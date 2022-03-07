@@ -2,898 +2,972 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245248AbiCGUBT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
+        id S245223AbiCGUBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:01:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245223AbiCGUBJ (ORCPT
+        with ESMTP id S234052AbiCGUBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:01:09 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138986D94A
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:00:11 -0800 (PST)
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4EBE13F621
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 20:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646683209;
-        bh=6MQB9zShCXQ2/NGCzHFkN4JNgvkXiS1oknbkWRE3O40=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=XHHo2dxe0obobp0umj3LCSH6nKKVHQ7ud0nsMurXL0SQUBC2lFIJiwG3YjAJIsqPu
-         zb66UejZOoMaU446ap638yNc0iYQZDxpbLrg46+0moUIkuQLeQQAJ77vqHrO5X9s5d
-         B1nU+F4N/Ni/0b2iH5KivsVPghuX2tOkmph8L4L7j3iQt1xED6OfIlTM+BO1A+CTwl
-         dSxRq6hFm63yyzhwrDe1syQTo/BD99tRGZVRKb4OmSLLegFxMw/EzodZMEUV6ku5++
-         e1W4RSPeJZC+N9dXe3lE+pqH3ko9b/CZurPcUQjwW4EHVnC96qxJwv7UIwdr9411lq
-         d26nLi2zNZ2bw==
-Received: by mail-io1-f70.google.com with SMTP id u25-20020a5d8199000000b006421bd641bbso11398123ion.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 12:00:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6MQB9zShCXQ2/NGCzHFkN4JNgvkXiS1oknbkWRE3O40=;
-        b=kSehPf0YEr4nrI/OXSH7FORC9TGKpP3bsffFsLWDNHI+yVH0F24aX7oBVpP2TuAwG1
-         SSgqCg9CdSRRhx1fpPCKFD6yGyHAzpYhG5uIz/0qmPW6ExSIPzvDmJEFCHw8IXcqFV7v
-         Xy8wnc3+xcSBn7pACVcG3M16JGJg0dGWVqSLz14h//AgKrIC/6mk2CYmoW7swoKcdTYw
-         ur96hbi0p7A40K6+sLgQdSRg5n6eQ3NBh9j5PfYn5Ag+qw2UKd8d09AhdMQJmLEexjHh
-         HVfZNrRE8E/2hoNo8d89522aDT9c6ad0iK1PwmWaUHWyyqIcKgGsArHyJJ/XPCMo+3+c
-         XMdg==
-X-Gm-Message-State: AOAM5326JA4BIRj00HmqdwXCJeBTvh83vQTYIPGaxdu7XHltP1m0TMd+
-        Oaa1PTqeqZMHClrjm/oxZQc5oxEfsKU2cwBBTnXsRFBL5dwLS7C1ERI1SyAy3WG3HdF5SAgQhUh
-        PoU2ctsFURSJy+f9kboomsmI1pK2jXqztuNG7dwob7A==
-X-Received: by 2002:a5d:89d8:0:b0:645:d853:66f0 with SMTP id a24-20020a5d89d8000000b00645d85366f0mr3068351iot.30.1646683205821;
-        Mon, 07 Mar 2022 12:00:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwHIvhSmnDE7W8spY7vvfPKk9VqxjVUTI4oxjs/Wu7ro9JHLTc7GOBjJOwkOfid5JzRrWO5lA==
-X-Received: by 2002:a5d:89d8:0:b0:645:d853:66f0 with SMTP id a24-20020a5d89d8000000b00645d85366f0mr3068197iot.30.1646683202773;
-        Mon, 07 Mar 2022 12:00:02 -0800 (PST)
-Received: from localhost (c-71-196-238-11.hsd1.co.comcast.net. [71.196.238.11])
-        by smtp.gmail.com with ESMTPSA id i3-20020a056602134300b0064620a85b6dsm105483iov.12.2022.03.07.12.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 12:00:01 -0800 (PST)
-From:   dann frazier <dann.frazier@canonical.com>
-To:     stable@vger.kernel.org
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Sergei Trofimovich <slyfox@gentoo.org>,
-        Anatoly Pugachev <matorola@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4.19 0/3] sched/topology: Fix missing scheduling domain levels
-Date:   Mon,  7 Mar 2022 12:59:38 -0700
-Message-Id: <20220307195941.459076-1-dann.frazier@canonical.com>
+        Mon, 7 Mar 2022 15:01:44 -0500
+X-Greylist: delayed 771 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 12:00:47 PST
+Received: from refb01.tmes.trendmicro.eu (refb01.tmes.trendmicro.eu [18.185.115.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496B67E581
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:00:46 -0800 (PST)
+Received: from 104.47.1.53_.trendmicro.com (unknown [172.21.10.208])
+        by refb01.tmes.trendmicro.eu (Postfix) with ESMTPS id 2A3AE1025CC76
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 19:47:57 +0000 (UTC)
+Received: from 104.47.1.53_.trendmicro.com (unknown [172.21.168.86])
+        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 885F910000099;
+        Mon,  7 Mar 2022 19:47:55 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1646682474.957000
+X-TM-MAIL-UUID: b59241d4-0d33-46da-90b8-651d6262293e
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (unknown [104.47.1.53])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id E9C6A100011DA;
+        Mon,  7 Mar 2022 19:47:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=abD6WfGnQ/py3hzrjgIwldgg6qED+7hF7JXos4ThWRPvnd9seUd8j6dXfBGsE9CRjNuGGBrwZ5WEBHWQpS0zqW9HJs/upgHRusdnA9SrM9l5XY70B8HE4d7iQluDapZDY/gW6vQL90OPyH/3W86p1y2ETZGPIzYDJGe5i8Anqn0nlKkSS68Xf++onlsIULGTCi2SAFPi+ReUvG5/KDCETpDq1NMkeVoJCVph+zWEWNZMh24lvtS5ATJ6bUgRkoXcc8yzDZl8jxUc9iX3QRarDeAA1X00XiLPOG6W2o8OGlF6AzAuh2etWFnOmnTEPn5oVY0dd/HOMlJtzq4JOL43RA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xuvY2z6NqstpeXVe5oGYpqU+tHORyOTcDnT3Dnp1/HQ=;
+ b=njCoaEaSyRqRoqi+v+vf3+QRxSMwiSpoThqLJIoyRjeyiXLwf7n2BlkJk98ceH6mtPB8/+cj9KcqzP2A3Pe2IpFZu+waq1sgFw+LCuZwtATfibrOoUIRVSpmyiV+Cfixnak6ilRbTllaHnvMEPijfgt+jF1Xt60SqVVDtpLhFPqeZWHwKjQNeVu91PRhxAdhM/FogSFriJEOQXQllH0A/3T49Jc5OMhyUfK/JAHmh4EG4T9jXEvlUAo8yRhBhRzdmPRKhIbjJ6YHCyjnhu/4dj9wMHetWaJINjs84L0Alrpf93h4W4czw+B08dc0RHo4MffnpiIutpwgwvpmhCE9ew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+From:   Anton Yakovlev <anton.yakovlev@opensynergy.com>
+To:     virtualization@lists.linux-foundation.org,
+        alsa-devel@alsa-project.org, virtio-dev@lists.oasis-open.org
+Cc:     Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] ALSA: virtio: add support for audio controls
+Date:   Mon,  7 Mar 2022 20:47:15 +0100
+Message-Id: <20220307194716.1517565-2-anton.yakovlev@opensynergy.com>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20220307194716.1517565-1-anton.yakovlev@opensynergy.com>
+References: <20220307194716.1517565-1-anton.yakovlev@opensynergy.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM5PR1001CA0040.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:206:15::17) To AM0PR04MB5891.eurprd04.prod.outlook.com
+ (2603:10a6:208:12e::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dbd0940a-04ea-4abe-56a8-08da00735e8f
+X-MS-TrafficTypeDiagnostic: HE1PR04MB3210:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR04MB32101F6AAF8A477A6A8E40B08D089@HE1PR04MB3210.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dYeW/459fLF1Y6h96XmI55vC0emIwROVOUegcOdo0O6GnePxRgsThDFmF5/VW9PZ7AfNfOshetyucPHkev5AH0eZ24lDHBZ2lECwFCGzOgDCAfyyKj5Tv9bzqLLzawWSY2/hQXO9PDZEL4EiWSkHUtrsnd94YMdL4ihUzbnL7bdtruNZ/4GOVFyzXghb4pLOb/koNrSi1qGy5Ty3LHg1i1AKFK/SP8TOuUDMUM6071i5Wt1xtGcnukWj3J632p0EWrfow8q7nynVCbvMsuFX1bYCln/OBRu/uRVWo0TjFhKtiIgfzv+Ecl0QYyujxQsCSTKqZjU6RlSW3/H35igAoMyxPTdcik2I5QsIPd3MuJnqtf85z0kcxaLvuh5MmGO5XKgdThftuQCMSNc0hn7awi2ALqObCaLou6JPMoyEyH+6/IwC4AEm508QpZf24m2yUqr+ZW/N04EbhaoJ213cShouqfgBRja6haxdeSivy5NQXVT/cP8Lyv0PYsq+lujt2lR9Lq9NzRGfjp7FFPMj1RXRkRojzALirj4eedWIPd0+HFJ5j5HGSlC4+iAjQS80psGdFzExfsZN/hGO+Fr3d4iqehFpo1yRgLksG3Ar39PQBtHOZNcLSOX55TCqSx04E1n4oVFrfIhCUdECNzP4IQfqgBRHuxM1O1gzCuCnqDUOojjui6MptcSbabnK5/rs2WI6WKbF1p/uBf13ErJqiZoilRwD8a9R949YgDDebzU5d7mmo/ggHICpKWOhigHgKEyqRtm9mbmSAlDM2H2d30nWhV4xsOe3V2jmekSsBFZ10pcHYyOBbM+zxpaC0tE/
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5891.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(36756003)(966005)(8936002)(8676002)(4326008)(66946007)(66476007)(66556008)(2906002)(52116002)(30864003)(86362001)(38100700002)(316002)(42186006)(83380400001)(38350700002)(26005)(1076003)(186003)(508600001)(5660300002)(44832011)(2616005)(54906003)(21314003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?biaEI2Rg5waJl2ujgoDZ048HO2+bLAIFmK/WdK/m3YDLYbZmzhP+rX+C+qcd?=
+ =?us-ascii?Q?1vqN+kSsX3DNF+p/VNSWfTcCpdQdGTRAec5s6m2yuzRAFSGJM2Jna/ny8YS1?=
+ =?us-ascii?Q?TwgGAWaaBQ5sLpwLp53kQilPuO/EtIY4ZgxMxGJuhWqsepr3YiM2+Mpzk14f?=
+ =?us-ascii?Q?d47GQc2Ey4lh672m5G6rY77eDNSUO/awmG5cIEZxgsRVU1LNQUBj/OPSVsoD?=
+ =?us-ascii?Q?16f1DHluAiFmN4dxFBp9WmfNdxH0F3CgntykckxUoWv5PAaU3CEiXkOnSm/u?=
+ =?us-ascii?Q?qE4z5r0SY3lzleYENb1FGnJ0yc/BIxEFhoExMmiLGIGJAlhAJ2zQS2Lt1Xuo?=
+ =?us-ascii?Q?/A56WvoGzv5vIkJeHQMmygWckIJUa+88F95/LAjR5naMjY8FvzyU/RgTntpo?=
+ =?us-ascii?Q?B0LCVAFSHQ9NggjcDU/Zrkx+Ff1U8xzDuk/kZU+FBV6JQgFdgtAVwuezlzww?=
+ =?us-ascii?Q?g5SbyjaMMnbddq9xHrp0vDgQfOPIBvoOtNN/bSTWg/o5X4uoPm4K952LcOl5?=
+ =?us-ascii?Q?1Uv9/Bdmvbv5ChiMbFNpOO26FIU3lwbW1SFxVHGcWvWeEfo9s/TFgiK96+F/?=
+ =?us-ascii?Q?rHly3ym6+oMPeTHNXPMwDbst08QtoC4ABvsecR+RR5uXjIN3vF1u7n6sQEqD?=
+ =?us-ascii?Q?4EUcyP7vmU+I/vMgiQQDnQReLe+3xyB5hmOt0LSTw+66iHA+Lms9lxxi9T91?=
+ =?us-ascii?Q?wehHFVyQUmcGIUs/moJT83wdmotwIE1vK9sAAn0ld+XkZAYUVYk3lN4UjrlA?=
+ =?us-ascii?Q?v/EuJRfIbTZ23zP2zqjAMZWCllQATXQIB8GcZ+MvxHoBH5JrPOJku6d4QMOD?=
+ =?us-ascii?Q?Me3sQIoLCc7aXAPakMXEm7Q4oSz5B9qVzNvuASxxs/4i/PniJQqT6eHucZ+G?=
+ =?us-ascii?Q?ovguSkWi5WBli/+jufFqoZQXMyZas4r1MuMAtvIissjBfruP3IA+MwQISysk?=
+ =?us-ascii?Q?5jfz2Fnz7548tzVz66KSXKzc47pdmPz99S7yxqO9knrujv0SUEEMcqzuwbpY?=
+ =?us-ascii?Q?K+tgxjGGM7sMeWpqj3jLi95JUDjSAy9uMvVd2Gf9mI+6ubKAOx+SSw80MqCN?=
+ =?us-ascii?Q?epTvNX4BdE+VaaUKwiVB1RLda97SfRWUXvwNJ0r6aUXWgNe15uc2vOoVpf6u?=
+ =?us-ascii?Q?0VE4aRsGrFvOsAi5PkFa/l/wQM/7Bs0oxKPSf3CEugmfMxCtHF5b+f1ApkEe?=
+ =?us-ascii?Q?AONoLKshaXqkmtAzIR+oxm2P/4Stmkz2NfaQybnfvNLHOB6YAypFLYmrP2Rm?=
+ =?us-ascii?Q?fUe1YCecTmUDjyCXKYotqh10vVju894zIzy8yMzycrEGWTQ4ZaHVCEk4fp2T?=
+ =?us-ascii?Q?GJDjhCObSdWhfuWpEfhYf5KbBuSNkSAbeVSJoNxRZ+ktZ85TLtvfHiR0pmRD?=
+ =?us-ascii?Q?+76sVt4Hn5xQffImsBO+gGX15CpPqvGAMKDnMHJFHzI/w6XNsE5B5axMf3JX?=
+ =?us-ascii?Q?+tXNvIe6hOZCqD+90S4zGeVa3pEXXeRVDfPH016VIlYuXHX0XCRalrGl0Tr3?=
+ =?us-ascii?Q?EydCcpxIHZSGTIFioMxyPdIzV3mVm+eqzHeiBLOFCmRAPrJhehluNe0KYW/D?=
+ =?us-ascii?Q?V21ajdZZb6VXxwREmvrIk1dP3vCr8f22rY1KqXfcPMWnwiysFvTCaJg/drem?=
+ =?us-ascii?Q?1LMgpLlq69BDIrGsS9Ks0gs=3D?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dbd0940a-04ea-4abe-56a8-08da00735e8f
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5891.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 19:47:53.5287
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XUUla3VaFMzD9Dxhdigiypx22cRnqH6YYCcv9ueZl08P1C5N//qPzbVJEP4Up1VTU6JrUC458sjBELJ48EHgYg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR04MB3210
+X-TM-AS-ERS: 104.47.1.53-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-8.8.1001-26758.002
+X-TMASE-Result: 10--27.434200-4.000000
+X-TMASE-MatchedRID: QkBk6NM3bYkJjCNolxOpSRFbgtHjUWLy0bdjqKOoG3cpurQKRyCSC/MI
+        NXcIwLY+L2EYbInFI5sj9UCLTHyvuM2xBiOieygkb/oIJuUAIuFZDdHiTk9OcCxMw0FMkBlZK7m
+        JD0QzrgRntI1EQdgdET2H0NTsYyE4d4yyDWGwM4b9QfnpVLoxlgeK93mzhKdFX30pMm+iz0h1N6
+        CkrtCdcVIeZmiiCQMf5p98cjyQCaKgKIcGQclMlr9A3Bl1/DcVjlRp8uau9oYO2jNO6qqUWylfT
+        GxFF4SxdfnosVrzNz3Olrk3M/IDPKlnRUJEkD40fUkgDiuGxn9pkBMYDn8FeDclhAqYjfRnOcY/
+        jkDGKiKwcLLU2//UpRcfV2p41YOpFlh98BIUXtILsPjFXByaSvlSepWcgdLPF45HquLQw3jdZii
+        xSw6RgZjY5FaoNLuDSaGNrMgEu1ws8AejW2/5AQrcxrzwsv5uUrr7Qc5WhKhR965L821jzHlbNL
+        JMhGkt/LF6HmtZY72GFT1Fsy+CXUPFZL7uftIdKiJEqUFWRggyhLY8urUHvskHbDtTC/XbILMvr
+        u9XoSs45PBNB8uybffPBI3wIcRmlwV2iaAfSWcURSScn+QSXt0H8LFZNFG7JQhrLH5KSJ0=
+X-TMASE-XGENCLOUD: 7c01af79-62ff-4628-a668-edad408a8ec2-0-0-200-0
+X-TM-Deliver-Signature: 41A141EBCCB9DA50C59B5242498DAE39
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+        s=TM-DKIM-20210503141657; t=1646682475;
+        bh=0XYq4g1AhiOSmFZ/lLVcu8iJR4HQ6D6WGVqWJiTK6yQ=; l=24328;
+        h=From:To:Date;
+        b=zwbtpR7T/6VQhgNwSAItQlMSGWJif+QMSlhlX0oHvy+UT2EvMj3MAt/O8WDY6ODL0
+         rsBLFuCAejxNo3EZsmDdC+PkFZ68Tb3Mwn+lUnmGa7OFrwKLjej66a7rZNM1a16l+S
+         tAjrYg2tjOqYNUENaP4o2Ono4cCG16yz/GVDtZRjYWY2nLsefn1q27FvLVvEU5zvSG
+         5OOX9bW87FhfKwmG6sNvFr7/y0lf6PGo6G5HEA+e7IA3U49nFm0cZv+ngrzMT5XNQH
+         ux+5RWZMTGvYkZPbgIHhj0kb+cxBA0w/hS8HNI7saAo0oFeQHMejB8x+dKTLAaQ8Jc
+         LXAAYqTKvtWgw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a 4.19.y version of a patch series I submitted earlier for
-5.4.y/5.10.y.
+Implementation of support for audio controls in accordance with the
+proposed extension of the virtio sound device specification [1].
 
-The LTP cpuset_sched_domains test, authored by Miao Xie, fails on a Kunpeng920
-server that has 4 NUMA nodes:
-  https://launchpad.net/bugs/1951289
+The device can announce the VIRTIO_SND_F_CTLS feature. If the feature is
+negotiated, then an additional field appears in the configuration space:
 
-This does appear to be a real bug. /proc/schedstat displays 4 domain levels for
-CPUs on 2 of the nodes, but only 3 levels for the others 2 (see below).
-I assume this means the scheduler is making suboptimal decisions about
-where to place/move processes. I'm not sure how to demonstrate that - but
-open to suggestions if that evidence is important justification for stable.
+  struct virtio_snd_config {
+    ...
+    /* number of available control elements */
+    __le32 controls;
+  };
 
-This is not a problem in current upstream kernels, so I bisected and found
-that the first patch here fixes it. I can't tell from the commit message
-if fixing this case was Valentin's intent, or just a happy side-effect of the
-set conversion. The other two patches fix regressions introduced by the first.
-The first 2 patches cleanly cherry-pick to 4.19.y, the 3rd one for ia64
-required very minor porting. This platform easily reproduces the problem
-Dietmar's fix addresses. I don't have hardware to test the ia64 fix.
+The driver can send the following requests to manage audio controls:
 
-Here's a comparison of /proc/schedstat before & after applying these
-fixes:
+  enum {
+    ...
+    /* control element request types */
+    VIRTIO_SND_R_CTL_INFO = 0x0300,
+    VIRTIO_SND_R_CTL_ENUM_ITEMS,
+    VIRTIO_SND_R_CTL_READ,
+    VIRTIO_SND_R_CTL_WRITE,
+    VIRTIO_SND_R_CTL_TLV_READ,
+    VIRTIO_SND_R_CTL_TLV_WRITE,
+    VIRTIO_SND_R_CTL_TLV_COMMAND,
+    ...
+  };
 
---- proc_schedstat.4.19.y	2022-03-07 12:50:56.654079337 -0700
-+++ proc_schedstat.4.19.y+fix	2022-03-07 12:50:56.838080561 -0700
-@@ -1,578 +1,642 @@
- version 15
--timestamp 4294908434
--cpu0 0 0 0 0 0 0 11361612670 10290559520 6836
-+timestamp 4341100534
-+cpu0 0 0 0 0 0 0 21341653900 11481279300 96517
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu1 0 0 0 0 0 0 1843515520 625631630 2548
-+cpu1 0 0 0 0 0 0 4471195470 882281120 71449
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu2 0 0 0 0 0 0 2289354570 713438390 3079
-+cpu2 0 0 0 0 0 0 2943530980 1004328880 62562
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu3 0 0 0 0 0 0 2432256280 666979990 1725
-+cpu3 0 0 0 0 0 0 4139792990 1703292020 55607
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu4 0 0 0 0 0 0 1992074450 629454630 1369
-+cpu4 0 0 0 0 0 0 2381857590 919686940 60677
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu5 0 0 0 0 0 0 2064947910 609531780 1521
-+cpu5 0 0 0 0 0 0 2759676770 917386060 56978
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu6 0 0 0 0 0 0 1855812000 663883500 1362
-+cpu6 0 0 0 0 0 0 3351237280 1297382170 74715
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu7 0 0 0 0 0 0 2703746430 783916840 1274
-+cpu7 0 0 0 0 0 0 3179976450 1058536630 77655
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu8 0 0 0 0 0 0 2090836290 638674520 1821
-+cpu8 0 0 0 0 0 0 4639801690 1188713110 72354
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu9 0 0 0 0 0 0 1436484120 612530430 1541
-+cpu9 0 0 0 0 0 0 2705771710 1062818450 65414
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu10 0 0 0 0 0 0 1480678890 556545060 1337
-+cpu10 0 0 0 0 0 0 2455687130 1058647510 68369
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu11 0 0 0 0 0 0 1423172570 653457570 981
-+cpu11 0 0 0 0 0 0 2948426610 1224244600 74876
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu12 0 0 0 0 0 0 1545614210 522001880 1372
-+cpu12 0 0 0 0 0 0 4943016060 1651668820 115111
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu13 0 0 0 0 0 0 1465587250 674454370 1207
-+cpu13 0 0 0 0 0 0 2167573930 908101200 61156
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu14 0 0 0 0 0 0 1390290580 650169110 1025
-+cpu14 0 0 0 0 0 0 4103688790 1301146100 81751
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu15 0 0 0 0 0 0 1743631330 646091580 1119
-+cpu15 0 0 0 0 0 0 3684955290 1065119580 87891
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu16 0 0 0 0 0 0 1739710440 555727290 1235
-+cpu16 0 0 0 0 0 0 2839787900 1158098400 77911
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu17 0 0 0 0 0 0 1514802100 707472360 1168
-+cpu17 0 0 0 0 0 0 3476012050 1332258530 88387
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu18 0 0 0 0 0 0 1391130070 668239020 1773
-+cpu18 0 0 0 0 0 0 5175597860 2383481010 135990
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu19 0 0 0 0 0 0 1451889490 456963730 1344
-+cpu19 0 0 0 0 0 0 2512887500 1180193640 68144
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu20 0 0 0 0 0 0 1908084510 715553220 1246
-+cpu20 0 0 0 0 0 0 2788627280 1011387500 74053
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu21 0 0 0 0 0 0 2066768230 775260700 1118
-+cpu21 0 0 0 0 0 0 2425076590 1075471460 75281
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu22 0 0 0 0 0 0 1615037850 712311120 952
-+cpu22 0 0 0 0 0 0 2307101730 962019510 58461
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu23 0 0 0 0 0 0 1456302120 572598420 1357
-+cpu23 0 0 0 0 0 0 2757474030 962260370 76356
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu24 0 0 0 0 0 0 1709072910 552893710 1169
-+cpu24 0 0 0 0 0 0 3652933450 1101994170 73649
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu25 0 0 0 0 0 0 1805119330 657079790 1087
-+cpu25 0 0 0 0 0 0 6529340180 1624287290 109297
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu26 0 0 0 0 0 0 1577795880 527864810 3029
-+cpu26 0 0 0 0 0 0 3324754670 1068483950 72891
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu27 0 0 0 0 0 0 1413590050 554362040 1049
-+cpu27 0 0 0 0 0 0 2974224880 1106486680 63463
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu28 0 0 0 0 0 0 1413432190 755115350 985
-+cpu28 0 0 0 0 0 0 2815118430 941855370 62111
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu29 0 0 0 0 0 0 1419853070 709649360 965
-+cpu29 0 0 0 0 0 0 2621430500 818510960 62538
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu30 0 0 0 0 0 0 2224691830 533562480 650
-+cpu30 0 0 0 0 0 0 2589371240 892337590 59789
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu31 0 0 0 0 0 0 1802365230 670372730 1050
-+cpu31 0 0 0 0 0 0 486062192680 4705704580 339187
- domain0 00000000,00000000,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu32 0 0 0 0 0 0 9573362270 609270210 10022
-+cpu32 0 0 0 0 0 0 5971265040 2139404800 121742
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu33 0 0 0 0 0 0 1843131380 599904670 1914
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu33 0 0 0 0 0 0 2677524760 991281220 64712
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu34 0 0 0 0 0 0 1460011550 532140570 1688
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu34 0 0 0 0 0 0 21475764990 10677348350 481844
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu35 0 0 0 0 0 0 1400239060 493604250 1512
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu35 0 0 0 0 0 0 2962357680 895515780 54085
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu36 0 0 0 0 0 0 1428620060 533587890 1425
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu36 0 0 0 0 0 0 4310924220 971362320 65732
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu37 0 0 0 0 0 0 1524935740 488283110 6510
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu37 0 0 0 0 0 0 3132714360 869595750 59698
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu38 0 0 0 0 0 0 1999281270 537669780 6115
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu38 0 0 0 0 0 0 2448968530 687460690 51252
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu39 0 0 0 0 0 0 1428167600 505249420 1096
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu39 0 0 0 0 0 0 4552292990 739739650 74183
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu40 0 0 0 0 0 0 1515985780 501267310 3840
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu40 0 0 0 0 0 0 1831337510 674888630 49370
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu41 0 0 0 0 0 0 1420438250 557522320 1184
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu41 0 0 0 0 0 0 1973746130 707267520 50880
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu42 0 0 0 0 0 0 1455844290 612244690 1039
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu42 0 0 0 0 0 0 1993767880 628424850 50460
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu43 0 0 0 0 0 0 1456445970 637932950 1171
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu43 0 0 0 0 0 0 1840687640 601267720 52153
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu44 0 0 0 0 0 0 1405907130 620353930 1023
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu44 0 0 0 0 0 0 2690531750 535200870 52597
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu45 0 0 0 0 0 0 1784062190 512787800 922
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu45 0 0 0 0 0 0 5069432230 1599031180 105413
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu46 0 0 0 0 0 0 1379527430 528818940 937
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu46 0 0 0 0 0 0 2678516560 697964660 51825
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu47 0 0 0 0 0 0 1344541010 592395430 743
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu47 0 0 0 0 0 0 57574127850 6647390480 995065
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu48 0 0 0 0 0 0 1328420630 584498310 981
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu48 0 0 0 0 0 0 11632859900 6308091200 590818
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu49 0 0 0 0 0 0 1467974770 515278960 1701
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu49 0 0 0 0 0 0 10079777610 4339643760 346371
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu50 0 0 0 0 0 0 1665255180 626549770 1448
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu50 0 0 0 0 0 0 5166677770 1780059980 102801
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu51 0 0 0 0 0 0 1376758540 522451430 1510
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu51 0 0 0 0 0 0 5303796540 1264948860 82590
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu52 0 0 0 0 0 0 1342335080 590540210 924
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu52 0 0 0 0 0 0 6106970160 1830189880 85615
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu53 0 0 0 0 0 0 1351876520 468872080 902
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu53 0 0 0 0 0 0 17366546430 1471292050 110608
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu54 0 0 0 0 0 0 1694712800 603617800 2043
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu54 0 0 0 0 0 0 9956432680 1334653040 74379
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu55 0 0 0 0 0 0 2027759720 600070800 1340
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu55 0 0 0 0 0 0 5967816930 1575673890 114789
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu56 0 0 0 0 0 0 1708325190 555252620 934
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu56 0 0 0 0 0 0 3109219800 816277290 51495
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu57 0 0 0 0 0 0 2093621470 496899220 1514
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu57 0 0 0 0 0 0 5282416490 2120760880 237134
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu58 0 0 0 0 0 0 1668541860 521570220 963
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu58 0 0 0 0 0 0 4306123980 886686630 56916
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu59 0 0 0 0 0 0 1791297470 378380750 1596
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu59 0 0 0 0 0 0 10280589500 3130725070 169341
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu60 0 0 0 0 0 0 1419231630 527375220 1044
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu60 0 0 0 0 0 0 3332621430 918959960 64661
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu61 0 0 0 0 0 0 1393583630 578772930 1009
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu61 0 0 0 0 0 0 2085048610 606157210 56813
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu62 0 0 0 0 0 0 1448983520 550022900 1469
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu62 0 0 0 0 0 0 1822324780 681457240 49305
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu63 0 0 0 0 0 0 1461598320 483305850 980
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu63 0 0 0 0 0 0 3778241440 856580220 73528
- domain0 00000000,00000000,ffffffff,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 00000000,00000000,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 00000000,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu64 0 0 0 0 0 0 3507643190 661152900 4244
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu64 0 0 0 0 0 0 22216587140 1428127370 125508
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu65 0 0 0 0 0 0 1492831550 600370650 975
-+cpu65 0 0 0 0 0 0 14127940200 1098171010 90254
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu66 0 0 0 0 0 0 1838833710 416135460 1086
-+cpu66 0 0 0 0 0 0 14849141250 1236594070 109524
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu67 0 0 0 0 0 0 1466172980 495304860 1389
-+cpu67 0 0 0 0 0 0 14476836460 1114782300 95657
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu68 0 0 0 0 0 0 1267081320 553239000 1778
-+cpu68 0 0 0 0 0 0 14301777660 1324547280 95881
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu69 0 0 0 0 0 0 1526589610 584764950 4584
-+cpu69 0 0 0 0 0 0 13216203220 1204294380 92657
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu70 0 0 0 0 0 0 1983939560 397079630 2049
-+cpu70 0 0 0 0 0 0 13127525830 1160748780 94376
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu71 0 0 0 0 0 0 1798306900 566172630 5770
-+cpu71 0 0 0 0 0 0 13604682800 1235081350 103097
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu72 0 0 0 0 0 0 2726720520 603334060 7516
-+cpu72 0 0 0 0 0 0 13417280970 975966630 89350
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu73 0 0 0 0 0 0 1447697760 488697730 1239
-+cpu73 0 0 0 0 0 0 12927320870 970385370 87649
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu74 0 0 0 0 0 0 1426290760 373811830 1882
-+cpu74 0 0 0 0 0 0 13138291420 1064998540 89727
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu75 0 0 0 0 0 0 2151996530 431681780 1468
-+cpu75 0 0 0 0 0 0 13574235300 1037221570 89262
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu76 0 0 0 0 0 0 1790512110 624574630 2231
-+cpu76 0 0 0 0 0 0 13262665270 1035332240 88955
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu77 0 0 0 0 0 0 1628597380 515857090 3999
-+cpu77 0 0 0 0 0 0 13210280290 1034503870 94551
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu78 0 0 0 0 0 0 1569364270 506924980 973
-+cpu78 0 0 0 0 0 0 14722980960 1014148230 90250
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu79 0 0 0 0 0 0 1545516180 539271750 3617
-+cpu79 0 0 0 0 0 0 14424507360 952523200 106198
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu80 0 0 0 0 0 0 1314881380 446373500 2104
-+cpu80 0 0 0 0 0 0 16949650100 1312289710 106558
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu81 0 0 0 0 0 0 1235357220 563105350 1291
-+cpu81 0 0 0 0 0 0 59661125520 4712796960 888710
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu82 0 0 0 0 0 0 1308268630 599984950 1500
-+cpu82 0 0 0 0 0 0 52812760750 6442971310 656162
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu83 0 0 0 0 0 0 1381022960 476011810 1784
-+cpu83 0 0 0 0 0 0 19405879230 2279630800 145772
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu84 0 0 0 0 0 0 2814122640 464110210 2874
-+cpu84 0 0 0 0 0 0 20741575350 1237812270 101456
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu85 0 0 0 0 0 0 1321336450 435735720 1332
-+cpu85 0 0 0 0 0 0 13913195240 1118206300 97305
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu86 0 0 0 0 0 0 1437564030 636517790 1304
-+cpu86 0 0 0 0 0 0 14035935000 1116957170 91485
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu87 0 0 0 0 0 0 1254395470 532577150 3209
-+cpu87 0 0 0 0 0 0 15901295860 1314048440 111234
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu88 0 0 0 0 0 0 1295552590 690733260 1582
-+cpu88 0 0 0 0 0 0 16911709520 1179562020 92679
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu89 0 0 0 0 0 0 1246907590 507766850 1902
-+cpu89 0 0 0 0 0 0 13525990150 1203966710 93613
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu90 0 0 0 0 0 0 1268379780 548312550 1093
-+cpu90 0 0 0 0 0 0 13806727720 1101458110 91998
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu91 0 0 0 0 0 0 1247742830 579149750 1227
-+cpu91 0 0 0 0 0 0 13625841200 988922760 91560
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu92 0 0 0 0 0 0 1272481900 461421670 997
-+cpu92 0 0 0 0 0 0 13766158180 1065663440 89003
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu93 0 0 0 0 0 0 1228611240 461038970 886
-+cpu93 0 0 0 0 0 0 12817342700 1043976800 92779
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu94 0 0 0 0 0 0 1447578690 459346070 877
-+cpu94 0 0 0 0 0 0 13308837020 1043742980 87526
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu95 0 0 0 0 0 0 1393144520 552480040 899
-+cpu95 0 0 0 0 0 0 13606107120 940495330 103860
- domain0 00000000,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu96 0 0 0 0 0 0 1370067340 465828610 793
-+cpu96 0 0 0 0 0 0 2987063120 753888540 60057
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu97 0 0 0 0 0 0 1171899600 453644780 567
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu97 0 0 0 0 0 0 1968001730 534342310 53949
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu98 0 0 0 0 0 0 1205647750 370030300 796
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu98 0 0 0 0 0 0 2220499060 706667480 53075
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu99 0 0 0 0 0 0 1188578600 445334260 629
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu99 0 0 0 0 0 0 2430403760 819037460 61433
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu100 0 0 0 0 0 0 1196553180 597428140 642
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu100 0 0 0 0 0 0 2460772780 577817540 53251
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu101 0 0 0 0 0 0 1167371530 432873560 502
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu101 0 0 0 0 0 0 1693618400 705122600 52664
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu102 0 0 0 0 0 0 1181187970 580350690 493
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu102 0 0 0 0 0 0 2301201340 632424530 49900
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu103 0 0 0 0 0 0 1186311210 574456360 542
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu103 0 0 0 0 0 0 1805617940 611485890 52184
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu104 0 0 0 0 0 0 1760990070 514012570 774
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu104 0 0 0 0 0 0 1664873190 527303670 52658
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu105 0 0 0 0 0 0 1485231310 624973390 575
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu105 0 0 0 0 0 0 2521611660 675404910 60313
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu106 0 0 0 0 0 0 1157646860 434236480 507
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu106 0 0 0 0 0 0 2110366970 609177130 53290
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu107 0 0 0 0 0 0 1228977750 444628380 559
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu107 0 0 0 0 0 0 1776083360 611230870 53791
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu108 0 0 0 0 0 0 1193380610 581360820 549
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu108 0 0 0 0 0 0 2421201140 491993970 57622
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu109 0 0 0 0 0 0 1649801280 393865790 629
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu109 0 0 0 0 0 0 1889445480 500033420 51916
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu110 0 0 0 0 0 0 1200941210 472638690 631
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu110 0 0 0 0 0 0 1931517310 622934790 50689
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu111 0 0 0 0 0 0 1172568170 575732120 656
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu111 0 0 0 0 0 0 1447219670 530624180 52184
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu112 0 0 0 0 0 0 1207990460 590195860 551
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu112 0 0 0 0 0 0 1745764040 532716480 49891
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu113 0 0 0 0 0 0 1144115950 619054780 545
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu113 0 0 0 0 0 0 1706237410 613992870 54371
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu114 0 0 0 0 0 0 1223053110 390862070 609
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu114 0 0 0 0 0 0 2269369350 678733390 52976
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu115 0 0 0 0 0 0 1487193840 471509880 554
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu115 0 0 0 0 0 0 1459128660 729702440 49229
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu116 0 0 0 0 0 0 1467892130 425307870 516
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu116 0 0 0 0 0 0 2099516420 565294690 50630
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu117 0 0 0 0 0 0 1785265600 360272740 729
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu117 0 0 0 0 0 0 2685067970 710842870 52588
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu118 0 0 0 0 0 0 1527783850 325185450 548
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu118 0 0 0 0 0 0 2598777260 611374290 51294
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu119 0 0 0 0 0 0 1532430330 499915720 553
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu119 0 0 0 0 0 0 2670722810 573329650 54912
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu120 0 0 0 0 0 0 1215283710 584904310 588
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu120 0 0 0 0 0 0 2230876930 680415800 48605
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu121 0 0 0 0 0 0 1195612890 514566410 661
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu121 0 0 0 0 0 0 1834523090 667740790 51029
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu122 0 0 0 0 0 0 1145575730 389723540 503
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu122 0 0 0 0 0 0 1968694910 505060190 48295
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu123 0 0 0 0 0 0 1173138720 412947810 535
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu123 0 0 0 0 0 0 1845035810 566308100 49047
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu124 0 0 0 0 0 0 1148413430 506449480 433
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu124 0 0 0 0 0 0 2007055190 607257140 52469
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu125 0 0 0 0 0 0 1535279740 473271970 525
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu125 0 0 0 0 0 0 2553202630 732732710 60094
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu126 0 0 0 0 0 0 1619874930 348350000 816
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu126 0 0 0 0 0 0 2288418430 658005670 49345
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
--cpu127 0 0 0 0 0 0 1431905380 457191450 615
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+cpu127 0 0 0 0 0 0 2474274800 650070960 56289
- domain0 ffffffff,00000000,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain1 ffffffff,ffffffff,00000000,00000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- domain2 ffffffff,ffffffff,00000000,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-+domain3 ffffffff,ffffffff,ffffffff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+And the device can send the following audio control event notification:
 
+  enum {
+    ...
+    /* control element event types */
+    VIRTIO_SND_EVT_CTL_NOTIFY = 0x1200,
+    ...
+  };
 
-Dietmar Eggemann (1):
-  sched/topology: Fix sched_domain_topology_level alloc in
-    sched_init_numa()
+See additional details in [1].
 
-Valentin Schneider (2):
-  sched/topology: Make sched_init_numa() use a set for the deduplicating
-    sort
-  ia64: ensure proper NUMA distance and possible map initialization
+[1] https://lists.oasis-open.org/archives/virtio-comment/202104/msg00013.html
 
- arch/ia64/kernel/acpi.c  |  7 ++-
- include/linux/topology.h |  1 +
- kernel/sched/topology.c  | 99 +++++++++++++++++++---------------------
- 3 files changed, 54 insertions(+), 53 deletions(-)
+Signed-off-by: Anton Yakovlev <anton.yakovlev@opensynergy.com>
+---
+ include/uapi/linux/virtio_snd.h | 154 +++++++++++
+ sound/virtio/Makefile           |   1 +
+ sound/virtio/virtio_card.c      |  21 ++
+ sound/virtio/virtio_card.h      |  22 ++
+ sound/virtio/virtio_kctl.c      | 464 ++++++++++++++++++++++++++++++++
+ 5 files changed, 662 insertions(+)
+ create mode 100644 sound/virtio/virtio_kctl.c
 
+diff --git a/include/uapi/linux/virtio_snd.h b/include/uapi/linux/virtio_snd.h
+index dfe49547a7b0..5f4100c2cf04 100644
+--- a/include/uapi/linux/virtio_snd.h
++++ b/include/uapi/linux/virtio_snd.h
+@@ -7,6 +7,14 @@
+ 
+ #include <linux/virtio_types.h>
+ 
++/*******************************************************************************
++ * FEATURE BITS
++ */
++enum {
++	/* device supports control elements */
++	VIRTIO_SND_F_CTLS = 0
++};
++
+ /*******************************************************************************
+  * CONFIGURATION SPACE
+  */
+@@ -17,6 +25,8 @@ struct virtio_snd_config {
+ 	__le32 streams;
+ 	/* # of available channel maps */
+ 	__le32 chmaps;
++	/* # of available control elements */
++	__le32 controls;
+ };
+ 
+ enum {
+@@ -55,6 +65,15 @@ enum {
+ 	/* channel map control request types */
+ 	VIRTIO_SND_R_CHMAP_INFO = 0x0200,
+ 
++	/* control element request types */
++	VIRTIO_SND_R_CTL_INFO = 0x0300,
++	VIRTIO_SND_R_CTL_ENUM_ITEMS,
++	VIRTIO_SND_R_CTL_READ,
++	VIRTIO_SND_R_CTL_WRITE,
++	VIRTIO_SND_R_CTL_TLV_READ,
++	VIRTIO_SND_R_CTL_TLV_WRITE,
++	VIRTIO_SND_R_CTL_TLV_COMMAND,
++
+ 	/* jack event types */
+ 	VIRTIO_SND_EVT_JACK_CONNECTED = 0x1000,
+ 	VIRTIO_SND_EVT_JACK_DISCONNECTED,
+@@ -63,6 +82,9 @@ enum {
+ 	VIRTIO_SND_EVT_PCM_PERIOD_ELAPSED = 0x1100,
+ 	VIRTIO_SND_EVT_PCM_XRUN,
+ 
++	/* control element event types */
++	VIRTIO_SND_EVT_CTL_NOTIFY = 0x1200,
++
+ 	/* common status codes */
+ 	VIRTIO_SND_S_OK = 0x8000,
+ 	VIRTIO_SND_S_BAD_MSG,
+@@ -331,4 +353,136 @@ struct virtio_snd_chmap_info {
+ 	__u8 positions[VIRTIO_SND_CHMAP_MAX_SIZE];
+ };
+ 
++/*******************************************************************************
++ * CONTROL ELEMENTS MESSAGES
++ */
++struct virtio_snd_ctl_hdr {
++	/* VIRTIO_SND_R_CTL_XXX */
++	struct virtio_snd_hdr hdr;
++	/* 0 ... virtio_snd_config::controls - 1 */
++	__le32 control_id;
++};
++
++/* supported roles for control elements */
++enum {
++	VIRTIO_SND_CTL_ROLE_UNDEFINED = 0,
++	VIRTIO_SND_CTL_ROLE_VOLUME,
++	VIRTIO_SND_CTL_ROLE_MUTE,
++	VIRTIO_SND_CTL_ROLE_GAIN
++};
++
++/* supported value types for control elements */
++enum {
++	VIRTIO_SND_CTL_TYPE_BOOLEAN = 0,
++	VIRTIO_SND_CTL_TYPE_INTEGER,
++	VIRTIO_SND_CTL_TYPE_INTEGER64,
++	VIRTIO_SND_CTL_TYPE_ENUMERATED,
++	VIRTIO_SND_CTL_TYPE_BYTES,
++	VIRTIO_SND_CTL_TYPE_IEC958
++};
++
++/* supported access rights for control elements */
++enum {
++	VIRTIO_SND_CTL_ACCESS_READ = 0,
++	VIRTIO_SND_CTL_ACCESS_WRITE,
++	VIRTIO_SND_CTL_ACCESS_VOLATILE,
++	VIRTIO_SND_CTL_ACCESS_INACTIVE,
++	VIRTIO_SND_CTL_ACCESS_TLV_READ,
++	VIRTIO_SND_CTL_ACCESS_TLV_WRITE,
++	VIRTIO_SND_CTL_ACCESS_TLV_COMMAND
++};
++
++struct virtio_snd_ctl_info {
++	/* common header */
++	struct virtio_snd_info hdr;
++	/* element role (VIRTIO_SND_CTL_ROLE_XXX) */
++	__le32 role;
++	/* element value type (VIRTIO_SND_CTL_TYPE_XXX) */
++	__le32 type;
++	/* element access right bit map (1 << VIRTIO_SND_CTL_ACCESS_XXX) */
++	__le32 access;
++	/* # of members in the element value */
++	__le32 count;
++	/* index for an element with a non-unique name */
++	__le32 index;
++	/* name identifier string for the element */
++	__u8 name[44];
++	/* additional information about the element's value */
++	union {
++		/* VIRTIO_SND_CTL_TYPE_INTEGER */
++		struct {
++			/* minimum supported value */
++			__le32 min;
++			/* maximum supported value */
++			__le32 max;
++			/* fixed step size for value (0 = variable size) */
++			__le32 step;
++		} integer;
++		/* VIRTIO_SND_CTL_TYPE_INTEGER64 */
++		struct {
++			/* minimum supported value */
++			__le64 min;
++			/* maximum supported value */
++			__le64 max;
++			/* fixed step size for value (0 = variable size) */
++			__le64 step;
++		} integer64;
++		/* VIRTIO_SND_CTL_TYPE_ENUMERATED */
++		struct {
++			/* # of options supported for value */
++			__le32 items;
++		} enumerated;
++	} value;
++};
++
++struct virtio_snd_ctl_enum_item {
++	/* option name */
++	__u8 item[64];
++};
++
++struct virtio_snd_ctl_iec958 {
++	/* AES/IEC958 channel status bits */
++	__u8 status[24];
++	/* AES/IEC958 subcode bits */
++	__u8 subcode[147];
++	/* nothing */
++	__u8 pad;
++	/* AES/IEC958 subframe bits */
++	__u8 dig_subframe[4];
++};
++
++struct virtio_snd_ctl_value {
++	union {
++		/* VIRTIO_SND_CTL_TYPE_BOOLEAN|INTEGER value */
++		__le32 integer[128];
++		/* VIRTIO_SND_CTL_TYPE_INTEGER64 value */
++		__le64 integer64[64];
++		/* VIRTIO_SND_CTL_TYPE_ENUMERATED value (option indexes) */
++		__le32 enumerated[128];
++		/* VIRTIO_SND_CTL_TYPE_BYTES value */
++		__u8 bytes[512];
++		/* VIRTIO_SND_CTL_TYPE_IEC958 value */
++		struct virtio_snd_ctl_iec958 iec958;
++	} value;
++};
++
++/* supported event reason types */
++enum {
++	/* element's value has changed */
++	VIRTIO_SND_CTL_EVT_MASK_VALUE = 0,
++	/* element's information has changed */
++	VIRTIO_SND_CTL_EVT_MASK_INFO,
++	/* element's metadata has changed */
++	VIRTIO_SND_CTL_EVT_MASK_TLV
++};
++
++struct virtio_snd_ctl_event {
++	/* VIRTIO_SND_EVT_CTL_NOTIFY */
++	struct virtio_snd_hdr hdr;
++	/* 0 ... virtio_snd_config::controls - 1 */
++	__le16 control_id;
++	/* event reason bit map (1 << VIRTIO_SND_CTL_EVT_MASK_XXX) */
++	__le16 mask;
++};
++
+ #endif /* VIRTIO_SND_IF_H */
+diff --git a/sound/virtio/Makefile b/sound/virtio/Makefile
+index 2742bddb8874..a839f8c8b5e6 100644
+--- a/sound/virtio/Makefile
++++ b/sound/virtio/Makefile
+@@ -7,6 +7,7 @@ virtio_snd-objs := \
+ 	virtio_chmap.o \
+ 	virtio_ctl_msg.o \
+ 	virtio_jack.o \
++	virtio_kctl.o \
+ 	virtio_pcm.o \
+ 	virtio_pcm_msg.o \
+ 	virtio_pcm_ops.o
+diff --git a/sound/virtio/virtio_card.c b/sound/virtio/virtio_card.c
+index e2847c040f75..61df3476cf70 100644
+--- a/sound/virtio/virtio_card.c
++++ b/sound/virtio/virtio_card.c
+@@ -64,6 +64,9 @@ static void virtsnd_event_dispatch(struct virtio_snd *snd,
+ 	case VIRTIO_SND_EVT_PCM_XRUN:
+ 		virtsnd_pcm_event(snd, event);
+ 		break;
++	case VIRTIO_SND_EVT_CTL_NOTIFY:
++		virtsnd_kctl_event(snd, event);
++		break;
+ 	}
+ }
+ 
+@@ -235,6 +238,12 @@ static int virtsnd_build_devs(struct virtio_snd *snd)
+ 	if (rc)
+ 		return rc;
+ 
++	if (virtio_has_feature(vdev, VIRTIO_SND_F_CTLS)) {
++		rc = virtsnd_kctl_parse_cfg(snd);
++		if (rc)
++			return rc;
++	}
++
+ 	if (snd->njacks) {
+ 		rc = virtsnd_jack_build_devs(snd);
+ 		if (rc)
+@@ -253,6 +262,12 @@ static int virtsnd_build_devs(struct virtio_snd *snd)
+ 			return rc;
+ 	}
+ 
++	if (snd->nkctls) {
++		rc = virtsnd_kctl_build_devs(snd);
++		if (rc)
++			return rc;
++	}
++
+ 	return snd_card_register(snd->card);
+ }
+ 
+@@ -419,10 +434,16 @@ static const struct virtio_device_id id_table[] = {
+ 	{ 0 },
+ };
+ 
++static unsigned int features[] = {
++	VIRTIO_SND_F_CTLS
++};
++
+ static struct virtio_driver virtsnd_driver = {
+ 	.driver.name = KBUILD_MODNAME,
+ 	.driver.owner = THIS_MODULE,
+ 	.id_table = id_table,
++	.feature_table = features,
++	.feature_table_size = ARRAY_SIZE(features),
+ 	.validate = virtsnd_validate,
+ 	.probe = virtsnd_probe,
+ 	.remove = virtsnd_remove,
+diff --git a/sound/virtio/virtio_card.h b/sound/virtio/virtio_card.h
+index 86ef3941895e..3ceee4e416fc 100644
+--- a/sound/virtio/virtio_card.h
++++ b/sound/virtio/virtio_card.h
+@@ -31,6 +31,16 @@ struct virtio_snd_queue {
+ 	struct virtqueue *vqueue;
+ };
+ 
++/**
++ * struct virtio_kctl - VirtIO control element.
++ * @kctl: ALSA control element.
++ * @items: Items for the ENUMERATED element type.
++ */
++struct virtio_kctl {
++	struct snd_kcontrol *kctl;
++	struct virtio_snd_ctl_enum_item *items;
++};
++
+ /**
+  * struct virtio_snd - VirtIO sound card device.
+  * @vdev: Underlying virtio device.
+@@ -45,6 +55,9 @@ struct virtio_snd_queue {
+  * @nsubstreams: Number of PCM substreams.
+  * @chmaps: VirtIO channel maps.
+  * @nchmaps: Number of channel maps.
++ * @kctl_infos: VirtIO control element information.
++ * @kctls: VirtIO control elements.
++ * @nkctls: Number of control elements.
+  */
+ struct virtio_snd {
+ 	struct virtio_device *vdev;
+@@ -59,6 +72,9 @@ struct virtio_snd {
+ 	u32 nsubstreams;
+ 	struct virtio_snd_chmap_info *chmaps;
+ 	u32 nchmaps;
++	struct virtio_snd_ctl_info *kctl_infos;
++	struct virtio_kctl *kctls;
++	u32 nkctls;
+ };
+ 
+ /* Message completion timeout in milliseconds (module parameter). */
+@@ -108,4 +124,10 @@ int virtsnd_chmap_parse_cfg(struct virtio_snd *snd);
+ 
+ int virtsnd_chmap_build_devs(struct virtio_snd *snd);
+ 
++int virtsnd_kctl_parse_cfg(struct virtio_snd *snd);
++
++int virtsnd_kctl_build_devs(struct virtio_snd *snd);
++
++void virtsnd_kctl_event(struct virtio_snd *snd, struct virtio_snd_event *event);
++
+ #endif /* VIRTIO_SND_CARD_H */
+diff --git a/sound/virtio/virtio_kctl.c b/sound/virtio/virtio_kctl.c
+new file mode 100644
+index 000000000000..16c48abe0ca1
+--- /dev/null
++++ b/sound/virtio/virtio_kctl.c
+@@ -0,0 +1,464 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * virtio-snd: Virtio sound device
++ * Copyright (C) 2022 OpenSynergy GmbH
++ */
++#include <sound/control.h>
++#include <linux/virtio_config.h>
++
++#include "virtio_card.h"
++
++/* Map for converting VirtIO types to ALSA types. */
++static const snd_ctl_elem_type_t g_v2a_type_map[] = {
++	[VIRTIO_SND_CTL_TYPE_BOOLEAN] = SNDRV_CTL_ELEM_TYPE_BOOLEAN,
++	[VIRTIO_SND_CTL_TYPE_INTEGER] = SNDRV_CTL_ELEM_TYPE_INTEGER,
++	[VIRTIO_SND_CTL_TYPE_INTEGER64] = SNDRV_CTL_ELEM_TYPE_INTEGER64,
++	[VIRTIO_SND_CTL_TYPE_ENUMERATED] = SNDRV_CTL_ELEM_TYPE_ENUMERATED,
++	[VIRTIO_SND_CTL_TYPE_BYTES] = SNDRV_CTL_ELEM_TYPE_BYTES,
++	[VIRTIO_SND_CTL_TYPE_IEC958] = SNDRV_CTL_ELEM_TYPE_IEC958
++};
++
++/* Map for converting VirtIO access rights to ALSA access rights. */
++static const unsigned int g_v2a_access_map[] = {
++	[VIRTIO_SND_CTL_ACCESS_READ] = SNDRV_CTL_ELEM_ACCESS_READ,
++	[VIRTIO_SND_CTL_ACCESS_WRITE] = SNDRV_CTL_ELEM_ACCESS_WRITE,
++	[VIRTIO_SND_CTL_ACCESS_VOLATILE] = SNDRV_CTL_ELEM_ACCESS_VOLATILE,
++	[VIRTIO_SND_CTL_ACCESS_INACTIVE] = SNDRV_CTL_ELEM_ACCESS_INACTIVE,
++	[VIRTIO_SND_CTL_ACCESS_TLV_READ] = SNDRV_CTL_ELEM_ACCESS_TLV_READ,
++	[VIRTIO_SND_CTL_ACCESS_TLV_WRITE] = SNDRV_CTL_ELEM_ACCESS_TLV_WRITE,
++	[VIRTIO_SND_CTL_ACCESS_TLV_COMMAND] = SNDRV_CTL_ELEM_ACCESS_TLV_COMMAND
++};
++
++/* Map for converting VirtIO event masks to ALSA event masks. */
++static const unsigned int g_v2a_mask_map[] = {
++	[VIRTIO_SND_CTL_EVT_MASK_VALUE] = SNDRV_CTL_EVENT_MASK_VALUE,
++	[VIRTIO_SND_CTL_EVT_MASK_INFO] = SNDRV_CTL_EVENT_MASK_INFO,
++	[VIRTIO_SND_CTL_EVT_MASK_TLV] = SNDRV_CTL_EVENT_MASK_TLV
++};
++
++/**
++ * virtsnd_kctl_info() - Returns information about the control.
++ * @kcontrol: ALSA control element.
++ * @uinfo: Element information.
++ *
++ * Context: Process context.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_kctl_info(struct snd_kcontrol *kcontrol,
++			     struct snd_ctl_elem_info *uinfo)
++{
++	struct virtio_snd *snd = kcontrol->private_data;
++	struct virtio_kctl *kctl = &snd->kctls[kcontrol->private_value];
++	struct virtio_snd_ctl_info *kinfo =
++		&snd->kctl_infos[kcontrol->private_value];
++	unsigned int i;
++
++	uinfo->type = g_v2a_type_map[le32_to_cpu(kinfo->type)];
++	uinfo->count = le32_to_cpu(kinfo->count);
++
++	switch (uinfo->type) {
++	case SNDRV_CTL_ELEM_TYPE_INTEGER:
++		uinfo->value.integer.min =
++			le32_to_cpu(kinfo->value.integer.min);
++		uinfo->value.integer.max =
++			le32_to_cpu(kinfo->value.integer.max);
++		uinfo->value.integer.step =
++			le32_to_cpu(kinfo->value.integer.step);
++
++		break;
++	case SNDRV_CTL_ELEM_TYPE_INTEGER64:
++		uinfo->value.integer64.min =
++			le64_to_cpu(kinfo->value.integer64.min);
++		uinfo->value.integer64.max =
++			le64_to_cpu(kinfo->value.integer64.max);
++		uinfo->value.integer64.step =
++			le64_to_cpu(kinfo->value.integer64.step);
++
++		break;
++	case SNDRV_CTL_ELEM_TYPE_ENUMERATED:
++		i = uinfo->value.enumerated.item;
++		if (i >= le32_to_cpu(kinfo->value.enumerated.items))
++			return -EINVAL;
++
++		strscpy(uinfo->value.enumerated.name, kctl->items[i].item,
++			sizeof(uinfo->value.enumerated.name));
++
++		break;
++	}
++
++	return 0;
++}
++
++/**
++ * virtsnd_kctl_get() - Read the value from the control.
++ * @kcontrol: ALSA control element.
++ * @uvalue: Element value.
++ *
++ * Context: Process context.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_kctl_get(struct snd_kcontrol *kcontrol,
++			    struct snd_ctl_elem_value *uvalue)
++{
++	struct virtio_snd *snd = kcontrol->private_data;
++	struct virtio_snd_ctl_info *kinfo =
++		&snd->kctl_infos[kcontrol->private_value];
++	unsigned int type = le32_to_cpu(kinfo->type);
++	unsigned int count = le32_to_cpu(kinfo->count);
++	struct virtio_snd_msg *msg;
++	struct virtio_snd_ctl_hdr *hdr;
++	struct virtio_snd_ctl_value *kvalue;
++	size_t request_size = sizeof(*hdr);
++	size_t response_size = sizeof(struct virtio_snd_hdr) + sizeof(*kvalue);
++	unsigned int i;
++	int rc;
++
++	msg = virtsnd_ctl_msg_alloc(request_size, response_size, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	virtsnd_ctl_msg_ref(msg);
++
++	hdr = virtsnd_ctl_msg_request(msg);
++	hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_READ);
++	hdr->control_id = cpu_to_le32(kcontrol->private_value);
++
++	rc = virtsnd_ctl_msg_send_sync(snd, msg);
++	if (rc)
++		goto on_failure;
++
++	kvalue = (void *)((u8 *)virtsnd_ctl_msg_response(msg) +
++			  sizeof(struct virtio_snd_hdr));
++
++	switch (type) {
++	case VIRTIO_SND_CTL_TYPE_BOOLEAN:
++	case VIRTIO_SND_CTL_TYPE_INTEGER:
++		for (i = 0; i < count; ++i)
++			uvalue->value.integer.value[i] =
++				le32_to_cpu(kvalue->value.integer[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_INTEGER64:
++		for (i = 0; i < count; ++i)
++			uvalue->value.integer64.value[i] =
++				le64_to_cpu(kvalue->value.integer64[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_ENUMERATED:
++		for (i = 0; i < count; ++i)
++			uvalue->value.enumerated.item[i] =
++				le32_to_cpu(kvalue->value.enumerated[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_BYTES:
++		memcpy(uvalue->value.bytes.data, kvalue->value.bytes, count);
++		break;
++	case VIRTIO_SND_CTL_TYPE_IEC958:
++		memcpy(&uvalue->value.iec958, &kvalue->value.iec958,
++		       sizeof(uvalue->value.iec958));
++		break;
++	}
++
++on_failure:
++	virtsnd_ctl_msg_unref(msg);
++
++	return rc;
++}
++
++/**
++ * virtsnd_kctl_put() - Write the value to the control.
++ * @kcontrol: ALSA control element.
++ * @uvalue: Element value.
++ *
++ * Context: Process context.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_kctl_put(struct snd_kcontrol *kcontrol,
++			    struct snd_ctl_elem_value *uvalue)
++{
++	struct virtio_snd *snd = kcontrol->private_data;
++	struct virtio_snd_ctl_info *kinfo =
++		&snd->kctl_infos[kcontrol->private_value];
++	unsigned int type = le32_to_cpu(kinfo->type);
++	unsigned int count = le32_to_cpu(kinfo->count);
++	struct virtio_snd_msg *msg;
++	struct virtio_snd_ctl_hdr *hdr;
++	struct virtio_snd_ctl_value *kvalue;
++	size_t request_size = sizeof(*hdr) + sizeof(*kvalue);
++	size_t response_size = sizeof(struct virtio_snd_hdr);
++	unsigned int i;
++
++	msg = virtsnd_ctl_msg_alloc(request_size, response_size, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	hdr = virtsnd_ctl_msg_request(msg);
++	hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_WRITE);
++	hdr->control_id = cpu_to_le32(kcontrol->private_value);
++
++	kvalue = (void *)((u8 *)hdr + sizeof(*hdr));
++
++	switch (type) {
++	case VIRTIO_SND_CTL_TYPE_BOOLEAN:
++	case VIRTIO_SND_CTL_TYPE_INTEGER:
++		for (i = 0; i < count; ++i)
++			kvalue->value.integer[i] =
++				cpu_to_le32(uvalue->value.integer.value[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_INTEGER64:
++		for (i = 0; i < count; ++i)
++			kvalue->value.integer64[i] =
++				cpu_to_le64(uvalue->value.integer64.value[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_ENUMERATED:
++		for (i = 0; i < count; ++i)
++			kvalue->value.enumerated[i] =
++				cpu_to_le32(uvalue->value.enumerated.item[i]);
++		break;
++	case VIRTIO_SND_CTL_TYPE_BYTES:
++		memcpy(kvalue->value.bytes, uvalue->value.bytes.data, count);
++		break;
++	case VIRTIO_SND_CTL_TYPE_IEC958:
++		memcpy(&kvalue->value.iec958, &uvalue->value.iec958,
++		       sizeof(kvalue->value.iec958));
++		break;
++	}
++
++	return virtsnd_ctl_msg_send_sync(snd, msg);
++}
++
++/**
++ * virtsnd_kctl_tlv_op() - Perform an operation on the control's metadata.
++ * @kcontrol: ALSA control element.
++ * @op_flag: Operation code (SNDRV_CTL_TLV_OP_XXX).
++ * @size: Size of the TLV data in bytes.
++ * @utlv: TLV data.
++ *
++ * Context: Process context.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_kctl_tlv_op(struct snd_kcontrol *kcontrol, int op_flag,
++			       unsigned int size, unsigned int __user *utlv)
++{
++	struct virtio_snd *snd = kcontrol->private_data;
++	struct virtio_snd_msg *msg;
++	struct virtio_snd_ctl_hdr *hdr;
++	unsigned int *tlv;
++	struct scatterlist sg;
++	int rc;
++
++	msg = virtsnd_ctl_msg_alloc(sizeof(*hdr), sizeof(struct virtio_snd_hdr),
++				    GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	tlv = kzalloc(size, GFP_KERNEL);
++	if (!tlv) {
++		virtsnd_ctl_msg_unref(msg);
++		return -ENOMEM;
++	}
++
++	sg_init_one(&sg, tlv, size);
++
++	hdr = virtsnd_ctl_msg_request(msg);
++	hdr->control_id = cpu_to_le32(kcontrol->private_value);
++
++	switch (op_flag) {
++	case SNDRV_CTL_TLV_OP_READ:
++		hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_TLV_READ);
++
++		rc = virtsnd_ctl_msg_send(snd, msg, NULL, &sg, false);
++		if (!rc) {
++			if (copy_to_user(utlv, tlv, size))
++				rc = -EFAULT;
++		}
++
++		break;
++	case SNDRV_CTL_TLV_OP_WRITE:
++	case SNDRV_CTL_TLV_OP_CMD:
++		if (op_flag == SNDRV_CTL_TLV_OP_WRITE)
++			hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_TLV_WRITE);
++		else
++			hdr->hdr.code =
++				cpu_to_le32(VIRTIO_SND_R_CTL_TLV_COMMAND);
++
++		if (copy_from_user(tlv, utlv, size))
++			rc = -EFAULT;
++		else
++			rc = virtsnd_ctl_msg_send(snd, msg, &sg, NULL, false);
++
++		break;
++	}
++
++	kfree(tlv);
++
++	return rc;
++}
++
++/**
++ * virtsnd_kctl_get_enum_items() - Query items for the ENUMERATED element type.
++ * @snd: VirtIO sound device.
++ * @cid: Control element ID.
++ *
++ * This function is called during initial device initialization.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++static int virtsnd_kctl_get_enum_items(struct virtio_snd *snd, unsigned int cid)
++{
++	struct virtio_device *vdev = snd->vdev;
++	struct virtio_snd_ctl_info *kinfo = &snd->kctl_infos[cid];
++	struct virtio_kctl *kctl = &snd->kctls[cid];
++	struct virtio_snd_msg *msg;
++	struct virtio_snd_ctl_hdr *hdr;
++	unsigned int n = le32_to_cpu(kinfo->value.enumerated.items);
++	struct scatterlist sg;
++
++	msg = virtsnd_ctl_msg_alloc(sizeof(*hdr),
++				    sizeof(struct virtio_snd_hdr), GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	kctl->items = devm_kcalloc(&vdev->dev, n, sizeof(*kctl->items),
++				   GFP_KERNEL);
++	if (!kctl->items) {
++		virtsnd_ctl_msg_unref(msg);
++		return -ENOMEM;
++	}
++
++	sg_init_one(&sg, kctl->items, n * sizeof(*kctl->items));
++
++	hdr = virtsnd_ctl_msg_request(msg);
++	hdr->hdr.code = cpu_to_le32(VIRTIO_SND_R_CTL_ENUM_ITEMS);
++	hdr->control_id = cpu_to_le32(cid);
++
++	return virtsnd_ctl_msg_send(snd, msg, NULL, &sg, false);
++}
++
++/**
++ * virtsnd_kctl_parse_cfg() - Parse the control element configuration.
++ * @snd: VirtIO sound device.
++ *
++ * This function is called during initial device initialization.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++int virtsnd_kctl_parse_cfg(struct virtio_snd *snd)
++{
++	struct virtio_device *vdev = snd->vdev;
++	u32 i;
++	int rc;
++
++	virtio_cread_le(vdev, struct virtio_snd_config, controls,
++			&snd->nkctls);
++	if (!snd->nkctls)
++		return 0;
++
++	snd->kctl_infos = devm_kcalloc(&vdev->dev, snd->nkctls,
++				       sizeof(*snd->kctl_infos), GFP_KERNEL);
++	if (!snd->kctl_infos)
++		return -ENOMEM;
++
++	snd->kctls = devm_kcalloc(&vdev->dev, snd->nkctls, sizeof(*snd->kctls),
++				  GFP_KERNEL);
++	if (!snd->kctls)
++		return -ENOMEM;
++
++	rc = virtsnd_ctl_query_info(snd, VIRTIO_SND_R_CTL_INFO, 0, snd->nkctls,
++				    sizeof(*snd->kctl_infos), snd->kctl_infos);
++	if (rc)
++		return rc;
++
++	for (i = 0; i < snd->nkctls; ++i) {
++		struct virtio_snd_ctl_info *kinfo = &snd->kctl_infos[i];
++		unsigned int type = le32_to_cpu(kinfo->type);
++
++		if (type == VIRTIO_SND_CTL_TYPE_ENUMERATED) {
++			rc = virtsnd_kctl_get_enum_items(snd, i);
++			if (rc)
++				return rc;
++		}
++	}
++
++	return 0;
++}
++
++/**
++ * virtsnd_kctl_build_devs() - Build ALSA control elements.
++ * @snd: VirtIO sound device.
++ *
++ * Context: Any context that permits to sleep.
++ * Return: 0 on success, -errno on failure.
++ */
++int virtsnd_kctl_build_devs(struct virtio_snd *snd)
++{
++	unsigned int cid;
++
++	for (cid = 0; cid < snd->nkctls; ++cid) {
++		struct virtio_snd_ctl_info *kinfo = &snd->kctl_infos[cid];
++		struct virtio_kctl *kctl = &snd->kctls[cid];
++		struct snd_kcontrol_new kctl_new;
++		unsigned int i;
++		int rc;
++
++		memset(&kctl_new, 0, sizeof(kctl_new));
++
++		kctl_new.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
++		kctl_new.name = kinfo->name;
++		kctl_new.index = le32_to_cpu(kinfo->index);
++
++		for (i = 0; i < ARRAY_SIZE(g_v2a_access_map); ++i)
++			if (le32_to_cpu(kinfo->access) & (1 << i))
++				kctl_new.access |= g_v2a_access_map[i];
++
++		if (kctl_new.access & (SNDRV_CTL_ELEM_ACCESS_TLV_READ |
++				       SNDRV_CTL_ELEM_ACCESS_TLV_WRITE |
++				       SNDRV_CTL_ELEM_ACCESS_TLV_COMMAND)) {
++			kctl_new.access |= SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK;
++			kctl_new.tlv.c = virtsnd_kctl_tlv_op;
++		}
++
++		kctl_new.info = virtsnd_kctl_info;
++		kctl_new.get = virtsnd_kctl_get;
++		kctl_new.put = virtsnd_kctl_put;
++		kctl_new.private_value = cid;
++
++		kctl->kctl = snd_ctl_new1(&kctl_new, snd);
++		if (!kctl->kctl)
++			return -ENOMEM;
++
++		rc = snd_ctl_add(snd->card, kctl->kctl);
++		if (rc)
++			return rc;
++	}
++
++	return 0;
++}
++
++/**
++ * virtsnd_kctl_event() - Handle the control element event notification.
++ * @snd: VirtIO sound device.
++ * @event: VirtIO sound event.
++ *
++ * Context: Interrupt context.
++ */
++void virtsnd_kctl_event(struct virtio_snd *snd, struct virtio_snd_event *event)
++{
++	struct virtio_snd_ctl_event *kevent =
++		(struct virtio_snd_ctl_event *)event;
++	struct virtio_kctl *kctl;
++	unsigned int cid = le16_to_cpu(kevent->control_id);
++	unsigned int mask = 0;
++	unsigned int i;
++
++	if (cid >= snd->nkctls)
++		return;
++
++	for (i = 0; i < ARRAY_SIZE(g_v2a_mask_map); ++i)
++		if (le16_to_cpu(kevent->mask) & (1 << i))
++			mask |= g_v2a_mask_map[i];
++
++
++	kctl = &snd->kctls[cid];
++
++	snd_ctl_notify(snd->card, mask, &kctl->kctl->id);
++}
 -- 
-2.25.1
+2.35.1
 
