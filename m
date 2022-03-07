@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD204C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235581AbiCGKG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:06:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        id S240253AbiCGKGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:06:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238343AbiCGJph (ORCPT
+        with ESMTP id S238370AbiCGJpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:45:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E9D13D35;
-        Mon,  7 Mar 2022 01:42:04 -0800 (PST)
+        Mon, 7 Mar 2022 04:45:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B726D66FBA;
+        Mon,  7 Mar 2022 01:42:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0344B810BC;
-        Mon,  7 Mar 2022 09:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1650CC340E9;
-        Mon,  7 Mar 2022 09:41:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4376F612C9;
+        Mon,  7 Mar 2022 09:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC8EC340F3;
+        Mon,  7 Mar 2022 09:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646115;
-        bh=a3ONiWZbtGmbWMaDBIz7szQySVCi5LFkDtFJQO9O+rU=;
+        s=korg; t=1646646118;
+        bh=fUk54RCdU5Q2bjljqigjse/3y6qzXzXSMrLJGAcJO1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q1QR8wuNUJ+U/WPF46ytb1PpbJLUX07qLzWZtnv0QpHtcRKCKyjcOfRYxHBY7Nq4q
-         sCOuSK4pvdbi/2bzUzhUXwBO0me0b/ei2LrBSzY4Gefc/nGWf+5hyDKW5ynmgwPiNu
-         Tfs86oOB2l7UPukjaO8T9LoPzKEYrcj1sY+8av6I=
+        b=RqId45BMS+fW/2MhRi3HYxNbZfVe41lTUZ3aDDYHyEoyx7WRx6kAVDFARrS6BpDcy
+         I8o9h+1qOF/2Sf70yP65uUqZkH6p+7lWwVctkhZLftaxWwO8bklTLCbBWVtATURHIN
+         jJVOBVnA3rlcnt6qhhgFraDSf8r7A62UltZAlQLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Alexandre Ghiti <alexandre.ghiti@canonical.com>,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 139/262] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
-Date:   Mon,  7 Mar 2022 10:18:03 +0100
-Message-Id: <20220307091706.374602491@linuxfoundation.org>
+Subject: [PATCH 5.15 140/262] riscv: Fix config KASAN && DEBUG_VIRTUAL
+Date:   Mon,  7 Mar 2022 10:18:04 +0100
+Message-Id: <20220307091706.401417271@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,37 +51,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-commit a3d328037846d013bb4c7f3777241e190e4c75e1 upstream.
+commit c648c4bb7d02ceb53ee40172fdc4433b37cee9c6 upstream.
 
-In order to get the pfn of a struct page* when sparsemem is enabled
-without vmemmap, the mem_section structures need to be initialized which
-happens in sparse_init.
+__virt_to_phys function is called very early in the boot process (ie
+kasan_early_init) so it should not be instrumented by KASAN otherwise it
+bugs.
 
-But kasan_early_init calls pfn_to_page way before sparse_init is called,
-which then tries to dereference a null mem_section pointer.
+Fix this by declaring phys_addr.c as non-kasan instrumentable.
 
-Fix this by removing the usage of this function in kasan_early_init.
-
-Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
 Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Fixes: 8ad8b72721d0 (riscv: Add KASAN support)
 Cc: stable@vger.kernel.org
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/mm/kasan_init.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/riscv/mm/Makefile |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/riscv/mm/kasan_init.c
-+++ b/arch/riscv/mm/kasan_init.c
-@@ -22,8 +22,7 @@ asmlinkage void __init kasan_early_init(
+--- a/arch/riscv/mm/Makefile
++++ b/arch/riscv/mm/Makefile
+@@ -24,6 +24,9 @@ obj-$(CONFIG_KASAN)   += kasan_init.o
+ ifdef CONFIG_KASAN
+ KASAN_SANITIZE_kasan_init.o := n
+ KASAN_SANITIZE_init.o := n
++ifdef CONFIG_DEBUG_VIRTUAL
++KASAN_SANITIZE_physaddr.o := n
++endif
+ endif
  
- 	for (i = 0; i < PTRS_PER_PTE; ++i)
- 		set_pte(kasan_early_shadow_pte + i,
--			mk_pte(virt_to_page(kasan_early_shadow_page),
--			       PAGE_KERNEL));
-+			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
- 
- 	for (i = 0; i < PTRS_PER_PMD; ++i)
- 		set_pmd(kasan_early_shadow_pmd + i,
+ obj-$(CONFIG_DEBUG_VIRTUAL) += physaddr.o
 
 
