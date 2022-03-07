@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BF4C38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A11C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238840AbiCGJsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
+        id S238925AbiCGJsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239053AbiCGJjK (ORCPT
+        with ESMTP id S239095AbiCGJjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:10 -0500
+        Mon, 7 Mar 2022 04:39:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C2A7090C;
-        Mon,  7 Mar 2022 01:34:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5D76D194;
+        Mon,  7 Mar 2022 01:34:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A1A4611AE;
-        Mon,  7 Mar 2022 09:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535C6C340F4;
-        Mon,  7 Mar 2022 09:34:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40E9261140;
+        Mon,  7 Mar 2022 09:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53CEEC340F3;
+        Mon,  7 Mar 2022 09:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645651;
-        bh=BO8DuYMKnodsGKT2IvNVN7t5Bqy/yxjI/YHCGpaJ+/E=;
+        s=korg; t=1646645657;
+        bh=7HCGrtQjAyeNpnXDtKIWTjQRngzq/AR+fwSQ5h9u4OM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jl4x8thPWWXbIer5tDOApAyg7EoaFntAvRwfGxuLjIyl+Bgl97DujqXVo/+jXSQvx
-         5FC1mAv07kG4nkNNCZyadJty7j5eTC6sPGV8BVEq5sMEYZUQbzBDd/PJ+5Fndeu9FR
-         RGWP/u/ScANrJtAfdn5N+amvQlFQgwo7OZ4bt4XI=
+        b=A+p+UEbpieSsDgd1j6MtAo9ksybSNVz5L0w+pZFjKq/mL6B039zw0HixwS7KR2d6e
+         3SByn+sjzdUAIR1i8xeny9UtEBi1dtON+rofc74UHCV/adgp9cCV4NOSRhx4xZbn4m
+         rSwqHUYJ2HZ0LoRvuM0Fch6xeumttHghHjlWiEiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 099/105] HID: add mapping for KEY_ALL_APPLICATIONS
-Date:   Mon,  7 Mar 2022 10:19:42 +0100
-Message-Id: <20220307091646.962627223@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.10 101/105] tracing: Fix return value of __setup handlers
+Date:   Mon,  7 Mar 2022 10:19:44 +0100
+Message-Id: <20220307091647.017777244@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,61 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Mahon <wmahon@chromium.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 327b89f0acc4c20a06ed59e4d9af7f6d804dc2e2 upstream.
+commit 1d02b444b8d1345ea4708db3bab4db89a7784b55 upstream.
 
-This patch adds a new key definition for KEY_ALL_APPLICATIONS
-and aliases KEY_DASHBOARD to it.
+__setup() handlers should generally return 1 to indicate that the
+boot options have been handled.
 
-It also maps the 0x0c/0x2a2 usage code to KEY_ALL_APPLICATIONS.
+Using invalid option values causes the entire kernel boot option
+string to be reported as Unknown and added to init's environment
+strings, polluting it.
 
-Signed-off-by: William Mahon <wmahon@chromium.org>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20220303035618.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
+    kprobe_event=p,syscall_any,$arg1 trace_options=quiet
+    trace_clock=jiffies", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     kprobe_event=p,syscall_any,$arg1
+     trace_options=quiet
+     trace_clock=jiffies
+
+Return 1 from the __setup() handlers so that init's environment is not
+polluted with kernel boot options.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lkml.kernel.org/r/20220303031744.32356-1-rdunlap@infradead.org
+
+Cc: stable@vger.kernel.org
+Fixes: 7bcfaf54f591 ("tracing: Add trace_options kernel command line parameter")
+Fixes: e1e232ca6b8f ("tracing: Add trace_clock=<clock> kernel parameter")
+Fixes: 970988e19eb0 ("tracing/kprobe: Add kprobe_event= boot parameter")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-debug.c                |    4 +++-
- drivers/hid/hid-input.c                |    2 ++
- include/uapi/linux/input-event-codes.h |    3 ++-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ kernel/trace/trace.c        |    4 ++--
+ kernel/trace/trace_kprobe.c |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/hid/hid-debug.c
-+++ b/drivers/hid/hid-debug.c
-@@ -823,7 +823,9 @@ static const char *keys[KEY_MAX + 1] = {
- 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
- 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
- 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
--	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
-+	[KEY_PROG4] = "Prog4",
-+	[KEY_ALL_APPLICATIONS] = "AllApplications",
-+	[KEY_SUSPEND] = "Suspend",
- 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
- 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
- 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1048,6 +1048,8 @@ static void hidinput_configure_usage(str
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -233,7 +233,7 @@ static char trace_boot_options_buf[MAX_T
+ static int __init set_trace_boot_options(char *str)
+ {
+ 	strlcpy(trace_boot_options_buf, str, MAX_TRACER_SIZE);
+-	return 0;
++	return 1;
+ }
+ __setup("trace_options=", set_trace_boot_options);
  
- 		case 0x29d: map_key_clear(KEY_KBD_LAYOUT_NEXT);	break;
+@@ -244,7 +244,7 @@ static int __init set_trace_boot_clock(c
+ {
+ 	strlcpy(trace_boot_clock_buf, str, MAX_TRACER_SIZE);
+ 	trace_boot_clock = trace_boot_clock_buf;
+-	return 0;
++	return 1;
+ }
+ __setup("trace_clock=", set_trace_boot_clock);
  
-+		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
-+
- 		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
- 		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
- 		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
---- a/include/uapi/linux/input-event-codes.h
-+++ b/include/uapi/linux/input-event-codes.h
-@@ -278,7 +278,8 @@
- #define KEY_PAUSECD		201
- #define KEY_PROG3		202
- #define KEY_PROG4		203
--#define KEY_DASHBOARD		204	/* AL Dashboard */
-+#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
-+#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
- #define KEY_SUSPEND		205
- #define KEY_CLOSE		206	/* AC Close */
- #define KEY_PLAY		207
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -31,7 +31,7 @@ static int __init set_kprobe_boot_events
+ 	strlcpy(kprobe_boot_events_buf, str, COMMAND_LINE_SIZE);
+ 	disable_tracing_selftest("running kprobe events");
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("kprobe_event=", set_kprobe_boot_events);
+ 
 
 
