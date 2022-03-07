@@ -2,97 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BFBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F859C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235387AbiCGFpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:45:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
+        id S235393AbiCGFpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:45:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235367AbiCGFp3 (ORCPT
+        with ESMTP id S235374AbiCGFp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 00:45:29 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481AE4B1E4
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97E54B1E8
         for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:44:35 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id fs4-20020a17090af28400b001bf5624c0aaso2073579pjb.0
+Received: by mail-pj1-x1033.google.com with SMTP id cx5so12334885pjb.1
         for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:44:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0KJ1UjrBbg7fzlE37vFvidwoVO0sq5aEejs8cXRFhtQ=;
-        b=mM6xhWXMHsiD6hkKquVoAp9riwKGW4Y0BUxcomfYBDTYo+XYnAaD+BZgNnyTjL1AWU
-         zejG8GBilDqTTvMTR9QQsw7JxCWOwgBHhxRj2VIZz5y14GgPIVd3bWy82oMmFcQgrEt7
-         FAcSMxYLv1YblrYNnz7KkCe6QEdcqzzzCeUjBzfBVt3POJ82ENLAf9aW0PaJYI0RPRm/
-         ToMG8C1rNpRf5e5kpzM0ijml7vjzLWhvD6kb+Ps/hm5HTdQP9WzTXJKR5wwqgAbsV1bW
-         fTbwgyihZy1rFq33m1CA2wRAY1+sK15eSn0nku684U0fntRocSnkU7d+7VCN5Li96AWg
-         WIhQ==
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uBjY8RLSr4Wf/RqUjGw1XSvLuEMUT8Kxzt7XGrbbTA4=;
+        b=lAIL2WxrAiBazAGJWqjUTrqx5il2WIviCluimAC8nzelpPqBr/fFyB0UwfzXwAL4My
+         qSBZbEpYxq1IMDHdPb8L17LXv6GHdnT4Dr9u1+hE/mspifd4KxifeLe8Yq619itW3q6s
+         4A3GNykAGj2/dcfQ+9RyzD0Rc5gQiBU9yrDLzdDglsTk3oGFxBPdGKkSqfNe6sdzZkd7
+         HjK1N8J8ZkzD3YyzWtGJl9ltWtt7FvKPJtJFJWxYwYBq5Cm+Vw6+5KatCLZu/D3zL2OA
+         Ig0VCxU4YELlJ9oowPlOCY6MhCU/cvHLbgVRGHymaOQ60JsCKegvKYNZrqTLHS1rmwcX
+         4daw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0KJ1UjrBbg7fzlE37vFvidwoVO0sq5aEejs8cXRFhtQ=;
-        b=M/hNbm5WKWCJf5SDf9rzm6f15GeHWUJCAwWknr5LhghwqUlr6PgwbUcJoBPKLCuEda
-         aMxc0gdYPD4A3e0B9zKafO2rWt2qfhC6QLsIz1X6ypFIOZVQdRKRgRpqUI4pQ8hu569U
-         OAGzKVuWbXGnS9XvpMxZ7zTu6w9m6fAXINcbJNxa2t+D/h9+ju022m2YRjVAv9b3NWZ4
-         aByXmSGf5YKF76vIjkyMyjwvFCiflutGRgAMOuuPZ8Y+SwnXuVkpStyHGog+6W2eLmFo
-         k3yqNbWI0WNPEPVAaKXawSz3kUNpyJ5lLAAVEcM4x/RFk07FyJGgGkxziLrvImaXjHwE
-         +Abw==
-X-Gm-Message-State: AOAM531eyVI8wXIQ5l/v034QrtgT1sOYHua/mf7ao46nWrsHmeVPtvRe
-        NpziK+v5F+13Hh28STfQ8DmkzA==
-X-Google-Smtp-Source: ABdhPJzqYG18cC+N/uShcQuB2WbjyF/988f/94S+cZx93mrfz490W8VRJXux93FuMHauXjmvrnU4TQ==
-X-Received: by 2002:a17:902:f789:b0:14e:ebbc:264b with SMTP id q9-20020a170902f78900b0014eebbc264bmr10491053pln.169.1646631874829;
-        Sun, 06 Mar 2022 21:44:34 -0800 (PST)
-Received: from localhost ([223.184.83.228])
-        by smtp.gmail.com with ESMTPSA id c11-20020a056a000acb00b004f35ee129bbsm14767184pfl.140.2022.03.06.21.44.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uBjY8RLSr4Wf/RqUjGw1XSvLuEMUT8Kxzt7XGrbbTA4=;
+        b=rc7Po5JiY2FKckzCSxyyy7BZWfQPm8ep/fVZhNKCJxwKu7gGvW5V7ykKalms6/TBtb
+         JavDoF3YKQtvIwX+j/9EPGOuJxkEVzN+/wSJThtUFBSupx2snujGsBayvbRAPYj0E/dw
+         wLqM9rwKq/dgrzLkQUeefS9NS0K/d6orUaLiR9QH0phKLfiQjnE1PSiFr8JrU5JRM9DI
+         tLxtB4vkjcRf9yJCt9HZdSSNVEB7vLpY7L05u/ybQqoIhhb4wWQzNYQIuPTg3PuRi27m
+         Cz7UApG8nc++fd4kjMfjupTM2lyYAk2eL11y0GqAYMz0SCf2jsLIde0NbXI1Tf64x0HU
+         bHIA==
+X-Gm-Message-State: AOAM533JlT5Om/RpwgeePXKtKplsv4oiJjNLvuhTS34gG5WgrXiHaeIn
+        Fh0feHV2UAUwGo7yqJWV9VW/pg==
+X-Google-Smtp-Source: ABdhPJxVlNJdV8XimvQFNcl99mDUTWcRveCL2gfbpROyNetl5A3n1pSHAfO43mCGHS6p1SKXEyj0XQ==
+X-Received: by 2002:a17:903:2346:b0:151:60f4:84ee with SMTP id c6-20020a170903234600b0015160f484eemr10817143plh.27.1646631875488;
+        Sun, 06 Mar 2022 21:44:35 -0800 (PST)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id k1-20020a056a00168100b004e0e45a39c6sm14447385pfc.181.2022.03.06.21.44.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 06 Mar 2022 21:44:34 -0800 (PST)
-Date:   Mon, 7 Mar 2022 11:14:32 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     zhanglianjie <zhanglianjie@uniontech.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] cpufreq: use helper macro __ATTR_XX
-Message-ID: <20220307054432.amawi7afl3vudfjn@vireshk-i7>
-References: <20220306021250.64315-1-zhanglianjie@uniontech.com>
- <20220306021250.64315-2-zhanglianjie@uniontech.com>
+From:   Zong Li <zong.li@sifive.com>
+To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
+        conor.dooley@microchip.com, geert@linux-m68k.org,
+        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 1/3] dt-bindings: dma-engine: sifive,fu540: Add dma-channels property and modify compatible
+Date:   Mon,  7 Mar 2022 13:44:24 +0800
+Message-Id: <1e75ad35b7d1fb6156781bf9c545e1f084c43a1e.1646631717.git.zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1646631717.git.zong.li@sifive.com>
+References: <cover.1646631717.git.zong.li@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220306021250.64315-2-zhanglianjie@uniontech.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06-03-22, 10:12, zhanglianjie wrote:
-> Use helper macro __ATTR_XX  to make code more clear.
-> Minor readability improvement.
-> 
-> Signed-off-by: zhanglianjie <zhanglianjie@uniontech.com>
-> 
-> diff --git a/drivers/cpufreq/cpufreq_governor.h b/drivers/cpufreq/cpufreq_governor.h
-> index 65ecf32ba4f8..a5a0bc3cc23e 100644
-> --- a/drivers/cpufreq/cpufreq_governor.h
-> +++ b/drivers/cpufreq/cpufreq_governor.h
-> @@ -68,12 +68,10 @@ static ssize_t file_name##_show						\
->  }
-> 
->  #define gov_attr_ro(_name)						\
-> -static struct governor_attr _name =					\
-> -__ATTR(_name, 0444, _name##_show, NULL)
-> +static struct governor_attr _name = __ATTR_RO(_name)
-> 
->  #define gov_attr_rw(_name)						\
-> -static struct governor_attr _name =					\
-> -__ATTR(_name, 0644, _name##_show, _name##_store)
-> +static struct governor_attr _name = __ATTR_RW(_name)
-> 
->  /* Common to all CPUs of a policy */
->  struct policy_dbs_info {
+Add dma-channels property, then we can determine how many channels there
+by device tree, rather than statically defining it in PDMA driver.
+In addition, we also modify the compatible for PDMA versioning scheme.
 
-This change looks fine though.
+Signed-off-by: Zong Li <zong.li@sifive.com>
+Suggested-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ .../bindings/dma/sifive,fu540-c000-pdma.yaml  | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
+index 75ad898c59bc..92f410f54d72 100644
+--- a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
++++ b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
+@@ -25,7 +25,15 @@ description: |
+ properties:
+   compatible:
+     items:
+-      - const: sifive,fu540-c000-pdma
++      - enum:
++          - sifive,fu540-c000-pdma
++      - const: sifive,pdma0
++    description:
++      Should be "sifive,<chip>-pdma" and "sifive,pdma<version>".
++      Supported compatible strings are -
++      "sifive,fu540-c000-pdma" for the SiFive PDMA v0 as integrated onto the
++      SiFive FU540 chip resp and "sifive,pdma0" for the SiFive PDMA v0 IP block
++      with no chip integration tweaks.
+ 
+   reg:
+     maxItems: 1
+@@ -34,6 +42,12 @@ properties:
+     minItems: 1
+     maxItems: 8
+ 
++  dma-channels:
++    description: For backwards-compatibility, the default value is 4
++    minimum: 1
++    maximum: 4
++    default: 4
++
+   '#dma-cells':
+     const: 1
+ 
+@@ -48,8 +62,9 @@ additionalProperties: false
+ examples:
+   - |
+     dma@3000000 {
+-      compatible = "sifive,fu540-c000-pdma";
++      compatible = "sifive,fu540-c000-pdma", "sifive,pdma0";
+       reg = <0x3000000 0x8000>;
++      dma-channels = <4>;
+       interrupts = <23>, <24>, <25>, <26>, <27>, <28>, <29>, <30>;
+       #dma-cells = <1>;
+     };
 -- 
-viresh
+2.31.1
+
