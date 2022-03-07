@@ -2,146 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82615C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbiCGKHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52204 "EHLO
+        id S240377AbiCGKHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238839AbiCGJsr (ORCPT
+        with ESMTP id S238941AbiCGJsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:48:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E3C6D4CD;
-        Mon,  7 Mar 2022 01:42:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 345AB61224;
-        Mon,  7 Mar 2022 09:42:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37104C36AE9;
-        Mon,  7 Mar 2022 09:42:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646156;
-        bh=ZFa5qGU/Bx44asH0ijJeAVEBfCBxgDdBxw9ajPLlLR0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wI7uR24pKni/lt3CzfJ4iH1z98M19BLZZawx454EvyUWzn2NARtiVXO9Kdej3eHOm
-         OL3aBm6+65pcjhAoZTbJmPBMgC7CkeM0DEp//nfXdVJYX9lk69N1RgRbsBjr0kH+Nv
-         m8EUd5yabrpwMAk3bmMKv+q5g/o3NaCXrqWKzuLY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jerry Dai <jerry.dai@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>, Jon Mason <jdmason@kudzu.us>
-Subject: [PATCH 5.15 151/262] ntb: intel: fix port config status offset for SPR
-Date:   Mon,  7 Mar 2022 10:18:15 +0100
-Message-Id: <20220307091706.701856383@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:48:53 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FCD6E4CD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:42:45 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so6051858wmq.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:42:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/ZxQ6z5PZGHQq9JKGs5BndICctE34zGD7U+mK09Uits=;
+        b=mV7uGh1AN3uU8R4KM0f4CaUkiQE7W3yax2HST5RXofwB3zd6VsTxHERt01MHByu81r
+         NZx/A7wJ1LJ9HXqr24yLhBbLmyQO5Bem3UCWozIMhLCvrLiLJdEwA/6uGgQTXZYdbA00
+         PTlUngJR8dWdmaAOQCYDvx74WmwoWUMlmsIiEsomdcobzf/Lo+/bEEI2smHRL4UNaKAy
+         r1c1d0285zVj36Gvwq4O7tWF460rdLhXJ6UCFL/38LVftsoyzIIkRYbfMU+8Q8k0AoGb
+         ktHHabe0wbt5ShJIYMc6Zc8JSRLpKvG9L6D0drTWTgP0cPAVJzUCdBp57IRjMN1aLsRM
+         Iq+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/ZxQ6z5PZGHQq9JKGs5BndICctE34zGD7U+mK09Uits=;
+        b=y6G1v5KR6g0a7ypGDpK5BIz/tFSZ1MwYhca5vBLLNGT1QyLoX/6QBJBlPiqEgwPcVr
+         3qzUK2Q4ZcItB6hEzhVhuX4PrQR43nJ9xDc3ehGzJpK01RLwIpPbpeU0wrxpkyrXISto
+         Ch8jj1JI52+dVEAPgmAW4gJ3WKDFdJIxIhFNHrO5/7OHEipXGpzZrkVXqI8JvPdahtG7
+         jow2gXSAsGKEqIGQ7xPCo3N1/vZ03sDIoA9Ym2J9f3mwckMqcMV7xI5d/+kgGBIxR5um
+         m+gGPCbc2rpBCAMnxlAhmhAVS/Z8W5YAB0ZrftwT89cHzG4YQhKQEmce8nadKVHkWBqU
+         aTJw==
+X-Gm-Message-State: AOAM532sUWpcw8agYEjea3WDoaeUI5phukhcrpzBD+N9EevwvNKlCZK2
+        yH5RmyGH+bISX+FGSAXmrtrl5A==
+X-Google-Smtp-Source: ABdhPJwHQeN0MgKhNErx7gl+9mJHuTeeNqxKmMx0vFXKVgA5RRBGOXqtFt55oleSuIQG/9RsBt4H2g==
+X-Received: by 2002:a05:600c:3ac3:b0:389:adb4:e7a1 with SMTP id d3-20020a05600c3ac300b00389adb4e7a1mr1693655wms.136.1646646151709;
+        Mon, 07 Mar 2022 01:42:31 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id b7-20020adfe647000000b001f1d614b8besm6997606wrn.112.2022.03.07.01.42.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:42:31 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:42:29 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] regulator/mfd: dt-bindings: maxim,max77802:
+ convert to dtschema
+Message-ID: <YiXThUFuzTQmtrCJ@google.com>
+References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
 
-commit d5081bf5dcfb1cb83fb538708b0ac07a10a79cc4 upstream.
+> Hi,
+> 
+> Changes since v1
+> ================
+> 1. MFD: Use absolute path to schemas.
+> 2. Regulator: skip properties.
 
-The field offset for port configuration status on SPR has been changed to
-bit 14 from ICX where it resides at bit 12. By chance link status detection
-continued to work on SPR. This is due to bit 12 being a configuration bit
-which is in sync with the status bit. Fix this by checking for a SPR device
-and checking correct status bit.
+Ah, this is v2.
 
-Fixes: 26bfe3d0b227 ("ntb: intel: Add Icelake (gen4) support for Intel NTB")
-Tested-by: Jerry Dai <jerry.dai@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Signed-off-by: Jon Mason <jdmason@kudzu.us>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/ntb/hw/intel/ntb_hw_gen4.c |   17 ++++++++++++++++-
- drivers/ntb/hw/intel/ntb_hw_gen4.h |   16 ++++++++++++++++
- 2 files changed, 32 insertions(+), 1 deletion(-)
+Un-applying this and heading to apply v3 instead.
 
---- a/drivers/ntb/hw/intel/ntb_hw_gen4.c
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen4.c
-@@ -168,6 +168,18 @@ static enum ntb_topo gen4_ppd_topo(struc
- 	return NTB_TOPO_NONE;
- }
- 
-+static enum ntb_topo spr_ppd_topo(struct intel_ntb_dev *ndev, u32 ppd)
-+{
-+	switch (ppd & SPR_PPD_TOPO_MASK) {
-+	case SPR_PPD_TOPO_B2B_USD:
-+		return NTB_TOPO_B2B_USD;
-+	case SPR_PPD_TOPO_B2B_DSD:
-+		return NTB_TOPO_B2B_DSD;
-+	}
-+
-+	return NTB_TOPO_NONE;
-+}
-+
- int gen4_init_dev(struct intel_ntb_dev *ndev)
- {
- 	struct pci_dev *pdev = ndev->ntb.pdev;
-@@ -183,7 +195,10 @@ int gen4_init_dev(struct intel_ntb_dev *
- 	}
- 
- 	ppd1 = ioread32(ndev->self_mmio + GEN4_PPD1_OFFSET);
--	ndev->ntb.topo = gen4_ppd_topo(ndev, ppd1);
-+	if (pdev_is_ICX(pdev))
-+		ndev->ntb.topo = gen4_ppd_topo(ndev, ppd1);
-+	else if (pdev_is_SPR(pdev))
-+		ndev->ntb.topo = spr_ppd_topo(ndev, ppd1);
- 	dev_dbg(&pdev->dev, "ppd %#x topo %s\n", ppd1,
- 		ntb_topo_string(ndev->ntb.topo));
- 	if (ndev->ntb.topo == NTB_TOPO_NONE)
---- a/drivers/ntb/hw/intel/ntb_hw_gen4.h
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen4.h
-@@ -49,10 +49,14 @@
- #define GEN4_PPD_CLEAR_TRN		0x0001
- #define GEN4_PPD_LINKTRN		0x0008
- #define GEN4_PPD_CONN_MASK		0x0300
-+#define SPR_PPD_CONN_MASK		0x0700
- #define GEN4_PPD_CONN_B2B		0x0200
- #define GEN4_PPD_DEV_MASK		0x1000
- #define GEN4_PPD_DEV_DSD		0x1000
- #define GEN4_PPD_DEV_USD		0x0000
-+#define SPR_PPD_DEV_MASK		0x4000
-+#define SPR_PPD_DEV_DSD 		0x4000
-+#define SPR_PPD_DEV_USD 		0x0000
- #define GEN4_LINK_CTRL_LINK_DISABLE	0x0010
- 
- #define GEN4_SLOTSTS			0xb05a
-@@ -62,6 +66,10 @@
- #define GEN4_PPD_TOPO_B2B_USD	(GEN4_PPD_CONN_B2B | GEN4_PPD_DEV_USD)
- #define GEN4_PPD_TOPO_B2B_DSD	(GEN4_PPD_CONN_B2B | GEN4_PPD_DEV_DSD)
- 
-+#define SPR_PPD_TOPO_MASK	(SPR_PPD_CONN_MASK | SPR_PPD_DEV_MASK)
-+#define SPR_PPD_TOPO_B2B_USD	(GEN4_PPD_CONN_B2B | SPR_PPD_DEV_USD)
-+#define SPR_PPD_TOPO_B2B_DSD	(GEN4_PPD_CONN_B2B | SPR_PPD_DEV_DSD)
-+
- #define GEN4_DB_COUNT			32
- #define GEN4_DB_LINK			32
- #define GEN4_DB_LINK_BIT		BIT_ULL(GEN4_DB_LINK)
-@@ -111,5 +119,13 @@ static inline int pdev_is_ICX(struct pci
- 		return 1;
- 	return 0;
- }
-+
-+static inline int pdev_is_SPR(struct pci_dev *pdev)
-+{
-+	if (pdev_is_gen4(pdev) &&
-+	    pdev->revision > PCI_DEVICE_REVISION_ICX_MAX)
-+		return 1;
-+	return 0;
-+}
- 
- #endif
+> Dependencies
+> ============
+> 1. DTS patch: nothing depends on it, sending here so Rob's automatic
+>    checker won't complain about DTS.
+>    I will take it via Samsung SoC tree.
+> 
+> 2. Final MFD patch depends on regulator, so the two last patches could
+>    go via Rob's, Mark's or Lee's trees.
+> 
+> Best regards,
+> Krzysztof
+> 
+> Krzysztof Kozlowski (3):
+>   regulator: dt-bindings: maxim,max77802: convert to dtschema
+>   dt-bindings: mfd: maxim,max77802: convert to dtschema
+>   dt-bindings: leds: common: fix unit address in max77693 example
+> 
+>  .../devicetree/bindings/leds/common.yaml      |   9 +-
+>  .../devicetree/bindings/mfd/max77802.txt      |  25 ---
+>  .../bindings/mfd/maxim,max77802.yaml          | 194 ++++++++++++++++++
+>  .../bindings/regulator/max77802.txt           | 111 ----------
+>  .../bindings/regulator/maxim,max77802.yaml    |  97 +++++++++
+>  MAINTAINERS                                   |   2 +-
+>  6 files changed, 299 insertions(+), 139 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/regulator/max77802.txt
+>  create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
+> 
 
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
