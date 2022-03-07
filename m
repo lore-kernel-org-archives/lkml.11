@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5ED0C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344C4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233116AbiCGKCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:02:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
+        id S238853AbiCGKCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:02:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240874AbiCGJli (ORCPT
+        with ESMTP id S240873AbiCGJli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0656F6B0A4;
-        Mon,  7 Mar 2022 01:38:30 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17406B094;
+        Mon,  7 Mar 2022 01:38:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D96C61052;
-        Mon,  7 Mar 2022 09:38:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C104C340E9;
-        Mon,  7 Mar 2022 09:38:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EEB8B810CF;
+        Mon,  7 Mar 2022 09:38:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62041C340E9;
+        Mon,  7 Mar 2022 09:38:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645910;
-        bh=+ydD8jfkmQrg22C8MDPUxGUem+btIMG6oKkZUd0OCME=;
+        s=korg; t=1646645906;
+        bh=ZTvWv+f7xdGh/iyHa1ekwbqb+LeXwVZZsUofm01tb8Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m/eoOW00yOQ8zbcI+cX/TH45Fujfxysw6gdwM0z+N3hcb5csFTvbnCqaKFre+AGCv
-         QLwpiEnDW80sss5lD09tyqJb1PxabWmbte9PARr/yAhX8w78OvR+ZQnw770SJa5yJq
-         82Im1DHw8cUUQaXe4n9kqd9wMUBhde6LuzUHD3qk=
+        b=jnH9c6Z+Apu7pGLtAlDVMhfCxPowYmk5NtzKHJsFowkro7hqAnJ+AGrEI5eT8wkyd
+         K93PQ/qKEM4ep4yiOnfcJgdmlKz8MXWNS/mjoXuCM0hSMDUzo6Cyb5RhdmpazcaL1z
+         DuJOObzEBD/TxvQ7MKpotTx5Yw52nWq/DqmxmsLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/262] PCI: mvebu: Fix support for PCI_EXP_RTSTA on emulated bridge
-Date:   Mon,  7 Mar 2022 10:16:57 +0100
-Message-Id: <20220307091704.556896173@linuxfoundation.org>
+Subject: [PATCH 5.15 072/262] PCI: mvebu: Fix support for PCI_EXP_DEVCTL on emulated bridge
+Date:   Mon,  7 Mar 2022 10:16:56 +0100
+Message-Id: <20220307091704.530226403@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,50 +52,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 838ff44a398ff47fe9b924961d91aee325821220 ]
+[ Upstream commit ecae073e393e65ee7be7ebf3fdd5258ab99f1636 ]
 
-PME Status bit in Root Status Register (PCIE_RC_RTSTA_OFF) is read-only and
-can be cleared only by writing 0b to the Interrupt Cause RW0C register
-(PCIE_INT_CAUSE_OFF).
+Comment in Armada 370 functional specification is misleading.
+PCI_EXP_DEVCTL_*RE bits are supported and configures receiving of error
+interrupts.
 
-Link: https://lore.kernel.org/r/20211125124605.25915-15-pali@kernel.org
+Link: https://lore.kernel.org/r/20211125124605.25915-14-pali@kernel.org
 Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
 Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-mvebu.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
 diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 6100608e6413e..b690768d5a413 100644
+index 3563301e772ae..6100608e6413e 100644
 --- a/drivers/pci/controller/pci-mvebu.c
 +++ b/drivers/pci/controller/pci-mvebu.c
-@@ -51,6 +51,8 @@
- 	 PCIE_CONF_FUNC(PCI_FUNC(devfn)) | PCIE_CONF_REG(where) | \
- 	 PCIE_CONF_ADDR_EN)
- #define PCIE_CONF_DATA_OFF	0x18fc
-+#define PCIE_INT_CAUSE_OFF	0x1900
-+#define  PCIE_INT_PM_PME		BIT(28)
- #define PCIE_MASK_OFF		0x1910
- #define  PCIE_MASK_ENABLE_INTS          0x0f000000
- #define PCIE_CTRL_OFF		0x1a00
-@@ -604,7 +606,14 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+@@ -498,9 +498,7 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
  		break;
  
- 	case PCI_EXP_RTSTA:
--		mvebu_writel(port, new, PCIE_RC_RTSTA);
-+		/*
-+		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
-+		 * is read-only and can be cleared only by writing 0b to the
-+		 * Interrupt Cause RW0C register (PCIE_INT_CAUSE_OFF). So
-+		 * clear PME via Interrupt Cause.
-+		 */
-+		if (new & PCI_EXP_RTSTA_PME)
-+			mvebu_writel(port, ~PCIE_INT_PM_PME, PCIE_INT_CAUSE_OFF);
+ 	case PCI_EXP_DEVCTL:
+-		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL) &
+-				 ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
+-				   PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
++		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
  		break;
- 	}
- }
+ 
+ 	case PCI_EXP_LNKCAP:
+@@ -590,13 +588,6 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ 
+ 	switch (reg) {
+ 	case PCI_EXP_DEVCTL:
+-		/*
+-		 * Armada370 data says these bits must always
+-		 * be zero when in root complex mode.
+-		 */
+-		new &= ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
+-			 PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
+-
+ 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
+ 		break;
+ 
 -- 
 2.34.1
 
