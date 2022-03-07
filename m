@@ -2,110 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235404AbiCGFzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:55:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        id S235415AbiCGF4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:56:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiCGFzh (ORCPT
+        with ESMTP id S234713AbiCGF4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:55:37 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBB85B8BC
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:54:43 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2d07ae0b1c0so151374637b3.2
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 21:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QRos77OuYahI5W9WnsHXgbvlDejxkrLInVdGyJ2rr7E=;
-        b=AWosRUzNwLSzhGtqZqZuQXj+VF1mkxwHARPfyirpW9O8wax8OzX3d2jKzUjBFnmRwW
-         anTC0PT7t4VdwOw7XTPXsJsxxEYbEpk3lm+l+ARif9Cqkq+n7bwN/DmEZrHYfLAsnkGs
-         NtHYcxSLr+3hIANbrqSb5fs5nTLTgqNBtXflGhdw8tRvRCqbq/QeTo88PXR8AdwiwH99
-         ZfMfO/wq42o3JFGGW+ITQDTnkjNjkjmnjxXaWstalQOWXMrcuMCUbdXPVMsy69YcUcfn
-         p0xK29odBS4uczBG21T7ky4emPLjylO5i9/dbTaGzYMjOOAF3ughjkE5JSjr20ixe18t
-         W+Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QRos77OuYahI5W9WnsHXgbvlDejxkrLInVdGyJ2rr7E=;
-        b=TN+UqvflnqccobbCblAGoc+TWd+aV9n7bwFd3QUIBKAv5Y87IGKHk/hCxDWKGoaTPK
-         Mj39YjT4ikuCWWp4EbrzKosY2OY029ZAqxnyzGRL7sJtWzpLJKLTAt/eWt0R1IQQH1WU
-         CvTA435Jh1q7a/pOBUAJnzlJRQIUTdpMNvMuYgZeVwNATqcF2UpUVFSRs4BLSvABfGGJ
-         C2ocWkuRUFf8jrfYVt5Rp46piRktzFnQYH1qiw/WAAPgAbqcsJZvA3aUXWky+6E4DDnl
-         RH2iRKDR/rvivi7qOSm8TDQ20j9x2xFmyi7UPswZBE1jl+RbAlMiEkB1CbxIVeOwcXA4
-         0hFw==
-X-Gm-Message-State: AOAM5336wh1Q2BLAES4Pcilv73WhEm/jPoMjnYUQs6XoGbdOuKvLbJws
-        dq2PjKR9fhncQtFPOZqR2cOjwCuXB7wihm4CNoSjsp7mNBiZQaJE
-X-Google-Smtp-Source: ABdhPJxnXO99Bk7rlCpR71gVaxojOT74qux6nT3oX69nqDJll+EyEnhJvugccXHWpZo+oSqCY62Izbxf9jUaLp5Da8A=
-X-Received: by 2002:a81:2f12:0:b0:2d7:d366:164a with SMTP id
- v18-20020a812f12000000b002d7d366164amr7509616ywv.265.1646632480686; Sun, 06
- Mar 2022 21:54:40 -0800 (PST)
+        Mon, 7 Mar 2022 00:56:09 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF03E5BD0C;
+        Sun,  6 Mar 2022 21:55:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646632513; x=1678168513;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=6wrzzSjJRORNGnQX4tuXLggICGZwcW8Dt9+2tM03uX0=;
+  b=JILmdawpGU9oPYM4nZHDV+5SGIPIPWEC3soZMO3KaLeyOzY7DxgK9FdX
+   SeMFd5Z48kQPynBsRk1PuedUYMKOcJzaSmY7U511tXYlyhEUTMJT063PT
+   6WhOmmCr/YdPfSB7pdyzuPXc1MUYwKVD5d9U/4UEpt1X0Q/tZWAHGq6t4
+   GJ/MMl/vYlC5KLifoFU0BdbgbQQj/Om2Njx2Uww8OZTIw9yGz6lFLydRf
+   dxRO9hojcRABofwyYSF1UdJe88ibbyLMGbV5PFSYg/l0qthU6SBjmqUts
+   pVd8CHqK9FXZuwMiQOBw3b7xunX6luB+YEa7utthhlkVfbhFrI95b98wA
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="241740790"
+X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
+   d="scan'208";a="241740790"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:51:59 -0800
+X-IronPort-AV: E=Sophos;i="5.90,160,1643702400"; 
+   d="scan'208";a="536975848"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2022 21:51:57 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     <linux-kernel@vger.kernel.org>,
+        <linux-tip-commits@vger.kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, <x86@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [tip: sched/core] sched/numa: Avoid migrating task to CPU-less
+ node
+References: <20220214121553.582248-2-ying.huang@intel.com>
+        <164512421264.16921.689831789198253265.tip-bot2@tip-bot2>
+        <Yh6H8SPSqpjv1dl7@qian>
+        <87v8wx1850.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Date:   Mon, 07 Mar 2022 13:51:55 +0800
+In-Reply-To: <87v8wx1850.fsf@yhuang6-desk2.ccr.corp.intel.com> (Ying Huang's
+        message of "Wed, 02 Mar 2022 08:59:55 +0800")
+Message-ID: <87wnh648ec.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <CA+G9fYs+Qc3rAONJBmyQXFnYmrzFBJ8GMpwWXBMpj3Nx6wQ0Hg@mail.gmail.com>
- <CAABZP2xHynkBmsk8mcvPujSL65fsj=hpM9acuMvmDOUYbWk0KQ@mail.gmail.com>
- <20220304194408.GP4285@paulmck-ThinkPad-P17-Gen-1> <CAABZP2x-1k_+nHzSvuD3EKD1cMSPiOFFnehJPQ7_QnaeDLpkGw@mail.gmail.com>
- <4d828b01-b636-e0b8-0241-656331f27de4@bytedance.com>
-In-Reply-To: <4d828b01-b636-e0b8-0241-656331f27de4@bytedance.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 7 Mar 2022 11:24:29 +0530
-Message-ID: <CA+G9fYtsZYnaFW4FEYGjZBf1XLJ5b4JNUJX=_GH2WG7dKOicAw@mail.gmail.com>
-Subject: Re: [External] Re: [next] WARNING: suspicious RCU usage :
- include/linux/cgroup.h:494 suspicious rcu_dereference_check() usage
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, rcu <rcu@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 5 Mar 2022 at 06:27, Chengming Zhou <zhouchengming@bytedance.com> w=
-rote:
+Hi, Qian,
+
+"Huang, Ying" <ying.huang@intel.com> writes:
+
+> Qian Cai <quic_qiancai@quicinc.com> writes:
 >
-> On 2022/3/5 4:28 =E4=B8=8A=E5=8D=88, Zhouyi Zhou wrote:
-> > Hi Paul
-> >
-> > Yes, your suggestion works!
-> > Thank you for your guidance, this is the first time I ever did a
-> > bisection, I gained greatly during this process!
+>> On Thu, Feb 17, 2022 at 06:56:52PM -0000, tip-bot2 for Huang Ying wrote:
+>>> The following commit has been merged into the sched/core branch of tip:
+>>> 
+>>> Commit-ID:     5c7b1aaf139dab5072311853bacc40fc3457d1f9
+>>> Gitweb:        https://git.kernel.org/tip/5c7b1aaf139dab5072311853bacc40fc3457d1f9
+>>> Author:        Huang Ying <ying.huang@intel.com>
+>>> AuthorDate:    Mon, 14 Feb 2022 20:15:53 +08:00
+>>> Committer:     Peter Zijlstra <peterz@infradead.org>
+>>> CommitterDate: Wed, 16 Feb 2022 15:57:53 +01:00
+>>> 
+>>> sched/numa: Avoid migrating task to CPU-less node
+>>> 
+>>> In a typical memory tiering system, there's no CPU in slow (PMEM) NUMA
+>>> nodes.  But if the number of the hint page faults on a PMEM node is
+>>> the max for a task, The current NUMA balancing policy may try to place
+>>> the task on the PMEM node instead of DRAM node.  This is unreasonable,
+>>> because there's no CPU in PMEM NUMA nodes.  To fix this, CPU-less
+>>> nodes are ignored when searching the migration target node for a task
+>>> in this patch.
+>>> 
+>>> To test the patch, we run a workload that accesses more memory in PMEM
+>>> node than memory in DRAM node.  Without the patch, the PMEM node will
+>>> be chosen as preferred node in task_numa_placement().  While the DRAM
+>>> node will be chosen instead with the patch.
+>>> 
+>>> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+>>> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>>> Link: https://lkml.kernel.org/r/20220214121553.582248-2-ying.huang@intel.com
+>>
+>> Reverting this commit on the top of today's linux-next fixed a boot crash
+>> on arm64 NUMA systems.
+>>
+>>  Unable to handle kernel paging request at virtual address ffff7a6601694aec
+>>  KASAN: maybe wild-memory-access in range [0xffffd3300b4a5760-0xffffd3300b4a5767]
+>>  Mem abort info:
+>>    ESR = 0x96000005
+>>    EC = 0x25: DABT (current EL), IL = 32 bits
+>>  mlx5_core 0007:02:00.0: enabling device (0100 -> 0102)
+>>    SET = 0, FnV = 0
+>>    EA = 0, S1PTW = 0
+>>    FSC = 0x05: level 1 translation fault
+>>  Data abort info:
+>>    ISV = 0, ISS = 0x00000005
+>>    CM = 0, WnR = 0
+>>  swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000400b3d6c6000
+>>  [ffff7a6601694aec] pgd=0000403fc007f003, p4d=0000403fc007f003, pud=0000000000000000
+>>  Internal error: Oops: 96000005 [#1] PREEMPT SMP
+>>  Modules linked in: nouveau(+) drm_ttm_helper ttm nvme(+) drm_dp_helper drm_kms_helper mlx5_core(+) mpt3sas(+) xhci_pci(+) nvme_core raid_class xhci_pci_renesas drm
+>>  CPU: 85 PID: 1308 Comm: udevadm Not tainted 5.17.0-rc6-next-20220301 #1
+>>  pstate: 40400009 (nZcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>>  pc : task_numa_placement
+>>  lr : task_numa_placement
+>>  sp : ffff800031047760
+>>  x29: ffff800031047760 x28: ffff3fffab916c00 x27: 0000000000000020
+>>  x26: 0000000000000001 x25: 0000000000000000 x24: 0000000000000000
+>>
+>>  x23: ffff07ffe5289a80 x22: ffffd3300b4a5760 x21: 000000000000003f
+>>  x20: ffffd32feb4a5768 x19: 0000000000000000 x18: ffff07ffe528ad88
+>>  x17: ffffd32fe5693a1c x16: 0000000000000000 x15: ffff8000310478e0
+>>
+>>  x14: ffff07ffe528ad90 x13: 0000000000000002 x12: dfff80000000000d
+>>  x11: 0000000000000001 x10: 000000000000b6be x9 : 0000000000000000
+>>  x8 : 00000000ffffffff x7 : ffffd32feb4a5780 x6 : 0000000000000000
+>>  x5 : 0000000000000000 x4 : 0000000000000000 x3 : 1ffffa6601694aec
+>>  x2 : 0000000000000000 x1 : dfff800000000000 x0 : 000000001ffffff8
+>>  Call trace:
+>>   task_numa_placement
+>>   arch_test_bit at include/asm-generic/bitops/non-atomic.h:118
+>>   (inlined by) node_state at include/linux/nodemask.h:416
+>>   (inlined by) task_numa_placement at kernel/sched/fair.c:2439
+>>   task_numa_fault
+>>   do_numa_page
+>>   handle_pte_fault
+>>   __handle_mm_fault
+>>   handle_mm_fault
+>>   do_page_fault
+>>   do_translation_fault
+>>   do_mem_abort
+>>   el0_da
+>>   el0t_64_sync_handler
+>>   el0t_64_sync
+>>  Code: 8b000296 d2d00001 f2fbffe1 d343fec3 (38e16861)
+>>  ---[ end trace 0000000000000000 ]---
+>>  Kernel panic - not syncing: Oops: Fatal exception
+>>  SMP: stopping secondary CPUs
+>>  Kernel Offset: 0x532fdcf70000 from 0xffff800008000000
+>>  PHYS_OFFSET: 0x80000000
+>>  CPU features: 0x00,00042c0c,19801c82
+>>  Memory Limit: none
+>>  ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
 >
-> Hi Zhouyi, thanks for the bisection test.
-> Could this patch solve RCU warning? I just tested on my machine and there
-> is no RCU warning any more.
-
-This patch solves the reported problem. The test link provided below [1].
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
+> Thanks for reporting!  Can you try whether the following debug patch can fix the issue?
 >
-> diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-> index 1e356c222756..0d1ada8968d7 100644
-> --- a/include/linux/cgroup.h
-> +++ b/include/linux/cgroup.h
-> @@ -450,6 +450,7 @@ extern struct mutex cgroup_mutex;
->  extern spinlock_t css_set_lock;
->  #define task_css_set_check(task, __c)                                  \
->         rcu_dereference_check((task)->cgroups,                          \
-> +               rcu_read_lock_sched_held() ||                           \
->                 lockdep_is_held(&cgroup_mutex) ||                       \
->                 lockdep_is_held(&css_set_lock) ||                       \
->                 ((task)->flags & PF_EXITING) || (__c))
+> Best Regards,
+> Huang, Ying
 >
+> ----------------------------8<-------------------------------------------
+> From 176d185426730111e763eb386d0210561f021dbc Mon Sep 17 00:00:00 2001
+> From: Huang Ying <ying.huang@intel.com>
+> Date: Wed, 2 Mar 2022 08:54:01 +0800
+> Subject: [PATCH] dbg KASAN error
+>
+> ---
+>  kernel/sched/fair.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index a3f0ea216ccb..1fe7a4510cca 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -2405,7 +2405,7 @@ static void task_numa_placement(struct task_struct *p)
+>  	}
+>  
+>  	/* Cannot migrate task to CPU-less node */
+> -	if (!node_state(max_nid, N_CPU)) {
+> +	if (max_nid != NUMA_NO_NODE && !node_state(max_nid, N_CPU)) {
+>  		int near_nid = max_nid;
+>  		int distance, near_distance = INT_MAX;
 
+Do you have time to give this patch a try?
 
---
-Linaro LKFT
-https://lkft.linaro.org
-[1] https://lkft.validation.linaro.org/scheduler/job/4664565#L339
+Best Regards,
+Huang, Ying
