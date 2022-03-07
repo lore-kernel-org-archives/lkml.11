@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A952C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA102C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238336AbiCGJiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:38:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        id S238386AbiCGJiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234196AbiCGJaH (ORCPT
+        with ESMTP id S237141AbiCGJaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:30:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E968593A6;
-        Mon,  7 Mar 2022 01:29:04 -0800 (PST)
+        Mon, 7 Mar 2022 04:30:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CA65DE4E;
+        Mon,  7 Mar 2022 01:29:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7FAE61119;
-        Mon,  7 Mar 2022 09:29:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9AD0C340E9;
-        Mon,  7 Mar 2022 09:29:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58E41B810B6;
+        Mon,  7 Mar 2022 09:29:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4CF2C340F5;
+        Mon,  7 Mar 2022 09:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645343;
-        bh=9/hY6KOQxNGmcFPrb7ue5KAfX84rmPATCgx/s4tbcxs=;
+        s=korg; t=1646645346;
+        bh=Sg/Ah47SA+zJdKoMGWdbk0fBXg3xkvIT4eCWhWp4Log=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8MSRJRLIyhPlcSXD9pWDP9bsGGlnn8MPijuGY84xmIa8FGYwQ1lG8zWoFE7J0HZv
-         oen0BT2ye5/iTV1QvNBJYP5G/1BAOmbeF0WGge0IuW3vjxwuqYU3fj2ZKfjIt1njnN
-         8nvirZ68fSZCc2do04HBFh7LJ3FqlX7iFkhKFrAk=
+        b=BHFhbhuO+aLEmJlnhcHiXVxycyx7oMrQKAT6CKhoHKay4mO0CIE73R57lfovgMlBw
+         KYPlwYmUUPkd47PhMYShSKjrwH5Ka0Hx1n4T1pazLNqE1VV4aaNgTUFVdlskj9PAme
+         Nq4fqGhWJNL9XXXBT2ieGrQiraCYJEGUB6p60llQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 52/64] net: chelsio: cxgb3: check the return value of pci_find_capability()
-Date:   Mon,  7 Mar 2022 10:19:25 +0100
-Message-Id: <20220307091640.627830784@linuxfoundation.org>
+Subject: [PATCH 5.4 53/64] nl80211: Handle nla_memdup failures in handle_nan_filter
+Date:   Mon,  7 Mar 2022 10:19:26 +0100
+Message-Id: <20220307091640.656254748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -50,35 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 767b9825ed1765894e569a3d698749d40d83762a ]
+[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
 
-The function pci_find_capability() in t3_prep_adapter() can fail, so its
-return value should be checked.
+As there's potential for failure of the nla_memdup(),
+check the return value.
 
-Fixes: 4d22de3e6cc4 ("Add support for the latest 1G/10G Chelsio adapter, T3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb3/t3_hw.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/wireless/nl80211.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-index 0a9f2c596624..d3e11fe1eabc 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/t3_hw.c
-@@ -3677,6 +3677,8 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
- 	    MAC_STATS_ACCUM_SECS : (MAC_STATS_ACCUM_SECS * 10);
- 	adapter->params.pci.vpd_cap_addr =
- 	    pci_find_capability(adapter->pdev, PCI_CAP_ID_VPD);
-+	if (!adapter->params.pci.vpd_cap_addr)
-+		return -ENODEV;
- 	ret = get_vpd_params(adapter, &adapter->params.vpd);
- 	if (ret < 0)
- 		return ret;
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 7633d6a74bc2..f2bc465de284 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -12320,6 +12320,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	i = 0;
+ 	nla_for_each_nested(attr, attr_filter, rem) {
+ 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
++		if (!filter[i].filter)
++			goto err;
++
+ 		filter[i].len = nla_len(attr);
+ 		i++;
+ 	}
+@@ -12332,6 +12335,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
+ 	}
+ 
+ 	return 0;
++
++err:
++	i = 0;
++	nla_for_each_nested(attr, attr_filter, rem) {
++		kfree(filter[i].filter);
++		i++;
++	}
++	kfree(filter);
++	return -ENOMEM;
+ }
+ 
+ static int nl80211_nan_add_func(struct sk_buff *skb,
 -- 
 2.34.1
 
