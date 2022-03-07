@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8121C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238499AbiCGJwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        id S238518AbiCGJw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240984AbiCGJlo (ORCPT
+        with ESMTP id S240992AbiCGJlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71986D19B;
-        Mon,  7 Mar 2022 01:38:56 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892926582B;
+        Mon,  7 Mar 2022 01:39:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08CDDB810B2;
-        Mon,  7 Mar 2022 09:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C261C340E9;
-        Mon,  7 Mar 2022 09:33:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9EBBB810CC;
+        Mon,  7 Mar 2022 09:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E7BC340E9;
+        Mon,  7 Mar 2022 09:38:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645618;
-        bh=605Itjkcjl8xyYq0VbHCegn2Ox/shTKMoaIMC1UCEeI=;
+        s=korg; t=1646645938;
+        bh=i57U6srCUY6x6p72vBcDx7z8RlmPz/tzafs1rL/YY9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=si8jzjzLn4+2e/Jyxrx8nCal33Ix/SRx12bj0oQj4mpzAsA4uxKjvUrh+/76gtqLB
-         IX5cw1q0MRRcmdTgLIZGctokZtfkkQrnv82Trc2Hf7KLz2ViIUVYuuu0W81DrL0eW2
-         PupyCRXA+RQRRCy06XjR+zjCDeknjfXprpT5LeUE=
+        b=m+WpiIcW57nBgieETTuRAzzyUNcUStMCBTb7EIjC+rMsQsVVAiuw9Vfn1OM5yeltg
+         EAa20eX8oAEZSNnEarurhu55d/5fTch/jZWc0xwVFFNMQNbBxPunVB7AOyn1RU8h7+
+         Yvacny5bKFRAW3Y9kMuYa5+SjVliuSISrMyIctBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 089/105] ibmvnic: complete init_done on transport events
-Date:   Mon,  7 Mar 2022 10:19:32 +0100
-Message-Id: <20220307091646.682645178@linuxfoundation.org>
+Subject: [PATCH 5.15 081/262] SUNRPC: Fix sockaddr handling in svcsock_accept_class trace points
+Date:   Mon,  7 Mar 2022 10:17:05 +0100
+Message-Id: <20220307091704.773768226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 36491f2df9ad2501e5a4ec25d3d95d72bafd2781 ]
+[ Upstream commit 16720861675393a35974532b3c837d9fd7bfe08c ]
 
-If we get a transport event, set the error and mark the init as
-complete so the attempt to send crq-init or login fail sooner
-rather than wait for the timeout.
+Avoid potentially hazardous memory copying and the needless use of
+"%pIS" -- in the kernel, an RPC service listener is always bound to
+ANYADDR. Having the network namespace is helpful when recording
+errors, though.
 
-Fixes: bbd669a868bb ("ibmvnic: Fix completion structure initialization")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a0469f46faab ("SUNRPC: Replace dprintk call sites in TCP state change callouts")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/trace/events/sunrpc.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index f07468316656..1afb31c9ed7b 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -4931,6 +4931,13 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
- 			adapter->fw_done_rc = -EIO;
- 			complete(&adapter->fw_done);
- 		}
-+
-+		/* if we got here during crq-init, retry crq-init */
-+		if (!completion_done(&adapter->init_done)) {
-+			adapter->init_done_rc = -EAGAIN;
-+			complete(&adapter->init_done);
-+		}
-+
- 		if (!completion_done(&adapter->stats_done))
- 			complete(&adapter->stats_done);
- 		if (test_bit(0, &adapter->resetting))
+diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
+index 1213c078dcca5..7c48613c18304 100644
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -2112,17 +2112,17 @@ DECLARE_EVENT_CLASS(svcsock_accept_class,
+ 	TP_STRUCT__entry(
+ 		__field(long, status)
+ 		__string(service, service)
+-		__array(unsigned char, addr, sizeof(struct sockaddr_in6))
++		__field(unsigned int, netns_ino)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->status = status;
+ 		__assign_str(service, service);
+-		memcpy(__entry->addr, &xprt->xpt_local, sizeof(__entry->addr));
++		__entry->netns_ino = xprt->xpt_net->ns.inum;
+ 	),
+ 
+-	TP_printk("listener=%pISpc service=%s status=%ld",
+-		__entry->addr, __get_str(service), __entry->status
++	TP_printk("addr=listener service=%s status=%ld",
++		__get_str(service), __entry->status
+ 	)
+ );
+ 
 -- 
 2.34.1
 
