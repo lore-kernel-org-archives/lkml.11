@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B465C35295
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A4FC352A7
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239807AbiCGJuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:50:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S240303AbiCGJuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240157AbiCGJko (ORCPT
+        with ESMTP id S240583AbiCGJlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:44 -0500
+        Mon, 7 Mar 2022 04:41:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38D5674F0;
-        Mon,  7 Mar 2022 01:37:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DEA15A0C;
+        Mon,  7 Mar 2022 01:37:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BE6FB810CF;
-        Mon,  7 Mar 2022 09:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F649C340E9;
-        Mon,  7 Mar 2022 09:36:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2209B8102B;
+        Mon,  7 Mar 2022 09:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D84C340E9;
+        Mon,  7 Mar 2022 09:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645804;
-        bh=wZH01uOAO4UsGv9C+T2IqqCCfADRCqC0wjWMBt/crTc=;
+        s=korg; t=1646645871;
+        bh=C1j676FUP8iWuGVMyB82H13nsJjOvitU5NC+K+waxcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SkDnvw+8OwFO3vRCX0c4nEsIzXUoY15fj38qFRoOPs5ZPKDghBjOgQzYH/nazIlPT
-         TQRapya1PEdBbJsI4PT7Wpfdo00+sYp8mkbYb2STDXcsXD/J3EAg6MnTiO3srYLu+n
-         RJrB7gW97PbwLlLnY9Ou0ZLkU3Tk+G/SMgKSvnWU=
+        b=tvzc7kQOeAPcNzkkKWj3+aijpADHdN0SZ3qBb+0qDqQYs9i9r+HojgC1K/x2utLRj
+         80mr1WXhSYEPqSOIqnxk9OrfI3BB2kzrqvLPyqCBEi0W6Q9Czu+YZJab6Ld1zu3yI5
+         c03zoI0WPkp4ZYgXvXTc1SaOCAhvZgz+hdUUnfZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Nicolas Pitre <npitre@baylibre.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 004/262] ASoC: rt5668: do not block workqueue if card is unbound
-Date:   Mon,  7 Mar 2022 10:15:48 +0100
-Message-Id: <20220307091702.505018653@linuxfoundation.org>
+Subject: [PATCH 5.15 062/262] i3c/master/mipi-i3c-hci: Fix a potentially infinite loop in hci_dat_v1_get_index()
+Date:   Mon,  7 Mar 2022 10:16:46 +0100
+Message-Id: <20220307091704.258121933@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -55,61 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit a6d78661dc903d90a327892bbc34268f3a5f4b9c ]
+[ Upstream commit 3f43926f271287fb1744c9ac9ae1122497f2b0c2 ]
 
-The current rt5668_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+The code in 'hci_dat_v1_get_index()' really looks like a hand coded version
+of 'for_each_set_bit()', except that a +1 is missing when searching for the
+next set bit.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
+This really looks odd and it seems that it will loop until 'dat_w0_read()'
+returns the expected result.
 
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
+So use 'for_each_set_bit()' instead. It is less verbose and should be more
+correct.
 
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-2-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 9ad9a52cce28 ("i3c/master: introduce the mipi-i3c-hci driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Nicolas Pitre <npitre@baylibre.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/0cdf3cb10293ead1acd271fdb8a70369c298c082.1637186628.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5668.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/i3c/master/mipi-i3c-hci/dat_v1.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5668.c b/sound/soc/codecs/rt5668.c
-index 6ab1a8bc37352..1186ceb5a978e 100644
---- a/sound/soc/codecs/rt5668.c
-+++ b/sound/soc/codecs/rt5668.c
-@@ -1022,11 +1022,13 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5668_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
+index 783e551a2c85a..97bb49ff5b53b 100644
+--- a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
++++ b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
+@@ -160,9 +160,7 @@ static int hci_dat_v1_get_index(struct i3c_hci *hci, u8 dev_addr)
+ 	unsigned int dat_idx;
+ 	u32 dat_w0;
  
--	while (!rt5668->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5668->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5668->component || !rt5668->component->card ||
-+	    !rt5668->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
- 
- 	mutex_lock(&rt5668->calibrate_mutex);
- 
+-	for (dat_idx = find_first_bit(hci->DAT_data, hci->DAT_entries);
+-	     dat_idx < hci->DAT_entries;
+-	     dat_idx = find_next_bit(hci->DAT_data, hci->DAT_entries, dat_idx)) {
++	for_each_set_bit(dat_idx, hci->DAT_data, hci->DAT_entries) {
+ 		dat_w0 = dat_w0_read(dat_idx);
+ 		if (FIELD_GET(DAT_0_DYNAMIC_ADDRESS, dat_w0) == dev_addr)
+ 			return dat_idx;
 -- 
 2.34.1
 
