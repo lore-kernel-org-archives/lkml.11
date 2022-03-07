@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA33FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE28DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbiCGJel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:34:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        id S237411AbiCGJeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:34:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238755AbiCGJ3k (ORCPT
+        with ESMTP id S238756AbiCGJ3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:29:40 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286BD59A74;
-        Mon,  7 Mar 2022 01:28:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E635A085;
+        Mon,  7 Mar 2022 01:28:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6F8E60C00;
-        Mon,  7 Mar 2022 09:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0466C340E9;
-        Mon,  7 Mar 2022 09:28:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F04FD61119;
+        Mon,  7 Mar 2022 09:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E447EC340E9;
+        Mon,  7 Mar 2022 09:28:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645296;
-        bh=1JdOwzAd4A8p14zKZkL9HsGfoOPkGQsKjtO9nw/zU1c=;
+        s=korg; t=1646645302;
+        bh=5vDZ1x7prQVgCXDE0HHM4Rg/E42DNApOD7pEDUZAzDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ee0PDt9mXlu89/QRhkblAAiMyl1IdZHDhY3xHJrcgTkJmA/ytXLOakkUocE5GBx/H
-         fpcvrcsT3Jnr18w9lL9i2He33vKTksCfL46P4VBncFHaJcgMHbfa8GuamC7OQckrH+
-         HaqnHeDOnys//DBP/tierad+9E+3soq70lplPsVQ=
+        b=fa0mDfLxMwBop4t9tWltgX3srzOVdbN2MBzAruHzuJuTE8HyTpXx/45ioIk5jk9Kg
+         JOVeFfPytlvMd70eHYHLbrOfwbgzA8XNvTRqCekutG5h4cYPTR0DhKFLm6sXGSLI/O
+         0Z3CxKSz2+Vxla9x1h6rnv+y0seJFD1sr1o7MinA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 47/64] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
-Date:   Mon,  7 Mar 2022 10:19:20 +0100
-Message-Id: <20220307091640.486020232@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 49/64] ibmvnic: free reset-work-item when flushing
+Date:   Mon,  7 Mar 2022 10:19:22 +0100
+Message-Id: <20220307091640.542339286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -52,48 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
+commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
 
-early_param() handlers should return 0 on success.
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 would cause the "option=value" string
-to be added to init's environment strings, polluting it.
+Fix a tiny memory leak when flushing the reset work queue.
 
-../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
-../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
-../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
-../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
-
-Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/mmu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -229,12 +229,14 @@ early_param("ecc", early_ecc);
- static int __init early_cachepolicy(char *p)
- {
- 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-+	return 0;
- }
- early_param("cachepolicy", early_cachepolicy);
- 
- static int __init noalign_setup(char *__unused)
- {
- 	pr_warn("noalign kernel parameter not supported without cp15\n");
-+	return 1;
- }
- __setup("noalign", noalign_setup);
- 
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2248,8 +2248,10 @@ static int ibmvnic_reset(struct ibmvnic_
+ 	 * flush reset queue and process this reset
+ 	 */
+ 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
+-		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
++		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
+ 			list_del(entry);
++			kfree(list_entry(entry, struct ibmvnic_rwi, list));
++		}
+ 	}
+ 	rwi->reset_reason = reason;
+ 	list_add_tail(&rwi->list, &adapter->rwi_list);
 
 
