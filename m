@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50131C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D635BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237058AbiCGKFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:05:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        id S239968AbiCGKFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:05:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236508AbiCGJmC (ORCPT
+        with ESMTP id S234934AbiCGJmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:42:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B878422A;
-        Mon,  7 Mar 2022 01:41:08 -0800 (PST)
+        Mon, 7 Mar 2022 04:42:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCEEDED7;
+        Mon,  7 Mar 2022 01:41:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 306ADCE0EAA;
-        Mon,  7 Mar 2022 09:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1194C340E9;
-        Mon,  7 Mar 2022 09:41:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6CF61354;
+        Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 108EDC340FF;
+        Mon,  7 Mar 2022 09:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646065;
-        bh=w3xW6sXuqTAEkeMEks1u2RQfpbj9vS7RE95tWEHFmkY=;
+        s=korg; t=1646646071;
+        bh=kRf2+Neh77iSMJt5sEjQ41gXstfFY7Iu39R7lcfHym4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A822l9Ea7/jXUa12UqALbJC5bfmtT4HvWQebdARmsHdi9mgRkEt4ui1ythMajKuFH
-         xDNglMeWvveSDtVm55M6dq4EPeSEXKjZPjMuL/mqtb7rM2ELQhJ+ennoCqwdfiIiOx
-         xz4u/DlDufOqz3dTkFvomr3XUhoowrBbraZWtDTw=
+        b=eRSO8yPNB8e5XTqrtWExOIShYPSl/8PN1tOuo/kqrqIiLymL5p6pIsIWeSw5ZiT0q
+         eGiu2eyaTGbDFexQiclnwfG0t5cUcXFnhgTuu2nYS+mBoS0Qa4Zz0nj8SPy+5o6lui
+         zbUjrHyHz7c/f6RVvNQJEPqSvntW/W7T5bEC1VVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Liu <xliutaox@google.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/262] gve: Recording rx queue before sending to napi
-Date:   Mon,  7 Mar 2022 10:17:45 +0100
-Message-Id: <20220307091705.877888655@linuxfoundation.org>
+Subject: [PATCH 5.15 123/262] net: dsa: seville: register the mdiobus under devres
+Date:   Mon,  7 Mar 2022 10:17:47 +0100
+Message-Id: <20220307091705.932468911@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,34 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Liu <xliutaox@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 084cbb2ec3af2d23be9de65fcc9493e21e265859 ]
+[ Upstream commit bd488afc3b39e045ba71aab472233f2a78726e7b ]
 
-This caused a significant performance degredation when using generic XDP
-with multiple queues.
+As explained in commits:
+74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 
-Fixes: f5cedc84a30d2 ("gve: Add transmit and receive support")
-Signed-off-by: Tao Liu <xliutaox@google.com>
-Link: https://lore.kernel.org/r/20220207175901.2486596-1-jeroendb@google.com
+mdiobus_free() will panic when called from devm_mdiobus_free() <-
+devres_release_all() <- __device_release_driver(), and that mdiobus was
+not previously unregistered.
+
+The Seville VSC9959 switch is a platform device, so the initial set of
+constraints that I thought would cause this (I2C or SPI buses which call
+->remove on ->shutdown) do not apply. But there is one more which
+applies here.
+
+If the DSA master itself is on a bus that calls ->remove from ->shutdown
+(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+between the switch and the DSA master, and device_links_unbind_consumers()
+will unbind the seville switch driver on shutdown.
+
+So the same treatment must be applied to all DSA switch drivers, which
+is: either use devres for both the mdiobus allocation and registration,
+or don't use devres at all.
+
+The seville driver has a code structure that could accommodate both the
+mdiobus_unregister and mdiobus_free calls, but it has an external
+dependency upon mscc_miim_setup() from mdio-mscc-miim.c, which calls
+devm_mdiobus_alloc_size() on its behalf. So rather than restructuring
+that, and exporting yet one more symbol mscc_miim_teardown(), let's work
+with devres and replace of_mdiobus_register with the devres variant.
+When we use all-devres, we can ensure that devres doesn't free a
+still-registered bus (it either runs both callbacks, or none).
+
+Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/google/gve/gve_rx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 629d8ed08fc61..97431969a488f 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -450,6 +450,7 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
- 		skb_set_hash(skb, be32_to_cpu(rx_desc->rss_hash),
- 			     gve_rss_type(rx_desc->flags_seq));
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index ca8c003b99bc5..05e4e75c01076 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -1111,7 +1111,7 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
  
-+	skb_record_rx_queue(skb, rx->q_num);
- 	if (skb_is_nonlinear(skb))
- 		napi_gro_frags(napi);
- 	else
+ 	/* Needed in order to initialize the bus mutex lock */
+-	rc = of_mdiobus_register(bus, NULL);
++	rc = devm_of_mdiobus_register(dev, bus, NULL);
+ 	if (rc < 0) {
+ 		dev_err(dev, "failed to register MDIO bus\n");
+ 		return rc;
+@@ -1163,7 +1163,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
+ 		mdio_device_free(pcs->mdio);
+ 		lynx_pcs_destroy(pcs);
+ 	}
+-	mdiobus_unregister(felix->imdio);
++
++	/* mdiobus_unregister and mdiobus_free handled by devres */
+ }
+ 
+ static const struct felix_info seville_info_vsc9953 = {
 -- 
 2.34.1
 
