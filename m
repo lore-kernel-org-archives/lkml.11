@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C59DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 967D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239033AbiCGKPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:15:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
+        id S234213AbiCGKPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240091AbiCGKAg (ORCPT
+        with ESMTP id S240162AbiCGKAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:36 -0500
+        Mon, 7 Mar 2022 05:00:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA92F7D02C;
-        Mon,  7 Mar 2022 01:46:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377037DE13;
+        Mon,  7 Mar 2022 01:47:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86CF260FB3;
-        Mon,  7 Mar 2022 09:46:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D6BC36AE2;
-        Mon,  7 Mar 2022 09:46:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B79E61220;
+        Mon,  7 Mar 2022 09:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1CDC340E9;
+        Mon,  7 Mar 2022 09:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646409;
-        bh=QiOVeJQEF3Etx495VCxmahhojVK5pWTINYYEamvuEkA=;
+        s=korg; t=1646646419;
+        bh=pNDp5nWRSBhinNFZm8hy3QHMNRTvUd6XoKNcO8RCUuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gT4FP1x9+vqA/rspdTiteu9std0K1QbTkr/l5QsoGFu+ghVDMdBUMDIvbeh12tcpf
-         XAoXHbkZ6WWXaaen2fBmAgb/zlOiOSgbR7qB960Tf3uVXKTiBAyBYb+pKMMEsqG6Y6
-         wPAMXcAsrTqDQ5tGAE3pjCSFmNUE1jdAgjW0BrD0=
+        b=ZUj/TEHZnqEl1vkn4N+inceSjK6b7KZLlUx/FwIC5Ucpv6FRtB6jqZJ9/s7XKkVbQ
+         VMJb2LpDre0zNBSvMoYpo+La6ebWa209X0DOeJQ5HZifp45B5coyKgYc2YzROcdlHl
+         wlMq4FnI+LaPIAa0w+xQwBdxEhKqBAiNCiMdKisM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        Nir Efrati <nir.efrati@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 234/262] iavf: Fix __IAVF_RESETTING state usage
-Date:   Mon,  7 Mar 2022 10:19:38 +0100
-Message-Id: <20220307091709.897936123@linuxfoundation.org>
+Subject: [PATCH 5.15 237/262] e1000e: Fix possible HW unit hang after an s0ix exit
+Date:   Mon,  7 Mar 2022 10:19:41 +0100
+Message-Id: <20220307091710.039447036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -53,73 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit 14756b2ae265d526b8356e86729090b01778fdf6 ]
+[ Upstream commit 1866aa0d0d6492bc2f8d22d0df49abaccf50cddd ]
 
-The setup of __IAVF_RESETTING state in watchdog task had no
-effect and could lead to slow resets in the driver as
-the task for __IAVF_RESETTING state only requeues watchdog.
-Till now the __IAVF_RESETTING was interpreted by reset task
-as running state which could lead to errors with allocating
-and resources disposal.
+Disable the OEM bit/Gig Disable/restart AN impact and disable the PHY
+LAN connected device (LCD) reset during power management flows. This
+fixes possible HW unit hangs on the s0ix exit on some corporate ADL
+platforms.
 
-Make watchdog_task queue the reset task when it's necessary.
-Do not update the state to __IAVF_RESETTING so the reset task
-knows exactly what is the current state of the adapter.
-
-Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
+Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
+Suggested-by: Nir Efrati <nir.efrati@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/e1000e/hw.h      |  1 +
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ++++
+ drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 +
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 26 +++++++++++++++++++++
+ 4 files changed, 32 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e23a062dc39c..50ecfb1faf61 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1073,8 +1073,7 @@ void iavf_down(struct iavf_adapter *adapter)
- 		rss->state = IAVF_ADV_RSS_DEL_REQUEST;
- 	spin_unlock_bh(&adapter->adv_rss_lock);
+diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
+index bcf680e83811..13382df2f2ef 100644
+--- a/drivers/net/ethernet/intel/e1000e/hw.h
++++ b/drivers/net/ethernet/intel/e1000e/hw.h
+@@ -630,6 +630,7 @@ struct e1000_phy_info {
+ 	bool disable_polarity_correction;
+ 	bool is_mdix;
+ 	bool polarity_correction;
++	bool reset_disable;
+ 	bool speed_downgraded;
+ 	bool autoneg_wait_to_complete;
+ };
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index a3e42d06c63e..d60e2016d03c 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -2050,6 +2050,10 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
+ 	bool blocked = false;
+ 	int i = 0;
  
--	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED) &&
--	    adapter->state != __IAVF_RESETTING) {
-+	if (!(adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)) {
- 		/* cancel any current operation */
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
- 		/* Schedule operations to close down the HW. Don't wait
-@@ -1992,11 +1991,12 @@ static void iavf_watchdog_task(struct work_struct *work)
- 	if (adapter->flags & IAVF_FLAG_PF_COMMS_FAILED)
- 		iavf_change_state(adapter, __IAVF_COMM_FAILED);
++	/* Check the PHY (LCD) reset flag */
++	if (hw->phy.reset_disable)
++		return true;
++
+ 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
+ 	       (i++ < 30))
+ 		usleep_range(10000, 11000);
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
+index 2504b11c3169..638a3ddd7ada 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
+@@ -271,6 +271,7 @@
+ #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
+ #define I217_MEMPWR			PHY_REG(772, 26)
+ #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
++#define I217_MEMPWR_MOEM		0x1000
  
--	if (adapter->flags & IAVF_FLAG_RESET_NEEDED &&
--	    adapter->state != __IAVF_RESETTING) {
--		iavf_change_state(adapter, __IAVF_RESETTING);
-+	if (adapter->flags & IAVF_FLAG_RESET_NEEDED) {
- 		adapter->aq_required = 0;
- 		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
-+		mutex_unlock(&adapter->crit_lock);
-+		queue_work(iavf_wq, &adapter->reset_task);
-+		return;
- 	}
+ /* Receive Address Initial CRC Calculation */
+ #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index af2029bb43e3..ce48e630fe55 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6992,8 +6992,21 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
++	struct e1000_hw *hw = &adapter->hw;
++	u16 phy_data;
+ 	int rc;
  
- 	switch (adapter->state) {
-@@ -2290,8 +2290,7 @@ static void iavf_reset_task(struct work_struct *work)
- 	 * ndo_open() returning, so we can't assume it means all our open
- 	 * tasks have finished, since we're not holding the rtnl_lock here.
- 	 */
--	running = ((adapter->state == __IAVF_RUNNING) ||
--		   (adapter->state == __IAVF_RESETTING));
-+	running = adapter->state == __IAVF_RUNNING;
++	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
++	    hw->mac.type >= e1000_pch_adp) {
++		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
++		e1e_rphy(hw, I217_MEMPWR, &phy_data);
++		phy_data |= I217_MEMPWR_MOEM;
++		e1e_wphy(hw, I217_MEMPWR, phy_data);
++
++		/* Disable LCD reset */
++		hw->phy.reset_disable = true;
++	}
++
+ 	e1000e_flush_lpic(pdev);
  
- 	if (running) {
- 		netif_carrier_off(netdev);
+ 	e1000e_pm_freeze(dev);
+@@ -7015,6 +7028,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
++	struct e1000_hw *hw = &adapter->hw;
++	u16 phy_data;
+ 	int rc;
+ 
+ 	/* Introduce S0ix implementation */
+@@ -7025,6 +7040,17 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	if (rc)
+ 		return rc;
+ 
++	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
++	    hw->mac.type >= e1000_pch_adp) {
++		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
++		e1e_rphy(hw, I217_MEMPWR, &phy_data);
++		phy_data &= ~I217_MEMPWR_MOEM;
++		e1e_wphy(hw, I217_MEMPWR, phy_data);
++
++		/* Enable LCD reset */
++		hw->phy.reset_disable = false;
++	}
++
+ 	return e1000e_pm_thaw(dev);
+ }
+ 
 -- 
 2.34.1
 
