@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BD6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236119AbiCGKVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:21:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
+        id S241633AbiCGKU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:20:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240519AbiCGKBE (ORCPT
+        with ESMTP id S240266AbiCGKAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:04 -0500
+        Mon, 7 Mar 2022 05:00:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7782617;
-        Mon,  7 Mar 2022 01:49:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B7B7DE24;
+        Mon,  7 Mar 2022 01:47:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB977B8102B;
-        Mon,  7 Mar 2022 09:49:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACE4C340F7;
-        Mon,  7 Mar 2022 09:49:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9370FB810B9;
+        Mon,  7 Mar 2022 09:47:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC847C340E9;
+        Mon,  7 Mar 2022 09:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646592;
-        bh=nSBScjLwDnnYYus0dcXkbfFcQ4AK2NVjbpG/fiVlMl4=;
+        s=korg; t=1646646431;
+        bh=Qhn1dzLQ60XqRJgYiz0jMsK2rdWDBMOKVka6WLgUbOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mrjQP6N2Vwl//WcnZbM67ybJt3d1o5ViaadS/lyYsXazDH0NKr1ZGfgeRfsWOALzc
-         5rt8n4JUinj1fVulL4lfF0FvnYPjM+vogR7FHx6sVnaEL11b3DhWkSOv6Qk/zgFEOr
-         vj65hv74KhVpZ645G1fqEn/Z6+pnFK26ZdFTgJ/4=
+        b=H84b+dfEV/B5sXsMLciK113xotqONvjh+JWVpmVCts6Cj1O//lym2T6J/TkxJaZFU
+         j0Q0eem3fF/rhk3Vsjvlvc4x0533LvRjmkAtNluzzavH4SPXU8OoEwrstP2WYUTeda
+         GTOFMUhYUVALPJ3pw7U4Ce3NIIoXbbbjNgaprhGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
+        stable@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 031/186] exfat: fix i_blocks for files truncated over 4 GiB
-Date:   Mon,  7 Mar 2022 10:17:49 +0100
-Message-Id: <20220307091654.964143171@linuxfoundation.org>
+Subject: [PATCH 5.15 241/262] net: dcb: disable softirqs in dcbnl_flush_dev()
+Date:   Mon,  7 Mar 2022 10:19:45 +0100
+Message-Id: <20220307091710.242137283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
-References: <20220307091654.092878898@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,79 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 92fba084b79e6bc7b12fc118209f1922c1a2df56 ]
+[ Upstream commit 10b6bb62ae1a49ee818fc479cf57b8900176773e ]
 
-In exfat_truncate(), the computation of inode->i_blocks is wrong if
-the file is larger than 4 GiB because a 32-bit variable is used as a
-mask. This is fixed and simplified by using round_up().
+Ido Schimmel points out that since commit 52cff74eef5d ("dcbnl : Disable
+software interrupts before taking dcb_lock"), the DCB API can be called
+by drivers from softirq context.
 
-Also fix the same buggy computation in exfat_read_root() and another
-(correct) one in exfat_fill_inode(). The latter was fixed another way
-last month but can be simplified by using round_up() as well. See:
+One such in-tree example is the chelsio cxgb4 driver:
+dcb_rpl
+-> cxgb4_dcb_handle_fw_update
+   -> dcb_ieee_setapp
 
-  commit 0c336d6e33f4 ("exfat: fix incorrect loading of i_blocks for
-                        large files")
+If the firmware for this driver happened to send an event which resulted
+in a call to dcb_ieee_setapp() at the exact same time as another
+DCB-enabled interface was unregistering on the same CPU, the softirq
+would deadlock, because the interrupted process was already holding the
+dcb_lock in dcbnl_flush_dev().
 
-Fixes: 98d917047e8b ("exfat: add file operations")
-Cc: stable@vger.kernel.org # v5.7+
-Suggested-by: Matthew Wilcox <willy@infradead.org>
-Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Fix this unlikely event by using spin_lock_bh() in dcbnl_flush_dev() as
+in the rest of the dcbnl code.
+
+Fixes: 91b0383fef06 ("net: dcb: flush lingering app table entries for unregistered devices")
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220302193939.1368823-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exfat/file.c  | 4 ++--
- fs/exfat/inode.c | 4 ++--
- fs/exfat/super.c | 4 ++--
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ net/dcb/dcbnl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-index 848166d6d5e9d..d890fd34bb2d0 100644
---- a/fs/exfat/file.c
-+++ b/fs/exfat/file.c
-@@ -251,8 +251,8 @@ void exfat_truncate(struct inode *inode, loff_t size)
- 	else
- 		mark_inode_dirty(inode);
+diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+index 36c91273daac..dc4fb699b56c 100644
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -2077,7 +2077,7 @@ static void dcbnl_flush_dev(struct net_device *dev)
+ {
+ 	struct dcb_app_type *itr, *tmp;
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
--			~(sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- write_size:
- 	aligned_size = i_size_read(inode);
- 	if (aligned_size & (blocksize - 1)) {
-diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
-index aca2e64d045b6..72a0ccfb616c3 100644
---- a/fs/exfat/inode.c
-+++ b/fs/exfat/inode.c
-@@ -602,8 +602,8 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
+-	spin_lock(&dcb_lock);
++	spin_lock_bh(&dcb_lock);
  
- 	exfat_save_attr(inode, info->attr);
+ 	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
+ 		if (itr->ifindex == dev->ifindex) {
+@@ -2086,7 +2086,7 @@ static void dcbnl_flush_dev(struct net_device *dev)
+ 		}
+ 	}
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
--		~((loff_t)sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- 	inode->i_mtime = info->mtime;
- 	inode->i_ctime = info->mtime;
- 	ei->i_crtime = info->crtime;
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 1a2115d73a48a..4b5d02b1df585 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -364,8 +364,8 @@ static int exfat_read_root(struct inode *inode)
- 	inode->i_op = &exfat_dir_inode_operations;
- 	inode->i_fop = &exfat_dir_operations;
+-	spin_unlock(&dcb_lock);
++	spin_unlock_bh(&dcb_lock);
+ }
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
--			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- 	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
- 	ei->i_size_aligned = i_size_read(inode);
- 	ei->i_size_ondisk = i_size_read(inode);
+ static int dcbnl_netdevice_event(struct notifier_block *nb,
 -- 
 2.34.1
 
