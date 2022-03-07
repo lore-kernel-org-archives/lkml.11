@@ -2,98 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE12C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242728AbiCGNFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:05:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S242741AbiCGNFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:05:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242740AbiCGNFK (ORCPT
+        with ESMTP id S241944AbiCGNFQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:05:10 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033298AE4E;
-        Mon,  7 Mar 2022 05:04:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646658256; x=1678194256;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0le0xn3d1vkwFX3wOCoHwX5VTqLPR6D4Yyf2PZhCSDY=;
-  b=jMnPjU/VMZgIDHoUZlmh1pGcqpyy5DfBDfodEQECIV3VNtWUy6SaDM21
-   5I1bXAxAdKxqRcFbDOAqTvOzQNMpnVxxKGGc2sg3IJ/m0gZHiQS60hTP+
-   Sd0roowj/Be9lniCwOJ1A+dUIoCMDtS5wFq4G/L0GQhpLYuy/OeGj3PYb
-   7pj3YnVWr3hxNVaIwMe1B9BsYYU3z17gCCKMmFJjPxXCAJJpF2t8r5foz
-   8dON5Cw5ketct5v3AIQaAfdGaH1gO4A3zMi0jkHHrfjILPfDgoOrGefpg
-   NJV80j26MFEOnqdTW7hPBR1yXBLqZmThewNs8FA7A21RmhvJG5EN2/fjC
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
-   d="scan'208";a="148323686"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 06:04:15 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 06:04:14 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 06:04:07 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <claudiu.beznea@microchip.com>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH 2/2] dt-bindings: pwm: at91: Add SAMA7G5 compatible strings list
-Date:   Mon, 7 Mar 2022 15:03:07 +0200
-Message-ID: <20220307130307.106102-3-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220307130307.106102-1-sergiu.moga@microchip.com>
-References: <20220307130307.106102-1-sergiu.moga@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Mon, 7 Mar 2022 08:05:16 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6228B6C2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:04:21 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v1-20020a17090a088100b001bf25f97c6eso6399856pjc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:04:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=JXzVQ2ZdweQIJEbxKcie2X+tclhUtVN1X52+YVLb9ho=;
+        b=hNqgxl7RZ8Mz040Am5Mimahm0M96u9CqSIyWge99EgmYicdlsy6/4yXWTt1VRmYceo
+         a4Qx+jCcdhcD4oOshOyNqiez1FjjwI5PR/N0MGQma0EtRXD/jxchdtQwxKc8Uyqff6/c
+         1F+WlFB0HjdbdxqwPArIWmStkvMUZkgeGFd/MIsPiMbGjAXCPfWMmYihRs3P1/6b5RVv
+         0DAtxY4e0C/FFcFDzaNu3mqIQSpe/GTuJVvJI7jyjjfYqe59p7Oc2JUpKxbP3HeOsaLf
+         RW9cLtWOiUMqgj54p7Gp2ozGtg1sm3RlITsynlUdPdUfXQ+D8g9AlbHGjROY4NxISx2s
+         Fwwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JXzVQ2ZdweQIJEbxKcie2X+tclhUtVN1X52+YVLb9ho=;
+        b=cBZJBzBcK3qBAkT74qLLx1YpSX1GtswVicdpEpNa+i9wzifIC33eOUdxMXKtpf0b2k
+         zjNV6sr5qxuCjdPH+K3yTBv18p9L4a+Xhl8Cg0WcgZwxzgEkamnuFnyaT/t6x3OLp/Cc
+         au3pS6KTOti4kHyqc94vbuwrTLOPfwopoh+C5CcBKssHR6D4iIMFdejXAbyTqMnx00zs
+         cdzL9+RXF472p1pmeXyQftpT9AdDRnmUSGWBDY9M7wJoUVCORVp9WVXA+DyNGktxVQQc
+         klXl/q53i69i9qsZt6fFoBh/Yorm6NCuBdmAUL6HFiXv86HTOSLUtT/CRSa46K9qTiMo
+         cdVw==
+X-Gm-Message-State: AOAM532/haAusKAY16cnXfIV40uarm7zZnmTHFUPGqa9tWYgSsyM2K69
+        HLln3dt73k/Xdh8aohl+kLI=
+X-Google-Smtp-Source: ABdhPJxyQZKjSR7O+jwWjm2Gm0nSCiz028BLT0JG5cVW38JeaVoEIj4UC0qg9LQoFwz0NAFzxiPbHw==
+X-Received: by 2002:a17:90a:1941:b0:1bf:3918:d49e with SMTP id 1-20020a17090a194100b001bf3918d49emr12833754pjh.136.1646658261409;
+        Mon, 07 Mar 2022 05:04:21 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id y12-20020a62640c000000b004f104f0ee75sm15099513pfb.185.2022.03.07.05.04.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 05:04:21 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Florian Meier <florian.meier@koalo.de>,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] ASoC: atmel: Fix error handling in snd_proto_probe
+Date:   Mon,  7 Mar 2022 13:04:14 +0000
+Message-Id: <20220307130415.5720-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible strings list for SAMA7G5.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+Fix this by calling of_node_put() in error handling too.
+
+Fixes: a45f8853a5f9 ("ASoC: Add driver for PROTO Audio CODEC (with a WM8731)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- .../devicetree/bindings/pwm/atmel-pwm.yaml        | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ sound/soc/atmel/mikroe-proto.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml b/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
-index f5378a2226bd..55d40973e6a9 100644
---- a/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
-+++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.yaml
-@@ -12,11 +12,16 @@ maintainers:
+diff --git a/sound/soc/atmel/mikroe-proto.c b/sound/soc/atmel/mikroe-proto.c
+index 627564c18c27..9ed634ee9dfc 100644
+--- a/sound/soc/atmel/mikroe-proto.c
++++ b/sound/soc/atmel/mikroe-proto.c
+@@ -115,7 +115,8 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 	cpu_np = of_parse_phandle(np, "i2s-controller", 0);
+ 	if (!cpu_np) {
+ 		dev_err(&pdev->dev, "i2s-controller missing\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_codec_node;
+ 	}
+ 	dai->cpus->of_node = cpu_np;
+ 	dai->platforms->of_node = cpu_np;
+@@ -125,7 +126,8 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 						       &bitclkmaster, &framemaster);
+ 	if (bitclkmaster != framemaster) {
+ 		dev_err(&pdev->dev, "Must be the same bitclock and frame master\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_cpu_node;
+ 	}
+ 	if (bitclkmaster) {
+ 		if (codec_np == bitclkmaster)
+@@ -136,18 +138,21 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 		dai_fmt |= snd_soc_daifmt_parse_clock_provider_as_flag(np, NULL);
+ 	}
  
- properties:
-   compatible:
--    enum:
--      - atmel,at91sam9rl-pwm
--      - atmel,sama5d3-pwm
--      - atmel,sama5d2-pwm
--      - microchip,sam9x60-pwm
-+    oneOf:
-+      - items:
-+          - enum:
-+              - atmel,at91sam9rl-pwm
-+              - atmel,sama5d3-pwm
-+              - atmel,sama5d2-pwm
-+              - microchip,sam9x60-pwm
-+      - items:
-+          - const: microchip,sama7g5-pwm
-+          - const: atmel,sama5d2-pwm
+-	of_node_put(bitclkmaster);
+-	of_node_put(framemaster);
+-	dai->dai_fmt = dai_fmt;
  
-   reg:
-     description: |
+-	of_node_put(codec_np);
+-	of_node_put(cpu_np);
++	dai->dai_fmt = dai_fmt;
+ 
+ 	ret = snd_soc_register_card(&snd_proto);
+ 	if (ret)
+ 		dev_err_probe(&pdev->dev, ret,
+ 			"snd_soc_register_card() failed\n");
+ 
++
++put_cpu_node:
++	of_node_put(bitclkmaster);
++	of_node_put(framemaster);
++	of_node_put(cpu_np);
++put_codec_node:
++	of_node_put(codec_np);
+ 	return ret;
+ }
+ 
 -- 
-2.25.1
+2.17.1
 
