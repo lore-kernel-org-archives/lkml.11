@@ -2,129 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61854C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23136C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238153AbiCGJdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
+        id S238039AbiCGJd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238546AbiCGJ3S (ORCPT
+        with ESMTP id S237295AbiCGJ17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:18 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E3D340D8;
-        Mon,  7 Mar 2022 01:27:36 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2278qQAj024110;
-        Mon, 7 Mar 2022 01:26:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : subject
- : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=tnNRhccJgcMUcoI9bWYGc+iOInXB9vAB50za7neiZI0=;
- b=YmuBHoFM5UGcdW50fFOvSkQbDk6CVTOJM0YByEvQ86z+Iy5ocgjkSCWYipg5om3ECct7
- ayCIyvM1PEGWSlVO5TsGURVXxKXukL1PUVpAQovyAE532HN1VncOS+igSQPvIiVTCgOt
- +AOyojyy2HXTq5wMr3AdbcCK31tJ7YuAMgxaf0G0ERy58zpLYX1LWKWg1MGHg376yNvd
- Qo9WJtrJ4cS5qD3oaKMl2qwQpuWJJHiJ8+jWYybxKwET9C+FTwnEfktWWgc9Azpoo9Ye
- z1m3sQLgdnuo37QcQAqGaM4GqBuBv3FbENJn44QD15SHHsCPqMLpX6j3DRYMx1pJTTBl Fw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3em88re1h5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 07 Mar 2022 01:26:51 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Mar
- 2022 01:26:49 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 7 Mar 2022 01:26:49 -0800
-Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
-        by maili.marvell.com (Postfix) with ESMTP id 1BD413F7043;
-        Mon,  7 Mar 2022 01:26:49 -0800 (PST)
-From:   Veerasenareddy Burru <vburru@marvell.com>
-To:     <vburru@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <corbet@lwn.net>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/7] Add octeon_ep driver
-Date:   Mon, 7 Mar 2022 01:26:39 -0800
-Message-ID: <20220307092646.17156-1-vburru@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 7 Mar 2022 04:27:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D664D674CB;
+        Mon,  7 Mar 2022 01:25:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AECAE61187;
+        Mon,  7 Mar 2022 09:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B794AC340E9;
+        Mon,  7 Mar 2022 09:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645099;
+        bh=9w7wfwKPGRpK9zkIDgGWdhu9dqbToz0KVbzKdvjnBHc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TkuhE6ZmuvIWtD4+lAwqAiTKLmRXnhp/PHzCRsVGEeeIpODmFw8jw/RNeO89xfRpQ
+         s1UVbm34AxHhj9jborReMD7fO6nJunYdNagH7Wjq+THv8QDsl5pX/favGMeNI/IYtF
+         PrzprimrIAU3WsBvo5w5Q9/FprBThKloT4pHH3tE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.19 38/51] can: gs_usb: change active_channelss type from atomic_t to u8
+Date:   Mon,  7 Mar 2022 10:19:13 +0100
+Message-Id: <20220307091638.075805689@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: A16DOrOSOnaVJCJHXUG3slUbKU_JxrL4
-X-Proofpoint-GUID: A16DOrOSOnaVJCJHXUG3slUbKU_JxrL4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-07_01,2022-03-04_01,2022-02-23_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver implements networking functionality of Marvell's Octeon
-PCI Endpoint NIC.
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-This driver support following devices:
- * Network controller: Cavium, Inc. Device b200
+commit 035b0fcf02707d3c9c2890dc1484b11aa5335eb1 upstream.
 
-V2 -> V3:
-    Fix warnings and errors reported by kernel test robot:
-    Reported-by: kernel test robot <lkp@intel.com>
+The driver uses an atomic_t variable: gs_usb:active_channels to keep
+track of the number of opened channels in order to only allocate
+memory for the URBs when this count changes from zero to one.
 
-V1 -> V2:
-    Address review comments on original patch series.
-    Divide PATCH 1/4 from the original series into 4 patches in
-    v2 patch series: PATCH 1/7 to PATCH 4/7.
-    Fix clang build errors.
+However, the driver does not decrement the counter when an error
+occurs in gs_can_open(). This issue is fixed by changing the type from
+atomic_t to u8 and by simplifying the logic accordingly.
 
-Veerasenareddy Burru (7):
-  octeon_ep: Add driver framework and device initialization
-  octeon_ep: add hardware configuration APIs
-  octeon_ep: Add mailbox for control commands
-  octeon_ep: add Tx/Rx ring resource setup and cleanup
-  octeon_ep: add support for ndo ops
-  octeon_ep: add Tx/Rx processing and interrupt support
-  octeon_ep: add ethtool support for Octeon PCI Endpoint NIC
+It is safe to use an u8 here because the network stack big kernel lock
+(a.k.a. rtnl_mutex) is being hold. For details, please refer to [1].
 
- .../device_drivers/ethernet/index.rst         |    1 +
- .../ethernet/marvell/octeon_ep.rst            |   35 +
- MAINTAINERS                                   |    7 +
- drivers/net/ethernet/marvell/Kconfig          |    1 +
- drivers/net/ethernet/marvell/Makefile         |    1 +
- .../net/ethernet/marvell/octeon_ep/Kconfig    |   20 +
- .../net/ethernet/marvell/octeon_ep/Makefile   |    9 +
- .../marvell/octeon_ep/octep_cn9k_pf.c         |  737 +++++++++++
- .../ethernet/marvell/octeon_ep/octep_config.h |  204 +++
- .../marvell/octeon_ep/octep_ctrl_mbox.c       |  254 ++++
- .../marvell/octeon_ep/octep_ctrl_mbox.h       |  170 +++
- .../marvell/octeon_ep/octep_ctrl_net.c        |  197 +++
- .../marvell/octeon_ep/octep_ctrl_net.h        |  299 +++++
- .../marvell/octeon_ep/octep_ethtool.c         |  463 +++++++
- .../ethernet/marvell/octeon_ep/octep_main.c   | 1178 +++++++++++++++++
- .../ethernet/marvell/octeon_ep/octep_main.h   |  379 ++++++
- .../marvell/octeon_ep/octep_regs_cn9k_pf.h    |  367 +++++
- .../net/ethernet/marvell/octeon_ep/octep_rx.c |  509 +++++++
- .../net/ethernet/marvell/octeon_ep/octep_rx.h |  199 +++
- .../net/ethernet/marvell/octeon_ep/octep_tx.c |  335 +++++
- .../net/ethernet/marvell/octeon_ep/octep_tx.h |  284 ++++
- 21 files changed, 5649 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/marvell/octeon_ep.rst
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/Kconfig
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/Makefile
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_config.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_main.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_main.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_rx.h
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_tx.c
- create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_tx.h
+[1] https://lore.kernel.org/linux-can/CAMZ6Rq+sHpiw34ijPsmp7vbUpDtJwvVtdV7CvRZJsLixjAFfrg@mail.gmail.com/T/#t
 
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Link: https://lore.kernel.org/all/20220214234814.1321599-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/can/usb/gs_usb.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-base-commit: 669b258a793db9f1c3bff29ce2bbd61b810503ad
--- 
-2.17.1
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -198,8 +198,8 @@ struct gs_can {
+ struct gs_usb {
+ 	struct gs_can *canch[GS_MAX_INTF];
+ 	struct usb_anchor rx_submitted;
+-	atomic_t active_channels;
+ 	struct usb_device *udev;
++	u8 active_channels;
+ };
+ 
+ /* 'allocate' a tx context.
+@@ -596,7 +596,7 @@ static int gs_can_open(struct net_device
+ 	if (rc)
+ 		return rc;
+ 
+-	if (atomic_add_return(1, &parent->active_channels) == 1) {
++	if (!parent->active_channels) {
+ 		for (i = 0; i < GS_MAX_RX_URBS; i++) {
+ 			struct urb *urb;
+ 			u8 *buf;
+@@ -697,6 +697,7 @@ static int gs_can_open(struct net_device
+ 
+ 	dev->can.state = CAN_STATE_ERROR_ACTIVE;
+ 
++	parent->active_channels++;
+ 	if (!(dev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
+ 		netif_start_queue(netdev);
+ 
+@@ -712,7 +713,8 @@ static int gs_can_close(struct net_devic
+ 	netif_stop_queue(netdev);
+ 
+ 	/* Stop polling */
+-	if (atomic_dec_and_test(&parent->active_channels))
++	parent->active_channels--;
++	if (!parent->active_channels)
+ 		usb_kill_anchored_urbs(&parent->rx_submitted);
+ 
+ 	/* Stop sending URBs */
+@@ -991,8 +993,6 @@ static int gs_usb_probe(struct usb_inter
+ 
+ 	init_usb_anchor(&dev->rx_submitted);
+ 
+-	atomic_set(&dev->active_channels, 0);
+-
+ 	usb_set_intfdata(intf, dev);
+ 	dev->udev = interface_to_usbdev(intf);
+ 
+
 
