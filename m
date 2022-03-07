@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B035EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240025AbiCGKFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:05:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        id S236907AbiCGKF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235301AbiCGJm2 (ORCPT
+        with ESMTP id S238096AbiCGJmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:42:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF93F10FE5;
-        Mon,  7 Mar 2022 01:41:18 -0800 (PST)
+        Mon, 7 Mar 2022 04:42:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD8C15A18;
+        Mon,  7 Mar 2022 01:41:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 591876128E;
-        Mon,  7 Mar 2022 09:41:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6595FC340E9;
-        Mon,  7 Mar 2022 09:41:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65A30B80F9F;
+        Mon,  7 Mar 2022 09:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A74A7C340F3;
+        Mon,  7 Mar 2022 09:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646077;
-        bh=FDzh0ZHeyKx2upDiIZLBZOLXmyWGOvmDhGV6edFVnBQ=;
+        s=korg; t=1646646081;
+        bh=Wt7B/bnSJ1P0KwmJ/NMxbKs0Pkrp1FbTdd1lziXU4UY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g2nGW+8wjxXbpLcY0JG1mmnPWd7FmhdxrVQKS9FagbDiSyETVg0okxKZF0eyyRLzK
-         Z129sCZsnnpRQo+NJ8oN1JvzB0lVZ6Z5qIV4K9bBsXbcUi7FusgLh9Qzf1pr+RHoob
-         A1ImySt8iejKJmTkZ0jo4UgJ3iEiTIkQKPNPybW8=
+        b=rw3PMJiydzWuf8Nf5zWqeN+ROkTHZgS+qO9mu7+K7HrasMlyiAM08GZ0l4zw3CFwy
+         kRX1fa2JfTUR05GrmqeS0XLXGPjzg2A0rEfMZuuOKf1DmazOjpzL+EUTGjKruEewju
+         TSqqrk72W95IkHTNIhdsyFmZRcnMLKB74Z5HLXc0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 124/262] ibmvnic: dont release napi in __ibmvnic_open()
-Date:   Mon,  7 Mar 2022 10:17:48 +0100
-Message-Id: <20220307091705.959547578@linuxfoundation.org>
+Subject: [PATCH 5.15 125/262] of: net: move of_net under net/
+Date:   Mon,  7 Mar 2022 10:17:49 +0100
+Message-Id: <20220307091705.986552104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -51,106 +50,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 61772b0908c640d0309c40f7d41d062ca4e979fa ]
+[ Upstream commit e330fb14590c5c80f7195c3d8c9b4bcf79e1a5cd ]
 
-If __ibmvnic_open() encounters an error such as when setting link state,
-it calls release_resources() which frees the napi structures needlessly.
-Instead, have __ibmvnic_open() only clean up the work it did so far (i.e.
-disable napi and irqs) and leave the rest to the callers.
+Rob suggests to move of_net.c from under drivers/of/ somewhere
+to the networking code.
 
-If caller of __ibmvnic_open() is ibmvnic_open(), it should release the
-resources immediately. If the caller is do_reset() or do_hard_reset(),
-they will release the resources on the next reset.
-
-This fixes following crash that occurred when running the drmgr command
-several times to add/remove a vnic interface:
-
-	[102056] ibmvnic 30000003 env3: Disabling rx_scrq[6] irq
-	[102056] ibmvnic 30000003 env3: Disabling rx_scrq[7] irq
-	[102056] ibmvnic 30000003 env3: Replenished 8 pools
-	Kernel attempted to read user page (10) - exploit attempt? (uid: 0)
-	BUG: Kernel NULL pointer dereference on read at 0x00000010
-	Faulting instruction address: 0xc000000000a3c840
-	Oops: Kernel access of bad area, sig: 11 [#1]
-	LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-	...
-	CPU: 9 PID: 102056 Comm: kworker/9:2 Kdump: loaded Not tainted 5.16.0-rc5-autotest-g6441998e2e37 #1
-	Workqueue: events_long __ibmvnic_reset [ibmvnic]
-	NIP:  c000000000a3c840 LR: c0080000029b5378 CTR: c000000000a3c820
-	REGS: c0000000548e37e0 TRAP: 0300   Not tainted  (5.16.0-rc5-autotest-g6441998e2e37)
-	MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 28248484  XER: 00000004
-	CFAR: c0080000029bdd24 DAR: 0000000000000010 DSISR: 40000000 IRQMASK: 0
-	GPR00: c0080000029b55d0 c0000000548e3a80 c0000000028f0200 0000000000000000
-	...
-	NIP [c000000000a3c840] napi_enable+0x20/0xc0
-	LR [c0080000029b5378] __ibmvnic_open+0xf0/0x430 [ibmvnic]
-	Call Trace:
-	[c0000000548e3a80] [0000000000000006] 0x6 (unreliable)
-	[c0000000548e3ab0] [c0080000029b55d0] __ibmvnic_open+0x348/0x430 [ibmvnic]
-	[c0000000548e3b40] [c0080000029bcc28] __ibmvnic_reset+0x500/0xdf0 [ibmvnic]
-	[c0000000548e3c60] [c000000000176228] process_one_work+0x288/0x570
-	[c0000000548e3d00] [c000000000176588] worker_thread+0x78/0x660
-	[c0000000548e3da0] [c0000000001822f0] kthread+0x1c0/0x1d0
-	[c0000000548e3e10] [c00000000000cf64] ret_from_kernel_thread+0x5c/0x64
-	Instruction dump:
-	7d2948f8 792307e0 4e800020 60000000 3c4c01eb 384239e0 f821ffd1 39430010
-	38a0fff6 e92d1100 f9210028 39200000 <e9030010> f9010020 60420000 e9210020
-	---[ end trace 5f8033b08fd27706 ]---
-
-Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220208001918.900602-1-sukadev@linux.ibm.com
+Suggested-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amd/Kconfig    | 2 +-
+ drivers/net/ethernet/arc/Kconfig    | 4 ++--
+ drivers/net/ethernet/ezchip/Kconfig | 2 +-
+ drivers/net/ethernet/litex/Kconfig  | 2 +-
+ drivers/net/ethernet/mscc/Kconfig   | 2 +-
+ drivers/of/Kconfig                  | 4 ----
+ drivers/of/Makefile                 | 1 -
+ include/linux/of_net.h              | 2 +-
+ net/core/Makefile                   | 1 +
+ net/core/net-sysfs.c                | 2 +-
+ {drivers/of => net/core}/of_net.c   | 0
+ 11 files changed, 9 insertions(+), 13 deletions(-)
+ rename {drivers/of => net/core}/of_net.c (100%)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 14a729ba737a8..cc5ab66a81850 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -108,6 +108,7 @@ static int init_crq_queue(struct ibmvnic_adapter *adapter);
- static int send_query_phys_parms(struct ibmvnic_adapter *adapter);
- static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic_adapter *adapter,
- 					 struct ibmvnic_sub_crq_queue *tx_scrq);
-+static void ibmvnic_disable_irqs(struct ibmvnic_adapter *adapter);
+diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
+index 4786f0504691d..899c8a2a34b6b 100644
+--- a/drivers/net/ethernet/amd/Kconfig
++++ b/drivers/net/ethernet/amd/Kconfig
+@@ -168,7 +168,7 @@ config SUNLANCE
  
- struct ibmvnic_stat {
- 	char name[ETH_GSTRING_LEN];
-@@ -1245,7 +1246,7 @@ static int __ibmvnic_open(struct net_device *netdev)
- 	rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_UP);
- 	if (rc) {
- 		ibmvnic_napi_disable(adapter);
--		release_resources(adapter);
-+		ibmvnic_disable_irqs(adapter);
- 		return rc;
- 	}
+ config AMD_XGBE
+ 	tristate "AMD 10GbE Ethernet driver"
+-	depends on ((OF_NET && OF_ADDRESS) || ACPI || PCI) && HAS_IOMEM
++	depends on (OF_ADDRESS || ACPI || PCI) && HAS_IOMEM
+ 	depends on X86 || ARM64 || COMPILE_TEST
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select BITREVERSE
+diff --git a/drivers/net/ethernet/arc/Kconfig b/drivers/net/ethernet/arc/Kconfig
+index 92a79c4ffa2c7..0a67612af2281 100644
+--- a/drivers/net/ethernet/arc/Kconfig
++++ b/drivers/net/ethernet/arc/Kconfig
+@@ -26,7 +26,7 @@ config ARC_EMAC_CORE
+ config ARC_EMAC
+ 	tristate "ARC EMAC support"
+ 	select ARC_EMAC_CORE
+-	depends on OF_IRQ && OF_NET
++	depends on OF_IRQ
+ 	depends on ARC || COMPILE_TEST
+ 	help
+ 	  On some legacy ARC (Synopsys) FPGA boards such as ARCAngel4/ML50x
+@@ -36,7 +36,7 @@ config ARC_EMAC
+ config EMAC_ROCKCHIP
+ 	tristate "Rockchip EMAC support"
+ 	select ARC_EMAC_CORE
+-	depends on OF_IRQ && OF_NET && REGULATOR
++	depends on OF_IRQ && REGULATOR
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	help
+ 	  Support for Rockchip RK3036/RK3066/RK3188 EMAC ethernet controllers.
+diff --git a/drivers/net/ethernet/ezchip/Kconfig b/drivers/net/ethernet/ezchip/Kconfig
+index 38aa824efb25d..9241b9b1c7a36 100644
+--- a/drivers/net/ethernet/ezchip/Kconfig
++++ b/drivers/net/ethernet/ezchip/Kconfig
+@@ -18,7 +18,7 @@ if NET_VENDOR_EZCHIP
  
-@@ -1295,7 +1296,6 @@ static int ibmvnic_open(struct net_device *netdev)
- 		rc = init_resources(adapter);
- 		if (rc) {
- 			netdev_err(netdev, "failed to initialize resources\n");
--			release_resources(adapter);
- 			goto out;
- 		}
- 	}
-@@ -1312,6 +1312,11 @@ static int ibmvnic_open(struct net_device *netdev)
- 		adapter->state = VNIC_OPEN;
- 		rc = 0;
- 	}
-+
-+	if (rc) {
-+		release_resources(adapter);
-+	}
-+
- 	return rc;
- }
+ config EZCHIP_NPS_MANAGEMENT_ENET
+ 	tristate "EZchip NPS management enet support"
+-	depends on OF_IRQ && OF_NET
++	depends on OF_IRQ
+ 	depends on HAS_IOMEM
+ 	help
+ 	  Simple LAN device for debug or management purposes.
+diff --git a/drivers/net/ethernet/litex/Kconfig b/drivers/net/ethernet/litex/Kconfig
+index 63bf01d28f0cf..f99adbf26ab4e 100644
+--- a/drivers/net/ethernet/litex/Kconfig
++++ b/drivers/net/ethernet/litex/Kconfig
+@@ -17,7 +17,7 @@ if NET_VENDOR_LITEX
  
+ config LITEX_LITEETH
+ 	tristate "LiteX Ethernet support"
+-	depends on OF_NET
++	depends on OF
+ 	help
+ 	  If you wish to compile a kernel for hardware with a LiteX LiteEth
+ 	  device then you should answer Y to this.
+diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
+index b6a73d151dec1..8dd8c7f425d2c 100644
+--- a/drivers/net/ethernet/mscc/Kconfig
++++ b/drivers/net/ethernet/mscc/Kconfig
+@@ -28,7 +28,7 @@ config MSCC_OCELOT_SWITCH
+ 	depends on BRIDGE || BRIDGE=n
+ 	depends on NET_SWITCHDEV
+ 	depends on HAS_IOMEM
+-	depends on OF_NET
++	depends on OF
+ 	select MSCC_OCELOT_SWITCH_LIB
+ 	select GENERIC_PHY
+ 	help
+diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
+index 3dfeae8912dfc..80b5fd44ab1c7 100644
+--- a/drivers/of/Kconfig
++++ b/drivers/of/Kconfig
+@@ -70,10 +70,6 @@ config OF_IRQ
+ 	def_bool y
+ 	depends on !SPARC && IRQ_DOMAIN
+ 
+-config OF_NET
+-	depends on NETDEVICES
+-	def_bool y
+-
+ config OF_RESERVED_MEM
+ 	def_bool OF_EARLY_FLATTREE
+ 
+diff --git a/drivers/of/Makefile b/drivers/of/Makefile
+index c13b982084a3a..e0360a44306e2 100644
+--- a/drivers/of/Makefile
++++ b/drivers/of/Makefile
+@@ -7,7 +7,6 @@ obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
+ obj-$(CONFIG_OF_PROMTREE) += pdt.o
+ obj-$(CONFIG_OF_ADDRESS)  += address.o
+ obj-$(CONFIG_OF_IRQ)    += irq.o
+-obj-$(CONFIG_OF_NET)	+= of_net.o
+ obj-$(CONFIG_OF_UNITTEST) += unittest.o
+ obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
+ obj-$(CONFIG_OF_RESOLVE)  += resolver.o
+diff --git a/include/linux/of_net.h b/include/linux/of_net.h
+index daef3b0d9270d..cf31188329b5a 100644
+--- a/include/linux/of_net.h
++++ b/include/linux/of_net.h
+@@ -8,7 +8,7 @@
+ 
+ #include <linux/phy.h>
+ 
+-#ifdef CONFIG_OF_NET
++#ifdef CONFIG_OF
+ #include <linux/of.h>
+ 
+ struct net_device;
+diff --git a/net/core/Makefile b/net/core/Makefile
+index 35ced6201814c..4268846f2f475 100644
+--- a/net/core/Makefile
++++ b/net/core/Makefile
+@@ -36,3 +36,4 @@ obj-$(CONFIG_FAILOVER) += failover.o
+ obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
+ obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
+ obj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o
++obj-$(CONFIG_OF)	+= of_net.o
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index a4ae652633844..d7f9ee830d34c 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1927,7 +1927,7 @@ static struct class net_class __ro_after_init = {
+ 	.get_ownership = net_get_ownership,
+ };
+ 
+-#ifdef CONFIG_OF_NET
++#ifdef CONFIG_OF
+ static int of_dev_node_match(struct device *dev, const void *data)
+ {
+ 	for (; dev; dev = dev->parent) {
+diff --git a/drivers/of/of_net.c b/net/core/of_net.c
+similarity index 100%
+rename from drivers/of/of_net.c
+rename to net/core/of_net.c
 -- 
 2.34.1
 
