@@ -2,53 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D850DC35295
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FC4C352A1
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241130AbiCGKJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52204 "EHLO
+        id S241199AbiCGKKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:10:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239106AbiCGJtI (ORCPT
+        with ESMTP id S239543AbiCGJtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:49:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE9B10FEE;
-        Mon,  7 Mar 2022 01:42:53 -0800 (PST)
+        Mon, 7 Mar 2022 04:49:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E457770CF0;
+        Mon,  7 Mar 2022 01:43:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD272B810BF;
-        Mon,  7 Mar 2022 09:42:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07289C340E9;
-        Mon,  7 Mar 2022 09:42:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20440B80E70;
+        Mon,  7 Mar 2022 09:43:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F197C340F3;
+        Mon,  7 Mar 2022 09:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646159;
-        bh=jL18z2hE6xJ6jALu7cW0FPYndfKRVk1ejDkLHHhGj0o=;
+        s=korg; t=1646646204;
+        bh=oMThjiixOCJ9dPH1HEuqZKbfzqOPbQDdMFQOvJ+z7Q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sRuAYlB+g6yNUQSaMENQcUwbzzN2RWMTBrqm0E894pfmoxEkaJaVns0fK1vLuQBIm
-         pmE6IdynNSl2QSoTNJ8x0tmYq+l8FwXa5YxxedRcUZCiKCm+zxPXWcNhKgILMID+I4
-         EwQsARWmYqFgpYETU0lB/rhscKspXLGhDhZpklJ4=
+        b=MUiXeTwXXDzF/oPR19IrYW32c7sDTOvFMNnuhbMjukTV+Zqkk1bpsc3fbD/11ZXF2
+         qZiMIyXKa1s1/t9/YvDKF/ciyKjT4W2i73nNFPWoZjMUPYkCZOeWzHxddhznvyA+8A
+         0hPeoxy96nIJOA8N+h1Rk0Vo9zsi5Khsekr+8iUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Willy Tarreau <w@1wt.eu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: [PATCH 5.15 152/262] mm: Consider __GFP_NOWARN flag for oversized kvmalloc() calls
-Date:   Mon,  7 Mar 2022 10:18:16 +0100
-Message-Id: <20220307091706.728892880@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Nixdorf <j.nixdorf@avm.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 166/262] net: ipv6: ensure we call ipv6_mc_down() at most once
+Date:   Mon,  7 Mar 2022 10:18:30 +0100
+Message-Id: <20220307091707.113195308@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -60,102 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: j.nixdorf@avm.de <j.nixdorf@avm.de>
 
-commit 0708a0afe291bdfe1386d74d5ec1f0c27e8b9168 upstream.
+commit 9995b408f17ff8c7f11bc725c8aa225ba3a63b1c upstream.
 
-syzkaller was recently triggering an oversized kvmalloc() warning via
-xdp_umem_create().
+There are two reasons for addrconf_notify() to be called with NETDEV_DOWN:
+either the network device is actually going down, or IPv6 was disabled
+on the interface.
 
-The triggered warning was added back in 7661809d493b ("mm: don't allow
-oversized kvmalloc() calls"). The rationale for the warning for huge
-kvmalloc sizes was as a reaction to a security bug where the size was
-more than UINT_MAX but not everything was prepared to handle unsigned
-long sizes.
+If either of them stays down while the other is toggled, we repeatedly
+call the code for NETDEV_DOWN, including ipv6_mc_down(), while never
+calling the corresponding ipv6_mc_up() in between. This will cause a
+new entry in idev->mc_tomb to be allocated for each multicast group
+the interface is subscribed to, which in turn leaks one struct ifmcaddr6
+per nontrivial multicast group the interface is subscribed to.
 
-Anyway, the AF_XDP related call trace from this syzkaller report was:
+The following reproducer will leak at least $n objects:
 
-  kvmalloc include/linux/mm.h:806 [inline]
-  kvmalloc_array include/linux/mm.h:824 [inline]
-  kvcalloc include/linux/mm.h:829 [inline]
-  xdp_umem_pin_pages net/xdp/xdp_umem.c:102 [inline]
-  xdp_umem_reg net/xdp/xdp_umem.c:219 [inline]
-  xdp_umem_create+0x6a5/0xf00 net/xdp/xdp_umem.c:252
-  xsk_setsockopt+0x604/0x790 net/xdp/xsk.c:1068
-  __sys_setsockopt+0x1fd/0x4e0 net/socket.c:2176
-  __do_sys_setsockopt net/socket.c:2187 [inline]
-  __se_sys_setsockopt net/socket.c:2184 [inline]
-  __x64_sys_setsockopt+0xb5/0x150 net/socket.c:2184
-  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ip addr add ff2e::4242/32 dev eth0 autojoin
+sysctl -w net.ipv6.conf.eth0.disable_ipv6=1
+for i in $(seq 1 $n); do
+	ip link set up eth0; ip link set down eth0
+done
 
-Björn mentioned that requests for >2GB allocation can still be valid:
+Joining groups with IPV6_ADD_MEMBERSHIP (unprivileged) or setting the
+sysctl net.ipv6.conf.eth0.forwarding to 1 (=> subscribing to ff02::2)
+can also be used to create a nontrivial idev->mc_list, which will the
+leak objects with the right up-down-sequence.
 
-  The structure that is being allocated is the page-pinning accounting.
-  AF_XDP has an internal limit of U32_MAX pages, which is *a lot*, but
-  still fewer than what memcg allows (PAGE_COUNTER_MAX is a LONG_MAX/
-  PAGE_SIZE on 64 bit systems). [...]
+Based on both sources for NETDEV_DOWN events the interface IPv6 state
+should be considered:
 
-  I could just change from U32_MAX to INT_MAX, but as I stated earlier
-  that has a hacky feeling to it. [...] From my perspective, the code
-  isn't broken, with the memcg limits in consideration. [...]
+ - not ready if the network interface is not ready OR IPv6 is disabled
+   for it
+ - ready if the network interface is ready AND IPv6 is enabled for it
 
-Linus says:
+The functions ipv6_mc_up() and ipv6_down() should only be run when this
+state changes.
 
-  [...] Pretty much every time this has come up, the kernel warning has
-  shown that yes, the code was broken and there really wasn't a reason
-  for doing allocations that big.
+Implement this by remembering when the IPv6 state is ready, and only
+run ipv6_mc_down() if it actually changed from ready to not ready.
 
-  Of course, some people would be perfectly fine with the allocation
-  failing, they just don't want the warning. I didn't want __GFP_NOWARN
-  to shut it up originally because I wanted people to see all those
-  cases, but these days I think we can just say "yeah, people can shut
-  it up explicitly by saying 'go ahead and fail this allocation, don't
-  warn about it'".
+The other direction (not ready -> ready) already works correctly, as:
 
-  So enough time has passed that by now I'd certainly be ok with [it].
+ - the interface notification triggered codepath for NETDEV_UP /
+   NETDEV_CHANGE returns early if ipv6 is disabled, and
+ - the disable_ipv6=0 triggered codepath skips fully initializing the
+   interface as long as addrconf_link_ready(dev) returns false
+ - calling ipv6_mc_up() repeatedly does not leak anything
 
-Thus allow call-sites to silence such userspace triggered splats if the
-allocation requests have __GFP_NOWARN. For xdp_umem_pin_pages()'s call
-to kvcalloc() this is already the case, so nothing else needed there.
-
-Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
-Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Tested-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
-Cc: Björn Töpel <bjorn@kernel.org>
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-Cc: Willy Tarreau <w@1wt.eu>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David S. Miller <davem@davemloft.net>
-Link: https://lore.kernel.org/bpf/CAJ+HfNhyfsT5cS_U9EC213ducHs9k9zNxX9+abqC0kTrPbQ0gg@mail.gmail.com
-Link: https://lore.kernel.org/bpf/20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Ackd-by: Michal Hocko <mhocko@suse.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 3ce62a84d53c ("ipv6: exit early in addrconf_notify() if IPv6 is disabled")
+Signed-off-by: Johannes Nixdorf <j.nixdorf@avm.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/util.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv6/addrconf.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/mm/util.c
-+++ b/mm/util.c
-@@ -594,8 +594,10 @@ void *kvmalloc_node(size_t size, gfp_t f
- 		return ret;
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3730,6 +3730,7 @@ static int addrconf_ifdown(struct net_de
+ 	struct inet6_dev *idev;
+ 	struct inet6_ifaddr *ifa, *tmp;
+ 	bool keep_addr = false;
++	bool was_ready;
+ 	int state, i;
  
- 	/* Don't even allow crazy sizes */
--	if (WARN_ON_ONCE(size > INT_MAX))
-+	if (unlikely(size > INT_MAX)) {
-+		WARN_ON_ONCE(!(flags & __GFP_NOWARN));
- 		return NULL;
-+	}
+ 	ASSERT_RTNL();
+@@ -3795,7 +3796,10 @@ restart:
  
- 	return __vmalloc_node(size, 1, flags, node,
- 			__builtin_return_address(0));
+ 	addrconf_del_rs_timer(idev);
+ 
+-	/* Step 2: clear flags for stateless addrconf */
++	/* Step 2: clear flags for stateless addrconf, repeated down
++	 *         detection
++	 */
++	was_ready = idev->if_flags & IF_READY;
+ 	if (!unregister)
+ 		idev->if_flags &= ~(IF_RS_SENT|IF_RA_RCVD|IF_READY);
+ 
+@@ -3869,7 +3873,7 @@ restart:
+ 	if (unregister) {
+ 		ipv6_ac_destroy_dev(idev);
+ 		ipv6_mc_destroy_dev(idev);
+-	} else {
++	} else if (was_ready) {
+ 		ipv6_mc_down(idev);
+ 	}
+ 
 
 
