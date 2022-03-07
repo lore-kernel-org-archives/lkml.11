@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D353BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239337AbiCGK0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        id S235209AbiCGK0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240563AbiCGKIQ (ORCPT
+        with ESMTP id S241500AbiCGKKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:08:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E283713FBB;
-        Mon,  7 Mar 2022 01:52:33 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766E32989;
+        Mon,  7 Mar 2022 01:53:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41457609D1;
-        Mon,  7 Mar 2022 09:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30FE6C340F8;
-        Mon,  7 Mar 2022 09:52:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7022260B70;
+        Mon,  7 Mar 2022 09:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63134C340F9;
+        Mon,  7 Mar 2022 09:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646749;
-        bh=ZFa5qGU/Bx44asH0ijJeAVEBfCBxgDdBxw9ajPLlLR0=;
+        s=korg; t=1646646780;
+        bh=huYpV3kJDyw1NWyRR1gpLkRho9l+6kbGwW5Ybc0vW+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZj0Qbu6WGPRW/HjI/Qn4PfPWvwQTWtrkFxm5iI64SNAt8MOqmpp+it3zOdsavbBm
-         0K+MWL3JqPB86StlJwjinJR0bGIW1Xtanr09xt94iS13hsEbxVzo0nI5y2Ly870rOW
-         QF4eZ1rKTfJ6ZPXUN1YYZ3+lOaktIKKeIvo8Zvdk=
+        b=WEeecSoYAGWgs1hts8fwrMF7zke62zmTbCiPIl3cVtbu5CIR3pPucztmfaB+KUcQW
+         D2ifYiK9sJVzngmy3A8os1RRNHohRJpHHfxS7e8luF6BEUjnkHk/SPKaN97hZbpJTa
+         h5XrFoPpUYTPXm2tyzMqXtFCLg8Y+YOZJelnl7is=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jerry Dai <jerry.dai@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>, Jon Mason <jdmason@kudzu.us>
-Subject: [PATCH 5.16 064/186] ntb: intel: fix port config status offset for SPR
-Date:   Mon,  7 Mar 2022 10:18:22 +0100
-Message-Id: <20220307091655.883455189@linuxfoundation.org>
+        stable@vger.kernel.org, Jouni Malinen <j@w1.fi>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.16 091/186] mac80211: treat some SAE auth steps as final
+Date:   Mon,  7 Mar 2022 10:18:49 +0100
+Message-Id: <20220307091656.628631329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,100 +48,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit d5081bf5dcfb1cb83fb538708b0ac07a10a79cc4 upstream.
+commit 94d9864cc86f572f881db9b842a78e9d075493ae upstream.
 
-The field offset for port configuration status on SPR has been changed to
-bit 14 from ICX where it resides at bit 12. By chance link status detection
-continued to work on SPR. This is due to bit 12 being a configuration bit
-which is in sync with the status bit. Fix this by checking for a SPR device
-and checking correct status bit.
+When we get anti-clogging token required (added by the commit
+mentioned below), or the other status codes added by the later
+commit 4e56cde15f7d ("mac80211: Handle special status codes in
+SAE commit") we currently just pretend (towards the internal
+state machine of authentication) that we didn't receive anything.
 
-Fixes: 26bfe3d0b227 ("ntb: intel: Add Icelake (gen4) support for Intel NTB")
-Tested-by: Jerry Dai <jerry.dai@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Signed-off-by: Jon Mason <jdmason@kudzu.us>
+This has the undesirable consequence of retransmitting the prior
+frame, which is not expected, because the timer is still armed.
+
+If we just disarm the timer at that point, it would result in
+the undesirable side effect of being in this state indefinitely
+if userspace crashes, or so.
+
+So to fix this, reset the timer and set a new auth_data->waiting
+in order to have no more retransmissions, but to have the data
+destroyed when the timer actually fires, which will only happen
+if userspace didn't continue (i.e. crashed or abandoned it.)
+
+Fixes: a4055e74a2ff ("mac80211: Don't destroy auth data in case of anti-clogging")
+Reported-by: Jouni Malinen <j@w1.fi>
+Link: https://lore.kernel.org/r/20220224103932.75964e1d7932.Ia487f91556f29daae734bf61f8181404642e1eec@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ntb/hw/intel/ntb_hw_gen4.c |   17 ++++++++++++++++-
- drivers/ntb/hw/intel/ntb_hw_gen4.h |   16 ++++++++++++++++
- 2 files changed, 32 insertions(+), 1 deletion(-)
+ net/mac80211/ieee80211_i.h |    2 +-
+ net/mac80211/mlme.c        |   16 ++++++++++++----
+ 2 files changed, 13 insertions(+), 5 deletions(-)
 
---- a/drivers/ntb/hw/intel/ntb_hw_gen4.c
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen4.c
-@@ -168,6 +168,18 @@ static enum ntb_topo gen4_ppd_topo(struc
- 	return NTB_TOPO_NONE;
- }
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -376,7 +376,7 @@ struct ieee80211_mgd_auth_data {
  
-+static enum ntb_topo spr_ppd_topo(struct intel_ntb_dev *ndev, u32 ppd)
-+{
-+	switch (ppd & SPR_PPD_TOPO_MASK) {
-+	case SPR_PPD_TOPO_B2B_USD:
-+		return NTB_TOPO_B2B_USD;
-+	case SPR_PPD_TOPO_B2B_DSD:
-+		return NTB_TOPO_B2B_DSD;
-+	}
-+
-+	return NTB_TOPO_NONE;
-+}
-+
- int gen4_init_dev(struct intel_ntb_dev *ndev)
- {
- 	struct pci_dev *pdev = ndev->ntb.pdev;
-@@ -183,7 +195,10 @@ int gen4_init_dev(struct intel_ntb_dev *
- 	}
+ 	u8 key[WLAN_KEY_LEN_WEP104];
+ 	u8 key_len, key_idx;
+-	bool done;
++	bool done, waiting;
+ 	bool peer_confirmed;
+ 	bool timeout_started;
  
- 	ppd1 = ioread32(ndev->self_mmio + GEN4_PPD1_OFFSET);
--	ndev->ntb.topo = gen4_ppd_topo(ndev, ppd1);
-+	if (pdev_is_ICX(pdev))
-+		ndev->ntb.topo = gen4_ppd_topo(ndev, ppd1);
-+	else if (pdev_is_SPR(pdev))
-+		ndev->ntb.topo = spr_ppd_topo(ndev, ppd1);
- 	dev_dbg(&pdev->dev, "ppd %#x topo %s\n", ppd1,
- 		ntb_topo_string(ndev->ntb.topo));
- 	if (ndev->ntb.topo == NTB_TOPO_NONE)
---- a/drivers/ntb/hw/intel/ntb_hw_gen4.h
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen4.h
-@@ -49,10 +49,14 @@
- #define GEN4_PPD_CLEAR_TRN		0x0001
- #define GEN4_PPD_LINKTRN		0x0008
- #define GEN4_PPD_CONN_MASK		0x0300
-+#define SPR_PPD_CONN_MASK		0x0700
- #define GEN4_PPD_CONN_B2B		0x0200
- #define GEN4_PPD_DEV_MASK		0x1000
- #define GEN4_PPD_DEV_DSD		0x1000
- #define GEN4_PPD_DEV_USD		0x0000
-+#define SPR_PPD_DEV_MASK		0x4000
-+#define SPR_PPD_DEV_DSD 		0x4000
-+#define SPR_PPD_DEV_USD 		0x0000
- #define GEN4_LINK_CTRL_LINK_DISABLE	0x0010
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -37,6 +37,7 @@
+ #define IEEE80211_AUTH_TIMEOUT_SAE	(HZ * 2)
+ #define IEEE80211_AUTH_MAX_TRIES	3
+ #define IEEE80211_AUTH_WAIT_ASSOC	(HZ * 5)
++#define IEEE80211_AUTH_WAIT_SAE_RETRY	(HZ * 2)
+ #define IEEE80211_ASSOC_TIMEOUT		(HZ / 5)
+ #define IEEE80211_ASSOC_TIMEOUT_LONG	(HZ / 2)
+ #define IEEE80211_ASSOC_TIMEOUT_SHORT	(HZ / 10)
+@@ -3009,8 +3010,15 @@ static void ieee80211_rx_mgmt_auth(struc
+ 		    (status_code == WLAN_STATUS_ANTI_CLOG_REQUIRED ||
+ 		     (auth_transaction == 1 &&
+ 		      (status_code == WLAN_STATUS_SAE_HASH_TO_ELEMENT ||
+-		       status_code == WLAN_STATUS_SAE_PK))))
++		       status_code == WLAN_STATUS_SAE_PK)))) {
++			/* waiting for userspace now */
++			ifmgd->auth_data->waiting = true;
++			ifmgd->auth_data->timeout =
++				jiffies + IEEE80211_AUTH_WAIT_SAE_RETRY;
++			ifmgd->auth_data->timeout_started = true;
++			run_again(sdata, ifmgd->auth_data->timeout);
+ 			goto notify_driver;
++		}
  
- #define GEN4_SLOTSTS			0xb05a
-@@ -62,6 +66,10 @@
- #define GEN4_PPD_TOPO_B2B_USD	(GEN4_PPD_CONN_B2B | GEN4_PPD_DEV_USD)
- #define GEN4_PPD_TOPO_B2B_DSD	(GEN4_PPD_CONN_B2B | GEN4_PPD_DEV_DSD)
+ 		sdata_info(sdata, "%pM denied authentication (status %d)\n",
+ 			   mgmt->sa, status_code);
+@@ -4597,10 +4605,10 @@ void ieee80211_sta_work(struct ieee80211
  
-+#define SPR_PPD_TOPO_MASK	(SPR_PPD_CONN_MASK | SPR_PPD_DEV_MASK)
-+#define SPR_PPD_TOPO_B2B_USD	(GEN4_PPD_CONN_B2B | SPR_PPD_DEV_USD)
-+#define SPR_PPD_TOPO_B2B_DSD	(GEN4_PPD_CONN_B2B | SPR_PPD_DEV_DSD)
-+
- #define GEN4_DB_COUNT			32
- #define GEN4_DB_LINK			32
- #define GEN4_DB_LINK_BIT		BIT_ULL(GEN4_DB_LINK)
-@@ -111,5 +119,13 @@ static inline int pdev_is_ICX(struct pci
- 		return 1;
- 	return 0;
- }
-+
-+static inline int pdev_is_SPR(struct pci_dev *pdev)
-+{
-+	if (pdev_is_gen4(pdev) &&
-+	    pdev->revision > PCI_DEVICE_REVISION_ICX_MAX)
-+		return 1;
-+	return 0;
-+}
- 
- #endif
+ 	if (ifmgd->auth_data && ifmgd->auth_data->timeout_started &&
+ 	    time_after(jiffies, ifmgd->auth_data->timeout)) {
+-		if (ifmgd->auth_data->done) {
++		if (ifmgd->auth_data->done || ifmgd->auth_data->waiting) {
+ 			/*
+-			 * ok ... we waited for assoc but userspace didn't,
+-			 * so let's just kill the auth data
++			 * ok ... we waited for assoc or continuation but
++			 * userspace didn't do it, so kill the auth data
+ 			 */
+ 			ieee80211_destroy_auth_data(sdata, false);
+ 		} else if (ieee80211_auth(sdata)) {
 
 
