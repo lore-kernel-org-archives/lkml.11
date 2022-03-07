@@ -2,171 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DEDBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237908AbiCGLs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:48:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
+        id S240239AbiCGLsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:48:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240742AbiCGLre (ORCPT
+        with ESMTP id S241598AbiCGLrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:47:34 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF8266AE8;
-        Mon,  7 Mar 2022 03:46:38 -0800 (PST)
-Received: from integral2.. (unknown [182.2.38.152])
-        by gnuweeb.org (Postfix) with ESMTPSA id 501337E6D0;
-        Mon,  7 Mar 2022 11:46:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1646653598;
-        bh=1JvYn827Bn9nDxhdSAqBIUF9kMGrVjukrbMIHARczbw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AOiruQvPP/O3Opa9klPNfqJnq2c3aX34OdRiXUGMq7e29cgpLqZVWxEPdK8+ellAL
-         mVMS+CnkphLiI7cWf4RWYWWJh8z3mtmHfqv6KTViq50Kt5z+kpD4lwJbpdFBmix+Am
-         YCN6J4xeShFWCyHs7+EEOFlLgN7ttTBIH6hZ92oIa3x9M/tXVUy4AUHQzp+WXEU/L5
-         nzSCh5ewc0qsm+qHNPhbJlAV5AHcbkwHUTpg1LxGTzzmfiWvLemLRqnLEa3KRNhnVp
-         DbILO3oYqAFVVj8n93Fu+/aWsHIlkcdufTCS6J5shwWtFU7EXHHY+etiOB68m2QSHG
-         esbnu3s8Y/Rgw==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Juergen Gross <jgross@suse.com>,
-        Kees Cook <keescook@chromium.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Youquan Song <youquan.song@intel.com>,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gwml@vger.gnuweeb.org, x86@kernel.org
-Subject: [PATCH v1 1/2] x86/include/asm: Avoid using INC and DEC instructions on hot paths
-Date:   Mon,  7 Mar 2022 18:45:57 +0700
-Message-Id: <20220307114558.1234494-2-ammarfaizi2@gnuweeb.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220307114558.1234494-1-ammarfaizi2@gnuweeb.org>
-References: <20220307114558.1234494-1-ammarfaizi2@gnuweeb.org>
+        Mon, 7 Mar 2022 06:47:35 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7120266CAA
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:46:39 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KBxPp6jPqzbc9C;
+        Mon,  7 Mar 2022 19:41:50 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 7 Mar 2022 19:46:36 +0800
+Subject: Re: [PATCH 13/16] mm/migration: return errno when isolate_huge_page
+ failed
+To:     Muchun Song <songmuchun@bytedance.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Huang Ying <ying.huang@intel.com>, Zi Yan <ziy@nvidia.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
+        Mina Almasry <almasrymina@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Peter Xu <peterx@redhat.com>,
+        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>, Michal Hocko <mhocko@suse.com>,
+        <riel@redhat.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+ <20220304093409.25829-14-linmiaohe@huawei.com>
+ <CAMZfGtVVoH+tkc7OrZAwWUKbxmj116xnTkyAod5kKj4jcWyoAA@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <1412b4e5-b76e-f827-6505-5dcae48caabd@huawei.com>
+Date:   Mon, 7 Mar 2022 19:46:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZfGtVVoH+tkc7OrZAwWUKbxmj116xnTkyAod5kKj4jcWyoAA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to take maximum advantage of out-of-order execution,
-avoid using INC and DEC instructions when appropriate. INC/DEC
-only writes to part of the flags register, which can cause a
-partial flag register stall.
+On 2022/3/5 10:23, Muchun Song wrote:
+> On Fri, Mar 4, 2022 at 5:36 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>
+>> We should return errno (-EBUSY here) when failed to isolate the huge page
+>> rather than always return 1 which could confuse the user.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> 
+> IIUC, this should be a bug fix since the status reported to the user is
+> wrong.  A Fixes tag may be needed.  But anyway:
+> 
 
-Agner Fog's optimization manual says [1]:
-"""
-  The INC and DEC instructions are inefficient on some CPUs because they
-  write to only part of the flags register (excluding the carry flag).
-  Use ADD or SUB instead to avoid false dependences or inefficient
-  splitting of the flags register, especially if they are followed by
-  an instruction that reads the flags.
-"""
+Agree. Thanks for pointing this out and many thanks for your review. :)
 
-Intel's optimization manual 3.5.1.1 says [2]:
-"""
-  The INC and DEC instructions modify only a subset of the bits in the
-  flag register. This creates a dependence on all previous writes of
-  the flag register. This is especially problematic when these
-  instructions are on the critical path because they are used to change
-  an address for a load on which many other instructions depend.
-
-  Assembly/Compiler Coding Rule 33. (M impact, H generality) INC and DEC
-  instructions should be replaced with ADD or SUB instructions, because
-  ADD and SUB overwrite all flags, whereas INC and DEC do not, therefore
-  creating false dependencies on earlier instructions that set the flags.
-"""
-
-[1]: https://www.agner.org/optimize/optimizing_assembly.pdf
-[2]: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-optimization-manual.pdf
-
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
- arch/x86/include/asm/xor_32.h | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/include/asm/xor_32.h b/arch/x86/include/asm/xor_32.h
-index 67ceb790e639..7aa438f3df20 100644
---- a/arch/x86/include/asm/xor_32.h
-+++ b/arch/x86/include/asm/xor_32.h
-@@ -53,7 +53,7 @@ xor_pII_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
- 
- 	"       addl $128, %1         ;\n"
- 	"       addl $128, %2         ;\n"
--	"       decl %0               ;\n"
-+	"       subl $1, %0           ;\n"
- 	"       jnz 1b                ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2)
-@@ -102,7 +102,7 @@ xor_pII_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $128, %1         ;\n"
- 	"       addl $128, %2         ;\n"
- 	"       addl $128, %3         ;\n"
--	"       decl %0               ;\n"
-+	"       subl $1, %0           ;\n"
- 	"       jnz 1b                ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3)
-@@ -156,7 +156,7 @@ xor_pII_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $128, %2         ;\n"
- 	"       addl $128, %3         ;\n"
- 	"       addl $128, %4         ;\n"
--	"       decl %0               ;\n"
-+	"       subl $1, %0           ;\n"
- 	"       jnz 1b                ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3), "+r" (p4)
-@@ -224,7 +224,7 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $128, %3         ;\n"
- 	"       addl $128, %4         ;\n"
- 	"       addl $128, %5         ;\n"
--	"       decl %0               ;\n"
-+	"       subl $1, %0           ;\n"
- 	"       jnz 1b                ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3)
-@@ -284,7 +284,7 @@ xor_p5_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
- 
- 	"       addl $64, %1         ;\n"
- 	"       addl $64, %2         ;\n"
--	"       decl %0              ;\n"
-+	"       subl $1, %0          ;\n"
- 	"       jnz 1b               ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2)
-@@ -341,7 +341,7 @@ xor_p5_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $64, %1         ;\n"
- 	"       addl $64, %2         ;\n"
- 	"       addl $64, %3         ;\n"
--	"       decl %0              ;\n"
-+	"       subl $1, %0          ;\n"
- 	"       jnz 1b               ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3)
-@@ -407,7 +407,7 @@ xor_p5_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $64, %2         ;\n"
- 	"       addl $64, %3         ;\n"
- 	"       addl $64, %4         ;\n"
--	"       decl %0              ;\n"
-+	"       subl $1, %0          ;\n"
- 	"       jnz 1b               ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3), "+r" (p4)
-@@ -490,7 +490,7 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
- 	"       addl $64, %3         ;\n"
- 	"       addl $64, %4         ;\n"
- 	"       addl $64, %5         ;\n"
--	"       decl %0              ;\n"
-+	"       subl $1, %0          ;\n"
- 	"       jnz 1b               ;\n"
- 	: "+r" (lines),
- 	  "+r" (p1), "+r" (p2), "+r" (p3)
--- 
-2.32.0
+> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> 
+> Thanks.
+> 
+> .
+> 
 
