@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43572C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6146AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232577AbiCGUkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
+        id S234003AbiCGUkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245312AbiCGUkK (ORCPT
+        with ESMTP id S245322AbiCGUkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:40:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17E170069
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:39:13 -0800 (PST)
+        Mon, 7 Mar 2022 15:40:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C387522E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:39:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13A7BB81714
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 20:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5B7C340EF;
-        Mon,  7 Mar 2022 20:39:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF2861520
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 20:39:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 015F6C36AEB;
+        Mon,  7 Mar 2022 20:39:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646685550;
-        bh=y3xTSCOAcDKIY8/TSo/4DU7Lm7NXIZjNrsfIiWP4fcQ=;
+        s=k20201202; t=1646685556;
+        bh=0Cv5vxXicRFXtF41SUF86JorRsvlrBPG16Z1OipQCFY=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=uNAzrzlaVuyW8l2r13Ja+vlzcJJsmeJf/xihcqojGkyG+IUB+eV7tsB5MXlVIyGK1
-         ZfXZLiiCjZucWolj7Hz/ZPXnrlLNGN5TU62kX0KnMZZjmt9rwa1IgOzti7Sv8y5bF2
-         e7yxT0M1CdLCb8zeu+FifurlaXkomVsWv7YaDK/lmm/nz3Yk2SNCgfagV/yIExoPvn
-         FgwkFfvBTjo2FNf5faaR5R5xrgtiFZrimq3zywDZSQiHUEZEzmCj/l3wXN8v9KHkRi
-         /c4nH99RslKJOvrbqasVsiO5+mxdRIljkhNqmCKA8NsH2AqDlz0JMeBdcAD8L/fiAx
-         3pZ5PpxbpQRrA==
+        b=GXICFvko+7lCN6j/JEWFGf/TCOSFpNoXmvZFEL4W8HNoeng2ozIrEjxEOzpgBKAmZ
+         SYnEaNSHfOtfw8nitbgpigzL6rQWb/CMHG8RHxX2K6XLKNtCMNEmubD5by/K6RFlJQ
+         lPKTDiXx0spXrhKYUvjP2UrOheNacI7Po4C9p9cxZGCB0HEFV1kRyj9xYpyFM+Zp1i
+         63ySRHC3bMDqwSviMmNe85L5QdMkmJl9+2vakW1441KUh7q1IBHksx6ucgUnnQPBr3
+         S0L2ii6LG83hQNlBUshk785Y7A6Lsam20y3Gv6DcuNZzDcS59VtzxRJzAP/HVAxgne
+         fbDXz0mfflt5g==
 From:   Mark Brown <broonie@kernel.org>
-To:     Simon Trimmer <simont@opensource.cirrus.com>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>
 Cc:     linux-kernel@vger.kernel.org, patches@opensource.cirrus.com,
         alsa-devel@alsa-project.org
-In-Reply-To: <20220303155016.122125-1-simont@opensource.cirrus.com>
-References: <20220303155016.122125-1-simont@opensource.cirrus.com>
-Subject: Re: [PATCH] ASoC: wm_adsp: Expand firmware loading search options
-Message-Id: <164668554896.3137316.16631599995013598455.b4-ty@kernel.org>
-Date:   Mon, 07 Mar 2022 20:39:08 +0000
+In-Reply-To: <20220304144015.398656-1-rf@opensource.cirrus.com>
+References: <20220304144015.398656-1-rf@opensource.cirrus.com>
+Subject: Re: [PATCH] ASoC: cs42l42: Add warnings about DETECT_MODE and PLL_START
+Message-Id: <164668555573.3137316.14425492431771518376.b4-ty@kernel.org>
+Date:   Mon, 07 Mar 2022 20:39:15 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -48,14 +48,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 15:50:16 +0000, Simon Trimmer wrote:
-> The parts supported by this driver can have product-specific
-> firmware and tunings files. Typically these have been used on
-> embedded systems where the manufacturer is responsible for
-> installing the correct product-specific firmware files into
-> /lib/firmware. However, the linux-firmware repository places all
-> available firmwares into /lib/firmware and it is up to the driver to
-> select the correct product-specific firmware from that directory.
+On Fri, 4 Mar 2022 14:40:15 +0000, Richard Fitzgerald wrote:
+> DETECT_MODE and PLL_START must be zero while HP_PDN and ADC_PDN are
+> both 1. If this condition is broken it can discharge FILT+ and it
+> can then take up to 1 second for FILT+ to recharge.
+> 
+> There is no workaround required for this, simply avoiding settings
+> and sequences that would break the requirement. The driver already
+> meets the requirement.
 > 
 > [...]
 
@@ -65,8 +65,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: wm_adsp: Expand firmware loading search options
-      commit: b6b62d942bbc4d926bcf3799ea3bcaeb105fd04f
+[1/1] ASoC: cs42l42: Add warnings about DETECT_MODE and PLL_START
+      commit: 71a6254c8b8aa3dcac3a5cb1d1cc2a2d3a840bfb
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
