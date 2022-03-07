@@ -2,113 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E639FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235084AbiCGDiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 22:38:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
+        id S235085AbiCGDju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 22:39:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235067AbiCGDin (ORCPT
+        with ESMTP id S233405AbiCGDjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 22:38:43 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6075D25C5C
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:37:49 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d61f6c1877so122726527b3.15
-        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 19:37:49 -0800 (PST)
+        Sun, 6 Mar 2022 22:39:49 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3664DF5A
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 19:38:55 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id o64so413706oib.7
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 19:38:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=5hsSDKF2hxibRKdAOZqtgoiMABLvidZTZY6Q7kdG83c=;
-        b=jVPRDH7CQUQtiRuTpytBrFdR1wfbt3PNKmeOwJtryOBtIEGbJke19zP8PeGyFR+TRT
-         SJa8P8Xy5F3x5KCno7dOTPpV5k8FQYoLKQftvu7nhCXDoTqp5z7tojgIQ1odyjmoKCtr
-         F2hgGgjqEQonVbXKmaSdVZT1m3s3FZ6lFmKu/vuKkZhEcBQ9Vo8lDalbo5MSELlG2D7z
-         kvX1UWCdRiknSAsegKwRCZtGCLuUVd03yZ82mseEFMspCsFNNXzqNxnwG5I+BqjHg++H
-         xCflgpOa0IV/x+KIzBm+f1hW/W5g2HvNKFYsjehZ8l+YKkp6m8042UQfdt5DAnaWsW6s
-         1XZg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Hb2fy5aM3CLZPd7X+iwsFgBJV1+qHX9cGiXpSHCLcg=;
+        b=hhVTqHkWvsVvvadoRnp1Mq41Qbf56aBlwOxFSBs0c/fwZSjwZtJwV6YB1q0Avf2Uhg
+         sFZQvwJcKQwKpOJTNdjfbQz8BfZm3IeO36U2KZsl4uRP2rYJs1CGP/YF8BCPcAlthDjp
+         niNkQ5BygacKk77Jp1SQM1d3R7GvpUElS/fuPHmFcblvtb/CGsyFxSy2mkMfN1G8KTDx
+         sVITXwF+iRIgsW0al20T9xum66wXDYBx82KbVt4iGWOWH57eCu1oMk6kHZcQNgqYocGO
+         xec8tc50PX1ZkpLLkoEO/MKXs4cUqb5CRu7i6/LOVFRY/lFhqPFBzxmXxEID1l84S6au
+         PxWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=5hsSDKF2hxibRKdAOZqtgoiMABLvidZTZY6Q7kdG83c=;
-        b=2KA3chPijMtf2C5Z9aF35WgCQVlAjd4c/aPsOnHEhlg+ir4z1Zt0/iiyccyNI/BehI
-         07YuLAApL6Hjcfm2njDqgVhRnYSGxumayTbIQxjFVMxMaCdUG5KR+LXqLOsaPhSHLDhN
-         EyULybgu/YrLNYAmXW2atg58Zoq7h5Gs6gNciK/WibaG4MzxXo/J+9kJJTvKE81S0f4i
-         ldONDviaRUpAA9iLCe68jZEmklT20KT01zbtFrG9U5ROo6m3BAfbStd2qj1Xf/rlbzNN
-         qm46LP5npB5aBxxzmSGdID/7oRd52UKjBhi8p6oZtia+jYsdvFGhhnhMM2ENLIk+AXgk
-         aTNw==
-X-Gm-Message-State: AOAM530dpjd+6MOgfo+yGsze1NL63GYAB4Ql84gr3Byx/RN1Rd0BZHMv
-        OmzJOH7nqqaOZkUzkBJmhhxvf2foNw==
-X-Google-Smtp-Source: ABdhPJwtjLf2Ob9SB7B/YTmp6P3LOygor58g0RrQpBuPiCI3xKjxhPxoE7UsT5rHm+Tb2pD84FoaJe+Cqw==
-X-Received: from wjack.tao.corp.google.com ([2401:fa00:fd:203:309f:cb85:fb3d:7ae0])
- (user=wjack job=sendgmr) by 2002:a81:1d50:0:b0:2dc:2e6d:6c34 with SMTP id
- d77-20020a811d50000000b002dc2e6d6c34mr7019035ywd.104.1646624268381; Sun, 06
- Mar 2022 19:37:48 -0800 (PST)
-Date:   Mon,  7 Mar 2022 11:31:09 +0800
-In-Reply-To: <20220307033110.283379-1-wjack@google.com>
-Message-Id: <20220307033110.283379-2-wjack@google.com>
-Mime-Version: 1.0
-References: <20220307033110.283379-1-wjack@google.com>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH v2] power: supply: add dock type
-From:   Jack Wu <wjack@google.com>
-To:     Sebastian Reichel <sre@kernel.org>
-Cc:     Jack Wu <wjack@google.com>, kernel-team@android.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Hb2fy5aM3CLZPd7X+iwsFgBJV1+qHX9cGiXpSHCLcg=;
+        b=6quWOQGVrbMaW0tbAI8YilUVMbP46T9F29Ee8De3w/I+9FyuNgj4j7iiMlKCmFNusV
+         rAof2VB1yBxf7+VoaIt/0C/7rTJ/WxvQNMzDkzEevr3aFn6+ARZI3mNsTl5rJkxwZs1x
+         raTpuZDxgIYY6JF5cgp29OvlubPwvQ4T9pXkzdC8kdgN/1EthulQb9zjg5kp1ZBwPfIz
+         bJ5gHOOzkmtSEYi2A2ZdKVJBRqVAmfKVUYxl84rUbe/mRZZTxGXxleUODh3N4iP8Q7aD
+         olGh1BsThN3vWFgPaTMV0KD3cQPvbwL5/jaHLchO+uGNJgI4w9q73MJxKZXTm3lYCPx5
+         RfHQ==
+X-Gm-Message-State: AOAM532OiJkUsvYrwhCkGG7ZI9XxBuKuO4fWBURpvgyp7nmJ3/Yt/iHC
+        Mfw7uymp/Yk7/kQsoAkNCknrcg==
+X-Google-Smtp-Source: ABdhPJy1mPqKhYPjb76XiNvksuVVYByp/vOKe46VZy3KjbU6OruWLUMP10F6P6FHw0Gs+/LqdVPHFw==
+X-Received: by 2002:a05:6808:b10:b0:2d9:a01a:4bfa with SMTP id s16-20020a0568080b1000b002d9a01a4bfamr5841916oij.289.1646624334985;
+        Sun, 06 Mar 2022 19:38:54 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id o2-20020a05687072c200b000d9ae3e1fabsm5005172oak.12.2022.03.06.19.38.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Mar 2022 19:38:54 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: [PATCH v4 1/7] device property: Helper to match multiple connections
+Date:   Sun,  6 Mar 2022 19:40:34 -0800
+Message-Id: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dock power_supply_type for the drivers which supports dock can
-register a power supply class device with POWER_SUPPLY_TYPE_DOCK.
+In some cases multiple connections with the same connection id
+needs to be resolved from a fwnode graph.
 
-Signed-off-by: Jack Wu <wjack@google.com>
+One such example is when separate hardware is used for performing muxing
+and/or orientation switching of the SuperSpeed and SBU lines in a USB
+Type-C connector. In this case the connector needs to belong to a graph
+with multiple matching remote endpoints, and the Type-C controller needs
+to be able to resolve them both.
+
+Add a new API that allows this kind of lookup.
+
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- Documentation/ABI/testing/sysfs-class-power | 2 +-
- drivers/power/supply/power_supply_sysfs.c   | 1 +
- include/linux/power_supply.h                | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-power b/Documentation/ABI/testing/sysfs-class-power
-index 859501366777..0b45d9d3a50f 100644
---- a/Documentation/ABI/testing/sysfs-class-power
-+++ b/Documentation/ABI/testing/sysfs-class-power
-@@ -34,7 +34,7 @@ Description:
- 		Describes the main type of the supply.
+Changes since v3:
+- fwnode_connection_find_matches() should not adjust matches before calling
+  fwnode_devcon_matches()
+- Replaced return from within the loops with break
+- Changed "count >= matches_len && matches" to "matches && count >=
+  matches_len", to denote the significance of "matches"
+
+Changes since v2:
+- Allow the caller of the new api to pass a matches of NULL, to count possible
+  matches. I previously argued that this will cause memory leaks, but Andy
+  pointed out that this depends on the caller and the match function.
+- Fixed spelling mistakes in commit message and kernel-doc.
+- Use two "count" variables to make the math clearer.
+
+Changes since v1:
+- Iterator in fwnode_devcon_matches() is now unsigned.
+- fwnode_handle_put() node for unavailable nodes.
+- Extended commit message on the subject of supporting dynamically sized
+  "matches" array.
+
+ drivers/base/property.c  | 109 +++++++++++++++++++++++++++++++++++++++
+ include/linux/property.h |   5 ++
+ 2 files changed, 114 insertions(+)
+
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index c0e94cce9c29..7fccb0587855 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1218,6 +1218,40 @@ fwnode_graph_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+ 	return NULL;
+ }
  
- 		Access: Read
--		Valid values: "Battery", "UPS", "Mains", "USB", "Wireless"
-+		Valid values: "Battery", "UPS", "Mains", "USB", "Wireless", "Dock"
++static unsigned int fwnode_graph_devcon_matches(struct fwnode_handle *fwnode,
++						const char *con_id, void *data,
++						devcon_match_fn_t match,
++						void **matches,
++						unsigned int matches_len)
++{
++	struct fwnode_handle *node;
++	struct fwnode_handle *ep;
++	unsigned int count = 0;
++	void *ret;
++
++	fwnode_graph_for_each_endpoint(fwnode, ep) {
++		if (matches && count >= matches_len) {
++			fwnode_handle_put(ep);
++			break;
++		}
++
++		node = fwnode_graph_get_remote_port_parent(ep);
++		if (!fwnode_device_is_available(node)) {
++			fwnode_handle_put(node);
++			continue;
++		}
++
++		ret = match(node, con_id, data);
++		fwnode_handle_put(node);
++		if (ret) {
++			if (matches)
++				matches[count] = ret;
++			count++;
++		}
++	}
++	return count;
++}
++
+ static void *
+ fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+ 		    void *data, devcon_match_fn_t match)
+@@ -1240,6 +1274,37 @@ fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+ 	return NULL;
+ }
  
- **Battery and USB properties**
++static unsigned int fwnode_devcon_matches(struct fwnode_handle *fwnode,
++					  const char *con_id, void *data,
++					  devcon_match_fn_t match,
++					  void **matches,
++					  unsigned int matches_len)
++{
++	struct fwnode_handle *node;
++	unsigned int count = 0;
++	unsigned int i;
++	void *ret;
++
++	for (i = 0; ; i++) {
++		if (matches && count >= matches_len)
++			break;
++
++		node = fwnode_find_reference(fwnode, con_id, i);
++		if (IS_ERR(node))
++			break;
++
++		ret = match(node, NULL, data);
++		fwnode_handle_put(node);
++		if (ret) {
++			if (matches)
++				matches[count] = ret;
++			count++;
++		}
++	}
++
++	return count;
++}
++
+ /**
+  * fwnode_connection_find_match - Find connection from a device node
+  * @fwnode: Device node with the connection
+@@ -1267,3 +1332,47 @@ void *fwnode_connection_find_match(struct fwnode_handle *fwnode,
+ 	return fwnode_devcon_match(fwnode, con_id, data, match);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_connection_find_match);
++
++/**
++ * fwnode_connection_find_matches - Find connections from a device node
++ * @fwnode: Device node with the connection
++ * @con_id: Identifier for the connection
++ * @data: Data for the match function
++ * @match: Function to check and convert the connection description
++ * @matches: Array of pointers to fill with matches
++ * @matches_len: Length of @matches
++ *
++ * Find up to @matches_len connections with unique identifier @con_id between
++ * @fwnode and other device nodes. @match will be used to convert the
++ * connection description to data the caller is expecting to be returned
++ * through the @matches array.
++ * If @matches is NULL @matches_len is ignored and the total number of resolved
++ * matches is returned.
++ *
++ * Return: Number of matches resolved, or negative errno.
++ */
++int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
++				   const char *con_id, void *data,
++				   devcon_match_fn_t match,
++				   void **matches, unsigned int matches_len)
++{
++	unsigned int count_graph;
++	unsigned int count_ref;
++
++	if (!fwnode || !match)
++		return -EINVAL;
++
++	count_graph = fwnode_graph_devcon_matches(fwnode, con_id, data, match,
++						  matches, matches_len);
++
++	if (matches) {
++		matches += count_graph;
++		matches_len -= count_graph;
++	}
++
++	count_ref = fwnode_devcon_matches(fwnode, con_id, data, match,
++					  matches, matches_len);
++
++	return count_graph + count_ref;
++}
++EXPORT_SYMBOL_GPL(fwnode_connection_find_matches);
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 4cd4b326941f..de7ff336d2c8 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -447,6 +447,11 @@ static inline void *device_connection_find_match(struct device *dev,
+ 	return fwnode_connection_find_match(dev_fwnode(dev), con_id, data, match);
+ }
  
-diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/supply/power_supply_sysfs.c
-index c0dfcfa33206..2b1f18b7f98c 100644
---- a/drivers/power/supply/power_supply_sysfs.c
-+++ b/drivers/power/supply/power_supply_sysfs.c
-@@ -57,6 +57,7 @@ static const char * const POWER_SUPPLY_TYPE_TEXT[] = {
- 	[POWER_SUPPLY_TYPE_USB_PD_DRP]		= "USB_PD_DRP",
- 	[POWER_SUPPLY_TYPE_APPLE_BRICK_ID]	= "BrickID",
- 	[POWER_SUPPLY_TYPE_WIRELESS]		= "Wireless",
-+	[POWER_SUPPLY_TYPE_DOCK]		= "Dock",
- };
++int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
++				   const char *con_id, void *data,
++				   devcon_match_fn_t match,
++				   void **matches, unsigned int matches_len);
++
+ /* -------------------------------------------------------------------------- */
+ /* Software fwnode support - when HW description is incomplete or missing */
  
- static const char * const POWER_SUPPLY_USB_TYPE_TEXT[] = {
-diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
-index e218041cc000..8f0425f00803 100644
---- a/include/linux/power_supply.h
-+++ b/include/linux/power_supply.h
-@@ -189,6 +189,7 @@ enum power_supply_type {
- 	POWER_SUPPLY_TYPE_USB_PD_DRP,		/* PD Dual Role Port */
- 	POWER_SUPPLY_TYPE_APPLE_BRICK_ID,	/* Apple Charging Method */
- 	POWER_SUPPLY_TYPE_WIRELESS,		/* Wireless */
-+	POWER_SUPPLY_TYPE_DOCK,			/* Dock Charging */
- };
- 
- enum power_supply_usb_type {
 -- 
-2.35.1.616.g0bdcbb4464-goog
+2.33.1
 
