@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C32C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F8EC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240749AbiCGKIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:08:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
+        id S240769AbiCGKIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239670AbiCGJuB (ORCPT
+        with ESMTP id S239741AbiCGJuG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B805710DF;
-        Mon,  7 Mar 2022 01:43:38 -0800 (PST)
+        Mon, 7 Mar 2022 04:50:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740CA71CAD;
+        Mon,  7 Mar 2022 01:43:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E49BFB810BC;
-        Mon,  7 Mar 2022 09:43:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260CDC340E9;
-        Mon,  7 Mar 2022 09:43:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01CAAB8102B;
+        Mon,  7 Mar 2022 09:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E992C340E9;
+        Mon,  7 Mar 2022 09:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646216;
-        bh=xNBSLegiMNsww5M/MQqDExxz79QvamxtTPQDiZrclWc=;
+        s=korg; t=1646646207;
+        bh=q+pHBw5Es58AND4WYJNiphPXKF5qBaS0miWn7pDZVK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HMLlodOvS335WtdtSmSDhMMX9OoU9JC21AMSTpaFP00l7yC3kQqtGkZq23WmkF0Hx
-         tSx4BErlSTX75Kp2GFLxdKEpIUeooKVMhTTnAO8KMxW+bRUsfcKV6MG9wwc5cJSdzE
-         nbCqhs7vEeY3NJi4bkU2ufhWxwtEf4fFDuCmnRps=
+        b=bDyPmz78eSKt9tBS74I6m6q6H4W2sm44w2v2vUmvI+GzFmj5L6IzZwQpdc02BgTsK
+         IkBDLjXnvoMG1+d+yDtEEIohOnJ8YyvDikjJXz5br76l1fFyxrvLyxQKJMxpAStvCm
+         NigeseXl1KHwdt6hjX7cw6yTdO8ZDEJiG/wlx3Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 169/262] net/smc: fix connection leak
-Date:   Mon,  7 Mar 2022 10:18:33 +0100
-Message-Id: <20220307091707.195678290@linuxfoundation.org>
+        stable@vger.kernel.org, Jimmy Kizito <Jimmy.Kizito@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 131/262] drm/amd/display: Fix stream->link_enc unassigned during stream removal
+Date:   Mon,  7 Mar 2022 10:17:55 +0100
+Message-Id: <20220307091706.156473293@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,85 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: D. Wythe <alibuda@linux.alibaba.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-commit 9f1c50cf39167ff71dc5953a3234f3f6eeb8fcb5 upstream.
+[ Upstream commit 3743e7f6fcb938b7d8b7967e6a9442805e269b3d ]
 
-There's a potential leak issue under following execution sequence :
+[Why]
+Found when running igt@kms_atomic.
 
-smc_release  				smc_connect_work
-if (sk->sk_state == SMC_INIT)
-					send_clc_confirim
-	tcp_abort();
-					...
-					sk.sk_state = SMC_ACTIVE
-smc_close_active
-switch(sk->sk_state) {
-...
-case SMC_ACTIVE:
-	smc_close_final()
-	// then wait peer closed
+Userspace attempts to do a TEST_COMMIT when 0 streams which calls
+dc_remove_stream_from_ctx. This in turn calls link_enc_unassign
+which ends up modifying stream->link = NULL directly, causing the
+global link_enc to be removed preventing further link activity
+and future link validation from passing.
 
-Unfortunately, tcp_abort() may discard CLC CONFIRM messages that are
-still in the tcp send buffer, in which case our connection token cannot
-be delivered to the server side, which means that we cannot get a
-passive close message at all. Therefore, it is impossible for the to be
-disconnected at all.
+[How]
+We take care of link_enc unassignment at the start of
+link_enc_cfg_link_encs_assign so this call is no longer necessary.
 
-This patch tries a very simple way to avoid this issue, once the state
-has changed to SMC_ACTIVE after tcp_abort(), we can actively abort the
-smc connection, considering that the state is SMC_INIT before
-tcp_abort(), abandoning the complete disconnection process should not
-cause too much problem.
+Fixes global state from being modified while unlocked.
 
-In fact, this problem may exist as long as the CLC CONFIRM message is
-not received by the server. Whether a timer should be added after
-smc_close_final() needs to be discussed in the future. But even so, this
-patch provides a faster release for connection in above case, it should
-also be valuable.
-
-Fixes: 39f41f367b08 ("net/smc: common release code for non-accepted sockets")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jimmy Kizito <Jimmy.Kizito@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -182,7 +182,7 @@ static int smc_release(struct socket *so
- {
- 	struct sock *sk = sock->sk;
- 	struct smc_sock *smc;
--	int rc = 0;
-+	int old_state, rc = 0;
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+index e94546187cf15..7ae409f7dcf8d 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -1799,9 +1799,6 @@ enum dc_status dc_remove_stream_from_ctx(
+ 				dc->res_pool,
+ 			del_pipe->stream_res.stream_enc,
+ 			false);
+-	/* Release link encoder from stream in new dc_state. */
+-	if (dc->res_pool->funcs->link_enc_unassign)
+-		dc->res_pool->funcs->link_enc_unassign(new_ctx, del_pipe->stream);
  
- 	if (!sk)
- 		goto out;
-@@ -190,8 +190,10 @@ static int smc_release(struct socket *so
- 	sock_hold(sk); /* sock_put below */
- 	smc = smc_sk(sk);
- 
-+	old_state = sk->sk_state;
-+
- 	/* cleanup for a dangling non-blocking connect */
--	if (smc->connect_nonblock && sk->sk_state == SMC_INIT)
-+	if (smc->connect_nonblock && old_state == SMC_INIT)
- 		tcp_abort(smc->clcsock->sk, ECONNABORTED);
- 
- 	if (cancel_work_sync(&smc->connect_work))
-@@ -205,6 +207,10 @@ static int smc_release(struct socket *so
- 	else
- 		lock_sock(sk);
- 
-+	if (old_state == SMC_INIT && sk->sk_state == SMC_ACTIVE &&
-+	    !smc->use_fallback)
-+		smc_close_active_abort(smc);
-+
- 	rc = __smc_release(smc);
- 
- 	/* detach socket */
+ 	if (del_pipe->stream_res.audio)
+ 		update_audio_usage(
+-- 
+2.34.1
+
 
 
