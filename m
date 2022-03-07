@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DD8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbiCGJqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:46:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
+        id S238067AbiCGJqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237741AbiCGJgY (ORCPT
+        with ESMTP id S237765AbiCGJgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:36:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14896E293;
-        Mon,  7 Mar 2022 01:31:31 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1136D879;
+        Mon,  7 Mar 2022 01:31:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3C2FB810B9;
-        Mon,  7 Mar 2022 09:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B9EBC340E9;
-        Mon,  7 Mar 2022 09:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14C9E61185;
+        Mon,  7 Mar 2022 09:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D0FBC340E9;
+        Mon,  7 Mar 2022 09:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645476;
-        bh=AnauxGBZ8p0xwscdaSv0eJJZrWzw18OZ91+tPeMhTpk=;
+        s=korg; t=1646645430;
+        bh=J3C58RKqRkdt0Z9ppRxUiMEM8xgTHy1k+NvGXw5NCTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kHOVXQv6dDSemxRZ7yR2q+2p4iCkfCECwm5h0AJ1hAFTnZ2pjmsAqW+hGfYoFpQcG
-         ohLWDsBu2GHypnKNAN9Ldp3H7YHr3s0qT/hh+YLGkLww2evFwsLkEd/HxmfqAJeV0V
-         jPR/dJnZiggSno/hsH1c5Us0wC2gLDt36Nld0lQg=
+        b=0CAVEkXBJoRUd+bYMX1/nStm5Ewv0k7sbDqfhn58Coh0u2BZb/eyAq5u61+n5uxKX
+         OoF4JnkfeHuhqN4h7kqMQmX7vb/Wpq2lKunDh5XJlTPHjrWPXH04VBDs3IFlYF9zdF
+         wHCEVndC/oXcpYRX7LFzfRyXdmhdAUubnN7Fpuio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksandr Natalenko <oleksandr@redhat.com>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH 5.10 043/105] netfilter: nf_queue: dont assume sk is full socket
-Date:   Mon,  7 Mar 2022 10:18:46 +0100
-Message-Id: <20220307091645.397407421@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 029/105] ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
+Date:   Mon,  7 Mar 2022 10:18:32 +0100
+Message-Id: <20220307091645.000357216@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,52 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Marek Vasut <marex@denx.de>
 
-commit 747670fd9a2d1b7774030dba65ca022ba442ce71 upstream.
+commit 9bdd10d57a8807dba0003af0325191f3cec0f11c upstream.
 
-There is no guarantee that state->sk refers to a full socket.
+While the $val/$val2 values passed in from userspace are always >= 0
+integers, the limits of the control can be signed integers and the $min
+can be non-zero and less than zero. To correctly validate $val/$val2
+against platform_max, add the $min offset to val first.
 
-If refcount transitions to 0, sock_put calls sk_free which then ends up
-with garbage fields.
-
-I'd like to thank Oleksandr Natalenko and Jiri Benc for considerable
-debug work and pointing out state->sk oddities.
-
-Fixes: ca6fb0651883 ("tcp: attach SYNACK messages to request sockets instead of listener")
-Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: 817f7c9335ec0 ("ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220215130645.164025-1-marex@denx.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_queue.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ sound/soc/soc-ops.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -46,6 +46,15 @@ void nf_unregister_queue_handler(struct
- }
- EXPORT_SYMBOL(nf_unregister_queue_handler);
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -317,7 +317,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 		mask = BIT(sign_bit + 1) - 1;
  
-+static void nf_queue_sock_put(struct sock *sk)
-+{
-+#ifdef CONFIG_INET
-+	sock_gen_put(sk);
-+#else
-+	sock_put(sk);
-+#endif
-+}
-+
- static void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
- {
- 	struct nf_hook_state *state = &entry->state;
-@@ -56,7 +65,7 @@ static void nf_queue_entry_release_refs(
- 	if (state->out)
- 		dev_put(state->out);
- 	if (state->sk)
--		sock_put(state->sk);
-+		nf_queue_sock_put(state->sk);
- 
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- 	if (entry->physin)
+ 	val = ucontrol->value.integer.value[0];
+-	if (mc->platform_max && val > mc->platform_max)
++	if (mc->platform_max && ((int)val + min) > mc->platform_max)
+ 		return -EINVAL;
+ 	if (val > max - min)
+ 		return -EINVAL;
+@@ -330,7 +330,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	val = val << shift;
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		val2 = ucontrol->value.integer.value[1];
+-		if (mc->platform_max && val2 > mc->platform_max)
++		if (mc->platform_max && ((int)val2 + min) > mc->platform_max)
+ 			return -EINVAL;
+ 		if (val2 > max - min)
+ 			return -EINVAL;
 
 
