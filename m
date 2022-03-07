@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A055C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240167AbiCGK1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
+        id S240304AbiCGK1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241644AbiCGKKZ (ORCPT
+        with ESMTP id S241617AbiCGKKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A5038791;
-        Mon,  7 Mar 2022 01:53:35 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7839E36E18;
+        Mon,  7 Mar 2022 01:53:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBDCA60A28;
-        Mon,  7 Mar 2022 09:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3EB7C340F3;
-        Mon,  7 Mar 2022 09:53:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B652B810B2;
+        Mon,  7 Mar 2022 09:53:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 543F5C340F3;
+        Mon,  7 Mar 2022 09:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646812;
-        bh=3fisiECyisSO7Ji5C0pqaTBPKeGnqyFjtJ41/s4CMIo=;
+        s=korg; t=1646646808;
+        bh=0tQu0CpwRLss3+hMQbOV2USPB0Dgy+d/d/xMQFVe7w8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IApEzv7YpO34aFkdB/yV/8fKjPjUU1FOXmsNnO8+vO8TPAL/LOCpvDoFnvMBr0rZp
-         N3GBmbkLLmzTPR5sSpYhraC736sPNpSw0SJScyANbpbYtl1CsPnMHnXKv1h0yqNyhW
-         Li2IlC/+BfI5HOBDD00ArIGYg9OreIUzEtc1JIBU=
+        b=ByLQXZbzeb+Gob5tnljUMoQf+UbonkOkkAXqgKsIjJGsqBLa2pz68al48Lx5An/f+
+         8G7uT2ZTwwErodfq+JaVnF2pYgJOJ8xgioyn/bhJeQ0Y0OIz5CgZZrV/50Gel7LxYI
+         hC92OZcv+4pbame+KxrVO0WsJURcCam2PjtG9T3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Alyssa Ross <hi@alyssa.is>, Sudeep Holla <sudeep.holla@arm.com>
-Subject: [PATCH 5.16 100/186] firmware: arm_scmi: Remove space in MODULE_ALIAS name
-Date:   Mon,  7 Mar 2022 10:18:58 +0100
-Message-Id: <20220307091656.877500650@linuxfoundation.org>
+        stable@vger.kernel.org, Lars Poeschel <poeschel@lemonage.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Miguel Ojeda <ojeda@kernel.org>
+Subject: [PATCH 5.16 099/186] auxdisplay: lcd2s: Fix lcd2s_redefine_char() feature
+Date:   Mon,  7 Mar 2022 10:18:57 +0100
+Message-Id: <20220307091656.850195389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,32 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alyssa Ross <hi@alyssa.is>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 1ba603f56568c3b4c2542dfba07afa25f21dcff3 upstream.
+commit 4424c35ead667ba2e8de7ab8206da66453e6f728 upstream.
 
-modprobe can't handle spaces in aliases. Get rid of it to fix the issue.
+It seems that the lcd2s_redefine_char() has never been properly
+tested. The buffer is filled by DEF_CUSTOM_CHAR command followed
+by the character number (from 0 to 7), but immediately after that
+these bytes are rewritten by the decoded hex stream.
 
-Link: https://lore.kernel.org/r/20220211102704.128354-1-sudeep.holla@arm.com
-Fixes: aa4f886f3893 ("firmware: arm_scmi: add basic driver infrastructure for SCMI")
-Reviewed-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Alyssa Ross <hi@alyssa.is>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Fix the index to fill the buffer after the command and number.
+
+Fixes: 8c9108d014c5 ("auxdisplay: add a driver for lcd2s character display")
+Cc: Lars Poeschel <poeschel@lemonage.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+[fixed typo in commit message]
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/arm_scmi/driver.c |    2 +-
+ drivers/auxdisplay/lcd2s.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -2112,7 +2112,7 @@ static void __exit scmi_driver_exit(void
- }
- module_exit(scmi_driver_exit);
+--- a/drivers/auxdisplay/lcd2s.c
++++ b/drivers/auxdisplay/lcd2s.c
+@@ -238,7 +238,7 @@ static int lcd2s_redefine_char(struct ch
+ 	if (buf[1] > 7)
+ 		return 1;
  
--MODULE_ALIAS("platform: arm-scmi");
-+MODULE_ALIAS("platform:arm-scmi");
- MODULE_AUTHOR("Sudeep Holla <sudeep.holla@arm.com>");
- MODULE_DESCRIPTION("ARM SCMI protocol driver");
- MODULE_LICENSE("GPL v2");
+-	i = 0;
++	i = 2;
+ 	shift = 0;
+ 	value = 0;
+ 	while (*esc && i < LCD2S_CHARACTER_SIZE + 2) {
 
 
