@@ -2,97 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C54C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD81BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240997AbiCGKiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:38:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
+        id S240884AbiCGKh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241514AbiCGKKS (ORCPT
+        with ESMTP id S237718AbiCGKOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA41338B1;
-        Mon,  7 Mar 2022 01:53:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 395F9B810BC;
-        Mon,  7 Mar 2022 09:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87034C340F3;
-        Mon,  7 Mar 2022 09:53:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646792;
-        bh=Qf0pMOyeqKrwzeWEyzg94zwj7+R6q9P1xaVjSePZBdM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxWKYORZX/bAXiuVtuSwuHhQQ9rZlIzh0VMDRdg/h00GtaZlRsQk5YOZHzl5K4UZt
-         IcaR4UjGPg88fEbMSd9ONlr8DmV9W1HUa+zKMq29Jmqu6y88WoY4XLaSFylxRWTVUx
-         9qFKfSDrL4vn4OYRd3BSEbZXPGS+G5zcmDaR1kTQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 094/186] ibmvnic: register netdev after init of adapter
-Date:   Mon,  7 Mar 2022 10:18:52 +0100
-Message-Id: <20220307091656.711747658@linuxfoundation.org>
+        Mon, 7 Mar 2022 05:14:24 -0500
+Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-hk2apc01on0720.outbound.protection.outlook.com [IPv6:2a01:111:f400:febc::720])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649AD7A9A6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:56:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OInw9ptdhThV942f9FPz0Rd/hpHJ8wsmRpbShPX41jZ2IgkqhxNVP7v0R58EZQ0evsJt9DWQZzoacET9nX9X8uLGuhdlP3w8u8bAVv+I1SYXY8puNdkI8mKnwKkbA3vJymshWxHqo6hDlu4tXACrqWU2X8Y+SGv0QcXTVIq1MWOWvkduO6JWL9tKIe58u8uWg6qHkSqGn3myxpMIjeKd07k6dcDbebh68wrxXdsK8KY0UScxFDWahN+Q5y57WI3eOksdXVbL6Td6roTSGUewvhCZR0evtI4YoDr/VeybujtU8CXnK7mMde8txNSB2PN+DkLJFjEzqegfxXKRrggY3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UcjSFt6u4NSsFSgY6g9g/sb4Od9X0lYnTX4YrUwJW0s=;
+ b=mpoecq7nmPXNUCy/fBFRVQYuwnlZ6tA2UHYf8/YjhCMQwuMK0AyUPOtEZPuqkjysFucBZ7vCAlSb80AbGd5e/u6cpTnbCNHlCm1NTnJLvu4JLE8vAaRs6Um6gDoY17EoXO4LbAAlh86WaMWXcOir9oVLyXw2mV+9kZUlb7v5DGB5FcMVdMJC3IRzxe+A3WnP5P+RN5jmRyGEwkg476S3XatPBhx5sTRdDtmxHT6eXGUtWMqJds7yRl6HIb9/YjuMyqAH6hkcCVD05xdllgBPkFXm/jDfFlIRz09T4zhBs4VSvCzha8QGbqIb8aupYO+HVIhX7/gxqae0+pgRvtt/SQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UcjSFt6u4NSsFSgY6g9g/sb4Od9X0lYnTX4YrUwJW0s=;
+ b=XdAfvJ8QgrWAQSGdN3/PYy9FoueHrPlRTZ5MKzG2hLuYabeTj/EfB6GVjv5ViylWV+c+/oSbH2KWBR/NiMeftaO9rqsauKTNfdgcHISTyKfGznKUbQV0G8CKr2W4Mo83kxXbHiLeKxiUI5c/f/DqfDDRrybtiQXIYmiQPdW/IVM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SEZPR06MB5071.apcprd06.prod.outlook.com (2603:1096:101:39::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5038.14; Mon, 7 Mar 2022 09:56:30 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::9d3f:ff3b:1948:d732]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::9d3f:ff3b:1948:d732%4]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
+ 09:56:30 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Tomi Valkeinen <tomba@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     kael_w@qq.com, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] drm/omap: fix NULL but dereferenced coccicheck error
+Date:   Mon,  7 Mar 2022 17:56:12 +0800
+Message-Id: <20220307095612.409090-1-wanjiabing@vivo.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
-References: <20220307091654.092878898@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR03CA0050.apcprd03.prod.outlook.com
+ (2603:1096:202:17::20) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bd23b7b9-a011-4c5a-68b5-08da0020c105
+X-MS-TrafficTypeDiagnostic: SEZPR06MB5071:EE_
+X-Microsoft-Antispam-PRVS: <SEZPR06MB507122A3AF53ACCA89A8E02AAB089@SEZPR06MB5071.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rDUe4FSNJ/Iu9cSgMveZhzTTQt5/dxckq2tv1W63vAfRO9dkcuYsB9Vp3qEFy6L3q4K0IpmLLp15LROVSPJhI9AKdKN40Koxw6u7ibpsenxPf6EjXm5CUD2UDGd/BbCZpb67VlxznO0UfC05GXOaDOe2IMckHWEx6gyl07mqged6yCUkVG8CNPxQShRbdVUrj6pteuXRYW8JPEIRXsUCfM7beClaxNG1Fu/nOlVvgWWO4d9qOI1BonSMrkPm7cPVu6B6xFwa6rlAjcvqo09VaVLBm+BJ1CacOjo5MRHioU61R3OZctYU95mtW5s6tG2tPEuxvqo8V8gEtz8HgpkOyT+mRjvMe9oYPIG3hXapBiuqLAXUThwbLX2kvfwYpWj+q9fqpWoj2Yd2/cZDGJoibTKoyCeVlduqXur0GuzSw34iZJ/Xyo+n6zp2pmuEkbuZNGiCosOqZgeBrNqjrQbtJ9q1uAUJaMoia/WSZ0wbzhlAloxPrwSFDFiOoNXsVWpXXo6H3k2JtNylGW7+IoDEMEZBXfUSxUGWJgrHv7NwrlPKjS8ow0EtDkcSjyVcLDQP3xT5iHibZ3rRIpS4Nym5C8Tr2Sh9bSq8PMh3a55BJN9rMkVlLfreSvqRFJz8qHSDhg1pigE5oWXqKwYMViCxMFxPIwBkm80rHO6rJQUXzhbuZesFgwzjwCGGbfEVgjqI/N73Op8mbOr7D9hJ2Xh0qQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(66946007)(107886003)(52116002)(8936002)(66476007)(4744005)(2616005)(1076003)(186003)(26005)(8676002)(4326008)(5660300002)(86362001)(83380400001)(508600001)(36756003)(6506007)(6666004)(6512007)(110136005)(2906002)(38350700002)(38100700002)(316002)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J4HmWOH5MdEF5hVUFvZRamGPIXLBPADEcXqH+iFaPjQbbXD12a2AxkbvqD+G?=
+ =?us-ascii?Q?pEgiF/uDW4laK0/0O95UpIgwcF8kNCVDfhVm4FDLKm+Ei8Qy/xqSsqsDjiCn?=
+ =?us-ascii?Q?unRK46j5O7Mp/vM7TzBzcTw1dM/mSRKR7k4Yg0kvMzQnLQ+LivuIAjT5gpxO?=
+ =?us-ascii?Q?zTRSaIp+0ik5QJHwhc6EzAbBXmC4XWpm8i0k6+80AVRb47vur+U6bk8NlTaP?=
+ =?us-ascii?Q?UKvpUsZ05unz4DVXfw8TeHYIj8JOr7t5KG/mYAUVin/6AHKJS6aq36OrjVFT?=
+ =?us-ascii?Q?u2RAjujcjKvry5lDnEkA0fyWAlXlPErTskeaQ5uZH1V7TPtJrY7tO6hbs4A0?=
+ =?us-ascii?Q?kvjRkWOkNsVEacy19fwY3VsHbA+mQVwSMyCjRGzX4Jdwi+u7lUrEtYAlp0o3?=
+ =?us-ascii?Q?55jYX5Dh+aytormec2GkxVFCODwye+RVLgecd48HRBnrf6qU5JRfUAS0VLj7?=
+ =?us-ascii?Q?aT55jGMRDW1Ev7TG/rnQ3mqEqAfXZ1AqHhXHFG6IcDFR6YGINGErBnQFcKcZ?=
+ =?us-ascii?Q?t3oVG3Yp7TbLp0aQr3NYEV8vO/sR7WT76svxNGuYEL9OhY3qcX2ztYxKnc+9?=
+ =?us-ascii?Q?5rmOOkO8tKc97xT1NSGcrlCUtDy41mzu9A6cW3VC8DCh5Csrwq1yGmHa85+1?=
+ =?us-ascii?Q?f6HTR2HBesSKFkjSUhmbeh21kpYHQfGkI41DcOVOKAP0F414Z1MMYgTJCNrM?=
+ =?us-ascii?Q?RrBKvICcJssgMDczdWncy2M9XygG2CW3yhbCjZNKzDdJwAB0f35JJxNjHd5z?=
+ =?us-ascii?Q?+znVwMSeULd+E8Fo2PBS4Y4T8xpyq+rgHyfwVSKfSjdKUAKMsxYXHe/t8cHn?=
+ =?us-ascii?Q?JzZ+7ndTSGT4TiOQR1zKsO+yD30sx5X/GRQNJ0WZ3DCzzgJIhjfTpAes9QkI?=
+ =?us-ascii?Q?w+iHXyVP5RaYN8zRDOSDtoq1AEEqMiuZ7evIik72G5tUBGQzZJyeMXls9AsS?=
+ =?us-ascii?Q?arrlzTM/PaXSX6s0MhDOOSWiRcd27/f2NUJojJs8WGdCing2B/LpkBZzRHvt?=
+ =?us-ascii?Q?IN6WAJQd2bHEDKgLTIbaYQm2LFt9n6EW+QgOTHYIhbY7DkHx8gnxp+DaRigq?=
+ =?us-ascii?Q?9CK+lq1Y4iBeu4DW1r88HQCEcn0DDehBrtKOzwfobDYwTScqeiodzATAy0K4?=
+ =?us-ascii?Q?bwr1je3HZUnMIKWpv4n2CcDRWsxowfBp0EKE57CvcV1soO6dcOgkzkXJe6gt?=
+ =?us-ascii?Q?r1OOOE62Mc2/GA70yvaQEygpAQct5MoQBeSNxiKAanZlOh5Fxt/G3Ega07Fy?=
+ =?us-ascii?Q?Vof6wJFlnJLJgKqMWvsDUrU/fEYLMRyPpTqsJUuOGQUAY92sSsoxDcCNOx/r?=
+ =?us-ascii?Q?eccwZEEr8Ezo6WBTxAlzgrlEw7molO8emq9dJYOKNnCv2SzSpCS6NJiUhrpe?=
+ =?us-ascii?Q?peEeUZi4J7pZfZmG9kmH+SU+zSrpoXbcs2B4uQ5/g811oqBX8pTRkKXuxRjx?=
+ =?us-ascii?Q?NK3mi7k0Zzm9dU+TB7CdnQwNsayQAhAfQDAB1HEKzxTMnsqP28kzVr1mJkTe?=
+ =?us-ascii?Q?uCKE5Fd4PfM4t99vniiOJhE9sQM9VwuUW2GbtwLAo8O6BodHwPGLPI1eJlWf?=
+ =?us-ascii?Q?/lgD1yIkasLWS7mrTPSg9BetVIgZjtutvSIKr36OB1HPuI30t5dZp+pm0dl6?=
+ =?us-ascii?Q?fuHP3X8pVmfsGhxsh2m7rpk=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd23b7b9-a011-4c5a-68b5-08da0020c105
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 09:56:30.6469
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5vvOYnygho/cbRWRejA8bxBKkCh5B+heuEbYXer2nxoKvTZ3wlMf7lMmKyMx6tAtA8MA6g2lsZgXYmFSQ8Wf0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR06MB5071
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Fix the following coccicheck warning:
+./drivers/gpu/drm/omapdrm/omap_overlay.c:89:22-25: ERROR: r_ovl is NULL
+but dereferenced.
 
-commit 570425f8c7c18b14fa8a2a58a0adb431968ad118 upstream.
+Here should be ovl->idx rather than r_ovl->idx.
 
-Finish initializing the adapter before registering netdev so state
-is consistent.
-
-Fixes: c26eba03e407 ("ibmvnic: Update reset infrastructure to support tunable parameters")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/omapdrm/omap_overlay.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5811,12 +5811,6 @@ static int ibmvnic_probe(struct vio_dev
- 		goto ibmvnic_dev_file_err;
- 
- 	netif_carrier_off(netdev);
--	rc = register_netdev(netdev);
--	if (rc) {
--		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
--		goto ibmvnic_register_fail;
--	}
--	dev_info(&dev->dev, "ibmvnic registered\n");
- 
- 	if (init_success) {
- 		adapter->state = VNIC_PROBED;
-@@ -5829,6 +5823,14 @@ static int ibmvnic_probe(struct vio_dev
- 
- 	adapter->wait_for_reset = false;
- 	adapter->last_reset_time = jiffies;
-+
-+	rc = register_netdev(netdev);
-+	if (rc) {
-+		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
-+		goto ibmvnic_register_fail;
-+	}
-+	dev_info(&dev->dev, "ibmvnic registered\n");
-+
- 	return 0;
- 
- ibmvnic_register_fail:
-
+diff --git a/drivers/gpu/drm/omapdrm/omap_overlay.c b/drivers/gpu/drm/omapdrm/omap_overlay.c
+index 10730c9b2752..b0bc9ad2ef73 100644
+--- a/drivers/gpu/drm/omapdrm/omap_overlay.c
++++ b/drivers/gpu/drm/omapdrm/omap_overlay.c
+@@ -86,7 +86,7 @@ int omap_overlay_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 		r_ovl = omap_plane_find_free_overlay(s->dev, overlay_map,
+ 						     caps, fourcc);
+ 		if (!r_ovl) {
+-			overlay_map[r_ovl->idx] = NULL;
++			overlay_map[ovl->idx] = NULL;
+ 			*overlay = NULL;
+ 			return -ENOMEM;
+ 		}
+-- 
+2.35.1
 
