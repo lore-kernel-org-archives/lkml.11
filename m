@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 414E2C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C3C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238464AbiCGJi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:38:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
+        id S238417AbiCGJi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:38:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237245AbiCGJak (ORCPT
+        with ESMTP id S237191AbiCGJaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:30:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3099565D2B;
-        Mon,  7 Mar 2022 01:29:13 -0800 (PST)
+        Mon, 7 Mar 2022 04:30:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB76D652E2;
+        Mon,  7 Mar 2022 01:29:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8715D611E4;
-        Mon,  7 Mar 2022 09:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B158C340E9;
-        Mon,  7 Mar 2022 09:29:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E39DB810BF;
+        Mon,  7 Mar 2022 09:29:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C82C340F3;
+        Mon,  7 Mar 2022 09:29:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645352;
-        bh=K/apgIO1qzUD09Cc2nL5EpI5pM5IvF9E3a5Pojt/GJ0=;
+        s=korg; t=1646645349;
+        bh=UDiUSxdVlF03zmyCAAJ1XdSqruRRjoof5WO0J5NUuMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dVDFwhiat/fiVQzRdgkQNjO42/hiv6NzY+fhL9a1BdtNWrhK3OcvKM/9blrLZQJWT
-         lFS4SyzECiGAZC99n+Apljp0GGYhnGSJTboR6DWrUtWeOUHTEwC/XgRc0eTDrjnpF7
-         bwTK2B6ilsnop7Th+Og3T11tXNdUBYhIRK0coe2o=
+        b=QCAxd2NX5Wh0HwoYbvRrUtnomkUTwrqwkMS5pbTONVcINyCgIHndz0IBNhCXGz8W8
+         H97DJRNGR4ae9RTL7fKAoUzT4oWniWS7/oGJqs+phaBkYuPMgRtA2ciE/W3nQFxAVi
+         ttStmJK+hym6uWqgPaivh4A8cKa5hK36yXXJJXvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.4 55/64] Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
-Date:   Mon,  7 Mar 2022 10:19:28 +0100
-Message-Id: <20220307091640.712557801@linuxfoundation.org>
+Subject: [PATCH 5.4 54/64] Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+Date:   Mon,  7 Mar 2022 10:19:27 +0100
+Message-Id: <20220307091640.685111676@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -50,54 +50,123 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hans de Goede <hdegoede@redhat.com>
 
-commit 04b7762e37c95d9b965d16bb0e18dbd1fa2e2861 upstream.
+commit 81a36d8ce554b82b0a08e2b95d0bd44fcbff339b upstream.
 
-Before these changes elan_suspend() would only disable the regulator
-when device_may_wakeup() returns false; whereas elan_resume() would
-unconditionally enable it, leading to an enable count imbalance when
-device_may_wakeup() returns true.
+elan_disable_power() is called conditionally on suspend, where as
+elan_enable_power() is always called on resume. This leads to
+an imbalance in the regulator's enable count.
 
-This triggers the "WARN_ON(regulator->enable_count)" in regulator_put()
-when the elan_i2c driver gets unbound, this happens e.g. with the
-hot-plugable dock with Elan I2C touchpad for the Asus TF103C 2-in-1.
+Move the regulator_[en|dis]able() calls out of elan_[en|dis]able_power()
+in preparation of fixing this.
 
-Fix this by making the regulator_enable() call also be conditional
-on device_may_wakeup() returning false.
+No functional changes intended.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-2-hdegoede@redhat.com
+Link: https://lore.kernel.org/r/20220131135436.29638-1-hdegoede@redhat.com
+[dtor: consolidate elan_[en|dis]able() into elan_set_power()]
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/input/mouse/elan_i2c_core.c |   62 ++++++++++++------------------------
+ 1 file changed, 22 insertions(+), 40 deletions(-)
 
 --- a/drivers/input/mouse/elan_i2c_core.c
 +++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -1305,17 +1305,17 @@ static int __maybe_unused elan_resume(st
- 	struct elan_tp_data *data = i2c_get_clientdata(client);
- 	int error;
+@@ -139,55 +139,21 @@ static int elan_get_fwinfo(u16 ic_type,
+ 	return 0;
+ }
  
--	if (device_may_wakeup(dev) && data->irq_wake) {
-+	if (!device_may_wakeup(dev)) {
-+		error = regulator_enable(data->vcc);
-+		if (error) {
-+			dev_err(dev, "error %d enabling regulator\n", error);
-+			goto err;
-+		}
-+	} else if (data->irq_wake) {
- 		disable_irq_wake(client->irq);
- 		data->irq_wake = false;
- 	}
+-static int elan_enable_power(struct elan_tp_data *data)
++static int elan_set_power(struct elan_tp_data *data, bool on)
+ {
+ 	int repeat = ETP_RETRY_COUNT;
+ 	int error;
  
 -	error = regulator_enable(data->vcc);
 -	if (error) {
--		dev_err(dev, "error %d enabling regulator\n", error);
--		goto err;
+-		dev_err(&data->client->dev,
+-			"failed to enable regulator: %d\n", error);
+-		return error;
 -	}
 -
- 	error = elan_set_power(data, true);
+ 	do {
+-		error = data->ops->power_control(data->client, true);
++		error = data->ops->power_control(data->client, on);
+ 		if (error >= 0)
+ 			return 0;
+ 
+ 		msleep(30);
+ 	} while (--repeat > 0);
+ 
+-	dev_err(&data->client->dev, "failed to enable power: %d\n", error);
+-	return error;
+-}
+-
+-static int elan_disable_power(struct elan_tp_data *data)
+-{
+-	int repeat = ETP_RETRY_COUNT;
+-	int error;
+-
+-	do {
+-		error = data->ops->power_control(data->client, false);
+-		if (!error) {
+-			error = regulator_disable(data->vcc);
+-			if (error) {
+-				dev_err(&data->client->dev,
+-					"failed to disable regulator: %d\n",
+-					error);
+-				/* Attempt to power the chip back up */
+-				data->ops->power_control(data->client, true);
+-				break;
+-			}
+-
+-			return 0;
+-		}
+-
+-		msleep(30);
+-	} while (--repeat > 0);
+-
+-	dev_err(&data->client->dev, "failed to disable power: %d\n", error);
++	dev_err(&data->client->dev, "failed to set power %s: %d\n",
++		on ? "on" : "off", error);
+ 	return error;
+ }
+ 
+@@ -1316,9 +1282,19 @@ static int __maybe_unused elan_suspend(s
+ 		/* Enable wake from IRQ */
+ 		data->irq_wake = (enable_irq_wake(client->irq) == 0);
+ 	} else {
+-		ret = elan_disable_power(data);
++		ret = elan_set_power(data, false);
++		if (ret)
++			goto err;
++
++		ret = regulator_disable(data->vcc);
++		if (ret) {
++			dev_err(dev, "error %d disabling regulator\n", ret);
++			/* Attempt to power the chip back up */
++			elan_set_power(data, true);
++		}
+ 	}
+ 
++err:
+ 	mutex_unlock(&data->sysfs_mutex);
+ 	return ret;
+ }
+@@ -1334,7 +1310,13 @@ static int __maybe_unused elan_resume(st
+ 		data->irq_wake = false;
+ 	}
+ 
+-	error = elan_enable_power(data);
++	error = regulator_enable(data->vcc);
++	if (error) {
++		dev_err(dev, "error %d enabling regulator\n", error);
++		goto err;
++	}
++
++	error = elan_set_power(data, true);
  	if (error) {
  		dev_err(dev, "power up when resuming failed: %d\n", error);
+ 		goto err;
 
 
