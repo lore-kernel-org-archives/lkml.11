@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68821C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDF0C35278
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239397AbiCGJ67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:58:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S239463AbiCGJ7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240198AbiCGJkr (ORCPT
+        with ESMTP id S240231AbiCGJkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2206949E;
-        Mon,  7 Mar 2022 01:37:13 -0800 (PST)
+        Mon, 7 Mar 2022 04:40:49 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB62C6E543;
+        Mon,  7 Mar 2022 01:37:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA1E612E7;
-        Mon,  7 Mar 2022 09:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1134FC340E9;
-        Mon,  7 Mar 2022 09:36:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2B231CE0EAF;
+        Mon,  7 Mar 2022 09:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C397C340F4;
+        Mon,  7 Mar 2022 09:36:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645810;
-        bh=/TuSRVhhNgcRtaFhCwFzRY1d6sThkyuKd+NanmVdqy0=;
+        s=korg; t=1646645772;
+        bh=nSBScjLwDnnYYus0dcXkbfFcQ4AK2NVjbpG/fiVlMl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8iMOqqg3VfkfBOx39U4bHMEtdUbkZenCPtsHejCN6p9Fx2NvA0ABCXfpBbT6JWYO
-         +4H2ywy+7np6P52snj3QwfGJYoaC1JBuQjh6IhNVEBbyIGrgAz8X/fJ2NlGU7U9uGw
-         Lx388bDPK/RxDEXsSRYAF/EuaUsQqHJWBmrxuWQc=
+        b=IPdgbH5aPBkTKZobqTG49F6KNTC2CK1FLDB+R57qFnbpDta8JZf3OZp1mAyShct+r
+         JTbaIVq4AKH2BNa2S37wncWJbmr5HxQ1W+0X6+avO4nnnKfhLBlA56QQqQ0I0NTM30
+         VTJWz+CiIgTEC9CrM9j2ClTkPFxIpc5ZmCu0IA/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Barta <oliver.barta@aptiv.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 006/262] regulator: core: fix false positive in regulator_late_cleanup()
-Date:   Mon,  7 Mar 2022 10:15:50 +0100
-Message-Id: <20220307091702.560296010@linuxfoundation.org>
+Subject: [PATCH 5.15 030/262] exfat: fix i_blocks for files truncated over 4 GiB
+Date:   Mon,  7 Mar 2022 10:16:14 +0100
+Message-Id: <20220307091703.217794610@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,72 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Barta <oliver.barta@aptiv.com>
+From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
 
-[ Upstream commit 4e2a354e3775870ca823f1fb29bbbffbe11059a6 ]
+[ Upstream commit 92fba084b79e6bc7b12fc118209f1922c1a2df56 ]
 
-The check done by regulator_late_cleanup() to detect whether a regulator
-is on was inconsistent with the check done by _regulator_is_enabled().
-While _regulator_is_enabled() takes the enable GPIO into account,
-regulator_late_cleanup() was not doing that.
+In exfat_truncate(), the computation of inode->i_blocks is wrong if
+the file is larger than 4 GiB because a 32-bit variable is used as a
+mask. This is fixed and simplified by using round_up().
 
-This resulted in a false positive, e.g. when a GPIO-controlled fixed
-regulator was used, which was not enabled at boot time, e.g.
+Also fix the same buggy computation in exfat_read_root() and another
+(correct) one in exfat_fill_inode(). The latter was fixed another way
+last month but can be simplified by using round_up() as well. See:
 
-reg_disp_1v2: reg_disp_1v2 {
-	compatible = "regulator-fixed";
-	regulator-name = "display_1v2";
-	regulator-min-microvolt = <1200000>;
-	regulator-max-microvolt = <1200000>;
-	gpio = <&tlmm 148 0>;
-	enable-active-high;
-};
+  commit 0c336d6e33f4 ("exfat: fix incorrect loading of i_blocks for
+                        large files")
 
-Such regulator doesn't have an is_enabled() operation. Nevertheless
-it's state can be determined based on the enable GPIO. The check in
-regulator_late_cleanup() wrongly assumed that the regulator is on and
-tried to disable it.
-
-Signed-off-by: Oliver Barta <oliver.barta@aptiv.com>
-Link: https://lore.kernel.org/r/20220208084645.8686-1-oliver.barta@aptiv.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 98d917047e8b ("exfat: add file operations")
+Cc: stable@vger.kernel.org # v5.7+
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/core.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ fs/exfat/file.c  | 4 ++--
+ fs/exfat/inode.c | 4 ++--
+ fs/exfat/super.c | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index ca6caba8a191a..46e76b5b21efe 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -6010,9 +6010,8 @@ core_initcall(regulator_init);
- static int regulator_late_cleanup(struct device *dev, void *data)
- {
- 	struct regulator_dev *rdev = dev_to_rdev(dev);
--	const struct regulator_ops *ops = rdev->desc->ops;
- 	struct regulation_constraints *c = rdev->constraints;
--	int enabled, ret;
-+	int ret;
+diff --git a/fs/exfat/file.c b/fs/exfat/file.c
+index 848166d6d5e9d..d890fd34bb2d0 100644
+--- a/fs/exfat/file.c
++++ b/fs/exfat/file.c
+@@ -251,8 +251,8 @@ void exfat_truncate(struct inode *inode, loff_t size)
+ 	else
+ 		mark_inode_dirty(inode);
  
- 	if (c && c->always_on)
- 		return 0;
-@@ -6025,14 +6024,8 @@ static int regulator_late_cleanup(struct device *dev, void *data)
- 	if (rdev->use_count)
- 		goto unlock;
+-	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
+-			~(sbi->cluster_size - 1)) >> inode->i_blkbits;
++	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
++				inode->i_blkbits;
+ write_size:
+ 	aligned_size = i_size_read(inode);
+ 	if (aligned_size & (blocksize - 1)) {
+diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
+index aca2e64d045b6..72a0ccfb616c3 100644
+--- a/fs/exfat/inode.c
++++ b/fs/exfat/inode.c
+@@ -602,8 +602,8 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
  
--	/* If we can't read the status assume it's always on. */
--	if (ops->is_enabled)
--		enabled = ops->is_enabled(rdev);
--	else
--		enabled = 1;
--
--	/* But if reading the status failed, assume that it's off. */
--	if (enabled <= 0)
-+	/* If reading the status failed, assume that it's off. */
-+	if (_regulator_is_enabled(rdev) <= 0)
- 		goto unlock;
+ 	exfat_save_attr(inode, info->attr);
  
- 	if (have_full_constraints()) {
+-	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
+-		~((loff_t)sbi->cluster_size - 1)) >> inode->i_blkbits;
++	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
++				inode->i_blkbits;
+ 	inode->i_mtime = info->mtime;
+ 	inode->i_ctime = info->mtime;
+ 	ei->i_crtime = info->crtime;
+diff --git a/fs/exfat/super.c b/fs/exfat/super.c
+index 1a2115d73a48a..4b5d02b1df585 100644
+--- a/fs/exfat/super.c
++++ b/fs/exfat/super.c
+@@ -364,8 +364,8 @@ static int exfat_read_root(struct inode *inode)
+ 	inode->i_op = &exfat_dir_inode_operations;
+ 	inode->i_fop = &exfat_dir_operations;
+ 
+-	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
+-			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
++	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
++				inode->i_blkbits;
+ 	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
+ 	ei->i_size_aligned = i_size_read(inode);
+ 	ei->i_size_ondisk = i_size_read(inode);
 -- 
 2.34.1
 
