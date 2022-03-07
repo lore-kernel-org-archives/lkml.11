@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C54C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68969C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240701AbiCGKhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:37:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S240723AbiCGKho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:37:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241991AbiCGKLK (ORCPT
+        with ESMTP id S241596AbiCGKKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:10 -0500
+        Mon, 7 Mar 2022 05:10:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD4983033;
-        Mon,  7 Mar 2022 01:54:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFC2366B1;
+        Mon,  7 Mar 2022 01:53:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD6B0B810AA;
-        Mon,  7 Mar 2022 09:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D92C340F3;
-        Mon,  7 Mar 2022 09:54:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF363B80F9F;
+        Mon,  7 Mar 2022 09:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB679C340F3;
+        Mon,  7 Mar 2022 09:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646842;
-        bh=kRj+XBMOcfrG227XydWXXvppgPuI8HRuN5RwQWY38uM=;
+        s=korg; t=1646646805;
+        bh=R8uY/zTXdHSzjpLIxZlJhb0hQIo+MzsaqToLbh99yeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKdYKOttD9e8Z0V0fbUqc77kF/U5F/Vk6rphFamxz+jfLz7h3Xd6NRmiocyOkJa0I
-         +vrDlth+LeaUYo1yjih5GYA2MdoocwCki6Fbo3w/dVc5vt1/zs4PZ7eulSCDFJSTd0
-         mHENqsnGImT0vTOYP54USGp/4gQ0EDg+QVdCi2Pk=
+        b=AK1+nI3jQqDb4Cn/gf54A/zCsaLZzujSVc6sR4lQGfsUIHUe6L7ITGID1W71UzqDY
+         PkDebHMXN/FoKOelS0nvJbudqpm4ye5u6Js7UvS8Q3pEReWqwZre0Xwqjfq1jNMNmG
+         VWPei4cJgcTEHrej27mSnfCm+0qH8sEhRN0u3/0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.16 071/186] e1000e: Correct NVM checksum verification flow
-Date:   Mon,  7 Mar 2022 10:18:29 +0100
-Message-Id: <20220307091656.075983069@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 5.16 098/186] efivars: Respect "block" flag in efivar_entry_set_safe()
+Date:   Mon,  7 Mar 2022 10:18:56 +0100
+Message-Id: <20220307091656.822308175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -51,38 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Jann Horn <jannh@google.com>
 
-commit ffd24fa2fcc76ecb2e61e7a4ef8588177bcb42a6 upstream.
+commit 258dd902022cb10c83671176688074879517fd21 upstream.
 
-Update MAC type check e1000_pch_tgp because for e1000_pch_cnp,
-NVM checksum update is still possible.
-Emit a more detailed warning message.
+When the "block" flag is false, the old code would sometimes still call
+check_var_size(), which wrongly tells ->query_variable_store() that it can
+block.
 
-Bugzilla: https://bugzilla.opensuse.org/show_bug.cgi?id=1191663
-Fixes: 4051f68318ca ("e1000e: Do not take care about recovery NVM checksum")
-Reported-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+As far as I can tell, this can't really materialize as a bug at the moment,
+because ->query_variable_store only does something on X86 with generic EFI,
+and in that configuration we always take the efivar_entry_set_nonblocking()
+path.
+
+Fixes: ca0e30dcaa53 ("efi: Add nonblocking option to efi_query_variable_store()")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220218180559.1432559-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/firmware/efi/vars.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -4136,9 +4136,9 @@ static s32 e1000_validate_nvm_checksum_i
- 		return ret_val;
+--- a/drivers/firmware/efi/vars.c
++++ b/drivers/firmware/efi/vars.c
+@@ -742,6 +742,7 @@ int efivar_entry_set_safe(efi_char16_t *
+ {
+ 	const struct efivar_operations *ops;
+ 	efi_status_t status;
++	unsigned long varsize;
  
- 	if (!(data & valid_csum_mask)) {
--		e_dbg("NVM Checksum Invalid\n");
-+		e_dbg("NVM Checksum valid bit not set\n");
+ 	if (!__efivars)
+ 		return -EINVAL;
+@@ -764,15 +765,17 @@ int efivar_entry_set_safe(efi_char16_t *
+ 		return efivar_entry_set_nonblocking(name, vendor, attributes,
+ 						    size, data);
  
--		if (hw->mac.type < e1000_pch_cnp) {
-+		if (hw->mac.type < e1000_pch_tgp) {
- 			data |= valid_csum_mask;
- 			ret_val = e1000_write_nvm(hw, word, 1, &data);
- 			if (ret_val)
++	varsize = size + ucs2_strsize(name, 1024);
+ 	if (!block) {
+ 		if (down_trylock(&efivars_lock))
+ 			return -EBUSY;
++		status = check_var_size_nonblocking(attributes, varsize);
+ 	} else {
+ 		if (down_interruptible(&efivars_lock))
+ 			return -EINTR;
++		status = check_var_size(attributes, varsize);
+ 	}
+ 
+-	status = check_var_size(attributes, size + ucs2_strsize(name, 1024));
+ 	if (status != EFI_SUCCESS) {
+ 		up(&efivars_lock);
+ 		return -ENOSPC;
 
 
