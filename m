@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9F3C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B230C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238098AbiCGJiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:38:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S230194AbiCGJmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:42:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238808AbiCGJ3o (ORCPT
+        with ESMTP id S237287AbiCGJbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9445C765A;
-        Mon,  7 Mar 2022 01:28:49 -0800 (PST)
+        Mon, 7 Mar 2022 04:31:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D8F66C83;
+        Mon,  7 Mar 2022 01:29:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F318B810B2;
-        Mon,  7 Mar 2022 09:28:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E93AC340F3;
-        Mon,  7 Mar 2022 09:28:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BF1D61185;
+        Mon,  7 Mar 2022 09:29:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16215C340F4;
+        Mon,  7 Mar 2022 09:29:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645327;
-        bh=wWdOksvsl0n4hqvHPuUSMZYSNyh8sB+6Ydafu2y5bp0=;
+        s=korg; t=1646645364;
+        bh=+sF1ZZKsec9M7x/W4cxtc7hDUruS5zQHxsrQZYqu2ZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wYz081zc/aV4qtm54muCScTQ/1F3z5Ey5BuUkvQ7MBqHG9l3UB3m1dWUO9vI1Sg5p
-         W0dcjJHtr3MExQXKtZN4BNjls4CSwV1gUxsduxOGhBXZ8tWYWoiMgb9OS5ybo5lvSP
-         ie/vPT6rO5F5BbAy3wTYUK/UttvSwiTe7zOJ+CbQ=
+        b=UXa9TXSJ4IC393dejjtr2a64bpizBEzLNZLqwZucYPX1G4Q5GJdRqkmr8+bV5VeG7
+         wE0jayfJ9/3CpRuLWbqwbaYX/ZbI5HAt4qs7K2q2BKRxFLU7c9/MrBCYjWBkR+gz4g
+         v8l2d0myRNlWJofTj24/RNMb2fb/rCHdfzcUFzgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 60/64] btrfs: fix lost prealloc extents beyond eof after full fsync
-Date:   Mon,  7 Mar 2022 10:19:33 +0100
-Message-Id: <20220307091640.853385477@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 59/64] tracing: Fix return value of __setup handlers
+Date:   Mon,  7 Mar 2022 10:19:32 +0100
+Message-Id: <20220307091640.824915664@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,175 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit d99478874355d3a7b9d86dfb5d7590d5b1754b1f upstream.
+commit 1d02b444b8d1345ea4708db3bab4db89a7784b55 upstream.
 
-When doing a full fsync, if we have prealloc extents beyond (or at) eof,
-and the leaves that contain them were not modified in the current
-transaction, we end up not logging them. This results in losing those
-extents when we replay the log after a power failure, since the inode is
-truncated to the current value of the logged i_size.
+__setup() handlers should generally return 1 to indicate that the
+boot options have been handled.
 
-Just like for the fast fsync path, we need to always log all prealloc
-extents starting at or beyond i_size. The fast fsync case was fixed in
-commit 471d557afed155 ("Btrfs: fix loss of prealloc extents past i_size
-after fsync log replay") but it missed the full fsync path. The problem
-exists since the very early days, when the log tree was added by
-commit e02119d5a7b439 ("Btrfs: Add a write ahead tree log to optimize
-synchronous operations").
+Using invalid option values causes the entire kernel boot option
+string to be reported as Unknown and added to init's environment
+strings, polluting it.
 
-Example reproducer:
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
+    kprobe_event=p,syscall_any,$arg1 trace_options=quiet
+    trace_clock=jiffies", will be passed to user space.
 
-  $ mkfs.btrfs -f /dev/sdc
-  $ mount /dev/sdc /mnt
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     kprobe_event=p,syscall_any,$arg1
+     trace_options=quiet
+     trace_clock=jiffies
 
-  # Create our test file with many file extent items, so that they span
-  # several leaves of metadata, even if the node/page size is 64K. Use
-  # direct IO and not fsync/O_SYNC because it's both faster and it avoids
-  # clearing the full sync flag from the inode - we want the fsync below
-  # to trigger the slow full sync code path.
-  $ xfs_io -f -d -c "pwrite -b 4K 0 16M" /mnt/foo
+Return 1 from the __setup() handlers so that init's environment is not
+polluted with kernel boot options.
 
-  # Now add two preallocated extents to our file without extending the
-  # file's size. One right at i_size, and another further beyond, leaving
-  # a gap between the two prealloc extents.
-  $ xfs_io -c "falloc -k 16M 1M" /mnt/foo
-  $ xfs_io -c "falloc -k 20M 1M" /mnt/foo
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lkml.kernel.org/r/20220303031744.32356-1-rdunlap@infradead.org
 
-  # Make sure everything is durably persisted and the transaction is
-  # committed. This makes all created extents to have a generation lower
-  # than the generation of the transaction used by the next write and
-  # fsync.
-  sync
-
-  # Now overwrite only the first extent, which will result in modifying
-  # only the first leaf of metadata for our inode. Then fsync it. This
-  # fsync will use the slow code path (inode full sync bit is set) because
-  # it's the first fsync since the inode was created/loaded.
-  $ xfs_io -c "pwrite 0 4K" -c "fsync" /mnt/foo
-
-  # Extent list before power failure.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x0
-     3: [32768..34815]:  2172928..2174975  2048 0x800
-     4: [34816..40959]:  hole              6144
-     5: [40960..43007]:  2174976..2177023  2048 0x801
-
-  <power fail>
-
-  # Mount fs again, trigger log replay.
-  $ mount /dev/sdc /mnt
-
-  # Extent list after power failure and log replay.
-  $ xfs_io -c "fiemap -v" /mnt/foo
-  /mnt/foo:
-   EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-     0: [0..7]:          2178048..2178055     8   0x0
-     1: [8..16383]:      26632..43007     16376   0x0
-     2: [16384..32767]:  2156544..2172927 16384   0x1
-
-  # The prealloc extents at file offsets 16M and 20M are missing.
-
-So fix this by calling btrfs_log_prealloc_extents() when we are doing a
-full fsync, so that we always log all prealloc extents beyond eof.
-
-A test case for fstests will follow soon.
-
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: stable@vger.kernel.org
+Fixes: 7bcfaf54f591 ("tracing: Add trace_options kernel command line parameter")
+Fixes: e1e232ca6b8f ("tracing: Add trace_clock=<clock> kernel parameter")
+Fixes: 970988e19eb0 ("tracing/kprobe: Add kprobe_event= boot parameter")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   43 +++++++++++++++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 12 deletions(-)
+ kernel/trace/trace.c        |    4 ++--
+ kernel/trace/trace_kprobe.c |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -4249,7 +4249,7 @@ static int log_one_extent(struct btrfs_t
- 
- /*
-  * Log all prealloc extents beyond the inode's i_size to make sure we do not
-- * lose them after doing a fast fsync and replaying the log. We scan the
-+ * lose them after doing a full/fast fsync and replaying the log. We scan the
-  * subvolume's root instead of iterating the inode's extent map tree because
-  * otherwise we can log incorrect extent items based on extent map conversion.
-  * That can happen due to the fact that extent maps are merged when they
-@@ -5042,6 +5042,7 @@ static int copy_inode_items_to_log(struc
- 				   struct btrfs_log_ctx *ctx,
- 				   bool *need_log_inode_item)
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -219,7 +219,7 @@ static char trace_boot_options_buf[MAX_T
+ static int __init set_trace_boot_options(char *str)
  {
-+	const u64 i_size = i_size_read(&inode->vfs_inode);
- 	struct btrfs_root *root = inode->root;
- 	int ins_start_slot = 0;
- 	int ins_nr = 0;
-@@ -5062,13 +5063,21 @@ again:
- 		if (min_key->type > max_key->type)
- 			break;
- 
--		if (min_key->type == BTRFS_INODE_ITEM_KEY)
-+		if (min_key->type == BTRFS_INODE_ITEM_KEY) {
- 			*need_log_inode_item = false;
--
--		if ((min_key->type == BTRFS_INODE_REF_KEY ||
--		     min_key->type == BTRFS_INODE_EXTREF_KEY) &&
--		    inode->generation == trans->transid &&
--		    !recursive_logging) {
-+		} else if (min_key->type == BTRFS_EXTENT_DATA_KEY &&
-+			   min_key->offset >= i_size) {
-+			/*
-+			 * Extents at and beyond eof are logged with
-+			 * btrfs_log_prealloc_extents().
-+			 * Only regular files have BTRFS_EXTENT_DATA_KEY keys,
-+			 * and no keys greater than that, so bail out.
-+			 */
-+			break;
-+		} else if ((min_key->type == BTRFS_INODE_REF_KEY ||
-+			    min_key->type == BTRFS_INODE_EXTREF_KEY) &&
-+			   inode->generation == trans->transid &&
-+			   !recursive_logging) {
- 			u64 other_ino = 0;
- 			u64 other_parent = 0;
- 
-@@ -5099,10 +5108,8 @@ again:
- 				btrfs_release_path(path);
- 				goto next_key;
- 			}
--		}
--
--		/* Skip xattrs, we log them later with btrfs_log_all_xattrs() */
--		if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+		} else if (min_key->type == BTRFS_XATTR_ITEM_KEY) {
-+			/* Skip xattrs, logged later with btrfs_log_all_xattrs() */
- 			if (ins_nr == 0)
- 				goto next_slot;
- 			ret = copy_items(trans, inode, dst_path, path,
-@@ -5155,9 +5162,21 @@ next_key:
- 			break;
- 		}
- 	}
--	if (ins_nr)
-+	if (ins_nr) {
- 		ret = copy_items(trans, inode, dst_path, path, ins_start_slot,
- 				 ins_nr, inode_only, logged_isize);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (inode_only == LOG_INODE_ALL && S_ISREG(inode->vfs_inode.i_mode)) {
-+		/*
-+		 * Release the path because otherwise we might attempt to double
-+		 * lock the same leaf with btrfs_log_prealloc_extents() below.
-+		 */
-+		btrfs_release_path(path);
-+		ret = btrfs_log_prealloc_extents(trans, inode, dst_path);
-+	}
- 
- 	return ret;
+ 	strlcpy(trace_boot_options_buf, str, MAX_TRACER_SIZE);
+-	return 0;
++	return 1;
  }
+ __setup("trace_options=", set_trace_boot_options);
+ 
+@@ -230,7 +230,7 @@ static int __init set_trace_boot_clock(c
+ {
+ 	strlcpy(trace_boot_clock_buf, str, MAX_TRACER_SIZE);
+ 	trace_boot_clock = trace_boot_clock_buf;
+-	return 0;
++	return 1;
+ }
+ __setup("trace_clock=", set_trace_boot_clock);
+ 
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -430,7 +430,7 @@ static int disable_trace_kprobe(struct t
+ 		 */
+ 		trace_probe_remove_file(tp, file);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #if defined(CONFIG_DYNAMIC_FTRACE) && \
 
 
