@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B15C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C859BC38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242393AbiCGKLb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53872 "EHLO
+        id S242632AbiCGKLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239947AbiCGJu0 (ORCPT
+        with ESMTP id S240668AbiCGJvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B9F723CF;
-        Mon,  7 Mar 2022 01:43:56 -0800 (PST)
+        Mon, 7 Mar 2022 04:51:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FACA76652;
+        Mon,  7 Mar 2022 01:45:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADD7EB8102B;
-        Mon,  7 Mar 2022 09:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4BC6C340E9;
-        Mon,  7 Mar 2022 09:43:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A96CB810A8;
+        Mon,  7 Mar 2022 09:45:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F27D5C340F5;
+        Mon,  7 Mar 2022 09:45:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646234;
-        bh=zis2YNmlecfJhb2oUpwoY3eFIA+187AlapIw03AkN9A=;
+        s=korg; t=1646646302;
+        bh=L3QHLCQ5OOhJmUA/Fm0RyMAYg3VH6hOVsjEQvs4i3OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fOh0AvSk0bxCczygzF6rhmgkaZX0UmpwGy+YkMYFxXmEWppRN760hc+/GgEUNP0d+
-         UFE8upxGm5Uj5m4Wjgij5ZlUp6Wix2g1RCzvCHubcbpeaDTN8Mlt2/XSnVX0o4cE0b
-         Zj2t97vpjT7X4RHnJuxV8DnsJdM7+fufo9T05BgM=
+        b=Wfs5fIq/cXR0Aq93nNOHB6ms3DQbtZY+e+DOau+oOS5KPv4u3AfKxGBICvBWNFrPh
+         c84Ga5DmOTzbzkXJ12xJomBisHhTVar7hIYYw3ufO5tNU0NBRMe8mZxmd9vITphZ5D
+         gbTeF94B5uTPygdDovfpVlUvx2FDrGqyLJfqiWTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 136/262] ALSA: intel_hdmi: Fix reference to PCM buffer address
-Date:   Mon,  7 Mar 2022 10:18:00 +0100
-Message-Id: <20220307091706.293022368@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 199/262] ibmvnic: free reset-work-item when flushing
+Date:   Mon,  7 Mar 2022 10:19:03 +0100
+Message-Id: <20220307091708.281783162@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,35 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-commit 0aa6b294b312d9710804679abd2c0c8ca52cc2bc upstream.
+commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
 
-PCM buffers might be allocated dynamically when the buffer
-preallocation failed or a larger buffer is requested, and it's not
-guaranteed that substream->dma_buffer points to the actually used
-buffer.  The driver needs to refer to substream->runtime->dma_addr
-instead for the buffer address.
+Fix a tiny memory leak when flushing the reset work queue.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220302074241.30469-1-nizhen@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/x86/intel_hdmi_audio.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -1261,7 +1261,7 @@ static int had_pcm_mmap(struct snd_pcm_s
- {
- 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
- 	return remap_pfn_range(vma, vma->vm_start,
--			substream->dma_buffer.addr >> PAGE_SHIFT,
-+			substream->runtime->dma_addr >> PAGE_SHIFT,
- 			vma->vm_end - vma->vm_start, vma->vm_page_prot);
- }
- 
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2606,8 +2606,10 @@ static int ibmvnic_reset(struct ibmvnic_
+ 	 * flush reset queue and process this reset
+ 	 */
+ 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
+-		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
++		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
+ 			list_del(entry);
++			kfree(list_entry(entry, struct ibmvnic_rwi, list));
++		}
+ 	}
+ 	rwi->reset_reason = reason;
+ 	list_add_tail(&rwi->list, &adapter->rwi_list);
 
 
