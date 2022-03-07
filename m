@@ -2,65 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244268AbiCGQlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
+        id S244276AbiCGQlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:41:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244253AbiCGQlP (ORCPT
+        with ESMTP id S240217AbiCGQlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:41:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75FD4EA37;
-        Mon,  7 Mar 2022 08:40:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Mar 2022 11:41:39 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3FC506D8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:40:44 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59B0BB81632;
-        Mon,  7 Mar 2022 16:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FC4DC340EF;
-        Mon,  7 Mar 2022 16:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646671219;
-        bh=D64AUoKStrCHhLRQnKnJTF+bBWtIrtXVo6ZGfwkuq/o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AxmZwu+bSl1W8wWDQsMLHRUtJuMN96MmoZOYEKFo3xeyvyXVp6qvoICHHDQ3EZNUR
-         yLunK+eDuIEjtvnsphTmYTMu5y1EdEdBy9zUHBoQhNGNygNwXfkwAbWZjN+WwUUgYh
-         8Ize1F35ehMGTWYIjKxeGbGV5dy42CILtK2ddyxP8eBS+Xlcg79EXRZPru1fpg8Lf3
-         MXd8u+p0/2gvSQ71MwacksiyWDK8vHMwMbrmnkpGT8DgkyjWeWj4V6EAdbu092gsiE
-         ikgTUzZCNcO5g7Uch/FfR9IyG5NLGESyiuuX/f4fMyxN3sgz281stU3GuSaacpah5r
-         /g81vBEpXhxCQ==
-Date:   Mon, 7 Mar 2022 18:39:38 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 21/32] selftests/sgx: Test two different SGX2 EAUG
- flows
-Message-ID: <YiY1Slfy6CvwaTDy@iki.fi>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <32c1116934a588bd3e6c174684e3e36a05c0a4d4.1644274683.git.reinette.chatre@intel.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4F4D1210FF;
+        Mon,  7 Mar 2022 16:40:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646671243; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W8dh4GyWsuZQpOUWJYTNSBAILVfnH4W50m69Zy0f1yw=;
+        b=OhPUMq1oOMBQ0yE+CkJlnQyTUyTCss65Ch7/ZNRSTi8a4fkUBir4gF62DX+dMYyjPAFpaN
+        qpap3cgJ1Z7tG/XySu/OVwVDm5jc0msQWKtkhLToWiap2ElHVxQbZQSwmQAq+Q9A9YQ7nC
+        ILDMcFOYDurqIARM75bLM98WEvblAVE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646671243;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W8dh4GyWsuZQpOUWJYTNSBAILVfnH4W50m69Zy0f1yw=;
+        b=kKUob1H/wHo1YPnI8AbQcGpzs8kDJVK720KguYQ8y0I73thjpupeRcYOq5X4JCfo/AeSxK
+        JfKfQk81OE2aX4CA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 26DD813B93;
+        Mon,  7 Mar 2022 16:40:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id uBS0CIs1JmKYTAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 07 Mar 2022 16:40:43 +0000
+Message-ID: <07d4f687-544f-17d4-51cd-7b86aa23fb21@suse.cz>
+Date:   Mon, 7 Mar 2022 17:40:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <32c1116934a588bd3e6c174684e3e36a05c0a4d4.1644274683.git.reinette.chatre@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        linux-kernel@vger.kernel.org
+References: <20220307074057.902222-1-42.hyeyoo@gmail.com>
+ <20220307074057.902222-3-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v3 2/2] mm/slub: refactor deactivate_slab()
+In-Reply-To: <20220307074057.902222-3-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 04:45:43PM -0800, Reinette Chatre wrote:
-> +	addr = mmap((void *)self->encl.encl_base + total_size, PAGE_SIZE,
-> +		    PROT_READ | PROT_WRITE | PROT_EXEC,
-> +		    MAP_SHARED | MAP_FIXED, self->encl.fd, 0);
+On 3/7/22 08:40, Hyeonggon Yoo wrote:
+> Simplify deactivate_slab() by unlocking n->list_lock and retrying
+> cmpxchg_double() when cmpxchg_double() fails, and perform
+> add_{partial,full} only when it succeed.
+> 
+> Releasing and taking n->list_lock again here is not harmful as SLUB
+> avoids deactivating slabs as much as possible.
+> 
+> [ vbabka@suse.cz: perform add_{partial,full} when cmpxchg_double()
+>   succeed.
+> 
+>   count deactivating full slabs even if debugging flag is not set. ]
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-Maybe inline comment to just state that this is expected to work because
-the range does not contain enclave pages, just as a reminder (had xref
-to sgx_encl_may_map() to check this assumption). Otherwise, fine.
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-BR, Jarkko
+adding both to slab-next. Fixed up some nits myself, see below:
+
+>  
+> @@ -2420,61 +2416,50 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+>  	new.frozen = 0;
+>  
+>  	if (!new.inuse && n->nr_partial >= s->min_partial)
+> -		m = M_FREE;
+> +		mode = M_FREE;
+>  	else if (new.freelist) {
+
+This was against kernel style even before the patch - we use { } in the
+'else if' branch, thus all branches should use { } even if one-line.
+
+> -		m = M_PARTIAL;
+> -		if (!lock) {
+> -			lock = 1;
+> -			/*
+> -			 * Taking the spinlock removes the possibility that
+> -			 * acquire_slab() will see a slab that is frozen
+> -			 */
+> -			spin_lock_irqsave(&n->list_lock, flags);
+> -		}
+> -	} else {
+> -		m = M_FULL;
+> -		if (kmem_cache_debug_flags(s, SLAB_STORE_USER) && !lock) {
+> -			lock = 1;
+> -			/*
+> -			 * This also ensures that the scanning of full
+> -			 * slabs from diagnostic functions will not see
+> -			 * any frozen slabs.
+> -			 */
+> -			spin_lock_irqsave(&n->list_lock, flags);
+> -		}
+> -	}
+> -
+> -	if (l != m) {
+> -		if (l == M_PARTIAL)
+> -			remove_partial(n, slab);
+> -		else if (l == M_FULL)
+> -			remove_full(s, n, slab);
+> +		mode = M_PARTIAL;
+> +		/*
+> +		 * Taking the spinlock removes the possibility that
+> +		 * acquire_slab() will see a slab that is frozen
+> +		 */
+> +		spin_lock_irqsave(&n->list_lock, flags);
+> +	} else if (kmem_cache_debug_flags(s, SLAB_STORE_USER)) {
+> +		mode = M_FULL;
+> +		/*
+> +		 * This also ensures that the scanning of full
+> +		 * slabs from diagnostic functions will not see
+> +		 * any frozen slabs.
+> +		 */
+> +		spin_lock_irqsave(&n->list_lock, flags);
+> +	} else
+> +		mode = M_FULL_NOLIST;
+
+Ditto here (this is new).
+
+> -		if (m == M_PARTIAL)
+> -			add_partial(n, slab, tail);
+> -		else if (m == M_FULL)
+> -			add_full(s, n, slab);
+> -	}
+>  
+> -	l = m;
+>  	if (!cmpxchg_double_slab(s, slab,
+>  				old.freelist, old.counters,
+>  				new.freelist, new.counters,
+> -				"unfreezing slab"))
+> +				"unfreezing slab")) {
+> +		if (mode == M_PARTIAL || mode == M_FULL)
+> +			spin_unlock_irqrestore(&n->list_lock, flags);
+>  		goto redo;
+> +	}
+>  
+> -	if (lock)
+> -		spin_unlock_irqrestore(&n->list_lock, flags);
+>  
+> -	if (m == M_PARTIAL)
+> +	if (mode == M_PARTIAL) {
+> +		add_partial(n, slab, tail);
+> +		spin_unlock_irqrestore(&n->list_lock, flags);
+>  		stat(s, tail);
+> -	else if (m == M_FULL)
+> -		stat(s, DEACTIVATE_FULL);
+> -	else if (m == M_FREE) {
+> +	} else if (mode == M_FREE) {
+>  		stat(s, DEACTIVATE_EMPTY);
+>  		discard_slab(s, slab);
+>  		stat(s, FREE_SLAB);
+> -	}
+> +	} else if (mode == M_FULL) {
+> +		add_full(s, n, slab);
+> +		spin_unlock_irqrestore(&n->list_lock, flags);
+> +		stat(s, DEACTIVATE_FULL);
+> +	} else if (mode == M_FULL_NOLIST)
+> +		stat(s, DEACTIVATE_FULL);
+
+And here.
+
+>  }
+>  
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+
