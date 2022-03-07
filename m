@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13158C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA9EC46467
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241392AbiCGKjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:39:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50466 "EHLO
+        id S241249AbiCGKjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:39:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239298AbiCGKPf (ORCPT
+        with ESMTP id S241303AbiCGKKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:15:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F4B7C145;
-        Mon,  7 Mar 2022 01:57:18 -0800 (PST)
+        Mon, 7 Mar 2022 05:10:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED0329CBD;
+        Mon,  7 Mar 2022 01:52:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5123460A23;
-        Mon,  7 Mar 2022 09:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 414CEC340E9;
-        Mon,  7 Mar 2022 09:56:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E958CB810A8;
+        Mon,  7 Mar 2022 09:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5C0C340F3;
+        Mon,  7 Mar 2022 09:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646999;
-        bh=5F5auzfzkdMpSUKFR4bTjbWgfqjhnAg35Vq0NJ55ko8=;
+        s=korg; t=1646646771;
+        bh=u//V4rLROZ+2Eueqd7C40Ei0MbMJtazySQEOq/suhPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0rxXZcetrxZGoMye9mP4K9WMGkikbjOBuiX70RcbcIfcj1l8YvdMTivYT8YB3hpl
-         Qv19zXJIJX9B3CGMx9u+svKIghZpN30inRuuLJ3hxOfw4K2Ts055C3EihrZoFN1mzj
-         g2VmZFXvEzVUMkteQNHMb/w+3MSah59XELImTxCY=
+        b=ZefrhKD4FS12r4QIgQ8IKI1JO7z8C8O/d7WUJuXWLKxVXzA4W4KTztg7UKgvIDR64
+         jzq33geoukdPwigWTK5KaNpewkCPhLYwRQs8kFNbwx2rLIT16uaOCsMFNDQAglKhHj
+         1bBNXNk9IEQKHS5V7OTaX01uxjKXKdErraPINnpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 161/186] ptp: ocp: Add ptp_ocp_adjtime_coarse for large adjustments
-Date:   Mon,  7 Mar 2022 10:19:59 +0100
-Message-Id: <20220307091658.577485153@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Svenning=20S=C3=B8rensen?= <sss@secomea.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 088/186] net: dsa: microchip: fix bridging with more than two member ports
+Date:   Mon,  7 Mar 2022 10:18:46 +0100
+Message-Id: <20220307091656.545913586@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,91 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Lemon <jonathan.lemon@gmail.com>
+From: Svenning Sørensen <sss@secomea.com>
 
-[ Upstream commit 90f8f4c0e3cebd541deaa45cf0e470bb9810dd4f ]
+commit 3d00827a90db6f79abc7cdc553887f89a2e0a184 upstream.
 
-In ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime."), the
-ns adjustment was written to the FPGA register, so the clock could
-accurately perform adjustments.
+Commit b3612ccdf284 ("net: dsa: microchip: implement multi-bridge support")
+plugged a packet leak between ports that were members of different bridges.
+Unfortunately, this broke another use case, namely that of more than two
+ports that are members of the same bridge.
 
-However, the adjtime() call passes in a s64, while the clock adjustment
-registers use a s32.  When trying to perform adjustments with a large
-value (37 sec), things fail.
+After that commit, when a port is added to a bridge, hardware bridging
+between other member ports of that bridge will be cleared, preventing
+packet exchange between them.
 
-Examine the incoming delta, and if larger than 1 sec, use the original
-(coarse) adjustment method.  If smaller than 1 sec, then allow the
-FPGA to fold in the changes over a 1 second window.
+Fix by ensuring that the Port VLAN Membership bitmap includes any existing
+ports in the bridge, not just the port being added.
 
-Fixes: 6d59d4fa1789 ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime.")
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Link: https://lore.kernel.org/r/20220228203957.367371-1-jonathan.lemon@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b3612ccdf284 ("net: dsa: microchip: implement multi-bridge support")
+Signed-off-by: Svenning Sørensen <sss@secomea.com>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ptp/ptp_ocp.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c |   26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 0f1b5a7d2a89..17ad5f0d13b2 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -607,7 +607,7 @@ ptp_ocp_settime(struct ptp_clock_info *ptp_info, const struct timespec64 *ts)
- }
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -26,7 +26,7 @@ void ksz_update_port_member(struct ksz_d
+ 	struct dsa_switch *ds = dev->ds;
+ 	u8 port_member = 0, cpu_port;
+ 	const struct dsa_port *dp;
+-	int i;
++	int i, j;
  
- static void
--__ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
-+__ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
- {
- 	u32 select, ctrl;
+ 	if (!dsa_is_user_port(ds, port))
+ 		return;
+@@ -45,13 +45,33 @@ void ksz_update_port_member(struct ksz_d
+ 			continue;
+ 		if (!dp->bridge_dev || dp->bridge_dev != other_dp->bridge_dev)
+ 			continue;
++		if (other_p->stp_state != BR_STATE_FORWARDING)
++			continue;
  
-@@ -615,7 +615,7 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
- 	iowrite32(OCP_SELECT_CLK_REG, &bp->reg->select);
+-		if (other_p->stp_state == BR_STATE_FORWARDING &&
+-		    p->stp_state == BR_STATE_FORWARDING) {
++		if (p->stp_state == BR_STATE_FORWARDING) {
+ 			val |= BIT(port);
+ 			port_member |= BIT(i);
+ 		}
  
- 	iowrite32(adj_val, &bp->reg->offset_ns);
--	iowrite32(adj_val & 0x7f, &bp->reg->offset_window_ns);
-+	iowrite32(NSEC_PER_SEC, &bp->reg->offset_window_ns);
- 
- 	ctrl = OCP_CTRL_ADJUST_OFFSET | OCP_CTRL_ENABLE;
- 	iowrite32(ctrl, &bp->reg->ctrl);
-@@ -624,6 +624,22 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
- 	iowrite32(select >> 16, &bp->reg->select);
- }
- 
-+static void
-+ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
-+{
-+	struct timespec64 ts;
-+	unsigned long flags;
-+	int err;
++		/* Retain port [i]'s relationship to other ports than [port] */
++		for (j = 0; j < ds->num_ports; j++) {
++			const struct dsa_port *third_dp;
++			struct ksz_port *third_p;
 +
-+	spin_lock_irqsave(&bp->lock, flags);
-+	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
-+	if (likely(!err)) {
-+		timespec64_add_ns(&ts, delta_ns);
-+		__ptp_ocp_settime_locked(bp, &ts);
-+	}
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+}
++			if (j == i)
++				continue;
++			if (j == port)
++				continue;
++			if (!dsa_is_user_port(ds, j))
++				continue;
++			third_p = &dev->ports[j];
++			if (third_p->stp_state != BR_STATE_FORWARDING)
++				continue;
++			third_dp = dsa_to_port(ds, j);
++			if (third_dp->bridge_dev == dp->bridge_dev)
++				val |= BIT(j);
++		}
 +
- static int
- ptp_ocp_adjtime(struct ptp_clock_info *ptp_info, s64 delta_ns)
- {
-@@ -631,6 +647,11 @@ ptp_ocp_adjtime(struct ptp_clock_info *ptp_info, s64 delta_ns)
- 	unsigned long flags;
- 	u32 adj_ns, sign;
+ 		dev->dev_ops->cfg_port_member(dev, i, val | cpu_port);
+ 	}
  
-+	if (delta_ns > NSEC_PER_SEC || -delta_ns > NSEC_PER_SEC) {
-+		ptp_ocp_adjtime_coarse(bp, delta_ns);
-+		return 0;
-+	}
-+
- 	sign = delta_ns < 0 ? BIT(31) : 0;
- 	adj_ns = sign ? -delta_ns : delta_ns;
- 
--- 
-2.34.1
-
 
 
