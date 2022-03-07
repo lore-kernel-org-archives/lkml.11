@@ -2,88 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C46F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A716BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 07:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235851AbiCGHjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 02:39:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S235875AbiCGHmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 02:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235841AbiCGHjx (ORCPT
+        with ESMTP id S235804AbiCGHmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 02:39:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA59C6333;
-        Sun,  6 Mar 2022 23:38:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40E2060B0F;
-        Mon,  7 Mar 2022 07:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EE1C340F4;
-        Mon,  7 Mar 2022 07:38:56 +0000 (UTC)
-Message-ID: <8e4a35a4-1d8f-5aff-f577-2a2b87646528@xs4all.nl>
-Date:   Mon, 7 Mar 2022 08:38:55 +0100
+        Mon, 7 Mar 2022 02:42:09 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881BD11C0F
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 23:41:15 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id mr24-20020a17090b239800b001bf0a375440so10471937pjb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 06 Mar 2022 23:41:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ruPMGqeWb/VXE6LVkwLB6ZypHxDSmZyVkhBDBym4xug=;
+        b=jNmT5ZLEhdxgLwZ1JmjTYZohGGLcRGo5QlTctu0MS3frEiFMEUXaGpZg+jvYT3ZcvG
+         M2qhiugCFpTb8YY5zAvXzNABbYJMyedEjGG3zYnfpUs0to4p7AX6pHsSqW3BknHMKdOh
+         xW1pWGAMRtsELQP5p4E5e9bgCp8/34qVkyD0Hn1MMOSDagsdKCALDjXW/OSj7QTchRhj
+         rBY4r+Kl2X+661AYc1ypusciDcIhm2C1OyKwJmywgPYWQzCYa8qC43k6V5tE8VxBHHNe
+         t6lEhbWKb03Psjt0clvsWR350fdV+Iww1XizChuSNVETxIx0Y6qRQP4MWxcpCF+aQLWc
+         KoXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ruPMGqeWb/VXE6LVkwLB6ZypHxDSmZyVkhBDBym4xug=;
+        b=3/ltyZcO22+shJpEUq/FH4ZuCLwdHWWkY/GpKLmHM7G1otBIM0/vv3SBa2o5ield0N
+         HYNC3gXh04F+S7TFjO98naVE3b7eZFTtF5cNmc71LMLv8QeAW2WeyBUN3hu3En4rDksY
+         OfuvVzSX/BplqoeKKKaTPh9HTrq3bNjJDFelLMfL9fGMHvTQ9p8/4Sw60zkkLQaVwbB6
+         hU/cZO7DeOQKWtAD6g8/Cr1Sd8Upm8vNkPnNG+z21jXOkSJ8bTO8BD/4lg3cgkdlJg7S
+         N8BKynPEK2eXGn12LMSSkjNyIk6WMsOzkcGfoGYQT1JHFtqmABRwGjTlQxikgcFWmfIw
+         bnbQ==
+X-Gm-Message-State: AOAM531O5lSG7txeKNtj6i+9fUp5zO0H7HM0qdEb9oNVHHRgGXB1pRis
+        5PYYHYkfXtFYCWxSijaq8Sk=
+X-Google-Smtp-Source: ABdhPJzyXG3H1K4h7sx1RNb4/P08gwVfbKjVatmlGKX4TiG66YC4kzeYyunGk200Y0WZtMj76BehBg==
+X-Received: by 2002:a17:903:22c7:b0:151:a594:bb85 with SMTP id y7-20020a17090322c700b00151a594bb85mr10846064plg.107.1646638875071;
+        Sun, 06 Mar 2022 23:41:15 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id p10-20020a637f4a000000b00373a2760775sm10878743pgn.2.2022.03.06.23.41.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Mar 2022 23:41:14 -0800 (PST)
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     linux-mm@kvack.org
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        linux-kernel@vger.kernel.org, 42.hyeyoo@gmail.com
+Subject: [PATCH v3 0/2] slab cleanups
+Date:   Mon,  7 Mar 2022 07:40:54 +0000
+Message-Id: <20220307074057.902222-1-42.hyeyoo@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] media: atmel: atmel-isc: Fix PM disable depth
- imbalance in atmel_isc_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220105111056.4662-1-linmq006@gmail.com>
- <20220301071859.24285-1-linmq006@gmail.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <20220301071859.24285-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Changes since v2:
+	Adjusted feedback from Vlastimil. Thanks!
 
+	Dropped kmalloc subsystem generalization patches.
+	I did more work generalizing kmalloc subsystem.
+	Now they look quite bigger. I'll send them as separate
+	series with RFC.
 
-On 3/1/22 08:18, Miaoqian Lin wrote:
-> The pm_runtime_enable will increase power disable depth.
-> If the probe fails, we should use pm_runtime_disable() to balance
-> pm_runtime_enable().
-> 
-> Fixes: 0a0e265 ("media: atmel: atmel-isc: split driver into driver base and isc")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> changes in v2:
-> - remove unused label.
-> ---
->  drivers/media/platform/atmel/atmel-sama5d2-isc.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-> index 1b2063cce0f7..7f1ebbb25437 100644
-> --- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-> +++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-> @@ -559,6 +559,8 @@ static int atmel_isc_probe(struct platform_device *pdev)
->  cleanup_subdev:
->  	isc_subdev_cleanup(isc);
->  
-> +	pm_runtime_disable(dev);
+Changes since v1:
+	Adjusted comments from Matthew, VLastimil, Rientjes.
+	Thank you for feedback!
 
-Same issue as with the st-delta patch: there is one 'goto cleanup_subdev'
-that is called before the pm_runtime_enable, so this patch just introduces
-another imbalance. You need an additional goto label here and rework it a
-little bit to get this right.
+Hello, these are cleanup patches for SLUB.
+Please consider them for slab-next :)
 
-Regards,
+Any comments will be appreciated.
+Thanks.
 
-	Hans
+Hyeonggon Yoo (2):
+  mm/slub: limit number of node partial slabs only in cache creation
+  mm/slub: refactor deactivate_slab()
 
-> +
->  unregister_v4l2_device:
->  	v4l2_device_unregister(&isc->v4l2_dev);
->  
+ mm/slub.c | 105 +++++++++++++++++++++---------------------------------
+ 1 file changed, 41 insertions(+), 64 deletions(-)
+
+-- 
+2.33.1
+
