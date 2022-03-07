@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56844C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235330AbiCGJg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S237378AbiCGJg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238230AbiCGJ26 (ORCPT
+        with ESMTP id S238228AbiCGJ26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:28:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293AE66ADC;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290C566AC3;
         Mon,  7 Mar 2022 01:27:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5036C61147;
-        Mon,  7 Mar 2022 09:27:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D174C340F4;
-        Mon,  7 Mar 2022 09:26:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09315B810C2;
+        Mon,  7 Mar 2022 09:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B32DC340E9;
+        Mon,  7 Mar 2022 09:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645219;
-        bh=zm7X+mczjZZVjYf1HfHRRL5vRFs3/Yfw66muXvDoBRQ=;
+        s=korg; t=1646645216;
+        bh=GJm7fJ8uut8H1LDJ+ADgX5VYZSZ0FaWV/2sJMYkllf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ATV1TvNKwIDB4HrnqJh4dWmBy69END4ZtacPO9oweW7YOvYvdGUv99RXsuvib/SfW
-         yu2d8EK16yZhOfwysIZ10wTU84vQrP5UvCKcckZENTF9Wpmpcgczi7cYf34Z6u+ZTT
-         TYSTiFr3orB8+423Aixh29mk7muNtRj/471MptkA=
+        b=gdzZ0Elc9+k2tzpLZSpqZ1Kwrt3OH9gZfx6lB1wkiyfvrcdj1t60e/LlZxs5dVLae
+         9X27z7Pi2ITMsu+l0axxW3i9kqsJvcy0uB8F9bY97jhUqaWUaabe2dwoo3sSrwReQn
+         1umVDE6qmf1dd87pTV2ytlwV4H+gJJUrQneagfXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
-        Sven Eckelmann <sven@narfation.org>,
+        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
         Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 5.4 25/64] batman-adv: Dont expect inter-netns unique iflink indices
-Date:   Mon,  7 Mar 2022 10:18:58 +0100
-Message-Id: <20220307091639.860509666@linuxfoundation.org>
+Subject: [PATCH 5.4 24/64] batman-adv: Request iflink once in batadv_get_real_netdevice
+Date:   Mon,  7 Mar 2022 10:18:57 +0100
+Message-Id: <20220307091639.832079053@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -51,93 +50,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sven Eckelmann <sven@narfation.org>
 
-commit 6c1f41afc1dbe59d9d3c8bb0d80b749c119aa334 upstream.
+commit 6116ba09423f7d140f0460be6a1644dceaad00da upstream.
 
-The ifindex doesn't have to be unique for multiple network namespaces on
-the same machine.
+There is no need to call dev_get_iflink multiple times for the same
+net_device in batadv_get_real_netdevice. And since some of the
+ndo_get_iflink callbacks are dynamic (for example via RCUs like in
+vxcan_get_iflink), it could easily happen that the returned values are not
+stable. The pre-checks before __dev_get_by_index are then of course bogus.
 
-  $ ip netns add test1
-  $ ip -net test1 link add dummy1 type dummy
-  $ ip netns add test2
-  $ ip -net test2 link add dummy2 type dummy
-
-  $ ip -net test1 link show dev dummy1
-  6: dummy1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 96:81:55:1e:dd:85 brd ff:ff:ff:ff:ff:ff
-  $ ip -net test2 link show dev dummy2
-  6: dummy2: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 5a:3c:af:35:07:c3 brd ff:ff:ff:ff:ff:ff
-
-But the batman-adv code to walk through the various layers of virtual
-interfaces uses this assumption because dev_get_iflink handles it
-internally and doesn't return the actual netns of the iflink. And
-dev_get_iflink only documents the situation where ifindex == iflink for
-physical devices.
-
-But only checking for dev->netdev_ops->ndo_get_iflink is also not an option
-because ipoib_get_iflink implements it even when it sometimes returns an
-iflink != ifindex and sometimes iflink == ifindex. The caller must
-therefore make sure itself to check both netns and iflink + ifindex for
-equality. Only when they are equal, a "physical" interface was detected
-which should stop the traversal. On the other hand, vxcan_get_iflink can
-also return 0 in case there was currently no valid peer. In this case, it
-is still necessary to stop.
-
-Fixes: b7eddd0b3950 ("batman-adv: prevent using any virtual device created on batman-adv as hard-interface")
 Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
-Reported-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: Sven Eckelmann <sven@narfation.org>
 Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/batman-adv/hard-interface.c |   19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ net/batman-adv/hard-interface.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 --- a/net/batman-adv/hard-interface.c
 +++ b/net/batman-adv/hard-interface.c
-@@ -159,13 +159,15 @@ static bool batadv_is_on_batman_iface(co
- 		return true;
+@@ -217,14 +217,16 @@ static struct net_device *batadv_get_rea
+ 	struct net_device *real_netdev = NULL;
+ 	struct net *real_net;
+ 	struct net *net;
+-	int ifindex;
++	int iflink;
  
- 	iflink = dev_get_iflink(net_dev);
--
--	/* no more parents..stop recursion */
--	if (iflink == 0 || iflink == net_dev->ifindex)
-+	if (iflink == 0)
- 		return false;
+ 	ASSERT_RTNL();
  
- 	parent_net = batadv_getlink_net(net_dev, net);
- 
-+	/* iflink to itself, most likely physical device */
-+	if (net == parent_net && iflink == net_dev->ifindex)
-+		return false;
-+
- 	/* recurse over the parent device */
- 	parent_dev = __dev_get_by_index((struct net *)parent_net, iflink);
- 	/* if we got a NULL parent_dev there is something broken.. */
-@@ -225,8 +227,7 @@ static struct net_device *batadv_get_rea
+ 	if (!netdev)
  		return NULL;
  
- 	iflink = dev_get_iflink(netdev);
--
--	if (netdev->ifindex == iflink) {
-+	if (iflink == 0) {
+-	if (netdev->ifindex == dev_get_iflink(netdev)) {
++	iflink = dev_get_iflink(netdev);
++
++	if (netdev->ifindex == iflink) {
  		dev_hold(netdev);
  		return netdev;
  	}
-@@ -237,6 +238,14 @@ static struct net_device *batadv_get_rea
+@@ -234,9 +236,8 @@ static struct net_device *batadv_get_rea
+ 		goto out;
  
  	net = dev_net(hard_iface->soft_iface);
+-	ifindex = dev_get_iflink(netdev);
  	real_net = batadv_getlink_net(netdev, net);
-+
-+	/* iflink to itself, most likely physical device */
-+	if (net == real_net && netdev->ifindex == iflink) {
-+		real_netdev = netdev;
-+		dev_hold(real_netdev);
-+		goto out;
-+	}
-+
- 	real_netdev = dev_get_by_index(real_net, iflink);
+-	real_netdev = dev_get_by_index(real_net, ifindex);
++	real_netdev = dev_get_by_index(real_net, iflink);
  
  out:
+ 	if (hard_iface)
 
 
