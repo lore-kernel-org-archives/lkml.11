@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC87C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42252C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbiCGKgv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
+        id S240522AbiCGKg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:36:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242218AbiCGKLS (ORCPT
+        with ESMTP id S242212AbiCGKLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:11:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9893A888F1;
-        Mon,  7 Mar 2022 01:54:41 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C46C888DA;
+        Mon,  7 Mar 2022 01:54:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D152360919;
-        Mon,  7 Mar 2022 09:54:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFF9C340F3;
-        Mon,  7 Mar 2022 09:54:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DF41609D1;
+        Mon,  7 Mar 2022 09:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58C2BC340E9;
+        Mon,  7 Mar 2022 09:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646848;
-        bh=q+N6qQHHbewH0S9LAj4Ur73Dl++E5J0JYWwl7aZW/7g=;
+        s=korg; t=1646646877;
+        bh=huafkLBrnu/F1EmTPPA+2e+YjFdAap1arJHRGX0eidc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iNVqbw/uKeapB8KgM0P7ek4sdvPqM2A98RyG5ZtPqzxSt5NuWDLW9xIBGTo2vuptl
-         RgFGO4OLWBBhsexyLplGfhfigu3sHuBdPX/GyFv+SyuXX4dBJF/gWnGHA3gGo3K1sn
-         hK75J/ruH+DYSmz4QAug3xDPLBXcb0+7/qS826P0=
+        b=FpLZtwlnW3Z/41XxSndX1ZOn4+hIQEqfEVRSjCkkCTpjpY2vwt18ucvC/Ak52AEV1
+         0F3TDOwQhbf+83Nz1UZ75CmFTjkx5SlZLpi5DRhPQ4kAzz2KW0xIgyWTHwFF9CB4TY
+         f1FJEJMjnkR87IK5d7deuJ8JiDyiY9oquvFkF3I8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.16 106/186] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
-Date:   Mon,  7 Mar 2022 10:19:04 +0100
-Message-Id: <20220307091657.042822329@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 122/186] arm64: dts: rockchip: fix Quartz64-A ddr regulator voltage
+Date:   Mon,  7 Mar 2022 10:19:20 +0100
+Message-Id: <20220307091657.491870743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,67 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Peter Geis <pgwipeout@gmail.com>
 
-commit b5fbaf7d779f5f02b7f75b080e7707222573be2a upstream.
+[ Upstream commit ad02776cf8d083e28b1ca4d93d8b1949668c27cc ]
 
-Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-switched the platform to SPDIF, but we didn't fix up the device tree.
+The Quartz64 Model A uses a voltage divider to ensure ddr voltage is
+within specification from the default regulator configuration.
+Adjusting this voltage is detrimental, and currently causes the ddr
+voltage to be about 0.8v.
 
-Drop the pinctrl settings, because the 'spdif_bus' pins are either:
- * unused (on kevin, bob), so the settings is ~harmless
- * used by a different function (on scarlet), which causes probe
-   failures (!!)
+Remove the min and max voltage setpoints for the ddr regulator.
 
-Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Link: https://lore.kernel.org/r/20220114150129.v2.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid
+Fixes: b33a22a1e7c4 ("arm64: dts: rockchip: add basic dts for Pine64 Quartz64-A")
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Link: https://lore.kernel.org/r/20220128003809.3291407-2-pgwipeout@gmail.com
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi |   17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-@@ -286,7 +286,7 @@
- 
- 	sound: sound {
- 		compatible = "rockchip,rk3399-gru-sound";
--		rockchip,cpu = <&i2s0 &i2s2>;
-+		rockchip,cpu = <&i2s0 &spdif>;
- 	};
- };
- 
-@@ -437,10 +437,6 @@ ap_i2c_audio: &i2c8 {
- 	status = "okay";
- };
- 
--&i2s2 {
--	status = "okay";
--};
--
- &io_domains {
- 	status = "okay";
- 
-@@ -537,6 +533,17 @@ ap_i2c_audio: &i2c8 {
- 	vqmmc-supply = <&ppvar_sd_card_io>;
- };
- 
-+&spdif {
-+	status = "okay";
-+
-+	/*
-+	 * SPDIF is routed internally to DP; we either don't use these pins, or
-+	 * mux them to something else.
-+	 */
-+	/delete-property/ pinctrl-0;
-+	/delete-property/ pinctrl-names;
-+};
-+
- &spi1 {
- 	status = "okay";
- 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
+index 4d4b2a301b1a..f6290538c8a4 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
+@@ -285,8 +285,6 @@
+ 			vcc_ddr: DCDC_REG3 {
+ 				regulator-always-on;
+ 				regulator-boot-on;
+-				regulator-min-microvolt = <1100000>;
+-				regulator-max-microvolt = <1100000>;
+ 				regulator-initial-mode = <0x2>;
+ 				regulator-name = "vcc_ddr";
+ 				regulator-state-mem {
+-- 
+2.34.1
+
 
 
