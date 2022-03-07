@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A33C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242523AbiCGU5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:57:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S244423AbiCGU5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:57:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239402AbiCGU5X (ORCPT
+        with ESMTP id S245475AbiCGU5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:57:23 -0500
+        Mon, 7 Mar 2022 15:57:43 -0500
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BFF3150A
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:56:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F36C37029
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:56:47 -0800 (PST)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nRKM8-0002DJ-0K; Mon, 07 Mar 2022 21:53:24 +0100
+        id 1nRKM6-0002DJ-9K; Mon, 07 Mar 2022 21:53:22 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -31,9 +31,9 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v7 12/13] riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-Date:   Mon,  7 Mar 2022 21:53:09 +0100
-Message-Id: <20220307205310.1905628-13-heiko@sntech.de>
+Subject: [PATCH v7 10/13] riscv: add cpufeature handling via alternatives
+Date:   Mon,  7 Mar 2022 21:53:07 +0100
+Message-Id: <20220307205310.1905628-11-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220307205310.1905628-1-heiko@sntech.de>
 References: <20220307205310.1905628-1-heiko@sntech.de>
@@ -43,29 +43,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If not defined in the arch, FIXMAP_PAGE_IO defaults to PAGE_KERNEL_IO,
-which we defined when adding the svpbmt implementation.
+Some cpufeatures should be handled via the alternatives mechanism
+to not incur penalties on unsupporting variants.
 
-So drop the FIXMAP_PAGE_IO riscv define.
+So add a mechanism to handle these similar to cpu erratas.
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/include/asm/fixmap.h | 2 --
- 1 file changed, 2 deletions(-)
+ arch/riscv/include/asm/alternative.h |  3 ++
+ arch/riscv/include/asm/errata_list.h |  2 +
+ arch/riscv/kernel/alternative.c      |  2 +
+ arch/riscv/kernel/cpufeature.c       | 57 +++++++++++++++++++++++++++-
+ 4 files changed, 63 insertions(+), 1 deletion(-)
 
-diff --git a/arch/riscv/include/asm/fixmap.h b/arch/riscv/include/asm/fixmap.h
-index 58a718573ad6..692e25e56d8e 100644
---- a/arch/riscv/include/asm/fixmap.h
-+++ b/arch/riscv/include/asm/fixmap.h
-@@ -44,8 +44,6 @@ enum fixed_addresses {
- 	__end_of_fixed_addresses
- };
+diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
+index f0657b1b3174..cf3b22173834 100644
+--- a/arch/riscv/include/asm/alternative.h
++++ b/arch/riscv/include/asm/alternative.h
+@@ -39,5 +39,8 @@ struct errata_checkfunc_id {
+ void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
+ 			      unsigned long archid, unsigned long impid,
+ 			      unsigned int stage);
++
++void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
++				 unsigned int stage);
+ #endif
+ #endif
+diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
+index 5f1046e82d9f..6b95bd9aee82 100644
+--- a/arch/riscv/include/asm/errata_list.h
++++ b/arch/riscv/include/asm/errata_list.h
+@@ -14,6 +14,8 @@
+ #define	ERRATA_SIFIVE_NUMBER 2
+ #endif
  
--#define FIXMAP_PAGE_IO		PAGE_KERNEL
--
- #define __early_set_fixmap	__set_fixmap
++#define	CPUFEATURE_NUMBER 0
++
+ #ifdef __ASSEMBLY__
  
- #define __late_set_fixmap	__set_fixmap
+ #define ALT_INSN_FAULT(x)						\
+diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
+index 223770b3945c..e6c9de9f9ba6 100644
+--- a/arch/riscv/kernel/alternative.c
++++ b/arch/riscv/kernel/alternative.c
+@@ -63,6 +63,8 @@ static void __init_or_module _apply_alternatives(struct alt_entry *begin,
+ 						 struct alt_entry *end,
+ 						 unsigned int stage)
+ {
++	riscv_cpufeature_patch_func(begin, end, stage);
++
+ 	if (!vendor_patch_func)
+ 		return;
+ 
+diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+index f3a4b0619aa0..92d4b4c25d47 100644
+--- a/arch/riscv/kernel/cpufeature.c
++++ b/arch/riscv/kernel/cpufeature.c
+@@ -8,9 +8,14 @@
+ 
+ #include <linux/bitmap.h>
+ #include <linux/ctype.h>
++#include <linux/module.h>
+ #include <linux/of.h>
+-#include <asm/processor.h>
++#include <asm/alternative.h>
++#include <asm/errata_list.h>
+ #include <asm/hwcap.h>
++#include <asm/patch.h>
++#include <asm/pgtable.h>
++#include <asm/processor.h>
+ #include <asm/smp.h>
+ #include <asm/switch_to.h>
+ 
+@@ -237,3 +242,53 @@ void __init riscv_fill_hwcap(void)
+ 		static_branch_enable(&cpu_hwcap_fpu);
+ #endif
+ }
++
++struct cpufeature_info {
++	char name[ERRATA_STRING_LENGTH_MAX];
++	bool (*check_func)(unsigned int stage);
++};
++
++static const struct cpufeature_info __initdata_or_module cpufeature_list[CPUFEATURE_NUMBER] = {
++};
++
++static u32 __init_or_module cpufeature_probe(unsigned int stage)
++{
++	const struct cpufeature_info *info;
++	u32 cpu_req_feature = 0;
++	int idx;
++
++	for (idx = 0; idx < CPUFEATURE_NUMBER; idx++) {
++		info = &cpufeature_list[idx];
++
++		if (info->check_func(stage))
++			cpu_req_feature |= (1U << idx);
++	}
++
++	return cpu_req_feature;
++}
++
++void __init_or_module riscv_cpufeature_patch_func(struct alt_entry *begin,
++						  struct alt_entry *end,
++						  unsigned int stage)
++{
++	u32 cpu_req_feature = cpufeature_probe(stage);
++	u32 cpu_apply_feature = 0;
++	struct alt_entry *alt;
++	u32 tmp;
++
++	for (alt = begin; alt < end; alt++) {
++		if (alt->vendor_id != 0)
++			continue;
++		if (alt->errata_id >= CPUFEATURE_NUMBER) {
++			WARN(1, "This feature id:%d is not in kernel cpufeature list",
++				alt->errata_id);
++			continue;
++		}
++
++		tmp = (1U << alt->errata_id);
++		if (cpu_req_feature & tmp) {
++			patch_text_nosync(alt->old_ptr, alt->alt_ptr, alt->alt_len);
++			cpu_apply_feature |= tmp;
++		}
++	}
++}
 -- 
 2.30.2
 
