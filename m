@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:35:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237568AbiCGJgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:36:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        id S237652AbiCGJgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237647AbiCGJ2R (ORCPT
+        with ESMTP id S238399AbiCGJ3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:17 -0500
+        Mon, 7 Mar 2022 04:29:09 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEA26AA63;
-        Mon,  7 Mar 2022 01:25:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882AE66F87;
+        Mon,  7 Mar 2022 01:27:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B65E2B810B9;
-        Mon,  7 Mar 2022 09:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF12C340F3;
-        Mon,  7 Mar 2022 09:25:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C80AB810AC;
+        Mon,  7 Mar 2022 09:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E9EC340F3;
+        Mon,  7 Mar 2022 09:27:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645145;
-        bh=l/hF19ts1pVffdE2/W6xqEpFVxjmTbWSdZr2grIVloI=;
+        s=korg; t=1646645235;
+        bh=6IjUGTiW8p4e+fU2RmYZBwhQ+7d4bpZmupWB9zHQXDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uEmlSwFoQ7CtG7dSTmRXKxYuR6sn5h+vmspFCJZ1eEs118uUW8DdCkyfBH2KkmuvB
-         QOn0XsvQ4UCFa5zvP4s1mv8mlgEOo8SHAD35D42WzIbtgQDLss2qtxnXyB3NDAp1mp
-         jW36X1CPxi+a9KP4COXhhwqmX9U6yptQ3finjUSE=
+        b=Nu410yVuTdIQTHyVP1dX08A8WZXfMB8ZySEJkeTuLTZq/k/dRRbcLhFISCRnPKWc1
+         496AV3d/w+BWjm/ofZd6H2/ajmauwvR9HIX+8BSa0cep3ydK8TiWF4E9gVQh6PqlGh
+         HFc1MkzBfSwoBKLyNtiZtmCF+9qFZJnnvWceRVsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
         Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.19 29/51] block: Fix fsync always failed if once failed
-Date:   Mon,  7 Mar 2022 10:19:04 +0100
-Message-Id: <20220307091637.820937128@linuxfoundation.org>
+Subject: [PATCH 5.4 29/64] block: Fix fsync always failed if once failed
+Date:   Mon,  7 Mar 2022 10:19:02 +0100
+Message-Id: <20220307091639.971939559@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-References: <20220307091636.988950823@linuxfoundation.org>
+In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
+References: <20220307091639.136830784@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,17 +96,17 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/block/blk-flush.c
 +++ b/block/blk-flush.c
-@@ -239,8 +239,10 @@ static void flush_end_io(struct request
- 			return;
- 		}
+@@ -222,8 +222,10 @@ static void flush_end_io(struct request
+ 		return;
+ 	}
  
--		if (fq->rq_status != BLK_STS_OK)
-+		if (fq->rq_status != BLK_STS_OK) {
- 			error = fq->rq_status;
-+			fq->rq_status = BLK_STS_OK;
-+		}
+-	if (fq->rq_status != BLK_STS_OK)
++	if (fq->rq_status != BLK_STS_OK) {
+ 		error = fq->rq_status;
++		fq->rq_status = BLK_STS_OK;
++	}
  
- 		hctx = blk_mq_map_queue(q, flush_rq->mq_ctx->cpu);
- 		if (!q->elevator) {
+ 	hctx = flush_rq->mq_hctx;
+ 	if (!q->elevator) {
 
 
