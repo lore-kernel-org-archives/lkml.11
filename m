@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCBBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59771C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237964AbiCGJm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:42:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
+        id S237852AbiCGJmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:42:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiCGJcu (ORCPT
+        with ESMTP id S237704AbiCGJdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:32:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCE95DE4C;
-        Mon,  7 Mar 2022 01:29:46 -0800 (PST)
+        Mon, 7 Mar 2022 04:33:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF136AA4E;
+        Mon,  7 Mar 2022 01:30:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FC4EB810B2;
-        Mon,  7 Mar 2022 09:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 191F0C340E9;
-        Mon,  7 Mar 2022 09:29:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2460611EC;
+        Mon,  7 Mar 2022 09:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC059C340F5;
+        Mon,  7 Mar 2022 09:29:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645373;
-        bh=Xs82X3vYzB+vo4Y5ziej9+mfchUN9IptXOlbGV1QJdA=;
+        s=korg; t=1646645397;
+        bh=OPairPbhUOTqUDIxGFauf9QTL0KPMO5IQu105xh9w0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mQIqhdug/HiMi5lWNgj7sIUCx0X3SX4oon6KllTHotIQZkZLbEzVEDy9251Ua6NH5
-         N3XkTwAxNiAyxnQXNsMimvZa+Pa4oqzAiy/sPyfmjIxMzKKIpNLmWNCPqb3lYNotPo
-         uiCfqGahgTl400JvgDb/so3KLpR9gSkyrsSsy76o=
+        b=A+cZKjLrWQXgx+D7/m2AHkWpdw09IUgakyDDEr58+bOxHuetvohps+CyhB5o/hMQk
+         hdZIV70MRvH6a9MyZSFT3JV+jRQvKg0GtRTidNknqXXm/OvR1cEcJZp/y5b93bwuLg
+         bPDMIT7+/gxkLKK2z0pxXIQQSDURwNpwkSSqH200=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org,
+        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 010/105] cifs: fix double free race when mount fails in cifs_get_root()
-Date:   Mon,  7 Mar 2022 10:18:13 +0100
-Message-Id: <20220307091644.473806523@linuxfoundation.org>
+Subject: [PATCH 5.10 018/105] exfat: reuse exfat_inode_info variable instead of calling EXFAT_I()
+Date:   Mon,  7 Mar 2022 10:18:21 +0100
+Message-Id: <20220307091644.696426921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,93 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
 
-[ Upstream commit 3d6cc9898efdfb062efb74dc18cfc700e082f5d5 ]
+[ Upstream commit 7dee6f57d7f22a89dd214518c778aec448270d4c ]
 
-When cifs_get_root() fails during cifs_smb3_do_mount() we call
-deactivate_locked_super() which eventually will call delayed_free() which
-will free the context.
-In this situation we should not proceed to enter the out: section in
-cifs_smb3_do_mount() and free the same resources a second time.
+Also add a local "struct exfat_inode_info *ei" variable to
+exfat_truncate() to simplify the code.
 
-[Thu Feb 10 12:59:06 2022] BUG: KASAN: use-after-free in rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022] Read of size 8 at addr ffff888364f4d110 by task swapper/1/0
-
-[Thu Feb 10 12:59:06 2022] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE     5.17.0-rc3+ #4
-[Thu Feb 10 12:59:06 2022] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.0 12/17/2019
-[Thu Feb 10 12:59:06 2022] Call Trace:
-[Thu Feb 10 12:59:06 2022]  <IRQ>
-[Thu Feb 10 12:59:06 2022]  dump_stack_lvl+0x5d/0x78
-[Thu Feb 10 12:59:06 2022]  print_address_description.constprop.0+0x24/0x150
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  kasan_report.cold+0x7d/0x117
-[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  __asan_load8+0x86/0xa0
-[Thu Feb 10 12:59:06 2022]  rcu_cblist_dequeue+0x32/0x60
-[Thu Feb 10 12:59:06 2022]  rcu_core+0x547/0xca0
-[Thu Feb 10 12:59:06 2022]  ? call_rcu+0x3c0/0x3c0
-[Thu Feb 10 12:59:06 2022]  ? __this_cpu_preempt_check+0x13/0x20
-[Thu Feb 10 12:59:06 2022]  ? lock_is_held_type+0xea/0x140
-[Thu Feb 10 12:59:06 2022]  rcu_core_si+0xe/0x10
-[Thu Feb 10 12:59:06 2022]  __do_softirq+0x1d4/0x67b
-[Thu Feb 10 12:59:06 2022]  __irq_exit_rcu+0x100/0x150
-[Thu Feb 10 12:59:06 2022]  irq_exit_rcu+0xe/0x30
-[Thu Feb 10 12:59:06 2022]  sysvec_hyperv_stimer0+0x9d/0xc0
-...
-[Thu Feb 10 12:59:07 2022] Freed by task 58179:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  kasan_set_track+0x25/0x30
-[Thu Feb 10 12:59:07 2022]  kasan_set_free_info+0x24/0x40
-[Thu Feb 10 12:59:07 2022]  ____kasan_slab_free+0x137/0x170
-[Thu Feb 10 12:59:07 2022]  __kasan_slab_free+0x12/0x20
-[Thu Feb 10 12:59:07 2022]  slab_free_freelist_hook+0xb3/0x1d0
-[Thu Feb 10 12:59:07 2022]  kfree+0xcd/0x520
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0x149/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-[Thu Feb 10 12:59:07 2022] Last potentially related work creation:
-[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
-[Thu Feb 10 12:59:07 2022]  __kasan_record_aux_stack+0xb6/0xc0
-[Thu Feb 10 12:59:07 2022]  kasan_record_aux_stack_noalloc+0xb/0x10
-[Thu Feb 10 12:59:07 2022]  call_rcu+0x76/0x3c0
-[Thu Feb 10 12:59:07 2022]  cifs_umount+0xce/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  cifs_kill_sb+0xc8/0xe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  deactivate_locked_super+0x5d/0xd0
-[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0xab9/0xbe0 [cifs]
-[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
-[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
-[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
-[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
-[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
-[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Reported-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/exfat/file.c  | 14 +++++++-------
+ fs/exfat/inode.c |  9 ++++-----
+ fs/exfat/namei.c |  6 +++---
+ fs/exfat/super.c |  6 +++---
+ 4 files changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index f0ed29a9a6f11..aa5a4d759ca23 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -864,6 +864,7 @@ cifs_smb3_do_mount(struct file_system_type *fs_type,
+diff --git a/fs/exfat/file.c b/fs/exfat/file.c
+index a92478eabfa4e..6258c5da3060b 100644
+--- a/fs/exfat/file.c
++++ b/fs/exfat/file.c
+@@ -109,8 +109,7 @@ int __exfat_truncate(struct inode *inode, loff_t new_size)
+ 	exfat_set_volume_dirty(sb);
  
- out_super:
- 	deactivate_locked_super(sb);
-+	return root;
- out:
- 	cifs_cleanup_volume_info(volume_info);
- 	return root;
+ 	num_clusters_new = EXFAT_B_TO_CLU_ROUND_UP(i_size_read(inode), sbi);
+-	num_clusters_phys =
+-		EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk, sbi);
++	num_clusters_phys = EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ 
+ 	exfat_chain_set(&clu, ei->start_clu, num_clusters_phys, ei->flags);
+ 
+@@ -227,12 +226,13 @@ void exfat_truncate(struct inode *inode, loff_t size)
+ {
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
++	struct exfat_inode_info *ei = EXFAT_I(inode);
+ 	unsigned int blocksize = i_blocksize(inode);
+ 	loff_t aligned_size;
+ 	int err;
+ 
+ 	mutex_lock(&sbi->s_lock);
+-	if (EXFAT_I(inode)->start_clu == 0) {
++	if (ei->start_clu == 0) {
+ 		/*
+ 		 * Empty start_clu != ~0 (not allocated)
+ 		 */
+@@ -259,11 +259,11 @@ void exfat_truncate(struct inode *inode, loff_t size)
+ 		aligned_size++;
+ 	}
+ 
+-	if (EXFAT_I(inode)->i_size_ondisk > i_size_read(inode))
+-		EXFAT_I(inode)->i_size_ondisk = aligned_size;
++	if (ei->i_size_ondisk > i_size_read(inode))
++		ei->i_size_ondisk = aligned_size;
+ 
+-	if (EXFAT_I(inode)->i_size_aligned > i_size_read(inode))
+-		EXFAT_I(inode)->i_size_aligned = aligned_size;
++	if (ei->i_size_aligned > i_size_read(inode))
++		ei->i_size_aligned = aligned_size;
+ 	mutex_unlock(&sbi->s_lock);
+ }
+ 
+diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
+index 8b0288f70e93d..d7f11b7ab46c5 100644
+--- a/fs/exfat/inode.c
++++ b/fs/exfat/inode.c
+@@ -114,10 +114,9 @@ static int exfat_map_cluster(struct inode *inode, unsigned int clu_offset,
+ 	unsigned int local_clu_offset = clu_offset;
+ 	unsigned int num_to_be_allocated = 0, num_clusters = 0;
+ 
+-	if (EXFAT_I(inode)->i_size_ondisk > 0)
++	if (ei->i_size_ondisk > 0)
+ 		num_clusters =
+-			EXFAT_B_TO_CLU_ROUND_UP(EXFAT_I(inode)->i_size_ondisk,
+-			sbi);
++			EXFAT_B_TO_CLU_ROUND_UP(ei->i_size_ondisk, sbi);
+ 
+ 	if (clu_offset >= num_clusters)
+ 		num_to_be_allocated = clu_offset - num_clusters + 1;
+@@ -415,10 +414,10 @@ static int exfat_write_end(struct file *file, struct address_space *mapping,
+ 
+ 	err = generic_write_end(file, mapping, pos, len, copied, pagep, fsdata);
+ 
+-	if (EXFAT_I(inode)->i_size_aligned < i_size_read(inode)) {
++	if (ei->i_size_aligned < i_size_read(inode)) {
+ 		exfat_fs_error(inode->i_sb,
+ 			"invalid size(size(%llu) > aligned(%llu)\n",
+-			i_size_read(inode), EXFAT_I(inode)->i_size_aligned);
++			i_size_read(inode), ei->i_size_aligned);
+ 		return -EIO;
+ 	}
+ 
+diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
+index 2932b23a3b6c3..935f600509009 100644
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -395,9 +395,9 @@ static int exfat_find_empty_entry(struct inode *inode,
+ 
+ 		/* directory inode should be updated in here */
+ 		i_size_write(inode, size);
+-		EXFAT_I(inode)->i_size_ondisk += sbi->cluster_size;
+-		EXFAT_I(inode)->i_size_aligned += sbi->cluster_size;
+-		EXFAT_I(inode)->flags = p_dir->flags;
++		ei->i_size_ondisk += sbi->cluster_size;
++		ei->i_size_aligned += sbi->cluster_size;
++		ei->flags = p_dir->flags;
+ 		inode->i_blocks += 1 << sbi->sect_per_clus_bits;
+ 	}
+ 
+diff --git a/fs/exfat/super.c b/fs/exfat/super.c
+index c6d8d2e534865..7b91214a4110e 100644
+--- a/fs/exfat/super.c
++++ b/fs/exfat/super.c
+@@ -366,9 +366,9 @@ static int exfat_read_root(struct inode *inode)
+ 
+ 	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
+ 			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
+-	EXFAT_I(inode)->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
+-	EXFAT_I(inode)->i_size_aligned = i_size_read(inode);
+-	EXFAT_I(inode)->i_size_ondisk = i_size_read(inode);
++	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
++	ei->i_size_aligned = i_size_read(inode);
++	ei->i_size_ondisk = i_size_read(inode);
+ 
+ 	exfat_save_attr(inode, ATTR_SUBDIR);
+ 	inode->i_mtime = inode->i_atime = inode->i_ctime = ei->i_crtime =
 -- 
 2.34.1
 
