@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238258AbiCGJvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:51:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        id S235493AbiCGJv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240926AbiCGJll (ORCPT
+        with ESMTP id S240976AbiCGJln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897526B0B0;
-        Mon,  7 Mar 2022 01:38:41 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9CF5BE42;
+        Mon,  7 Mar 2022 01:38:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4055AB810CF;
-        Mon,  7 Mar 2022 09:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A79A3C340E9;
-        Mon,  7 Mar 2022 09:38:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E0AAB810BD;
+        Mon,  7 Mar 2022 09:38:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E43C340E9;
+        Mon,  7 Mar 2022 09:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645919;
-        bh=+Bkcp0VCYZzyHwRdT0c8Yl/OQ/o5Uwu0mG4gMVfVeC4=;
+        s=korg; t=1646645932;
+        bh=np/VDDuSzK0U7l3ywkzyCKXrtcwvE2mSNRZWXCFH3oM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2T2qPKZMQ55Dlg/nuXUyRQU/Ymi0pVWQ7TqELTf79pUS+bHMDQ66GKdjcY6Ta1mu6
-         XEsIACRD7s7ya7j5UQhInLbELSZ2CnRVwSatSgqGQeP81lGtWLK2DZE8prDCjBhItX
-         aH0pFJ5nmF7oFvk0w/U4xkkF/X6O9WhlqMa6e9z0=
+        b=AcxYnBHMOOcFKCUaZreVlVcOaV8GiigyfFlbbWi14nMM0kvmwwOfWkyD+tcUl404l
+         bmFPPxWeDnZvr9D8LYdoA7XnG1q2oX4AAjOOoPlAS6iSk7LbZ6mdwueIEO8kOBhDCP
+         lp5nQ6TG5zgC8qfDfFnth2ajJ5SoVJ/1IV+8smUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/262] Revert "nfsd: skip some unnecessary stats in the v4 case"
-Date:   Mon,  7 Mar 2022 10:17:00 +0100
-Message-Id: <20220307091704.638467217@linuxfoundation.org>
+Subject: [PATCH 5.15 044/262] NFSD: Fix zero-length NFSv3 WRITEs
+Date:   Mon,  7 Mar 2022 10:16:28 +0100
+Message-Id: <20220307091703.765871345@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,137 +52,88 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 58f258f65267542959487dbe8b5641754411843d ]
+[ Upstream commit 6a2f774424bfdcc2df3e17de0cefe74a4269cad5 ]
 
-On the wire, I observed NFSv4 OPEN(CREATE) operations sometimes
-returning a reasonable-looking value in the cinfo.before field and
-zero in the cinfo.after field.
+The Linux NFS server currently responds to a zero-length NFSv3 WRITE
+request with NFS3ERR_IO. It responds to a zero-length NFSv4 WRITE
+with NFS4_OK and count of zero.
 
-RFC 8881 Section 10.8.1 says:
-> When a client is making changes to a given directory, it needs to
-> determine whether there have been changes made to the directory by
-> other clients.  It does this by using the change attribute as
-> reported before and after the directory operation in the associated
-> change_info4 value returned for the operation.
+RFC 1813 says of the WRITE procedure's @count argument:
 
-and
+count
+         The number of bytes of data to be written. If count is
+         0, the WRITE will succeed and return a count of 0,
+         barring errors due to permissions checking.
 
-> ... The post-operation change
-> value needs to be saved as the basis for future change_info4
-> comparisons.
+RFC 8881 has similar language for NFSv4, though NFSv4 removed the
+explicit @count argument because that value is already contained in
+the opaque payload array.
 
-A good quality client implementation therefore saves the zero
-cinfo.after value. During a subsequent OPEN operation, it will
-receive a different non-zero value in the cinfo.before field for
-that directory, and it will incorrectly believe the directory has
-changed, triggering an undesirable directory cache invalidation.
+The synthetic client pynfs's WRT4 and WRT15 tests do emit zero-
+length WRITEs to exercise this spec requirement. Commit fdec6114ee1f
+("nfsd4: zero-length WRITE should succeed") addressed the same
+problem there with the same fix.
 
-There are filesystem types where fs_supports_change_attribute()
-returns false, tmpfs being one. On NFSv4 mounts, this means the
-fh_getattr() call site in fill_pre_wcc() and fill_post_wcc() is
-never invoked. Subsequently, nfsd4_change_attribute() is invoked
-with an uninitialized @stat argument.
+But interestingly the Linux NFS client does not appear to emit zero-
+length WRITEs, instead squelching them. I'm not aware of a test that
+can generate such WRITEs for NFSv3, so I wrote a naive C program to
+generate a zero-length WRITE and test this fix.
 
-In fill_pre_wcc(), @stat contains stale stack garbage, which is
-then placed on the wire. In fill_post_wcc(), ->fh_post_wc is all
-zeroes, so zero is placed on the wire. Both of these values are
-meaningless.
-
-This fix can be applied immediately to stable kernels. Once there
-are more regression tests in this area, this optimization can be
-attempted again.
-
-Fixes: 428a23d2bf0c ("nfsd: skip some unnecessary stats in the v4 case")
+Fixes: 8154ef2776aa ("NFSD: Clean up legacy NFS WRITE argument XDR decoders")
+Reported-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/nfs3xdr.c | 44 +++++++++++++++++---------------------------
- 1 file changed, 17 insertions(+), 27 deletions(-)
+ fs/nfsd/nfs3proc.c | 6 +-----
+ fs/nfsd/nfsproc.c  | 5 -----
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/fs/nfsd/nfs3xdr.c b/fs/nfsd/nfs3xdr.c
-index 0ee156b9c9d71..48d4f99b7f901 100644
---- a/fs/nfsd/nfs3xdr.c
-+++ b/fs/nfsd/nfs3xdr.c
-@@ -487,11 +487,6 @@ svcxdr_encode_wcc_data(struct svc_rqst *rqstp, struct xdr_stream *xdr,
- 	return true;
- }
- 
--static bool fs_supports_change_attribute(struct super_block *sb)
--{
--	return sb->s_flags & SB_I_VERSION || sb->s_export_op->fetch_iversion;
--}
--
- /*
-  * Fill in the pre_op attr for the wcc data
-  */
-@@ -500,26 +495,24 @@ void fill_pre_wcc(struct svc_fh *fhp)
- 	struct inode    *inode;
- 	struct kstat	stat;
- 	bool v4 = (fhp->fh_maxsize == NFS4_FHSIZE);
-+	__be32 err;
- 
- 	if (fhp->fh_no_wcc || fhp->fh_pre_saved)
- 		return;
- 	inode = d_inode(fhp->fh_dentry);
--	if (fs_supports_change_attribute(inode->i_sb) || !v4) {
--		__be32 err = fh_getattr(fhp, &stat);
--
--		if (err) {
--			/* Grab the times from inode anyway */
--			stat.mtime = inode->i_mtime;
--			stat.ctime = inode->i_ctime;
--			stat.size  = inode->i_size;
--		}
--		fhp->fh_pre_mtime = stat.mtime;
--		fhp->fh_pre_ctime = stat.ctime;
--		fhp->fh_pre_size  = stat.size;
-+	err = fh_getattr(fhp, &stat);
-+	if (err) {
-+		/* Grab the times from inode anyway */
-+		stat.mtime = inode->i_mtime;
-+		stat.ctime = inode->i_ctime;
-+		stat.size  = inode->i_size;
- 	}
- 	if (v4)
- 		fhp->fh_pre_change = nfsd4_change_attribute(&stat, inode);
- 
-+	fhp->fh_pre_mtime = stat.mtime;
-+	fhp->fh_pre_ctime = stat.ctime;
-+	fhp->fh_pre_size  = stat.size;
- 	fhp->fh_pre_saved = true;
- }
- 
-@@ -530,6 +523,7 @@ void fill_post_wcc(struct svc_fh *fhp)
- {
- 	bool v4 = (fhp->fh_maxsize == NFS4_FHSIZE);
- 	struct inode *inode = d_inode(fhp->fh_dentry);
-+	__be32 err;
- 
- 	if (fhp->fh_no_wcc)
- 		return;
-@@ -537,16 +531,12 @@ void fill_post_wcc(struct svc_fh *fhp)
- 	if (fhp->fh_post_saved)
- 		printk("nfsd: inode locked twice during operation.\n");
- 
--	fhp->fh_post_saved = true;
--
--	if (fs_supports_change_attribute(inode->i_sb) || !v4) {
--		__be32 err = fh_getattr(fhp, &fhp->fh_post_attr);
--
--		if (err) {
--			fhp->fh_post_saved = false;
--			fhp->fh_post_attr.ctime = inode->i_ctime;
--		}
+diff --git a/fs/nfsd/nfs3proc.c b/fs/nfsd/nfs3proc.c
+index 354bbfcd96aae..b540489ea240d 100644
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -211,15 +211,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
+ 	fh_copy(&resp->fh, &argp->fh);
+ 	resp->committed = argp->stable;
+ 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
+-	if (!nvecs) {
+-		resp->status = nfserr_io;
+-		goto out;
 -	}
-+	err = fh_getattr(fhp, &fhp->fh_post_attr);
-+	if (err) {
-+		fhp->fh_post_saved = false;
-+		fhp->fh_post_attr.ctime = inode->i_ctime;
-+	} else
-+		fhp->fh_post_saved = true;
- 	if (v4)
- 		fhp->fh_post_change =
- 			nfsd4_change_attribute(&fhp->fh_post_attr, inode);
++
+ 	resp->status = nfsd_write(rqstp, &resp->fh, argp->offset,
+ 				  rqstp->rq_vec, nvecs, &cnt,
+ 				  resp->committed, resp->verf);
+ 	resp->count = cnt;
+-out:
+ 	return rpc_success;
+ }
+ 
+diff --git a/fs/nfsd/nfsproc.c b/fs/nfsd/nfsproc.c
+index de282f3273c50..312fd289be583 100644
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -235,10 +235,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 		argp->len, argp->offset);
+ 
+ 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
+-	if (!nvecs) {
+-		resp->status = nfserr_io;
+-		goto out;
+-	}
+ 
+ 	resp->status = nfsd_write(rqstp, fh_copy(&resp->fh, &argp->fh),
+ 				  argp->offset, rqstp->rq_vec, nvecs,
+@@ -247,7 +243,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 		resp->status = fh_getattr(&resp->fh, &resp->stat);
+ 	else if (resp->status == nfserr_jukebox)
+ 		return rpc_drop_reply;
+-out:
+ 	return rpc_success;
+ }
+ 
 -- 
 2.34.1
 
