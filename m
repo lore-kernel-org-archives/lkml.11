@@ -2,101 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00923C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A152C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243223AbiCGOdi convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:33:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S243229AbiCGOeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:34:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243228AbiCGOdf (ORCPT
+        with ESMTP id S237783AbiCGOeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:33:35 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D81622AE39
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:32:40 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-90-h5M8wZQmO6yot19GRlHRaQ-1; Mon, 07 Mar 2022 14:32:37 +0000
-X-MC-Unique: h5M8wZQmO6yot19GRlHRaQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 7 Mar 2022 14:32:34 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 7 Mar 2022 14:32:34 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jisheng Zhang' <jszhang@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-CC:     "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] riscv: add irq stack support
-Thread-Topic: [PATCH v2] riscv: add irq stack support
-Thread-Index: AQHYMi3k+WYJFHSO9UyI1q+ElBcqo6yz+IIw
-Date:   Mon, 7 Mar 2022 14:32:34 +0000
-Message-ID: <f7f46323619e4084b4cfc551cdb47dd0@AcuMS.aculab.com>
-References: <20220307140804.1400-1-jszhang@kernel.org>
-In-Reply-To: <20220307140804.1400-1-jszhang@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 7 Mar 2022 09:34:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30DA539805
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:33:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646663604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BqBsilqCKDCrxnxeJqaARCUBXf202zo2/T5FUy2wzuY=;
+        b=YhG1a/LKoxwSxtbqrRyoyL2pxRPpdPyFeSWNbUEYlP5CLeg3sypO/LxVshhCe6JYX88qCd
+        xPWy5HjDzR99+l+RZsMmOWcv/o6lS/8pZBavaKHyLj7GZchvR1tFla+/X0fpJSo8wA3q1F
+        Sik3U9S6/r7IjlA6BVzs06TJ13m/bXU=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-546-C9hErc8FOF-1zNM6ZBn-aA-1; Mon, 07 Mar 2022 09:33:21 -0500
+X-MC-Unique: C9hErc8FOF-1zNM6ZBn-aA-1
+Received: by mail-wr1-f72.google.com with SMTP id a11-20020adffb8b000000b001efe754a488so4618728wrr.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 06:33:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=BqBsilqCKDCrxnxeJqaARCUBXf202zo2/T5FUy2wzuY=;
+        b=iV/Ulzc5Yh0zP6uR07dQuSZed9xN6ERA9aANDDHtYB0tyEgGR/ODjpJ1KKubrM8Cqk
+         w0h2RB05emMpIzO46n9glghC8nk3UFqyBlLcrK5hyK2I+g5SPiMgy7iTqv/jE+SRjuXT
+         mO/p9vssErQhLjM9mqAwLcFarAaym2YZE/WT46oqYXZLIJwvlGgnU6OPoZ1dMvtzrTu5
+         LrHN8bCZ8MhQRt3jxpPn7NY2WOuXuU1DlhqrTB0gNIA67s5Jdq6LFl38qt7fRTwMex67
+         iy5f8K4ejprJct59mmPJBmUx9tYGDtjINqH36/BNDsFVFIW1kH8BnRgfBeodj+5albvi
+         eW5g==
+X-Gm-Message-State: AOAM5305WM2TBoil82CDx+OX38/5HBGo7yaTau3XqbPY/fv/JYMmYdZF
+        yHjhXrWdG1j8esycPvvB1F6n43qWs4g5J1SB0N0HO/cq0ob4AksFWsUNwN5vQxNmLAs/e29A7Kv
+        PcsPkktYYERsj9DJQReVF4u+i
+X-Received: by 2002:a7b:c154:0:b0:388:8e6e:ff76 with SMTP id z20-20020a7bc154000000b003888e6eff76mr9711135wmi.191.1646663600074;
+        Mon, 07 Mar 2022 06:33:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxfRVYkTxAcRn47Pfs4K6l3yvxYBhJf4kPwPZnm8FvG7VYk1WZXxsFh62kxfrGjwDoyNK0tCw==
+X-Received: by 2002:a7b:c154:0:b0:388:8e6e:ff76 with SMTP id z20-20020a7bc154000000b003888e6eff76mr9711104wmi.191.1646663599814;
+        Mon, 07 Mar 2022 06:33:19 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id l18-20020adfe592000000b001f064ae9830sm9837404wrm.37.2022.03.07.06.33.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 06:33:19 -0800 (PST)
+Message-ID: <9982c5a7-9715-7cdd-59be-8f27a65f32bf@redhat.com>
+Date:   Mon, 7 Mar 2022 15:33:18 +0100
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
 Content-Language: en-US
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
+Cc:     linux-fbdev@vger.kernel.org, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, David Airlie <airlied@linux.ie>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helge Deller <deller@gmx.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-video@atrey.karlin.mff.cuni.cz,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Mack <daniel@zonque.org>
+References: <20220218093334.24830-1-msuchanek@suse.de>
+ <354f3cfd-bfa0-3ebe-3d67-705423d9294e@suse.de>
+ <20220302193846.GT3113@kunlun.suse.cz>
+ <2ba8497f-ba6d-558b-d782-bb3ee67d23ec@redhat.com>
+ <81f87874-4aa8-265d-a0ed-c8a67708a92a@suse.de>
+ <8d1c3caf-96ad-ae4c-021e-ac38f179dfcb@redhat.com>
+In-Reply-To: <8d1c3caf-96ad-ae4c-021e-ac38f179dfcb@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang
-> Sent: 07 March 2022 14:08
-> Currently, IRQs are still handled on the kernel stack of the current
-> task on riscv platforms. If the task has a deep call stack at the time
-> of interrupt, and handling the interrupt also requires a deep stack,
-> it's possible to see stack overflow.
+On 3/4/22 21:47, Javier Martinez Canillas wrote:
+> Hello Thomas,
 > 
-...
-I'd have thought that a single page is (probably) enough for the
-IRQ stack.
-Certainly its sizing isn't really related to the normal thread
-stack size.
+> On 3/4/22 21:00, Thomas Zimmermann wrote:
+>> Hi,
+>>
+>> I've merged the patches into drm-misc-fixes. Thanks a lot to both of you.
+>>
+> 
+> Ard already picked these through the efi tree:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/efi/efi.git/log/
+>
 
-> From another side, after this patch, it's possible to reduce the
-> THREAD_SIZE to 8KB for RV64 platforms. This is especially useful for
-> those systems with small memory size, e.g the Allwinner D1S platform
-> which is RV64 but only has 64MB DDR.
+I talked with Ard and he kindly dropped these patches from the efi
+tree. So everything is fine.
+ 
+>> Best regards
+>> Thomas
+>>
 
-Are you sure?
-Is the stack use likely to be very much less than that of x86-64?
-The real problem isn't the stack use of the test you are doing,
-but the horrid worst case stack of some path that has multiple
-1k+ buffers on stack.
+-- 
+Best regards,
 
-Apart from compiler fubar (which usually hit KASAN) that stack
-is actually likely to be architecture independent.
-(The difference between 32bit and 64bit is also likely to be
-relatively small - unless there are on-stack arrays of 'long'.)
-
-For VMAP stacks is there a 'guard' KVA page allocated below
-all of the stacks?
-64bit systems should have lots of KVA so this shouldn't be
-a problem.
-Then stack overruns will fault and panic rather than trashing
-another data area - which is really hard to debug.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
