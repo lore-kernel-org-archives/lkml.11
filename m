@@ -2,112 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F250FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238439AbiCGMFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        id S239099AbiCGMF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:05:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234746AbiCGMFq (ORCPT
+        with ESMTP id S237738AbiCGMFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:05:46 -0500
-Received: from mail-41103.protonmail.ch (mail-41103.protonmail.ch [185.70.41.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BCC35274
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 04:04:52 -0800 (PST)
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        by mail-41103.protonmail.ch (Postfix) with ESMTPS id 4KBxwL3hdLz4xVxW
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:04:50 +0000 (UTC)
-Authentication-Results: mail-41103.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="LryxRMZw"
-Date:   Mon, 07 Mar 2022 12:04:43 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail3; t=1646654685;
-        bh=tNbfds0Zkrvnerg4GoIv9RquBwiaPfFEwO186o+ANJw=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
-         Subject:Reply-To:Feedback-ID:Message-ID;
-        b=LryxRMZwm6D7W3EKoDy05BslSzojlJFrtBvmhSXqqcj0AyDvzzE2DfzIhlaoeV5Kn
-         f7FW8TsqT4NZgyKyHZ6SkQv6TLHOlo1dhuK0mcnN5bVdvqBhsHmZADx2eAl2jGX3nn
-         A3DSkhK4kRH+87Lrg34+0OoVd0LWom5GKUtFv50Yc4UVM4HD+E7AK8U2DDnraRxxE3
-         vz5/+UV/dZb7YaFFKwXDtLqBNF0umQzQRUOt5kEbymDkrWh9EE7DvcQgfnCT+fqmo0
-         jpwgOJClPIEinbTBJv6OEQKib/nQKtLvaRKR2Ud4VNFMd/RC7ICAUR0e+XCvGggl4F
-         WXbjZAykL5ksw==
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Turritopsis Dohrnii Teo En Ming <teo.en.ming@protonmail.com>
-Cc:     "ceo@teo-en-ming-corp.com" <ceo@teo-en-ming-corp.com>
-Reply-To: Turritopsis Dohrnii Teo En Ming <teo.en.ming@protonmail.com>
-Subject: Do you know which version of the Linux kernel is running on the Cisco ISR C1111-4P router?
-Message-ID: <AB0feU9l_r03jGQuU1pL3oQcUz6tYy2ZboVlYuDj4R34X5rzjHCQMzxqtx8Rw-e_bmV67wZdMCJRlwofm3dF-CJAxk6zAcWjxi14pEGtUJc=@protonmail.com>
+        Mon, 7 Mar 2022 07:05:52 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FF46EB28;
+        Mon,  7 Mar 2022 04:04:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646654696; x=1678190696;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ADxjblmvouljyvbG8C2f+H370jdyVZUvau7Hsxu26P0=;
+  b=tO9F8QVh1vXtum4W/IENiiLhvtypfcB3i5o1FPYWTbIZ2Q2qRg644Ubc
+   02DpAvKdZ1HPCLx7+ow9seukQLHZAeFvEVN7tGALuoMT8/xBoviCfjdtY
+   ZMQAN4PxwKjPGzsvCp61P6eahF809Q/vFfGafzBi4CPr5rFwsmFXt9wUX
+   nH1x89WOXS2iKyg7LAiGTARrLGSgAFG1dcIOo2M1WSmYV0YGTOn91S7ox
+   GAQ/YgL5CMImAsCPFpr+c3Aa4dYjVZW/EFitqVuLrd2TZbG2mzGKU3Swq
+   F4uhcdhrzu5oqFzD3PTcE+Sh5/h9ckmuCg5V5mtQJiCdEQFJR2ZBNfXgw
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
+   d="scan'208";a="164765120"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 05:04:56 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 7 Mar 2022 05:04:56 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 05:04:50 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <claudiu.beznea@microchip.com>, <hverkuil-cisco@xs4all.nl>,
+        <nicolas.ferre@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH v7 00/13] media: atmel: atmel-isc: implement media controller
+Date:   Mon, 7 Mar 2022 14:04:10 +0200
+Message-ID: <20220307120423.2427631-1-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: Do you know which version of the Linux kernel is running on the Ci=
-sco ISR C1111-4P router?
 
-Good day from Singapore,
+This series is the v7 series that attempts to support media controller in the
+atmel ISC and XISC drivers.
+The CSI2DC driver was accepted thus removed from the patch series, together with
+other patches.
 
-Do you know which version of the Linux kernel is running on the Cisco ISR C=
-1111-4P router? I saw the following lines on the console output.
+Important note: this series applies on top of current media_staging tree, as it
+relies on previous patches in the series which were accepted.
 
-Cisco IOS Software [Fuji], ISR Software (ARMV8EB_LINUX_IOSD-UNIVERSALK9_IAS=
--M), Version 16.9.5, RELEASE SOFTWARE (fc1)
-Line 366: *Mar  3 03:11:12.681: %IOSXE-2-PLATFORM: R0/0: kernel: CPU3: fail=
-ed to come online
-Line 367: *Mar  3 03:11:12.681: %IOSXE-3-PLATFORM: R0/0: kernel: CPU3: fail=
-ed in unknown state : 0x0
-Line 368: *Mar  3 03:11:12.711: %IOSXE-3-PLATFORM: R0/0: kernel: coresight-=
-etm4x f0f40000.etm3: ETM arch init failed
+Thanks to everyone who reviewed my work !
 
-I have 417 lines of console output, but I only provide 4 lines above at the=
- momennt. If you would like to see more console output, I will provide at y=
-our request.
+Eugen
 
-Looking forward to your reply.
-
-Thank you very much.
-
-Mr. Turritopsis Dohrnii Teo En Ming, 44 years old as of 7 March 2022 Monday=
-, is a TARGETED INDIVIDUAL living in Singapore. He is an IT Consultant with=
- a Systems Integrator (SI)/computer firm in Singapore. He is an IT enthusia=
-st.
+Changes in v7:
+-> scaler: modified crop bounds to have maximum isc size
+-> format propagation: did small changes as per Jacopo review
 
 
+Changes in v6:
+-> worked a bit on scaler, added try crop and other changes as per Jacopo review
+-> worked on isc-base enum_fmt , reworked as per Jacopo review
+
+Changes in v5:
+-> removed patch that removed the 'stop' variable as it was still required
+-> added two new trivial patches
+-> reworked some parts of the scaler and format propagation after discussions with Jacopo
 
 
+Changes in v4:
+-> as reviewed by Hans, added new patch to remove the 'stop' variable and reworked
+one patch that was using it
+-> as reviewed by Jacopo, reworked some parts of the media controller implementation
 
 
------BEGIN EMAIL SIGNATURE-----
+Changes in v3:
+- change in bindings, small fixes in csi2dc driver and conversion to mc
+for the isc-base.
+- removed some MAINTAINERS patches and used patterns in MAINTAINERS
 
-The Gospel for all Targeted Individuals (TIs):
+Changes in v2:
+- integrated many changes suggested by Jacopo in the review of the v1 series.
+- add a few new patches
 
-[The New York Times] Microwave Weapons Are Prime Suspect in Ills of U.S. Em=
-bassy Workers
 
-Link:
+Eugen Hristev (13):
+  media: atmel: atmel-isc-base: use streaming status when queueing
+    buffers
+  media: atmel: atmel-isc-base: replace is_streaming call in
+    s_fmt_vid_cap
+  media: atmel: atmel-isc: remove redundant comments
+  media: atmel: atmel-isc: implement media controller
+  media: atmel: atmel-sama5d2-isc: fix wrong mask in YUYV format check
+  media: atmel: atmel-isc-base: use mutex to lock awb workqueue from
+    streaming
+  media: atmel: atmel-isc: compact the controller formats list
+  media: atmel: atmel-isc: change format propagation to subdev into only
+    verification
+  media: atmel: atmel-sama7g5-isc: remove stray line
+  dt-bindings: media: microchip,xisc: add bus-width of 14
+  ARM: dts: at91: sama7g5: add nodes for video capture
+  ARM: configs: at91: sama7: add xisc and csi2dc
+  ARM: multi_v7_defconfig: add atmel video pipeline modules
 
-https://www.nytimes.com/2018/09/01/science/sonic-attack-cuba-microwave.html
+ .../bindings/media/microchip,xisc.yaml        |   2 +-
+ arch/arm/boot/dts/sama7g5.dtsi                |  49 ++
+ arch/arm/configs/multi_v7_defconfig           |   3 +
+ arch/arm/configs/sama7_defconfig              |   2 +
+ drivers/media/platform/atmel/Makefile         |   2 +-
+ drivers/media/platform/atmel/atmel-isc-base.c | 518 ++++++++++--------
+ .../media/platform/atmel/atmel-isc-scaler.c   | 276 ++++++++++
+ drivers/media/platform/atmel/atmel-isc.h      |  58 +-
+ .../media/platform/atmel/atmel-sama5d2-isc.c  |  87 +--
+ .../media/platform/atmel/atmel-sama7g5-isc.c  |  93 ++--
+ 10 files changed, 763 insertions(+), 327 deletions(-)
+ create mode 100644 drivers/media/platform/atmel/atmel-isc-scaler.c
 
-***************************************************************************=
-*****************
+-- 
+2.25.1
 
-Singaporean Targeted Individual Mr. Turritopsis Dohrnii Teo En Ming's Acade=
-mic Qualifications as at 14 Feb 2019 and refugee seeking attempts at the Un=
-ited Nations Refugee Agency Bangkok (21 Mar 2017), in Taiwan (5 Aug 2019) a=
-nd Australia (25 Dec 2019 to 9 Jan 2020):
-
-[1] https://tdtemcerts.wordpress.com/
-
-[2] https://tdtemcerts.blogspot.sg/
-
-[3] https://www.scribd.com/user/270125049/Teo-En-Ming
-
------END EMAIL SIGNATURE-----
-
-Sent with ProtonMail Secure Email.
