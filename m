@@ -2,91 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E689BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC52EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 22:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343837AbiCGWnu (ORCPT
+        id S1343842AbiCGWrT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 17:43:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        Mon, 7 Mar 2022 17:47:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243229AbiCGWnr (ORCPT
+        with ESMTP id S243189AbiCGWrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 17:43:47 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D5E2982F;
-        Mon,  7 Mar 2022 14:42:49 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id k24so16155743wrd.7;
-        Mon, 07 Mar 2022 14:42:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=doUASiEkKSCXAFSzEQp6F7J0ad241mwX8xOq8sbVorM=;
-        b=XHB5Kp+JDUH60WICe5UwMmi3bPPyLh9hOv9OKWCyeHrPAAWe3qBLn1Kgoe58esYtTP
-         eDBBIKQNb+duIemCig5COE9QCqjIW/9Jg48wjbbpOVLdbHBR9drfJOTAUPsBcPlLxr7X
-         glRdirD02kHhMJfYRXSzpi/sWzpuhvLEpIjRten57Z2yisGFeeXAandDDWbHjx5qHDkr
-         m11Cl1Zp2vQEVcP26mn5Vfn6ALXDWBVWYLYBiLVnK9SowiEu00gHfI+5vSpTW/lAVtAd
-         kdHJtfNAvPWui3pO7wIuRus0BF4tDnIEgcYQu0mQtUBJAK4qCsOF0Z/V8qoEr0FhynOB
-         Gj4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=doUASiEkKSCXAFSzEQp6F7J0ad241mwX8xOq8sbVorM=;
-        b=VdR5g6HhiFddEiZaJUub9Vqa7nYTui4nLar5A6+0wKpq9hoGdJaz5Gkk8aj395bj0g
-         ohJHfu8qtjrgU23iDDRMpOuXI0x/erpDiZl2fDj/A/NJELMtfI8BLqO2fSIzHfDGgKFL
-         PfmH0X/1fJyCxUzUvuQe+RTLEWYLU0l/hKfWXiAgI2hyFD4rXakwcjLdyObbC2WVqame
-         KARjy9eH6Np7bOR3Zmm+3GfN7nRqNlfBtuMi4tZxMWi267Q57hhmHB6sWxqJ6pEW3kDM
-         FavPVt7C95FMk8w8kf0nNhQgDn1oJTPgQbHXAt1lT8bxCERA7dfwU7DqByJ8p8EVDrPr
-         x2fA==
-X-Gm-Message-State: AOAM533fdaLSJMEsFSpbKOogwexZ2CQ1epO1cqr/9ARDxD/+TMvmaZOr
-        amRxcyetrCQbIU9GC4959NZFc/gezZ1/BA==
-X-Google-Smtp-Source: ABdhPJz1ftml4JACkXfhIC8v5g7ez3OZ02XSySK0IO+HN357sjY+KWVo8zSkozz34MQPXvwazGGrzQ==
-X-Received: by 2002:a5d:48d1:0:b0:1e3:2401:f229 with SMTP id p17-20020a5d48d1000000b001e32401f229mr10012515wrs.694.1646692968554;
-        Mon, 07 Mar 2022 14:42:48 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id t184-20020a1c46c1000000b003814de297fcsm500430wma.16.2022.03.07.14.42.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 14:42:48 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: gspca: make the read-only array table static const
-Date:   Mon,  7 Mar 2022 22:42:47 +0000
-Message-Id: <20220307224247.167172-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Mar 2022 17:47:17 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB7A26D;
+        Mon,  7 Mar 2022 14:46:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 18591CE12A5;
+        Mon,  7 Mar 2022 22:46:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B59C340F3;
+        Mon,  7 Mar 2022 22:46:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646693178;
+        bh=0H6XB46pWYh6xZnaTmcKQn0MM2/ClqZdvLNMr6BJqkk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rtMZcA53GaxsPpz3H1bwL5eT9rsN7fl5bs5guxs34W4ttTLsb+jDmo+ZCzsD5Q1Z+
+         WfuFn2eezBXmbYeiq666HzAW6hjYzKtWgKnkg7VRs1XesXGSs3sf8XaJNc1QzMsJaA
+         HUoviWFPuUcpK+vuOeLiaas261WV1lXfEazfMAN9sd6f/g9Qa/vJ+z3gGAbro+0uIv
+         4CzZ7Xcc2/pzbBO75DpgDFn6QuMVQqjQCPdQFniPEKJN2UM3cWZXCmy3axAOUy0y/H
+         Yq1N/OjS0TSjS5Hr7363ef484SvANz2cXBw6kkPRu9K9hgO/1Nv6JKlL6vraECSFFI
+         miDt/c4FfP9bg==
+Date:   Mon, 7 Mar 2022 14:46:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't populate the read-only array table on the stack but
-instead make it static const. Also makes the object code a little
-smaller.
+On Mon, 7 Mar 2022 23:14:13 +0100 Ilya Maximets wrote:
+> The main problem is that userspace uses the modified copy of the uapi header
+> which looks like this:
+>   https://github.com/openvswitch/ovs/blob/f77dbc1eb2da2523625cd36922c6fccfcb3f3eb7/datapath/linux/compat/include/linux/openvswitch.h#L357
+> 
+> In short, the userspace view:
+> 
+>   enum ovs_key_attr {
+>       <common attrs>
+> 
+>   #ifdef __KERNEL__
+>       /* Only used within kernel data path. */
+>   #endif
+> 
+>   #ifndef __KERNEL__
+>       /* Only used within userspace data path. */
+>   #endif
+>       __OVS_KEY_ATTR_MAX
+> };
+> 
+> And the kernel view:
+> 
+>   enum ovs_key_attr {
+>       <common attrs>
+> 
+>   #ifdef __KERNEL__
+>       /* Only used within kernel data path. */
+>   #endif
+> 
+>       __OVS_KEY_ATTR_MAX
+>   };
+> 
+> This happened before my time, but the commit where userspace made a wrong
+> turn appears to be this one:
+>   https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
+> The attribute for userspace only was added to the common enum after the
+> OVS_KEY_ATTR_TUNNEL_INFO.   I'm not sure how things didn't fall apart when
+> OVS_KEY_ATTR_NSH was added later (no-one cared that NSH doesn't work, because
+> OVS didn't support it yet?).
+> 
+> In general, any addition of a new attribute into that enumeration leads to
+> inevitable clash between userpsace-only attributes and new kernel attributes.
+> 
+> After the kernel update, kernel provides new attributes to the userspace and
+> userspace tries to parse them as one of the userspace-only attributes and
+> fails.   In our current case userspace is trying to parse OVS_KEY_ATTR_IPV6_EXTHDR
+> as userspace-only OVS_KEY_ATTR_PACKET_TYPE, because they have the same value in the
+> enum, fails and discards the netlink message as malformed.  So, IPv6 is fully
+> broken, because OVS_KEY_ATTR_IPV6_EXTHDR is supplied now with every IPv6 packet
+> that goes to userspace.
+> 
+> We need to unify the view of 'enum ovs_key_attr' between userspace and kernel
+> before we can add any new values to it.
+> 
+> One way to do that should be addition of both userspace-only attributes to the
+> kernel header (and maybe exposing OVS_KEY_ATTR_TUNNEL_INFO too, just to keep
+> it flat and avoid any possible problems in the future).  Any other suggestions
+> are welcome.  But in any case this will require careful testing with existing
+> OVS userspace to avoid any unexpected issues.
+> 
+> Moving forward, I think, userspace OVS should find a way to not have userpsace-only
+> attributes, or have them as a separate enumeration.  But I'm not sure how to do
+> that right now.  Or we'll have to add userspace-only attributes to the kernel
+> uapi before using them.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/media/usb/gspca/spca561.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the explanation, we can apply a revert if that'd help your
+CI / ongoing development but sounds like the fix really is in user
+space. Expecting netlink attribute lists not to grow is not fair.
 
-diff --git a/drivers/media/usb/gspca/spca561.c b/drivers/media/usb/gspca/spca561.c
-index d608a518c141..431527ed602b 100644
---- a/drivers/media/usb/gspca/spca561.c
-+++ b/drivers/media/usb/gspca/spca561.c
-@@ -510,7 +510,7 @@ static void setexposure(struct gspca_dev *gspca_dev, s32 val)
- 	/* We choose to use the high bits setting the fixed framerate divisor
- 	   asap, as setting high basic exposure setting without the fixed
- 	   divider in combination with high gains makes the cam stop */
--	int table[] =  { 0, 450, 550, 625, EXPOSURE_MAX };
-+	static const int table[] =  { 0, 450, 550, 625, EXPOSURE_MAX };
- 
- 	for (i = 0; i < ARRAY_SIZE(table) - 1; i++) {
- 		if (val <= table[i + 1]) {
--- 
-2.35.1
-
+Since ovs uses genetlink you should be able to dump the policy from 
+the kernel and at least validate that it doesn't overlap.
