@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C33C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FBDC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241693AbiCGKVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:21:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
+        id S241714AbiCGKVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:21:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240360AbiCGKA6 (ORCPT
+        with ESMTP id S240346AbiCGKA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00C7140A2;
-        Mon,  7 Mar 2022 01:47:46 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251F51176;
+        Mon,  7 Mar 2022 01:47:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F94E60FB3;
-        Mon,  7 Mar 2022 09:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A376C340E9;
-        Mon,  7 Mar 2022 09:47:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C737FB80F9F;
+        Mon,  7 Mar 2022 09:47:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E74C340E9;
+        Mon,  7 Mar 2022 09:47:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646465;
-        bh=igfJvNVfCrUaBjyCAbRfQsvYSmOThCSr/ZM/OJv2Zss=;
+        s=korg; t=1646646453;
+        bh=xytpePAYg+Pf1xy5ot5dhr8kqJfnVy5IUhMPtgnfZxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fggn6gi3mUXmix12agHvjPilsmlyY06orY9l7I/03BQVEZZ4Vij1YHO8v1aJ6T9HW
-         DKKi5ZaIFmUzMmduqelewqDsAXgEw0emAcWlI/dRGS7UmBzbpVgIGnC1gDe5GGpWDh
-         B8Pg10dcQ1/ZSIH9H+jQwVpjtgJ9ghfu/r5hCGk0=
+        b=TCkkbt7bx/TCt5qq6pUQCIbfZPdH1XT9FJ797XMJqmeSVdeZvzBuWLsvkqr9sQ1i0
+         w9/y+M7GkGCYx/7hjN3vWwv18vrMRKcg8tA4FTWccvQ0aGumgn0LYzwUAdSzvRFGba
+         flRrpxRPLchsH86Qow1f/VMuOpalVS3IAWo73dnE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.15 251/262] HID: add mapping for KEY_ALL_APPLICATIONS
-Date:   Mon,  7 Mar 2022 10:19:55 +0100
-Message-Id: <20220307091710.716883909@linuxfoundation.org>
+Subject: [PATCH 5.15 247/262] Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+Date:   Mon,  7 Mar 2022 10:19:51 +0100
+Message-Id: <20220307091710.529180577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,61 +48,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Mahon <wmahon@chromium.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 327b89f0acc4c20a06ed59e4d9af7f6d804dc2e2 upstream.
+commit 81a36d8ce554b82b0a08e2b95d0bd44fcbff339b upstream.
 
-This patch adds a new key definition for KEY_ALL_APPLICATIONS
-and aliases KEY_DASHBOARD to it.
+elan_disable_power() is called conditionally on suspend, where as
+elan_enable_power() is always called on resume. This leads to
+an imbalance in the regulator's enable count.
 
-It also maps the 0x0c/0x2a2 usage code to KEY_ALL_APPLICATIONS.
+Move the regulator_[en|dis]able() calls out of elan_[en|dis]able_power()
+in preparation of fixing this.
 
-Signed-off-by: William Mahon <wmahon@chromium.org>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20220303035618.1.I3a7746ad05d270161a18334ae06e3b6db1a1d339@changeid
+No functional changes intended.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220131135436.29638-1-hdegoede@redhat.com
+[dtor: consolidate elan_[en|dis]able() into elan_set_power()]
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-debug.c                |    4 +++-
- drivers/hid/hid-input.c                |    2 ++
- include/uapi/linux/input-event-codes.h |    3 ++-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/input/mouse/elan_i2c_core.c |   62 ++++++++++++------------------------
+ 1 file changed, 22 insertions(+), 40 deletions(-)
 
---- a/drivers/hid/hid-debug.c
-+++ b/drivers/hid/hid-debug.c
-@@ -825,7 +825,9 @@ static const char *keys[KEY_MAX + 1] = {
- 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
- 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
- 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
--	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
-+	[KEY_PROG4] = "Prog4",
-+	[KEY_ALL_APPLICATIONS] = "AllApplications",
-+	[KEY_SUSPEND] = "Suspend",
- 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
- 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
- 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1083,6 +1083,8 @@ static void hidinput_configure_usage(str
+--- a/drivers/input/mouse/elan_i2c_core.c
++++ b/drivers/input/mouse/elan_i2c_core.c
+@@ -186,55 +186,21 @@ static int elan_get_fwinfo(u16 ic_type,
+ 	return 0;
+ }
  
- 		case 0x29d: map_key_clear(KEY_KBD_LAYOUT_NEXT);	break;
+-static int elan_enable_power(struct elan_tp_data *data)
++static int elan_set_power(struct elan_tp_data *data, bool on)
+ {
+ 	int repeat = ETP_RETRY_COUNT;
+ 	int error;
  
-+		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
+-	error = regulator_enable(data->vcc);
+-	if (error) {
+-		dev_err(&data->client->dev,
+-			"failed to enable regulator: %d\n", error);
+-		return error;
+-	}
+-
+ 	do {
+-		error = data->ops->power_control(data->client, true);
++		error = data->ops->power_control(data->client, on);
+ 		if (error >= 0)
+ 			return 0;
+ 
+ 		msleep(30);
+ 	} while (--repeat > 0);
+ 
+-	dev_err(&data->client->dev, "failed to enable power: %d\n", error);
+-	return error;
+-}
+-
+-static int elan_disable_power(struct elan_tp_data *data)
+-{
+-	int repeat = ETP_RETRY_COUNT;
+-	int error;
+-
+-	do {
+-		error = data->ops->power_control(data->client, false);
+-		if (!error) {
+-			error = regulator_disable(data->vcc);
+-			if (error) {
+-				dev_err(&data->client->dev,
+-					"failed to disable regulator: %d\n",
+-					error);
+-				/* Attempt to power the chip back up */
+-				data->ops->power_control(data->client, true);
+-				break;
+-			}
+-
+-			return 0;
+-		}
+-
+-		msleep(30);
+-	} while (--repeat > 0);
+-
+-	dev_err(&data->client->dev, "failed to disable power: %d\n", error);
++	dev_err(&data->client->dev, "failed to set power %s: %d\n",
++		on ? "on" : "off", error);
+ 	return error;
+ }
+ 
+@@ -1399,9 +1365,19 @@ static int __maybe_unused elan_suspend(s
+ 		/* Enable wake from IRQ */
+ 		data->irq_wake = (enable_irq_wake(client->irq) == 0);
+ 	} else {
+-		ret = elan_disable_power(data);
++		ret = elan_set_power(data, false);
++		if (ret)
++			goto err;
 +
- 		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
- 		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
- 		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
---- a/include/uapi/linux/input-event-codes.h
-+++ b/include/uapi/linux/input-event-codes.h
-@@ -278,7 +278,8 @@
- #define KEY_PAUSECD		201
- #define KEY_PROG3		202
- #define KEY_PROG4		203
--#define KEY_DASHBOARD		204	/* AL Dashboard */
-+#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
-+#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
- #define KEY_SUSPEND		205
- #define KEY_CLOSE		206	/* AC Close */
- #define KEY_PLAY		207
++		ret = regulator_disable(data->vcc);
++		if (ret) {
++			dev_err(dev, "error %d disabling regulator\n", ret);
++			/* Attempt to power the chip back up */
++			elan_set_power(data, true);
++		}
+ 	}
+ 
++err:
+ 	mutex_unlock(&data->sysfs_mutex);
+ 	return ret;
+ }
+@@ -1417,7 +1393,13 @@ static int __maybe_unused elan_resume(st
+ 		data->irq_wake = false;
+ 	}
+ 
+-	error = elan_enable_power(data);
++	error = regulator_enable(data->vcc);
++	if (error) {
++		dev_err(dev, "error %d enabling regulator\n", error);
++		goto err;
++	}
++
++	error = elan_set_power(data, true);
+ 	if (error) {
+ 		dev_err(dev, "power up when resuming failed: %d\n", error);
+ 		goto err;
 
 
