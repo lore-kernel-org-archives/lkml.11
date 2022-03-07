@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD311C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238428AbiCGJrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S238547AbiCGJrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238652AbiCGJij (ORCPT
+        with ESMTP id S238722AbiCGJin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2955B6B082;
-        Mon,  7 Mar 2022 01:33:07 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2C84E3AE;
+        Mon,  7 Mar 2022 01:33:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 641CA61119;
-        Mon,  7 Mar 2022 09:32:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF3EC340E9;
-        Mon,  7 Mar 2022 09:32:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62387B810BF;
+        Mon,  7 Mar 2022 09:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E1B6C340F3;
+        Mon,  7 Mar 2022 09:33:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645578;
-        bh=K7m3Sfc/qWJ0tybqDLT00RD7TUonF20rm7LwRCpNImo=;
+        s=korg; t=1646645594;
+        bh=B67qt1s9/yhVlYKNjUE5sEKW8kaB1jXEWKvNU9m/iuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czYr39C14lsaKYKTMANsvWoZU3x/FCr3jiSZL8h02qWBHoPJ869GGiwUkjsPy2j1c
-         WSqzgpTox5Al5hmOK3KdrZkygSj/RCECxTsBt6PjMmSS22Ub7EFirlkBCcuHppchEt
-         VbLYP4LDdQXzXC+L5WBlHcAhTtEcHeDsHZjRE6g0=
+        b=im6knJVWgwqkBPAFw22OBYwd8HhEhxZL9671xDId4bGHMX0QWdH8x4pIV7iNkwWsz
+         lrI7vmeG9TfUxMQVbSvHePcizVEl+I5+3gm1uA9HLcW1k8TyJGdNAbMMaD1AEq/j8P
+         GfrDNKjLkMCPhtBeTRPGx+JS6UlbZGPUU2QUPrJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.10 077/105] pinctrl: sunxi: Use unique lockdep classes for IRQs
-Date:   Mon,  7 Mar 2022 10:19:20 +0100
-Message-Id: <20220307091646.343867452@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anthoine Bourgeois <anthoine.bourgeois@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 082/105] ARM: dts: switch timer config to common devkit8000 devicetree
+Date:   Mon,  7 Mar 2022 10:19:25 +0100
+Message-Id: <20220307091646.485585151@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -50,104 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
 
-commit bac129dbc6560dfeb634c03f0c08b78024e71915 upstream.
+[ Upstream commit 64324ef337d0caa5798fa8fa3f6bbfbd3245868a ]
 
-This driver, like several others, uses a chained IRQ for each GPIO bank,
-and forwards .irq_set_wake to the GPIO bank's upstream IRQ. As a result,
-a call to irq_set_irq_wake() needs to lock both the upstream and
-downstream irq_desc's. Lockdep considers this to be a possible deadlock
-when the irq_desc's share lockdep classes, which they do by default:
+This patch allow lcd43 and lcd70 flavors to benefit from timer
+evolution.
 
- ============================================
- WARNING: possible recursive locking detected
- 5.17.0-rc3-00394-gc849047c2473 #1 Not tainted
- --------------------------------------------
- init/307 is trying to acquire lock:
- c2dfe27c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
-
- but task is already holding lock:
- c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
-
- other info that might help us debug this:
-  Possible unsafe locking scenario:
-
-        CPU0
-        ----
-   lock(&irq_desc_lock_class);
-   lock(&irq_desc_lock_class);
-
-  *** DEADLOCK ***
-
-  May be due to missing lock nesting notation
-
- 4 locks held by init/307:
-  #0: c1f29f18 (system_transition_mutex){+.+.}-{3:3}, at: __do_sys_reboot+0x90/0x23c
-  #1: c20f7760 (&dev->mutex){....}-{3:3}, at: device_shutdown+0xf4/0x224
-  #2: c2e804d8 (&dev->mutex){....}-{3:3}, at: device_shutdown+0x104/0x224
-  #3: c3c0ac7c (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
-
- stack backtrace:
- CPU: 0 PID: 307 Comm: init Not tainted 5.17.0-rc3-00394-gc849047c2473 #1
- Hardware name: Allwinner sun8i Family
-  unwind_backtrace from show_stack+0x10/0x14
-  show_stack from dump_stack_lvl+0x68/0x90
-  dump_stack_lvl from __lock_acquire+0x1680/0x31a0
-  __lock_acquire from lock_acquire+0x148/0x3dc
-  lock_acquire from _raw_spin_lock_irqsave+0x50/0x6c
-  _raw_spin_lock_irqsave from __irq_get_desc_lock+0x58/0xa0
-  __irq_get_desc_lock from irq_set_irq_wake+0x2c/0x19c
-  irq_set_irq_wake from irq_set_irq_wake+0x13c/0x19c
-    [tail call from sunxi_pinctrl_irq_set_wake]
-  irq_set_irq_wake from gpio_keys_suspend+0x80/0x1a4
-  gpio_keys_suspend from gpio_keys_shutdown+0x10/0x2c
-  gpio_keys_shutdown from device_shutdown+0x180/0x224
-  device_shutdown from __do_sys_reboot+0x134/0x23c
-  __do_sys_reboot from ret_fast_syscall+0x0/0x1c
-
-However, this can never deadlock because the upstream and downstream
-IRQs are never the same (nor do they even involve the same irqchip).
-
-Silence this erroneous lockdep splat by applying what appears to be the
-usual fix of moving the GPIO IRQs to separate lockdep classes.
-
-Fixes: a59c99d9eaf9 ("pinctrl: sunxi: Forward calls to irq_set_irq_wake")
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220216040037.22730-1-samuel@sholland.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
+Signed-off-by: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-sunxi.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../arm/boot/dts/omap3-devkit8000-common.dtsi | 33 +++++++++++++++++++
+ arch/arm/boot/dts/omap3-devkit8000.dts        | 33 -------------------
+ 2 files changed, 33 insertions(+), 33 deletions(-)
 
---- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-@@ -36,6 +36,13 @@
- #include "../core.h"
- #include "pinctrl-sunxi.h"
+diff --git a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
+index 2c19d6e255bd..0df2b1dd07f6 100644
+--- a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
++++ b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
+@@ -158,6 +158,39 @@
+ 	status = "disabled";
+ };
  
-+/*
-+ * These lock classes tell lockdep that GPIO IRQs are in a different
-+ * category than their parents, so it won't report false recursion.
-+ */
-+static struct lock_class_key sunxi_pinctrl_irq_lock_class;
-+static struct lock_class_key sunxi_pinctrl_irq_request_class;
++/* Unusable as clocksource because of unreliable oscillator */
++&counter32k {
++	status = "disabled";
++};
 +
- static struct irq_chip sunxi_pinctrl_edge_irq_chip;
- static struct irq_chip sunxi_pinctrl_level_irq_chip;
- 
-@@ -1552,6 +1559,8 @@ int sunxi_pinctrl_init_with_variant(stru
- 	for (i = 0; i < (pctl->desc->irq_banks * IRQ_PER_BANK); i++) {
- 		int irqno = irq_create_mapping(pctl->domain, i);
- 
-+		irq_set_lockdep_class(irqno, &sunxi_pinctrl_irq_lock_class,
-+				      &sunxi_pinctrl_irq_request_class);
- 		irq_set_chip_and_handler(irqno, &sunxi_pinctrl_edge_irq_chip,
- 					 handle_edge_irq);
- 		irq_set_chip_data(irqno, pctl);
++/* Unusable as clockevent because if unreliable oscillator, allow to idle */
++&timer1_target {
++	/delete-property/ti,no-reset-on-init;
++	/delete-property/ti,no-idle;
++	timer@0 {
++		/delete-property/ti,timer-alwon;
++	};
++};
++
++/* Preferred always-on timer for clocksource */
++&timer12_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		/* Always clocked by secure_32k_fck */
++	};
++};
++
++/* Preferred timer for clockevent */
++&timer2_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		assigned-clocks = <&gpt2_fck>;
++		assigned-clock-parents = <&sys_ck>;
++	};
++};
++
+ &twl_gpio {
+ 	ti,use-leds;
+ 	/*
+diff --git a/arch/arm/boot/dts/omap3-devkit8000.dts b/arch/arm/boot/dts/omap3-devkit8000.dts
+index c2995a280729..162d0726b008 100644
+--- a/arch/arm/boot/dts/omap3-devkit8000.dts
++++ b/arch/arm/boot/dts/omap3-devkit8000.dts
+@@ -14,36 +14,3 @@
+ 		display2 = &tv0;
+ 	};
+ };
+-
+-/* Unusable as clocksource because of unreliable oscillator */
+-&counter32k {
+-	status = "disabled";
+-};
+-
+-/* Unusable as clockevent because if unreliable oscillator, allow to idle */
+-&timer1_target {
+-	/delete-property/ti,no-reset-on-init;
+-	/delete-property/ti,no-idle;
+-	timer@0 {
+-		/delete-property/ti,timer-alwon;
+-	};
+-};
+-
+-/* Preferred always-on timer for clocksource */
+-&timer12_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		/* Always clocked by secure_32k_fck */
+-	};
+-};
+-
+-/* Preferred timer for clockevent */
+-&timer2_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		assigned-clocks = <&gpt2_fck>;
+-		assigned-clock-parents = <&sys_ck>;
+-	};
+-};
+-- 
+2.34.1
+
 
 
