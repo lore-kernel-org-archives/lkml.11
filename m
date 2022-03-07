@@ -2,77 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27EEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30894C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbiCGS6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48564 "EHLO
+        id S244911AbiCGTAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:00:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244898AbiCGS6q (ORCPT
+        with ESMTP id S234880AbiCGTAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:58:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B15528E30
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:57:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646679470;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rIEo8DUeeVvdeAtDzMVTfRpe1FoQl+OoA2kxWVVYsJI=;
-        b=gdagCkyvZncr63cAkM8zfUeKbkNteQm1ClL1C390dCOrp9j/iAAdRRzfJCdom6v5JWcRu5
-        Vus4IIWcbE0BMshQcNi6eChl4LiDBSz601EJ6pTjsxHeCgVB43x8Kzs6kvGAXbXGPDDgy0
-        Y6n96n1EhOwowj9M67cinb2YNRnDZYA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-128-tEku2LycPC2Pj6ynXgB1Wg-1; Mon, 07 Mar 2022 13:57:43 -0500
-X-MC-Unique: tEku2LycPC2Pj6ynXgB1Wg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C250B1006AA6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:57:42 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.34.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 80E6D86C5B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:57:42 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: add missing files for bonding definition
-Date:   Mon,  7 Mar 2022 13:57:34 -0500
-Message-Id: <247a5ccddbce5b6b37ce4f0c98d7e89b33f981c5.1646679416.git.jtoppins@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+        Mon, 7 Mar 2022 14:00:11 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F944E388;
+        Mon,  7 Mar 2022 10:59:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646679557; x=1678215557;
+  h=from:to:cc:subject:date:message-id;
+  bh=qctIyTYqs9f3ukRf6gbzWZSCRaC9dudhKd5TcrRHiT4=;
+  b=R5UBOZ9NzFvczuaYprPdnNS/IBkmJ1PeOELkv8J3LwuK+DEU9SkLdj/L
+   1FO1gRJPHoWZmpSWy1Xbelps76kHcQrphp+/hk6BML3sr3TA+LHeNGzku
+   tLNa2YCvsy1+hBFbZPKDQVuOEqAdbfkztEk6a0fWl6ZJAzuDx8Ip8I1w+
+   s=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 07 Mar 2022 10:59:17 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Mar 2022 10:59:15 -0800
+X-QCInternal: smtphost
+Received: from pmaliset-linux.qualcomm.com ([10.206.64.233])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 08 Mar 2022 00:29:12 +0530
+Received: by pmaliset-linux.qualcomm.com (Postfix, from userid 3848298)
+        id D8D9D21422; Tue,  8 Mar 2022 00:29:10 +0530 (IST)
+From:   Prasad Malisetty <quic_pmaliset@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rajatja@google.com, refactormyself@gmail.com
+Cc:     quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>
+Subject: [PATCH v2] [RFC PATCH] PCI: Update LTR threshold based on LTRME bit
+Date:   Tue,  8 Mar 2022 00:29:09 +0530
+Message-Id: <1646679549-12494-1-git-send-email-quic_pmaliset@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bonding entry did not include additional include files that have
-been added nor did it reference the documentation. Add these references
-for completeness.
+Update LTR threshold scale and value based on LTRME (Latency
+Tolenrance Reporting Mechanism) from device capabilities.
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+In ASPM driver, LTR threshold scale and value is updating
+based on tcommon_mode and t_poweron values. In kioxia NVMe,
+L1.2 is failing due to LTR threshold scale and value is
+greater values than max snoop/non snoop value.
+
+In general, updated LTR threshold scale and value should be
+less than max snoop/non snoop value to enter the device
+into L1.2 state.
+
+Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
+
 ---
- MAINTAINERS | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changes since v1:
+	- Added missing variable declaration in v1 patch.
+---
+ drivers/pci/pcie/aspm.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cb75c5d6d78b..9449caf87b94 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3480,8 +3480,9 @@ M:	Andy Gospodarek <andy@greyhouse.net>
- L:	netdev@vger.kernel.org
- S:	Supported
- W:	http://sourceforge.net/projects/bonding/
-+F:	Documentation/networking/bonding.rst
- F:	drivers/net/bonding/
--F:	include/net/bonding.h
-+F:	include/net/bond*
- F:	include/uapi/linux/if_bonding.h
+diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+index a96b742..a67746c 100644
+--- a/drivers/pci/pcie/aspm.c
++++ b/drivers/pci/pcie/aspm.c
+@@ -463,6 +463,7 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+ 	u32 val1, val2, scale1, scale2;
+ 	u32 t_common_mode, t_power_on, l1_2_threshold, scale, value;
+ 	u32 ctl1 = 0, ctl2 = 0;
++	u32 cap;
+ 	u32 pctl1, pctl2, cctl1, cctl2;
+ 	u32 pl1_2_enables, cl1_2_enables;
  
- BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
+@@ -499,9 +500,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+ 	 * Table 5-11.  T(POWER_OFF) is at most 2us and T(L1.2) is at
+ 	 * least 4us.
+ 	 */
+-	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+-	encode_l12_threshold(l1_2_threshold, &scale, &value);
+-	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
++	pcie_capability_read_dword(child, PCI_EXP_DEVCAP2, &cap);
++	if (!(cap & PCI_EXP_DEVCAP2_LTR)) {
++		l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
++		encode_l12_threshold(l1_2_threshold, &scale, &value);
++		ctl1 |= scale << 29 | value << 16;
++	}
++
++	ctl1 |= t_common_mode;
+ 
+ 	/* Some broken devices only support dword access to L1 SS */
+ 	pci_read_config_dword(parent, parent->l1ss + PCI_L1SS_CTL1, &pctl1);
 -- 
-2.27.0
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
