@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C00FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E2EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237199AbiCGJa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:30:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
+        id S237116AbiCGJbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237385AbiCGJ2D (ORCPT
+        with ESMTP id S237409AbiCGJ2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEE25BD1E;
-        Mon,  7 Mar 2022 01:25:20 -0800 (PST)
+        Mon, 7 Mar 2022 04:28:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F412A6A029;
+        Mon,  7 Mar 2022 01:25:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 077B9B810B2;
-        Mon,  7 Mar 2022 09:25:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42397C340E9;
-        Mon,  7 Mar 2022 09:25:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BF7460C00;
+        Mon,  7 Mar 2022 09:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4148CC340E9;
+        Mon,  7 Mar 2022 09:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645117;
-        bh=ZmDrpSXBxhFbiVSDxHqnr0OkvbLlHZXnWYI54QNgtlM=;
+        s=korg; t=1646645111;
+        bh=8HVQ0bK50UVVZlUYGGpvPde5Jchndo2Q57B4WADFTzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rp+a5kW1MLJytD+dllVRHndVDWbxulxqH/UCP6HtElvgN9Ke5Tt1LEnIJJZA6447e
-         dmFZoHvdQd8uhWydT/pLGybm2p0rRXyuE6YcDuUqAE0tIPhhCyyS3Tq4lzLIhgMPYl
-         rJYv4SUbqR5R/J7tyzixx2ZtvI4C4AlVTl8HEIok=
+        b=eJzM/LJjNj35ADtw1nDmYkqdMH82iRqHDjgd54O1AbNI6PHt3C9qgaIFF1B4JUlWf
+         FNqglt/UgSCDAMtmbQSxic+wljz3cA061dqg0AQ+9G6/M8yF1tJRb32bnDivcKfI4J
+         qJMs4YN7rXIWUrv6pYICYpUqKNfn9HHs/s0IvaKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 44/51] nl80211: Handle nla_memdup failures in handle_nan_filter
-Date:   Mon,  7 Mar 2022 10:19:19 +0100
-Message-Id: <20220307091638.244181307@linuxfoundation.org>
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 42/51] soc: fsl: qe: Check of ioremap return value
+Date:   Mon,  7 Mar 2022 10:19:17 +0100
+Message-Id: <20220307091638.188796141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -51,50 +50,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 6ad27f522cb3b210476daf63ce6ddb6568c0508b ]
+[ Upstream commit a222fd8541394b36b13c89d1698d9530afd59a9c ]
 
-As there's potential for failure of the nla_memdup(),
-check the return value.
+As the possible failure of the ioremap(), the par_io could be NULL.
+Therefore it should be better to check it and return error in order to
+guarantee the success of the initiation.
+But, I also notice that all the caller like mpc85xx_qe_par_io_init() in
+`arch/powerpc/platforms/85xx/common.c` don't check the return value of
+the par_io_init().
+Actually, par_io_init() needs to check to handle the potential error.
+I will submit another patch to fix that.
+Anyway, par_io_init() itsely should be fixed.
 
-Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+Fixes: 7aa1aa6ecec2 ("QE: Move QE from arch/powerpc to drivers/soc")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301100020.3801187-1-jiasheng@iscas.ac.cn
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/soc/fsl/qe/qe_io.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 04c4fd376e1d..c5806f46f6c9 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11791,6 +11791,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	i = 0;
- 	nla_for_each_nested(attr, attr_filter, rem) {
- 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
-+		if (!filter[i].filter)
-+			goto err;
-+
- 		filter[i].len = nla_len(attr);
- 		i++;
- 	}
-@@ -11803,6 +11806,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	}
+diff --git a/drivers/soc/fsl/qe/qe_io.c b/drivers/soc/fsl/qe/qe_io.c
+index 7ae59abc7863..127a4a836e67 100644
+--- a/drivers/soc/fsl/qe/qe_io.c
++++ b/drivers/soc/fsl/qe/qe_io.c
+@@ -41,6 +41,8 @@ int par_io_init(struct device_node *np)
+ 	if (ret)
+ 		return ret;
+ 	par_io = ioremap(res.start, resource_size(&res));
++	if (!par_io)
++		return -ENOMEM;
  
- 	return 0;
-+
-+err:
-+	i = 0;
-+	nla_for_each_nested(attr, attr_filter, rem) {
-+		kfree(filter[i].filter);
-+		i++;
-+	}
-+	kfree(filter);
-+	return -ENOMEM;
- }
- 
- static int nl80211_nan_add_func(struct sk_buff *skb,
+ 	num_ports = of_get_property(np, "num-ports", NULL);
+ 	if (num_ports)
 -- 
 2.34.1
 
