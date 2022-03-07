@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED47FC388F3
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B88CC38162
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241993AbiCGKLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52122 "EHLO
+        id S242053AbiCGKLM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240281AbiCGJus (ORCPT
+        with ESMTP id S240577AbiCGJvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:48 -0500
+        Mon, 7 Mar 2022 04:51:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EC974DC3;
-        Mon,  7 Mar 2022 01:44:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9638E657B5;
+        Mon,  7 Mar 2022 01:44:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58C736116E;
-        Mon,  7 Mar 2022 09:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 534BFC340E9;
-        Mon,  7 Mar 2022 09:44:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7607F60F62;
+        Mon,  7 Mar 2022 09:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0D8C340F3;
+        Mon,  7 Mar 2022 09:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646262;
-        bh=7op5MFowyiInE3pMmlvDncVgyDPHUsh9zGiv/8ME6CU=;
+        s=korg; t=1646646292;
+        bh=+NzAtLObj6uMrptvGTkHCHEAmFeyo5+8E9Db1t+8QB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JjM2vfxkbuBqLE9yoOy+6FqGTCqVZzQY/C/yWi1Nzed5NcAJasWvQPC218aFCaiwz
-         wq7sUD+nR5lpnpgi5koQKY33kbYli6g5gc44Vs1aBqTUZcceyum6h2ixeRSJELCntO
-         HMEh97MAFP3Jd5ZpBFB8JUHk0uB4FqU8wCWXXSXE=
+        b=ly+GesbPd56nSVAIawB0oPXncZYME1Zipc1Kxrn67yCNf+POamLBDDObyZ3mvCBCI
+         R8bY2XqnqfWhMUhvi7bRuoMvuwsAV5XfkLlRzRTa+QjAWU4+d4146Oe1yT8OYbxCiv
+         gkWebhqyzv+T31HHUot5P+yMz5hFCu/lyCzDcc3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars Poeschel <poeschel@lemonage.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>
-Subject: [PATCH 5.15 187/262] auxdisplay: lcd2s: Use proper API to free the instance of charlcd object
-Date:   Mon,  7 Mar 2022 10:18:51 +0100
-Message-Id: <20220307091707.746320066@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Cohen <amcohen@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 196/262] selftests: mlxsw: tc_police_scale: Make test more robust
+Date:   Mon,  7 Mar 2022 10:19:00 +0100
+Message-Id: <20220307091708.140705665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,44 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-commit 9ed331f8a0fb674f4f06edf05a1687bf755af27b upstream.
+commit dc9752075341e7beb653e37c6f4a3723074dc8bc upstream.
 
-While it might work, the current approach is fragile in a few ways:
-- whenever members in the structure are shuffled, the pointer will be wrong
-- the resource freeing may include more than covered by kfree()
+The test adds tc filters and checks how many of them were offloaded by
+grepping for 'in_hw'.
 
-Fix this by using charlcd_free() call instead of kfree().
+iproute2 commit f4cd4f127047 ("tc: add skip_hw and skip_sw to control
+action offload") added offload indication to tc actions, producing the
+following output:
 
-Fixes: 8c9108d014c5 ("auxdisplay: add a driver for lcd2s character display")
-Cc: Lars Poeschel <poeschel@lemonage.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+ $ tc filter show dev swp2 ingress
+ ...
+ filter protocol ipv6 pref 1000 flower chain 0 handle 0x7c0
+   eth_type ipv6
+   dst_ip 2001:db8:1::7bf
+   skip_sw
+   in_hw in_hw_count 1
+         action order 1:  police 0x7c0 rate 10Mbit burst 100Kb mtu 2Kb action drop overhead 0b
+         ref 1 bind 1
+         not_in_hw
+         used_hw_stats immediate
+
+The current grep expression matches on both 'in_hw' and 'not_in_hw',
+resulting in incorrect results.
+
+Fix that by using JSON output instead.
+
+Fixes: 5061e773264b ("selftests: mlxsw: Add scale test for tc-police")
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/auxdisplay/lcd2s.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/auxdisplay/lcd2s.c
-+++ b/drivers/auxdisplay/lcd2s.c
-@@ -336,7 +336,7 @@ static int lcd2s_i2c_probe(struct i2c_cl
- 	return 0;
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_police_scale.sh
+@@ -60,7 +60,8 @@ __tc_police_test()
  
- fail1:
--	kfree(lcd);
-+	charlcd_free(lcd2s->charlcd);
- 	return err;
+ 	tc_police_rules_create $count $should_fail
+ 
+-	offload_count=$(tc filter show dev $swp1 ingress | grep in_hw | wc -l)
++	offload_count=$(tc -j filter show dev $swp1 ingress |
++			jq "[.[] | select(.options.in_hw == true)] | length")
+ 	((offload_count == count))
+ 	check_err_fail $should_fail $? "tc police offload count"
  }
- 
-@@ -345,7 +345,7 @@ static int lcd2s_i2c_remove(struct i2c_c
- 	struct lcd2s_data *lcd2s = i2c_get_clientdata(i2c);
- 
- 	charlcd_unregister(lcd2s->charlcd);
--	kfree(lcd2s->charlcd);
-+	charlcd_free(lcd2s->charlcd);
- 	return 0;
- }
- 
 
 
