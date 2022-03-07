@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F22C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D0BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbiCGKkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S240566AbiCGKk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:40:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240792AbiCGKT2 (ORCPT
+        with ESMTP id S240793AbiCGKT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:19:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CAC62112;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79E86622C;
         Mon,  7 Mar 2022 01:57:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78D1660929;
-        Mon,  7 Mar 2022 09:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B934C340F3;
-        Mon,  7 Mar 2022 09:57:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B374C60BAF;
+        Mon,  7 Mar 2022 09:57:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1EAC340F3;
+        Mon,  7 Mar 2022 09:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646647038;
-        bh=O834SLh8x99q2Ut0KUpMDKC7Kn7l+pM8+iUMXreQbKE=;
+        s=korg; t=1646647079;
+        bh=YD3MXLQIQr/JqZEO7ZzfsiIS3V636Ue2jI9mSt6slXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GCNY4Un/ulNZh00bridmXk7OSRBLSmRbbP1/gCa26fXtKUCrVBh5PNLYwRyCKMlgl
-         7b7SRc3ogMwEwIaKZsAKFWEfl2UVpoPsWxuK4domJw85zUFYSFRFq4rVC30shItOZ2
-         hPMoxdhhvxqYCvehwR1LiD3xUWMa/pWXE+PJMjR8=
+        b=e0Le6pcXrdJxGs/IkMzOGT8m9B/z6GH54ZT31jhnhBu3uJ1V5y8/VRTL/1T1CLvNN
+         GrSEixebweOAcg02nEuTCq5XNpyIBz40OUfMEw8pNqlAK2EU9ARUwFnJZjKjg6jAGS
+         sEs8kGnMIFoPZwwOtddKuZfShRfGoWjwYcpEFOmQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.16 172/186] tracing: Fix return value of __setup handlers
-Date:   Mon,  7 Mar 2022 10:20:10 +0100
-Message-Id: <20220307091658.886471698@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.16 184/186] s390/ftrace: fix arch_ftrace_get_regs implementation
+Date:   Mon,  7 Mar 2022 10:20:22 +0100
+Message-Id: <20220307091659.226167182@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,82 +53,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-commit 1d02b444b8d1345ea4708db3bab4db89a7784b55 upstream.
+commit 1389f17937a03fe4ec71b094e1aa6530a901963e upstream.
 
-__setup() handlers should generally return 1 to indicate that the
-boot options have been handled.
+arch_ftrace_get_regs is supposed to return a struct pt_regs pointer
+only if the pt_regs structure contains all register contents, which
+means it must have been populated when created via ftrace_regs_caller.
 
-Using invalid option values causes the entire kernel boot option
-string to be reported as Unknown and added to init's environment
-strings, polluting it.
+If it was populated via ftrace_caller the contents are not complete
+(the psw mask part is missing), and therefore a NULL pointer needs be
+returned.
 
-  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
-    kprobe_event=p,syscall_any,$arg1 trace_options=quiet
-    trace_clock=jiffies", will be passed to user space.
+The current code incorrectly always returns a struct pt_regs pointer.
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-     kprobe_event=p,syscall_any,$arg1
-     trace_options=quiet
-     trace_clock=jiffies
+Fix this by adding another pt_regs flag which indicates if the
+contents are complete, and fix arch_ftrace_get_regs accordingly.
 
-Return 1 from the __setup() handlers so that init's environment is not
-polluted with kernel boot options.
-
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lkml.kernel.org/r/20220303031744.32356-1-rdunlap@infradead.org
-
-Cc: stable@vger.kernel.org
-Fixes: 7bcfaf54f591 ("tracing: Add trace_options kernel command line parameter")
-Fixes: e1e232ca6b8f ("tracing: Add trace_clock=<clock> kernel parameter")
-Fixes: 970988e19eb0 ("tracing/kprobe: Add kprobe_event= boot parameter")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 894979689d3a ("s390/ftrace: provide separate ftrace_caller/ftrace_regs_caller implementations")
+Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c        |    4 ++--
- kernel/trace/trace_kprobe.c |    2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/s390/include/asm/ftrace.h |   10 ++++++----
+ arch/s390/include/asm/ptrace.h |    2 ++
+ arch/s390/kernel/ftrace.c      |    2 +-
+ arch/s390/kernel/mcount.S      |    9 +++++++++
+ 4 files changed, 18 insertions(+), 5 deletions(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -235,7 +235,7 @@ static char trace_boot_options_buf[MAX_T
- static int __init set_trace_boot_options(char *str)
+--- a/arch/s390/include/asm/ftrace.h
++++ b/arch/s390/include/asm/ftrace.h
+@@ -47,15 +47,17 @@ struct ftrace_regs {
+ 
+ static __always_inline struct pt_regs *arch_ftrace_get_regs(struct ftrace_regs *fregs)
  {
- 	strlcpy(trace_boot_options_buf, str, MAX_TRACER_SIZE);
--	return 0;
-+	return 1;
+-	return &fregs->regs;
++	struct pt_regs *regs = &fregs->regs;
++
++	if (test_pt_regs_flag(regs, PIF_FTRACE_FULL_REGS))
++		return regs;
++	return NULL;
  }
- __setup("trace_options=", set_trace_boot_options);
  
-@@ -246,7 +246,7 @@ static int __init set_trace_boot_clock(c
+ static __always_inline void ftrace_instruction_pointer_set(struct ftrace_regs *fregs,
+ 							   unsigned long ip)
  {
- 	strlcpy(trace_boot_clock_buf, str, MAX_TRACER_SIZE);
- 	trace_boot_clock = trace_boot_clock_buf;
--	return 0;
-+	return 1;
+-	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
+-
+-	regs->psw.addr = ip;
++	fregs->regs.psw.addr = ip;
  }
- __setup("trace_clock=", set_trace_boot_clock);
  
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -31,7 +31,7 @@ static int __init set_kprobe_boot_events
- 	strlcpy(kprobe_boot_events_buf, str, COMMAND_LINE_SIZE);
- 	disable_tracing_selftest("running kprobe events");
+ /*
+--- a/arch/s390/include/asm/ptrace.h
++++ b/arch/s390/include/asm/ptrace.h
+@@ -15,11 +15,13 @@
+ #define PIF_EXECVE_PGSTE_RESTART	1	/* restart execve for PGSTE binaries */
+ #define PIF_SYSCALL_RET_SET		2	/* return value was set via ptrace */
+ #define PIF_GUEST_FAULT			3	/* indicates program check in sie64a */
++#define PIF_FTRACE_FULL_REGS		4	/* all register contents valid (ftrace) */
  
--	return 0;
-+	return 1;
- }
- __setup("kprobe_event=", set_kprobe_boot_events);
+ #define _PIF_SYSCALL			BIT(PIF_SYSCALL)
+ #define _PIF_EXECVE_PGSTE_RESTART	BIT(PIF_EXECVE_PGSTE_RESTART)
+ #define _PIF_SYSCALL_RET_SET		BIT(PIF_SYSCALL_RET_SET)
+ #define _PIF_GUEST_FAULT		BIT(PIF_GUEST_FAULT)
++#define _PIF_FTRACE_FULL_REGS		BIT(PIF_FTRACE_FULL_REGS)
  
+ #ifndef __ASSEMBLY__
+ 
+--- a/arch/s390/kernel/ftrace.c
++++ b/arch/s390/kernel/ftrace.c
+@@ -291,7 +291,7 @@ void kprobe_ftrace_handler(unsigned long
+ 
+ 	regs = ftrace_get_regs(fregs);
+ 	p = get_kprobe((kprobe_opcode_t *)ip);
+-	if (unlikely(!p) || kprobe_disabled(p))
++	if (!regs || unlikely(!p) || kprobe_disabled(p))
+ 		goto out;
+ 
+ 	if (kprobe_running()) {
+--- a/arch/s390/kernel/mcount.S
++++ b/arch/s390/kernel/mcount.S
+@@ -27,6 +27,7 @@ ENDPROC(ftrace_stub)
+ #define STACK_PTREGS_GPRS	(STACK_PTREGS + __PT_GPRS)
+ #define STACK_PTREGS_PSW	(STACK_PTREGS + __PT_PSW)
+ #define STACK_PTREGS_ORIG_GPR2	(STACK_PTREGS + __PT_ORIG_GPR2)
++#define STACK_PTREGS_FLAGS	(STACK_PTREGS + __PT_FLAGS)
+ #ifdef __PACK_STACK
+ /* allocate just enough for r14, r15 and backchain */
+ #define TRACED_FUNC_FRAME_SIZE	24
+@@ -57,6 +58,14 @@ ENDPROC(ftrace_stub)
+ 	.if \allregs == 1
+ 	stg	%r14,(STACK_PTREGS_PSW)(%r15)
+ 	stosm	(STACK_PTREGS_PSW)(%r15),0
++#ifdef CONFIG_HAVE_MARCH_Z10_FEATURES
++	mvghi	STACK_PTREGS_FLAGS(%r15),_PIF_FTRACE_FULL_REGS
++#else
++	lghi	%r14,_PIF_FTRACE_FULL_REGS
++	stg	%r14,STACK_PTREGS_FLAGS(%r15)
++#endif
++	.else
++	xc	STACK_PTREGS_FLAGS(8,%r15),STACK_PTREGS_FLAGS(%r15)
+ 	.endif
+ 
+ 	lg	%r14,(__SF_GPRS+8*8)(%r1)	# restore original return address
 
 
