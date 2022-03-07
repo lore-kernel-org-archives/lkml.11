@@ -2,218 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26839C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD111C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243139AbiCGQ65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:58:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        id S244369AbiCGQ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:59:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237432AbiCGQ6y (ORCPT
+        with ESMTP id S244352AbiCGQ7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:58:54 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97645193F7
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:57:59 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id cx5so14277162pjb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 08:57:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tIhXGZLVpZ9gpPB8Y0IEDVl0g8sNd0sXb4aXiUdZXd0=;
-        b=YP2FNy86W7N8nKMNMqM2YUGV/GbODjCGqey24vRQhOQVk5clrTz+DAxqejvidakQBI
-         9TtFA05SljyJ4KDFxjiN0umUq+/62+jga/bbaQdWUCLFfYvljIcv4m9X07eYaYh0Nadd
-         DQuK/PW1H4wFsAybKEPfJVLdPlSP3bAmsH1B3AbYFXJSnSoGSKcjtg9OJUWvYtY3JuFR
-         nUOmT0BkXOrKM/WQSvWbp9PZTq2KswXC8vo4U+i925uXsuuaZkdSAV4S3wC2QQBiR+ra
-         amwbzwb/jnl2ZttKE0v8nzwzkmsCIX0ezC7DO1vPG97dlUA+tsLIOXhpelHcLD5a3Fzj
-         6vpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tIhXGZLVpZ9gpPB8Y0IEDVl0g8sNd0sXb4aXiUdZXd0=;
-        b=xEbqaqTbfomiq+8rBXBb2vPZ+DIOP3FLNVM/Sdk1Mq+X2yx/ZOdgVcSnzZZgkqjQnX
-         PvifocduadbUiRcUjjqYaA2BsFxCx+Qt1cy9gq51N5R9eJVOS7XeicCrTA53Sq1YNUpG
-         W+drvLTrTBCecxWx6MILA7Pp+pPMgHhHpLROekxvDSzKu3kNqye6EgTt9yr/U2vf08m+
-         Vif4VEDQhaHgijJ7axrdoCIxXn7gMFae73+gCkkeltKjY7kGIXBFokmefxqpsDXqr4mX
-         PpCdDjaj2n9+yLbiUY0xZWSPapV9A7eIpzbuY84d8C+4FQ/lm01ZVKEUgjoHTbPBUAWu
-         qSzQ==
-X-Gm-Message-State: AOAM533REAHP06FiBU3muNPjvBq7cNiA2Kj2xxTk/CzwrZIco099DtKc
-        9Goa+JMilAWUwF20gv3KRHvZdeMCasQ5Ih1XT3x8Og==
-X-Google-Smtp-Source: ABdhPJx8XmL3ynHyeduH/5RI2S24f5ccnfYE5r4H7NIQr7UVkGE6yqNch4rjeZxEKJVjLao5GJVTFGn1w108kteXJF8=
-X-Received: by 2002:a17:902:7044:b0:14e:e1b1:bb0e with SMTP id
- h4-20020a170902704400b0014ee1b1bb0emr12959564plt.65.1646672279034; Mon, 07
- Mar 2022 08:57:59 -0800 (PST)
+        Mon, 7 Mar 2022 11:59:16 -0500
+X-Greylist: delayed 1409 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 08:58:21 PST
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D178F2E09F
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:58:21 -0800 (PST)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id AFAAD9C766
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:34:51 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id RGJvn17jkRnrrRGJvnkxsn; Mon, 07 Mar 2022 10:34:51 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=E3pGPPNNo3xRbfhh9om7nduDNuHsQN8qJ8ZnQHI78oM=; b=PKU8IHHYksUu32410/3p7aJtl+
+        TX7XfJiOYCqH49Wd6csXN8FmUZhUhuIEQUfWrCZxi+H2t86BNw0KagraxPR9HEw31Lzf8MvdNOT45
+        gZhMRolX9w9aBIiHjPQi9YbwJWhdVeJVAASwC7tvRglrvJmTkPh6tQ76XI29w0lpkjkcmZKjknb9m
+        adlmDYyv6kCb9TyxO4Cwq40+7wnP8E4SK+lX2P+i+KgBzi40z8XZ4ws7zt+Hpd/UePz6YULvDCmGD
+        aRF3pKd+Wxq3fv9PqaIzI4mH+qmP0QmHZBUvdgFDNFKFBKgXuGiFxKPLFFCUc7NpwC+YSIiqqZa+Q
+        /5KaVYCQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38096)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRGJu-003jbN-V3; Mon, 07 Mar 2022 16:34:51 +0000
+Message-ID: <e23ebf8b-5227-cc97-d166-797a4e852cd2@roeck-us.net>
+Date:   Mon, 7 Mar 2022 08:34:48 -0800
 MIME-Version: 1.0
-References: <20220307154558.2505734-1-robert.foss@linaro.org>
- <20220307154558.2505734-2-robert.foss@linaro.org> <YiY1CP6DkfgU4re/@robh.at.kernel.org>
-In-Reply-To: <YiY1CP6DkfgU4re/@robh.at.kernel.org>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 7 Mar 2022 17:57:47 +0100
-Message-ID: <CAG3jFyssPxuRXzZsZkVHWrSS8b6pRHRRmpZCTvLmDV-t2CDA1g@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] Revert "dt-bindings:drm/bridge:anx7625:add vendor define"
-To:     Rob Herring <robh@kernel.org>
-Cc:     airlied@linux.ie, daniel@ffwll.ch, matthias.bgg@gmail.com,
-        xji@analogixsemi.com, hsinyi@chromium.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Chen-Yu Tsai <wenst@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220307091702.378509770@linuxfoundation.org>
+ <24c54a05-bb80-a128-d0ba-a78c6d5d101c@roeck-us.net>
+ <YiYw3hV2r8DTa7fb@kroah.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
+In-Reply-To: <YiYw3hV2r8DTa7fb@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRGJu-003jbN-V3
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38096
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 12
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 at 17:38, Rob Herring <robh@kernel.org> wrote:
->
-> On Mon, Mar 07, 2022 at 04:45:57PM +0100, Robert Foss wrote:
-> > This reverts commit a43661e7e819b100e1f833a35018560a1d9abb39.
->
-> S-o-b and reason for the revert?
->
-> > ---
-> >  .../display/bridge/analogix,anx7625.yaml      | 65 +------------------
-> >  1 file changed, 2 insertions(+), 63 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > index 1d3e88daca041..ab48ab2f4240d 100644
-> > --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> > @@ -43,70 +43,14 @@ properties:
-> >    vdd33-supply:
-> >      description: Regulator that provides the supply 3.3V power.
-> >
-> > -  analogix,lane0-swing:
-> > -    $ref: /schemas/types.yaml#/definitions/uint8-array
-> > -    minItems: 1
-> > -    maxItems: 20
-> > -    description:
-> > -      an array of swing register setting for DP tx lane0 PHY.
-> > -      Registers 0~9 are Swing0_Pre0, Swing1_Pre0, Swing2_Pre0,
-> > -      Swing3_Pre0, Swing0_Pre1, Swing1_Pre1, Swing2_Pre1, Swing0_Pre2,
-> > -      Swing1_Pre2, Swing0_Pre3, they are for [Boost control] and
-> > -      [Swing control] setting.
-> > -      Registers 0~9, bit 3:0 is [Boost control], these bits control
-> > -      post cursor manual, increase the [Boost control] to increase
-> > -      Pre-emphasis value.
-> > -      Registers 0~9, bit 6:4 is [Swing control], these bits control
-> > -      swing manual, increase [Swing control] setting to add Vp-p value
-> > -      for each Swing, Pre.
-> > -      Registers 10~19 are Swing0_Pre0, Swing1_Pre0, Swing2_Pre0,
-> > -      Swing3_Pre0, Swing0_Pre1, Swing1_Pre1, Swing2_Pre1, Swing0_Pre2,
-> > -      Swing1_Pre2, Swing0_Pre3, they are for [R select control] and
-> > -      [R Termination control] setting.
-> > -      Registers 10~19, bit 4:0 is [R select control], these bits are
-> > -      compensation manual, increase it can enhance IO driven strength
-> > -      and Vp-p.
-> > -      Registers 10~19, bit 5:6 is [R termination control], these bits
-> > -      adjust 50ohm impedance of DP tx termination. 00:55 ohm,
-> > -      01:50 ohm(default), 10:45 ohm, 11:40 ohm.
-> > -
-> > -  analogix,lane1-swing:
-> > -    $ref: /schemas/types.yaml#/definitions/uint8-array
-> > -    minItems: 1
-> > -    maxItems: 20
-> > -    description:
-> > -      an array of swing register setting for DP tx lane1 PHY.
-> > -      DP TX lane1 swing register setting same with lane0
-> > -      swing, please refer lane0-swing property description.
->
-> These apply to the DP side, so no need to revert this part.
+On 3/7/22 08:20, Greg Kroah-Hartman wrote:
+> On Mon, Mar 07, 2022 at 06:36:22AM -0800, Guenter Roeck wrote:
+>> On 3/7/22 01:15, Greg Kroah-Hartman wrote:
+>>> This is the start of the stable review cycle for the 5.15.27 release.
+>>> There are 262 patches in this series, all will be posted as a response
+>>> to this one.  If anyone has any issues with these being applied, please
+>>> let me know.
+>>>
+>>> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+>>> Anything received after that time might be too late.
+>>>
+>>
+>> In addition to other reported build errors:
+>>
+>> Building mips:allmodconfig ... failed
+>> --------------
+>> Error log:
+>> drivers/net/hamradio/mkiss.c:35: error: "END" redefined
+> 
+> That is odd, I don't see any changes to that driver, nor any MIPS
+> changes that touch "END".
+> 
+> I don't even see "END" in the diff anywhere.
+> 
+> Any chance you can bisect?
+> 
 
-Ack.
+git bisect start 'HEAD' 'v5.15.26'
+# bad: [20ab3ebe56f306d821cf1c6858cf29f4d2e0075a] drm/amd/display: Fix stream->link_enc unassigned during stream removal
+git bisect bad 20ab3ebe56f306d821cf1c6858cf29f4d2e0075a
+# bad: [2f01eec30992529350bae197f73d71136b35e3b1] Input: ti_am335x_tsc - fix STEPCONFIG setup for Z2
+git bisect bad 2f01eec30992529350bae197f73d71136b35e3b1
+# good: [d369b344b4fb5a6ab9f72bacece674526761b885] arm64: Mark start_backtrace() notrace and NOKPROBE_SYMBOL
+git bisect good d369b344b4fb5a6ab9f72bacece674526761b885
+# good: [46f46f14bd45acdabcfb1d9f3b648f4a27d18c08] bpf, arm64: Use emit_addr_mov_i64() for BPF_PSEUDO_FUNC
+git bisect good 46f46f14bd45acdabcfb1d9f3b648f4a27d18c08
+# bad: [5b0c543b875e976e74c347b2d009c6519a6d2939] KVM: s390: Ensure kvm_arch_no_poll() is read once when blocking vCPU
+git bisect bad 5b0c543b875e976e74c347b2d009c6519a6d2939
+# bad: [58452f46ddb11fbe5b5f31d93a979d57efdad4b1] PCI: rcar: Check if device is runtime suspended instead of __clk_is_enabled()
+git bisect bad 58452f46ddb11fbe5b5f31d93a979d57efdad4b1
+# bad: [d6ab8da0cb6234fbc4fd240b9d7470b4c03d5df9] signal: In get_signal test for signal_group_exit every time through the loop
+git bisect bad d6ab8da0cb6234fbc4fd240b9d7470b4c03d5df9
+# bad: [53863a048566989e87f8bb306e835f940a10ed73] MIPS: fix local_{add,sub}_return on MIPS64
+git bisect bad 53863a048566989e87f8bb306e835f940a10ed73
+# first bad commit: [53863a048566989e87f8bb306e835f940a10ed73] MIPS: fix local_{add,sub}_return on MIPS64
 
->
-> > -
-> > -  analogix,audio-enable:
-> > -    type: boolean
-> > -    description: let the driver enable audio HDMI codec function or not.
-> > -
->
-> Not sure on this one...
+The problem is the innocent looking
 
-These additions are independent from my reading of this, would you
-like a v2 with only the bus-type related changes reverted?
+  #include <linux/atomic.h>
++#include <asm/asm.h>
+  #include <asm/cmpxchg.h>
 
->
-> >    ports:
-> >      $ref: /schemas/graph.yaml#/properties/ports
-> >
-> >      properties:
-> >        port@0:
-> > -        $ref: /schemas/graph.yaml#/$defs/port-base
-> > -        unevaluatedProperties: false
-> > +        $ref: /schemas/graph.yaml#/properties/port
-> >          description:
-> > -          MIPI DSI/DPI input.
-> > -
-> > -        properties:
-> > -          endpoint:
-> > -            $ref: /schemas/media/video-interfaces.yaml#
-> > -            type: object
-> > -            additionalProperties: false
-> > -
-> > -            properties:
-> > -              remote-endpoint: true
-> > -
-> > -              bus-type:
-> > -                enum: [1, 5]
->
-> I think the error here is really 1 should be 4 which corresponds to
-> D-PHY which is used by both CSI and DSI. Otherwise, I don't really see
-> the issue with bus-type being shared between CSI and DSI.
+in that patch. Reverting it fixes the problem. Alternatively, you could apply
+commit 16517829f2e0 ("hamradio: fix macro redefine warning").
 
-I think that would be a correct solution. And ignoring everything
-else, the range of this property is something that should be fixed.
-
-But that would mean that CPI (camera parallel interface) and DPI
-(display parallel interface) would share the
-V4L2_FWNODE_BUS_TYPE_PARALLEL enum. I think that would be perfectly
-functional, but it is not what V4L2_FWNODE_BUS_TYPE_PARALLEL is
-documented to represent. As far as I can see it's only intended to
-represent CPI.
-
-Instead of having V4L2_FWNODE_BUS_TYPE_PARALLEL represent two
-standards, I think they should be split. And possibly
-V4L2_FWNODE_BUS_TYPE_PARALLEL should be renamed for CPI, but that is a
-separate story. This would provide for the neatest and most legible
-solution. If this solution is implemented, this range would be
-incorrect. Additionally the snippet reverted in 2/2 of this series
-would no longer be valid.
-
-As it stands V4L2_FWNODE_BUS_TYPE_PARALLEL was used to represent DPI
-due to not being caught in the review process.
-
->
-> > -                default: 1
-> > -
-> > -              data-lanes: true
-> > +          Video port for MIPI DSI input.
-> >
-> >        port@1:
-> >          $ref: /schemas/graph.yaml#/properties/port
-> > @@ -143,9 +87,6 @@ examples:
-> >              vdd10-supply = <&pp1000_mipibrdg>;
-> >              vdd18-supply = <&pp1800_mipibrdg>;
-> >              vdd33-supply = <&pp3300_mipibrdg>;
-> > -            analogix,audio-enable;
-> > -            analogix,lane0-swing = /bits/ 8 <0x14 0x54 0x64 0x74>;
-> > -            analogix,lane1-swing = /bits/ 8 <0x14 0x54 0x64 0x74>;
-> >
-> >              ports {
-> >                  #address-cells = <1>;
-> > @@ -155,8 +96,6 @@ examples:
-> >                      reg = <0>;
-> >                      anx7625_in: endpoint {
-> >                          remote-endpoint = <&mipi_dsi>;
-> > -                        bus-type = <5>;
-> > -                        data-lanes = <0 1 2 3>;
-> >                      };
-> >                  };
-> >
-> > --
-> > 2.32.0
-
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Guenter
