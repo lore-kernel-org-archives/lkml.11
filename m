@@ -2,357 +2,413 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F29FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACED8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242804AbiCGNKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:10:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
+        id S239462AbiCGNLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242797AbiCGNJ6 (ORCPT
+        with ESMTP id S229841AbiCGNLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:09:58 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7C35BD2F
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:08:59 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id a5so2136337pfv.2
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:08:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1OMb6+2xb2ueOpC2O231W+xC0LlPanYaCyUkm3nLSq0=;
-        b=P0OgwEuzaNO5bFgHBqtDtVGr2gBoU/3xHekRrxUGxiAx+m3oWqI+sG/KAbqKv0h+oY
-         vMi0SgxaatSzUTP19GXHVSCFn7x9hs91BNJCvm10282Xm2e3DBMw7+3M13RNaTdb74Qc
-         lTdEwRxoO/DfxMUkJB+WkItzcc5U3g1XusKg+zO95MM/cFolcykQENe4C02ot1HIwb/5
-         fyN0uiYpJpTqrKWE/hctCISihgZZcuyIsZ/JaThs2CdoOa1wVROWtGGKsFhr6Ji4W5tQ
-         TeCDDHNTJcQRr0ieUdu4YPIfGwAyiVwDySB4kWsdXsnrj70V6WNBequMvqnMIkqPGgOj
-         oK9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1OMb6+2xb2ueOpC2O231W+xC0LlPanYaCyUkm3nLSq0=;
-        b=RebY+lqErLMCucLzU/oBHY+Ydvy1s44JlVcXjGD83ZO8Ij0f+hzbpCIdjggk6SerPJ
-         DDhXnND015ktRBnaTUY4tf3+pmmXv1tI21HlmdAnzVIe8HXe2md1HWb4NgInESE2/jew
-         XNiK4DYO+a6J+Cs2vp/kXK7Xh5pQDUpPusWaU+x4JhCEwcTeuIalXEcUNMuonRK8FAlH
-         MN/IUSIPyXMs5S3rcdB2m/Rp0hjROdDa5NDYJhkbvhFYxmCVYFGSwjd8ZaqguBHpsXBA
-         TAak9mSlGP9X2Xfdakc3ip3isOJ6ADlgHl15FYFdEWXBTfvteU2O+FGR45nuJysj+sVq
-         S6Ow==
-X-Gm-Message-State: AOAM5308PT4wIXm/z789g0y7a+0WleOFweukJAyXuVXRXl42MA+S1irM
-        G4qKTmG+6+SAGWzfl8DtMQcbVQ==
-X-Google-Smtp-Source: ABdhPJxe7TtLawzowOkb+ZDTnSFzwxCW8mkz9lFK64uTeFNt99dlPNUpl4aYf0ELGjo1lx6PgV/5PA==
-X-Received: by 2002:a63:5014:0:b0:380:132:6b25 with SMTP id e20-20020a635014000000b0038001326b25mr8513764pgb.211.1646658538636;
-        Mon, 07 Mar 2022 05:08:58 -0800 (PST)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id x9-20020aa79409000000b004f704d33ca0sm3258528pfo.136.2022.03.07.05.08.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 05:08:58 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v3 4/4] mm: hugetlb: add hugetlb_free_vmemmap sysctl
-Date:   Mon,  7 Mar 2022 21:07:08 +0800
-Message-Id: <20220307130708.58771-5-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220307130708.58771-1-songmuchun@bytedance.com>
-References: <20220307130708.58771-1-songmuchun@bytedance.com>
+        Mon, 7 Mar 2022 08:11:32 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8586E54F
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:10:37 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nRD82-0008CC-KX; Mon, 07 Mar 2022 14:10:22 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nRD80-003DWU-Kg; Mon, 07 Mar 2022 14:10:19 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nRD7y-007YIv-Ty; Mon, 07 Mar 2022 14:10:18 +0100
+Date:   Mon, 7 Mar 2022 14:10:18 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     hammer hsieh <hammerh0314@gmail.com>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wells.lu@sunplus.com,
+        "hammer.hsieh" <hammer.hsieh@sunplus.com>, kernel@pengutronix.de
+Subject: Re: [PATCH v2 2/2] pwm:sunplus-pwm:Add Sunplus SoC PWM Driver
+Message-ID: <20220307131018.6wrdsiixmgdtnodt@pengutronix.de>
+References: <1646374812-2988-1-git-send-email-hammerh0314@gmail.com>
+ <1646374812-2988-3-git-send-email-hammerh0314@gmail.com>
+ <20220304185702.i6csx2r3mokfmr6o@pengutronix.de>
+ <CAOX-t56cycXMga_grJcpmSG68ve5-RuTsbtaEQi9Ui0A+5uhSg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="r2auzwuukbtlhojx"
+Content-Disposition: inline
+In-Reply-To: <CAOX-t56cycXMga_grJcpmSG68ve5-RuTsbtaEQi9Ui0A+5uhSg@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We must add "hugetlb_free_vmemmap=on" to boot cmdline and reboot the
-server to enable the feature of freeing vmemmap pages of HugeTLB
-pages.  Rebooting usually takes a long time.  Add a sysctl to enable
-or disable the feature at runtime without rebooting.
 
-Disabling requires there is no any optimized HugeTLB page in the
-system.  If you fail to disable it, you can set "nr_hugepages" to 0
-and then retry.
+--r2auzwuukbtlhojx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- Documentation/admin-guide/sysctl/vm.rst |  14 ++++
- include/linux/memory_hotplug.h          |   9 +++
- mm/hugetlb_vmemmap.c                    | 113 +++++++++++++++++++++++++-------
- mm/hugetlb_vmemmap.h                    |   4 +-
- mm/memory_hotplug.c                     |   7 +-
- 5 files changed, 116 insertions(+), 31 deletions(-)
+Hello,
 
-diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
-index f4804ce37c58..9e0e153ed935 100644
---- a/Documentation/admin-guide/sysctl/vm.rst
-+++ b/Documentation/admin-guide/sysctl/vm.rst
-@@ -561,6 +561,20 @@ Change the minimum size of the hugepage pool.
- See Documentation/admin-guide/mm/hugetlbpage.rst
- 
- 
-+hugetlb_free_vmemmap
-+====================
-+
-+Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap
-+pages associated with each HugeTLB page.  Once true, the vmemmap pages of
-+subsequent allocation of HugeTLB pages from buddy system will be optimized,
-+whereas already allocated HugeTLB pages will not be optimized.  If you fail
-+to disable this feature, you can set "nr_hugepages" to 0 and then retry
-+since it is only allowed to be disabled after there is no any optimized
-+HugeTLB page in the system.
-+
-+See Documentation/admin-guide/mm/hugetlbpage.rst
-+
-+
- nr_hugepages_mempolicy
- ======================
- 
-diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-index e0b2209ab71c..20d7edf62a6a 100644
---- a/include/linux/memory_hotplug.h
-+++ b/include/linux/memory_hotplug.h
-@@ -351,4 +351,13 @@ void arch_remove_linear_mapping(u64 start, u64 size);
- extern bool mhp_supports_memmap_on_memory(unsigned long size);
- #endif /* CONFIG_MEMORY_HOTPLUG */
- 
-+#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
-+bool mhp_memmap_on_memory(void);
-+#else
-+static inline bool mhp_memmap_on_memory(void)
-+{
-+	return false;
-+}
-+#endif
-+
- #endif /* __LINUX_MEMORY_HOTPLUG_H */
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index 49bc7f845438..0f7fe49220cf 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -10,6 +10,7 @@
- 
- #define pr_fmt(fmt)	"HugeTLB: " fmt
- 
-+#include <linux/memory_hotplug.h>
- #include "hugetlb_vmemmap.h"
- 
- /*
-@@ -26,6 +27,10 @@ DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON,
- 			hugetlb_free_vmemmap_enabled_key);
- EXPORT_SYMBOL(hugetlb_free_vmemmap_enabled_key);
- 
-+/* How many HugeTLB pages with vmemmap pages optimized. */
-+static atomic_long_t optimized_pages = ATOMIC_LONG_INIT(0);
-+static DECLARE_RWSEM(sysctl_rwsem);
-+
- static int __init early_hugetlb_free_vmemmap_param(char *buf)
- {
- 	/* We cannot optimize if a "struct page" crosses page boundaries. */
-@@ -48,11 +53,6 @@ static int __init early_hugetlb_free_vmemmap_param(char *buf)
- }
- early_param("hugetlb_free_vmemmap", early_hugetlb_free_vmemmap_param);
- 
--static inline unsigned long free_vmemmap_pages_size_per_hpage(struct hstate *h)
--{
--	return (unsigned long)free_vmemmap_pages_per_hpage(h) << PAGE_SHIFT;
--}
--
- /*
-  * Previously discarded vmemmap pages will be allocated and remapping
-  * after this function returns zero.
-@@ -61,14 +61,16 @@ int alloc_huge_page_vmemmap(struct hstate *h, struct page *head)
- {
- 	int ret;
- 	unsigned long vmemmap_addr = (unsigned long)head;
--	unsigned long vmemmap_end, vmemmap_reuse;
-+	unsigned long vmemmap_end, vmemmap_reuse, vmemmap_pages;
- 
- 	if (!HPageVmemmapOptimized(head))
- 		return 0;
- 
--	vmemmap_addr += RESERVE_VMEMMAP_SIZE;
--	vmemmap_end = vmemmap_addr + free_vmemmap_pages_size_per_hpage(h);
--	vmemmap_reuse = vmemmap_addr - PAGE_SIZE;
-+	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
-+	vmemmap_pages	= free_vmemmap_pages_per_hpage(h);
-+	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
-+	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
-+
- 	/*
- 	 * The pages which the vmemmap virtual address range [@vmemmap_addr,
- 	 * @vmemmap_end) are mapped to are freed to the buddy allocator, and
-@@ -78,8 +80,14 @@ int alloc_huge_page_vmemmap(struct hstate *h, struct page *head)
- 	 */
- 	ret = vmemmap_remap_alloc(vmemmap_addr, vmemmap_end, vmemmap_reuse,
- 				  GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE);
--	if (!ret)
-+	if (!ret) {
- 		ClearHPageVmemmapOptimized(head);
-+		/*
-+		 * Paired with acquire semantic in
-+		 * hugetlb_free_vmemmap_handler().
-+		 */
-+		atomic_long_dec_return_release(&optimized_pages);
-+	}
- 
- 	return ret;
- }
-@@ -87,22 +95,28 @@ int alloc_huge_page_vmemmap(struct hstate *h, struct page *head)
- void free_huge_page_vmemmap(struct hstate *h, struct page *head)
- {
- 	unsigned long vmemmap_addr = (unsigned long)head;
--	unsigned long vmemmap_end, vmemmap_reuse;
-+	unsigned long vmemmap_end, vmemmap_reuse, vmemmap_pages;
- 
--	if (!free_vmemmap_pages_per_hpage(h))
--		return;
-+	down_read(&sysctl_rwsem);
-+	vmemmap_pages = free_vmemmap_pages_per_hpage(h);
-+	if (!vmemmap_pages)
-+		goto out;
- 
--	vmemmap_addr += RESERVE_VMEMMAP_SIZE;
--	vmemmap_end = vmemmap_addr + free_vmemmap_pages_size_per_hpage(h);
--	vmemmap_reuse = vmemmap_addr - PAGE_SIZE;
-+	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
-+	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
-+	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
- 
- 	/*
- 	 * Remap the vmemmap virtual address range [@vmemmap_addr, @vmemmap_end)
- 	 * to the page which @vmemmap_reuse is mapped to, then free the pages
- 	 * which the range [@vmemmap_addr, @vmemmap_end] is mapped to.
- 	 */
--	if (!vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
-+	if (!vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse)) {
- 		SetHPageVmemmapOptimized(head);
-+		atomic_long_inc(&optimized_pages);
-+	}
-+out:
-+	up_read(&sysctl_rwsem);
- }
- 
- void __init hugetlb_vmemmap_init(struct hstate *h)
-@@ -118,18 +132,16 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
- 	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
- 		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
- 
--	if (!hugetlb_free_vmemmap_enabled())
--		return;
--
--	if (IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON) &&
--	    !is_power_of_2(sizeof(struct page))) {
-+	if (!is_power_of_2(sizeof(struct page))) {
- 		/*
- 		 * The hugetlb_free_vmemmap_enabled_key can be enabled when
- 		 * CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON. It should
- 		 * be disabled if "struct page" crosses page boundaries.
- 		 */
--		pr_warn_once("cannot free vmemmap pages because \"struct page\" crosses page boundaries\n");
--		static_branch_disable(&hugetlb_free_vmemmap_enabled_key);
-+		if (IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON)) {
-+			pr_warn_once("cannot free vmemmap pages because \"struct page\" crosses page boundaries\n");
-+			static_branch_disable(&hugetlb_free_vmemmap_enabled_key);
-+		}
- 		return;
- 	}
- 
-@@ -148,3 +160,56 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
- 	pr_info("can free %d vmemmap pages for %s\n", h->nr_free_vmemmap_pages,
- 		h->name);
- }
-+
-+static int hugetlb_free_vmemmap_handler(struct ctl_table *table, int write,
-+					void *buffer, size_t *length,
-+					loff_t *ppos)
-+{
-+	int ret;
-+
-+	down_write(&sysctl_rwsem);
-+	/*
-+	 * Cannot be disabled when there is at lease one optimized
-+	 * HugeTLB in the system.
-+	 *
-+	 * The acquire semantic is paired with release semantic in
-+	 * alloc_huge_page_vmemmap(). If we saw the @optimized_pages
-+	 * with 0, all the operations of vmemmap pages remapping from
-+	 * alloc_huge_page_vmemmap() are visible too so that we can
-+	 * safely disable static key.
-+	 */
-+	table->extra1 = atomic_long_read_acquire(&optimized_pages) ?
-+			SYSCTL_ONE : SYSCTL_ZERO;
-+	ret = proc_do_static_key(table, write, buffer, length, ppos);
-+	up_write(&sysctl_rwsem);
-+
-+	return ret;
-+}
-+
-+static struct ctl_table hugetlb_vmemmap_sysctls[] = {
-+	{
-+		.procname	= "hugetlb_free_vmemmap",
-+		.data		= &hugetlb_free_vmemmap_enabled_key.key,
-+		.mode		= 0644,
-+		.proc_handler	= hugetlb_free_vmemmap_handler,
-+	},
-+	{ }
-+};
-+
-+static __init int hugetlb_vmemmap_sysctls_init(void)
-+{
-+	if (!is_power_of_2(sizeof(struct page)))
-+		return 0;
-+
-+	/*
-+	 * The vmemmap pages cannot be optimized if
-+	 * "memory_hotplug.memmap_on_memory" is enabled.
-+	 */
-+	if (mhp_memmap_on_memory())
-+		return 0;
-+
-+	register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
-+
-+	return 0;
-+}
-+late_initcall(hugetlb_vmemmap_sysctls_init);
-diff --git a/mm/hugetlb_vmemmap.h b/mm/hugetlb_vmemmap.h
-index cb2bef8f9e73..b67a159027f4 100644
---- a/mm/hugetlb_vmemmap.h
-+++ b/mm/hugetlb_vmemmap.h
-@@ -21,7 +21,9 @@ void hugetlb_vmemmap_init(struct hstate *h);
-  */
- static inline unsigned int free_vmemmap_pages_per_hpage(struct hstate *h)
- {
--	return h->nr_free_vmemmap_pages;
-+	if (hugetlb_free_vmemmap_enabled())
-+		return h->nr_free_vmemmap_pages;
-+	return 0;
- }
- #else
- static inline int alloc_huge_page_vmemmap(struct hstate *h, struct page *head)
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index d92edf102cfe..e69c31cea917 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -63,15 +63,10 @@ static bool memmap_on_memory __ro_after_init;
- module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
- MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
- 
--static inline bool mhp_memmap_on_memory(void)
-+bool mhp_memmap_on_memory(void)
- {
- 	return memmap_on_memory;
- }
--#else
--static inline bool mhp_memmap_on_memory(void)
--{
--	return false;
--}
- #endif
- 
- enum {
--- 
-2.11.0
+On Mon, Mar 07, 2022 at 08:50:10PM +0800, hammer hsieh wrote:
+> Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> =E6=96=BC 2022=E5=
+=B9=B43=E6=9C=885=E6=97=A5 =E9=80=B1=E5=85=AD =E4=B8=8A=E5=8D=882:57=E5=AF=
+=AB=E9=81=93=EF=BC=9A
+> > On Fri, Mar 04, 2022 at 02:20:12PM +0800, Hammer Hsieh wrote:
+> > > diff --git a/drivers/pwm/pwm-sunplus.c b/drivers/pwm/pwm-sunplus.c
+> > > new file mode 100644
+> > > index 0000000..170534f
+> > > --- /dev/null
+> > > +++ b/drivers/pwm/pwm-sunplus.c
+> > > @@ -0,0 +1,229 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * PWM device driver for SUNPLUS SoCs
+> >
+> > Is there a public manual available for this hardware? If yes, please add
+> > a link here.
+>=20
+> yes, will add links as below
+> https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+> https://sunplus.atlassian.net/wiki/spaces/doc/pages/461144198/12.+Pulse+W=
+idth+Modulation+PWM
+>=20
+> > > + *
+> > > + * Limitations:
+> > > + * - Only supports normal polarity.
+> >
+> > How does the HW behave when it's disabled? Usual candidates are:
+> >  - It freezes at where it currently is
+> >  - It outputs low
+> >  - It becomes tristate
+> >
+> > Please note this in the Limitations section, too.
+> >
+> > Another thing to mention is if running periods are completed when the
+> > parameters change.
+> >
+>=20
+> ok, will add note as below
+>   Limitations:
+>   - Only supports normal polarity.
+>   - It output low when PWM channel disabled.
+>   - When the parameters change, current running period will not be comple=
+ted
+>       and run new settings immediately.
 
+Sounds good.
+
+Other thing that might maybe happen: in .apply() you write the register
+for period first and then the one for duty_cycle. Can it happen, that
+for a moment the output is defined by new period and old duty_cycle?
+That would be another thing to note.
+
+> > > +struct sunplus_pwm {
+> > > +     struct pwm_chip chip;
+> > > +     void __iomem *base;
+> > > +     struct clk *clk;
+> > > +     u32 approx_period[PWM_SUP_NUM];
+> > > +     u32 approx_duty_cycle[PWM_SUP_NUM];
+> > > +};
+> > > +
+> > > +static inline struct sunplus_pwm *to_sunplus_pwm(struct pwm_chip *ch=
+ip)
+> > > +{
+> > > +     return container_of(chip, struct sunplus_pwm, chip);
+> > > +}
+> > > +
+> > > +static void sunplus_pwm_free(struct pwm_chip *chip, struct pwm_devic=
+e *pwm)
+> > > +{
+> > > +     struct sunplus_pwm *priv =3D to_sunplus_pwm(chip);
+> > > +     u32 value;
+> > > +
+> > > +     /* disable pwm channel output */
+> > > +     value =3D readl(priv->base + PWM_SUP_CONTROL0);
+> > > +     value &=3D ~BIT(pwm->hwpwm);
+> > > +     writel(value, priv->base + PWM_SUP_CONTROL0);
+> > > +     /* disable pwm channel clk source */
+> > > +     value =3D readl(priv->base + PWM_SUP_CONTROL1);
+> > > +     value &=3D ~BIT(pwm->hwpwm);
+> > > +     writel(value, priv->base + PWM_SUP_CONTROL1);
+> >
+> > the .free callback isn't supposed to modify the hardware.
+>=20
+> But how to turn pwm channel off ?
+> I add .free function for turn it off.
+> In user space
+>   cd /sys/class/pwm/pwmchip0
+>   echo 0 > export
+>   cd pwm0
+>   echo 20000000 > period
+>   echo 1000000 > duty_cycle
+>   echo 1 > enable
+>   cd ..
+>   echo 0 > unexport ; turn off pwm will call .free function
+
+unexport should just keep the PWM configured as is. To turn it of, don't
+unexport but echo 0 > enable.
+
+> > > +     u32 tmp, rate;
+> > > +     u64 max_period, period_ns, duty_ns, clk_rate;
+> > > +
+> > > +     if (state->polarity !=3D pwm->state.polarity)
+> > > +             return -EINVAL;
+> > > +
+> > > +     if (!state->enabled) {
+> > > +             /* disable pwm channel output */
+> > > +             value =3D readl(priv->base + PWM_SUP_CONTROL0);
+> > > +             value &=3D ~BIT(pwm->hwpwm);
+> >
+> > I'd give this one a name. Something like:
+> >
+> >         #define PWM_SUP_CONTROL_EN(ch)  BIT(ch)
+> >
+> > (Pick the right name from the manual.)
+>=20
+> That means it need to implement
+> PWM_SUP_CONTROL_EN(ch) and PWM_SUP_CONTROL_DIS(ch) ?
+
+PWM_SUP_CONTROL_EN(ch) should be enough, PWM_SUP_CONTROL_DIS(ch) would
+just be 0 which doens't make much sense.
+
+>=20
+> > > +             writel(value, priv->base + PWM_SUP_CONTROL0);
+> > > +             /* disable pwm channel clk source */
+> > > +             value =3D readl(priv->base + PWM_SUP_CONTROL1);
+> > > +             value &=3D ~BIT(pwm->hwpwm);
+> > > +             writel(value, priv->base + PWM_SUP_CONTROL1);
+> > > +             return 0;
+> > > +     }
+> > > +
+> > > +     clk_rate =3D clk_get_rate(priv->clk);
+> > > +     rate =3D (u32)clk_rate / 100000;
+> >
+> > This cast doesn't change anything, does it?
+>=20
+> yes, clk_rate should be 202.5MHz, to prevent overflow use 2025 to calcula=
+te.
+
+I only talked about the cast, so
+
+	rate =3D clk_rate / 100000;
+
+should have the same effect and is a tad nicer.
+
+> > > +     max_period =3D PWM_SUP_FREQ_MAX * (PWM_SUP_FREQ_SCALER * 10000 =
+/ rate);
+> >
+> > Here you have rounding issues. Consider rate =3D 3329. Then you get
+> > max_period =3D 0xffff * (2560000 / 3329) =3D 0xffff * 768 =3D 50330880.
+> >
+> > However the actual result is 50396395.31...
+> >
+> > Also dividing by the result of a division looses precision.
+> >
+>=20
+> I am not sure how to fix the rounding issue.(thinking...)
+
+the mul_u64_u64_div_u64 I suggested should be good.
+
+> > > +     if (dd_freq =3D=3D 0)
+> > > +             return -EINVAL;
+> > > +
+> > > +     if (dd_freq > PWM_SUP_FREQ_MAX)
+> > > +             dd_freq =3D PWM_SUP_FREQ_MAX;
+> > > +
+> > > +     writel(dd_freq, priv->base + PWM_SUP_FREQ(pwm->hwpwm));
+> > > +
+> > > +     /* cal and set pwm duty */
+> > > +     value =3D readl(priv->base + PWM_SUP_CONTROL0);
+> > > +     value |=3D BIT(pwm->hwpwm);
+> > > +     value1 =3D readl(priv->base + PWM_SUP_CONTROL1);
+> > > +     value1 |=3D BIT(pwm->hwpwm);
+> > > +     if (duty_ns =3D=3D period_ns) {
+> > > +             value |=3D BIT(pwm->hwpwm + PWM_BYPASS_BIT_SHIFT);
+> > > +             duty =3D PWM_SUP_DUTY_MAX;
+> > > +     } else {
+> > > +             value &=3D ~BIT(pwm->hwpwm + PWM_BYPASS_BIT_SHIFT);
+> > > +             tmp =3D priv->approx_duty_cycle[pwm->hwpwm] * PWM_SUP_F=
+REQ_SCALER;
+> > > +             tmp /=3D priv->approx_period[pwm->hwpwm];
+> >
+> > Please use the exact values available.
+>=20
+> The same reason, in case of enable PWM_DEBUG.
+> first call .apply , then it will call .get_state for verify the calculati=
+on.
+
+The overall goal is not to please PWM_DEBUG, but to use exact
+calculations and if you did that, PWM_DEBUG should be happy, too.
+
+> > > +             duty =3D (u32)tmp;
+> > > +             duty |=3D (pwm->hwpwm << PWM_DD_SEL_BIT_SHIFT);
+> > > +     }
+> > > +     writel(duty, priv->base + PWM_SUP_DUTY(pwm->hwpwm));
+> > > +     writel(value1, priv->base + PWM_SUP_CONTROL1);
+> > > +     writel(value, priv->base + PWM_SUP_CONTROL0);
+> >
+> > What is the difference between CONTROL1 and CONTROL0?
+>=20
+> PWM CONTROL0 for PWM channel switch.
+> PWM CONTROL1 for PWM clock source switch.
+> Actually PWM supports 8 channels , but clock source only 4 sets.
+> For easy control(now submit), I just support 4 PWM channels, and one
+> clock source for one pwm channel.
+> For complicated control(not now), 8 PWM channels 4 clock source , need
+> to manage clock source / pwm channel enable or not
+> while request/free pwm channel.
+
+So you can use (say) clk 2 to "drive" PWM channel 6? Where is that
+mapping defined. Only implementing 4 channels with a 1:1 mapping is ok,
+but you might want to ensure the mapping is indeed 1:1.
+
+> > > +     return 0;
+> > > +}
+> > > +
+> > > +static void sunplus_pwm_get_state(struct pwm_chip *chip, struct pwm_=
+device *pwm,
+> > > +                               struct pwm_state *state)
+> > > +{
+> > > +     struct sunplus_pwm *priv =3D to_sunplus_pwm(chip);
+> > > +     u32 value, freq, duty, rate, freq_tmp, duty_tmp;
+> > > +     u64 tmp, clk_rate;
+> > > +
+> > > +     value =3D readl(priv->base + PWM_SUP_CONTROL0);
+> > > +
+> > > +     if (value & BIT(pwm->hwpwm)) {
+> > > +             clk_rate =3D clk_get_rate(priv->clk);
+> > > +             rate =3D (u32)clk_rate / 100000;
+> > > +             freq =3D readl(priv->base + PWM_SUP_FREQ(pwm->hwpwm));
+> > > +             duty =3D readl(priv->base + PWM_SUP_DUTY(pwm->hwpwm));
+> > > +             duty &=3D ~GENMASK(9, 8);
+> > > +
+> > > +             freq_tmp =3D rate * priv->approx_period[pwm->hwpwm] / (=
+PWM_SUP_FREQ_SCALER * 100);
+> > > +             duty_tmp =3D priv->approx_duty_cycle[pwm->hwpwm] * PWM_=
+SUP_FREQ_SCALER /
+> > > +                             priv->approx_period[pwm->hwpwm];
+> > > +
+> > > +             if (freq =3D=3D freq_tmp && duty =3D=3D duty_tmp) {
+> > > +                     state->period =3D priv->approx_period[pwm->hwpw=
+m] * 100;
+> > > +                     state->duty_cycle =3D priv->approx_duty_cycle[p=
+wm->hwpwm] * 100;
+> > > +             } else {
+> > > +                     tmp =3D (u64)freq * PWM_SUP_FREQ_SCALER * 10000;
+> > > +                     state->period =3D div64_u64(tmp, rate);
+> > > +                     tmp =3D (u64)freq * (u64)duty * 10000;
+> > > +                     state->duty_cycle =3D div64_u64(tmp, rate);
+> > > +             }
+> > > +             state->enabled =3D true;
+> > > +     } else {
+> > > +             state->enabled =3D false;
+> > > +     }
+> > > +
+> > > +     state->polarity =3D PWM_POLARITY_NORMAL;
+> > > +}
+> >
+> > When .get_state() is first called, .apply wasn't called yet. Then
+> > priv->approx_period[pwm->hwpwm] is zero and the returned result is
+> > wrong. Please read the register values and calculate the implemented
+> > output without caching.
+>=20
+> The same reason, in case of enable PWM_DEBUG.
+> first call .apply , then it will call .get_state for verify the calculati=
+on.
+>=20
+> In get_state, I thought about that.
+> first called .get_state, read register value to calculate period and duty=
+_cycle.
+> after calling .apply , caching data approx_period / approx_duty_cycle
+> will not zero.
+> then get_state will use caching data to do PWM_DEBUG self verification.
+> I will think about how to solve the PWM_DEBUG ".apply is not idempotent" =
+issue.
+
+I'd say: Don't cache anything. In .get_state() just read the registers and
+determine .duty_cycle and .period from them, and in .apply() do the
+inverse.
+
+> > > +     priv->clk =3D devm_clk_get_optional(dev, NULL);
+> > > +     if (IS_ERR(priv->clk))
+> , > > +             return dev_err_probe(dev, PTR_ERR(priv->clk),
+> > > +                                  "get pwm clock failed\n");
+> >
+> > If priv->clk is the dummy clk, clk_get_rate returns 0. This is bad as
+> > (at lease up to now) you divide by rate in .apply().
+> >
+>=20
+> I check many pwm drivers , they are called devm_clk_get_optional( ) or
+> devm_clk_get( ).
+> Could you tell me how to do it in a probe ?
+
+You can only sensibly use devm_clk_get_optional() if you don't rely on
+the rate of the clk. So the way to go here is to just use
+devm_clk_get().
+
+> > > +     ret =3D devm_add_action_or_reset(dev,
+> > > +                                    (void(*)(void *))clk_disable_unp=
+repare,
+> >
+> > Without checking my C book I'm unsure if this is save on all platforms.
+> > I'd implement a oneline function for this.
+>=20
+> ok, will implement it in one line.
+> static void sunplus_pwm_clk_release(*data)
+> {
+>    struct clk *clk =3D data;
+>    clk_disable_unprepare(clk);
+> }
+>  ret =3D devm_add_action_or_reset(dev, sunplus_pwm_clk_release, priv->clk=
+);
+>=20
+
+*nod*
+
+> > > +                                    priv->clk);
+> > > +     if (ret)
+> >
+> > missing error message
+> >
+>=20
+> I didn't see another driver add an error message, is it necessary?
+
+IMHO yes. (Though the most likely error -ENOMEM, in this case no error
+message should be emitted.)
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
+   |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--r2auzwuukbtlhojx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmImBDcACgkQwfwUeK3K
+7AnVaAgAhJJ05MIAoQYFoGdi6n63rMm1Lztd1uxdu8UNsO3rY2C6SmLGvV/sIRRE
+/tE/NCQKdqE83W100LEGkEazrmheeZCsC9qbM97AgeNByX/tZUPKYgnKY7q5fSqy
+oWeATu0AASCXGHkD76q502hR1+MHLLjnveqKihyVjP5VAURVyLqGnniN/5mzdeSb
+lTYOO/cJ4dwz7nVLz3mLuldOlkOvCeNtSOaWQ0ddvlU6FAAJCBPp2+Iea4XZoSlc
+VRK3McPwP9LPYUQbZ+AvAlAzLvp0E5sQRJnSnSpJYktfBTbaL5oLAtIOm+ft7JjC
+Pr0yd4B5E8/gvUXdgdGJhtCWzz2nsQ==
+=64DV
+-----END PGP SIGNATURE-----
+
+--r2auzwuukbtlhojx--
