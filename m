@@ -2,86 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A11C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238705AbiCGMk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:40:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        id S240949AbiCGMlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiCGMk5 (ORCPT
+        with ESMTP id S231961AbiCGMlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:40:57 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF95943ACB;
-        Mon,  7 Mar 2022 04:40:03 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id kx1-20020a17090b228100b001bf2dd26729so6768300pjb.1;
-        Mon, 07 Mar 2022 04:40:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id;
-        bh=dHsR3ao0+xiXYz+qySp/eO6Jeo43rF2+fndDyCDm5CI=;
-        b=Rc0lOw3FgFRLAsd7u/DZJrhDJcbnYhMJ/edMTz2xVyQIeT0FJq00ihuiveFiTc8z1G
-         iMfvs7k+Lw2IHVlSyq7jCRsbeTHobIFuiaEUPH0sYlNERgv/qTA+s5h/feUQVVammIqB
-         jCx5gxtn0oICvoNEMKRnVgXMkKHJ6oW6Bb2VeJSOTd/Sovq6oyCc6y+Oqj3zzXX3v+UR
-         R47BD4fM6PuDJtwYDSIV12jd8oSksmffC8nATaB3VogSj5Gk3PetfwqoRtbkb1H7yLHv
-         tsWP8oZnkfxW8TNf8N/b8NFPdx2wmzKHhvyeir+LhwdAagZTpr9JcbUhL6/VX7znWUES
-         bCFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=dHsR3ao0+xiXYz+qySp/eO6Jeo43rF2+fndDyCDm5CI=;
-        b=MQxj/CtAgFtSnspEPI++J7D3g03vzlRT94AaQzUA+my+5rfWxetYG0Z5YKjgN2KYrb
-         s4TAe6e53bOl9u6rBQH4Oed582y5EYIt71btAOvBeFW6T2bmN2v5MpFkRQXd5e06wpsz
-         D/CfnEsOQ+rjUYRCpD5ikYQVoWQoytnav+9dwt6BkkGi7YHOEh1uKcZwLy23JocbMwdZ
-         azqm0wLV9JdJl1LfaehZXkQvTlSIb+hFr1MrZTvxScQyd79ZxfyTM1AKN9fpI+wkrakH
-         mj542mkIgulVlKCbmuG6BcPhg2iEcpmdLhAh2XFGnZh4IAOn3R9JjSbVwc1OE4IYuTxb
-         dPZw==
-X-Gm-Message-State: AOAM533aq0nzDDd973I+y0oWgq+2A4HfBLjyC7TOkU38gh8r5ET4f69a
-        7Z4CyFQGcvHTpoEIDNzHcFM=
-X-Google-Smtp-Source: ABdhPJznGIbMiQ2zK8bIDsA3ZjDX9lSU/OOB0ngOTGlZjuFIN3Qa4EfVixbTbjo+6MMS4ZEfjCq9ZA==
-X-Received: by 2002:a17:903:291:b0:150:4197:7cf2 with SMTP id j17-20020a170903029100b0015041977cf2mr11633351plr.173.1646656803121;
-        Mon, 07 Mar 2022 04:40:03 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id w5-20020a17090a6b8500b001bf564e624esm4687093pjj.39.2022.03.07.04.40.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 04:40:02 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Helge Deller <deller@gmx.de>, Miaoqian Lin <linmq006@gmail.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Dave Airlie <airlied@gmail.com>, linux-omap@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] omapfb: Add missing of_node_put() in dvic_probe_of
-Date:   Mon,  7 Mar 2022 12:38:12 +0000
-Message-Id: <20220307123816.31888-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 7 Mar 2022 07:41:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F496419A9;
+        Mon,  7 Mar 2022 04:40:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 125B2B811E6;
+        Mon,  7 Mar 2022 12:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C9B5C340F4;
+        Mon,  7 Mar 2022 12:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646656811;
+        bh=PN/nEQ7czoCcNRM3+QJffb3c4Xa5AaMxJWXIngv9K8w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kDhk1t7u5xGZyAuX5FDKtbBwgq3MboggHhg5cuK0ryEj9J7v5xwfz7bHFrwph4ZVy
+         KHhnrdii2TqOXKCSOKwHeDQUSje+xozy501rzQWX3OspTWq6mGegoa2DgDHwN5/hjd
+         zVpChGKusm+eqKxOAWexPvvfIfLp0GwFtT+ft+2iZiu3ChLCfi+alXkAjt5dOUYNlV
+         d/fCv3xGDMBMQao0Osop7KmisvPiSmMY+PcqLsWZvBz0Gfr+lyC8hUUJVRD4oaKEdb
+         bQibGCtZIAdZPU4xTp8OmkC2mf3/ZEdKy7FT8u5a1j7SHcqnyfYufzAGQjbh3Ej+Ax
+         J7BpMBl+FgTqA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61ABEEAC081;
+        Mon,  7 Mar 2022 12:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] qed: return status of qed_iov_get_link
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164665681139.14619.5267479786896733708.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Mar 2022 12:40:11 +0000
+References: <20220305150642.684247-1-trix@redhat.com>
+In-Reply-To: <20220305150642.684247-1-trix@redhat.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        Yuval.Mintz@qlogic.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Hello:
 
-Fixes: f76ee892a99e ("omapfb: copy omapdss & displays for omapfb")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c | 1 +
- 1 file changed, 1 insertion(+)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-index 2fa436475b40..c8ad3ef42bd3 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-@@ -246,6 +246,7 @@ static int dvic_probe_of(struct platform_device *pdev)
- 	adapter_node = of_parse_phandle(node, "ddc-i2c-bus", 0);
- 	if (adapter_node) {
- 		adapter = of_get_i2c_adapter_by_node(adapter_node);
-+		of_node_put(adapter_node);
- 		if (adapter == NULL) {
- 			dev_err(&pdev->dev, "failed to parse ddc-i2c-bus\n");
- 			omap_dss_put_device(ddata->in);
+On Sat,  5 Mar 2022 07:06:42 -0800 you wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> Clang static analysis reports this issue
+> qed_sriov.c:4727:19: warning: Assigned value is
+>   garbage or undefined
+>   ivi->max_tx_rate = tx_rate ? tx_rate : link.speed;
+>                    ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> [...]
+
+Here is the summary with links:
+  - qed: return status of qed_iov_get_link
+    https://git.kernel.org/netdev/net/c/d9dc0c84ad2d
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
