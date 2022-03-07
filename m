@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90539C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A15C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238486AbiCGJwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S238499AbiCGJwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240986AbiCGJlo (ORCPT
+        with ESMTP id S240984AbiCGJlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9A06D193;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71986D19B;
         Mon,  7 Mar 2022 01:38:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 189446116E;
-        Mon,  7 Mar 2022 09:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C93C340E9;
-        Mon,  7 Mar 2022 09:38:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08CDDB810B2;
+        Mon,  7 Mar 2022 09:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C261C340E9;
+        Mon,  7 Mar 2022 09:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645935;
-        bh=vUUx7TDfvi9NLzfwhBM7JvnGySc+0jCcgOAbRK5rt/I=;
+        s=korg; t=1646645618;
+        bh=605Itjkcjl8xyYq0VbHCegn2Ox/shTKMoaIMC1UCEeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlVMajugN+JxMxA+O9lTJv4FhRyRj2ssg8ajocIMQK+dLkTa1MtlJwEPBNhfeN4it
-         SwVb7js1lwqmZWUIOgBU40qnkzaPRPO2lcmUpIfAC5Li6VwK9QSf/HylRjOFeVXD0e
-         upBdULY6cdLijjReitXyMC+Hn2tXlmy8TP7Uc4j8=
+        b=si8jzjzLn4+2e/Jyxrx8nCal33Ix/SRx12bj0oQj4mpzAsA4uxKjvUrh+/76gtqLB
+         IX5cw1q0MRRcmdTgLIZGctokZtfkkQrnv82Trc2Hf7KLz2ViIUVYuuu0W81DrL0eW2
+         PupyCRXA+RQRRCy06XjR+zjCDeknjfXprpT5LeUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 080/262] SUNRPC: Fix sockaddr handling in the svc_xprt_create_error trace point
-Date:   Mon,  7 Mar 2022 10:17:04 +0100
-Message-Id: <20220307091704.747088295@linuxfoundation.org>
+Subject: [PATCH 5.10 089/105] ibmvnic: complete init_done on transport events
+Date:   Mon,  7 Mar 2022 10:19:32 +0100
+Message-Id: <20220307091646.682645178@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,83 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit dc6c6fb3d639756a532bcc47d4a9bf9f3965881b ]
+[ Upstream commit 36491f2df9ad2501e5a4ec25d3d95d72bafd2781 ]
 
-While testing, I got an unexpected KASAN splat:
+If we get a transport event, set the error and mark the init as
+complete so the attempt to send crq-init or login fail sooner
+rather than wait for the timeout.
 
-Jan 08 13:50:27 oracle-102.nfsv4.dev kernel: BUG: KASAN: stack-out-of-bounds in trace_event_raw_event_svc_xprt_create_err+0x190/0x210 [sunrpc]
-Jan 08 13:50:27 oracle-102.nfsv4.dev kernel: Read of size 28 at addr ffffc9000008f728 by task mount.nfs/4628
-
-The memcpy() in the TP_fast_assign section of this trace point
-copies the size of the destination buffer in order that the buffer
-won't be overrun.
-
-In other similar trace points, the source buffer for this memcpy is
-a "struct sockaddr_storage" so the actual length of the source
-buffer is always long enough to prevent the memcpy from reading
-uninitialized or unallocated memory.
-
-However, for this trace point, the source buffer can be as small as
-a "struct sockaddr_in". For AF_INET sockaddrs, the memcpy() reads
-memory that follows the source buffer, which is not always valid
-memory.
-
-To avoid copying past the end of the passed-in sockaddr, make the
-source address's length available to the memcpy(). It would be a
-little nicer if the tracing infrastructure was more friendly about
-storing socket addresses that are not AF_INET, but I could not find
-a way to make printk("%pIS") work with a dynamic array.
-
-Reported-by: KASAN
-Fixes: 4b8f380e46e4 ("SUNRPC: Tracepoint to record errors in svc_xpo_create()")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: bbd669a868bb ("ibmvnic: Fix completion structure initialization")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sunrpc.h | 5 +++--
- net/sunrpc/svc_xprt.c         | 2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index daaf407e9e494..1213c078dcca5 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -1727,10 +1727,11 @@ TRACE_EVENT(svc_xprt_create_err,
- 		const char *program,
- 		const char *protocol,
- 		struct sockaddr *sap,
-+		size_t salen,
- 		const struct svc_xprt *xprt
- 	),
- 
--	TP_ARGS(program, protocol, sap, xprt),
-+	TP_ARGS(program, protocol, sap, salen, xprt),
- 
- 	TP_STRUCT__entry(
- 		__field(long, error)
-@@ -1743,7 +1744,7 @@ TRACE_EVENT(svc_xprt_create_err,
- 		__entry->error = PTR_ERR(xprt);
- 		__assign_str(program, program);
- 		__assign_str(protocol, protocol);
--		memcpy(__entry->addr, sap, sizeof(__entry->addr));
-+		memcpy(__entry->addr, sap, min(salen, sizeof(__entry->addr)));
- 	),
- 
- 	TP_printk("addr=%pISpc program=%s protocol=%s error=%ld",
-diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index 6316bd2b8f37b..d4b663401be14 100644
---- a/net/sunrpc/svc_xprt.c
-+++ b/net/sunrpc/svc_xprt.c
-@@ -243,7 +243,7 @@ static struct svc_xprt *__svc_xpo_create(struct svc_xprt_class *xcl,
- 	xprt = xcl->xcl_ops->xpo_create(serv, net, sap, len, flags);
- 	if (IS_ERR(xprt))
- 		trace_svc_xprt_create_err(serv->sv_program->pg_name,
--					  xcl->xcl_name, sap, xprt);
-+					  xcl->xcl_name, sap, len, xprt);
- 	return xprt;
- }
- 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index f07468316656..1afb31c9ed7b 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4931,6 +4931,13 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
+ 			adapter->fw_done_rc = -EIO;
+ 			complete(&adapter->fw_done);
+ 		}
++
++		/* if we got here during crq-init, retry crq-init */
++		if (!completion_done(&adapter->init_done)) {
++			adapter->init_done_rc = -EAGAIN;
++			complete(&adapter->init_done);
++		}
++
+ 		if (!completion_done(&adapter->stats_done))
+ 			complete(&adapter->stats_done);
+ 		if (test_bit(0, &adapter->resetting))
 -- 
 2.34.1
 
