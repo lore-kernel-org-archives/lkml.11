@@ -2,132 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F2EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61265C43217
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239531AbiCGJ71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        id S239624AbiCGJ7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:59:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240302AbiCGJkx (ORCPT
+        with ESMTP id S240385AbiCGJk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:53 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B036212A;
-        Mon,  7 Mar 2022 01:37:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4F26ACE0EAA;
-        Mon,  7 Mar 2022 09:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67060C340E9;
-        Mon,  7 Mar 2022 09:36:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645813;
-        bh=Kd7tWJSaOdAD0nh7OxQbtG+Qpn/HeAoCK+1NZS/YSUI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QD55zRLkGxEiZE//iQf4qaGrw7MligeTV1hibvXlNnr/370TG9qX3+5i3GuSAMCxz
-         T3GtLlXcri2jquMshORYrBoqqFqyN6U5WGU5eXTiPVEGTYpIxBbcp1g/lnyUB+LGEz
-         3cuaHnLV/y44tOExE1GdSk2CF4eOutS3Tc9PhhiU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Hutterer <peter.hutterer@who-t.net>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 007/262] Input: clear BTN_RIGHT/MIDDLE on buttonpads
-Date:   Mon,  7 Mar 2022 10:15:51 +0100
-Message-Id: <20220307091702.587190838@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-References: <20220307091702.378509770@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 04:40:58 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73536BF49
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:37:36 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id x15so22174941wru.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:37:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Dedx0S9GHW+zCkwbwjAj7WEO1ltayYGHp0V6c4kJEK0=;
+        b=dOMdB7J6brgJ2xzB+wrppTiKJ6RjnpcClkRhOIwSfpgp+0jrJe2ORFPVEtMFRHrs9f
+         l7thIuzhh+jnrFKTDyLqsNLOdlRxEP8WMe22XbXC33fFvUdp4jwvpXmaEiiHvXaUIiFr
+         80NN8JS7ySADo621LVmJwOnq5GYHUkoRFL1hfn/0JliTL7fzwZAI1h9FP1JThlFJTpcR
+         szVt580bgl/aqI1RqcSQOFGjsvArGvodGKQrzZ/2rGGrIQN6GaOURjZ/eqn3l1hvyms7
+         CzR2V81RHFlGyBhVZ7S7r/Ejd99U+h5CfZFdtmB4WG/VbXN25a5NOyemfnlhmyA9LZM5
+         NWHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Dedx0S9GHW+zCkwbwjAj7WEO1ltayYGHp0V6c4kJEK0=;
+        b=Zu6f+OqmVEF3LnRuf1e/lUH9Iq7pbxuB4IKNseCB3wClBonGO+Ipiuw1AbG+zR82NC
+         k4yL4Dh/qe8n1YmqNN6c3V1dgYsZf1SEcaN46U2Cyog0t+mpDMXr9dQhB6MR0EWVKfjR
+         NM+gmfjzDqE/Z3iwTMA85Xijhp3UUipTwWV9Z31+ZW35jJ25zPlJ70SKCjRClJf9olyP
+         U7bh6B4ugyIVIKXaQkq/Fqryw8stx9SPNznwdGbHnXsnkXCHTUENKly9RNbLnUSyjPGH
+         Bx73GfRrHCZ7MS/JGWzuuK25m64K1oRe5NV04P9y6mvVW+Z0VgpduMFjJ9fCFloJZfy2
+         SvMw==
+X-Gm-Message-State: AOAM532prhlfgphOfHlm/9sQvZf7KNTa9dNtvhryH++BpjK2qxQ0wo6e
+        7hxpoHPhRasOrlN6Iur0akBP7A==
+X-Google-Smtp-Source: ABdhPJy1wHUzClgICXkLnTzjIevPBASUICHgXeFLBM/lOyLrfWzfrHSUqPuD86sAw3lLzcZ8afaSTw==
+X-Received: by 2002:a5d:6046:0:b0:1f0:4973:142f with SMTP id j6-20020a5d6046000000b001f04973142fmr7563737wrt.538.1646645853633;
+        Mon, 07 Mar 2022 01:37:33 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bg18-20020a05600c3c9200b0037c2ef07493sm14826354wmb.3.2022.03.07.01.37.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 01:37:33 -0800 (PST)
+Date:   Mon, 7 Mar 2022 09:37:31 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 3/3] dt-bindings: mfd: maxim,max14577: convert to
+ dtschema
+Message-ID: <YiXSWzuy9xAXpUMv@google.com>
+References: <20220215074759.29402-1-krzysztof.kozlowski@canonical.com>
+ <20220215074759.29402-4-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220215074759.29402-4-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+On Tue, 15 Feb 2022, Krzysztof Kozlowski wrote:
 
-[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
+> Convert the MFD part of Maxim MAX14577/MAX77836 MUIC to DT schema
+> format.  The example DTS was copied from existing DTS
+> (exynos3250-rinato.dts), so keep the license as GPL-2.0-only.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/mfd/max14577.txt      | 147 -------------
+>  .../bindings/mfd/maxim,max14577.yaml          | 195 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 196 insertions(+), 148 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mfd/max14577.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
 
-Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
-and the BTN_LEFT key bit.
+Applied, thanks.
 
-As explained in the specification, where a device has a button type
-value of 0 (click-pad) or 1 (pressure-pad) there should not be
-discrete buttons:
-https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
-
-However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
-though the device is a buttonpad and therefore does not have those
-buttons.
-
-This behavior has forced userspace applications like libinput to
-implement different workarounds and quirks to detect buttonpads and
-offer to the user the right set of features and configuration options.
-For more information:
-https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
-
-In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
-bits when the input device is register if the INPUT_PROP_BUTTONPAD
-property bit is set.
-
-Notice that this change will not affect udev because it does not check
-for buttons. See systemd/src/udev/udev-builtin-input_id.c.
-
-List of known affected hardware:
-
- - Chuwi AeroBook Plus
- - Chuwi Gemibook
- - Framework Laptop
- - GPD Win Max
- - Huawei MateBook 2020
- - Prestigio Smartbook 141 C2
- - Purism Librem 14v1
- - StarLite Mk II   - AMI firmware
- - StarLite Mk II   - Coreboot firmware
- - StarLite Mk III  - AMI firmware
- - StarLite Mk III  - Coreboot firmware
- - StarLabTop Mk IV - AMI firmware
- - StarLabTop Mk IV - Coreboot firmware
- - StarBook Mk V
-
-Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Acked-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/input/input.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index ccaeb24263854..c3139bc2aa0db 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -2285,6 +2285,12 @@ int input_register_device(struct input_dev *dev)
- 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
- 	__clear_bit(KEY_RESERVED, dev->keybit);
- 
-+	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
-+	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
-+		__clear_bit(BTN_RIGHT, dev->keybit);
-+		__clear_bit(BTN_MIDDLE, dev->keybit);
-+	}
-+
- 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
- 	input_cleanse_bitmasks(dev);
- 
 -- 
-2.34.1
-
-
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
