@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7FBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232779AbiCGKY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:24:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S236145AbiCGKYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:24:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240825AbiCGKBS (ORCPT
+        with ESMTP id S240811AbiCGKBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:18 -0500
+        Mon, 7 Mar 2022 05:01:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9176D383;
-        Mon,  7 Mar 2022 01:50:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7237D6B09C;
+        Mon,  7 Mar 2022 01:50:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA68960929;
-        Mon,  7 Mar 2022 09:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9591C340F3;
-        Mon,  7 Mar 2022 09:50:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12E3E6066C;
+        Mon,  7 Mar 2022 09:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F6EBC340F4;
+        Mon,  7 Mar 2022 09:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646657;
-        bh=J+/jw8k4zKjtveZbhrOnbT76RkWaWlpLCcmkq5W6CFc=;
+        s=korg; t=1646646654;
+        bh=2N6PMCCEjRAG0HCGUdg+U4i9gnmlB9Vm1Tah9PDMevc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zjc2i/SWH0wbuuFD9OcsMlC0QzHhvoBqv8F9p+yx7mlvaSVmRNrDWHVSIuC0iaYEZ
-         eZp4CpWP1MzW/vMIKjDaLahPT+oeD/yWOiwXUBegWqD/YYdEcigTNcm1K4aCEITM0I
-         TSQAuUsOKAOrhILvL0pp/xykKU/tvOxXrUZLJmSg=
+        b=SxF+dFfu+uX9GfuioVmVIyyHGU30e8+MGHPGB+qkuiZI8QC758SOkUhnbeyHyQ+Gq
+         NbS8L93Rts3xzq0eRxo4m5t0e2SCuCHtJZ8/IISJ4Mih2ZbNNT9HiX4tmwVr7UOfRg
+         87DhdS14p5frFvgvDeK2YCQLVOChiLFEb60Ogrrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        matoro <matoro_bugzilla_kernel@matoro.tk>,
-        matoro <matoro_mailinglist_kernel@matoro.tk>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.16 050/186] binfmt_elf: Avoid total_mapping_size for ET_EXEC
-Date:   Mon,  7 Mar 2022 10:18:08 +0100
-Message-Id: <20220307091655.493807730@linuxfoundation.org>
+        stable@vger.kernel.org, Etienne Dechamps <etienne@edechamps.fr>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 049/186] ucounts: Fix systemd LimitNPROC with private users regression
+Date:   Mon,  7 Mar 2022 10:18:07 +0100
+Message-Id: <20220307091655.466186753@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -53,98 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 439a8468242b313486e69b8cc3b45ddcfa898fbf upstream.
+commit 0ac983f512033cb7b5e210c9589768ad25b1e36b upstream.
 
-Partially revert commit 5f501d555653 ("binfmt_elf: reintroduce using
-MAP_FIXED_NOREPLACE"), which applied the ET_DYN "total_mapping_size"
-logic also to ET_EXEC.
+Long story short recursively enforcing RLIMIT_NPROC when it is not
+enforced on the process that creates a new user namespace, causes
+currently working code to fail.  There is no reason to enforce
+RLIMIT_NPROC recursively when we don't enforce it normally so update
+the code to detect this case.
 
-At least ia64 has ET_EXEC PT_LOAD segments that are not virtual-address
-contiguous (but _are_ file-offset contiguous). This would result in a
-giant mapping attempting to cover the entire span, including the virtual
-address range hole, and well beyond the size of the ELF file itself,
-causing the kernel to refuse to load it. For example:
+I would like to simply use capable(CAP_SYS_RESOURCE) to detect when
+RLIMIT_NPROC is not enforced upon the caller.  Unfortunately because
+RLIMIT_NPROC is charged and checked for enforcement based upon the
+real uid, using capable() which is euid based is inconsistent with reality.
+Come as close as possible to testing for capable(CAP_SYS_RESOURCE) by
+testing for when the real uid would match the conditions when
+CAP_SYS_RESOURCE would be present if the real uid was the effective
+uid.
 
-$ readelf -lW /usr/bin/gcc
-...
-Program Headers:
-  Type Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   ...
-...
-  LOAD 0x000000 0x4000000000000000 0x4000000000000000 0x00b5a0 0x00b5a0 ...
-  LOAD 0x00b5a0 0x600000000000b5a0 0x600000000000b5a0 0x0005ac 0x000710 ...
-...
-       ^^^^^^^^ ^^^^^^^^^^^^^^^^^^                    ^^^^^^^^ ^^^^^^^^
-
-File offset range     : 0x000000-0x00bb4c
-			0x00bb4c bytes
-
-Virtual address range : 0x4000000000000000-0x600000000000bcb0
-			0x200000000000bcb0 bytes
-
-Remove the total_mapping_size logic for ET_EXEC, which reduces the
-ET_EXEC MAP_FIXED_NOREPLACE coverage to only the first PT_LOAD (better
-than nothing), and retains it for ET_DYN.
-
-Ironically, this is the reverse of the problem that originally caused
-problems with MAP_FIXED_NOREPLACE: overlapping PT_LOAD segments. Future
-work could restore full coverage if load_elf_binary() were to perform
-mappings in a separate phase from the loading (where it could resolve
-both overlaps and holes).
-
-Cc: Eric Biederman <ebiederm@xmission.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: linux-fsdevel@vger.kernel.org
-Cc: linux-mm@kvack.org
-Reported-by: matoro <matoro_bugzilla_kernel@matoro.tk>
-Fixes: 5f501d555653 ("binfmt_elf: reintroduce using MAP_FIXED_NOREPLACE")
-Link: https://lore.kernel.org/r/a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info
-Tested-by: matoro <matoro_mailinglist_kernel@matoro.tk>
-Link: https://lore.kernel.org/lkml/ce8af9c13bcea9230c7689f3c1e0e2cd@matoro.tk
-Tested-By: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Link: https://lore.kernel.org/lkml/49182d0d-708b-4029-da5f-bc18603440a6@physik.fu-berlin.de
+Reported-by: Etienne Dechamps <etienne@edechamps.fr>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215596
+Link: https://lkml.kernel.org/r/e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr
+Link: https://lkml.kernel.org/r/87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org
 Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ kernel/user_namespace.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1135,14 +1135,25 @@ out_free_interp:
- 			 * is then page aligned.
- 			 */
- 			load_bias = ELF_PAGESTART(load_bias - vaddr);
--		}
+--- a/kernel/user_namespace.c
++++ b/kernel/user_namespace.c
+@@ -58,6 +58,18 @@ static void set_cred_user_ns(struct cred
+ 	cred->user_ns = user_ns;
+ }
  
--		/*
--		 * Calculate the entire size of the ELF mapping (total_size).
--		 * (Note that load_addr_set is set to true later once the
--		 * initial mapping is performed.)
--		 */
--		if (!load_addr_set) {
-+			/*
-+			 * Calculate the entire size of the ELF mapping
-+			 * (total_size), used for the initial mapping,
-+			 * due to load_addr_set which is set to true later
-+			 * once the initial mapping is performed.
-+			 *
-+			 * Note that this is only sensible when the LOAD
-+			 * segments are contiguous (or overlapping). If
-+			 * used for LOADs that are far apart, this would
-+			 * cause the holes between LOADs to be mapped,
-+			 * running the risk of having the mapping fail,
-+			 * as it would be larger than the ELF file itself.
-+			 *
-+			 * As a result, only ET_DYN does this, since
-+			 * some ET_EXEC (e.g. ia64) may have large virtual
-+			 * memory holes between LOADs.
-+			 *
-+			 */
- 			total_size = total_mapping_size(elf_phdata,
- 							elf_ex->e_phnum);
- 			if (!total_size) {
++static unsigned long enforced_nproc_rlimit(void)
++{
++	unsigned long limit = RLIM_INFINITY;
++
++	/* Is RLIMIT_NPROC currently enforced? */
++	if (!uid_eq(current_uid(), GLOBAL_ROOT_UID) ||
++	    (current_user_ns() != &init_user_ns))
++		limit = rlimit(RLIMIT_NPROC);
++
++	return limit;
++}
++
+ /*
+  * Create a new user namespace, deriving the creator from the user in the
+  * passed credentials, and replacing that user with the new root user for the
+@@ -122,7 +134,7 @@ int create_user_ns(struct cred *new)
+ 	for (i = 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++) {
+ 		ns->ucount_max[i] = INT_MAX;
+ 	}
+-	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
++	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, enforced_nproc_rlimit());
+ 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
+ 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
+ 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
 
 
