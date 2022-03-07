@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B470C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbiCGJ0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:26:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
+        id S236841AbiCGJ0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:26:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiCGJX2 (ORCPT
+        with ESMTP id S237098AbiCGJXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2FD66ADE;
-        Mon,  7 Mar 2022 01:21:58 -0800 (PST)
+        Mon, 7 Mar 2022 04:23:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C063B65821;
+        Mon,  7 Mar 2022 01:21:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E76A1B810C0;
-        Mon,  7 Mar 2022 09:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3548EC340FC;
-        Mon,  7 Mar 2022 09:21:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4823E61027;
+        Mon,  7 Mar 2022 09:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5915DC340F3;
+        Mon,  7 Mar 2022 09:21:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644915;
-        bh=7CwRksKJml/9QpQn0cdYH6brkoQJtb4mCcNbBsPHmvw=;
+        s=korg; t=1646644909;
+        bh=Fi3GZLIsbutc8SXukSmt00AA/xd56Py1HYugwVIKGAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KSYa9elC87gzUm5uKrw/S6N4DG60Z9zdX/19St3oyOe+qLmhmiThFktVuocxOkjC2
-         teP+DawSQy9fRDxmcJDggkv+MpkTBr7VnATcxEq4it6+DEhmRBBqCT8LD310fpQX9Z
-         x289XK3BQ503hP3DiL1PQdn/wkkCHYeM1Yj6Sp6w=
+        b=KrLqE4V9wxPTSV4IRlyFmYMdluadsHOIgaGg1SNS+taPXettuL6bg+78rdx9Pea9i
+         STZBrQmVxzK0Ma9WsHPVjyvOBgL3DcZdTiswHTBLxtRTAaEQou4oBf24q+FDvb4+ON
+         c++xJJeDPf9UPLZkwx9HT4zoOX11r5gJUb8q1YrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 4.14 20/42] batman-adv: Request iflink once in batadv-on-batadv check
-Date:   Mon,  7 Mar 2022 10:18:54 +0100
-Message-Id: <20220307091636.738398248@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH 4.14 19/42] netfilter: nf_queue: fix possible use-after-free
+Date:   Mon,  7 Mar 2022 10:18:53 +0100
+Message-Id: <20220307091636.710014074@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -48,53 +49,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Florian Westphal <fw@strlen.de>
 
-commit 690bb6fb64f5dc7437317153902573ecad67593d upstream.
+commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
 
-There is no need to call dev_get_iflink multiple times for the same
-net_device in batadv_is_on_batman_iface. And since some of the
-.ndo_get_iflink callbacks are dynamic (for example via RCUs like in
-vxcan_get_iflink), it could easily happen that the returned values are not
-stable. The pre-checks before __dev_get_by_index are then of course bogus.
+Eric Dumazet says:
+  The sock_hold() side seems suspect, because there is no guarantee
+  that sk_refcnt is not already 0.
 
-Fixes: b7eddd0b3950 ("batman-adv: prevent using any virtual device created on batman-adv as hard-interface")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+On failure, we cannot queue the packet and need to indicate an
+error.  The packet will be dropped by the caller.
+
+v2: split skb prefetch hunk into separate change
+
+Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/batman-adv/hard-interface.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_queue.h |    2 +-
+ net/netfilter/nf_queue.c         |   12 ++++++++++--
+ net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
+ 3 files changed, 20 insertions(+), 6 deletions(-)
 
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -155,22 +155,23 @@ static bool batadv_is_on_batman_iface(co
- 	struct net *net = dev_net(net_dev);
- 	struct net_device *parent_dev;
- 	struct net *parent_net;
-+	int iflink;
- 	bool ret;
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -32,7 +32,7 @@ void nf_register_queue_handler(struct ne
+ void nf_unregister_queue_handler(struct net *net);
+ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
  
- 	/* check if this is a batman-adv mesh interface */
- 	if (batadv_softif_is_valid(net_dev))
- 		return true;
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
  
-+	iflink = dev_get_iflink(net_dev);
+ static inline void init_hashrandom(u32 *jhash_initval)
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -80,10 +80,13 @@ void nf_queue_entry_release_refs(struct
+ EXPORT_SYMBOL_GPL(nf_queue_entry_release_refs);
+ 
+ /* Bump dev refs so they don't vanish while packet is out */
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
+ {
+ 	struct nf_hook_state *state = &entry->state;
+ 
++	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
++		return false;
 +
- 	/* no more parents..stop recursion */
--	if (dev_get_iflink(net_dev) == 0 ||
--	    dev_get_iflink(net_dev) == net_dev->ifindex)
-+	if (iflink == 0 || iflink == net_dev->ifindex)
- 		return false;
+ 	if (state->in)
+ 		dev_hold(state->in);
+ 	if (state->out)
+@@ -102,6 +105,7 @@ void nf_queue_entry_get_refs(struct nf_q
+ 			dev_hold(physdev);
+ 	}
+ #endif
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
  
- 	parent_net = batadv_getlink_net(net_dev, net);
+@@ -159,7 +163,11 @@ static int __nf_queue(struct sk_buff *sk
+ 		.size	= sizeof(*entry) + afinfo->route_key_size,
+ 	};
  
- 	/* recurse over the parent device */
--	parent_dev = __dev_get_by_index((struct net *)parent_net,
--					dev_get_iflink(net_dev));
-+	parent_dev = __dev_get_by_index((struct net *)parent_net, iflink);
- 	/* if we got a NULL parent_dev there is something broken.. */
- 	if (!parent_dev) {
- 		pr_err("Cannot find parent device\n");
+-	nf_queue_entry_get_refs(entry);
++	if (!nf_queue_entry_get_refs(entry)) {
++		kfree(entry);
++		return -ENOTCONN;
++	}
++
+ 	afinfo->saveroute(skb, entry);
+ 	status = qh->outfn(entry, queuenum);
+ 
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -693,9 +693,15 @@ static struct nf_queue_entry *
+ nf_queue_entry_dup(struct nf_queue_entry *e)
+ {
+ 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
+-	if (entry)
+-		nf_queue_entry_get_refs(entry);
+-	return entry;
++
++	if (!entry)
++		return NULL;
++
++	if (nf_queue_entry_get_refs(entry))
++		return entry;
++
++	kfree(entry);
++	return NULL;
+ }
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 
 
