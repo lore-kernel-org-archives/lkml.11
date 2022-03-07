@@ -2,133 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 241E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242140AbiCGNB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:01:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
+        id S242687AbiCGNBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:01:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239938AbiCGNBZ (ORCPT
+        with ESMTP id S240325AbiCGNBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:01:25 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BA68A32B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:00:30 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id h126so30777403ybc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:00:30 -0800 (PST)
+        Mon, 7 Mar 2022 08:01:51 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A9D8A6C2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:00:56 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id p9so23134041wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 05:00:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cV/iRWpEISoBT8RqYrC9Loyzy60WPxJLdJrpUBpn9N4=;
-        b=LVb++RVBZfne8vu4GpNufR3TESTWg0xLaPgW4a8mWdgu+RsfCq0eSp7KjWLVehEZMi
-         Nqc9VQ04sWEuTzePC1BAc92teVEUvdGyPyD24J9VgfOlza/1uyEZeVS4Rz+ev0Kg+g+w
-         mVMXXPm1QDuom6dMCjngUykQ4yCV1nwKEqJwjVs8PmDIVYk7pJ+0X9Fc1Ucm82OLgzKY
-         rFrdY08sjABSAp4mH5xB7Jz6UfirJs2eorbxcisS7cxmYySScStHT7AH6YMGEz0Mv4jA
-         x4/UXhyzWP0afg9vP2AQLMwR4es9LiI26n22K0Fn0iAsm4g/NOcto86FXEk64Rn1bgyX
-         7uHg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=pSHEpDDbP3cBBq52zYK0sNbU+pR3WMacBq6FSVuCsuM=;
+        b=LCuu2kJ2WK3apjNwfJaaGKw3LfWQxq3nVjKl4XDn7Zd/ZudKYJlRYR6C0RsPt/mC4i
+         Ci3QvmMl8EGMpHDTBjYa8ojuUgfUd+kyP2WqDIeIgLTDgSV6td5MCe3Z5/jsf9iruK+T
+         VQ/7Cdzpn0qGtDTC8PPsCqnFoXxH/HwVguTAlkQDZZfXg4+btoyaqlDy6OCsaQG7M8/g
+         SLfhrDqZfdBr73m+NnDep1iIv5uPI4mJJ9hP5SkNhb3O0SaR5wf1wsc2L8VZaoKpL35D
+         nzTo5ycCw9N9Mwg3vZ3ib3MEavB5YTwHx6D+l/0IVBj9dI7ZdkeKQF2WmJmtlJtcFLNH
+         ckfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cV/iRWpEISoBT8RqYrC9Loyzy60WPxJLdJrpUBpn9N4=;
-        b=C1yW012ZNsSZtD6tI9s8uiKgW8R6IE+lL6l89zsx1DIOHyBLizbhQMjiRypKLn3H86
-         MrlZQiGbuS1Kfy59wR5RBkqYHXONhSCme2JgH3k12kxpMfsWGUpNwjeLGJAU6o6JDBR2
-         ZNRtYG5RS8MGwF5ozoFr9dIDfPgTJAPJHvi0C8EBFGfbwJm5Xt4iLfK+qo8ZgDH9hhBS
-         05ki+21dpxcBWBliwPMyqYFM1tzVDhSf0/HwOshQ4k8tXhjOk/Upqe0uJ5i9kAP7cO/D
-         PNgFXXMV0dZmwGLempGX2qenq0Xp18SF0CFi3/CWF/A4vt19+wICY/BRHBH3q0q9FNGl
-         qGfA==
-X-Gm-Message-State: AOAM531g4xp96JMZudhuROz63W4EmmBTTevV9d15H+0hDmkwpCAhPlNi
-        ssmXdQeuB6qLuamdbauSu7VeMxfTNfUaAG7+xLmJ5Q==
-X-Google-Smtp-Source: ABdhPJz7y/I54piNlQLkLmG1TBL8cO2TtZqqA/3TeporXhO/Ll4av+9Oeyrz2ZsqrqwcxxAf9U2afKUDEFHXjPyXHVY=
-X-Received: by 2002:a25:5090:0:b0:628:b76b:b9d3 with SMTP id
- e138-20020a255090000000b00628b76bb9d3mr7938482ybb.128.1646658029569; Mon, 07
- Mar 2022 05:00:29 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=pSHEpDDbP3cBBq52zYK0sNbU+pR3WMacBq6FSVuCsuM=;
+        b=V+g172jl9Q9FhfUkSo5wPyX/xGvUQEOE9PXOQAdAh8MSFy39LIohfhOpzqsYZlJbgk
+         PdIOl6VkotJQmgLWyUO0qndCvcfJL4vi12vODFIyvSr5buuspfEMwtV/8lhOClX6GbMe
+         KD46i4pybgJX1agTf8cMUwZ4Rk8a5zmEWMr/Ld5pVJzP9v2kxm9FvNAVBFvcn8ggN9Wt
+         unA/snmTA+XR6eQtE0yb4eUY9/c0XvxzeYBIqjJsJ9GbtdiZuP/oFm8WB7L/86Mijs8S
+         V4ceC6w2NDZH6gdteZw4N6CEULHQLiHuSHqYaleeTn8t3w5cqfre8gIuB+mK7Pll6i13
+         reeQ==
+X-Gm-Message-State: AOAM532vNSyN5uyf8b/Gu21J/0ThpfuRb2JTjTk3AN9RHi9T0pek62Ck
+        AlrCy0Eo4NyNQboX9FhcrMVLxg==
+X-Google-Smtp-Source: ABdhPJzQ2zK+BHalBN2ZGLsmib6HHXicnCDWmEggfQLtbjc0cgr3mMIlGK04NE7s/VBEZJTjHJu/uQ==
+X-Received: by 2002:a05:6000:1ac8:b0:1f1:f808:fb5b with SMTP id i8-20020a0560001ac800b001f1f808fb5bmr3916828wry.560.1646658055340;
+        Mon, 07 Mar 2022 05:00:55 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id q125-20020a1c4383000000b003899720641dsm6821115wma.30.2022.03.07.05.00.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 05:00:54 -0800 (PST)
+Date:   Mon, 7 Mar 2022 13:00:53 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] regulator/mfd: dt-bindings: maxim,max77802:
+ convert to dtschema
+Message-ID: <YiYCBdT8bpRrW/gx@google.com>
+References: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <20220307091702.378509770@linuxfoundation.org>
-In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 7 Mar 2022 18:30:18 +0530
-Message-ID: <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, dri-devel@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Hou Tao <houtao1@huawei.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220215075344.31421-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 at 15:07, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.27 release.
-> There are 262 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.27-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Enjoy!
 
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-Following build errors/warnings noticed on arm64.
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
+are available in the Git repository at:
 
-arch/arm64/net/bpf_jit_comp.c: In function 'build_insn':
-arch/arm64/net/bpf_jit_comp.c:791:21: error: implicit declaration of
-function 'bpf_pseudo_func' [-Werror=implicit-function-declaration]
-  791 |                 if (bpf_pseudo_func(insn))
-      |                     ^~~~~~~~~~~~~~~
-cc1: some warnings being treated as errors
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-spi-dt-v5.18
 
+for you to fetch changes up to 172e611b54e813c49a35b6b74bccaa99f27bf566:
 
-drivers/gpu/drm/mediatek/mtk_dsi.c: In function 'mtk_dsi_host_attach':
-drivers/gpu/drm/mediatek/mtk_dsi.c:858:28: error: implicit declaration
-of function 'devm_drm_of_get_bridge'; did you mean
-'devm_drm_panel_bridge_add'? [-Werror=implicit-function-declaration]
-  858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
-dev->of_node, 0, 0);
-      |                            ^~~~~~~~~~~~~~~~~~~~~~
-      |                            devm_drm_panel_bridge_add
-drivers/gpu/drm/mediatek/mtk_dsi.c:858:26: warning: assignment to
-'struct drm_bridge *' from 'int' makes pointer from integer without a
-cast [-Wint-conversion]
-  858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
-dev->of_node, 0, 0);
-      |                          ^
-cc1: some warnings being treated as errors
+  dt-bindings: mfd: maxim,max77802: Convert to dtschema (2022-03-07 12:55:59 +0000)
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+----------------------------------------------------------------
+Immutable branch between MFD, SPI and DT  due for the v5.18 merge window
 
-Build log [1].
+----------------------------------------------------------------
+Krzysztof Kozlowski (13):
+      dt-bindings: extcon: maxim,max77843: Add MAX77843 bindings
+      regulator: dt-bindings: maxim,max77843: Add MAX77843 bindings
+      dt-bindings: mfd: maxim,max77843: Add MAX77843 bindings
+      MAINTAINERS: mfd: Cover MAX77843 by Maxim PMIC/MUIC for Exynos boards entry
+      spi: dt-bindings: samsung: Convert to dtschema
+      mfd: dt-bindings: google,cros-ec: Reference Samsung SPI bindings
+      mfd: dt-bindings: google,cros-ec: Fix indentation in example
+      spi: s3c64xx: Allow controller-data to be optional
+      dt-bindings: power: supply: maxim,max14577: Convert to dtschema
+      regulator: dt-bindings: maxim,max14577: Convert to dtschema
+      dt-bindings: mfd: maxim,max14577: Convert to dtschema
+      regulator: dt-bindings: maxim,max77802: Convert to dtschema
+      dt-bindings: mfd: maxim,max77802: Convert to dtschema
 
---
-Linaro LKFT
-https://lkft.linaro.org
+ .../devicetree/bindings/extcon/maxim,max77843.yaml |  40 +++++
+ .../devicetree/bindings/mfd/google,cros-ec.yaml    |  31 ++--
+ Documentation/devicetree/bindings/mfd/max14577.txt | 147 ----------------
+ Documentation/devicetree/bindings/mfd/max77802.txt |  25 ---
+ .../devicetree/bindings/mfd/maxim,max14577.yaml    | 195 +++++++++++++++++++++
+ .../devicetree/bindings/mfd/maxim,max77802.yaml    | 194 ++++++++++++++++++++
+ .../devicetree/bindings/mfd/maxim,max77843.yaml    | 144 +++++++++++++++
+ .../bindings/power/supply/maxim,max14577.yaml      |  84 +++++++++
+ .../devicetree/bindings/regulator/max77802.txt     | 111 ------------
+ .../bindings/regulator/maxim,max14577.yaml         |  78 +++++++++
+ .../bindings/regulator/maxim,max77802.yaml         |  85 +++++++++
+ .../bindings/regulator/maxim,max77843.yaml         |  65 +++++++
+ .../bindings/soc/samsung/exynos-usi.yaml           |   2 +-
+ .../bindings/spi/samsung,spi-peripheral-props.yaml |  33 ++++
+ .../devicetree/bindings/spi/samsung,spi.yaml       | 187 ++++++++++++++++++++
+ .../bindings/spi/spi-peripheral-props.yaml         |   1 +
+ .../devicetree/bindings/spi/spi-samsung.txt        | 122 -------------
+ MAINTAINERS                                        |   9 +-
+ drivers/spi/spi-s3c64xx.c                          |  14 +-
+ 19 files changed, 1136 insertions(+), 431 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/extcon/maxim,max77843.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/max14577.txt
+ delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77843.yaml
+ create mode 100644 Documentation/devicetree/bindings/power/supply/maxim,max14577.yaml
+ delete mode 100644 Documentation/devicetree/bindings/regulator/max77802.txt
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max14577.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77802.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77843.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-samsung.txt
 
-[1] https://builds.tuxbuild.com/263ZKyWWLLcPGRbiZwIEZw3wvXX/
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
