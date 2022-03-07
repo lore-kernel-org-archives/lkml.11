@@ -2,119 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C941DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E43C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:05:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242980AbiCGOES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:04:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S242987AbiCGOFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiCGOEQ (ORCPT
+        with ESMTP id S233239AbiCGOFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:04:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F2D54FA2
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:03:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Mar 2022 09:05:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5DCD5AECE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:04:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646661897;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+/lGec4dDaa2PRCmRBpnfAUw2RsLSGmneKuOWF+Jy7s=;
+        b=Wq4UVYcYFUmouqf3RNaoTlP4H5MnlXm/EU+99YyWODt1gWNGns7OG16ph3HHAIHqz6Iagh
+        Lw4UlMXaal1A6JLdDiNG6sWxyzBkM77f+Z3aYow5XdvqZRRuNTtO1vZFm5FD4ptRK9Jht2
+        eDaL5WgH4CCbR95s68jaS1aoxXRfMsA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-590-T9rlbQuhOnSjEboWkQd7lQ-1; Mon, 07 Mar 2022 09:04:53 -0500
+X-MC-Unique: T9rlbQuhOnSjEboWkQd7lQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ABCB61251
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 14:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B64B4C340E9;
-        Mon,  7 Mar 2022 14:03:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646661800;
-        bh=2MTHBOFgVYCKlqpzzYVqArZRrCFQzXTxroUgqZcLwg0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L5lab8TcPHl+culCD+ohjt8V/uvg8GpMHWHpPbMzLem9XE6sY0KEbu0AvyldMVXDX
-         Pke5UHNol8t4mRMfDnHz+DQW7Hey21pLrKPrPc0yQSLFejRQBp2v0bYmaxkXCFCHvX
-         l71g+rUQGRlpGcyuNwgchWvQ+lhsOPmfaTU2AWIezadLRqwfAZsM6CqePU3f/MbqvZ
-         JNz8mByEfoNW4F78V6yx1h4mQ/2u5cktZcUtFNuZ0obDRzvwDcWshopDbOTNlTomnT
-         QF237oPjvYjuSTz4YuLNqdsUHnYMzZZD7sBgqIb8FmY0wNps400GXhuHhke6byLy5g
-         /8C8EKYeFiHyg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nRDxG-00CnuT-7q; Mon, 07 Mar 2022 14:03:18 +0000
-Date:   Mon, 07 Mar 2022 14:03:17 +0000
-Message-ID: <878rtl272y.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        chenxiang <chenxiang66@hisilicon.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7E6A3801DDB;
+        Mon,  7 Mar 2022 14:04:51 +0000 (UTC)
+Received: from localhost (ovpn-13-211.pek2.redhat.com [10.72.13.211])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2FF417A542;
+        Mon,  7 Mar 2022 14:04:49 +0000 (UTC)
+Date:   Mon, 7 Mar 2022 22:04:47 +0800
+From:   "bhe@redhat.com" <bhe@redhat.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        "d.hatayama@fujitsu.com" <d.hatayama@fujitsu.com>,
+        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "liuqi (BA)" <liuqi115@huawei.com>, <wangxiongfeng2@huawei.com>,
-        David Decotigny <decot@google.com>
-Subject: Re: PCI MSI issue for maxcpus=1
-In-Reply-To: <87a6e1276p.wl-maz@kernel.org>
-References: <78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com>
-        <87a6g8vp8k.wl-maz@kernel.org>
-        <19d55cdf-9ef7-e4a3-5ae5-0970f0d7751b@huawei.com>
-        <87v8yjyjc0.wl-maz@kernel.org>
-        <87k0ey9122.wl-maz@kernel.org>
-        <5f529b4e-1f6c-5a7d-236c-09ebe3a7db29@huawei.com>
-        <1cbe7daa-8003-562b-06fa-5a50f7ee6ed2@huawei.com>
-        <87a6e4tnkm.wl-maz@kernel.org>
-        <452d97ed-459f-7936-99e4-600380608615@huawei.com>
-        <87a6e1276p.wl-maz@kernel.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: john.garry@huawei.com, tglx@linutronix.de, chenxiang66@hisilicon.com, shameerali.kolothum.thodi@huawei.com, linux-kernel@vger.kernel.org, liuqi115@huawei.com, wangxiongfeng2@huawei.com, decot@google.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        "dyoung@redhat.com" <dyoung@redhat.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "vgoyal@redhat.com" <vgoyal@redhat.com>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "halves@canonical.com" <halves@canonical.com>,
+        "kernel@gpiccoli.net" <kernel@gpiccoli.net>
+Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
+Message-ID: <YiYQ/w6Hn5Zb67di@MiWiFi-R3L-srv>
+References: <20220108153451.195121-1-gpiccoli@igalia.com>
+ <TYAPR01MB6507D06BA6D32218F6E88198955F9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
+ <fda509a5-ea0d-4d1d-a1c1-ca5e80010fc0@igalia.com>
+ <TYAPR01MB6507D9747647685B554B8F8F955F9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
+ <fb5e66b6-049a-22ab-5913-a04cc302b629@igalia.com>
+ <YfPxvzSzDLjO5ldp@alley>
+ <73011b6f-084b-43f5-cc01-1818a8a57e56@igalia.com>
+ <YiV/HbXftVF2iAvU@MiWiFi-R3L-srv>
+ <e1033adc-46ff-5dbc-e739-1bf725b6fed0@igalia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e1033adc-46ff-5dbc-e739-1bf725b6fed0@igalia.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Mar 2022 14:01:02 +0000,
-Marc Zyngier <maz@kernel.org> wrote:
-> 
-> Hi John,
-> 
-> On Mon, 07 Mar 2022 13:48:11 +0000,
-> John Garry <john.garry@huawei.com> wrote:
+On 03/07/22 at 10:11am, Guilherme G. Piccoli wrote:
+> On 07/03/2022 00:42, bhe@redhat.com wrote:
+> > [...]
+> >> Let me know your thoughts Petr / Baoquan - it would add slightly more
+> >> code / complexity, but in my opinion the payback is very good.
+> >> Cheers,
 > > 
-> > Hi Marc,
+> > The ideal situation is each panic notifier has an order or index to
+> > indicate its priority. Wondering how to make it. What I think of is
+> > copying initcall. We have several priorities, at the same priority,
+> > execution sequence is not important. Not sure if I get your point.
 > > 
-> > > 
-> > > diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> > > index 2bdfce5edafd..97e9eb9aecc6 100644
-> > > --- a/kernel/irq/msi.c
-> > > +++ b/kernel/irq/msi.c
-> > > @@ -823,6 +823,19 @@ static int msi_init_virq(struct irq_domain *domain, int virq, unsigned int vflag
-> > >   	if (!(vflags & VIRQ_ACTIVATE))
-> > >   		return 0;
-> > >   +	if (!(vflags & VIRQ_CAN_RESERVE)) {
-> > > +		/*
-> > > +		 * If the interrupt is managed but no CPU is available
-> > > +		 * to service it, shut it down until better times.
-> > > +		 */
-> > > +		if (irqd_affinity_is_managed(irqd) &&
-> > > +		    !cpumask_intersects(irq_data_get_affinity_mask(irqd),
-> > > +					cpu_online_mask)) {
-> > > +			irqd_set_managed_shutdown(irqd);
-> > > +			return 0;
-> > > +		}
-> > > +	}
-> > > +
-> > >   	ret = irq_domain_activate_irq(irqd, vflags & VIRQ_CAN_RESERVE);
-> > >   	if (ret)
-> > >   		return ret;
-> > > 
+> > ~~~~~~~
+> > #define core_initcall(fn)               __define_initcall(fn, 1)
+> > #define core_initcall_sync(fn)          __define_initcall(fn, 1s)
+> > ......
+> > #define late_initcall(fn)               __define_initcall(fn, 7)
+> > #define late_initcall_sync(fn)          __define_initcall(fn, 7s)
 > > 
-> > Yeah, that seems to solve the issue. I will test it a bit more.
 > 
-> Thanks. For the record, I have pushed a branch at [1]. The patch is
-> extremely similar, just moved up a tiny bit to avoid duplicating the
-> !VIRQ_CAN_RESERVE case.
+> Hi Baoquan, thanks for you consideration! In fact, the notifiers
+> infrastructure already have a mechanism of ordering, my idea is to make
+> use of that. It's not that different from the initcall system...
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/log/?h=irq/msi-shutdown-on-init
+Ah, sorry, I even didn't notice that. That's awesome if we can make use
+of that. While I still have concerns:
 
--- 
-Without deviation from the norm, progress is not possible.
+1) about those we have decided to take out from panic notifier list and
+put before kdump, e.g the Hypver-V notifier, how will we do with it? Are
+we going to handle them as we have discussed?
+
+2) Combing and settling priority for all existing panic notifier looks
+great, even though it will take some effort. How about the later newly
+added one? How can we guarantee that those new notifiers are getting
+appropriate priority to mark their order? Sometime we even don't know
+a new panic notifier is added since code change may be made in any
+component or driver.
+
+> 
+> For instance, the code in the notifier register function checks for the
+> priority field in the notifier block:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/notifier.c#n31
+> .
+> 
+> For example, the Xen panic notifier is one of the few blocks that make
+> use of that, currently:
+> 
+> static struct notifier_block xen_panic_block = {
+> 	.notifier_call = xen_panic_event,
+> 	.priority = INT_MIN
+> };
+> 
+> (see
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/xen/enlighten.c#n286)
+> 
+> In this case, xen_panic_event() will be the latest one to run. My idea
+> is to make use of that in *all* panic notifiers, having a table/list on
+> panic_notifier.h (defines or enum, I'll think about that when writing
+> this part) so all notifiers are documented and the ordering is clear and
+> enforced.
+> 
+> Makes sense to you?
+> Cheers,
+> 
+> 
+> Guilherme
+> 
+
