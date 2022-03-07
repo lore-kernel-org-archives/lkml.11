@@ -2,92 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 15:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243462AbiCGPVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
+        id S243709AbiCGPVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237565AbiCGPVc (ORCPT
+        with ESMTP id S243691AbiCGPVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:21:32 -0500
-Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501EE8D69D
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:20:37 -0800 (PST)
-X-QQ-mid: bizesmtp90t1646666426tldfkns3
-Received: from localhost.localdomain ( [114.222.120.105])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 07 Mar 2022 23:20:20 +0800 (CST)
-X-QQ-SSF: 01400000002000C0I000B00A0000000
-X-QQ-FEAT: FXvDfBZI5O5S/McaXi3cuxWk1Q1MS5RO0634j6zHeJ9soIovgRq6aHksoO4dB
-        Fp+b/c1Eh+7wKGISBy/dpcDywCZoSh/PorAiLF2JoJLO/zfLzgBVRQo1jaSKywaWNMgfBmq
-        udq3gkFSgNmO8wt6ba0wTPVfnJi1wxRu+JDGgGcyKcKLLmlXI9utNVYV+4Gdb01J9DOM6hi
-        A+9wq3gOzss2m6x1WSlXjcatagVz19ri8Mb+WTlo/ZgI6cKrmML7DOgjmn4VWAHYVSYaogb
-        /jFf5aS3soon7mlQzyf/euGpParnitMfQehTT29NK2NtN5XH0NYHDSe0vd1RzuSo/KnvyV/
-        3SRYxUz/TAluAkQTabdsQUnw2K+c32319vcITKnvnSb+9v/9RI=
-X-QQ-GoodBg: 2
-From:   Lianjie Zhang <zhanglianjie@uniontech.com>
-To:     Jaroslav Kysela <perex@perex.cz>
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Lianjie Zhang <zhanglianjie@uniontech.com>
-Subject: [PATCH v2] ASoC: Intel: catpt: use asoc_substream_to_rtd()
-Date:   Mon,  7 Mar 2022 23:19:39 +0800
-Message-Id: <20220307151939.32870-1-zhanglianjie@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 7 Mar 2022 10:21:40 -0500
+X-Greylist: delayed 1235 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 07:20:45 PST
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA888D6B6
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 07:20:45 -0800 (PST)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 6E3CA3111D
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:00:10 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id REqEn6xrJ9AGSREqFnRBzF; Mon, 07 Mar 2022 09:00:08 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dQrC4NPwOH1bBJ1s8Jj8y2mqjLke9bqZ691DQeDyyuw=; b=bZlBLS6zySUXqHuHeg5DwGvuQm
+        hzFDmcDTJmfjJiXE0iky04k8rK2YvzWrETBnWlukqnRBGbf/lhY3nbfunMEAEn/wbWqJiV95iX499
+        vhwXj8MQyfA+jpS/9xxuNDcjdVM1LUMpQ5rrujdx6lEFHdBt3ePDPgqToHIIgnV3LtZGDoDKrtaVK
+        M0v+muupn88rXkNIgnI12zJgY7IDtBRpsy0ueUtD/bdD+RwFkVjYVMYPt+jhoqIL1iJ1YqZBiZKyx
+        Fz9kbQfPvfndyf1xlCoFpfSe14YD2Vjg+Dvfy+BeVgSW1mvaeQfCgojN9qswwxKFyazOiAEBL8QeB
+        K3p8FTmg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58898 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nREqE-002RVL-Fw; Mon, 07 Mar 2022 15:00:06 +0000
+Date:   Mon, 7 Mar 2022 07:00:04 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Linux 5.17-rc7
+Message-ID: <20220307150004.GA3279416@roeck-us.net>
+References: <CAHk-=wjkkYX8OvTv60+XvQkAK4Pg0QC0Hn-4+n7Q0t1+QWw7Sw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign1
-X-QQ-Bgrelay: 1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjkkYX8OvTv60+XvQkAK4Pg0QC0Hn-4+n7Q0t1+QWw7Sw@mail.gmail.com>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nREqE-002RVL-Fw
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58898
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 1
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now we can use asoc_substream_to_rtd() macro,
-let's use it.
+On Sun, Mar 06, 2022 at 02:41:11PM -0800, Linus Torvalds wrote:
+> No surprises this week - we still have a couple of pending things, but
+> everything looks under control.
+> 
+> Knock wood.
+> 
+> Last week saw the usual number of small fixes all over - with btrfs
+> standing out once again. But once again it's not like it's a lot of
+> changes, it's just that the rest tends to be pretty small.
+> 
+> "The rest" in this case is mostly networking (drivers but also some
+> core fixes), misc other drivers (gpu and input, with some noise
+> elsewhere) and arch updates (mostly devicetree and some kvm fixes, but
+> also RISC-V and s390).
+> 
+> Shortlog appended - and as things stand, I expect that final 5.17 will
+> be next weekend unless something surprising comes up.
+> 
+> Please test,
+> 
 
-Signed-off-by: Lianjie Zhang <zhanglianjie@uniontech.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Build results:
+	total: 155 pass: 153 fail: 2
+Failed builds:
+	powerpc:skiroot_defconfig
+	sparc64:allmodconfig
+Qemu test results:
+	total: 488 pass: 488 fail: 0
 
-diff --git a/sound/soc/intel/catpt/pcm.c b/sound/soc/intel/catpt/pcm.c
-index 939a9b801dec..a26000cd5ceb 100644
---- a/sound/soc/intel/catpt/pcm.c
-+++ b/sound/soc/intel/catpt/pcm.c
-@@ -74,7 +74,7 @@ static struct catpt_stream_template *catpt_topology[] = {
- static struct catpt_stream_template *
- catpt_get_stream_template(struct snd_pcm_substream *substream)
- {
--	struct snd_soc_pcm_runtime *rtm = substream->private_data;
-+	struct snd_soc_pcm_runtime *rtm = asoc_substream_to_rtd(substream);
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtm, 0);
- 	enum catpt_stream_type type;
+Not sure if it adds value at this point to keep reporting details,
+but here they are.
 
-@@ -593,7 +593,7 @@ static int catpt_component_pcm_construct(struct snd_soc_component *component,
- static int catpt_component_open(struct snd_soc_component *component,
- 				struct snd_pcm_substream *substream)
- {
--	struct snd_soc_pcm_runtime *rtm = substream->private_data;
-+	struct snd_soc_pcm_runtime *rtm = asoc_substream_to_rtd(substream);
+Building powerpc:skiroot_defconfig ... failed
+--------------
+arch/powerpc/kernel/stacktrace.c: In function 'handle_backtrace_ipi':
+arch/powerpc/kernel/stacktrace.c:171:9: error: implicit declaration of function 'nmi_cpu_backtrace'
 
- 	if (!rtm->dai_link->no_pcm)
- 		snd_soc_set_runtime_hwparams(substream, &catpt_pcm_hardware);
-@@ -604,7 +604,7 @@ static snd_pcm_uframes_t
- catpt_component_pointer(struct snd_soc_component *component,
- 			struct snd_pcm_substream *substream)
- {
--	struct snd_soc_pcm_runtime *rtm = substream->private_data;
-+	struct snd_soc_pcm_runtime *rtm = asoc_substream_to_rtd(substream);
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtm, 0);
- 	struct catpt_stream_runtime *stream;
- 	struct catpt_dev *cdev = dev_get_drvdata(component->dev);
---
-2.20.1
+Introduced with commit 1614b2b11fab29 ("arch: Make ARCH_STACKWALK
+independent of STACKTRACE"). Discussed at
+https://lore.kernel.org/lkml/YeE2VWwHO50gFw9M@hirez.programming.kicks-ass.net/T/
 
+Fix: https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220212111349.2806972-1-mpe@ellerman.id.au/
+The patch is available in linux-next. Comments in patchwork suggest
+that it will only be pushed during the next merge window.
 
+---
+Building sparc64:allmodconfig ... failed
+--------------
+Error log:
+<stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
+sparc64-linux-ld: drivers/memory/omap-gpmc.o: in function `gpmc_probe_generic_child':
+omap-gpmc.c:(.text.unlikely+0x14c4): undefined reference to `of_platform_device_create'
 
+Introduced by commit 4cd335dae3cf ("mtd: rawnand: omap2: Prevent invalid
+configuration and build error").
+Reported: https://lore.kernel.org/lkml/20220219150836.GA1035394@roeck-us.net/T/#t
+Fix: https://patchwork.ozlabs.org/project/linux-mtd/patch/20220219193600.24892-1-rogerq@kernel.org/
+The patch is available in linux-next.
+
+That, and the persistent terrible shape of linux-next, makes me wonder
+if we need some kind of pre-commit and/or pre-push validation system.
+
+Guenter
