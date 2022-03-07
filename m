@@ -2,155 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E305FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237315AbiCGJfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:35:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S234206AbiCGJfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237171AbiCGJ1u (ORCPT
+        with ESMTP id S237539AbiCGJ2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:27:50 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985F15A15C
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:24:52 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 7 Mar 2022 04:28:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE96D6AA58;
+        Mon,  7 Mar 2022 01:25:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5EA74210F4;
-        Mon,  7 Mar 2022 09:24:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646645084; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dbesU7tJyBXRg16/sf1QCiyqq4j+TrNZcTyuNDIT7/4=;
-        b=rTLHFWB4bkpJaVJPgKjefViGQ1MW7mGfILnZGnmR/e1uSjeYcrgMulGOd81cy7kQCCew/o
-        qlhKN9armihWCc83R9lwywRfuwL0FTtyI7aqVZNB//zMIUql6X7nqbrnWf4XkQalzVmoXZ
-        DAvljv84jgZXc/4TJZKTzQ6a7ut18xI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646645084;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dbesU7tJyBXRg16/sf1QCiyqq4j+TrNZcTyuNDIT7/4=;
-        b=WmOasQHVSV5ZUWpJlANconS3gOQ1nNinKIGCsJfgVaOl4agm+UAVZ6lwdDagPbLzyexTBT
-        DKCcO82dGtWe4LBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3000E13A84;
-        Mon,  7 Mar 2022 09:24:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id w4wFC1zPJWL+CwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 07 Mar 2022 09:24:44 +0000
-Message-ID: <862170fd-a325-a158-36b8-eb73b15c2629@suse.cz>
-Date:   Mon, 7 Mar 2022 10:24:43 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60E05B810B6;
+        Mon,  7 Mar 2022 09:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D73C340E9;
+        Mon,  7 Mar 2022 09:25:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645133;
+        bh=RA5MjAREVeLlyf8DR2wQTDiIpoO9krt7YPldP0t9j60=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OQSvIZgUUEKNnXo31o/+yosHBj2WYmbST0WyeLKBQHjiJt/uvfstbCbYVDJewymVr
+         eAjBzPw3/M+3/UAzdTanTADIEEgOf5icAq04CiFVPOvexkarWTFGl+I9K53h6xwv5F
+         +hIp74gFJ08kP0xIaCRp7UG87RwTMNo6JSFuYT60=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        Zeal Robot <zealci@zte.com.cn>,
+        wangyong <wang.yong12@zte.com.cn>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        CGEL ZTE <cgel.zte@gmail.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Song Liu <songliubraving@fb.com>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 48/51] memfd: fix F_SEAL_WRITE after shmem huge page allocated
+Date:   Mon,  7 Mar 2022 10:19:23 +0100
+Message-Id: <20220307091638.357126249@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220304170215.1868106-1-eric.dumazet@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v2] mm/page_alloc: call check_new_pages() while zone
- spinlock is not held
-In-Reply-To: <20220304170215.1868106-1-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 18:02, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> For high order pages not using pcp, rmqueue() is currently calling
-> the costly check_new_pages() while zone spinlock is held,
-> and hard irqs masked.
-> 
-> This is not needed, we can release the spinlock sooner to reduce
-> zone spinlock contention.
-> 
-> Note that after this patch, we call __mod_zone_freepage_state()
-> before deciding to leak the page because it is in bad state.
+From: Hugh Dickins <hughd@google.com>
 
-Which is arguably an accounting fix on its own, because when we remove page
-from the free list, we should decrease the respective counter(s) even if we
-find the page is in bad state and discard (effectively leak) it.
+commit f2b277c4d1c63a85127e8aa2588e9cc3bd21cb99 upstream.
 
-> 
-> v2: We need to keep interrupts disabled to call __mod_zone_freepage_state()
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+Wangyong reports: after enabling tmpfs filesystem to support transparent
+hugepage with the following command:
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
 
-> Cc: Mel Gorman <mgorman@techsingularity.net>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Michal Hocko <mhocko@kernel.org>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Cc: Wei Xu <weixugc@google.com>
-> Cc: Greg Thelen <gthelen@google.com>
-> Cc: Hugh Dickins <hughd@google.com>
-> Cc: David Rientjes <rientjes@google.com>
-> ---
->  mm/page_alloc.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 3589febc6d31928f850ebe5a4015ddc40e0469f3..1804287c1b792b8aa0e964b17eb002b6b1115258 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -3706,10 +3706,10 @@ struct page *rmqueue(struct zone *preferred_zone,
->  	 * allocate greater than order-1 page units with __GFP_NOFAIL.
->  	 */
->  	WARN_ON_ONCE((gfp_flags & __GFP_NOFAIL) && (order > 1));
-> -	spin_lock_irqsave(&zone->lock, flags);
->  
->  	do {
->  		page = NULL;
-> +		spin_lock_irqsave(&zone->lock, flags);
->  		/*
->  		 * order-0 request can reach here when the pcplist is skipped
->  		 * due to non-CMA allocation context. HIGHATOMIC area is
-> @@ -3721,15 +3721,15 @@ struct page *rmqueue(struct zone *preferred_zone,
->  			if (page)
->  				trace_mm_page_alloc_zone_locked(page, order, migratetype);
->  		}
-> -		if (!page)
-> +		if (!page) {
->  			page = __rmqueue(zone, order, migratetype, alloc_flags);
-> -	} while (page && check_new_pages(page, order));
-> -	if (!page)
-> -		goto failed;
-> -
-> -	__mod_zone_freepage_state(zone, -(1 << order),
-> -				  get_pcppage_migratetype(page));
-> -	spin_unlock_irqrestore(&zone->lock, flags);
-> +			if (!page)
-> +				goto failed;
-> +		}
-> +		__mod_zone_freepage_state(zone, -(1 << order),
-> +					  get_pcppage_migratetype(page));
-> +		spin_unlock_irqrestore(&zone->lock, flags);
-> +	} while (check_new_pages(page, order));
->  
->  	__count_zid_vm_events(PGALLOC, page_zonenum(page), 1 << order);
->  	zone_statistics(preferred_zone, zone, 1);
+the docker program tries to add F_SEAL_WRITE through the following
+command, but it fails unexpectedly with errno EBUSY:
+
+  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) = -1.
+
+That is because memfd_tag_pins() and memfd_wait_for_pins() were never
+updated for shmem huge pages: checking page_mapcount() against
+page_count() is hopeless on THP subpages - they need to check
+total_mapcount() against page_count() on THP heads only.
+
+Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
+(compared != 1): either can be justified, but given the non-atomic
+total_mapcount() calculation, it is better now to be strict.  Bear in
+mind that total_mapcount() itself scans all of the THP subpages, when
+choosing to take an XA_CHECK_SCHED latency break.
+
+Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
+page has been swapped out since memfd_tag_pins(), then its refcount must
+have fallen, and so it can safely be untagged.
+
+Link: https://lkml.kernel.org/r/a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com
+Signed-off-by: Hugh Dickins <hughd@google.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Reported-by: wangyong <wang.yong12@zte.com.cn>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: CGEL ZTE <cgel.zte@gmail.com>
+Cc: Kirill A. Shutemov <kirill@shutemov.name>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yang Yang <yang.yang29@zte.com.cn>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/memfd.c |   30 ++++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
+
+--- a/mm/memfd.c
++++ b/mm/memfd.c
+@@ -34,26 +34,35 @@ static void memfd_tag_pins(struct addres
+ 	void __rcu **slot;
+ 	pgoff_t start;
+ 	struct page *page;
+-	unsigned int tagged = 0;
++	int latency = 0;
++	int cache_count;
+ 
+ 	lru_add_drain();
+ 	start = 0;
+ 
+ 	xa_lock_irq(&mapping->i_pages);
+ 	radix_tree_for_each_slot(slot, &mapping->i_pages, &iter, start) {
++		cache_count = 1;
+ 		page = radix_tree_deref_slot_protected(slot, &mapping->i_pages.xa_lock);
+-		if (!page || radix_tree_exception(page)) {
++		if (!page || radix_tree_exception(page) || PageTail(page)) {
+ 			if (radix_tree_deref_retry(page)) {
+ 				slot = radix_tree_iter_retry(&iter);
+ 				continue;
+ 			}
+-		} else if (page_count(page) - page_mapcount(page) > 1) {
+-			radix_tree_tag_set(&mapping->i_pages, iter.index,
+-					   MEMFD_TAG_PINNED);
++		} else {
++			if (PageTransHuge(page) && !PageHuge(page))
++				cache_count = HPAGE_PMD_NR;
++			if (cache_count !=
++			    page_count(page) - total_mapcount(page)) {
++				radix_tree_tag_set(&mapping->i_pages,
++						iter.index, MEMFD_TAG_PINNED);
++			}
+ 		}
+ 
+-		if (++tagged % 1024)
++		latency += cache_count;
++		if (latency < 1024)
+ 			continue;
++		latency = 0;
+ 
+ 		slot = radix_tree_iter_resume(slot, &iter);
+ 		xa_unlock_irq(&mapping->i_pages);
+@@ -79,6 +88,7 @@ static int memfd_wait_for_pins(struct ad
+ 	pgoff_t start;
+ 	struct page *page;
+ 	int error, scan;
++	int cache_count;
+ 
+ 	memfd_tag_pins(mapping);
+ 
+@@ -107,8 +117,12 @@ static int memfd_wait_for_pins(struct ad
+ 				page = NULL;
+ 			}
+ 
+-			if (page &&
+-			    page_count(page) - page_mapcount(page) != 1) {
++			cache_count = 1;
++			if (page && PageTransHuge(page) && !PageHuge(page))
++				cache_count = HPAGE_PMD_NR;
++
++			if (page && cache_count !=
++			    page_count(page) - total_mapcount(page)) {
+ 				if (scan < LAST_SCAN)
+ 					goto continue_resched;
+ 
+
 
