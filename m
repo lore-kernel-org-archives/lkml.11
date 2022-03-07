@@ -2,99 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE2AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245204AbiCGT6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:58:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S245215AbiCGUBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245184AbiCGT6l (ORCPT
+        with ESMTP id S245193AbiCGUBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:58:41 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEE364E9;
-        Mon,  7 Mar 2022 11:57:46 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id s42so2656997pfg.0;
-        Mon, 07 Mar 2022 11:57:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qaaoX3XGXyKcbvuJQkZ7A/pfCaFGarrrhpO5p9cLWnE=;
-        b=pwWg2Z84bVFNQJurvbsE82MoCwoI1depjNMvL48Phsg3edgB1gontKdVo3RR8F+Aaa
-         sxofxCYtMBKYo6UJAsUX9/dYKgCN42EhvH/g3JX3JIUjBsPZLzuE7sTcZcp6d/Zb+xw0
-         qk1HjzGAnVtRQ4zVKJhe9f+274Yo7X/1EVYogCBFviT0GejFrRacbs0gChXiyleVO/S0
-         8SKAM1EJLSQUep1TqYDR/NIDx8lYE7zz9q+T9RlV2+DC0XTcU9JHSelvbiBO4IXLA69A
-         66yWXXrlNIKSS0nBUlLfbSbJYHqCi1gP9prCYldM0aPoxl5j7gJfstav4fy8tqfFl9Bx
-         NXRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qaaoX3XGXyKcbvuJQkZ7A/pfCaFGarrrhpO5p9cLWnE=;
-        b=UqB6/G3hL5OaYq3OJIQRU/aGEQwd6gxh6nDPuS3lJgETxVXSIMk3IgWZ0HkRLRmYvd
-         8ct6o6Tv5ZPohBkj/8KOIrawckmBZztgG2U02wyNWONqaH98hKSA+aQMewIvkYnym+QR
-         1Z/Dd6sW96kBxgwSAEVUTn8VWw0ujhQc8nKOh02v2fW0ZPvpuSu3ENIvGnKThNpXmdor
-         +Fwuf3hvhvzbCMxEAHuExzMtQm/uJL9VxlYxIxRfEUOTwvy9hPkjtT9h+gtza7D6zN5L
-         sZw+BaMty69+NEeyjmom72ES3/gwFPiH5SNHBnpXfpFxzcYGQkGErUBJ7/R7CbmKxabj
-         s2+g==
-X-Gm-Message-State: AOAM533R4m+8ttyjRhLwk0HzcWxD7CmB2bYb7f+zazTSECDLwCOC9m+5
-        paA1tFuroAJBD8ZXGydYE0k=
-X-Google-Smtp-Source: ABdhPJyNr/kUwXUfBHilIyzQ4PL7Gp3fTkhvskJB62P3j4blM7ZS3Y1gb+QbQwkhPX3qcA94V0SlZw==
-X-Received: by 2002:a62:586:0:b0:4e1:dc81:8543 with SMTP id 128-20020a620586000000b004e1dc818543mr14494172pff.0.1646683065702;
-        Mon, 07 Mar 2022 11:57:45 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id u18-20020a056a00159200b004f708ecd48esm4353205pfk.149.2022.03.07.11.57.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 11:57:45 -0800 (PST)
-Subject: Re: [PATCH 5.16 000/184] 5.16.13-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220307162147.440035361@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <35252a15-4c0f-7eb6-3331-43843a518c3f@gmail.com>
-Date:   Mon, 7 Mar 2022 11:57:39 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 7 Mar 2022 15:01:01 -0500
+X-Greylist: delayed 1812 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 12:00:06 PST
+Received: from uncle.firstenglishco.com (uncle.firstenglishco.com [194.31.98.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741956AA4A
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:00:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=firstenglishco.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=the.sey@firstenglishco.com;
+ bh=Eylb9VhY/SSMAygF0bYLSZ+CaeE=;
+ b=S5Zd5jTSEb5NNNj4T2mFZOFDO9AyRef4vExsqcvySiPgKu9H/PdDqrZ98EAeFcHT5gJz6EmfRhAJ
+   1+ZL10PqtLINe5SzIMsGdT8MQ8M90K/Nv/9ukAe1ZUWmYdepbhdbaZhczrcdUrmiyO7U7a+s8dYC
+   vw1iunyEyztW4DuHpHt4WoQUo3dmMF/YVwWBkbwgkdprCFDQzxf0Ob2WVdCk3L8s30/ayXzFBl/l
+   yve+R5yY6aA9BEfRfGFcRhqpIO95wyjLHFoNq3YeQQsTEOO8vWunHaCOJ17P4aI1w1P0lTfhILbf
+   2HiPnZ1I/kPjOn/AMkcMtF6BJtAfO7CmmLpURQ==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=firstenglishco.com;
+ b=iZGuH5KEzU9OJ9naiYtT+rNZb6x/ytcnJCE1pLK1o3Q3wZ7gQn03XO8Ikw75MP99IyBianDA9h0H
+   nvmgAyFIBcjEGZKDkfTlThhNsfRdX/M9Q5QEzJewiZx8Zxm/WBBnVwmxQKRFzEdJfhC5CucedNu5
+   mgrOsmcjd6SKAFPAwwyNLhu4wQfNacaLB8aIyH2j8oacwigi4sXQ0EfbhOhfHFgGaooIW+sc/TAG
+   PHZuI2YS/rT1bdu7W5MLS88eja2xph0saxdULLspuuj7QBII4vDWUFDca6hh8JVsEXd4LsCenPb3
+   gV22gdGCLM35Gt5EEeWWxdTf4Dl1LgtYdWZjEA==;
+Reply-To: eymencemil404@gmail.com
+From:   the.sey@firstenglishco.com
+To:     linux-kernel@vger.kernel.org
+Subject: 073HSBC
+Date:   7 Mar 2022 20:29:35 +0100
+Message-ID: <20220307202935.943A14D016704E75@firstenglishco.com>
 MIME-Version: 1.0
-In-Reply-To: <20220307162147.440035361@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 8:28 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.13 release.
-> There are 184 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Mar 2022 16:21:20 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.13-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-
-
-
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
-
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Greetings linux-kernel
+=20
+Good Day. Hope you are well.
+=20
+I hope my message finds you well and healthy? I am contacting you=20
+due to my recent discovery in my bank branch and a profitable=20
+proposition for you. I will give you more details regarding my=20
+proposal when I get your reply.
+Thanks for your understanding.
+=20
+Best regards
