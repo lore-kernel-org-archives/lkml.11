@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2795AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F31C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241015AbiCGKJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
+        id S240996AbiCGKJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:09:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240526AbiCGJvF (ORCPT
+        with ESMTP id S240471AbiCGJvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:51:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F2775C04;
-        Mon,  7 Mar 2022 01:44:48 -0800 (PST)
+        Mon, 7 Mar 2022 04:51:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F8275623;
+        Mon,  7 Mar 2022 01:44:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA3361052;
-        Mon,  7 Mar 2022 09:44:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CAB3C340F5;
-        Mon,  7 Mar 2022 09:44:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 326DD61375;
+        Mon,  7 Mar 2022 09:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D133C340F8;
+        Mon,  7 Mar 2022 09:44:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646286;
-        bh=CaKtX6RI701ZDx4Bn/ja5BTKe+943YPz+gM9MRC0pRo=;
+        s=korg; t=1646646280;
+        bh=KjGoanFe9yX2UdN5dVRQKQaNmaQjJPnPPFDSw4zrYPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B2Tv/Jdz0wqIA6o3h4tMMducy0zvwbd8rr9ZaXPs91bwLC74QGaF1zwPcwibO7m7d
-         6tDY3097Y6MNjT/3RThTUqrw0wCwk48viWK93PDn2k04EDw+EMCRqMIE/tsZ56cUkw
-         OUa7YJwQbvrEGUPWrMzDo5Bb/4jSrLI1umxffIOI=
+        b=qBOcn/NmQChDecYdEHrtUEgNmoNjYbqWYDMYa8/+4I8IFigIsRgjsagPQM4w3+wB1
+         z1OsdlAEH1KPyqZdnM819dW/cr1AfRxtH+hotX6T/H6gg3xNJWiDXWUCNXSs5v6So1
+         NpMg/mU/f/4Buab9vcsscFPsfCIsldsIjGwxicGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
+        stable@vger.kernel.org, Johannes Stezenbach <js@sig21.net>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.15 194/262] ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
-Date:   Mon,  7 Mar 2022 10:18:58 +0100
-Message-Id: <20220307091708.048728426@linuxfoundation.org>
+Subject: [PATCH 5.15 192/262] ARM: Fix kgdb breakpoint for Thumb2
+Date:   Mon,  7 Mar 2022 10:18:56 +0100
+Message-Id: <20220307091707.961397047@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,48 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 7b83299e5b9385943a857d59e15cba270df20d7e upstream.
+commit d920eaa4c4559f59be7b4c2d26fa0a2e1aaa3da9 upstream.
 
-early_param() handlers should return 0 on success.
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 would cause the "option=value" string
-to be added to init's environment strings, polluting it.
+The kgdb code needs to register an undef hook for the Thumb UDF
+instruction that will fault in order to be functional on Thumb2
+platforms.
 
-../arch/arm/mm/mmu.c: In function 'test_early_cachepolicy':
-../arch/arm/mm/mmu.c:215:1: error: no return statement in function returning non-void [-Werror=return-type]
-../arch/arm/mm/mmu.c: In function 'test_noalign_setup':
-../arch/arm/mm/mmu.c:221:1: error: no return statement in function returning non-void [-Werror=return-type]
-
-Fixes: b849a60e0903 ("ARM: make cr_alignment read-only #ifndef CONFIG_CPU_CP15")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
+Reported-by: Johannes Stezenbach <js@sig21.net>
+Tested-by: Johannes Stezenbach <js@sig21.net>
+Fixes: 5cbad0ebf45c ("kgdb: support for ARCH=arm")
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/mmu.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/kernel/kgdb.c |   36 ++++++++++++++++++++++++++++--------
+ 1 file changed, 28 insertions(+), 8 deletions(-)
 
---- a/arch/arm/mm/mmu.c
-+++ b/arch/arm/mm/mmu.c
-@@ -212,12 +212,14 @@ early_param("ecc", early_ecc);
- static int __init early_cachepolicy(char *p)
- {
- 	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-+	return 0;
+--- a/arch/arm/kernel/kgdb.c
++++ b/arch/arm/kernel/kgdb.c
+@@ -154,22 +154,38 @@ static int kgdb_compiled_brk_fn(struct p
+ 	return 0;
  }
- early_param("cachepolicy", early_cachepolicy);
  
- static int __init noalign_setup(char *__unused)
+-static struct undef_hook kgdb_brkpt_hook = {
++static struct undef_hook kgdb_brkpt_arm_hook = {
+ 	.instr_mask		= 0xffffffff,
+ 	.instr_val		= KGDB_BREAKINST,
+-	.cpsr_mask		= MODE_MASK,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+ 	.cpsr_val		= SVC_MODE,
+ 	.fn			= kgdb_brk_fn
+ };
+ 
+-static struct undef_hook kgdb_compiled_brkpt_hook = {
++static struct undef_hook kgdb_brkpt_thumb_hook = {
++	.instr_mask		= 0xffff,
++	.instr_val		= KGDB_BREAKINST & 0xffff,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
++	.cpsr_val		= PSR_T_BIT | SVC_MODE,
++	.fn			= kgdb_brk_fn
++};
++
++static struct undef_hook kgdb_compiled_brkpt_arm_hook = {
+ 	.instr_mask		= 0xffffffff,
+ 	.instr_val		= KGDB_COMPILED_BREAK,
+-	.cpsr_mask		= MODE_MASK,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+ 	.cpsr_val		= SVC_MODE,
+ 	.fn			= kgdb_compiled_brk_fn
+ };
+ 
++static struct undef_hook kgdb_compiled_brkpt_thumb_hook = {
++	.instr_mask		= 0xffff,
++	.instr_val		= KGDB_COMPILED_BREAK & 0xffff,
++	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
++	.cpsr_val		= PSR_T_BIT | SVC_MODE,
++	.fn			= kgdb_compiled_brk_fn
++};
++
+ static int __kgdb_notify(struct die_args *args, unsigned long cmd)
  {
- 	pr_warn("noalign kernel parameter not supported without cp15\n");
-+	return 1;
+ 	struct pt_regs *regs = args->regs;
+@@ -210,8 +226,10 @@ int kgdb_arch_init(void)
+ 	if (ret != 0)
+ 		return ret;
+ 
+-	register_undef_hook(&kgdb_brkpt_hook);
+-	register_undef_hook(&kgdb_compiled_brkpt_hook);
++	register_undef_hook(&kgdb_brkpt_arm_hook);
++	register_undef_hook(&kgdb_brkpt_thumb_hook);
++	register_undef_hook(&kgdb_compiled_brkpt_arm_hook);
++	register_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+ 
+ 	return 0;
  }
- __setup("noalign", noalign_setup);
+@@ -224,8 +242,10 @@ int kgdb_arch_init(void)
+  */
+ void kgdb_arch_exit(void)
+ {
+-	unregister_undef_hook(&kgdb_brkpt_hook);
+-	unregister_undef_hook(&kgdb_compiled_brkpt_hook);
++	unregister_undef_hook(&kgdb_brkpt_arm_hook);
++	unregister_undef_hook(&kgdb_brkpt_thumb_hook);
++	unregister_undef_hook(&kgdb_compiled_brkpt_arm_hook);
++	unregister_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+ 	unregister_die_notifier(&kgdb_notifier);
+ }
  
 
 
