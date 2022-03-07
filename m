@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD8AC35274
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 425AEC3526E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236452AbiCGJdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51388 "EHLO
+        id S238091AbiCGJdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:33:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238596AbiCGJ3Y (ORCPT
+        with ESMTP id S238551AbiCGJ3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE60642A29;
-        Mon,  7 Mar 2022 01:27:40 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA4344E0;
+        Mon,  7 Mar 2022 01:27:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F29661185;
-        Mon,  7 Mar 2022 09:27:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EF49C340F3;
-        Mon,  7 Mar 2022 09:27:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3ED54B810B2;
+        Mon,  7 Mar 2022 09:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A25C340E9;
+        Mon,  7 Mar 2022 09:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645259;
-        bh=fcckVDvJc857jFVAiGekitFckuwdPE60S5tE7C7nExk=;
+        s=korg; t=1646645232;
+        bh=37Czy/XIDuF5pub/L9jgRS+Unyz4h5tBEJDYZjBSadc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czz3ClJ6in+34T8Aot1PC4Rn4PqRIJraqOJFJZawAp5EQTTk3965uxHUqBzzhxoXm
-         fNWlsI3t1upe6GB8AaZfz5BUnl1qAjwkfm7Ty+b+nzD+f4o8qYOGnabYr11n7iZ/id
-         tlW7mSLORybI2jMJPF7szAbD2N1wwJlVlMiZX/uo=
+        b=ha/C4SCUE6hfj2dWOc9lrTCMvJMEdVzDyDKMDowJju6szQ9zbbQPzWTov+Bx6TMBG
+         /RAXHwFpO9JGcGgeYdSe5drgbKXo6yqZ/Am5OrIaJmkEGfoFFGiS8dykG3eDitY5rX
+         RFntxOLYAXWI07Gmt19Y/Kq/cvWyWbdNLWluQ3ac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 36/64] iavf: Fix missing check for running netdev
-Date:   Mon,  7 Mar 2022 10:19:09 +0100
-Message-Id: <20220307091640.172080649@linuxfoundation.org>
+        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 28/64] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+Date:   Mon,  7 Mar 2022 10:19:01 +0100
+Message-Id: <20220307091639.943993080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -52,43 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: D. Wythe <alibuda@linux.alibaba.com>
 
-commit d2c0f45fcceb0995f208c441d9c9a453623f9ccf upstream.
+commit 4940a1fdf31c39f0806ac831cde333134862030b upstream.
 
-The driver was queueing reset_task regardless of the netdev
-state.
+The problem of SMC_CLC_DECL_ERR_REGRMB on the server is very clear.
+Based on the fact that whether a new SMC connection can be accepted or
+not depends on not only the limit of conn nums, but also the available
+entries of rtoken. Since the rtoken release is trigger by peer, while
+the conn nums is decrease by local, tons of thing can happen in this
+time difference.
 
-Do not queue the reset task in iavf_change_mtu if netdev
-is not running.
+This only thing that needs to be mentioned is that now all connection
+creations are completely protected by smc_server_lgr_pending lock, it's
+enough to check only the available entries in rtokens_used_mask.
 
-Fixes: fdd4044ffdc8 ("iavf: Remove timer for work triggering, use delaying work instead")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: cd6851f30386 ("smc: remote memory buffers (RMBs)")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/smc/smc_core.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3323,8 +3323,11 @@ static int iavf_change_mtu(struct net_de
- 		iavf_notify_client_l2_params(&adapter->vsi);
- 		adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
- 	}
--	adapter->flags |= IAVF_FLAG_RESET_NEEDED;
--	queue_work(iavf_wq, &adapter->reset_task);
-+
-+	if (netif_running(netdev)) {
-+		adapter->flags |= IAVF_FLAG_RESET_NEEDED;
-+		queue_work(iavf_wq, &adapter->reset_task);
-+	}
- 
- 	return 0;
- }
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -632,7 +632,8 @@ int smc_conn_create(struct smc_sock *smc
+ 		    !lgr->sync_err &&
+ 		    lgr->vlan_id == ini->vlan_id &&
+ 		    (role == SMC_CLNT ||
+-		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX)) {
++		    (lgr->conns_num < SMC_RMBS_PER_LGR_MAX &&
++		      !bitmap_full(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)))) {
+ 			/* link group found */
+ 			ini->cln_first_contact = SMC_REUSE_CONTACT;
+ 			conn->lgr = lgr;
 
 
