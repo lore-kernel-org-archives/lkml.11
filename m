@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AECC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B91B4C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237768AbiCGJnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S238048AbiCGJms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:42:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237663AbiCGJdG (ORCPT
+        with ESMTP id S237747AbiCGJdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7EC6660A;
-        Mon,  7 Mar 2022 01:30:00 -0800 (PST)
+        Mon, 7 Mar 2022 04:33:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E514A6AA5C;
+        Mon,  7 Mar 2022 01:30:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 089CD61147;
-        Mon,  7 Mar 2022 09:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07DADC340E9;
-        Mon,  7 Mar 2022 09:29:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BAD36116E;
+        Mon,  7 Mar 2022 09:30:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20866C340E9;
+        Mon,  7 Mar 2022 09:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645379;
-        bh=3Q6HfLvnyk20c5KteC9b+hLzCTbQ2st3hb44bFNMDzQ=;
+        s=korg; t=1646645400;
+        bh=cjVfmnK4fz5GuuXiNFft/0FaHOJnzNJnwdbrzYua5+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qbI0ZVvD/U1igvQbS62pBa1kydhWzYkvYDZe+fXiJSDaKayN5gCOGZWEKSaCezE2x
-         QmSiSX1dBUvLNSmc4Q8zvrx8vGqpJw+jcWSwbIWuWjpeXDPSgsWlknBT6l9vAxC6rA
-         6j1X2vn9qPGtX24fDe9elEJrZ4NWWxy4GlBKwm/Q=
+        b=eaxJIaD9vQZ4Jf+vlAwNlmp65nqG3YekdgHppTEz/nagmoLJA4vU9ihrsu8pmSJD8
+         n6ChnbfhsgdqgQV5bwxB9eJVyE3RnpLWC97QVg6zSiaxXllZc38eXwOLCzdD5WYWtn
+         UMMmcOILBF+xUrG58qB19bubNgTag4GGXETXyUXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 012/105] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Mon,  7 Mar 2022 10:18:15 +0100
-Message-Id: <20220307091644.529997660@linuxfoundation.org>
+        stable@vger.kernel.org, JaeMan Park <jaeman@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 002/105] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
+Date:   Mon,  7 Mar 2022 10:18:05 +0100
+Message-Id: <20220307091644.251872591@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,38 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: JaeMan Park <jaeman@google.com>
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+[ Upstream commit cacfddf82baf1470e5741edeecb187260868f195 ]
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+In mac80211_hwsim, the probe_req frame is created and sent while
+scanning. It is sent with ieee80211_tx_info which is not initialized.
+Uninitialized ieee80211_tx_info can cause problems when using
+mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
+ieee80211_tx_info and doesn't relay probe_req frame to other clients
+even if it is a broadcasting message.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
+the probe_req that is created by hw_scan_work in mac80211_hwsim.
+
+Signed-off-by: JaeMan Park <jaeman@google.com>
+Link: https://lore.kernel.org/r/20220113060235.546107-1-jaeman@google.com
+[fix memory leak]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mac80211_hwsim.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index 7f72b3f4cd1ae..19ac95c0098f0 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 0122585a1e500..cc550ba0c9dfe 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -2264,6 +2264,15 @@ static void hw_scan_work(struct work_struct *work)
+ 			if (req->ie_len)
+ 				skb_put_data(probe, req->ie, req->ie_len);
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
-+		}
- 
- 		pm_runtime_barrier(schan->dev);
- 
++			if (!ieee80211_tx_prepare_skb(hwsim->hw,
++						      hwsim->hw_scan_vif,
++						      probe,
++						      hwsim->tmp_chan->band,
++						      NULL)) {
++				kfree_skb(probe);
++				continue;
++			}
++
+ 			local_bh_disable();
+ 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
+ 						hwsim->tmp_chan);
 -- 
 2.34.1
 
