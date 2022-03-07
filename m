@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BC9C3527D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AECC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237738AbiCGJn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
+        id S237768AbiCGJnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237650AbiCGJdG (ORCPT
+        with ESMTP id S237663AbiCGJdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:33:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC0365824;
-        Mon,  7 Mar 2022 01:29:59 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7EC6660A;
+        Mon,  7 Mar 2022 01:30:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DC62B810C5;
-        Mon,  7 Mar 2022 09:29:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4591C36AE2;
-        Mon,  7 Mar 2022 09:29:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 089CD61147;
+        Mon,  7 Mar 2022 09:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07DADC340E9;
+        Mon,  7 Mar 2022 09:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645385;
-        bh=oQ/WUyu1a1DvBwsfO0I1oS/ecdqExqC9GcCSL1Zqbds=;
+        s=korg; t=1646645379;
+        bh=3Q6HfLvnyk20c5KteC9b+hLzCTbQ2st3hb44bFNMDzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M2EJH3Jbwhsauty3BBE+CzSqEB8O+H7/GY+kaHJCZBRVhMR43TSVw2SUGcgtAYWjC
-         mkPONKkmZPKbXo9Lxb7ovAla5XCa1WtBKSheDxkD6d2CMn8pWQBP3Iz6FDOZefVM07
-         9qJqaY7SvU4u+6QaHTJknoZDlfdTpRYkBpdwWXX0=
+        b=qbI0ZVvD/U1igvQbS62pBa1kydhWzYkvYDZe+fXiJSDaKayN5gCOGZWEKSaCezE2x
+         QmSiSX1dBUvLNSmc4Q8zvrx8vGqpJw+jcWSwbIWuWjpeXDPSgsWlknBT6l9vAxC6rA
+         6j1X2vn9qPGtX24fDe9elEJrZ4NWWxy4GlBKwm/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 014/105] i2c: qup: allow COMPILE_TEST
-Date:   Mon,  7 Mar 2022 10:18:17 +0100
-Message-Id: <20220307091644.585896841@linuxfoundation.org>
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 012/105] dmaengine: shdma: Fix runtime PM imbalance on error
+Date:   Mon,  7 Mar 2022 10:18:15 +0100
+Message-Id: <20220307091644.529997660@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,32 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa@kernel.org>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
+[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
 
-Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
-and easier maintenance.
+pm_runtime_get_() increments the runtime PM usage counter even
+when it returns an error code, thus a matching decrement is needed on
+the error handling path to keep the counter balanced.
 
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/sh/shdma-base.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index d5fc8ec025020..ea474b16e3aac 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -926,7 +926,7 @@ config I2C_QCOM_GENI
+diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+index 7f72b3f4cd1ae..19ac95c0098f0 100644
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
+ 		ret = pm_runtime_get(schan->dev);
  
- config I2C_QUP
- 	tristate "Qualcomm QUP based I2C controller"
--	depends on ARCH_QCOM
-+	depends on ARCH_QCOM || COMPILE_TEST
- 	help
- 	  If you say yes to this option, support will be included for the
- 	  built-in I2C interface on the Qualcomm SoCs.
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0)
++		if (ret < 0) {
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
++			pm_runtime_put(schan->dev);
++		}
+ 
+ 		pm_runtime_barrier(schan->dev);
+ 
 -- 
 2.34.1
 
