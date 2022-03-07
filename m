@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3091BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E281DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236402AbiCGJWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:22:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
+        id S236488AbiCGJWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:22:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236562AbiCGJVk (ORCPT
+        with ESMTP id S236591AbiCGJVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:21:40 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4992E541AA;
-        Mon,  7 Mar 2022 01:20:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646644808; x=1678180808;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=wGeDKaASQDCyWy0awRd7jeAVQdDX7gR/VgWstKH88gA=;
-  b=bRdsM6TncrMoQcN60/Ak8xegmd7mcKX+Pqa8Kyc82ckHH9l7VZxyrdXi
-   Qy+zUsRJuFFR+cK9tox0P3uCJsH7FSOyacQUOynSSMYX8jASZqHYYEgCZ
-   9PhlRRdkCXmJ8VTHsPYhUnaDmdcaTDEwgx0BAaXraBCGOnDcrhcSpvt9c
-   8FzO/VaNY6odrH64Hv4W0Z+BJXFD381Aa044QfYUSVRYkivDfYpyLTDv6
-   vMK3OYXohgaLAONqF7burNZKksnfgphTb4PUVb/m7BONykTYRvRzDI5l4
-   GOGN528riicFYlgTCZezfw1SQu07sr2hTZcp1Qn/lza2jNgBSw3yfsYE/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254536717"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="254536717"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:07 -0800
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="537042104"
-Received: from rabl-mobl2.ger.corp.intel.com ([10.252.54.114])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:04 -0800
-Date:   Mon, 7 Mar 2022 11:19:59 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Lukas Wunner <lukas@wunner.de>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
-In-Reply-To: <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
-Message-ID: <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de> <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+        Mon, 7 Mar 2022 04:21:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456B765433;
+        Mon,  7 Mar 2022 01:20:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9F6561029;
+        Mon,  7 Mar 2022 09:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B04C340F4;
+        Mon,  7 Mar 2022 09:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646644813;
+        bh=2gO547OLSlpbogOwW/5AiNadq3GKTKLPFPNb1dAQYO4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ui7ncDp9vfZXHmbfnmTzHPD9o9GsylmWcNYTKCqh744DC9Z6JfAaFv14m67XdpKhh
+         ZA98vyfdLxQUEVViZX4bY8Ug/WIdtrnquM0tQGkKXmCHEPB/S3Y/4G0OpFjwE7xUOj
+         wtEBqcyb3YqhxG28cly6aUGOI1zqgMFrCqu+hGvE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 4.9 28/32] Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+Date:   Mon,  7 Mar 2022 10:18:54 +0100
+Message-Id: <20220307091635.237206483@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
+References: <20220307091634.434478485@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1881166460-1646644807=:1677"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Hans de Goede <hdegoede@redhat.com>
 
---8323329-1881166460-1646644807=:1677
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+commit 81a36d8ce554b82b0a08e2b95d0bd44fcbff339b upstream.
 
-On Mon, 7 Mar 2022, Andy Shevchenko wrote:
+elan_disable_power() is called conditionally on suspend, where as
+elan_enable_power() is always called on resume. This leads to
+an imbalance in the regulator's enable count.
 
-> On Mon, Mar 7, 2022 at 12:00 AM Lukas Wunner <lukas@wunner.de> wrote:
-> > On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo Järvinen wrote:
-> 
-> ...
-> 
-> > Does the DesignWare UART use dedicated DE and RE pins instead of
-> > the RTS pin?  That would be quite unusual.
-> 
-> They are muxed with other UART pins on SoC level, but I don't remember
-> by heart which ones. According to the Synopsys datasheet they are
-> separate signals. It might be that I'm missing something, since the
-> last time I looked was last year.
+Move the regulator_[en|dis]able() calls out of elan_[en|dis]able_power()
+in preparation of fixing this.
 
-Unusual or not, there is a pin for both DE and RE. DE is muxed with RTS.
+No functional changes intended.
 
-> > > +     d->hw_rs485_support = device_property_read_bool(p->dev, "snps,rs485-interface-en");
-> > > +     if (d->hw_rs485_support)
-> > > +             p->rs485_config = dw8250_rs485_config;
-> > > +
-> >
-> > You wrote in the commit message that rs485 support is present from
-> > version 4.0 onward.  Can't we just check the IP version and enable
-> > rs485 support for >= 4.0?  That would seem more appropriate instead
-> > of introducing yet another new property.
-> 
-> AFAIU this is dependent on the IP syntheses. I.o.w. version 4.0+ is a
-> prerequisite, but doesn't automatically mean that there is a support.
-> Unfortunately there is no way to tell this clearly in the IP
-> configuration register.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220131135436.29638-1-hdegoede@redhat.com
+[dtor: consolidate elan_[en|dis]able() into elan_set_power()]
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/input/mouse/elan_i2c_core.c |   62 ++++++++++++------------------------
+ 1 file changed, 22 insertions(+), 40 deletions(-)
 
-And the IP synthesis only part of the picture, in general case, it'd
-also matter that there's something connected to that RE (i.e.,
-an RS485 transceiver).
+--- a/drivers/input/mouse/elan_i2c_core.c
++++ b/drivers/input/mouse/elan_i2c_core.c
+@@ -132,55 +132,21 @@ static int elan_get_fwinfo(u8 iap_versio
+ 	return 0;
+ }
+ 
+-static int elan_enable_power(struct elan_tp_data *data)
++static int elan_set_power(struct elan_tp_data *data, bool on)
+ {
+ 	int repeat = ETP_RETRY_COUNT;
+ 	int error;
+ 
+-	error = regulator_enable(data->vcc);
+-	if (error) {
+-		dev_err(&data->client->dev,
+-			"failed to enable regulator: %d\n", error);
+-		return error;
+-	}
+-
+ 	do {
+-		error = data->ops->power_control(data->client, true);
++		error = data->ops->power_control(data->client, on);
+ 		if (error >= 0)
+ 			return 0;
+ 
+ 		msleep(30);
+ 	} while (--repeat > 0);
+ 
+-	dev_err(&data->client->dev, "failed to enable power: %d\n", error);
+-	return error;
+-}
+-
+-static int elan_disable_power(struct elan_tp_data *data)
+-{
+-	int repeat = ETP_RETRY_COUNT;
+-	int error;
+-
+-	do {
+-		error = data->ops->power_control(data->client, false);
+-		if (!error) {
+-			error = regulator_disable(data->vcc);
+-			if (error) {
+-				dev_err(&data->client->dev,
+-					"failed to disable regulator: %d\n",
+-					error);
+-				/* Attempt to power the chip back up */
+-				data->ops->power_control(data->client, true);
+-				break;
+-			}
+-
+-			return 0;
+-		}
+-
+-		msleep(30);
+-	} while (--repeat > 0);
+-
+-	dev_err(&data->client->dev, "failed to disable power: %d\n", error);
++	dev_err(&data->client->dev, "failed to set power %s: %d\n",
++		on ? "on" : "off", error);
+ 	return error;
+ }
+ 
+@@ -1195,9 +1161,19 @@ static int __maybe_unused elan_suspend(s
+ 		/* Enable wake from IRQ */
+ 		data->irq_wake = (enable_irq_wake(client->irq) == 0);
+ 	} else {
+-		ret = elan_disable_power(data);
++		ret = elan_set_power(data, false);
++		if (ret)
++			goto err;
++
++		ret = regulator_disable(data->vcc);
++		if (ret) {
++			dev_err(dev, "error %d disabling regulator\n", ret);
++			/* Attempt to power the chip back up */
++			elan_set_power(data, true);
++		}
+ 	}
+ 
++err:
+ 	mutex_unlock(&data->sysfs_mutex);
+ 	return ret;
+ }
+@@ -1213,7 +1189,13 @@ static int __maybe_unused elan_resume(st
+ 		data->irq_wake = false;
+ 	}
+ 
+-	error = elan_enable_power(data);
++	error = regulator_enable(data->vcc);
++	if (error) {
++		dev_err(dev, "error %d enabling regulator\n", error);
++		goto err;
++	}
++
++	error = elan_set_power(data, true);
+ 	if (error) {
+ 		dev_err(dev, "power up when resuming failed: %d\n", error);
+ 		goto err;
 
-On the board I'm testing with, I can also turn RS485 on/off from BIOS
-which makes the pins (mainly RE) behave differently.
 
-I initially had additional version check here while developing this
-patch series but it seemed to not provide any added value due those
-other factors that need to be considered.
-
-
--- 
- i.
-
---8323329-1881166460-1646644807=:1677--
