@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6BBC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4ACC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237484AbiCGJ2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:28:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S237222AbiCGJ1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:27:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236897AbiCGJZm (ORCPT
+        with ESMTP id S236788AbiCGJZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:25:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35F95B881;
-        Mon,  7 Mar 2022 01:23:54 -0800 (PST)
+        Mon, 7 Mar 2022 04:25:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45962583A4;
+        Mon,  7 Mar 2022 01:23:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE7D0B810C0;
-        Mon,  7 Mar 2022 09:23:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C1AC36AE7;
-        Mon,  7 Mar 2022 09:23:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04F48B810AC;
+        Mon,  7 Mar 2022 09:23:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D11C340F3;
+        Mon,  7 Mar 2022 09:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645031;
-        bh=tozq4ciK0IC+DMbSMOvqSOpHdPePfpNxa67dMJWlD/Y=;
+        s=korg; t=1646645016;
+        bh=VKj7xlrRFbcxioWHBRFh2u0Z7Dc86o9b0hoFi2dJGaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iBwIq8CsMrHBejBhOZXqZfO7EKU4NS2J5/s1n9ahI2OCpAiipi3cJVKPMH3RkOZgU
-         CS22IB2sV3gYse6BVu+wIjGdTj/a+qTN92AbzaDdDalrlW8cxZbI6kKhZkiZBLkr3B
-         gMfzXzngkPXW7XJyhI7EWXlu8lcGR35jvTkb/ZdI=
+        b=Jpa+/y2KNwtMeGkVZZNCY4UqMWytI2bidJh/MImq1f9dynBV/IGKcv/ZwhaXjm8wI
+         tBIX6kCe8Vv3N0iHY/lzXwrVqVLjr6eGd8U7+bYtCWnwTfqrIUfbd4bZbUf5Oo1ZCn
+         htEozMmWjfATbnQbXkj8C7XZLSN5OdXbi2IAbgwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 16/51] ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
-Date:   Mon,  7 Mar 2022 10:18:51 +0100
-Message-Id: <20220307091637.453536571@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 11/51] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
+Date:   Mon,  7 Mar 2022 10:18:46 +0100
+Message-Id: <20220307091637.315420493@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -48,45 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-commit 9bdd10d57a8807dba0003af0325191f3cec0f11c upstream.
+[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
 
-While the $val/$val2 values passed in from userspace are always >= 0
-integers, the limits of the control can be signed integers and the $min
-can be non-zero and less than zero. To correctly validate $val/$val2
-against platform_max, add the $min offset to val first.
+Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
+0x1071 composition in order to avoid bind error.
 
-Fixes: 817f7c9335ec0 ("ASoC: ops: Reject out of bounds values in snd_soc_put_volsw()")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220215130645.164025-1-marex@denx.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-ops.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/cdc_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -323,7 +323,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 		mask = BIT(sign_bit + 1) - 1;
+diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
+index cdd1b193fd4fe..41bac861ca99d 100644
+--- a/drivers/net/usb/cdc_mbim.c
++++ b/drivers/net/usb/cdc_mbim.c
+@@ -660,6 +660,11 @@ static const struct usb_device_id mbim_devs[] = {
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+ 	},
  
- 	val = ucontrol->value.integer.value[0];
--	if (mc->platform_max && val > mc->platform_max)
-+	if (mc->platform_max && ((int)val + min) > mc->platform_max)
- 		return -EINVAL;
- 	if (val > max - min)
- 		return -EINVAL;
-@@ -336,7 +336,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	val = val << shift;
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		val2 = ucontrol->value.integer.value[1];
--		if (mc->platform_max && val2 > mc->platform_max)
-+		if (mc->platform_max && ((int)val2 + min) > mc->platform_max)
- 			return -EINVAL;
- 		if (val2 > max - min)
- 			return -EINVAL;
++	/* Telit FN990 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
++	},
++
+ 	/* default entry */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+-- 
+2.34.1
+
 
 
