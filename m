@@ -2,92 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E24EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243184AbiCGOav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:30:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
+        id S243199AbiCGObQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243188AbiCGOat (ORCPT
+        with ESMTP id S234087AbiCGObP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:30:49 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852C878934;
-        Mon,  7 Mar 2022 06:29:55 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id n2so4398794plf.4;
-        Mon, 07 Mar 2022 06:29:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=SqUFf/0e9pIfYA2SPUi1rOc62Loeelt2Cp4NKFK25pw=;
-        b=n2oWKDzxZmGwqowGp4AEgcRLjh1BUYKx02aE7FgNv+I+jooioHnW++CUWq65y81gqd
-         wJR5Nf4BCpjvQYuIL5lM0tRI7ZVy3yll2SaMzR+LVWc4mWiFB7B8eaW81T7j+y3hiRlo
-         TfHC5LPZWHf5cHH1Liyq0OwcN+VBfwXtOeJHs1MDbbWeyfRNRGQRJf2QWZt02ifKpgFy
-         qOb8LdDDEriC/4n+YRsl3ZSVKte854pch8MIyJnjJ4aj+gJUUjue+lEHyy0Eu2PeO/Kk
-         TUwiZ6h5PdokAeFgavsw+8ntKTaDjTB4PpsEkQD6ek5guB7A/0KPsIWt4hhOsR1YWtWh
-         osyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=SqUFf/0e9pIfYA2SPUi1rOc62Loeelt2Cp4NKFK25pw=;
-        b=Hl6eeTTUAr1E2y3KnKDuFZRUCSfR0+FHMZlz1K8diW5NgbiujgHcLFdW4iRkm0fVyu
-         wt8j6T7NIBxXJSGKiEF+8pgdJoYhmeh+7dcCzkkZdEMyOGP3xu0BLfdTqRNmoQpdYyTp
-         CJNYLd7cnZBiCAUQxNFugafC8cB17mdusp45rDp3KU7hnGqcOCc8FZNDoHelBKOBPQai
-         wA9NFVkBDL3Uo3CV4fmCMKU/bQzj94bgstesPpUWdb4bdDibVMb6SrE4d654HyXEVFMr
-         HU35eZALEvu8q/grTER27qMVJfMOZ2rM1K48AwL9YM/WRkrRelVfbmWbrVRfMGT23by5
-         fbJg==
-X-Gm-Message-State: AOAM532L5i/7r1Ab7/eqm7a3XtyQvOxCTPPO/Co2WRL7slA6KjxAOlH8
-        eZKRm5kQUhGYml9u+zr/WIDavxvcmOXDFmR2UoHqmg==
-X-Google-Smtp-Source: ABdhPJycETZ3OKOAQKgyTTtP46/9uLpeaMNzbTPBQSO4ZbB7wkp+zOyMQI5/hBmYYalbGljhIbtL2w==
-X-Received: by 2002:a17:902:b683:b0:150:c60:288f with SMTP id c3-20020a170902b68300b001500c60288fmr12359661pls.61.1646663394339;
-        Mon, 07 Mar 2022 06:29:54 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id r16-20020a17090a0ad000b001bf6ab71e75sm3105914pje.28.2022.03.07.06.29.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 06:29:53 -0800 (PST)
-Message-ID: <622616e1.1c69fb81.33021.7133@mx.google.com>
-Date:   Mon, 07 Mar 2022 06:29:53 -0800 (PST)
-X-Google-Original-Date: Mon, 07 Mar 2022 14:29:51 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
-Subject: RE: [PATCH 5.16 000/186] 5.16.13-rc1 review
+        Mon, 7 Mar 2022 09:31:15 -0500
+X-Greylist: delayed 1300 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 06:30:19 PST
+Received: from host.metroassettman.biz (metroassettman.biz [62.173.138.186])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF58A78929
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:30:19 -0800 (PST)
+Received: from metroassettman.biz (ec2-18-116-66-108.us-east-2.compute.amazonaws.com [18.116.66.108])
+        by host.metroassettman.biz (Postfix) with ESMTPA id 0CF571208F2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:59:14 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 host.metroassettman.biz 0CF571208F2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=metroassettman.biz;
+        s=default; t=1646661555;
+        bh=FBYaKmVy75dN2Nuxl+GNzc8EK1j9WPRyTaK0gW915Q0=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=cA4SwXqnRWwlLbeL25l06q+TQlOCCNOZm+XfSOdOo2TFipNYmLVoeS1seHU1fygX6
+         Oj+s4CsGiBFneULiVpN96GltleSNR+TQuiInDQ6oa1tC7TghqBTyibWUaOhgEAXSdQ
+         BYfuWmO/YgTdTjcTRn7bRQ3zSUEttct+n+IUIb3A=
+DKIM-Filter: OpenDKIM Filter v2.11.0 host.metroassettman.biz 0CF571208F2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=metroassettman.biz;
+        s=default; t=1646661555;
+        bh=FBYaKmVy75dN2Nuxl+GNzc8EK1j9WPRyTaK0gW915Q0=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=cA4SwXqnRWwlLbeL25l06q+TQlOCCNOZm+XfSOdOo2TFipNYmLVoeS1seHU1fygX6
+         Oj+s4CsGiBFneULiVpN96GltleSNR+TQuiInDQ6oa1tC7TghqBTyibWUaOhgEAXSdQ
+         BYfuWmO/YgTdTjcTRn7bRQ3zSUEttct+n+IUIb3A=
+Reply-To: elliotmatare20@metropolitanasset-manager.com
+From:   E Matare <elliotmatare20@metroassettman.biz>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+Subject: Projects
+Date:   07 Mar 2022 13:59:14 +0000
+Message-ID: <20220307135914.E676751BB7C52146@metroassettman.biz>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Mar 2022 10:17:18 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.16.13 release.
-> There are 186 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.13-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hello, I hope this message finds you in good spirits especially=20
+during this challenging period. Firstly, let me introduce myself.=20
+I am Elliot Matare, a private broker with Metropolitan Asset=20
+Manager in South Africa. I am privately contacting you because=20
+one of my high profile clients is interested in investing abroad=20
+and has asked me to look for individuals and companies with=20
+interesting business ideas that he can invest in. He has an=20
+interest in investing a very substantial amount abroad. I got=20
+your email contact through an online business directory and I=20
+thought I'd contact you to see if you are interested in this=20
+opportunity. Do you or your company have new or existing projects=20
+that require funding? If so, kindly get back to me so that I can=20
+give you more details and we can also plan a strategy that will=20
+be beneficial to all parties. Please also indicate your direct=20
+mobile and whatsapp numbers for an easier communication. 
 
-5.16.13-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+Best Regards,
 
+Elliot.
