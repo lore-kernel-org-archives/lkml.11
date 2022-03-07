@@ -2,212 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 817BAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244744AbiCGSWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:22:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
+        id S232429AbiCGSWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236052AbiCGSWa (ORCPT
+        with ESMTP id S236052AbiCGSWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:22:30 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32A882D08;
-        Mon,  7 Mar 2022 10:21:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646677295; x=1678213295;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3LQ0B6lHtp/iHliRWS/KHEmauspBEfzknxmYTnH13Bk=;
-  b=Jrl1mEom2jIti5Rcl/euFLNE5KXVTXlBzo3NR7g2uq1Z0jQdigRwsSUe
-   mhMOOJSyq44S4mPQENCBiLXLZw9Mhz9odvDRNSnyKkRi7pWGNe/BXu5/+
-   brjNp1Kg3fRqsRc4oHuP1XCb21Ysp+4Xnxny9jN8EgaDaCabEKUl7gd/f
-   E=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Mar 2022 10:21:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 10:21:35 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 7 Mar 2022 10:21:35 -0800
-Received: from maru.qualcomm.com (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 7 Mar 2022
- 10:21:34 -0800
-From:   Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-To:     Wolfram Sang <wsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Ingo Molnar" <mingo@redhat.com>
-CC:     Jamie Iles <quic_jiles@quicinc.com>,
-        Graeme Gregory <quic_ggregory@quicinc.com>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Subject: [PATCH] i2c: add tracepoints for I2C slave events
-Date:   Mon, 7 Mar 2022 10:20:49 -0800
-Message-ID: <20220307182049.3790905-1-quic_jaehyoo@quicinc.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 7 Mar 2022 13:22:34 -0500
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A0F82D08
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:21:39 -0800 (PST)
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220307182137epoutp02c2deb06ce59f19ef8f101df4752ac788~aLEcJsR0J3120131201epoutp02Y
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:21:37 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220307182137epoutp02c2deb06ce59f19ef8f101df4752ac788~aLEcJsR0J3120131201epoutp02Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646677297;
+        bh=/J+z6G42rWkxE8lu/uL7Rm+nMfgqe+5jZvMCgeeEWfY=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=R8F+5QO8jTyoTNeT95BT0wOlZxmePeLkqV3CbnpKVMrZ94fbx1QH20xIxLTnZbCvp
+         EJf+nMxtwk/CNIIFa9UwonoDp6PW/9Xdhwvakmu2OAq7kgR5QPepY8XGgXTwva48d5
+         6SK02zmVTx2IxHQkgKMIrhec0VGiRRmAr+qndsdk=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220307182136epcas5p4337edae5bcac87f910a0b77ed170ea3d~aLEa_kO-s3151331513epcas5p4J;
+        Mon,  7 Mar 2022 18:21:36 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.180]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KC6Gz3Dccz4x9Pr; Mon,  7 Mar
+        2022 18:21:31 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B7.1D.46822.97A46226; Tue,  8 Mar 2022 03:10:01 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220307182131epcas5p266101e33fa3d9e181ace27e833047be4~aLEWX_u5I0752707527epcas5p2M;
+        Mon,  7 Mar 2022 18:21:31 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220307182131epsmtrp2f67a7a71de449a2e899da573da6036d7~aLEWXPQ1Y0032100321epsmtrp2m;
+        Mon,  7 Mar 2022 18:21:31 +0000 (GMT)
+X-AuditID: b6c32a4a-dfbff7000000b6e6-7b-62264a79d757
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A8.E1.29871.B2D46226; Tue,  8 Mar 2022 03:21:31 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220307182130epsmtip2691ead9ace9d1e46069f48ea33f55583~aLEVUAL4I1136311363epsmtip23;
+        Mon,  7 Mar 2022 18:21:29 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
+        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
+        "'Jiri Slaby'" <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
+Subject: RE: [PATCH v2 0/7] tty: serial: samsung: minor fixes/cleanups
+Date:   Mon, 7 Mar 2022 23:51:28 +0530
+Message-ID: <000201d83250$2b1fb3a0$815f1ae0$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIJNNL4wI7r1IeeqxSWm7dk8MPZOAGoAYk8rET1w7A=
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmpm6ll1qSwYSjVhbNi9ezWbybK2Ox
+        8e0PJotNj6+xWlzeNYfNYsb5fUwWZxb3sjuwe8xq6GXz2LSqk81j/9w17B6bl9R7fN4kF8Aa
+        lW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ibaqvk4hOg65aZA3SEkkJZ
+        Yk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafApECvODG3uDQvXS8vtcTK0MDAyBSoMCE7
+        4+bPuWwFb3kqvtz7x9LA+IGri5GTQ0LARKLz6hymLkYuDiGB3YwS59paWSCcT4wSp7/0M0I4
+        3xgl9uxfzwTTcrS5hRkisZdRYuOC1WwQzktGiW8TlzCDVLEJ6ErsWNwGlhAR2MAkceneVLB2
+        TgF3ia7Jz8BsYQE3ic6j11m7GDk4WARUJA4szgAJ8wpYSlzf28sKYQtKnJz5hAXEZhaQl9j+
+        dg4zxBUKEj+fLgOrERGwkrhz4DcTRI24xMujR9ghano5JCZ/5QQZLyHgIjHlQjxEWFji1fEt
+        UCVSEp/f7WWDKMmW6NllDBGukVg67xgLhG0vceDKHBaQEmYBTYn1u/QhFvFJ9P5+wgTRySvR
+        0SYEUa0q0fzuKlSntMTE7m5WiBIPiflnNSHhNItR4mfzbMYJjAqzkLw4C8mLs5C8Mgth8QJG
+        llWMkqkFxbnpqcWmBUZ5qeXw2E7Oz93ECE6gWl47GB8++KB3iJGJg/EQowQHs5II7/3zKklC
+        vCmJlVWpRfnxRaU5qcWHGE2BwT6RWUo0OR+YwvNK4g1NLA1MzMzMTCyNzQyVxHlPp29IFBJI
+        TyxJzU5NLUgtgulj4uCUamBycHxwblJNnWvb3MTso6ouR5p/98T9qS+e4lBwnT8zMkqje5Jk
+        1Y2CpPv6kr5H/MJWeVX9MhbfKSJ8/XTJE59raUd/mGQ7bc521O15/fGqmI/dz+iX2z26U3+0
+        9x03DzL0twjnYg4RE5vq17bITv+gzn3diQarFslziWg9epSvVC/CNWna/ITcGe3t/fv3Z6qv
+        l8oriFo7Wzu/z7g8cFblYZOQiIO3jHx1I360fXhWc/vbTrXfjZLvpe8mGFyKE1y0e62R9lED
+        r8ON/L842AXvlLnccLgSutviwJ/CeXYXAiff+fjc0Onx+YpUvvbAOJeISe9VlrUty/i9Vt3d
+        yWK2r8rVBQqKfw63Gcw+p8RSnJFoqMVcVJwIAHpITVYpBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWy7bCSvK62r1qSwY/zbBbNi9ezWbybK2Ox
+        8e0PJotNj6+xWlzeNYfNYsb5fUwWZxb3sjuwe8xq6GXz2LSqk81j/9w17B6bl9R7fN4kF8Aa
+        xWWTkpqTWZZapG+XwJVx8+dctoK3PBVf7v1jaWD8wNXFyMkhIWAicbS5hbmLkYtDSGA3o8S/
+        3m2sEAlpiesbJ7BD2MISK/89B7OFBJ4zSuxamQNiswnoSuxY3MYGYosIbGGSWPQtDmLQDEaJ
+        SVt+M4IkOAXcJbomP2MCsYUF3CQ6j14HWsDBwSKgInFgcQZImFfAUuL63l5WCFtQ4uTMJywg
+        JcwCehJtG8GmMAvIS2x/O4cZ4hwFiZ9Pl7FCrLWSuHPgNxNEjbjEy6NH2CcwCs1CMmkWwqRZ
+        SCbNQtKxgJFlFaNkakFxbnpusWGBYV5quV5xYm5xaV66XnJ+7iZGcLRoae5g3L7qg94hRiYO
+        xkOMEhzMSiK898+rJAnxpiRWVqUW5ccXleakFh9ilOZgURLnvdB1Ml5IID2xJDU7NbUgtQgm
+        y8TBKdXAdFg4qXapx4M50jv+WBtL/vU0bmf44Ro0V6r4sk24xpmslw5P5NgVzmudOFC/9o8H
+        5wLj8+ozIhh3ypQnyhvNzG/jONB86ALziUM8/Y++/34y52GjSd+2h0pvuNcuYV8cv8TpwhKB
+        a6kVib6akwXsnv9xm6S/aseilzMnRR/Mmr4wY6r9r/BXver/1sxlDP93/WV7v9uBTr2isCu3
+        ZWZoRp3ZFXh07afC6O1rT0m8XPQraOqn14Lmre/Ck5/olDjrf6/MN9oW/sg1+dc5ibladxav
+        0JoquOlQ9kyFA/55r2ecvtlXUOUXc6ar4Mr/aufPpicmuL/l+OMp2hoS7as9e9Ez22OBL6b+
+        41XIX3xkWbwSS3FGoqEWc1FxIgCyfnN5BQMAAA==
+X-CMS-MailID: 20220307182131epcas5p266101e33fa3d9e181ace27e833047be4
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220307080826epcas5p13d71054f6b461cff91edbbb2cf42491a
+References: <CGME20220307080826epcas5p13d71054f6b461cff91edbbb2cf42491a@epcas5p1.samsung.com>
+        <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I2C slave events tracepoints can be enabled by:
+Hi Krzysztof
 
-	echo 1 > /sys/kernel/tracing/events/i2c_slave/enable
+>-----Original Message-----
+>From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
+>Sent: Monday, March 7, 2022 1:38 PM
+>To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>; Alim Akhtar
+><alim.akhtar@samsung.com>; Greg Kroah-Hartman
+><gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
+>kernel@lists.infradead.org; linux-samsung-soc@vger.kernel.org; linux-
+>serial@vger.kernel.org; linux-kernel@vger.kernel.org
+>Subject: [PATCH v2 0/7] tty: serial: samsung: minor fixes/cleanups
+>
+>Hi,
+>
+>Changes since v1:
+>1. Patch 3: remove unneeded parenthesis and module alias change (Jiri).
+>2. Patch 3: move unrelated "constify" bits to patch 6.
+>3. Patch 5: fix typo.
+>4. Add review tags.
+>
+>Best regards,
+>Krzysztof
+>
+>Krzysztof Kozlowski (7):
+>  tty: serial: samsung: embed s3c24xx_uart_info in parent structure
+>  tty: serial: samsung: embed s3c2410_uartcfg in parent structure
+>  tty: serial: samsung: constify s3c24xx_serial_drv_data
+>  tty: serial: samsung: constify UART name
+>  tty: serial: samsung: constify s3c24xx_serial_drv_data members
+>  tty: serial: samsung: constify variables and pointers
+>  tty: serial: samsung: simplify getting OF match data
+>
+> drivers/tty/serial/samsung_tty.c | 225 +++++++++++++++----------------
+> 1 file changed, 109 insertions(+), 116 deletions(-)
+>
 
-and logs in /sys/kernel/tracing/trace will look like:
+For this series feel free to add
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-	... i2c_slave: i2c-0 a=010 WR_REQ []
-	... i2c_slave: i2c-0 a=010 WR_RCV [02]
-	... i2c_slave: i2c-0 a=010 WR_RCV [0c]
-	... i2c_slave: i2c-0 a=010   STOP []
-	... i2c_slave: i2c-0 a=010 RD_REQ [04]
-	... i2c_slave: i2c-0 a=010 RD_PRO [b4]
-	... i2c_slave: i2c-0 a=010   STOP []
+Sanity tested on Exynos7 Espresso board, boot log and other console prints
+after boot looks fine, so
 
-formatted as:
+Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-	i2c-<adapter-nr>
-	a=<addr>
-	<event>
-	[<data>]
+>--
+>2.32.0
 
-trace printings can be selected by adding a filter like:
-
-	echo adapter_nr==1 >/sys/kernel/tracing/events/i2c_slave/filter
-
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
----
- drivers/i2c/i2c-core-slave.c     | 15 +++++++++
- include/linux/i2c.h              |  8 ++---
- include/trace/events/i2c_slave.h | 57 ++++++++++++++++++++++++++++++++
- 3 files changed, 74 insertions(+), 6 deletions(-)
- create mode 100644 include/trace/events/i2c_slave.h
-
-diff --git a/drivers/i2c/i2c-core-slave.c b/drivers/i2c/i2c-core-slave.c
-index 1589179d5eb9..4968a17328b3 100644
---- a/drivers/i2c/i2c-core-slave.c
-+++ b/drivers/i2c/i2c-core-slave.c
-@@ -14,6 +14,9 @@
- 
- #include "i2c-core.h"
- 
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/i2c_slave.h>
-+
- int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
- {
- 	int ret;
-@@ -79,6 +82,18 @@ int i2c_slave_unregister(struct i2c_client *client)
- }
- EXPORT_SYMBOL_GPL(i2c_slave_unregister);
- 
-+int i2c_slave_event(struct i2c_client *client,
-+		    enum i2c_slave_event event, u8 *val)
-+{
-+	int ret = client->slave_cb(client, event, val);
-+
-+	if (!ret)
-+		trace_i2c_slave(client, event, val);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(i2c_slave_event);
-+
- /**
-  * i2c_detect_slave_mode - detect operation mode
-  * @dev: The device owning the bus
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index 7d4f52ceb7b5..fbda5ada2afc 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -392,12 +392,8 @@ enum i2c_slave_event {
- int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb);
- int i2c_slave_unregister(struct i2c_client *client);
- bool i2c_detect_slave_mode(struct device *dev);
--
--static inline int i2c_slave_event(struct i2c_client *client,
--				  enum i2c_slave_event event, u8 *val)
--{
--	return client->slave_cb(client, event, val);
--}
-+int i2c_slave_event(struct i2c_client *client,
-+		    enum i2c_slave_event event, u8 *val);
- #else
- static inline bool i2c_detect_slave_mode(struct device *dev) { return false; }
- #endif
-diff --git a/include/trace/events/i2c_slave.h b/include/trace/events/i2c_slave.h
-new file mode 100644
-index 000000000000..1f0c1cfbf2ef
---- /dev/null
-+++ b/include/trace/events/i2c_slave.h
-@@ -0,0 +1,57 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * I2C slave tracepoints
-+ *
-+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM i2c_slave
-+
-+#if !defined(_TRACE_I2C_SLAVE_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_I2C_SLAVE_H
-+
-+#include <linux/i2c.h>
-+#include <linux/tracepoint.h>
-+
-+TRACE_EVENT(i2c_slave,
-+	TP_PROTO(const struct i2c_client *client, enum i2c_slave_event event,
-+		 __u8 *val),
-+	TP_ARGS(client, event, val),
-+	TP_STRUCT__entry(
-+		__field(int,				adapter_nr	)
-+		__field(__u16,				addr		)
-+		__field(enum i2c_slave_event,		event		)
-+		__field(__u16,				len		)
-+		__dynamic_array(__u8, buf, 1)				),
-+
-+	TP_fast_assign(
-+		__entry->adapter_nr = client->adapter->nr;
-+		__entry->addr = client->addr;
-+		__entry->event = event;
-+		switch (event) {
-+		case I2C_SLAVE_READ_REQUESTED:
-+		case I2C_SLAVE_READ_PROCESSED:
-+		case I2C_SLAVE_WRITE_RECEIVED:
-+			__entry->len = 1;
-+			memcpy(__get_dynamic_array(buf), val, __entry->len);
-+			break;
-+		default:
-+			__entry->len = 0;
-+			break;
-+		}
-+		),
-+	TP_printk("i2c-%d a=%03x %s [%*phD]",
-+		__entry->adapter_nr, __entry->addr,
-+		__print_symbolic(__entry->event,
-+				 { I2C_SLAVE_READ_REQUESTED,	"RD_REQ" },
-+				 { I2C_SLAVE_WRITE_REQUESTED,	"WR_REQ" },
-+				 { I2C_SLAVE_READ_PROCESSED,	"RD_PRO" },
-+				 { I2C_SLAVE_WRITE_RECEIVED,	"WR_RCV" },
-+				 { I2C_SLAVE_STOP,		"  STOP" }),
-+		__entry->len, __get_dynamic_array(buf)
-+		));
-+
-+#endif /* _TRACE_I2C_SLAVE_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
--- 
-2.25.1
 
