@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8418BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240423AbiCGKgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:36:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        id S240448AbiCGKgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:36:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242484AbiCGKLg (ORCPT
+        with ESMTP id S242450AbiCGKLe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:36 -0500
+        Mon, 7 Mar 2022 05:11:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D8E8B6D2;
-        Mon,  7 Mar 2022 01:55:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2EB8A313;
+        Mon,  7 Mar 2022 01:55:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89EF560929;
-        Mon,  7 Mar 2022 09:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADAEC340E9;
-        Mon,  7 Mar 2022 09:54:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 381F660A27;
+        Mon,  7 Mar 2022 09:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38222C340E9;
+        Mon,  7 Mar 2022 09:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646881;
-        bh=xLtXi2r7Swk2EOyZzNZ8cnYnHDBA0m7pMboTMPh5HAw=;
+        s=korg; t=1646646874;
+        bh=7ZaHIqiLhEKHT66BkWo+qr1fJJ6/m4DqN31xrBv38I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvLFM+zYfUVyRTCmN7I7hzpHAV1UqOIQWfHD/qdonE8eBpAR8EahAMMUDZnudb1Up
-         xmwann4dPB0dvnaDuMZFazXRtxgikxFO5m86ugFfb11ayOyltOJzqlymSXC1k5xVXw
-         3rjO0rX07xZWAyPgNHrULYwvvm/OazRXUGHdUmYU=
+        b=lwJu5JvXvyNFvQwyWP/MHiSEAurIbqs8uVAMfbJzmTTxdZxt9xX0pKW284QpHYkM7
+         YW7dQY7M+3EWzfDP4qsJlnX7DDyeh/NzliWaMc9Sx3qJRrbdTKFcAI2ETde7rztztI
+         J/QhavTKXuQzykX1ykL+oWjNM89GYuo4fzhZk4bg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 123/186] arm64: dts: imx8mm: Fix VPU Hanging
-Date:   Mon,  7 Mar 2022 10:19:21 +0100
-Message-Id: <20220307091657.520117102@linuxfoundation.org>
+Subject: [PATCH 5.16 121/186] arm64: dts: juno: Remove GICv2m dma-range
+Date:   Mon,  7 Mar 2022 10:19:19 +0100
+Message-Id: <20220307091657.463588854@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,35 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit ef3075d6638d3d5353a97fcc7bb0338fc85675f5 ]
+[ Upstream commit 31eeb6b09f4053f32a30ce9fbcdfca31f713028d ]
 
-The vpumix power domain has a reset assigned to it, however
-when used, it causes a system hang.  Testing has shown that
-it does not appear to be needed anywhere.
+Although it is painstakingly honest to describe all 3 PCI windows in
+"dma-ranges", it misses the the subtle distinction that the window for
+the GICv2m range is normally programmed for Device memory attributes
+rather than Normal Cacheable like the DRAM windows. Since MMU-401 only
+offers stage 2 translation, this means that when the PCI SMMU is
+enabled, accesses through that IPA range unexpectedly lose coherency if
+mapped as cacheable at the SMMU, due to the attribute combining rules.
+Since an extra 256KB is neither here nor there when we still have 10GB
+worth of usable address space, rather than attempting to describe and
+cope with this detail let's just remove the offending range. If the SMMU
+is not used then it makes no difference anyway.
 
-Fixes: d39d4bb15310 ("arm64: dts: imx8mm: add GPC node")
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Link: https://lore.kernel.org/r/856c3f7192c6c3ce545ba67462f2ce9c86ed6b0c.1643046936.git.robin.murphy@arm.com
+Fixes: 4ac4d146cb63 ("arm64: dts: juno: Describe PCI dma-ranges")
+Reported-by: Anders Roxell <anders.roxell@linaro.org>
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm.dtsi | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/arm/juno-base.dtsi | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm.dtsi b/arch/arm64/boot/dts/freescale/imx8mm.dtsi
-index c2f3f118f82e..f13d31ebfcbd 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm.dtsi
-@@ -681,7 +681,6 @@
- 						clocks = <&clk IMX8MM_CLK_VPU_DEC_ROOT>;
- 						assigned-clocks = <&clk IMX8MM_CLK_VPU_BUS>;
- 						assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_800M>;
--						resets = <&src IMX8MQ_RESET_VPU_RESET>;
- 					};
- 
- 					pgc_vpu_g1: power-domain@7 {
+diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
+index 6288e104a089..a2635b14da30 100644
+--- a/arch/arm64/boot/dts/arm/juno-base.dtsi
++++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
+@@ -543,8 +543,7 @@
+ 			 <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
+ 			 <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
+ 		/* Standard AXI Translation entries as programmed by EDK2 */
+-		dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
+-			     <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
++		dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
+ 			     <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
+ 		#interrupt-cells = <1>;
+ 		interrupt-map-mask = <0 0 0 7>;
 -- 
 2.34.1
 
