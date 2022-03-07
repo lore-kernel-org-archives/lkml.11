@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48031C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238476AbiCGJ4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:56:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        id S234323AbiCGJ4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:56:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238803AbiCGJiv (ORCPT
+        with ESMTP id S238826AbiCGJix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140AE6BDD2;
-        Mon,  7 Mar 2022 01:33:29 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE586BDFD;
+        Mon,  7 Mar 2022 01:33:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A34B2611E4;
-        Mon,  7 Mar 2022 09:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839C0C340E9;
-        Mon,  7 Mar 2022 09:33:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5A2A6116E;
+        Mon,  7 Mar 2022 09:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2295C340F3;
+        Mon,  7 Mar 2022 09:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645588;
-        bh=jZhJUgnC00Oi4NxwevCHNXIQrXbw0XYFCaL4YrnILQw=;
+        s=korg; t=1646645603;
+        bh=oe7SPUu/FZii2D5OpDZKgwBQny+lXJx42fOx2VDyJj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JeHNcR9WXl3oCjwxL8805vOXy7WqmC7PJhEQmiScTxdHsKYO9rmX3iT+ewkSJPJHJ
-         UIz8NYj8rTgszYAdoCdq9iVqynbQx8oNQVx0V9vQ/iSvtcZWad/15niZTLVAVZWnRt
-         M2DoUAwh9TAulHdNF/igCNoUGywM3O5tg34qiQKE=
+        b=eZ+lZXhwwy5dsMzeFCTfBCl9k+1eZYhnJqFSFSC3+cbbmyVkFX2GRVKNJCzujsyOj
+         cCwNrf69xeQ7h96x4l3regTML1ilUqzxICSiXXkqV2YoDBygGRAo89DqIfi2TMh2q1
+         PiOkslrI99WLzwDmv7sjBoKmpAHGU+iN2NtAnGuY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Zeal Robot <zealci@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        CGEL ZTE <cgel.zte@gmail.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Song Liu <songliubraving@fb.com>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 080/105] memfd: fix F_SEAL_WRITE after shmem huge page allocated
-Date:   Mon,  7 Mar 2022 10:19:23 +0100
-Message-Id: <20220307091646.428770541@linuxfoundation.org>
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 084/105] soc: fsl: guts: Revert commit 3c0d64e867ed
+Date:   Mon,  7 Mar 2022 10:19:27 +0100
+Message-Id: <20220307091646.542408900@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -57,131 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit f2b277c4d1c63a85127e8aa2588e9cc3bd21cb99 upstream.
+[ Upstream commit b113737cf12964a20cc3ba1ddabe6229099661c6 ]
 
-Wangyong reports: after enabling tmpfs filesystem to support transparent
-hugepage with the following command:
+This reverts commit 3c0d64e867ed
+("soc: fsl: guts: reuse machine name from device tree").
 
-  echo always > /sys/kernel/mm/transparent_hugepage/shmem_enabled
+A following patch will fix the missing memory allocation failure check
+instead.
 
-the docker program tries to add F_SEAL_WRITE through the following
-command, but it fails unexpectedly with errno EBUSY:
-
-  fcntl(5, F_ADD_SEALS, F_SEAL_WRITE) = -1.
-
-That is because memfd_tag_pins() and memfd_wait_for_pins() were never
-updated for shmem huge pages: checking page_mapcount() against
-page_count() is hopeless on THP subpages - they need to check
-total_mapcount() against page_count() on THP heads only.
-
-Make memfd_tag_pins() (compared > 1) as strict as memfd_wait_for_pins()
-(compared != 1): either can be justified, but given the non-atomic
-total_mapcount() calculation, it is better now to be strict.  Bear in
-mind that total_mapcount() itself scans all of the THP subpages, when
-choosing to take an XA_CHECK_SCHED latency break.
-
-Also fix the unlikely xa_is_value() case in memfd_wait_for_pins(): if a
-page has been swapped out since memfd_tag_pins(), then its refcount must
-have fallen, and so it can safely be untagged.
-
-Link: https://lkml.kernel.org/r/a4f79248-df75-2c8c-3df-ba3317ccb5da@google.com
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Reported-by: wangyong <wang.yong12@zte.com.cn>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: CGEL ZTE <cgel.zte@gmail.com>
-Cc: Kirill A. Shutemov <kirill@shutemov.name>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yang Yang <yang.yang29@zte.com.cn>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memfd.c |   40 ++++++++++++++++++++++++++++------------
- 1 file changed, 28 insertions(+), 12 deletions(-)
+ drivers/soc/fsl/guts.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/mm/memfd.c
-+++ b/mm/memfd.c
-@@ -31,20 +31,28 @@
- static void memfd_tag_pins(struct xa_state *xas)
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 34810f9bb2ee..6d7465afd6fd 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -28,7 +28,6 @@ struct fsl_soc_die_attr {
+ static struct guts *guts;
+ static struct soc_device_attribute soc_dev_attr;
+ static struct soc_device *soc_dev;
+-static struct device_node *root;
+ 
+ 
+ /* SoC die attribute definition for QorIQ platform */
+@@ -138,7 +137,7 @@ static u32 fsl_guts_get_svr(void)
+ 
+ static int fsl_guts_probe(struct platform_device *pdev)
  {
- 	struct page *page;
--	unsigned int tagged = 0;
-+	int latency = 0;
-+	int cache_count;
+-	struct device_node *np = pdev->dev.of_node;
++	struct device_node *root, *np = pdev->dev.of_node;
+ 	struct device *dev = &pdev->dev;
+ 	struct resource *res;
+ 	const struct fsl_soc_die_attr *soc_die;
+@@ -161,8 +160,9 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	root = of_find_node_by_path("/");
+ 	if (of_property_read_string(root, "model", &machine))
+ 		of_property_read_string_index(root, "compatible", 0, &machine);
++	of_node_put(root);
+ 	if (machine)
+-		soc_dev_attr.machine = machine;
++		soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
  
- 	lru_add_drain();
+ 	svr = fsl_guts_get_svr();
+ 	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
+@@ -197,7 +197,6 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ static int fsl_guts_remove(struct platform_device *dev)
+ {
+ 	soc_device_unregister(soc_dev);
+-	of_node_put(root);
+ 	return 0;
+ }
  
- 	xas_lock_irq(xas);
- 	xas_for_each(xas, page, ULONG_MAX) {
--		if (xa_is_value(page))
--			continue;
--		page = find_subpage(page, xas->xa_index);
--		if (page_count(page) - page_mapcount(page) > 1)
-+		cache_count = 1;
-+		if (!xa_is_value(page) &&
-+		    PageTransHuge(page) && !PageHuge(page))
-+			cache_count = HPAGE_PMD_NR;
-+
-+		if (!xa_is_value(page) &&
-+		    page_count(page) - total_mapcount(page) != cache_count)
- 			xas_set_mark(xas, MEMFD_TAG_PINNED);
-+		if (cache_count != 1)
-+			xas_set(xas, page->index + cache_count);
- 
--		if (++tagged % XA_CHECK_SCHED)
-+		latency += cache_count;
-+		if (latency < XA_CHECK_SCHED)
- 			continue;
-+		latency = 0;
- 
- 		xas_pause(xas);
- 		xas_unlock_irq(xas);
-@@ -73,7 +81,8 @@ static int memfd_wait_for_pins(struct ad
- 
- 	error = 0;
- 	for (scan = 0; scan <= LAST_SCAN; scan++) {
--		unsigned int tagged = 0;
-+		int latency = 0;
-+		int cache_count;
- 
- 		if (!xas_marked(&xas, MEMFD_TAG_PINNED))
- 			break;
-@@ -87,10 +96,14 @@ static int memfd_wait_for_pins(struct ad
- 		xas_lock_irq(&xas);
- 		xas_for_each_marked(&xas, page, ULONG_MAX, MEMFD_TAG_PINNED) {
- 			bool clear = true;
--			if (xa_is_value(page))
--				continue;
--			page = find_subpage(page, xas.xa_index);
--			if (page_count(page) - page_mapcount(page) != 1) {
-+
-+			cache_count = 1;
-+			if (!xa_is_value(page) &&
-+			    PageTransHuge(page) && !PageHuge(page))
-+				cache_count = HPAGE_PMD_NR;
-+
-+			if (!xa_is_value(page) && cache_count !=
-+			    page_count(page) - total_mapcount(page)) {
- 				/*
- 				 * On the last scan, we clean up all those tags
- 				 * we inserted; but make a note that we still
-@@ -103,8 +116,11 @@ static int memfd_wait_for_pins(struct ad
- 			}
- 			if (clear)
- 				xas_clear_mark(&xas, MEMFD_TAG_PINNED);
--			if (++tagged % XA_CHECK_SCHED)
-+
-+			latency += cache_count;
-+			if (latency < XA_CHECK_SCHED)
- 				continue;
-+			latency = 0;
- 
- 			xas_pause(&xas);
- 			xas_unlock_irq(&xas);
+-- 
+2.34.1
+
 
 
