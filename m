@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32569C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F98AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245415AbiCGUyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:54:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
+        id S245418AbiCGUys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:54:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242490AbiCGUyT (ORCPT
+        with ESMTP id S245394AbiCGUyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 15:54:19 -0500
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3417F289AF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F282289B8
         for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:53:24 -0800 (PST)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nRKLy-0002DJ-SO; Mon, 07 Mar 2022 21:53:14 +0100
+        id 1nRKM1-0002DJ-Ar; Mon, 07 Mar 2022 21:53:17 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -30,11 +30,10 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>,
-        Atish Patra <atishp@rivosinc.com>
-Subject: [PATCH v7 01/13] riscv: prevent null-pointer dereference with sbi_remote_fence_i
-Date:   Mon,  7 Mar 2022 21:52:58 +0100
-Message-Id: <20220307205310.1905628-2-heiko@sntech.de>
+        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH v7 04/13] riscv: implement module alternatives
+Date:   Mon,  7 Mar 2022 21:53:01 +0100
+Message-Id: <20220307205310.1905628-5-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220307205310.1905628-1-heiko@sntech.de>
 References: <20220307205310.1905628-1-heiko@sntech.de>
@@ -44,55 +43,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The callback used inside sbi_remote_fence_i is set at sbi probe time
-to the needed variant. Before that it is a NULL pointer.
-
-Some users like the flush_icache_*() functions suggest a generic
-functionality, that doesn't depend on a specific boot-stage but
-uses sbi_remote_fence_i as one option to flush other cpu cores.
-
-So they definitely shouldn't run into null-pointer dereference
-issues when called "too early" during boot.
-
-So introduce an empty function to be the standard for the __sbi_rfence
-function pointer until sbi_init has run.
-
-Users of sbi_remote_fence_i will have separate code for the local
-cpu and sbi_init() is called before other cpus are brought up.
-So there are no other cpus present at the time when the issue
-might happen.
+This allows alternatives to also be applied when loading modules
+and follows the implementation of other architectures (e.g. arm64).
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
 ---
- arch/riscv/kernel/sbi.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/riscv/errata/sifive/errata.c    |  7 ++++---
+ arch/riscv/include/asm/alternative.h |  3 ++-
+ arch/riscv/kernel/alternative.c      | 18 +++++++++++++----
+ arch/riscv/kernel/module.c           | 29 ++++++++++++++++++++++++++++
+ 4 files changed, 49 insertions(+), 8 deletions(-)
 
-diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
-index 775d3322b422..5a60a458c0b7 100644
---- a/arch/riscv/kernel/sbi.c
-+++ b/arch/riscv/kernel/sbi.c
-@@ -16,11 +16,19 @@
- unsigned long sbi_spec_version __ro_after_init = SBI_SPEC_VERSION_DEFAULT;
- EXPORT_SYMBOL(sbi_spec_version);
+diff --git a/arch/riscv/errata/sifive/errata.c b/arch/riscv/errata/sifive/errata.c
+index 4fe03ac41fd7..42457efcaaa3 100644
+--- a/arch/riscv/errata/sifive/errata.c
++++ b/arch/riscv/errata/sifive/errata.c
+@@ -4,6 +4,7 @@
+  */
  
-+static int __sbi_rfence_none(int fid, const struct cpumask *cpu_mask,
-+			     unsigned long start, unsigned long size,
-+			     unsigned long arg4, unsigned long arg5)
+ #include <linux/kernel.h>
++#include <linux/module.h>
+ #include <linux/string.h>
+ #include <linux/bug.h>
+ #include <asm/patch.h>
+@@ -54,7 +55,7 @@ static struct errata_info_t errata_list[ERRATA_SIFIVE_NUMBER] = {
+ 	},
+ };
+ 
+-static u32 __init sifive_errata_probe(unsigned long archid, unsigned long impid)
++static u32 __init_or_module sifive_errata_probe(unsigned long archid, unsigned long impid)
+ {
+ 	int idx;
+ 	u32 cpu_req_errata = 0;
+@@ -66,7 +67,7 @@ static u32 __init sifive_errata_probe(unsigned long archid, unsigned long impid)
+ 	return cpu_req_errata;
+ }
+ 
+-static void __init warn_miss_errata(u32 miss_errata)
++static void __init_or_module warn_miss_errata(u32 miss_errata)
+ {
+ 	int i;
+ 
+@@ -79,7 +80,7 @@ static void __init warn_miss_errata(u32 miss_errata)
+ 	pr_warn("----------------------------------------------------------------\n");
+ }
+ 
+-void __init sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
++void __init_or_module sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
+ 				     unsigned long archid, unsigned long impid,
+ 				     unsigned int stage)
+ {
+diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
+index 811bdd8027db..f0657b1b3174 100644
+--- a/arch/riscv/include/asm/alternative.h
++++ b/arch/riscv/include/asm/alternative.h
+@@ -18,8 +18,10 @@
+ #include <asm/hwcap.h>
+ 
+ #define RISCV_ALTERNATIVES_BOOT		0 /* alternatives applied during regular boot */
++#define RISCV_ALTERNATIVES_MODULE	1 /* alternatives applied during module-init */
+ 
+ void __init apply_boot_alternatives(void);
++void apply_module_alternatives(void *start, size_t length);
+ 
+ struct alt_entry {
+ 	void *old_ptr;		 /* address of original instruciton or data  */
+@@ -37,6 +39,5 @@ struct errata_checkfunc_id {
+ void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
+ 			      unsigned long archid, unsigned long impid,
+ 			      unsigned int stage);
+-
+ #endif
+ #endif
+diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
+index 02db62f55bac..223770b3945c 100644
+--- a/arch/riscv/kernel/alternative.c
++++ b/arch/riscv/kernel/alternative.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/init.h>
++#include <linux/module.h>
+ #include <linux/cpu.h>
+ #include <linux/uaccess.h>
+ #include <asm/alternative.h>
+@@ -23,7 +24,7 @@ static struct cpu_manufacturer_info_t {
+ 
+ static void (*vendor_patch_func)(struct alt_entry *begin, struct alt_entry *end,
+ 				 unsigned long archid, unsigned long impid,
+-				 unsigned int stage) __initdata;
++				 unsigned int stage) __initdata_or_module;
+ 
+ static inline void __init riscv_fill_cpu_mfr_info(void)
+ {
+@@ -58,9 +59,9 @@ static void __init init_alternative(void)
+  * a feature detect on the boot CPU). No need to worry about other CPUs
+  * here.
+  */
+-static void __init _apply_alternatives(struct alt_entry *begin,
+-				       struct alt_entry *end,
+-				       unsigned int stage)
++static void __init_or_module _apply_alternatives(struct alt_entry *begin,
++						 struct alt_entry *end,
++						 unsigned int stage)
+ {
+ 	if (!vendor_patch_func)
+ 		return;
+@@ -81,3 +82,12 @@ void __init apply_boot_alternatives(void)
+ 			    (struct alt_entry *)__alt_end,
+ 			    RISCV_ALTERNATIVES_BOOT);
+ }
++
++#ifdef CONFIG_MODULES
++void apply_module_alternatives(void *start, size_t length)
 +{
-+	return -EOPNOTSUPP;
++	_apply_alternatives((struct alt_entry *)start,
++			    (struct alt_entry *)(start + length),
++			    RISCV_ALTERNATIVES_MODULE);
++}
++#endif
+diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
+index 68a9e3d1fe16..a778abd5b8b9 100644
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -11,6 +11,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/sizes.h>
+ #include <linux/pgtable.h>
++#include <asm/alternative.h>
+ #include <asm/sections.h>
+ 
+ static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
+@@ -416,3 +417,31 @@ void *module_alloc(unsigned long size)
+ 				    __builtin_return_address(0));
+ }
+ #endif
++
++static const Elf_Shdr *find_section(const Elf_Ehdr *hdr,
++				    const Elf_Shdr *sechdrs,
++				    const char *name)
++{
++	const Elf_Shdr *s, *se;
++	const char *secstrs = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
++
++	for (s = sechdrs, se = sechdrs + hdr->e_shnum; s < se; s++) {
++		if (strcmp(name, secstrs + s->sh_name) == 0)
++			return s;
++	}
++
++	return NULL;
 +}
 +
- static void (*__sbi_set_timer)(uint64_t stime) __ro_after_init;
- static int (*__sbi_send_ipi)(const struct cpumask *cpu_mask) __ro_after_init;
- static int (*__sbi_rfence)(int fid, const struct cpumask *cpu_mask,
- 			   unsigned long start, unsigned long size,
--			   unsigned long arg4, unsigned long arg5) __ro_after_init;
-+			   unsigned long arg4, unsigned long arg5)
-+			   __ro_after_init = __sbi_rfence_none;
- 
- struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
- 			unsigned long arg1, unsigned long arg2,
++int module_finalize(const Elf_Ehdr *hdr,
++		    const Elf_Shdr *sechdrs,
++		    struct module *me)
++{
++	const Elf_Shdr *s;
++
++	s = find_section(hdr, sechdrs, ".alternative");
++	if (s)
++		apply_module_alternatives((void *)s->sh_addr, s->sh_size);
++
++	return 0;
++}
 -- 
 2.30.2
 
