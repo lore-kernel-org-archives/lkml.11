@@ -2,98 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 624FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE59C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243316AbiCGOjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:39:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        id S243321AbiCGOk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:40:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234931AbiCGOjw (ORCPT
+        with ESMTP id S234931AbiCGOkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:39:52 -0500
-X-Greylist: delayed 1402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Mar 2022 06:38:58 PST
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D76238D94
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:38:58 -0800 (PST)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 345EE321A6C
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:15:06 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id RE8fnB6kN22u3RE8gnz4Xr; Mon, 07 Mar 2022 08:15:06 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mExfza9Swq8QkIJylEbCbdZzmqYa/N9/7AiymPbUTCM=; b=rYNQMX+01131Q8XdRFTD87aLuD
-        mQZXzvMFnaxxvYTfvBLW+3zKJ601cNRfA4eME2mcxX3PnBhUamllQ0190VDcGE9Mo3JcH767LOBSX
-        xqcGlbUytabfC9WPxJWzEeZ6IOeZ5apKh6C0RnSUqityirORLyr+zV3DVUff2iQ9KxvOgDr1PidcX
-        mPdl0BIU8SMRQdHJuHY7YbTH1JZAGDByoLKNUkLTXFdZt/vRj8nTKwhIvX0ppXAUiTOLeqLAQgg4p
-        pxu6eYuefCBHujZaeoqFzP9O2hJES+nsnPQ8W0rYQLrryM1kPz8bRbcdgo56fsezxuza/eiZiyLEQ
-        yB2N+C1A==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38090)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        Mon, 7 Mar 2022 09:40:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6046665497
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:39:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A7DAB815AC
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 14:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B398FC340E9;
+        Mon,  7 Mar 2022 14:39:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646663967;
+        bh=YfE/KGzlAzInoMUlekJ47nSUzyULGjw7PxFX9ewaJtw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ow+8Cy+yPZwA9pJzACUmolLy6Dyr0vQVWel51k/LWd2tX1jVyx6E5RoAPJR5NJcNF
+         ZD2H0mKkwnVdxQFIoyKE0i7BYC6YkBjZxXFUsmOLzS3EOGNkwdIsJ/TaXEx3ERqE80
+         zlsXrVN6LIhqJlJlLT2xlCesDaDSDkrPpdBULhRq7rwbcb04q2gzZMQCfHcK4BSW0q
+         Oj1XGkPAQVZsf5NvwrgGa9to7k6w+fdqGWpQ/Ax0p9JExYq7WUmFfrqPG3Rh4iSdcF
+         cCgehfrshFpVubGFWT2GQWv0RVI+E5Ms6OE4CJ3Q3EAjUhabV041th/eJdtmN3iyjB
+         9JUQOtn7LLsXw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nRE8f-001zAT-7h; Mon, 07 Mar 2022 14:15:05 +0000
-Message-ID: <d71d84d2-5aa2-7d72-9fdb-a0ac203cefb2@roeck-us.net>
-Date:   Mon, 7 Mar 2022 06:15:02 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.10 000/105] 5.10.104-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220307091644.179885033@linuxfoundation.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nRE8f-001zAT-7h
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38090
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 12
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+        (envelope-from <maz@kernel.org>)
+        id 1nREWD-00CoSw-CB; Mon, 07 Mar 2022 14:39:25 +0000
+Date:   Mon, 07 Mar 2022 14:39:25 +0000
+Message-ID: <877d9525eq.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        Linu Cherian <lcherian@marvell.com>
+Cc:     <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuc.decode@gmail.com>
+Subject: Re: [PATCH V3] irqchip/gic-v3: Workaround Marvell erratum 38545 when reading IAR
+In-Reply-To: <20220307143014.22758-1-lcherian@marvell.com>
+References: <20220307143014.22758-1-lcherian@marvell.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: catalin.marinas@arm.com, will@kernel.org, lcherian@marvell.com, tglx@linutronix.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuc.decode@gmail.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 01:18, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.104 release.
-> There are 105 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, 07 Mar 2022 14:30:14 +0000,
+Linu Cherian <lcherian@marvell.com> wrote:
 > 
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
+> When a IAR register read races with a GIC interrupt RELEASE event,
+> GIC-CPU interface could wrongly return a valid INTID to the CPU
+> for an interrupt that is already released(non activated) instead of 0x3ff.
 > 
+> As a side effect, an interrupt handler could run twice, once with
+> interrupt priority and then with idle priority.
+> 
+> As a workaround, gic_read_iar is updated so that it will return a
+> valid interrupt ID only if there is a change in the active priority list
+> after the IAR read on all the affected Silicons.
+> 
+> Since there are silicon variants where both 23154 and 38545 are applicable,
+> workaround for erratum 23154 has been extended to address both of them.
+> 
+> Signed-off-by: Linu Cherian <lcherian@marvell.com>
+> ---
+> Changes since V2:
+> - Changed masked part number to individual part numbers
+> - Added additional comment to clarify on priority groups
+> 
+> 
+> Changes since V1:
+> - IIDR based quirk management done for 23154 has been reverted
+> - Extended existing 23154 errata to address 38545 as well,
+>   so that existing static keys are reused. 
+> - Added MIDR based support macros to cover all the affected parts
+> - Changed the unlikely construct to likely construct in the workaround
+>   function.
+> 
+> 
+> 
+> 
+>  Documentation/arm64/silicon-errata.rst |  2 +-
+>  arch/arm64/Kconfig                     |  8 ++++++--
+>  arch/arm64/include/asm/arch_gicv3.h    | 23 +++++++++++++++++++++--
+>  arch/arm64/include/asm/cputype.h       | 13 +++++++++++++
+>  arch/arm64/kernel/cpu_errata.c         | 20 +++++++++++++++++---
+>  5 files changed, 58 insertions(+), 8 deletions(-)
 
+Looks good to me this time.
 
-Building powerpc:allmodconfig ... failed
+Catalin, Will: happy to take this into the irqchip tree for 5.18 with
+your Ack, or you can take it into the arm64 tree with my
 
-In file included from include/linux/module.h:12,
-                  from drivers/net/ethernet/ibm/ibmvnic.c:35:
-drivers/net/ethernet/ibm/ibmvnic.c: In function 'ibmvnic_reset':
-drivers/net/ethernet/ibm/ibmvnic.c:2349:23: error: 'entry' undeclared
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
