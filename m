@@ -2,194 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1604EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B01B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241985AbiCGL0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
+        id S239187AbiCGL06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:26:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240972AbiCGL0d (ORCPT
+        with ESMTP id S241747AbiCGL0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:26:33 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E5B140B9;
-        Mon,  7 Mar 2022 03:01:25 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1ED4724000C;
-        Mon,  7 Mar 2022 11:01:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646650884;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2XWbbNsrv7GMCfFzHUP9mF4raG8jWPE48CJX7NCXbrE=;
-        b=QwMwiTgnayAOQIqvLlmJ5VUuCZAxupgu7UH2Hbedv5hewEGJODRZmTdHpnxQcLg9fMYTJl
-        MtTSIXrxd1FILOX9L+bzGdHre+USlg7xe8q1mzCgHIPbJ/rRb9jIBfK+ZDPejbMwAVDBog
-        9BvAOu5LI1fHSBeY47a8VxGGqhghj8bACUyDQadPQMyh03gLDJ2rfvpHFoPn8zHQvMx4eO
-        kGC+LUpoL1G+DhG52AuP8sqTE9BpHYZJwIeDoTf+DwmRt3qxaY+foj8tyjNdvBEKnPwYER
-        rMUI0O433+EOcyT7bjtQ71yoqP/zcOf9O/DehI1GYgeKCAEz9/cWd0/khNAyKA==
-Date:   Mon, 7 Mar 2022 12:00:00 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org,
-        Etienne Carriere <etienne.carriere@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2] rtc: optee: add RTC driver for OP-TEE RTC PTA
-Message-ID: <20220307120000.49f88c8b@fixe.home>
-In-Reply-To: <CAHUa44FJEsd1wc=E0p+4pHU1=31z7JTgNDyz9Vxx77N11B8RKg@mail.gmail.com>
-References: <20220307094042.48446-1-clement.leger@bootlin.com>
-        <CAHUa44FJEsd1wc=E0p+4pHU1=31z7JTgNDyz9Vxx77N11B8RKg@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Mon, 7 Mar 2022 06:26:31 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB7E25CD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:00:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646650821; x=1678186821;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=u6Qsj+nyRVcK7IzT3wVG7qxRlWjoeLyGnzJX6lFkAWE=;
+  b=VxlpwxYnrsiv/N7lSWL9VsuiWm4k+UucyEJ0oQhciJ8m1o7SjHcHhHwX
+   3vca84vSKnY0MWiTRDaSIINQhuh9JhktH2CNtjejzNbRAYIwGnChh7ZLq
+   /SAYOZW+ObZEHL3/iXD7zdcreiYebM1JtZ/xmeXH5NGNRx0Kt1X+2P7Kv
+   Hdlc2KQZwrrzpbiZ5E0FLqCodUayjLDKG3JN9L1C7QVsr4/bA49AZgKV5
+   zLjVzBH+9w8Y5IDwa1br1bMakIIoor3wVz30TnxqodjTgzcXZETubWyyd
+   acqs1JaUtui459sHhidbgmrTv94Ncf7LcxH6AZYUwC0mgmIrNMWKsEZbQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="340795983"
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="340795983"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 03:00:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="643203519"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 07 Mar 2022 03:00:19 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 227B0He0030077;
+        Mon, 7 Mar 2022 11:00:18 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH] linux/bits.h: fix -Wtype-limits warnings in GENMASK_INPUT_CHECK()
+Date:   Mon,  7 Mar 2022 11:58:10 +0100
+Message-Id: <20220307105810.1747024-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com>
+References: <20220304124416.1181029-1-mailhol.vincent@wanadoo.fr> <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, 7 Mar 2022 11:40:38 +0100,
-Jens Wiklander <jens.wiklander@linaro.org> a =C3=A9crit :
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 4 Mar 2022 20:46:08 +0200
 
-> On Mon, Mar 7, 2022 at 10:42 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
-otlin.com> wrote:
+> On Fri, Mar 4, 2022 at 7:36 PM Vincent Mailhol
+> <mailhol.vincent@wanadoo.fr> wrote:
 > >
-> > This drivers allows to communicate with a RTC PTA handled by OP-TEE [1].
-> > This PTA allows to query RTC information, set/get time and set/get
-> > offset depending on the supported features.
-> >
-> > [1] https://github.com/OP-TEE/optee_os/pull/5179
-> >
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > ---
-> >
-> > Changes in v2: =20
->=20
-> Hmm, this seems to be a second v2.
+> 
+> > This pattern is harmless but because it occurs in header files
+> > (example find_first_bit() from linux/find.h [1]) and because of the
+> > include hell, the macro GENMASK_INPUT_CHECK() is accountable for 31%
+> > (164714/532484) of all warnings when compiling all modules at W=2
+> > level.
 
-Hmpf, I answered to Etienne questions on V1 and forgot I already sent a
-V2.
+Nice catch, thanks! I wanted to submit the very same fix, but
+postponed it for some reason, and now here we are.
 
->=20
-> >  - Rebased over tee-shm-for-v5.18
-> >  - Switch to tee_shm_alloc_kernel_buf()
-> >  - Use export_uuid() to copy uuid
-> >  - Fix warnings reported by checkpatch
-> >  - Free SHM in error exit path
-> >  - Fix error messages to include ret value and fix wrong IOCTL names
-> >  - Use 100 columns char limit =20
->=20
-> From bdc48fa11e46 ("checkpatch/coding-style: deprecate 80-column warning"=
-):
->     Yes, staying withing 80 columns is certainly still _preferred_.  But
->     it's not the hard limit that the checkpatch warnings imply, and other
->     concerns can most certainly dominate.
->=20
->     Increase the default limit to 100 characters.  Not because 100
->     characters is some hard limit either, but that's certainly a "what are
->     you doing" kind of value and less likely to be about the occasional
->     slightly longer lines.
+> 
+> Have you fixed W=1 warnings?
+> Without fixing W=1 (which makes much more sense, when used with
+> WERROR=y && COMPILE_TEST=y) this has no value.
 
-Ok.
+How is this connected?
+When I do `make W=2 path/to/my/code`, I want to see the actual code
+problems, not something that comes from the include files.
+When I do `make W=2 path/to/new/code/from/lkml`, I want to see the
+actual new warnings, not something coming from the includes.
+It's much easier to overlook or miss some real warnings when the
+stderr is being flooded by the warnings from the include files.
+I'm aware there are some scripts to compare before/after, but I
+don't want to use them just because "this has to value".
+I don't want to do `make W=2 KCFLAGS='-Wno-shadow -Wno-type-limits'`
+because then I'm not able to spot the actual shadow or type limit
+problems in my/new code.
+I fixed several `-Wshadow` warnings previously in the include files
+related to networking, and *nobody* said "this has no value" or
+NAKed it. And `-Wshadow` has always been in W=2.
 
-> > +
-> > +       if (param[0].u.memref.size !=3D sizeof(*optee_tm)) {
-> > +               dev_err(dev, "Invalid read size from OPTEE\n");
-> > +               return -EPROTO;
-> > +       } =20
->=20
-> The dev_err() prints above are basically covering "can't happen"
-> cases. Robust code should certainly do the checks, but I'm not so sure
-> about how useful the prints are.
+> 
+> NAK.
 
-Agreed, if it fails, this is likely to be due to protocol changes and
-thus, the developer will probably know where to search for the error.
+...
 
-[...]
-
-> > +static int optee_rtc_probe(struct device *dev)
-> > +{
-> > +       struct tee_client_device *rtc_device =3D to_tee_client_device(d=
-ev);
-> > +       struct tee_ioctl_open_session_arg sess_arg;
-> > +       struct optee_rtc *priv;
-> > +       struct rtc_device *rtc;
-> > +       struct tee_shm *shm;
-> > +       int ret, err;
-> > +
-> > +       memset(&sess_arg, 0, sizeof(sess_arg));
-> > +
-> > +       priv =3D devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> > +       if (!priv)
-> > +               return -ENOMEM;
-> > +
-> > +       rtc =3D devm_rtc_allocate_device(dev);
-> > +       if (IS_ERR(rtc))
-> > +               return PTR_ERR(rtc);
-> > +
-> > +       /* Open context with TEE driver */
-> > +       priv->ctx =3D tee_client_open_context(NULL, optee_ctx_match, NU=
-LL, NULL);
-> > +       if (IS_ERR(priv->ctx))
-> > +               return -ENODEV;
-> > +
-> > +       /* Open session with rtc Trusted App */
-> > +       export_uuid(sess_arg.uuid, &rtc_device->id.uuid);
-> > +       sess_arg.clnt_login =3D TEE_IOCTL_LOGIN_REE_KERNEL;
-> > +
-> > +       ret =3D tee_client_open_session(priv->ctx, &sess_arg, NULL);
-> > +       if (ret < 0 || sess_arg.ret !=3D 0) {
-> > +               dev_err(dev, "tee_client_open_session failed, err: %x\n=
-", sess_arg.ret); =20
->=20
-> This print is the most useful print in the driver. This is typically
-> reached if the PTA doesn't exist.
-
-If the PTA does not exists, is the driver even probed ? I thought it
-was based on the UUID matching.
-
->=20
-> > +               err =3D -EINVAL;
-> > +               goto out_ctx;
-> > +       }
-> > +       priv->session_id =3D sess_arg.session;
-> > +
-> > +       shm =3D tee_shm_alloc_kernel_buf(priv->ctx, sizeof(struct optee=
-_rtc_info));
-> > +       if (IS_ERR(shm)) {
-> > +               dev_err(priv->dev, "tee_shm_alloc_kernel_buf failed\n");
-> > +               err =3D PTR_ERR(shm);
-> > +               goto out_sess;
-> > +       }
-> > +
-> > +       priv->shm =3D shm;
-> > +       priv->dev =3D dev;
-> > +       dev_set_drvdata(dev, priv);
-> > +
-> > +       rtc->ops =3D &optee_rtc_ops;
-> > +
-> > +       err =3D optee_rtc_read_info(dev, rtc, &priv->features);
-> > +       if (err) {
-> > +               dev_err(dev, "Failed to get RTC features from OP-TEE\n"=
-); =20
->=20
-> This print could also be worth keeping, but the rest are in my opinion
-> of limited interest.
->=20
-> It's a tradeoff with the prints, no big deal if you'd like to keep more.
-
-I'm ok with that statement. The runtime errors are less likely (if not
-totally unlikely) to happen. I'll sent a new version (V4 this time...)
-with theses modifications.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
 
 Thanks,
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Al
