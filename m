@@ -2,176 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ACBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC175C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240745AbiCGL12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
+        id S236404AbiCGL1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238472AbiCGL1P (ORCPT
+        with ESMTP id S235907AbiCGL1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:27:15 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04EB48319
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:03:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LrFKTLtauhYaU5nj2KMUyiPuCUwuYDacLC75CAIeIyahcu9N1jlJtIaPDAAeCkz97SLQxE8w7Ws958Jb55CGrIg9Y7gzOgBcElEJBEYEHa8tS2r/Zd7OnBZNdLHP+gAOzFq+AarXKHj9u3XauMwHk5ppg20HjVIpv2/fKzjB5xjvpV0ygwtnUh+rkhherqqZRure9m1WqkL77cykIpIlZDapZstzpbc9vMOVFs1aFzyjWe9pOHiNAR7mKpev2aEUdMjXunKBWHIO9Y9rvADWT85ZsmsN69nqum7vX/E9hDIn521AL+4uuRx1RxuL5iOeD8xYYZLhU+WuNCM/m+Dqug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ixfabuPUE7CS/I0EAocdBKtAQRcjISrxdm35oAz2uvE=;
- b=NoqrY8xAXlyA7fRqQAAl1hjrk/EBgiZTGmzP1XpLU++Td9i67g7LI693FCekfWIQbgC54PxVjeSff6khH9CSj4qJCg2uwtOE9z38SUT4N/3yvHgnk3U63bfB/VTpSvQZmwhSVkHg91pOrLxdL5tI/oPvSRxc8tTueMtCq32TJxSXbZmknIzum5CyHiybpoGjCnZ/8BYjhILDq1iSyrweFsLR+ykyVoCq8UdyM1nvtQiesSchWGXKw/w9i5zD3t3UHi5HrO/nFCQeLOqYnWDW2NYpuAmT4hA2TZZE1bJaEaV0peAjfWGMBc4KZuP5fOYbrYTtFITnMMDn9FB5DS+3JA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ixfabuPUE7CS/I0EAocdBKtAQRcjISrxdm35oAz2uvE=;
- b=d+d5dtunvcz7Y+oOlpb7oIIewqzLaF5A9ecw+KVN/IV5GrVG6Z1Ti4VDiX7CFI7foC92dN2dIBM9eAiVpU86+yd53AKvtODPs8qxM7J7eHB628BM5icirJxz9sK/D3ROxN/lVOeP2SdYOq+yfTHUlfbOF3aHDKwKP02v2Jmc5zKNBvSA0p5ppuBFpG0FuImoYu4FAU3ClA1iz+d1ZEtFXX1VpnbQoA0ES21qt8zqE4+rz6VTFq3EmPYcwaPqtahis/4Re0YzooP6/L80KQ35aTXlYdbLewxUatH6UjqAJzocivyWsSKbsmi6BsVDTolyjBp6kKIt/cPagd09ndnO6w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by DM6PR12MB2684.namprd12.prod.outlook.com (2603:10b6:5:4a::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Mon, 7 Mar
- 2022 11:03:26 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::c8a0:e8df:3661:63b8]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::c8a0:e8df:3661:63b8%3]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
- 11:03:26 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        shy828301@gmail.com, willy@infradead.org, ying.huang@intel.com,
-        ziy@nvidia.com, minchan@kernel.org, ave.hansen@linux.intel.com,
-        o451686892@gmail.com, almasrymina@google.com, jhubbard@nvidia.com,
-        rcampbell@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
-        mhocko@suse.com, riel@redhat.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/16] mm/migration: remove unneeded local variable
- page_lru
-Date:   Mon, 07 Mar 2022 21:58:11 +1100
-References: <20220304093409.25829-1-linmiaohe@huawei.com>
- <20220304093409.25829-4-linmiaohe@huawei.com>
-User-agent: mu4e 1.6.9; emacs 27.1
-In-reply-to: <20220304093409.25829-4-linmiaohe@huawei.com>
-Message-ID: <87wnh6rpms.fsf@nvdebian.thelocal>
-Content-Type: multipart/mixed; boundary="=-=-="
-X-ClientProxiedBy: SJ0PR05CA0041.namprd05.prod.outlook.com
- (2603:10b6:a03:33f::16) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Mon, 7 Mar 2022 06:27:16 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8199F4A3DE
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:03:41 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id v4so13078759pjh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 03:03:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JFEOo1tcEco00+Nvk7m320IFPXwMdnmT4rBSqgHwb9U=;
+        b=qtjDbzotyaVzeWfh9ZP2lKirFOAUTh9U/lRfK/AmyUHC81BOUQqRWV8uYCpRv45zF/
+         JfuELtkYJkfkeBsnkNyb8dSw5o0huILMLDVO1CneisVMVdzYZp/KPIHiPffB7jNk2y7g
+         7qyMbiP+ZcgwqY03j2iV6pztEiry52W4y6m3vGeh+ccjyh55cthC36FA9t/+YbMF5ueK
+         A2JLckHy3vDz9ECpC+g5tiA3F/I6nZlnFG5BHEUusdCqvxPTit5boDlsMSM0/QLfegx9
+         g92RR3KXXqWVJ/Twx7BOxF8eaSreXTIq8xxN1/uSlLTZHQdvtbmc+BKtR2ukBE4PkzPm
+         22Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JFEOo1tcEco00+Nvk7m320IFPXwMdnmT4rBSqgHwb9U=;
+        b=t/aILU1QWwlEDjFdoQM200CfWHpc8lWX9zyXnsseCJKPIbCkYSltAdO2mAb67xuymw
+         ywHE9x+ZuY2QDoUiuzM+hkJjwzMpxuibahjiInDc0K+ez6fJPAkRLnoGlYEYobRo9g0c
+         w72z1CERM7vfnR3tKAZRwMdHB/DLfjOtNcFZtTM9LnSqcTgEDi5/IAcXypHwArgCrDeL
+         yjYN7ZNu8yrZPsEmK/aj3jtruaXa7oDjo0d6GXSiHl6x8lLNDejsdUYmSj5UPZoZHIaG
+         hdnPEncaxuazgPEhnjODj/NBBtX7+7Qy5NPvXCLQmCm6vxhqBHQ0yejOQQofg1bd6Zli
+         NlIw==
+X-Gm-Message-State: AOAM533MstlhwJctwTojQIdT9Nmdl/zXlvQpibBTyXelzXTMPEHPohYb
+        wF50oJ864n/oBExlQ/MY83Wzfg==
+X-Google-Smtp-Source: ABdhPJzQWuDyPVOZV8+vb7zFRV1bqqY/2Jkp1Y9YhwzRyLVg+CvO8Hap3qvd2yxJOHBDSbBx85jL6Q==
+X-Received: by 2002:a17:90b:216:b0:1bc:5d68:e7aa with SMTP id fy22-20020a17090b021600b001bc5d68e7aamr12283884pjb.57.1646651020984;
+        Mon, 07 Mar 2022 03:03:40 -0800 (PST)
+Received: from localhost.localdomain ([2401:4900:1c2a:216d:d967:c5a7:5da:6441])
+        by smtp.gmail.com with ESMTPSA id mw7-20020a17090b4d0700b001b8baf6b6f5sm12390121pjb.50.2022.03.07.03.03.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 03:03:40 -0800 (PST)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com,
+        dianders@chromium.org
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        linux-kernel@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        arnd@arndb.de, peterz@infradead.org,
+        Sumit Garg <sumit.garg@linaro.org>
+Subject: [RFT v4] tty/sysrq: Make sysrq handler NMI aware
+Date:   Mon,  7 Mar 2022 16:33:28 +0530
+Message-Id: <20220307110328.2557655-1-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 663673a3-9cf8-4024-2b81-08da002a1a6d
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2684:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB26846438D9D4E1A78A6EB731DF089@DM6PR12MB2684.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jkt+5CFdGy14MdvRYLmY3XULBEVqrlzgfTDViZlCuieJm2Pvhsy2fjtrQIQqWRBvQjG17iEgE80d+T+GUGO4A9wTn2+Nf/tJ9ICIKqtAxv+ymn6AU8HpKgYBZSnpdpkCxbtQivq0YcCY2TEamh229j+Qcs/g0B5MNRXVSSTSUHkIVPXYaG5ieT4kpbPay+a3lSfz91OF41flxGRDf8GI0jQZVGlbL4OlAQJ184uw1mStRzXP+ZeZwk0/w2GM9IKnH2uEO+w/WKUtTOo1QF+A8cGFLLfVZyhtshBrx9Z+sFjVXn8vZJOsuMdkoeJkNRS2FOO98Abmd1rvknkMX8gH+ubMPzrhYJ+4s0SsrtmOR5uzeHql6c/hDr6bbmi+wZ+WAhDBu6JvKtS9u+T4UnB7p9x/F5dNaDPgBaGOgvONrtEmjjRMIyE3PFE5a8c7aj1laRZ/SLgkoVtUsvAe2LviCw85cFsBrRHO6VlYEhSktNt2z0ixeSDeb7YY0oOWaTL09MzMcygAhP56ijSH0k+Yb/2JEk6iSitv1edrkAzF5NYwWDa5DmAwO5usmldn0ezBCur2F5a0E0DvVXaxJQEGCbm+9/+Gs59g26JXbw18ASulDBHXl4YW0lGCQTNIpvZGsDs/O6vBHpoRfDXTl9t9Ew==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(2906002)(66946007)(5660300002)(8676002)(508600001)(7416002)(66476007)(66556008)(4326008)(6506007)(8936002)(6512007)(6666004)(6486002)(6916009)(9686003)(83380400001)(44144004)(186003)(26005)(316002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OE9Z2vhzrhh4ZxZ2g2Bb2HJelTjaHFNk1Ge56Quh8hRPj6fRJUb5+ooQRp0A?=
- =?us-ascii?Q?Smzm4inAbLaRRgPUlocl7cMsUdBzOtShi4EhQBYcC430St0V9eKuC/Le7rdR?=
- =?us-ascii?Q?TVTvqIBoVpZfXyNek1dbLELa0ZTCGoFIGm6mNWZWTx7pLRj704cENrnjq3Zb?=
- =?us-ascii?Q?UjuZooPJPOtRiCQSRnBNwjIkIWrpy2edlG8mPwb5+nVqIOIlSSpPrnIHc3Om?=
- =?us-ascii?Q?7lIO7m+CkZdN3/RHaC+Q+iym9oPxVh09Jt+7wInW/DP8tNxXzAlRZvOkOqSI?=
- =?us-ascii?Q?ACn+7s78Qm8FpwZxQ7es04NkEaG0lIFC+G7IaaHPdTX8rtyIxkFEbO+286QJ?=
- =?us-ascii?Q?AGPKlilOfdVCVPWR7t2mDxOcanmLXbgK3U4/zC/sIfZiYWYLWGncFRjcVzZC?=
- =?us-ascii?Q?M0iZU8+Hx9ArrYIjeQ1c9aEk6EC8i9U2STy2FA0A/7madtAmRW0A3mOapXHJ?=
- =?us-ascii?Q?Mfy6lt42mfiGzDMRW4WU4zAC4Q7yAyuTIRXGR5NurkbqUx5cJ8cI8dpOxJsC?=
- =?us-ascii?Q?Rok+clcv2nDMlHVZ1f3azuaan5TqasOh7hHaIzrJFj75C6/FnCesGRPQUVYl?=
- =?us-ascii?Q?KSaHPMCghXoeUtDHiyi4sFRUxH78FvWfIMHzslrXwHerWtA652qC7WZLGkLU?=
- =?us-ascii?Q?GU6wFU+W6MG/GmFPv7Z8ctqfpMlkeSuAF1vmdiKcV9Qnzu2BN8aIbdLX9UbX?=
- =?us-ascii?Q?+8k38TTwL1sCWFkSe8mHZd4RwT2PStj7eOalijkIOu4YO0iRC7JdXp9bw3KO?=
- =?us-ascii?Q?OD0ze+N67ROLStSJJcDWfyA5YswPzoiNyc7BaH4rvpsL/XiKCzAbYJlnMYI1?=
- =?us-ascii?Q?F6lfAjDSn/8xGZT0MCYqUah4D6EFXFbWksITN8qWUmhNepNUw2oJX6XvP+0O?=
- =?us-ascii?Q?9YSff6WPnaxqpFBRbouZmgKea5j4sV9BX3owwxqek3IKWjlIw6qwOCQFR8SD?=
- =?us-ascii?Q?boWwTSaUSGF8tA8zgfjzMnELJDkFVYIkjKx5kl/UeZfDywEmR9ZCFH5IREVe?=
- =?us-ascii?Q?BJG0619Yr5SBCWbHhs0PCMTzBCiX6bS/u5+T8alb7HN+X4SKPD5/CJm2a6gS?=
- =?us-ascii?Q?h+6IGX+zC2tJ96EbYSvc8SVV9UI1IFOsOOMZ0+d2BV/NjQrj4Ywb3Cyywsz/?=
- =?us-ascii?Q?3moWx/etM3YozZA2Gu6HMl+68sOULa5jtbwPf8R0IHZXpm0fiBtZg9bJGSeC?=
- =?us-ascii?Q?weUFonm8www4NfaNGIzMniGxy/LiGnXr9TTekAuYCJEwdL/CYL561HpTj8+q?=
- =?us-ascii?Q?U4V2GWD3iTZWZHE1wbhPucoglL0rRGi/7oGetcCpZbKdRKm9Ts957Sb+xf61?=
- =?us-ascii?Q?MB7OqZx4ZwHY/QN/Y152J94xmoryLgITMqd+zwYemMvG6O7+RxK6opH+GR/w?=
- =?us-ascii?Q?UZyfi44vLzRYgOt2q6cqT5U2N6QgEvFCa+xqhVw5SoQ14mdAINjV0yyWpKX+?=
- =?us-ascii?Q?au/QoTBf1lr4+Im7jz+ovYsMSvYLcxcNXHPPNA8D1gmcch5hDX1mymOKxhNx?=
- =?us-ascii?Q?CsUL2sV6eZ6BtdA3EShBkQgMmnO+in4BQwi8qY67A31gahG/BSREKRhnnuOR?=
- =?us-ascii?Q?c4gevvBooCPABH4NIHXUJk9V6qb0cB0W7G6ypm2ISCicHymyAuCuXTsWfZyM?=
- =?us-ascii?Q?6xNAhEQgDYJSlz6N2IFeqTk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 663673a3-9cf8-4024-2b81-08da002a1a6d
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 11:03:26.0834
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p8penMLnenr/Srt5C47wrvKZZsgsGeIaLkfoxpgsuL34qEvSpHckV7rOlPkKZtWHxqtE/rcG/mwhQLAIofHTaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2684
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Disposition: inline
+Allow a magic sysrq to be triggered from an NMI context. This is done
+via marking some sysrq actions as NMI safe. Safe actions will be allowed
+to run from NMI context whilst that cannot run from an NMI will be queued
+as irq_work for later processing.
 
-Miaohe Lin <linmiaohe@huawei.com> writes:
+The major use-case is to add NMI debugging capabilities to the kernel
+in order to debug scenarios such as:
+- Primary CPU is stuck in deadlock with interrupts disabled and hence
+  doesn't honor serial device interrupt. So having magic sysrq triggered
+  as an NMI is helpful for debugging.
+- Always enabled NMI based magic sysrq irrespective of whether the serial
+  TTY port is active or not.
+- Apart from UART interrupts, it allows magic sysrq to be triggered from
+  a diagnostic NMI interrupt on systems such as A64FX.
 
-> We can use page_is_file_lru() directly to help account the isolated
-> pages to simplify the code a bit as same as local variable follflags.
+A particular sysrq handler is only marked as NMI safe in case the handler
+isn't contending for any synchronization primitives as in NMI context
+they are expected to cause deadlocks. Note that the debug sysrq do not
+contend for any synchronization primitives. It does call kgdb_breakpoint()
+to provoke a trap but that trap handler should be NMI safe on
+architectures that implement an NMI.
 
-Looks good, but there are two independent changes here. Even though they are
-small they should probably be split into two patches.
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+---
 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/migrate.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index bc1867a5706c..da5a81052468 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1609,7 +1609,6 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
->  {
->  	struct vm_area_struct *vma;
->  	struct page *page;
-> -	unsigned int follflags;
->  	int err;
->
->  	mmap_read_lock(mm);
-> @@ -1619,8 +1618,7 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
->  		goto out;
->
->  	/* FOLL_DUMP to ignore special (like zero) pages */
-> -	follflags = FOLL_GET | FOLL_DUMP;
-> -	page = follow_page(vma, addr, follflags);
-> +	page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
->
->  	err = PTR_ERR(page);
->  	if (IS_ERR(page))
-> @@ -2033,7 +2031,6 @@ static struct page *alloc_misplaced_dst_page_thp(struct page *page,
->
->  static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->  {
-> -	int page_lru;
->  	int nr_pages = thp_nr_pages(page);
->  	int order = compound_order(page);
->
-> @@ -2060,8 +2057,7 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->  	if (isolate_lru_page(page))
->  		return 0;
->
-> -	page_lru = page_is_file_lru(page);
-> -	mod_node_page_state(page_pgdat(page), NR_ISOLATED_ANON + page_lru,
-> +	mod_node_page_state(page_pgdat(page), NR_ISOLATED_ANON + page_is_file_lru(page),
->  			    nr_pages);
->
->  	/*
+Changes in v4:
+- Use atomic operations for sysrq key variable to gracefully handle
+  concurrent sysrq entry on multiple CPUs.
+- Rename sysrq_nmi_key to sysrq_key as it isn't anymore specific to NMI
+  context.
+- Addressed other misc. comments from Doug.
 
---=-=-=--
+Changes in v3:
+- Extend commit message to include use-cases.
+- Get rid of redundant kfifo stuff.
+- Incorporate other misc. feedback from Peter Z.
+
+Changes in v2:
+- Rebased to 5.17-rc5.
+- Separate this patch from complete patch-set [1] as its relevant for
+  other diagnostic NMI interrupts [2] as well apart from uart NMI
+  interrupts.
+- Incorporated suggestions from Doug.
+
+[1] https://lore.kernel.org/linux-arm-kernel/CAFA6WYOWHgmYYt=KGXDh2hKiuy_rQbJfi279ev0+s-Qh7L21kA@mail.gmail.com/t/#m2b5006f08581448020eb24566927a104d0b95c44
+[2] https://lore.kernel.org/all/Yhi0rrkSR63ZhjX1@kroah.com/T/
+
+ drivers/tty/sysrq.c       | 50 ++++++++++++++++++++++++++++++++++++++-
+ include/linux/sysrq.h     |  1 +
+ kernel/debug/debug_core.c |  1 +
+ 3 files changed, 51 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index bbfd004449b5..005c9f9e0004 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -51,6 +51,7 @@
+ #include <linux/syscalls.h>
+ #include <linux/of.h>
+ #include <linux/rcupdate.h>
++#include <linux/irq_work.h>
+ 
+ #include <asm/ptrace.h>
+ #include <asm/irq_regs.h>
+@@ -112,6 +113,7 @@ static const struct sysrq_key_op sysrq_loglevel_op = {
+ 	.help_msg	= "loglevel(0-9)",
+ 	.action_msg	= "Changing Loglevel",
+ 	.enable_mask	= SYSRQ_ENABLE_LOG,
++	.nmi_safe	= true,
+ };
+ 
+ #ifdef CONFIG_VT
+@@ -159,6 +161,7 @@ static const struct sysrq_key_op sysrq_crash_op = {
+ 	.help_msg	= "crash(c)",
+ 	.action_msg	= "Trigger a crash",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ 
+ static void sysrq_handle_reboot(int key)
+@@ -172,6 +175,7 @@ static const struct sysrq_key_op sysrq_reboot_op = {
+ 	.help_msg	= "reboot(b)",
+ 	.action_msg	= "Resetting",
+ 	.enable_mask	= SYSRQ_ENABLE_BOOT,
++	.nmi_safe	= true,
+ };
+ 
+ const struct sysrq_key_op *__sysrq_reboot_op = &sysrq_reboot_op;
+@@ -219,6 +223,7 @@ static const struct sysrq_key_op sysrq_showlocks_op = {
+ 	.handler	= sysrq_handle_showlocks,
+ 	.help_msg	= "show-all-locks(d)",
+ 	.action_msg	= "Show Locks Held",
++	.nmi_safe	= true,
+ };
+ #else
+ #define sysrq_showlocks_op (*(const struct sysrq_key_op *)NULL)
+@@ -291,6 +296,7 @@ static const struct sysrq_key_op sysrq_showregs_op = {
+ 	.help_msg	= "show-registers(p)",
+ 	.action_msg	= "Show Regs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ 
+ static void sysrq_handle_showstate(int key)
+@@ -328,6 +334,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
+ 	.help_msg	= "dump-ftrace-buffer(z)",
+ 	.action_msg	= "Dump ftrace buffer",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ #else
+ #define sysrq_ftrace_dump_op (*(const struct sysrq_key_op *)NULL)
+@@ -566,12 +573,46 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
+ 		sysrq_key_table[i] = op_p;
+ }
+ 
++static atomic_t sysrq_key = ATOMIC_INIT(-1);
++
++static void sysrq_do_irq_work(struct irq_work *work)
++{
++	const struct sysrq_key_op *op_p;
++	int orig_suppress_printk;
++	int key = atomic_read(&sysrq_key);
++
++	orig_suppress_printk = suppress_printk;
++	suppress_printk = 0;
++
++	rcu_sysrq_start();
++	rcu_read_lock();
++
++	op_p = __sysrq_get_key_op(key);
++	if (op_p)
++		op_p->handler(key);
++
++	rcu_read_unlock();
++	rcu_sysrq_end();
++
++	suppress_printk = orig_suppress_printk;
++	atomic_set(&sysrq_key, -1);
++}
++
++static DEFINE_IRQ_WORK(sysrq_irq_work, sysrq_do_irq_work);
++
+ void __handle_sysrq(int key, bool check_mask)
+ {
+ 	const struct sysrq_key_op *op_p;
+ 	int orig_log_level;
+ 	int orig_suppress_printk;
+ 	int i;
++	bool irq_work = false;
++
++	/* Skip sysrq handling if one already in progress */
++	if (atomic_cmpxchg(&sysrq_key, -1, key) != -1) {
++		pr_warn("Skip sysrq key: %i as one already in progress\n", key);
++		return;
++	}
+ 
+ 	orig_suppress_printk = suppress_printk;
+ 	suppress_printk = 0;
+@@ -596,7 +637,11 @@ void __handle_sysrq(int key, bool check_mask)
+ 		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
+ 			pr_info("%s\n", op_p->action_msg);
+ 			console_loglevel = orig_log_level;
+-			op_p->handler(key);
++
++			if (in_nmi() && !op_p->nmi_safe)
++				irq_work = irq_work_queue(&sysrq_irq_work);
++			else
++				op_p->handler(key);
+ 		} else {
+ 			pr_info("This sysrq operation is disabled.\n");
+ 			console_loglevel = orig_log_level;
+@@ -623,6 +668,9 @@ void __handle_sysrq(int key, bool check_mask)
+ 	rcu_sysrq_end();
+ 
+ 	suppress_printk = orig_suppress_printk;
++
++	if (!irq_work)
++		atomic_set(&sysrq_key, -1);
+ }
+ 
+ void handle_sysrq(int key)
+diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
+index 3a582ec7a2f1..630b5b9dc225 100644
+--- a/include/linux/sysrq.h
++++ b/include/linux/sysrq.h
+@@ -34,6 +34,7 @@ struct sysrq_key_op {
+ 	const char * const help_msg;
+ 	const char * const action_msg;
+ 	const int enable_mask;
++	const bool nmi_safe;
+ };
+ 
+ #ifdef CONFIG_MAGIC_SYSRQ
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index da06a5553835..53b56114f59b 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -978,6 +978,7 @@ static const struct sysrq_key_op sysrq_dbg_op = {
+ 	.handler	= sysrq_handle_dbg,
+ 	.help_msg	= "debug(g)",
+ 	.action_msg	= "DEBUG",
++	.nmi_safe	= true,
+ };
+ #endif
+ 
+-- 
+2.25.1
+
