@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38767C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235469AbiCGKZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
+        id S236963AbiCGKZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:25:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239918AbiCGKD4 (ORCPT
+        with ESMTP id S240026AbiCGKEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:03:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3EF75207;
-        Mon,  7 Mar 2022 01:51:59 -0800 (PST)
+        Mon, 7 Mar 2022 05:04:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BF366AF4;
+        Mon,  7 Mar 2022 01:52:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BB1F60919;
-        Mon,  7 Mar 2022 09:51:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD0FC340F4;
-        Mon,  7 Mar 2022 09:51:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58E75B8102B;
+        Mon,  7 Mar 2022 09:52:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A14BBC340F3;
+        Mon,  7 Mar 2022 09:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646715;
-        bh=HGY8bZHnNj0ChX0IiyXwwCG+PIxtDhcYwRoyL0o6fO8=;
+        s=korg; t=1646646725;
+        bh=w/ntj/P8FjG0egwwy9HfVWJPl4ZMUNQq0IVluBcr0ME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZyuzATy4Vl5Utm8MOJOwACt5kvORqnK97lUsRsxlRIzP+oGSphk378vqiJwf/Sgqa
-         y/klvEzjDBZf+4DTojRRfprVrou5twatTdvN9cYFETXnmOlP6QduVLiaUAJJ5LAj3P
-         BgxDzoKJpJ99RvxG6SZFcN72fILPYVH+EuVCV0r0=
+        b=vVQK7THo8PqJK6ovBee1YhZ0ucY68y1Q/qDNXOZzR9jVyYDbOIbq5A62T0NHUB7nj
+         aabEvtkCvIv5MQAz+4lhjlt9HUJVkXrDISaAGXkyCvRxTRqkz9s44GRSF+Z73sBiMM
+         vYsjv93A6RLhmoa+yHCxEHzZ1v2QBBt8A3KL2ACI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 063/186] blktrace: fix use after free for struct blk_trace
-Date:   Mon,  7 Mar 2022 10:18:21 +0100
-Message-Id: <20220307091655.856433453@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH 5.16 074/186] netfilter: nf_queue: fix possible use-after-free
+Date:   Mon,  7 Mar 2022 10:18:32 +0100
+Message-Id: <20220307091656.159231396@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -48,180 +49,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 30939293262eb433c960c4532a0d59c4073b2b84 upstream.
+commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
 
-When tracing the whole disk, 'dropped' and 'msg' will be created
-under 'q->debugfs_dir' and 'bt->dir' is NULL, thus blk_trace_free()
-won't remove those files. What's worse, the following UAF can be
-triggered because of accessing stale 'dropped' and 'msg':
+Eric Dumazet says:
+  The sock_hold() side seems suspect, because there is no guarantee
+  that sk_refcnt is not already 0.
 
-==================================================================
-BUG: KASAN: use-after-free in blk_dropped_read+0x89/0x100
-Read of size 4 at addr ffff88816912f3d8 by task blktrace/1188
+On failure, we cannot queue the packet and need to indicate an
+error.  The packet will be dropped by the caller.
 
-CPU: 27 PID: 1188 Comm: blktrace Not tainted 5.17.0-rc4-next-20220217+ #469
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-4
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_address_description.constprop.0.cold+0xab/0x381
- ? blk_dropped_read+0x89/0x100
- ? blk_dropped_read+0x89/0x100
- kasan_report.cold+0x83/0xdf
- ? blk_dropped_read+0x89/0x100
- kasan_check_range+0x140/0x1b0
- blk_dropped_read+0x89/0x100
- ? blk_create_buf_file_callback+0x20/0x20
- ? kmem_cache_free+0xa1/0x500
- ? do_sys_openat2+0x258/0x460
- full_proxy_read+0x8f/0xc0
- vfs_read+0xc6/0x260
- ksys_read+0xb9/0x150
- ? vfs_write+0x3d0/0x3d0
- ? fpregs_assert_state_consistent+0x55/0x60
- ? exit_to_user_mode_prepare+0x39/0x1e0
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fbc080d92fd
-Code: ce 20 00 00 75 10 b8 00 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 1
-RSP: 002b:00007fbb95ff9cb0 EFLAGS: 00000293 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 00007fbb95ff9dc0 RCX: 00007fbc080d92fd
-RDX: 0000000000000100 RSI: 00007fbb95ff9cc0 RDI: 0000000000000045
-RBP: 0000000000000045 R08: 0000000000406299 R09: 00000000fffffffd
-R10: 000000000153afa0 R11: 0000000000000293 R12: 00007fbb780008c0
-R13: 00007fbb78000938 R14: 0000000000608b30 R15: 00007fbb780029c8
- </TASK>
+v2: split skb prefetch hunk into separate change
 
-Allocated by task 1050:
- kasan_save_stack+0x1e/0x40
- __kasan_kmalloc+0x81/0xa0
- do_blk_trace_setup+0xcb/0x410
- __blk_trace_setup+0xac/0x130
- blk_trace_ioctl+0xe9/0x1c0
- blkdev_ioctl+0xf1/0x390
- __x64_sys_ioctl+0xa5/0xe0
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Freed by task 1050:
- kasan_save_stack+0x1e/0x40
- kasan_set_track+0x21/0x30
- kasan_set_free_info+0x20/0x30
- __kasan_slab_free+0x103/0x180
- kfree+0x9a/0x4c0
- __blk_trace_remove+0x53/0x70
- blk_trace_ioctl+0x199/0x1c0
- blkdev_common_ioctl+0x5e9/0xb30
- blkdev_ioctl+0x1a5/0x390
- __x64_sys_ioctl+0xa5/0xe0
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff88816912f380
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 88 bytes inside of
- 96-byte region [ffff88816912f380, ffff88816912f3e0)
-The buggy address belongs to the page:
-page:000000009a1b4e7c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0f
-flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
-raw: 0017ffffc0000200 ffffea00044f1100 dead000000000002 ffff88810004c780
-raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88816912f280: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- ffff88816912f300: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
->ffff88816912f380: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                                    ^
- ffff88816912f400: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
- ffff88816912f480: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-==================================================================
-
-Fixes: c0ea57608b69 ("blktrace: remove debugfs file dentries from struct blk_trace")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220228034354.4047385-1-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/blktrace.c |   26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ include/net/netfilter/nf_queue.h |    2 +-
+ net/netfilter/nf_queue.c         |   13 +++++++++----
+ net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
+ 3 files changed, 19 insertions(+), 8 deletions(-)
 
---- a/kernel/trace/blktrace.c
-+++ b/kernel/trace/blktrace.c
-@@ -310,10 +310,20 @@ record_it:
- 	local_irq_restore(flags);
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -37,7 +37,7 @@ void nf_register_queue_handler(const str
+ void nf_unregister_queue_handler(void);
+ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
+ 
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ void nf_queue_entry_free(struct nf_queue_entry *entry);
+ 
+ static inline void init_hashrandom(u32 *jhash_initval)
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
+@@ -96,19 +96,21 @@ static void __nf_queue_entry_init_physde
  }
  
--static void blk_trace_free(struct blk_trace *bt)
-+static void blk_trace_free(struct request_queue *q, struct blk_trace *bt)
+ /* Bump dev refs so they don't vanish while packet is out */
+-void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
  {
- 	relay_close(bt->rchan);
--	debugfs_remove(bt->dir);
+ 	struct nf_hook_state *state = &entry->state;
+ 
++	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
++		return false;
 +
-+	/*
-+	 * If 'bt->dir' is not set, then both 'dropped' and 'msg' are created
-+	 * under 'q->debugfs_dir', thus lookup and remove them.
-+	 */
-+	if (!bt->dir) {
-+		debugfs_remove(debugfs_lookup("dropped", q->debugfs_dir));
-+		debugfs_remove(debugfs_lookup("msg", q->debugfs_dir));
-+	} else {
-+		debugfs_remove(bt->dir);
+ 	dev_hold(state->in);
+ 	dev_hold(state->out);
+-	if (state->sk)
+-		sock_hold(state->sk);
+ 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	dev_hold(entry->physin);
+ 	dev_hold(entry->physout);
+ #endif
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
+ 
+@@ -196,7 +198,10 @@ static int __nf_queue(struct sk_buff *sk
+ 
+ 	__nf_queue_entry_init_physdevs(entry);
+ 
+-	nf_queue_entry_get_refs(entry);
++	if (!nf_queue_entry_get_refs(entry)) {
++		kfree(entry);
++		return -ENOTCONN;
 +	}
- 	free_percpu(bt->sequence);
- 	free_percpu(bt->msg_data);
- 	kfree(bt);
-@@ -335,10 +345,10 @@ static void put_probe_ref(void)
- 	mutex_unlock(&blk_probe_mutex);
- }
  
--static void blk_trace_cleanup(struct blk_trace *bt)
-+static void blk_trace_cleanup(struct request_queue *q, struct blk_trace *bt)
+ 	switch (entry->state.pf) {
+ 	case AF_INET:
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -710,9 +710,15 @@ static struct nf_queue_entry *
+ nf_queue_entry_dup(struct nf_queue_entry *e)
  {
- 	synchronize_rcu();
--	blk_trace_free(bt);
-+	blk_trace_free(q, bt);
- 	put_probe_ref();
+ 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
+-	if (entry)
+-		nf_queue_entry_get_refs(entry);
+-	return entry;
++
++	if (!entry)
++		return NULL;
++
++	if (nf_queue_entry_get_refs(entry))
++		return entry;
++
++	kfree(entry);
++	return NULL;
  }
  
-@@ -352,7 +362,7 @@ static int __blk_trace_remove(struct req
- 		return -EINVAL;
- 
- 	if (bt->trace_state != Blktrace_running)
--		blk_trace_cleanup(bt);
-+		blk_trace_cleanup(q, bt);
- 
- 	return 0;
- }
-@@ -572,7 +582,7 @@ static int do_blk_trace_setup(struct req
- 	ret = 0;
- err:
- 	if (ret)
--		blk_trace_free(bt);
-+		blk_trace_free(q, bt);
- 	return ret;
- }
- 
-@@ -1616,7 +1626,7 @@ static int blk_trace_remove_queue(struct
- 
- 	put_probe_ref();
- 	synchronize_rcu();
--	blk_trace_free(bt);
-+	blk_trace_free(q, bt);
- 	return 0;
- }
- 
-@@ -1647,7 +1657,7 @@ static int blk_trace_setup_queue(struct
- 	return 0;
- 
- free_bt:
--	blk_trace_free(bt);
-+	blk_trace_free(q, bt);
- 	return ret;
- }
- 
+ #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
 
 
