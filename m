@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24892C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B983C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbiCGJtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S239151AbiCGJtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiCGJjP (ORCPT
+        with ESMTP id S239176AbiCGJjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173A570931;
-        Mon,  7 Mar 2022 01:34:39 -0800 (PST)
+        Mon, 7 Mar 2022 04:39:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C13670CE0;
+        Mon,  7 Mar 2022 01:34:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EDD36128E;
-        Mon,  7 Mar 2022 09:34:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B794C340E9;
-        Mon,  7 Mar 2022 09:34:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D5506116E;
+        Mon,  7 Mar 2022 09:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A067C340E9;
+        Mon,  7 Mar 2022 09:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645669;
-        bh=JaDOKGxkstXvayk71s8oa+46K84swD26bFQlLGDAZaA=;
+        s=korg; t=1646645630;
+        bh=JmT9QfBOyZJcBBwWxnPYAC63NAd5BxcKK3R707o9fKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ro9r5T/9+cFt0f3HXqRQStpe6N/GZ6CnsJswKnKhnvWArhuljreu1wd870uKBjSbb
-         oWdLteTWf+6WgznfBaPiWHTgs6Z4lOIHt4hYqKs1I8yBUtl1Na2qvK4F2Az52L1bLv
-         OsR7HiO6viKy9PAr0yL/EfICvlvsSNSwsKqEgm+A=
+        b=tnQg0xCW/WBAsTrJYPcSwlQjHj21wCSsLzGbUJxHMijmproZBB63OTID+Sq8NZ8SA
+         vD02vcnWn+8HTY0Vj323k5zI02XiTINtt728NauKiG60zwY93s0MrpqLNsU7KKexkM
+         tmCvBYvYnagqf8S908+9naF/4m+AuzvPF4GV94yI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 104/105] btrfs: add missing run of delayed items after unlink during log replay
-Date:   Mon,  7 Mar 2022 10:19:47 +0100
-Message-Id: <20220307091647.102718054@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 066/105] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+Date:   Mon,  7 Mar 2022 10:19:09 +0100
+Message-Id: <20220307091646.035443224@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,72 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 4751dc99627e4d1465c5bfa8cb7ab31ed418eff5 upstream.
+commit bd6f1fd5d33dfe5d1b4f2502d3694a7cc13f166d upstream.
 
-During log replay, whenever we need to check if a name (dentry) exists in
-a directory we do searches on the subvolume tree for inode references or
-or directory entries (BTRFS_DIR_INDEX_KEY keys, and BTRFS_DIR_ITEM_KEY
-keys as well, before kernel 5.17). However when during log replay we
-unlink a name, through btrfs_unlink_inode(), we may not delete inode
-references and dir index keys from a subvolume tree and instead just add
-the deletions to the delayed inode's delayed items, which will only be
-run when we commit the transaction used for log replay. This means that
-after an unlink operation during log replay, if we attempt to search for
-the same name during log replay, we will not see that the name was already
-deleted, since the deletion is recorded only on the delayed items.
+During driver initialization, the pointer of card info, i.e. the
+variable 'ci' is required. However, the definition of
+'com20020pci_id_table' reveals that this field is empty for some
+devices, which will cause null pointer dereference when initializing
+these devices.
 
-We run delayed items after every unlink operation during log replay,
-except at unlink_old_inode_refs() and at add_inode_ref(). This was due
-to an overlook, as delayed items should be run after evert unlink, for
-the reasons stated above.
+The following log reveals it:
 
-So fix those two cases.
+[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
+[    3.975181] Call Trace:
+[    3.976208]  local_pci_probe+0x13f/0x210
+[    3.977248]  pci_device_probe+0x34c/0x6d0
+[    3.977255]  ? pci_uevent+0x470/0x470
+[    3.978265]  really_probe+0x24c/0x8d0
+[    3.978273]  __driver_probe_device+0x1b3/0x280
+[    3.979288]  driver_probe_device+0x50/0x370
 
-Fixes: 0d836392cadd5 ("Btrfs: fix mount failure after fsync due to hard link recreation")
-Fixes: 1f250e929a9c9 ("Btrfs: fix log replay failure after unlink and link combination")
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fix this by checking whether the 'ci' is a null pointer first.
+
+Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/arcnet/com20020-pci.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1286,6 +1286,15 @@ again:
- 						 inode, name, namelen);
- 			kfree(name);
- 			iput(dir);
-+			/*
-+			 * Whenever we need to check if a name exists or not, we
-+			 * check the subvolume tree. So after an unlink we must
-+			 * run delayed items, so that future checks for a name
-+			 * during log replay see that the name does not exists
-+			 * anymore.
-+			 */
-+			if (!ret)
-+				ret = btrfs_run_delayed_items(trans);
- 			if (ret)
- 				goto out;
- 			goto again;
-@@ -1537,6 +1546,15 @@ static noinline int add_inode_ref(struct
- 				 */
- 				if (!ret && inode->i_nlink == 0)
- 					inc_nlink(inode);
-+				/*
-+				 * Whenever we need to check if a name exists or
-+				 * not, we check the subvolume tree. So after an
-+				 * unlink we must run delayed items, so that future
-+				 * checks for a name during log replay see that the
-+				 * name does not exists anymore.
-+				 */
-+				if (!ret)
-+					ret = btrfs_run_delayed_items(trans);
- 			}
- 			if (ret < 0)
- 				goto out;
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -136,6 +136,9 @@ static int com20020pci_probe(struct pci_
+ 		return -ENOMEM;
+ 
+ 	ci = (struct com20020_pci_card_info *)id->driver_data;
++	if (!ci)
++		return -EINVAL;
++
+ 	priv->ci = ci;
+ 	mm = &ci->misc_map;
+ 
 
 
