@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAF2C3527A
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6309C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242509AbiCGKLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        id S242555AbiCGKLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239849AbiCGJuR (ORCPT
+        with ESMTP id S239856AbiCGJuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:50:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E5871EEB;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E670515A05;
         Mon,  7 Mar 2022 01:43:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A6B4B810AA;
-        Mon,  7 Mar 2022 09:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D24C340E9;
-        Mon,  7 Mar 2022 09:43:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0371F60F62;
+        Mon,  7 Mar 2022 09:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11855C340E9;
+        Mon,  7 Mar 2022 09:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646213;
-        bh=sErDgod7RzPWcTPqfDL+Ru6q/2bT8PfdvLUzyDcaCFA=;
+        s=korg; t=1646646225;
+        bh=NPONLAZLBstRZEyym2VkP7E0lzKD00RlkxXDT8ej6EE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LEVdGA9K/jDn1C8Y5XIUi3P8nytkRNjmjM2F/8ve3SxD1+D0WJApdhnNFr3Ux5mLZ
-         QrVQQcquPTo0cT0nrz8YfVDD7net3MxSLtrchY169Q3Jrtea4PUkaOaS5i8Y6VOErS
-         0qwpgCbAf+1LAL2USgoBaVgJ4zpslj3U65rTsMMM=
+        b=nikmCttAzMuN0ofQ4s1+LQZEmoikg2L77GSUZXbj0TGOpbbZUZ3uich9iF6j8gKW4
+         gIotDN5jQdSGhqRt7WKFvsIYY4mgrP1peS/fkQMloY1da1FoML3RXga9D77RFMgc1G
+         3dU/pKU/gqqeexUXSiNxuAjiSDhd4qsfUo5ngTA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alex Elder <elder@linaro.org>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 168/262] net: ipa: add an interconnect dependency
-Date:   Mon,  7 Mar 2022 10:18:32 +0100
-Message-Id: <20220307091707.168448846@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 133/262] drm/amd/display: For vblank_disable_immediate, check PSR is really used
+Date:   Mon,  7 Mar 2022 10:17:57 +0100
+Message-Id: <20220307091706.211904198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,36 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Michel Dänzer <mdaenzer@redhat.com>
 
-commit 1dba41c9d2e2dc94b543394974f63d55aa195bfe upstream.
+[ Upstream commit 4d22336f903930eb94588b939c310743a3640276 ]
 
-In order to function, the IPA driver very clearly requires the
-interconnect framework to be enabled in the kernel configuration.
-State that dependency in the Kconfig file.
+Even if PSR is allowed for a present GPU, there might be no eDP link
+which supports PSR.
 
-This became a problem when CONFIG_COMPILE_TEST support was added.
-Non-Qualcomm platforms won't necessarily enable CONFIG_INTERCONNECT.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Link: https://lore.kernel.org/r/20220301113440.257916-1-elder@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 708978487304 ("drm/amdgpu/display: Only set vblank_disable_immediate when PSR is not enabled")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Michel Dänzer <mdaenzer@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c   | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -2,6 +2,7 @@ config QCOM_IPA
- 	tristate "Qualcomm IPA support"
- 	depends on NET && QCOM_SMEM
- 	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on INTERCONNECT
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	select QCOM_MDT_LOADER if ARCH_QCOM
- 	select QCOM_SCM
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 76967adc51606..cd611444ad177 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3812,6 +3812,9 @@ static int amdgpu_dm_initialize_drm_device(struct amdgpu_device *adev)
+ 	}
+ #endif
+ 
++	/* Disable vblank IRQs aggressively for power-saving. */
++	adev_to_drm(adev)->vblank_disable_immediate = true;
++
+ 	/* loops over all connectors on the board */
+ 	for (i = 0; i < link_cnt; i++) {
+ 		struct dc_link *link = NULL;
+@@ -3858,19 +3861,17 @@ static int amdgpu_dm_initialize_drm_device(struct amdgpu_device *adev)
+ 				update_connector_ext_caps(aconnector);
+ 			if (amdgpu_dc_feature_mask & DC_PSR_MASK)
+ 				amdgpu_dm_set_psr_caps(link);
++
++			/* TODO: Fix vblank control helpers to delay PSR entry to allow this when
++			 * PSR is also supported.
++			 */
++			if (link->psr_settings.psr_feature_enabled)
++				adev_to_drm(adev)->vblank_disable_immediate = false;
+ 		}
+ 
+ 
+ 	}
+ 
+-	/*
+-	 * Disable vblank IRQs aggressively for power-saving.
+-	 *
+-	 * TODO: Fix vblank control helpers to delay PSR entry to allow this when PSR
+-	 * is also supported.
+-	 */
+-	adev_to_drm(adev)->vblank_disable_immediate = !psr_feature_enabled;
+-
+ 	/* Software is initialized. Now we can register interrupt handlers. */
+ 	switch (adev->asic_type) {
+ #if defined(CONFIG_DRM_AMD_DC_SI)
+-- 
+2.34.1
+
 
 
