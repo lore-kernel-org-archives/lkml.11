@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20788C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239404AbiCGKHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        id S239139AbiCGKHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239289AbiCGJt1 (ORCPT
+        with ESMTP id S239308AbiCGJta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:49:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C6A49255;
-        Mon,  7 Mar 2022 01:43:04 -0800 (PST)
+        Mon, 7 Mar 2022 04:49:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CEC1DA73;
+        Mon,  7 Mar 2022 01:42:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2536B6116E;
-        Mon,  7 Mar 2022 09:43:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E19AC340E9;
-        Mon,  7 Mar 2022 09:43:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B9CCB810C3;
+        Mon,  7 Mar 2022 09:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66EFC340E9;
+        Mon,  7 Mar 2022 09:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646183;
-        bh=eilNXL7FYByQZsmEqMoxFr7L+I0SJTK7SW/o3Pnue4k=;
+        s=korg; t=1646646174;
+        bh=lpTIfqFfuxNnkZVoWmvjaup59vtQTcg03a28fDRHsfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKMuzSVW1nYYLyFzjaFbZ7XzpXBrf1kGLMnaBNv1hXBeqyKaCS0hvLzruhxCGz2JB
-         LdNB3EUX+EWUZbiV+Q2YMkyMBe8GWdfVdplJMkOdBFs6fhPKAjsXk3tplGQWOafpcr
-         AsLYfrjKfV8/Jituk3FN9QvYdL2yiP066jn0cACU=
+        b=kR4BpZJeEKYoamKW+hmTbSir5vJc7fxqiWP22M3mDcN8IWbd8Z7MuYqJGRPjhwqg2
+         v3OvhbZ9sck1XYbgwXiLPiE8WVHYbTVv5+QelQf5JGSPcrUEM7PnmN1tRCdxgGPQr8
+         DB9BAYAihGRSd6w6y3UOoum5RjhMFmsuual0d+Mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, lena wang <lena.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 159/262] net: fix up skbs delta_truesize in UDP GRO frag_list
-Date:   Mon,  7 Mar 2022 10:18:23 +0100
-Message-Id: <20220307091706.921361675@linuxfoundation.org>
+        stable@vger.kernel.org, Kim Scarborough <kim@scarborough.kim>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 130/262] cifs: fix confusing unneeded warning message on smb2.1 and earlier
+Date:   Mon,  7 Mar 2022 10:17:54 +0100
+Message-Id: <20220307091706.127954885@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,64 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lena wang <lena.wang@mediatek.com>
+From: Steve French <stfrench@microsoft.com>
 
-commit 224102de2ff105a2c05695e66a08f4b5b6b2d19c upstream.
+[ Upstream commit 53923e0fe2098f90f339510aeaa0e1413ae99a16 ]
 
-The truesize for a UDP GRO packet is added by main skb and skbs in main
-skb's frag_list:
-skb_gro_receive_list
-        p->truesize += skb->truesize;
+When mounting with SMB2.1 or earlier, even with nomultichannel, we
+log the confusing warning message:
+  "CIFS: VFS: multichannel is not supported on this protocol version, use 3.0 or above"
 
-The commit 53475c5dd856 ("net: fix use-after-free when UDP GRO with
-shared fraglist") introduced a truesize increase for frag_list skbs.
-When uncloning skb, it will call pskb_expand_head and trusesize for
-frag_list skbs may increase. This can occur when allocators uses
-__netdev_alloc_skb and not jump into __alloc_skb. This flow does not
-use ksize(len) to calculate truesize while pskb_expand_head uses.
-skb_segment_list
-err = skb_unclone(nskb, GFP_ATOMIC);
-pskb_expand_head
-        if (!skb->sk || skb->destructor == sock_edemux)
-                skb->truesize += size - osize;
+Fix this so that we don't log this unless they really are trying
+to mount with multichannel.
 
-If we uses increased truesize adding as delta_truesize, it will be
-larger than before and even larger than previous total truesize value
-if skbs in frag_list are abundant. The main skb truesize will become
-smaller and even a minus value or a huge value for an unsigned int
-parameter. Then the following memory check will drop this abnormal skb.
-
-To avoid this error we should use the original truesize to segment the
-main skb.
-
-Fixes: 53475c5dd856 ("net: fix use-after-free when UDP GRO with shared fraglist")
-Signed-off-by: lena wang <lena.wang@mediatek.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/1646133431-8948-1-git-send-email-lena.wang@mediatek.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215608
+Reported-by: Kim Scarborough <kim@scarborough.kim>
+Cc: stable@vger.kernel.org # 5.11+
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cifs/sess.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3853,6 +3853,7 @@ struct sk_buff *skb_segment_list(struct
- 		list_skb = list_skb->next;
+diff --git a/fs/cifs/sess.c b/fs/cifs/sess.c
+index a1e688113645f..5500ea7837845 100644
+--- a/fs/cifs/sess.c
++++ b/fs/cifs/sess.c
+@@ -76,11 +76,6 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
+ 	struct cifs_server_iface *ifaces = NULL;
+ 	size_t iface_count;
  
- 		err = 0;
-+		delta_truesize += nskb->truesize;
- 		if (skb_shared(nskb)) {
- 			tmp = skb_clone(nskb, GFP_ATOMIC);
- 			if (tmp) {
-@@ -3877,7 +3878,6 @@ struct sk_buff *skb_segment_list(struct
- 		tail = nskb;
+-	if (ses->server->dialect < SMB30_PROT_ID) {
+-		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
+-		return 0;
+-	}
+-
+ 	spin_lock(&ses->chan_lock);
  
- 		delta_len += nskb->len;
--		delta_truesize += nskb->truesize;
+ 	new_chan_count = old_chan_count = ses->chan_count;
+@@ -94,6 +89,12 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
+ 		return 0;
+ 	}
  
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
++	if (ses->server->dialect < SMB30_PROT_ID) {
++		spin_unlock(&ses->chan_lock);
++		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
++		return 0;
++	}
++
+ 	if (!(ses->server->capabilities & SMB2_GLOBAL_CAP_MULTI_CHANNEL)) {
+ 		cifs_dbg(VFS, "server %s does not support multichannel\n", ses->server->hostname);
+ 		ses->chan_max = 1;
+-- 
+2.34.1
+
 
 
