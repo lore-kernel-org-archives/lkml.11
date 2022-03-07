@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9ED6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237889AbiCGKOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:14:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
+        id S239007AbiCGKO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239927AbiCGKA0 (ORCPT
+        with ESMTP id S239961AbiCGKA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8217D023;
-        Mon,  7 Mar 2022 01:46:34 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588B57CDDE;
+        Mon,  7 Mar 2022 01:46:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 727ED61220;
-        Mon,  7 Mar 2022 09:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 769EFC340E9;
-        Mon,  7 Mar 2022 09:46:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49A396116E;
+        Mon,  7 Mar 2022 09:46:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56F97C340F6;
+        Mon,  7 Mar 2022 09:46:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646393;
-        bh=RBIP91LgZUyqhUHzo0CuYJAho8yLrXfh2cIdnSzoUw0=;
+        s=korg; t=1646646396;
+        bh=x1xfJ+eyXvadcqqgQp61+DU5rlvWMNQZMb/dMecAW5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RV0cmJxB0YLFEK4RyWyioQQ1SWZyW6+qMGxdAcRQtbgJr5Cm82ljnErcNmfr8gyJ3
-         YTDmU/g3fAJXBgTzbSgg8xnNXWoUE0WRjDUIUClvsucHu4OmqYBP7TmrFzrBsnq/+s
-         cGJFtpY6h2w57fXtzCLy9NRwlesxJZl2YxepcB+8=
+        b=UjWWaxHxLGhjOCxBffWDy6tdYhluV2ulH3PkUIiaM8o2eh/g0aKtT4p2neBqMedDh
+         5JEeKeZK2E5zsFfg8B6HNC6155jxPKxNKoMXABNK6l9BP93yefIZ8EEYNBsl2lKc+j
+         OyATe24TKHP0FJBWv7M/9Mv74iZfqluPnU2t2mhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 230/262] iavf: Add waiting so the port is initialized in remove
-Date:   Mon,  7 Mar 2022 10:19:34 +0100
-Message-Id: <20220307091709.708747963@linuxfoundation.org>
+Subject: [PATCH 5.15 231/262] iavf: Fix init state closure on remove
+Date:   Mon,  7 Mar 2022 10:19:35 +0100
+Message-Id: <20220307091709.758025370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -55,24 +55,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Slawomir Laba <slawomirx.laba@intel.com>
 
-[ Upstream commit 974578017fc1fdd06cea8afb9dfa32602e8529ed ]
+[ Upstream commit 3ccd54ef44ebfa0792c5441b6d9c86618f3378d1 ]
 
-There exist races when port is being configured and remove is
-triggered.
+When init states of the adapter work, the errors like lack
+of communication with the PF might hop in. If such events
+occur the driver restores previous states in order to retry
+initialization in a proper way. When remove task kicks in,
+this situation could lead to races with unregistering the
+netdevice as well as resources cleanup. With the commit
+introducing the waiting in remove for init to complete,
+this problem turns into an endless waiting if init never
+recovers from errors.
 
-unregister_netdev is not and can't be called under crit_lock
-mutex since it is calling ndo_stop -> iavf_close which requires
-this lock. Depending on init state the netdev could be still
-unregistered so unregister_netdev never cleans up, when shortly
-after that the device could become registered.
+Introduce __IAVF_IN_REMOVE_TASK bit to indicate that the
+remove thread has started.
 
-Make iavf_remove wait until port finishes initialization.
-All critical state changes are atomic (under crit_lock).
-Crashes that come from iavf_reset_interrupt_capability and
-iavf_free_traffic_irqs should now be solved in a graceful
-manner.
+Make __IAVF_COMM_FAILED adapter state respect the
+__IAVF_IN_REMOVE_TASK bit and set the __IAVF_INIT_FAILED
+state and return without any action instead of trying to
+recover.
 
-Fixes: 605ca7c5c6707 ("iavf: Fix kernel BUG in free_msi_irqs")
+Make __IAVF_INIT_FAILED adapter state respect the
+__IAVF_IN_REMOVE_TASK bit and return without any further
+actions.
+
+Make the loop in the remove handler break when adapter has
+__IAVF_INIT_FAILED state set.
+
+Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
 Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
 Signed-off-by: Phani Burra <phani.r.burra@intel.com>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
@@ -81,61 +91,80 @@ Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 27 ++++++++++++---------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf.h      |  4 ++++
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 24 ++++++++++++++++++++-
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 21e0f3361560..ffc61993019b 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -188,6 +188,10 @@ enum iavf_state_t {
+ 	__IAVF_RUNNING,		/* opened, working */
+ };
+ 
++enum iavf_critical_section_t {
++	__IAVF_IN_REMOVE_TASK,	/* device being removed */
++};
++
+ #define IAVF_CLOUD_FIELD_OMAC		0x01
+ #define IAVF_CLOUD_FIELD_IMAC		0x02
+ #define IAVF_CLOUD_FIELD_IVLAN	0x04
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index e97a8dbbbc89..60e6f55c6dc5 100644
+index 60e6f55c6dc5..57ecdff870a1 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3979,7 +3979,6 @@ static int __maybe_unused iavf_resume(struct device *dev_d)
- static void iavf_remove(struct pci_dev *pdev)
- {
- 	struct iavf_adapter *adapter = iavf_pdev_to_adapter(pdev);
--	enum iavf_state_t prev_state = adapter->last_state;
- 	struct net_device *netdev = adapter->netdev;
- 	struct iavf_fdir_fltr *fdir, *fdirtmp;
- 	struct iavf_vlan_filter *vlf, *vlftmp;
-@@ -3989,6 +3988,22 @@ static void iavf_remove(struct pci_dev *pdev)
+@@ -2019,6 +2019,15 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 				   msecs_to_jiffies(1));
+ 		return;
+ 	case __IAVF_INIT_FAILED:
++		if (test_bit(__IAVF_IN_REMOVE_TASK,
++			     &adapter->crit_section)) {
++			/* Do not update the state and do not reschedule
++			 * watchdog task, iavf_remove should handle this state
++			 * as it can loop forever
++			 */
++			mutex_unlock(&adapter->crit_lock);
++			return;
++		}
+ 		if (++adapter->aq_wait_count > IAVF_AQ_MAX_ERR) {
+ 			dev_err(&adapter->pdev->dev,
+ 				"Failed to communicate with PF; waiting before retry\n");
+@@ -2035,6 +2044,17 @@ static void iavf_watchdog_task(struct work_struct *work)
+ 		queue_delayed_work(iavf_wq, &adapter->watchdog_task, HZ);
+ 		return;
+ 	case __IAVF_COMM_FAILED:
++		if (test_bit(__IAVF_IN_REMOVE_TASK,
++			     &adapter->crit_section)) {
++			/* Set state to __IAVF_INIT_FAILED and perform remove
++			 * steps. Remove IAVF_FLAG_PF_COMMS_FAILED so the task
++			 * doesn't bring the state back to __IAVF_COMM_FAILED.
++			 */
++			iavf_change_state(adapter, __IAVF_INIT_FAILED);
++			adapter->flags &= ~IAVF_FLAG_PF_COMMS_FAILED;
++			mutex_unlock(&adapter->crit_lock);
++			return;
++		}
+ 		reg_val = rd32(hw, IAVF_VFGEN_RSTAT) &
+ 			  IAVF_VFGEN_RSTAT_VFR_STATE_MASK;
+ 		if (reg_val == VIRTCHNL_VFR_VFACTIVE ||
+@@ -3988,13 +4008,15 @@ static void iavf_remove(struct pci_dev *pdev)
  	struct iavf_hw *hw = &adapter->hw;
  	int err;
  
-+	/* Wait until port initialization is complete.
-+	 * There are flows where register/unregister netdev may race.
-+	 */
-+	while (1) {
-+		mutex_lock(&adapter->crit_lock);
-+		if (adapter->state == __IAVF_RUNNING ||
-+		    adapter->state == __IAVF_DOWN) {
-+			mutex_unlock(&adapter->crit_lock);
-+			break;
-+		}
-+
-+		mutex_unlock(&adapter->crit_lock);
-+		usleep_range(500, 1000);
-+	}
-+	cancel_delayed_work_sync(&adapter->watchdog_task);
-+
- 	if (adapter->netdev_registered) {
- 		unregister_netdev(netdev);
- 		adapter->netdev_registered = false;
-@@ -4026,16 +4041,6 @@ static void iavf_remove(struct pci_dev *pdev)
- 	iavf_free_all_rx_resources(adapter);
- 	iavf_free_misc_irq(adapter);
- 
--	/* In case we enter iavf_remove from erroneous state, free traffic irqs
--	 * here, so as to not cause a kernel crash, when calling
--	 * iavf_reset_interrupt_capability.
--	 */
--	if ((adapter->last_state == __IAVF_RESETTING &&
--	     prev_state != __IAVF_DOWN) ||
--	    (adapter->last_state == __IAVF_RUNNING &&
--	     !(netdev->flags & IFF_UP)))
--		iavf_free_traffic_irqs(adapter);
--
- 	iavf_reset_interrupt_capability(adapter);
- 	iavf_free_q_vectors(adapter);
- 
++	set_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section);
+ 	/* Wait until port initialization is complete.
+ 	 * There are flows where register/unregister netdev may race.
+ 	 */
+ 	while (1) {
+ 		mutex_lock(&adapter->crit_lock);
+ 		if (adapter->state == __IAVF_RUNNING ||
+-		    adapter->state == __IAVF_DOWN) {
++		    adapter->state == __IAVF_DOWN ||
++		    adapter->state == __IAVF_INIT_FAILED) {
+ 			mutex_unlock(&adapter->crit_lock);
+ 			break;
+ 		}
 -- 
 2.34.1
 
