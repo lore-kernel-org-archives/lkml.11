@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E15DC3526E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D9AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239001AbiCGJtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
+        id S239068AbiCGJtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:49:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239149AbiCGJjR (ORCPT
+        with ESMTP id S239136AbiCGJjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:17 -0500
+        Mon, 7 Mar 2022 04:39:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE2E70913;
-        Mon,  7 Mar 2022 01:34:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52D06D383;
+        Mon,  7 Mar 2022 01:34:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21DB2B80F9F;
-        Mon,  7 Mar 2022 09:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533DEC340E9;
-        Mon,  7 Mar 2022 09:34:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBD84B810BD;
+        Mon,  7 Mar 2022 09:34:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DAD5C340E9;
+        Mon,  7 Mar 2022 09:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645686;
-        bh=ho+1fk4JbqUuOdumvMPIOqALlMHuN+23rs2JHlchIaA=;
+        s=korg; t=1646645672;
+        bh=9O063uzd5t314367gVbpuKNTxNBHwFdVMWrBXUW3IX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dH0tG8Ba7zzgExZll9jZ1mdnIyFmnRrLUK7FSesO6e7eLqS8TdNRFvcv1kksqtdNj
-         nnjWq6+R9N6Cxw0I5Q1kIDtxIRsDTNjnJP2AKl831cobqmjBFgQcR+TLSRJMLMBD76
-         LKZup7/KClGqAhJoGUYjGyPTWfboGByD2lRw2Aj0=
+        b=0Si1ENbg66U0yve8CpwRf6EC7wz1vx+v3BXTbn64f1VsOpkNZB360c4TrG5NaRCLi
+         n6M8hufxoM8uCxHTflemPsnbtkNHrrUStCIaqdfbymH4C+GGAukk7aPew790hRbZSq
+         INyERsvUFBVH0n10gKCqr/1VtS0OEyxfdTSI9KJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.10 070/105] ASoC: cs4265: Fix the duplicated control name
-Date:   Mon,  7 Mar 2022 10:19:13 +0100
-Message-Id: <20220307091646.147215888@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Bohac <jbohac@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.10 105/105] Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+Date:   Mon,  7 Mar 2022 10:19:48 +0100
+Message-Id: <20220307091647.130976910@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,54 +48,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Jiri Bohac <jbohac@suse.cz>
 
-commit c5487b9cdea5c1ede38a7ec94db0fc59963c8e86 upstream.
+commit a6d95c5a628a09be129f25d5663a7e9db8261f51 upstream.
 
-Currently, the following error messages are seen during boot:
+This reverts commit b515d2637276a3810d6595e10ab02c13bfd0b63a.
 
-asoc-simple-card sound: control 2:0:0:SPDIF Switch:0 is already present
-cs4265 1-004f: ASoC: failed to add widget SPDIF dapm kcontrol SPDIF Switch: -16
+Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
+should return at least 1280 for ipv6") in v5.14 breaks the TCP MSS
+calculation in ipsec transport mode, resulting complete stalls of TCP
+connections. This happens when the (P)MTU is 1280 or slighly larger.
 
-Quoting Mark Brown:
+The desired formula for the MSS is:
+MSS = (MTU - ESP_overhead) - IP header - TCP header
 
-"The driver is just plain buggy, it defines both a regular SPIDF Switch
-control and a SND_SOC_DAPM_SWITCH() called SPDIF both of which will
-create an identically named control, it can never have loaded without
-error.  One or both of those has to be renamed or they need to be
-merged into one thing."
+However, the above commit clamps the (MTU - ESP_overhead) to a
+minimum of 1280, turning the formula into
+MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
 
-Fix the duplicated control name by combining the two SPDIF controls here
-and move the register bits onto the DAPM widget and have DAPM control them.
+With the (P)MTU near 1280, the calculated MSS is too large and the
+resulting TCP packets never make it to the destination because they
+are over the actual PMTU.
 
-Fixes: f853d6b3ba34 ("ASoC: cs4265: Add a S/PDIF enable switch")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220215120514.1760628-1-festevam@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The above commit also causes suboptimal double fragmentation in
+xfrm tunnel mode, as described in
+https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
+
+The original problem the above commit was trying to fix is now fixed
+by commit 6596a0229541270fb8d38d989f91b78838e5e9da ("xfrm: fix MTU
+regression").
+
+Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/cs4265.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/net/xfrm.h    |    1 -
+ net/ipv4/esp4.c       |    2 +-
+ net/ipv6/esp6.c       |    2 +-
+ net/xfrm/xfrm_state.c |   14 ++------------
+ 4 files changed, 4 insertions(+), 15 deletions(-)
 
---- a/sound/soc/codecs/cs4265.c
-+++ b/sound/soc/codecs/cs4265.c
-@@ -150,7 +150,6 @@ static const struct snd_kcontrol_new cs4
- 	SOC_SINGLE("E to F Buffer Disable Switch", CS4265_SPDIF_CTL1,
- 				6, 1, 0),
- 	SOC_ENUM("C Data Access", cam_mode_enum),
--	SOC_SINGLE("SPDIF Switch", CS4265_SPDIF_CTL2, 5, 1, 1),
- 	SOC_SINGLE("Validity Bit Control Switch", CS4265_SPDIF_CTL2,
- 				3, 1, 0),
- 	SOC_ENUM("SPDIF Mono/Stereo", spdif_mono_stereo_enum),
-@@ -186,7 +185,7 @@ static const struct snd_soc_dapm_widget
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1551,7 +1551,6 @@ void xfrm_sad_getinfo(struct net *net, s
+ void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
+ u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
+ int xfrm_init_replay(struct xfrm_state *x);
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ u32 xfrm_state_mtu(struct xfrm_state *x, int mtu);
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload);
+ int xfrm_init_state(struct xfrm_state *x);
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -673,7 +673,7 @@ static int esp_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
  
- 	SND_SOC_DAPM_SWITCH("Loopback", SND_SOC_NOPM, 0, 0,
- 			&loopback_ctl),
--	SND_SOC_DAPM_SWITCH("SPDIF", SND_SOC_NOPM, 0, 0,
-+	SND_SOC_DAPM_SWITCH("SPDIF", CS4265_SPDIF_CTL2, 5, 1,
- 			&spdif_switch),
- 	SND_SOC_DAPM_SWITCH("DAC", CS4265_PWRCTL, 1, 1,
- 			&dac_switch),
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -708,7 +708,7 @@ static int esp6_output(struct xfrm_state
+ 		struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
+ 		u32 padto;
+ 
+-		padto = min(x->tfcpad, __xfrm_state_mtu(x, dst->child_mtu_cached));
++		padto = min(x->tfcpad, xfrm_state_mtu(x, dst->child_mtu_cached));
+ 		if (skb->len < padto)
+ 			esp.tfclen = padto - skb->len;
+ 	}
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2537,7 +2537,7 @@ void xfrm_state_delete_tunnel(struct xfr
+ }
+ EXPORT_SYMBOL(xfrm_state_delete_tunnel);
+ 
+-u32 __xfrm_state_mtu(struct xfrm_state *x, int mtu)
++u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+ {
+ 	const struct xfrm_type *type = READ_ONCE(x->type);
+ 	struct crypto_aead *aead;
+@@ -2568,17 +2568,7 @@ u32 __xfrm_state_mtu(struct xfrm_state *
+ 	return ((mtu - x->props.header_len - crypto_aead_authsize(aead) -
+ 		 net_adj) & ~(blksize - 1)) + net_adj - 2;
+ }
+-EXPORT_SYMBOL_GPL(__xfrm_state_mtu);
+-
+-u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
+-{
+-	mtu = __xfrm_state_mtu(x, mtu);
+-
+-	if (x->props.family == AF_INET6 && mtu < IPV6_MIN_MTU)
+-		return IPV6_MIN_MTU;
+-
+-	return mtu;
+-}
++EXPORT_SYMBOL_GPL(xfrm_state_mtu);
+ 
+ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ {
 
 
