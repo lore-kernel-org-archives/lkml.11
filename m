@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B961C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD65FC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240882AbiCGKJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:09:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
+        id S240977AbiCGKJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240100AbiCGJuk (ORCPT
+        with ESMTP id S240434AbiCGJvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:40 -0500
+        Mon, 7 Mar 2022 04:51:01 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47044B420;
-        Mon,  7 Mar 2022 01:44:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B5075601;
+        Mon,  7 Mar 2022 01:44:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07626B80E70;
-        Mon,  7 Mar 2022 09:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65109C340F3;
-        Mon,  7 Mar 2022 09:44:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1197B80F9F;
+        Mon,  7 Mar 2022 09:44:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 212B1C340E9;
+        Mon,  7 Mar 2022 09:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646246;
-        bh=R8uY/zTXdHSzjpLIxZlJhb0hQIo+MzsaqToLbh99yeY=;
+        s=korg; t=1646646274;
+        bh=153pYkbNtQ6uMiWjTVZzDEHbjE1/6jBFe2d7OnN+QNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wUytfzgN1qKkjg/pbwEM0/tQWa/Xv0wJh74MK66dzzpUR7HEH83QD9bUOjUxQ8+0N
-         qc1akUZXyzjVICs8LBFOLksO57u/goI1hG/Dgh5n8h5XR2CxeKQ6d+vvNUS0RexEBU
-         J3XrsbsV4+ze74QhwuLKxY6tE1yCr5+5n1Qxwjv4=
+        b=BR3AqG2/hCy/Ue0katcBtD5aRWOdp/zEWGfFpy3Q5cjGmc71Ik4i53VZrB0a54M80
+         rnhf6b3AU8NFpqDZd0Qeq3UglSocNxZ5XlElWMBEHbSdPJv12m1ltSfuQvY9N01p2C
+         LDLO/eHPEjwf2FEU3+61kIfEtwtyhKFU6yjfVoms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: [PATCH 5.15 182/262] efivars: Respect "block" flag in efivar_entry_set_safe()
-Date:   Mon,  7 Mar 2022 10:18:46 +0100
-Message-Id: <20220307091707.550528025@linuxfoundation.org>
+        stable@vger.kernel.org, Remi Pommarel <repk@triplefau.lt>,
+        Nicolas Escande <nico.escande@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.15 173/262] mac80211: fix forwarded mesh frames AC & queue selection
+Date:   Mon,  7 Mar 2022 10:18:37 +0100
+Message-Id: <20220307091707.304983012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,56 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Nicolas Escande <nico.escande@gmail.com>
 
-commit 258dd902022cb10c83671176688074879517fd21 upstream.
+commit 859ae7018316daa4adbc496012dcbbb458d7e510 upstream.
 
-When the "block" flag is false, the old code would sometimes still call
-check_var_size(), which wrongly tells ->query_variable_store() that it can
-block.
+There are two problems with the current code that have been highlighted
+with the AQL feature that is now enbaled by default.
 
-As far as I can tell, this can't really materialize as a bug at the moment,
-because ->query_variable_store only does something on X86 with generic EFI,
-and in that configuration we always take the efivar_entry_set_nonblocking()
-path.
+First problem is in ieee80211_rx_h_mesh_fwding(),
+ieee80211_select_queue_80211() is used on received packets to choose
+the sending AC queue of the forwarding packet although this function
+should only be called on TX packet (it uses ieee80211_tx_info).
+This ends with forwarded mesh packets been sent on unrelated random AC
+queue. To fix that, AC queue can directly be infered from skb->priority
+which has been extracted from QOS info (see ieee80211_parse_qos()).
 
-Fixes: ca0e30dcaa53 ("efi: Add nonblocking option to efi_query_variable_store()")
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Link: https://lore.kernel.org/r/20220218180559.1432559-1-jannh@google.com
+Second problem is the value of queue_mapping set on forwarded mesh
+frames via skb_set_queue_mapping() is not the AC of the packet but a
+hardware queue index. This may or may not work depending on AC to HW
+queue mapping which is driver specific.
+
+Both of these issues lead to improper AC selection while forwarding
+mesh packets but more importantly due to improper airtime accounting
+(which is done on a per STA, per AC basis) caused traffic stall with
+the introduction of AQL.
+
+Fixes: cf44012810cc ("mac80211: fix unnecessary frame drops in mesh fwding")
+Fixes: d3c1597b8d1b ("mac80211: fix forwarded mesh frame queue mapping")
+Co-developed-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Nicolas Escande <nico.escande@gmail.com>
+Link: https://lore.kernel.org/r/20220214173214.368862-1-nico.escande@gmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/efi/vars.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/mac80211/rx.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/firmware/efi/vars.c
-+++ b/drivers/firmware/efi/vars.c
-@@ -742,6 +742,7 @@ int efivar_entry_set_safe(efi_char16_t *
- {
- 	const struct efivar_operations *ops;
- 	efi_status_t status;
-+	unsigned long varsize;
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2918,13 +2918,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80
+ 	    ether_addr_equal(sdata->vif.addr, hdr->addr3))
+ 		return RX_CONTINUE;
  
- 	if (!__efivars)
- 		return -EINVAL;
-@@ -764,15 +765,17 @@ int efivar_entry_set_safe(efi_char16_t *
- 		return efivar_entry_set_nonblocking(name, vendor, attributes,
- 						    size, data);
- 
-+	varsize = size + ucs2_strsize(name, 1024);
- 	if (!block) {
- 		if (down_trylock(&efivars_lock))
- 			return -EBUSY;
-+		status = check_var_size_nonblocking(attributes, varsize);
- 	} else {
- 		if (down_interruptible(&efivars_lock))
- 			return -EINTR;
-+		status = check_var_size(attributes, varsize);
+-	ac = ieee80211_select_queue_80211(sdata, skb, hdr);
++	ac = ieee802_1d_to_ac[skb->priority];
+ 	q = sdata->vif.hw_queue[ac];
+ 	if (ieee80211_queue_stopped(&local->hw, q)) {
+ 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_congestion);
+ 		return RX_DROP_MONITOR;
  	}
+-	skb_set_queue_mapping(skb, q);
++	skb_set_queue_mapping(skb, ac);
  
--	status = check_var_size(attributes, size + ucs2_strsize(name, 1024));
- 	if (status != EFI_SUCCESS) {
- 		up(&efivars_lock);
- 		return -ENOSPC;
+ 	if (!--mesh_hdr->ttl) {
+ 		if (!is_multicast_ether_addr(hdr->addr1))
 
 
