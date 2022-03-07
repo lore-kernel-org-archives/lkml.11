@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239487AbiCGKfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        id S239532AbiCGKfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:35:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233144AbiCGKME (ORCPT
+        with ESMTP id S242612AbiCGKLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:12:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C998BF76;
-        Mon,  7 Mar 2022 01:56:22 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC358BE38;
+        Mon,  7 Mar 2022 01:55:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E08F60A23;
-        Mon,  7 Mar 2022 09:55:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E365C340E9;
-        Mon,  7 Mar 2022 09:55:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B06A60BAF;
+        Mon,  7 Mar 2022 09:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 927EDC340E9;
+        Mon,  7 Mar 2022 09:55:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646943;
-        bh=t7GC+IXgt474DCHKZQEHKkdeaE3n6OLcf8iTcFT3s0g=;
+        s=korg; t=1646646901;
+        bh=mlVNa+LMZf+wgzM5A0Ty7lgykLLJvJJYcR+H/gM2krY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Up7VjYc1bx38IHxZCrAMqBi/V562lr6a+zl8FrhPMd4rikp3qR1DOfTMaW/ntHIop
-         jS8njVEwPCCPfsQ6KE+DVCCdDaE1A8MuQMbFUFyViZjVGMnuu156hyDcT7cf0kxKQv
-         AGRbrTtmBZdldZoDcO6RkklVqGuaqH9Tu1PlbR4w=
+        b=PEW0VxZnzkAIGe8j/hukMpkEReb+BNzIBRcEm9jdKrb98Uu/+2pe1pqlAvc9mIwf2
+         Aj+sR1WG7CzkP5hRUIdvwVuMyjR2VBvxh/ZMEJsfWw4bmyIHV2+par40iqZfQXQHFu
+         pVF2W2bfBSJZoDSJYMw6cMgbHwr1xGqnYAufIXJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Anthoine Bourgeois <anthoine.bourgeois@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 141/186] ibmvnic: define flush_reset_queue helper
-Date:   Mon,  7 Mar 2022 10:19:39 +0100
-Message-Id: <20220307091658.020285215@linuxfoundation.org>
+Subject: [PATCH 5.16 128/186] ARM: dts: switch timer config to common devkit8000 devicetree
+Date:   Mon,  7 Mar 2022 10:19:26 +0100
+Message-Id: <20220307091657.658572994@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,66 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
 
-[ Upstream commit 83da53f7e4bd86dca4b2edc1e2bb324fb3c033a1 ]
+[ Upstream commit 64324ef337d0caa5798fa8fa3f6bbfbd3245868a ]
 
-Define and use a helper to flush the reset queue.
+This patch allow lcd43 and lcd70 flavors to benefit from timer
+evolution.
 
-Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
+Signed-off-by: Anthoine Bourgeois <anthoine.bourgeois@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ .../arm/boot/dts/omap3-devkit8000-common.dtsi | 33 +++++++++++++++++++
+ arch/arm/boot/dts/omap3-devkit8000.dts        | 33 -------------------
+ 2 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 945a84c2134f..5c8264e3979a 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2731,12 +2731,23 @@ static void __ibmvnic_delayed_reset(struct work_struct *work)
- 	__ibmvnic_reset(&adapter->ibmvnic_reset);
- }
+diff --git a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
+index 5e55198e4576..f5197bb31ed8 100644
+--- a/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
++++ b/arch/arm/boot/dts/omap3-devkit8000-common.dtsi
+@@ -158,6 +158,39 @@
+ 	status = "disabled";
+ };
  
-+static void flush_reset_queue(struct ibmvnic_adapter *adapter)
-+{
-+	struct list_head *entry, *tmp_entry;
++/* Unusable as clocksource because of unreliable oscillator */
++&counter32k {
++	status = "disabled";
++};
 +
-+	if (!list_empty(&adapter->rwi_list)) {
-+		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
-+			list_del(entry);
-+			kfree(list_entry(entry, struct ibmvnic_rwi, list));
-+		}
-+	}
-+}
++/* Unusable as clockevent because if unreliable oscillator, allow to idle */
++&timer1_target {
++	/delete-property/ti,no-reset-on-init;
++	/delete-property/ti,no-idle;
++	timer@0 {
++		/delete-property/ti,timer-alwon;
++	};
++};
 +
- static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 			 enum ibmvnic_reset_reason reason)
- {
--	struct list_head *entry, *tmp_entry;
--	struct ibmvnic_rwi *rwi, *tmp;
- 	struct net_device *netdev = adapter->netdev;
-+	struct ibmvnic_rwi *rwi, *tmp;
- 	unsigned long flags;
- 	int ret;
- 
-@@ -2779,12 +2790,9 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	/* if we just received a transport event,
- 	 * flush reset queue and process this reset
- 	 */
--	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
--		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
--			list_del(entry);
--			kfree(list_entry(entry, struct ibmvnic_rwi, list));
--		}
--	}
-+	if (adapter->force_reset_recovery)
-+		flush_reset_queue(adapter);
++/* Preferred always-on timer for clocksource */
++&timer12_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		/* Always clocked by secure_32k_fck */
++	};
++};
 +
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
- 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %s)\n",
++/* Preferred timer for clockevent */
++&timer2_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		assigned-clocks = <&gpt2_fck>;
++		assigned-clock-parents = <&sys_ck>;
++	};
++};
++
+ &twl_gpio {
+ 	ti,use-leds;
+ 	/*
+diff --git a/arch/arm/boot/dts/omap3-devkit8000.dts b/arch/arm/boot/dts/omap3-devkit8000.dts
+index c2995a280729..162d0726b008 100644
+--- a/arch/arm/boot/dts/omap3-devkit8000.dts
++++ b/arch/arm/boot/dts/omap3-devkit8000.dts
+@@ -14,36 +14,3 @@
+ 		display2 = &tv0;
+ 	};
+ };
+-
+-/* Unusable as clocksource because of unreliable oscillator */
+-&counter32k {
+-	status = "disabled";
+-};
+-
+-/* Unusable as clockevent because if unreliable oscillator, allow to idle */
+-&timer1_target {
+-	/delete-property/ti,no-reset-on-init;
+-	/delete-property/ti,no-idle;
+-	timer@0 {
+-		/delete-property/ti,timer-alwon;
+-	};
+-};
+-
+-/* Preferred always-on timer for clocksource */
+-&timer12_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		/* Always clocked by secure_32k_fck */
+-	};
+-};
+-
+-/* Preferred timer for clockevent */
+-&timer2_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		assigned-clocks = <&gpt2_fck>;
+-		assigned-clock-parents = <&sys_ck>;
+-	};
+-};
 -- 
 2.34.1
 
