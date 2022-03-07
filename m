@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B00BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FE5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235338AbiCGKN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
+        id S235933AbiCGKOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:14:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238964AbiCGJ5t (ORCPT
+        with ESMTP id S239060AbiCGJ6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:57:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1577B575;
-        Mon,  7 Mar 2022 01:46:05 -0800 (PST)
+        Mon, 7 Mar 2022 04:58:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231377C160;
+        Mon,  7 Mar 2022 01:46:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6E92613CA;
-        Mon,  7 Mar 2022 09:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B39C340F3;
-        Mon,  7 Mar 2022 09:45:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E63EB80F9F;
+        Mon,  7 Mar 2022 09:46:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44A4C340F5;
+        Mon,  7 Mar 2022 09:46:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646357;
-        bh=SaOWSdfpn9CGBVS1B4toCBOUU00mGD5nHWoK8cA+Qkk=;
+        s=korg; t=1646646366;
+        bh=aJiMtZDEzYoL9IK8Ld/F52RoqRogDvXyrBRCMv7st+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cHYvmsD7NbHumFWhZoYYAKsLXcjU+zWBh7o2ZQ/PZ3qtj0zmZ3543+Alnj7psJwB7
-         ItldZjsB52kp/xiqxMjpu9St8TdXrv6wIdTvHdcshO06/VPuxDK6+bgTp0ZN/OUSVq
-         oo/fO8Ac/9RFyR4sZ8bjFMtPQIR4MfN6vzPrhCbs=
+        b=1pSOpyQ2fTqUDGzQhvx9xyZUAFELAU7JdScOUXGTMujIT1ADAMfInBlm0wyIUVRRt
+         /JNnpomS+bemBpzhKQKVxxemzptiq1Pi9gLJPbGtx+znBr/io8l+5DQG/+JWgCtw51
+         feh0GsNlXkuiJr2D8gCkNMyrBCTR2pmfzMQLFOOk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Siva Reddy <siva.kallam@samsung.com>,
-        Girish K S <ks.giri@samsung.com>,
-        Byungho An <bh74.an@samsung.com>,
+        stable@vger.kernel.org,
+        Maurice Baijens <maurice.baijens@ellips.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 177/262] net: sxgbe: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 10:18:41 +0100
-Message-Id: <20220307091707.414229455@linuxfoundation.org>
+Subject: [PATCH 5.15 180/262] ixgbe: xsk: change !netif_carrier_ok() handling in ixgbe_xmit_zc()
+Date:   Mon,  7 Mar 2022 10:18:44 +0100
+Message-Id: <20220307091707.496512150@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,52 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit 50e06ddceeea263f57fe92baa677c638ecd65bb6 upstream.
+commit 6c7273a266759d9d36f7c862149f248bcdeddc0f upstream.
 
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 causes the "option=value" string to be
-added to init's environment strings, polluting it.
+Commit c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if
+netif is not OK") addressed the ring transient state when
+MEM_TYPE_XSK_BUFF_POOL was being configured which in turn caused the
+interface to through down/up. Maurice reported that when carrier is not
+ok and xsk_pool is present on ring pair, ksoftirqd will consume 100% CPU
+cycles due to the constant NAPI rescheduling as ixgbe_poll() states that
+there is still some work to be done.
 
-Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
-Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Siva Reddy <siva.kallam@samsung.com>
-Cc: Girish K S <ks.giri@samsung.com>
-Cc: Byungho An <bh74.an@samsung.com>
-Link: https://lore.kernel.org/r/20220224033528.24640-1-rdunlap@infradead.org
+To fix this, do not set work_done to false for a !netif_carrier_ok().
+
+Fixes: c685c69fba71 ("ixgbe: don't do any AF_XDP zero-copy transmit if netif is not OK")
+Reported-by: Maurice Baijens <maurice.baijens@ellips.com>
+Tested-by: Maurice Baijens <maurice.baijens@ellips.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -2282,18 +2282,18 @@ static int __init sxgbe_cmdline_opt(char
- 	char *opt;
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -388,12 +388,14 @@ static bool ixgbe_xmit_zc(struct ixgbe_r
+ 	u32 cmd_type;
  
- 	if (!str || !*str)
--		return -EINVAL;
-+		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
- 		if (!strncmp(opt, "eee_timer:", 10)) {
- 			if (kstrtoint(opt + 10, 0, &eee_timer))
- 				goto err;
+ 	while (budget-- > 0) {
+-		if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
+-		    !netif_carrier_ok(xdp_ring->netdev)) {
++		if (unlikely(!ixgbe_desc_unused(xdp_ring))) {
+ 			work_done = false;
+ 			break;
  		}
- 	}
--	return 0;
-+	return 1;
  
- err:
- 	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
--	return -EINVAL;
-+	return 1;
- }
++		if (!netif_carrier_ok(xdp_ring->netdev))
++			break;
++
+ 		if (!xsk_tx_peek_desc(pool, &desc))
+ 			break;
  
- __setup("sxgbeeth=", sxgbe_cmdline_opt);
 
 
