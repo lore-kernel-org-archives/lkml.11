@@ -2,185 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B236C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 266D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245471AbiCGUy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:54:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        id S241649AbiCGUzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:55:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245404AbiCGUyV (ORCPT
+        with ESMTP id S245442AbiCGUyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:54:21 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AAE2A26B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:53:26 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nRKM5-0002DJ-FY; Mon, 07 Mar 2022 21:53:21 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v7 09/13] riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-Date:   Mon,  7 Mar 2022 21:53:06 +0100
-Message-Id: <20220307205310.1905628-10-heiko@sntech.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220307205310.1905628-1-heiko@sntech.de>
-References: <20220307205310.1905628-1-heiko@sntech.de>
+        Mon, 7 Mar 2022 15:54:43 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E2B3151A
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:53:33 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6100:2d37:4115:c358])
+        by xavier.telenet-ops.be with bizsmtp
+        id 3YtW2700A1Yj8bA01YtWF7; Mon, 07 Mar 2022 21:53:33 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLY-0036Ql-Nk; Mon, 07 Mar 2022 21:52:48 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLY-0034iA-3I; Mon, 07 Mar 2022 21:52:48 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 RFC 09/10] drm/fourcc: Add DRM_FORMAT_R[124]
+Date:   Mon,  7 Mar 2022 21:52:44 +0100
+Message-Id: <98c062f1b5c71427d5ba6c7bca706d04b1892162.1646683502.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646683502.git.geert@linux-m68k.org>
+References: <cover.1646683502.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On rv32 the PFN part of PTEs is defined to use bits [xlen-1:10]
-while on rv64 it is defined to use bits [53:10], leaving [63:54]
-as reserved.
+Introduce fourcc codes for single-channel light-on-dark frame buffer
+formats with two, four, and sixteen intensity levels.
 
-With upcoming optional extensions like svpbmt these previously
-reserved bits will get used so simply right-shifting the PTE
-to get the PFN won't be enough.
+As the number of bits per pixel is less than eight, these rely on proper
+block handling for the calculation of bits per pixel and pitch.
 
-So introduce a _PAGE_PFN_MASK constant to mask the correct bits
-for both rv32 and rv64 before shifting.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- arch/riscv/include/asm/pgtable-32.h   |  8 ++++++++
- arch/riscv/include/asm/pgtable-64.h   | 14 +++++++++++---
- arch/riscv/include/asm/pgtable-bits.h |  6 ------
- arch/riscv/include/asm/pgtable.h      |  6 +++---
- 4 files changed, 22 insertions(+), 12 deletions(-)
+RFC, as I have no immediate need for these formats.
 
-diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
-index 5b2e79e5bfa5..e266a4fe7f43 100644
---- a/arch/riscv/include/asm/pgtable-32.h
-+++ b/arch/riscv/include/asm/pgtable-32.h
-@@ -7,6 +7,7 @@
- #define _ASM_RISCV_PGTABLE_32_H
+v2:
+  - Improve pixel descriptions.
+---
+ drivers/gpu/drm/drm_fourcc.c  |  6 ++++++
+ include/uapi/drm/drm_fourcc.h | 11 ++++++++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/drm_fourcc.c b/drivers/gpu/drm/drm_fourcc.c
+index 29f4fe199c4ddcf0..05e65e9ab0c69c6a 100644
+--- a/drivers/gpu/drm/drm_fourcc.c
++++ b/drivers/gpu/drm/drm_fourcc.c
+@@ -154,6 +154,12 @@ const struct drm_format_info *__drm_format_info(u32 format)
+ 		{ .format = DRM_FORMAT_C4,		.depth = 4,  .num_planes = 1,
+ 		  .char_per_block = { 1, }, .block_w = { 2, }, .block_h = { 1, }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
+ 		{ .format = DRM_FORMAT_C8,		.depth = 8,  .num_planes = 1, .cpp = { 1, 0, 0 }, .hsub = 1, .vsub = 1, .is_color_indexed = true },
++		{ .format = DRM_FORMAT_R1,		.depth = 1,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 8, }, .block_h = { 1, }, .hsub = 1, .vsub = 1 },
++		{ .format = DRM_FORMAT_R2,		.depth = 2,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 4, }, .block_h = { 1, }, .hsub = 1, .vsub = 1 },
++		{ .format = DRM_FORMAT_R4,		.depth = 4,  .num_planes = 1,
++		  .char_per_block = { 1, }, .block_w = { 2, }, .block_h = { 1, }, .hsub = 1, .vsub = 1 },
+ 		{ .format = DRM_FORMAT_R8,		.depth = 8,  .num_planes = 1, .cpp = { 1, 0, 0 }, .hsub = 1, .vsub = 1 },
+ 		{ .format = DRM_FORMAT_R10,		.depth = 10, .num_planes = 1, .cpp = { 2, 0, 0 }, .hsub = 1, .vsub = 1 },
+ 		{ .format = DRM_FORMAT_R12,		.depth = 12, .num_planes = 1, .cpp = { 2, 0, 0 }, .hsub = 1, .vsub = 1 },
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index f0187cf20e4619d2..def0a73620dc86d2 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -104,8 +104,17 @@ extern "C" {
+ #define DRM_FORMAT_C4		fourcc_code('C', '4', ' ', ' ') /* [7:0] C0:C1 4:4 two pixels/byte */
+ #define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C 8 one pixel/byte */
  
- #include <asm-generic/pgtable-nopmd.h>
-+#include <linux/bits.h>
- #include <linux/const.h>
- 
- /* Size of region mapped by a page global directory */
-@@ -16,4 +17,11 @@
- 
- #define MAX_POSSIBLE_PHYSMEM_BITS 34
- 
-+/*
-+ * rv32 PTE format:
-+ * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-+ *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-+ */
-+#define _PAGE_PFN_MASK  GENMASK(31, 10)
++/* 1 bpp Red (or monochrome light-on-dark) */
++#define DRM_FORMAT_R1		fourcc_code('R', '1', ' ', ' ') /* [7:0] R0:R1:R2:R3:R4:R5:R6:R7 1:1:1:1:1:1:1:1 eight pixels/byte */
 +
- #endif /* _ASM_RISCV_PGTABLE_32_H */
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index bbbdd66e5e2f..9412c6157c88 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -6,6 +6,7 @@
- #ifndef _ASM_RISCV_PGTABLE_64_H
- #define _ASM_RISCV_PGTABLE_64_H
- 
-+#include <linux/bits.h>
- #include <linux/const.h>
- 
- extern bool pgtable_l4_enabled;
-@@ -48,6 +49,13 @@ typedef struct {
- 
- #define PTRS_PER_PMD    (PAGE_SIZE / sizeof(pmd_t))
- 
-+/*
-+ * rv64 PTE format:
-+ * | 63 | 62 61 | 60 54 | 53  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-+ *   N      MT     RSV    PFN      reserved for SW   D   A   G   U   X   W   R   V
-+ */
-+#define _PAGE_PFN_MASK  GENMASK(53, 10)
++/* 2 bpp Red (or generic light-on-dark) */
++#define DRM_FORMAT_R2		fourcc_code('R', '2', ' ', ' ') /* [7:0] R0:R1:R2:R3 2:2:2:2 four pixels/byte */
 +
- static inline int pud_present(pud_t pud)
- {
- 	return (pud_val(pud) & _PAGE_PRESENT);
-@@ -91,12 +99,12 @@ static inline unsigned long _pud_pfn(pud_t pud)
++/* 4 bpp Red (or generic light-on-dark) */
++#define DRM_FORMAT_R4		fourcc_code('R', '4', ' ', ' ') /* [7:0] R0:R1 4:4 two pixels/byte */
++
+ /* 8 bpp Red (or generic light-on-dark) */
+-#define DRM_FORMAT_R8		fourcc_code('R', '8', ' ', ' ') /* [7:0] R */
++#define DRM_FORMAT_R8		fourcc_code('R', '8', ' ', ' ') /* [7:0] R 8 one pixel/byte */
  
- static inline pmd_t *pud_pgtable(pud_t pud)
- {
--	return (pmd_t *)pfn_to_virt(pud_val(pud) >> _PAGE_PFN_SHIFT);
-+	return (pmd_t *)pfn_to_virt((pud_val(pud) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- static inline struct page *pud_page(pud_t pud)
- {
--	return pfn_to_page(pud_val(pud) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page((pud_val(pud) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- #define mm_pud_folded  mm_pud_folded
-@@ -117,7 +125,7 @@ static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pmd_pfn(pmd_t pmd)
- {
--	return pmd_val(pmd) >> _PAGE_PFN_SHIFT;
-+	return (pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT;
- }
- 
- #define mk_pmd(page, prot)    pfn_pmd(page_to_pfn(page), prot)
-diff --git a/arch/riscv/include/asm/pgtable-bits.h b/arch/riscv/include/asm/pgtable-bits.h
-index a6b0c89824c2..e571fa954afc 100644
---- a/arch/riscv/include/asm/pgtable-bits.h
-+++ b/arch/riscv/include/asm/pgtable-bits.h
-@@ -6,12 +6,6 @@
- #ifndef _ASM_RISCV_PGTABLE_BITS_H
- #define _ASM_RISCV_PGTABLE_BITS_H
- 
--/*
-- * PTE format:
-- * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-- *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-- */
--
- #define _PAGE_ACCESSED_OFFSET 6
- 
- #define _PAGE_PRESENT   (1 << 0)
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index e3549e50de95..6d31489818cd 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -259,12 +259,12 @@ static inline unsigned long _pgd_pfn(pgd_t pgd)
- 
- static inline struct page *pmd_page(pmd_t pmd)
- {
--	return pfn_to_page(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page((pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- {
--	return (unsigned long)pfn_to_virt(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-+	return (unsigned long)pfn_to_virt((pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- static inline pte_t pmd_pte(pmd_t pmd)
-@@ -280,7 +280,7 @@ static inline pte_t pud_pte(pud_t pud)
- /* Yields the page frame number (PFN) of a page table entry */
- static inline unsigned long pte_pfn(pte_t pte)
- {
--	return (pte_val(pte) >> _PAGE_PFN_SHIFT);
-+	return ((pte_val(pte) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- #define pte_page(x)     pfn_to_page(pte_pfn(x))
+ /* 10 bpp Red (or generic light-on-dark) */
+ #define DRM_FORMAT_R10		fourcc_code('R', '1', '0', ' ') /* [15:0] x:R 6:10 little endian */
 -- 
-2.30.2
+2.25.1
 
