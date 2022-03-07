@@ -2,77 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F27C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3374CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244760AbiCGSXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:23:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
+        id S244786AbiCGSXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:23:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244886AbiCGSXO (ORCPT
+        with ESMTP id S244792AbiCGSW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:23:14 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065A182D21;
-        Mon,  7 Mar 2022 10:22:20 -0800 (PST)
-Date:   Mon, 07 Mar 2022 18:22:17 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646677338;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CXbeal6bcy95rXyzNFRNmpLjARfb/CPaN+PE9LyP9rI=;
-        b=3jZoEM/z6CfMqutjQJecvGmBSk5jYC3EVcfwNXdZWcoVpsoNfW64vfhVc6GlBkn898dOnh
-        SMJcOTD5FnkQRkHIO3Qhaqp0YC0JyZjYQejAgZBKo3GgRPJ0SPW8QUICWROw7eUTji4dMX
-        TPErS2/Q0fBS7jXOwsdir4g3BJz2kPKl9kKnYYRrQZU07gBzXGAkTBdsk/ZSH5XogdXLt6
-        KQKSHjnCE2+ehgLYybdNVOVIr+uKDjNwX3ngtQbnrCPyjhJPyK5OSm6lZSdNSiakh4FcCF
-        0asOTEbd2c7p9sCPvaj1Hpc8JFFtoXvLJtTFS+BbaeXWd0bz34GUhhxFH8IBsw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646677338;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CXbeal6bcy95rXyzNFRNmpLjARfb/CPaN+PE9LyP9rI=;
-        b=e1k4UY0rcSecT6erkbR7eFXZPH5AbMs1lyxv7Swpe0aXdhr6EEy6p5XnlTqD3QFnyymoEN
-        r1yH+5BiCttYTMCg==
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] Merge branch 'clocksource.2022.02.01b' of
- git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu into
- timers/core
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220224000718.GA3747431@paulmck-ThinkPad-P17-Gen-1>
-References: <20220224000718.GA3747431@paulmck-ThinkPad-P17-Gen-1>
-MIME-Version: 1.0
-Message-ID: <164667733763.16921.1137393450862098087.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+        Mon, 7 Mar 2022 13:22:59 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F2F8300D;
+        Mon,  7 Mar 2022 10:22:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646677320; x=1678213320;
+  h=from:to:cc:subject:date:message-id;
+  bh=X6DiltQgtmgZijWZ4q1Ek4ipVF95KdQa5L+5uhVz/jY=;
+  b=TYK5GEW9BgSepXubTjHp8EwMNPrmLANIG6dvV+Q0O6PFzCLkPSK9p1/i
+   MgFsFz2ddJ9SJ4xQrV5bWDLYJpIfEX8WkUhzrXxSXAer+v5682vG3PvVK
+   nCUUYZMaf9rkdYu6AagKyNZ/JBYP856Giwi7TeXC8MWAgrtYINkRmCWkl
+   U=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 07 Mar 2022 10:22:00 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Mar 2022 10:21:59 -0800
+X-QCInternal: smtphost
+Received: from pmaliset-linux.qualcomm.com ([10.206.64.233])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 07 Mar 2022 23:51:38 +0530
+Received: by pmaliset-linux.qualcomm.com (Postfix, from userid 3848298)
+        id 7A578213E0; Mon,  7 Mar 2022 23:51:37 +0530 (IST)
+From:   Prasad Malisetty <quic_pmaliset@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rajatja@google.com, refactormyself@gmail.com
+Cc:     quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>
+Subject: [PATCH v1] [RFC PATCH] PCI: Update LTR threshold based on LTRME bit
+Date:   Mon,  7 Mar 2022 23:51:35 +0530
+Message-Id: <1646677295-32733-1-git-send-email-quic_pmaliset@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the timers/core branch of tip:
+Update LTR threshold scale and value based on LTRME (Latency
+Tolenrance Reporting Mechanism) from device capabilities.
 
-Commit-ID:     58dedf0a4782ce42b4d31f1f62e5ad80a1b73d72
-Gitweb:        https://git.kernel.org/tip/58dedf0a4782ce42b4d31f1f62e5ad80a1b73d72
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Mon, 07 Mar 2022 19:12:38 +01:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Mon, 07 Mar 2022 19:12:38 +01:00
+In ASPM driver, LTR threshold scale and value is updating
+based on tcommon_mode and t_poweron values. In kioxia NVMe,
+L1.2 is failing due to LTR threshold scale and value is
+greater values than max snoop/non snoop value.
 
-Merge branch 'clocksource.2022.02.01b' of git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu into timers/core
+In general, updated LTR threshold scale and value should be
+less than max snoop/non snoop value to enter the device
+into L1.2 state.
 
-Pull clocksource watchdog update from Paul McKenney:
-
- - Add a config option for the maximum skew of the watchdog.
-
-Link: https://lore.kernel.org/r/20220224000718.GA3747431@paulmck-ThinkPad-P17-Gen-1
+Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
 ---
+ drivers/pci/pcie/aspm.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+index a96b742..9822bd7 100644
+--- a/drivers/pci/pcie/aspm.c
++++ b/drivers/pci/pcie/aspm.c
+@@ -499,9 +499,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+ 	 * Table 5-11.  T(POWER_OFF) is at most 2us and T(L1.2) is at
+ 	 * least 4us.
+ 	 */
+-	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+-	encode_l12_threshold(l1_2_threshold, &scale, &value);
+-	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
++	pcie_capability_read_dword(child, PCI_EXP_DEVCAP2, &cap);
++	if (!(cap & PCI_EXP_DEVCAP2_LTR)) {
++		l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
++		encode_l12_threshold(l1_2_threshold, &scale, &value);
++		ctl1 |= scale << 29 | value << 16;
++	}
++
++	ctl1 | = t_common_mode;
+ 
+ 	/* Some broken devices only support dword access to L1 SS */
+ 	pci_read_config_dword(parent, parent->l1ss + PCI_L1SS_CTL1, &pctl1);
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
