@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3C3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BCFC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238417AbiCGJi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:38:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
+        id S237950AbiCGJhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:37:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237191AbiCGJaj (ORCPT
+        with ESMTP id S238746AbiCGJ3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:30:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB76D652E2;
-        Mon,  7 Mar 2022 01:29:11 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C9B5C36F;
+        Mon,  7 Mar 2022 01:28:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E39DB810BF;
-        Mon,  7 Mar 2022 09:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C82C340F3;
-        Mon,  7 Mar 2022 09:29:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1FDE61119;
+        Mon,  7 Mar 2022 09:28:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B65C340E9;
+        Mon,  7 Mar 2022 09:28:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645349;
-        bh=UDiUSxdVlF03zmyCAAJ1XdSqruRRjoof5WO0J5NUuMc=;
+        s=korg; t=1646645284;
+        bh=75ZY1WfUHU2Io4whiLfTwywajK/W9695AyieS52ILww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QCAxd2NX5Wh0HwoYbvRrUtnomkUTwrqwkMS5pbTONVcINyCgIHndz0IBNhCXGz8W8
-         H97DJRNGR4ae9RTL7fKAoUzT4oWniWS7/oGJqs+phaBkYuPMgRtA2ciE/W3nQFxAVi
-         ttStmJK+hym6uWqgPaivh4A8cKa5hK36yXXJJXvI=
+        b=wr/eSdJqjxO+p1bXBS/xxRuQT03g9eiTWGvFizNkIil6K+x+6h7kwce1NbHazGGqx
+         Sjsi1sn3hS394o381kHCscyQ2/Y8fvt/Dkzf3v8P8+cTOUdzM7nSkqAyeBSaoWukRB
+         1UO16rgC6/71PJy52oANduXuWmpGyzUID8FGdzQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.4 54/64] Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
-Date:   Mon,  7 Mar 2022 10:19:27 +0100
-Message-Id: <20220307091640.685111676@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.4 44/64] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+Date:   Mon,  7 Mar 2022 10:19:17 +0100
+Message-Id: <20220307091640.402267811@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,125 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 81a36d8ce554b82b0a08e2b95d0bd44fcbff339b upstream.
+commit b5fbaf7d779f5f02b7f75b080e7707222573be2a upstream.
 
-elan_disable_power() is called conditionally on suspend, where as
-elan_enable_power() is always called on resume. This leads to
-an imbalance in the regulator's enable count.
+Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+switched the platform to SPDIF, but we didn't fix up the device tree.
 
-Move the regulator_[en|dis]able() calls out of elan_[en|dis]able_power()
-in preparation of fixing this.
+Drop the pinctrl settings, because the 'spdif_bus' pins are either:
+ * unused (on kevin, bob), so the settings is ~harmless
+ * used by a different function (on scarlet), which causes probe
+   failures (!!)
 
-No functional changes intended.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-1-hdegoede@redhat.com
-[dtor: consolidate elan_[en|dis]able() into elan_set_power()]
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Link: https://lore.kernel.org/r/20220114150129.v2.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   62 ++++++++++++------------------------
- 1 file changed, 22 insertions(+), 40 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi |   17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -139,55 +139,21 @@ static int elan_get_fwinfo(u16 ic_type,
- 	return 0;
- }
+--- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+@@ -281,7 +281,7 @@
  
--static int elan_enable_power(struct elan_tp_data *data)
-+static int elan_set_power(struct elan_tp_data *data, bool on)
- {
- 	int repeat = ETP_RETRY_COUNT;
- 	int error;
+ 	sound: sound {
+ 		compatible = "rockchip,rk3399-gru-sound";
+-		rockchip,cpu = <&i2s0 &i2s2>;
++		rockchip,cpu = <&i2s0 &spdif>;
+ 	};
+ };
  
--	error = regulator_enable(data->vcc);
--	if (error) {
--		dev_err(&data->client->dev,
--			"failed to enable regulator: %d\n", error);
--		return error;
--	}
--
- 	do {
--		error = data->ops->power_control(data->client, true);
-+		error = data->ops->power_control(data->client, on);
- 		if (error >= 0)
- 			return 0;
+@@ -432,10 +432,6 @@ ap_i2c_audio: &i2c8 {
+ 	status = "okay";
+ };
  
- 		msleep(30);
- 	} while (--repeat > 0);
+-&i2s2 {
+-	status = "okay";
+-};
+-
+ &io_domains {
+ 	status = "okay";
  
--	dev_err(&data->client->dev, "failed to enable power: %d\n", error);
--	return error;
--}
--
--static int elan_disable_power(struct elan_tp_data *data)
--{
--	int repeat = ETP_RETRY_COUNT;
--	int error;
--
--	do {
--		error = data->ops->power_control(data->client, false);
--		if (!error) {
--			error = regulator_disable(data->vcc);
--			if (error) {
--				dev_err(&data->client->dev,
--					"failed to disable regulator: %d\n",
--					error);
--				/* Attempt to power the chip back up */
--				data->ops->power_control(data->client, true);
--				break;
--			}
--
--			return 0;
--		}
--
--		msleep(30);
--	} while (--repeat > 0);
--
--	dev_err(&data->client->dev, "failed to disable power: %d\n", error);
-+	dev_err(&data->client->dev, "failed to set power %s: %d\n",
-+		on ? "on" : "off", error);
- 	return error;
- }
+@@ -532,6 +528,17 @@ ap_i2c_audio: &i2c8 {
+ 	vqmmc-supply = <&ppvar_sd_card_io>;
+ };
  
-@@ -1316,9 +1282,19 @@ static int __maybe_unused elan_suspend(s
- 		/* Enable wake from IRQ */
- 		data->irq_wake = (enable_irq_wake(client->irq) == 0);
- 	} else {
--		ret = elan_disable_power(data);
-+		ret = elan_set_power(data, false);
-+		if (ret)
-+			goto err;
++&spdif {
++	status = "okay";
 +
-+		ret = regulator_disable(data->vcc);
-+		if (ret) {
-+			dev_err(dev, "error %d disabling regulator\n", ret);
-+			/* Attempt to power the chip back up */
-+			elan_set_power(data, true);
-+		}
- 	}
- 
-+err:
- 	mutex_unlock(&data->sysfs_mutex);
- 	return ret;
- }
-@@ -1334,7 +1310,13 @@ static int __maybe_unused elan_resume(st
- 		data->irq_wake = false;
- 	}
- 
--	error = elan_enable_power(data);
-+	error = regulator_enable(data->vcc);
-+	if (error) {
-+		dev_err(dev, "error %d enabling regulator\n", error);
-+		goto err;
-+	}
++	/*
++	 * SPDIF is routed internally to DP; we either don't use these pins, or
++	 * mux them to something else.
++	 */
++	/delete-property/ pinctrl-0;
++	/delete-property/ pinctrl-names;
++};
 +
-+	error = elan_set_power(data, true);
- 	if (error) {
- 		dev_err(dev, "power up when resuming failed: %d\n", error);
- 		goto err;
+ &spi1 {
+ 	status = "okay";
+ 
 
 
