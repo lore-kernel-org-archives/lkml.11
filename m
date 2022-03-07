@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B91B4C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiCGJms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:42:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        id S229588AbiCGJny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237747AbiCGJdK (ORCPT
+        with ESMTP id S237915AbiCGJdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:10 -0500
+        Mon, 7 Mar 2022 04:33:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E514A6AA5C;
-        Mon,  7 Mar 2022 01:30:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019D96BDFD;
+        Mon,  7 Mar 2022 01:30:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BAD36116E;
-        Mon,  7 Mar 2022 09:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20866C340E9;
-        Mon,  7 Mar 2022 09:29:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF7DA61119;
+        Mon,  7 Mar 2022 09:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DDBC36AE3;
+        Mon,  7 Mar 2022 09:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645400;
-        bh=cjVfmnK4fz5GuuXiNFft/0FaHOJnzNJnwdbrzYua5+k=;
+        s=korg; t=1646645418;
+        bh=dD+9dySqOBY0GnPXc0vqEOlGIoqkKIGq+vQ0XmTQUfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eaxJIaD9vQZ4Jf+vlAwNlmp65nqG3YekdgHppTEz/nagmoLJA4vU9ihrsu8pmSJD8
-         n6ChnbfhsgdqgQV5bwxB9eJVyE3RnpLWC97QVg6zSiaxXllZc38eXwOLCzdD5WYWtn
-         UMMmcOILBF+xUrG58qB19bubNgTag4GGXETXyUXI=
+        b=BQBDUu8R/7yJLRoRdaNrzQaAR78u9GWZt91S253oBPT+ocSytC2LFmu420y8V0pk/
+         LzLe81bWn83Mn0EI5luumbipPnipi9lHTU40Tj2Qt5a29E8lJ0PRaHpfICF9TKGLAw
+         6ayk72Iy8fkWuQW3zEDV8mxy0ebkmP8tdPFCNDWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, JaeMan Park <jaeman@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 002/105] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
-Date:   Mon,  7 Mar 2022 10:18:05 +0100
-Message-Id: <20220307091644.251872591@linuxfoundation.org>
+        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 008/105] KVM: arm64: vgic: Read HW interrupt pending state from the HW
+Date:   Mon,  7 Mar 2022 10:18:11 +0100
+Message-Id: <20220307091644.419513600@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,49 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JaeMan Park <jaeman@google.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit cacfddf82baf1470e5741edeecb187260868f195 ]
+[ Upstream commit 5bfa685e62e9ba93c303a9a8db646c7228b9b570 ]
 
-In mac80211_hwsim, the probe_req frame is created and sent while
-scanning. It is sent with ieee80211_tx_info which is not initialized.
-Uninitialized ieee80211_tx_info can cause problems when using
-mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
-ieee80211_tx_info and doesn't relay probe_req frame to other clients
-even if it is a broadcasting message.
+It appears that a read access to GIC[DR]_I[CS]PENDRn doesn't always
+result in the pending interrupts being accurately reported if they are
+mapped to a HW interrupt. This is particularily visible when acking
+the timer interrupt and reading the GICR_ISPENDR1 register immediately
+after, for example (the interrupt appears as not-pending while it really
+is...).
 
-Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
-the probe_req that is created by hw_scan_work in mac80211_hwsim.
+This is because a HW interrupt has its 'active and pending state' kept
+in the *physical* distributor, and not in the virtual one, as mandated
+by the spec (this is what allows the direct deactivation). The virtual
+distributor only caries the pending and active *states* (note the
+plural, as these are two independent and non-overlapping states).
 
-Signed-off-by: JaeMan Park <jaeman@google.com>
-Link: https://lore.kernel.org/r/20220113060235.546107-1-jaeman@google.com
-[fix memory leak]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fix it by reading the HW state back, either from the timer itself or
+from the distributor if necessary.
+
+Reported-by: Ricardo Koller <ricarkol@google.com>
+Tested-by: Ricardo Koller <ricarkol@google.com>
+Reviewed-by: Ricardo Koller <ricarkol@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220208123726.3604198-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/kvm/vgic/vgic-mmio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 0122585a1e500..cc550ba0c9dfe 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2264,6 +2264,15 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
- 
-+			if (!ieee80211_tx_prepare_skb(hwsim->hw,
-+						      hwsim->hw_scan_vif,
-+						      probe,
-+						      hwsim->tmp_chan->band,
-+						      NULL)) {
-+				kfree_skb(probe);
-+				continue;
-+			}
-+
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
+diff --git a/arch/arm64/kvm/vgic/vgic-mmio.c b/arch/arm64/kvm/vgic/vgic-mmio.c
+index b2d73fc0d1ef4..9e1459534ce54 100644
+--- a/arch/arm64/kvm/vgic/vgic-mmio.c
++++ b/arch/arm64/kvm/vgic/vgic-mmio.c
+@@ -248,6 +248,8 @@ unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
+ 						    IRQCHIP_STATE_PENDING,
+ 						    &val);
+ 			WARN_RATELIMIT(err, "IRQ %d", irq->host_irq);
++		} else if (vgic_irq_is_mapped_level(irq)) {
++			val = vgic_get_phys_line_level(irq);
+ 		} else {
+ 			val = irq_is_pending(irq);
+ 		}
 -- 
 2.34.1
 
