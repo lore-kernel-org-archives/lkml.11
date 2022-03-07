@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 071C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234994AbiCGKPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:15:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
+        id S233507AbiCGKPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240066AbiCGKAd (ORCPT
+        with ESMTP id S240139AbiCGKAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0196B7D01F;
-        Mon,  7 Mar 2022 01:46:47 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7E37E096;
+        Mon,  7 Mar 2022 01:46:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 139FDB8102B;
-        Mon,  7 Mar 2022 09:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E40C340E9;
-        Mon,  7 Mar 2022 09:46:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D7AC6122D;
+        Mon,  7 Mar 2022 09:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87C88C340E9;
+        Mon,  7 Mar 2022 09:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646399;
-        bh=vr8mNEQM1Q6qXcOOY94Mo84hOwzAVDPBT4c+/c+S1tc=;
+        s=korg; t=1646646416;
+        bh=KqGqrntkRFA4FtfAJBGO3M6K/SUpm6NYj4q/F3xOyfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wzgTAQC09wpWvp4TyhZRMgxDjeTGWM7urC1FS/hk/2M34JEX3s6ILM1oISLtZFLB0
-         aS36eJVs66o1S+rSiLRORy71mgNfH43bQLP9Q4FgoND++YVKduT+v+hSv2CchmMK4w
-         ClFnCk4aua8o+10FXnazptIdTQZDPfvsen34FfSw=
+        b=AGoLA54T1aOz4v6O8pCNyX2YAzlRT1vdKpB9QNcqoHw4uydGGeMZEg9TCjZ7n4kzk
+         JzKuY6GTrh+PVyWYmWt8E0dR/sxobqoc66L3D2mp9Aeq/QZih4tl6eHVQHt43CBGrj
+         aty6QDrv4cvSSGJae3JOB2W6xrpQXeKrAbUTHgS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 232/262] iavf: Fix locking for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS
-Date:   Mon,  7 Mar 2022 10:19:36 +0100
-Message-Id: <20220307091709.804962207@linuxfoundation.org>
+Subject: [PATCH 5.15 236/262] drm/bridge: ti-sn65dsi86: Properly undo autosuspend
+Date:   Mon,  7 Mar 2022 10:19:40 +0100
+Message-Id: <20220307091709.992393880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -53,121 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Douglas Anderson <dianders@chromium.org>
 
-[ Upstream commit 0579fafd37fb7efe091f0e6c8ccf968864f40f3e ]
+[ Upstream commit 26d3474348293dc752c55fe6d41282199f73714c ]
 
-iavf_virtchnl_completion is called under crit_lock but when
-the code for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS is called,
-this lock is released in order to obtain rtnl_lock to avoid
-ABBA deadlock with unregister_netdev.
+The PM Runtime docs say:
+  Drivers in ->remove() callback should undo the runtime PM changes done
+  in ->probe(). Usually this means calling pm_runtime_disable(),
+  pm_runtime_dont_use_autosuspend() etc.
 
-Along with the new way iavf_remove behaves, there exist
-many risks related to the lock release and attmepts to regrab
-it. The driver faces crashes related to races between
-unregister_netdev and netdev_update_features. Yet another
-risk is that the driver could already obtain the crit_lock
-in order to destroy it and iavf_virtchnl_completion could
-crash or block forever.
+We weren't doing that for autosuspend. Let's do it.
 
-Make iavf_virtchnl_completion never relock crit_lock in it's
-call paths.
-
-Extract rtnl_lock locking logic to the driver for
-unregister_netdev in order to set the netdev_registered flag
-inside the lock.
-
-Introduce a new flag that will inform adminq_task to perform
-the code from VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS right after
-it finishes processing messages. Guard this code with remove
-flags so it's never called when the driver is in remove state.
-
-Fixes: 5951a2b9812d ("iavf: Fix VLAN feature flags after VFR")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 9bede63127c6 ("drm/bridge: ti-sn65dsi86: Use pm_runtime autosuspend")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220222141838.1.If784ba19e875e8ded4ec4931601ce6d255845245@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h          |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c     | 16 +++++++++++++++-
- drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 14 +-------------
- 3 files changed, 17 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index ffc61993019b..9a122aea6979 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -274,6 +274,7 @@ struct iavf_adapter {
- #define IAVF_FLAG_LEGACY_RX			BIT(15)
- #define IAVF_FLAG_REINIT_ITR_NEEDED		BIT(16)
- #define IAVF_FLAG_QUEUES_DISABLED		BIT(17)
-+#define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
- /* duplicates for common code */
- #define IAVF_FLAG_DCB_ENABLED			0
- 	/* flags for admin queue service task */
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 57ecdff870a1..d11e172252b4 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2463,6 +2463,18 @@ static void iavf_adminq_task(struct work_struct *work)
- 	} while (pending);
- 	mutex_unlock(&adapter->crit_lock);
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index 4d08246f930c..45a5f1e48f0e 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -1473,6 +1473,7 @@ static inline void ti_sn_gpio_unregister(void) {}
  
-+	if ((adapter->flags & IAVF_FLAG_SETUP_NETDEV_FEATURES)) {
-+		if (adapter->netdev_registered ||
-+		    !test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section)) {
-+			struct net_device *netdev = adapter->netdev;
-+
-+			rtnl_lock();
-+			netdev_update_features(netdev);
-+			rtnl_unlock();
-+		}
-+
-+		adapter->flags &= ~IAVF_FLAG_SETUP_NETDEV_FEATURES;
-+	}
- 	if ((adapter->flags &
- 	     (IAVF_FLAG_RESET_PENDING | IAVF_FLAG_RESET_NEEDED)) ||
- 	    adapter->state == __IAVF_RESETTING)
-@@ -4027,8 +4039,10 @@ static void iavf_remove(struct pci_dev *pdev)
- 	cancel_delayed_work_sync(&adapter->watchdog_task);
+ static void ti_sn65dsi86_runtime_disable(void *data)
+ {
++	pm_runtime_dont_use_autosuspend(data);
+ 	pm_runtime_disable(data);
+ }
  
- 	if (adapter->netdev_registered) {
--		unregister_netdev(netdev);
-+		rtnl_lock();
-+		unregister_netdevice(netdev);
- 		adapter->netdev_registered = false;
-+		rtnl_unlock();
- 	}
- 	if (CLIENT_ALLOWED(adapter)) {
- 		err = iavf_lan_del_device(adapter);
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 845976a9ec5f..8a1c293b8c7a 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -1752,19 +1752,7 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+@@ -1532,11 +1533,11 @@ static int ti_sn65dsi86_probe(struct i2c_client *client,
+ 				     "failed to get reference clock\n");
  
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		iavf_process_config(adapter);
--
--		/* unlock crit_lock before acquiring rtnl_lock as other
--		 * processes holding rtnl_lock could be waiting for the same
--		 * crit_lock
--		 */
--		mutex_unlock(&adapter->crit_lock);
--		rtnl_lock();
--		netdev_update_features(adapter->netdev);
--		rtnl_unlock();
--		if (iavf_lock_timeout(&adapter->crit_lock, 10000))
--			dev_warn(&adapter->pdev->dev, "failed to acquire crit_lock in %s\n",
--				 __FUNCTION__);
--
-+		adapter->flags |= IAVF_FLAG_SETUP_NETDEV_FEATURES;
- 		}
- 		break;
- 	case VIRTCHNL_OP_ENABLE_QUEUES:
+ 	pm_runtime_enable(dev);
++	pm_runtime_set_autosuspend_delay(pdata->dev, 500);
++	pm_runtime_use_autosuspend(pdata->dev);
+ 	ret = devm_add_action_or_reset(dev, ti_sn65dsi86_runtime_disable, dev);
+ 	if (ret)
+ 		return ret;
+-	pm_runtime_set_autosuspend_delay(pdata->dev, 500);
+-	pm_runtime_use_autosuspend(pdata->dev);
+ 
+ 	ti_sn65dsi86_debugfs_init(pdata);
+ 
 -- 
 2.34.1
 
