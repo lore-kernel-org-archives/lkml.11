@@ -2,61 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC85C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 12:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242215AbiCGM01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 07:26:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
+        id S242251AbiCGM0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 07:26:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236937AbiCGM0R (ORCPT
+        with ESMTP id S242132AbiCGM0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 07:26:17 -0500
+        Mon, 7 Mar 2022 07:26:19 -0500
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 177D98023C;
-        Mon,  7 Mar 2022 04:25:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 158E180924;
+        Mon,  7 Mar 2022 04:25:25 -0800 (PST)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nRCQS-00072o-05; Mon, 07 Mar 2022 13:25:20 +0100
+        id 1nRCQS-00072o-03; Mon, 07 Mar 2022 13:25:20 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id ABB2BC1280; Mon,  7 Mar 2022 13:24:40 +0100 (CET)
-Date:   Mon, 7 Mar 2022 13:24:40 +0100
+        id C86BDC1280; Mon,  7 Mar 2022 13:21:17 +0100 (CET)
+Date:   Mon, 7 Mar 2022 13:21:17 +0100
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Xi Ruoyao <xry111@mengyan1223.wang>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Huacai Chen <chenhuacai@kernel.org>
-Subject: Re: [PATCH] mips: remove reference to "newer Loongson-3"
-Message-ID: <20220307122440.GF14422@alpha.franken.de>
-References: <0b7c9431efb12c2d957fcc53ec8f0743725d61b3.camel@mengyan1223.wang>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: Sanitise Cavium switch cases in TLB handler
+ synthesizers
+Message-ID: <20220307122117.GD14422@alpha.franken.de>
+References: <alpine.DEB.2.21.2203042044580.47558@angie.orcam.me.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0b7c9431efb12c2d957fcc53ec8f0743725d61b3.camel@mengyan1223.wang>
+In-Reply-To: <alpine.DEB.2.21.2203042044580.47558@angie.orcam.me.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 29, 2021 at 08:49:09PM +0800, Xi Ruoyao wrote:
-> Newest Loongson-3 processors have moved to use LoongArch architecture.
-> Sadly, the LL/SC issue is still existing on both latest Loongson-3
-> processors using MIPS64 (Loongson-3A4000) and LoongArch
-> (Loongson-3A5000).
+On Fri, Mar 04, 2022 at 09:13:11PM +0000, Maciej W. Rozycki wrote:
+> It makes no sense to fall through to `break'.  Therefore reorder the 
+> switch statements so as to have the Cavium cases first, followed by the 
+> default case, which improves readability and pacifies code analysis 
+> tools.  No change in semantics, assembly produced is exactly the same.
 > 
-> As it's very unlikely there will be new Loongson-3 processors using
-> MIPS64, let's stop people from false hoping.
-> 
-> Signed-off-by: Xi Ruoyao <xry111@mengyan1223.wang>
-> Cc: Huacai Chen <chenhuacai@kernel.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> Fixes: bc431d2153cc ("MIPS: Fix fall-through warnings for Clang")
 > ---
-> 
-> Huacai: how's the status of LL/SC issue on Loongson-2K?  If
-> the issue exists on it as well, we can just force
-> CPU_LOONGSON3_WORKAROUNDS when CONFIG_CPU_LOONGSON64 and
-> CONFIG_SMP are both selected.
-> 
->  arch/mips/Kconfig | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
+>  arch/mips/mm/tlbex.c |   23 ++++++++++-------------
+>  1 file changed, 10 insertions(+), 13 deletions(-)
 
 applied to mips-next.
 
