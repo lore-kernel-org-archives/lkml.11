@@ -2,173 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D190BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244903AbiCGS6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S244904AbiCGS6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:58:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243341AbiCGS6D (ORCPT
+        with ESMTP id S234370AbiCGS6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:58:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E9F92D30;
-        Mon,  7 Mar 2022 10:57:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 7 Mar 2022 13:58:37 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6E011A20
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:57:40 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCB1861387;
-        Mon,  7 Mar 2022 18:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9316CC340E9;
-        Mon,  7 Mar 2022 18:56:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646679427;
-        bh=kzPVR0Ts7EvL4cw43owr5qE2dp0dCtf1msIC/h6ja3s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hWt3NTUbKn9a8SzZ7LbBwKtKZCBQX3n8AciKZPGl1KpM2+i7OpUqh8VWt11+/jsNp
-         KjxrMVQFwaVZyyh0sO2G8Klttr+Je2FWqjrNV3OrvR1V5893sxrksMVjYjNn2kWEox
-         oITR2QtoXvgaoFUOtKuliF7ce1I4JjDomW4yS5EzHMhBbJdJTG8osUKLmzQbPzk5Ih
-         33mRGl8VIswmhVlNEivsIZEjlV1PMnRmuQrBCDPuyg33dWVBmOBF5pE+WPKkcMW4Mn
-         JKkGQVk3mWdVACaEHCjPK9n8iC9rXLc6J49S2tDo6cfdt9MeWkvkdTQkTpv6caMSoQ
-         kMvttHPSMcGEA==
-Date:   Mon, 7 Mar 2022 20:56:44 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "bsingharora@gmail.com" <bsingharora@gmail.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "Syromiatnikov, Eugene" <esyr@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
-        "Eranian, Stephane" <eranian@google.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "adrian@lisas.de" <adrian@lisas.de>,
-        "fweimer@redhat.com" <fweimer@redhat.com>,
-        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "avagin@gmail.com" <avagin@gmail.com>,
-        "kcc@google.com" <kcc@google.com>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Yang, Weijiang" <weijiang.yang@intel.com>,
-        "dave.martin@arm.com" <dave.martin@arm.com>,
-        "john.allen@amd.com" <john.allen@amd.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "gorcunov@gmail.com" <gorcunov@gmail.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH 00/35] Shadow stacks for userspace
-Message-ID: <YiZVbPwlgSFnhadv@kernel.org>
-References: <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
- <9d664c91-2116-42cc-ef8d-e6d236de43d0@kernel.org>
- <Yh0wIMjFdDl8vaNM@kernel.org>
- <5a792e77-0072-4ded-9f89-e7fcc7f7a1d6@www.fastmail.com>
- <Yh0+9cFyAfnsXqxI@kernel.org>
- <05df964f-552e-402e-981c-a8bea11c555c@www.fastmail.com>
- <YiEZyTT/UBFZd6Am@kernel.org>
- <CALCETrWacW8SC2tpPxQSaLtxsOXfXHueyuwLcXpNF4aG-0ZvhA@mail.gmail.com>
- <fb7d6e4da58ae77be2c6321ee3f3487485b2886c.camel@intel.com>
- <40a3500c-835a-60b0-15bf-40c6622ad013@kernel.org>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F3AC33F4C2
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 18:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646679459;
+        bh=Xy6MdIJ1JZ9Av676oic2sRFwBOpZq/tlPRFQIZOvVVo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=am/q5y50SWdpD9yPWvEwNLQUOql3uPs1Dbg2Z0fuaDIXoHf778EknmFu4yxuO+ir2
+         v/6I426oaBtRLhCkNQ0uQ7mrUQEvNCYhYRtMYqbbf2UHjK1c0JKH8lx2GQVQkS4qTC
+         y2SvBwQVmu6+isqhY0JBeOcxWcBY7ZR21bZ9B7i8lL7ZL7RonA0gWNGJgDOqA8pRMr
+         6DrN3M9T0Z1ZuzNQHCvnkxyOgFMB8+phktYAQ68mQVc2ygu6+jrUSv9qEdB/TUzTcd
+         S8X238FL26gSnC6Lib6XIwB++dGvR7btIrLtO9SLakMQanPxzwPtyVKDh7vGCi2VwL
+         fgTKuFQAcGr7Q==
+Received: by mail-ed1-f69.google.com with SMTP id l14-20020a056402344e00b0041593c729adso9183660edc.18
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 10:57:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xy6MdIJ1JZ9Av676oic2sRFwBOpZq/tlPRFQIZOvVVo=;
+        b=3EAnVBxE2KqbbMQhCp8LrLuRPR8jHQ35Pwum6TWB7d9bKBob4VoE018wHYh339s2HA
+         DmCVnEqSW7qxAXz6sHf6j5K54LvmSz/TvJSqQHUe4djp7JfXJpNAjEVDVevCIdc6wCjj
+         7OVQ5LDE9KMsUob6IjVZDHuF3s6kYjJ1Sw94pg8FIBBJhlr5MGM7lUcVUNLm+pyEmQZX
+         pDbGUnDkWGLmtq3GYaD6eBtbqI2ZzzXOhruyYFmSw2/nabkzvBD+DdApISd3/8OMMKHv
+         BH5fNi3KCvI0xD6y8E6JmDN2Uwikzp+MSB2Im15szfurRGRxcnHYTyJaS4+Q8WZLk+4u
+         Z0pw==
+X-Gm-Message-State: AOAM5318rwMmEvr5Z88QddXrifX/DYsnFx0QVV5AoYCQC3riaSWlcnf6
+        tyRXWjCdzvn/cQ/UCOA1BysKkQMoXqY+W+HWNH46WOtc5J5VA9a2V1Q4HBYseTQJsq8vNEhVZOJ
+        9sLNzKNsYZR860Krqs+58eZwyC14Rzb4TCwfwv3Q7/Q==
+X-Received: by 2002:a17:907:9622:b0:6db:a30:8bb8 with SMTP id gb34-20020a170907962200b006db0a308bb8mr8103688ejc.475.1646679458586;
+        Mon, 07 Mar 2022 10:57:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxbw5jzHRiBUPGzW87WJtQ5FkmPc5d1NjPaESWeFD6YzdTpSqPNUVHDARbSb6sfuT75Z3pO8g==
+X-Received: by 2002:a17:907:9622:b0:6db:a30:8bb8 with SMTP id gb34-20020a170907962200b006db0a308bb8mr8103654ejc.475.1646679458293;
+        Mon, 07 Mar 2022 10:57:38 -0800 (PST)
+Received: from [192.168.0.143] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id fx13-20020a170906b74d00b006da9e406786sm4598892ejb.189.2022.03.07.10.57.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 10:57:37 -0800 (PST)
+Message-ID: <ee98d248-b2cd-e975-84df-448917a79287@canonical.com>
+Date:   Mon, 7 Mar 2022 19:57:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <40a3500c-835a-60b0-15bf-40c6622ad013@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/4] dt-bindings: cpufreq: mediatek: transform
+ cpufreq-mediatek into yaml
+Content-Language: en-US
+To:     Tim Chang <jia-wei.chang@mediatek.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, fan.chen@mediatek.com,
+        louis.yu@mediatek.com, roger.lu@mediatek.com,
+        Allen-yy.Lin@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        hsinyi@google.com,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+References: <20220307122151.11666-1-jia-wei.chang@mediatek.com>
+ <20220307122151.11666-2-jia-wei.chang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220307122151.11666-2-jia-wei.chang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 11:13:19AM -0800, Andy Lutomirski wrote:
-> On 3/3/22 17:30, Edgecombe, Rick P wrote:
-> > On Thu, 2022-03-03 at 15:00 -0800, Andy Lutomirski wrote:
-> > > > > The intent of PTRACE_CALL_FUNCTION_SIGFRAME is push a signal
-> > > > > frame onto
-> > > > > the stack and call a function.  That function should then be able
-> > > > > to call
-> > > > > sigreturn just like any normal signal handler.
-> > > > 
-> > > > Ok, let me reiterate.
-> > > > 
-> > > > We have a seized and stopped tracee, use
-> > > > PTRACE_CALL_FUNCTION_SIGFRAME
-> > > > to push a signal frame onto the tracee's stack so that sigreturn
-> > > > could use
-> > > > that frame, then set the tracee %rip to the function we'd like to
-> > > > call and
-> > > > then we PTRACE_CONT the tracee. Tracee continues to execute the
-> > > > parasite
-> > > > code that calls sigreturn to clean up and restore the tracee
-> > > > process.
-> > > > 
-> > > > PTRACE_CALL_FUNCTION_SIGFRAME also pushes a restore token to the
-> > > > shadow
-> > > > stack, just like setup_rt_frame() does, so that sys_rt_sigreturn()
-> > > > won't
-> > > > bail out at restore_signal_shadow_stack().
-> > > 
-> > > That is the intent.
-> > > 
-> > > > 
-> > > > The only thing that CRIU actually needs is to push a restore token
-> > > > to the
-> > > > shadow stack, so for us a ptrace call that does that would be
-> > > > ideal.
-> > > > 
-> > > 
-> > > That seems fine too.  The main benefit of the SIGFRAME approach is
-> > > that, AIUI, CRIU eventually constructs a signal frame anyway, and
-> > > getting one ready-made seems plausibly helpful.  But if it's not
-> > > actually that useful, then there's no need to do it.
-> > 
-> > I guess pushing a token to the shadow stack could be done like GDB does
-> > calls, with just the basic CET ptrace support. So do we even need a
-> > specific push token operation?
+On 07/03/2022 13:21, Tim Chang wrote:
+> convert Mediatek cpufreq devicetree binding to YAML.
 
-I've tried to follow gdb CET push implementation, but got lost.
-What is "basic CET ptrace support"? I don't see any ptrace changes in this
-series.
- 
-> > I suppose if CRIU already used some kernel encapsulation of a seized
-> > call/return operation it would have been easier to make CRIU work with
-> > the introduction of CET. But the design of CRIU seems to be to have the
-> > kernel expose just enough and then tie it all together in userspace.
-> > 
-> > Andy, did you have any other usages for PTRACE_CALL_FUNCTION in mind? I
-> > couldn't find any other CRIU-like users of sigreturn in the debian
-> > source search (but didn't read all 819 pages that come up with
-> > "sigreturn"). It seemed to be mostly seccomp sandbox references.
+Start with capital letter please.
 > 
-> I don't see a benefit compelling enough to justify the added complexity,
-> given that existing mechanisms can do it.
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+> ---
+>  .../bindings/cpufreq/cpufreq-mediatek.yaml    | 131 ++++++++++++++++++
+>  1 file changed, 131 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.yaml
+
+You wrote "convert" but where is the removal of TXT?
+
 > 
-> The sigframe thing, OTOH, seems genuinely useful if CRIU would actually use
-> it to save the full register state.  Generating a signal frame from scratch
-> is a pain.  That being said, if CRIU isn't excited, then don't bother.
+> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.yaml
+> new file mode 100644
+> index 000000000000..584946eb3790
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.yaml
+> @@ -0,0 +1,131 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/cpufreq/cpufreq-mediatek.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek CPUFREQ driver Device Tree Bindings
 
-CRIU is excited :)
+Please remove "driver Device Tree Bindings" because the title should
+describe the hardware. Therefore it could be something like "Mediatek
+SoC CPU frequency and voltage scaling".
 
-I just was looking for the minimal possible interface that will allow us to
-call sigreturn. Rick is right and CRIU does try to expose as little as
-possible and handle the pain in the userspace.
+How is it related to cpufreq-mediatek-hw.yaml? The names/title look
+unfortunately too similar.
 
-The SIGFRAME approach is indeed very helpful, especially if we can make it
-work on other architectures eventually. 
+In general this does not look like proper bindings (see also below lack
+of compatible). Bindings describe the hardware, so what is exactly the
+hardware here?
 
--- 
-Sincerely yours,
-Mike.
+> +
+> +maintainers:
+> +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> +
+> +description: |
+> +  CPUFREQ is used for scaling clock frequency of CPUs.
+> +  The module cooperates with CCI DEVFREQ to manage frequency for some Mediatek
+> +  SoCs.
+> +
+> +properties:
+
+How is this schema going to be applied? I don't see here select neither
+compatible.
+
+> +  clocks:
+> +    items:
+> +      - description:
+> +          The first one is the multiplexer for clock input of CPU cluster.
+> +      - description:
+> +          The other is used as an intermediate clock source when the original
+> +          CPU is under transition and not stable yet.
+> +
+> +  clock-names:
+> +    items:
+> +      - const: "cpu"
+> +      - const: "intermediate"
+> +
+> +  operating-points-v2:
+> +    description:
+> +      For details, please refer to
+> +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+> +
+> +  opp-table: true
+
+You have operating-points-v2. What is this for? Did it exist in original
+bindings?
+
+> +
+> +  proc-supply:
+> +    description:
+> +      Phandle of the regulator for CPU cluster that provides the supply
+> +      voltage.
+> +
+> +  sram-supply:
+> +    description:
+> +      Phandle of the regulator for sram of CPU cluster that provides the supply
+> +      voltage. When present, the cpufreq driver needs to do "voltage tracking"
+> +      to step by step scale up/down Vproc and Vsram to fit SoC specific needs.
+> +      When absent, the voltage scaling flow is handled by hardware, hence no
+> +      software "voltage tracking" is needed.
+> +
+> +  "#cooling-cells":
+> +    description:
+> +      For details, please refer to
+> +      Documentation/devicetree/bindings/thermal/thermal-cooling-devices.yaml
+
+Skip description, it's obvious. Instead add here const with value.
+
+
+Best regards,
+Krzysztof
