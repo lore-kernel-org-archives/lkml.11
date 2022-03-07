@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E11C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B30F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240287AbiCGKNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:13:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
+        id S233478AbiCGKNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:13:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238954AbiCGJ5t (ORCPT
+        with ESMTP id S238945AbiCGJ5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:57:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970FD7B567;
+        Mon, 7 Mar 2022 04:57:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8329B7B561;
         Mon,  7 Mar 2022 01:46:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C353AB8102B;
-        Mon,  7 Mar 2022 09:46:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4CFC340E9;
-        Mon,  7 Mar 2022 09:45:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5292FB810C3;
+        Mon,  7 Mar 2022 09:45:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B932CC340F3;
+        Mon,  7 Mar 2022 09:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646360;
-        bh=VTKM/YwKoGj9z/Ij5f3LgJGLGD6A7h4ZU75WjylvML8=;
+        s=korg; t=1646646354;
+        bh=hampRF1xat1hho1n/bgLbdw80cfDHlGbjyr6jsw/pSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qJHOthlOyaBlz5BwHTss8cQM9+GQwzpkXpQtr/1m/8PETR6W5LBDJniCD1khMUxu
-         ecW1moiKrdJ25oPboEiPE90KxK0n3a3kdsDmETB+wFp5FQLP/cDCPnxhUMZS4Bi/KQ
-         OEeKIbrXuSjvmW6DkpZcSnDd90eZKqVdmU+8y68c=
+        b=YObi/NEOfgMTl+jYgZc1dXY8cAcdjbCAkNLSo/8wu2cVoYGhST+p2kgWOPhedidge
+         LKv+fiDfksOCuJ6pSGxIMfo4Lm8CpPWAgd/1xLG8N6+N1Fxvw5UAMwlaDFMArA4Kvt
+         XYx1V7XLymvlTH/kbRw5E/DczSTbq39g474ATkuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 178/262] ibmvnic: register netdev after init of adapter
-Date:   Mon,  7 Mar 2022 10:18:42 +0100
-Message-Id: <20220307091707.441491438@linuxfoundation.org>
+        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.15 176/262] iavf: Fix missing check for running netdev
+Date:   Mon,  7 Mar 2022 10:18:40 +0100
+Message-Id: <20220307091707.386536997@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,50 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-commit 570425f8c7c18b14fa8a2a58a0adb431968ad118 upstream.
+commit d2c0f45fcceb0995f208c441d9c9a453623f9ccf upstream.
 
-Finish initializing the adapter before registering netdev so state
-is consistent.
+The driver was queueing reset_task regardless of the netdev
+state.
 
-Fixes: c26eba03e407 ("ibmvnic: Update reset infrastructure to support tunable parameters")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Do not queue the reset task in iavf_change_mtu if netdev
+is not running.
+
+Fixes: fdd4044ffdc8 ("iavf: Remove timer for work triggering, use delaying work instead")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5632,12 +5632,6 @@ static int ibmvnic_probe(struct vio_dev
- 		goto ibmvnic_dev_file_err;
- 
- 	netif_carrier_off(netdev);
--	rc = register_netdev(netdev);
--	if (rc) {
--		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
--		goto ibmvnic_register_fail;
--	}
--	dev_info(&dev->dev, "ibmvnic registered\n");
- 
- 	if (init_success) {
- 		adapter->state = VNIC_PROBED;
-@@ -5650,6 +5644,14 @@ static int ibmvnic_probe(struct vio_dev
- 
- 	adapter->wait_for_reset = false;
- 	adapter->last_reset_time = jiffies;
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3373,8 +3373,11 @@ static int iavf_change_mtu(struct net_de
+ 		iavf_notify_client_l2_params(&adapter->vsi);
+ 		adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
+ 	}
+-	adapter->flags |= IAVF_FLAG_RESET_NEEDED;
+-	queue_work(iavf_wq, &adapter->reset_task);
 +
-+	rc = register_netdev(netdev);
-+	if (rc) {
-+		dev_err(&dev->dev, "failed to register netdev rc=%d\n", rc);
-+		goto ibmvnic_register_fail;
++	if (netif_running(netdev)) {
++		adapter->flags |= IAVF_FLAG_RESET_NEEDED;
++		queue_work(iavf_wq, &adapter->reset_task);
 +	}
-+	dev_info(&dev->dev, "ibmvnic registered\n");
-+
- 	return 0;
  
- ibmvnic_register_fail:
+ 	return 0;
+ }
 
 
