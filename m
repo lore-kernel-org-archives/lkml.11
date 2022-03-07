@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AC2C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F14C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237830AbiCGJ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:28:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
+        id S237751AbiCGJ2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:28:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236933AbiCGJ0S (ORCPT
+        with ESMTP id S236945AbiCGJ0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:26:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1E85C353;
-        Mon,  7 Mar 2022 01:24:15 -0800 (PST)
+        Mon, 7 Mar 2022 04:26:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BD8583AF;
+        Mon,  7 Mar 2022 01:24:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1862DB810B2;
-        Mon,  7 Mar 2022 09:24:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0D2C340F3;
-        Mon,  7 Mar 2022 09:24:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13877B810B6;
+        Mon,  7 Mar 2022 09:24:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB7CC340F3;
+        Mon,  7 Mar 2022 09:24:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645052;
-        bh=cYXrRg0bKDaRuFtwOPMDCLHu9zFCT4+KPhzPcZjVbFQ=;
+        s=korg; t=1646645049;
+        bh=Yj6yiYRDYgg5v4mYk0LXJCfA+wUzd4tFvjJgIfZasDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZXXWr2XQO/rVlFWf/9JNEmY8ITMJUiwLdOp39jvy9NZke/0mwizXaJ/GBPJQnPH8
-         0w2s1PWsijDZyImUPiMFnIzYO0BLBKeI/Muh8J36LP8eAz1p+EaZe7PISnQUj1wxro
-         xYOAsZQuLKqq9hqNgfAeGRJyld8eawO4ezrrEyNI=
+        b=D/TpFH88DyoAfLaURV5Fvpgn2+D6iSRPS5kISL1wck3TFrmC0iAIIIk0iSTEB+gna
+         M/WqDj8Lh8I2Pzs7HNWEULmfUP5QC5U9An3g5G6Eg6pL5hWJBhaWvscLfzVOBlxCvF
+         Ir9oj9uIUSuQWIYu9+KbrE+vfOn3wy1H7YLok23w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Oleksandr Natalenko <oleksandr@redhat.com>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH 4.19 22/51] netfilter: nf_queue: fix possible use-after-free
-Date:   Mon,  7 Mar 2022 10:18:57 +0100
-Message-Id: <20220307091637.624376245@linuxfoundation.org>
+Subject: [PATCH 4.19 21/51] netfilter: nf_queue: dont assume sk is full socket
+Date:   Mon,  7 Mar 2022 10:18:56 +0100
+Message-Id: <20220307091637.595147213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -51,96 +50,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-commit c3873070247d9e3c7a6b0cf9bf9b45e8018427b1 upstream.
+commit 747670fd9a2d1b7774030dba65ca022ba442ce71 upstream.
 
-Eric Dumazet says:
-  The sock_hold() side seems suspect, because there is no guarantee
-  that sk_refcnt is not already 0.
+There is no guarantee that state->sk refers to a full socket.
 
-On failure, we cannot queue the packet and need to indicate an
-error.  The packet will be dropped by the caller.
+If refcount transitions to 0, sock_put calls sk_free which then ends up
+with garbage fields.
 
-v2: split skb prefetch hunk into separate change
+I'd like to thank Oleksandr Natalenko and Jiri Benc for considerable
+debug work and pointing out state->sk oddities.
 
-Fixes: 271b72c7fa82c ("udp: RCU handling for Unicast packets.")
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Fixes: ca6fb0651883 ("tcp: attach SYNACK messages to request sockets instead of listener")
+Tested-by: Oleksandr Natalenko <oleksandr@redhat.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_queue.h |    2 +-
- net/netfilter/nf_queue.c         |   11 +++++++++--
- net/netfilter/nfnetlink_queue.c  |   12 +++++++++---
- 3 files changed, 19 insertions(+), 6 deletions(-)
+ net/netfilter/nf_queue.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/include/net/netfilter/nf_queue.h
-+++ b/include/net/netfilter/nf_queue.h
-@@ -32,7 +32,7 @@ void nf_register_queue_handler(struct ne
- void nf_unregister_queue_handler(struct net *net);
- void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
- 
--void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
-+bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
- void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
- 
- static inline void init_hashrandom(u32 *jhash_initval)
 --- a/net/netfilter/nf_queue.c
 +++ b/net/netfilter/nf_queue.c
-@@ -82,10 +82,13 @@ void nf_queue_entry_release_refs(struct
- EXPORT_SYMBOL_GPL(nf_queue_entry_release_refs);
+@@ -46,6 +46,15 @@ void nf_unregister_queue_handler(struct
+ }
+ EXPORT_SYMBOL(nf_unregister_queue_handler);
  
- /* Bump dev refs so they don't vanish while packet is out */
--void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
-+bool nf_queue_entry_get_refs(struct nf_queue_entry *entry)
++static void nf_queue_sock_put(struct sock *sk)
++{
++#ifdef CONFIG_INET
++	sock_gen_put(sk);
++#else
++	sock_put(sk);
++#endif
++}
++
+ void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
  {
  	struct nf_hook_state *state = &entry->state;
- 
-+	if (state->sk && !refcount_inc_not_zero(&state->sk->sk_refcnt))
-+		return false;
-+
- 	if (state->in)
- 		dev_hold(state->in);
+@@ -56,7 +65,7 @@ void nf_queue_entry_release_refs(struct
  	if (state->out)
-@@ -104,6 +107,7 @@ void nf_queue_entry_get_refs(struct nf_q
- 			dev_hold(physdev);
- 	}
- #endif
-+	return true;
- }
- EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
- 
-@@ -195,7 +199,10 @@ static int __nf_queue(struct sk_buff *sk
- 		.size	= sizeof(*entry) + route_key_size,
- 	};
- 
--	nf_queue_entry_get_refs(entry);
-+	if (!nf_queue_entry_get_refs(entry)) {
-+		kfree(entry);
-+		return -ENOTCONN;
-+	}
- 
- 	switch (entry->state.pf) {
- 	case AF_INET:
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -716,9 +716,15 @@ static struct nf_queue_entry *
- nf_queue_entry_dup(struct nf_queue_entry *e)
- {
- 	struct nf_queue_entry *entry = kmemdup(e, e->size, GFP_ATOMIC);
--	if (entry)
--		nf_queue_entry_get_refs(entry);
--	return entry;
-+
-+	if (!entry)
-+		return NULL;
-+
-+	if (nf_queue_entry_get_refs(entry))
-+		return entry;
-+
-+	kfree(entry);
-+	return NULL;
- }
- 
+ 		dev_put(state->out);
+ 	if (state->sk)
+-		sock_put(state->sk);
++		nf_queue_sock_put(state->sk);
  #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+ 	if (entry->skb->nf_bridge) {
+ 		struct net_device *physdev;
 
 
