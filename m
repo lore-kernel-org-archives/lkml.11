@@ -2,200 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 19:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245003AbiCGTQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:16:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S245011AbiCGTQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:16:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237059AbiCGTQW (ORCPT
+        with ESMTP id S245038AbiCGTQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:16:22 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2611E7CDF9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 11:15:27 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id v1-20020a17090a088100b001bf25f97c6eso485735pjc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 11:15:27 -0800 (PST)
+        Mon, 7 Mar 2022 14:16:39 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279527CDF9
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 11:15:40 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id bn33so21951442ljb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 11:15:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ec12nJBSkE86MnU2yz3hD3Crn8S+e1l2jeH9YuRdiFg=;
-        b=0h/eT9ol31u+aaBaTF7odf5szx32PTHZvNh5Ed8dtxAx4adLg/+T6CA8K5Pfs/Tagh
-         OgbhX2q9ZHDjCi/dTmUbkTxxK1983owlpY53/jvF+3vrcsvfG1cL9vDQt5N8ygzHQ1Qy
-         NYNxWAM5UaEp7EFh7Tlun5++cjfAxUjai4dv4X5cqyiDOECQ8eVz3mGDEWujnIOQ7C5z
-         W13m/XjsDWandN+9u/WHP2fsBkHIosdm7CnfqdxGcwUPS5l2wg9HSzXIYmHW6ShJ0mRK
-         Ie8xjGMmg4Uyl772AdwLuqQ57FIC982eSgqVR1uaj37nar0BYitY8uFm5hRmzhSQLuuL
-         YX7g==
+         :cc;
+        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
+        b=dlpUNu5q4CyzmXtBLA/gOu0GC/00SF7ttDAollAbHZtk5bw2xAtIqb7CwTopnt8lf3
+         AbfnSVPq9xulj/tw8AvoPmKfCZDzXeZNEVEEDbHlLhh/I5bp+zk8upvRu1BNSASuquhE
+         pUQrRqiHujQApoBOt9qnNksqqhPlFfAR59MXs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ec12nJBSkE86MnU2yz3hD3Crn8S+e1l2jeH9YuRdiFg=;
-        b=4Eqlrwnv6Ttqf0tkZoqYNTb3FDVfVF6k/+rm9P6Cv1PXqytZSQfOjFLg2crDZVKqVr
-         s6oDP8GfOymkdp8rdGkoFIwE7elNGM44gwCPse6xnHpJMVLTjtTnLXWdZyXguaHGQLNI
-         xj02/oBAaJsssxii+f5lpH70lZgZCuObKIvpISo9tzz2H2F1YZf8ceouCucYaeDd/APC
-         CFNqirWA+1G5brOURiLdvMGOjmA5lZDzOpaSFnwuJEITIO0zLQGdWeR1dnLPH+EoTE6v
-         pAQJnFlt1xzb482mWAZPwoONe2qwi2S49IEn3U9DKqCNhEDFz2WcI9mhSk4JvOe3mPxu
-         DuOA==
-X-Gm-Message-State: AOAM5312F/JuajrOB9GmKYWc3nh7H5I1Xx5tj3uI0IjyEhO/k8EWbGx6
-        CD9na2Bpxx6JtQjPEVyBn8ko71fKBYw2yNovIQ7IHQ==
-X-Google-Smtp-Source: ABdhPJyyCiet5Mfd0KFLhDhyKkh5WyTvUsGLB+U4nAW5fU0bwYJ6hjsEn/Zf4pjIYjWajMfWtQADvqo6T0HCv6fkeA4=
-X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id
- d22-20020a170902729600b0014b4bc60e81mr13651116pll.132.1646680526576; Mon, 07
- Mar 2022 11:15:26 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
+        b=CtsiwRjIj5w6N4+QZxjFAe4Ct58sHt7MhbscnizbDaqncdMABUHJh7/Zk2BGws09MZ
+         H/2MG25ylnNf2NAYum3Bm0MI7dXd1LC9Bd0T4CPdEGIBauYQ/M7G/fHubWeHfE7H0/J7
+         1LFn0kRF6i+GpfQmeR90wSbXkzeba6cC+acDP3d4Q7NJw1QVzkBYYyWNMWOdoWqf70rl
+         0o73zAfmqSppNcr3SS7dYCueS3QNH44ejsgbhTjefmLk+QH+R4Lm9BhyttPKV1Bj+HEe
+         q9WAXVPzqm8z2iheQE6JS05WFSm0GzgX4sLhHug5EozWFrfNANgoMFt4vRpx1Hgxzjpw
+         h4pg==
+X-Gm-Message-State: AOAM531vWGZEIrdjKkussEuW9D0nF0lpaQyQV7DwOFZSL/y0+vm0Je3Z
+        0/s3hk4ADmg6awF7xUJZGMiYhWOazAtrjwhdVbA=
+X-Google-Smtp-Source: ABdhPJz45EfGv+Kzy28FY0mnsMPFsBLlWPDT862n6r2+qARtdNVHBc+zDsUa1DqugFQN+kTocTqODw==
+X-Received: by 2002:a2e:9147:0:b0:246:1379:2cd4 with SMTP id q7-20020a2e9147000000b0024613792cd4mr8555170ljg.418.1646680536986;
+        Mon, 07 Mar 2022 11:15:36 -0800 (PST)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
+        by smtp.gmail.com with ESMTPSA id n13-20020a056512388d00b00443ecf806c5sm3000780lft.104.2022.03.07.11.15.35
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 11:15:36 -0800 (PST)
+Received: by mail-lf1-f46.google.com with SMTP id n19so6914982lfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 11:15:35 -0800 (PST)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr5310350lja.443.1646680524503; Mon, 07
+ Mar 2022 11:15:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20220301195457.21152-1-jithu.joseph@intel.com>
- <20220301195457.21152-9-jithu.joseph@intel.com> <188492dc80c017375da76d444347b1d00c2031f6.camel@intel.com>
- <7b9c788e-21dc-eedc-a1b4-9c6877fa48fe@intel.com> <CAPcyv4h=qPFrP+mRqaZhkh5ZmYjuQawsqvf+-R036ZJVKBNK4Q@mail.gmail.com>
- <33d0e764-86d9-8504-17fa-14b31c87de4e@intel.com>
-In-Reply-To: <33d0e764-86d9-8504-17fa-14b31c87de4e@intel.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 7 Mar 2022 11:15:18 -0800
-Message-ID: <CAPcyv4g5bq9+u0iLjhpeJw8bkbCREUw60H2z_KfDz4hHCrKdFQ@mail.gmail.com>
-Subject: Re: [RFC 08/10] platform/x86/intel/ifs: Add IFS sysfs interface
-To:     "Joseph, Jithu" <jithu.joseph@intel.com>
-Cc:     "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "markgross@kernel.org" <markgross@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220307150037.GD3293@kadam> <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
+In-Reply-To: <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 7 Mar 2022 11:15:07 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
+Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
+Subject: Re: [PATCH 0/6] Remove usage of list iterator past the loop body
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jason Gunthorpe <jgg@ziepe.ca>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>, "bp@alien8.de" <bp@alien8.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 11:09 AM Joseph, Jithu <jithu.joseph@intel.com> wrot=
-e:
+On Mon, Mar 7, 2022 at 7:26 AM David Laight <David.Laight@aculab.com> wrote:
 >
->
->
-> On 3/7/2022 9:38 AM, Dan Williams wrote:
-> > On Fri, Mar 4, 2022 at 12:42 PM Joseph, Jithu <jithu.joseph@intel.com> =
-wrote:
-> >>
-> >>
-> >>
->
-> >>>> + */
-> >>>> +static ssize_t details_show(struct device *dev,
-> >>>> +                           struct device_attribute *attr,
-> >>>> +                           char *buf)
-> >>>> +{
-> >>>> +       unsigned int cpu =3D dev->id;
-> >>>> +       int ret;
-> >>>> +
-> >>>> +       if (down_trylock(&ifs_sem))
-> >>>> +               return -EBUSY;
-> >>>
-> >>> What is the ifs_sem protecting? This result is immediately invalid
-> >>> after the lock is dropped anyway, so why hold it over reading the
-> >>> value? You can't prevent 2 threads racing each other here.
-> >>
-> >> percpu thread running scan_test_worker() will update per_cpu(ifs_state=
-, cpu).scan_details. (before signalling this thread to run, this lock would=
- be acquired)
-> >> This is to protect against the scenario where if the percpu thread is =
-running a test and if at the same time a user is querying its status, they =
-would see busy.
-> >
-> > That begs the question why would userspace be polling this file? Is it
-> > because it does not know when a test completes otherwise? How does it
-> > know that the result it is seeing is from the test it ran and not some
-> > other invocation to start a new test?
->
-> I think I should have explained the need for locking at a higher level .
-> It is to make sure that only one of the below action happens at any time
->
-> 1. single percpu test
-> 2. all-cpu test (tests all cores sequentially)
-> 3. scan binary reload
-> 4. querying the status
->
-> (There are h/w reasons for why we restrict to a  single IFS test at any t=
-ime)
-> If 4 happens while 1 or 2 is in progress , we return busy.  My earlier ex=
-planation was trying to explain why we are preventing 4 when 1 or 2   is in=
- progress.
->
-> As to the question of why would a user do 4 while 1 or 2 is in progress, =
-there is no reason for him to do that, both the run_test (percpu and global=
-) are blocking.
-> But if he issues a test from one shell and uses another shell to query th=
-e status  (while it is still in progress) he will see busy.
+> I'd write the following new defines (but I might be using
+> the old names here):
 
-...and what about the race that the semaphore cannot solve of test run
-launch racing collection of previous run results?
+See my email at
 
->
->
-> >>>
-> >>> Just have a CPU mask as an input parameter and avoid needing to hang
-> >>> ifs sysfs attributes underneath /sys/device/system/cpu/ifs.
-> >>
-> >> The percpu sysfs has the additional function of providing percpu statu=
-s and  details.
-> >
-> > That still does not answer the question about the input parameter for
-> > selecting cores.
->
-> see below
->
-> >
-> >> The global interface is unable to provide the status and details for a=
-ll the cores in the system. It does give a summary, which
-> >> guides the user to the appropriate percpu status/details
-> >
-> > It does not sound like the global sysfs interface is all that useful,
-> > especially as it just expands the window for the global results to
-> > become out of sync with the per-cpu results. With a uevent  the tool
-> > can get called to handle results on per-cpu / per-test,chunk basis
-> > atomically. I.e. a udev rule like:
->
-> The global/percpu design was chosen after some thought on how a user migh=
-t want to test his system.  And the sysfs files are grouped accordingly.
-> To start with he might want to see if everything is fine with his system =
-(all cores).  The global interface is for this. He can do that with a singl=
-e line command
->
-> echo 1 > /sys/devices/system/cpu/ifs/run_test
->
-> if "/sys/devices/system/cpu/ifs/status" says anything other than pass, he=
- can identify the failed/untested cores using "/sys/devices/system/cpu/ifs/=
-cpu_fail_list" and "cpu_untested_list".
->
-> Now to understand why a particular core failed or retest that particular =
-core, the percpu interface is present.
-> (So  global and percpu views are  a simple and convenient way to expose t=
-he available functionality and we went with that =E2=80=A6 I agree that an =
-alternative was to provide an input parameter for selecting cores)
->
-> The whole testing can be done with simple interaction with sysfs file  =
-=E2=80=A6 without the need for any elaborate user space tool.
+  https://lore.kernel.org/all/CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com/
 
-I have not asked for an "elaborate" user tool, sysfs events and
-uevents allow for basic shell script tooling. Now, a more polished
-tool is certainly welcome, but a sample script is better than nothing.
+for what I think is the way forward if we want to do new defines and
+clean up the situation.
 
-> Perhaps we can add recommended testing flow in the Documentation
+It's really just an example (and converts two list cases and one
+single file that uses them), so it's not in any way complete.
 
-Documentation is good for describing architecture internals and
-motivation, a sample user tool / script is good for validating ABI fit
-for purpose.
+I also has that "-std=gnu11" in the patch so that you can use the
+loop-declared variables - but without the other small fixups for some
+of the things that exposed.
+
+I'll merge the proper version of the "update C standard version" from
+Arnd early in the 5.18 merge window, but for testing that one file
+example change I sent out the patch like that.
+
+          Linus
