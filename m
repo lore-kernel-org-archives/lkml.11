@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F386C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238143AbiCGJrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:47:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S232064AbiCGJrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:47:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238458AbiCGJi1 (ORCPT
+        with ESMTP id S238499AbiCGJia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FF461A3B;
-        Mon,  7 Mar 2022 01:32:42 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EF93EB94;
+        Mon,  7 Mar 2022 01:32:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D60C611F1;
-        Mon,  7 Mar 2022 09:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32459C340E9;
-        Mon,  7 Mar 2022 09:32:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7AF5611E4;
+        Mon,  7 Mar 2022 09:32:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4722C340E9;
+        Mon,  7 Mar 2022 09:32:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645560;
-        bh=oh72mR18v89eoxIem2rjFCWNCuIQgKOqDksdMwJ+Hug=;
+        s=korg; t=1646645551;
+        bh=5CXbBcdfgN66RFXybhCZIswRAYHG8fVX0Dk4Suk+HIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fPnpk6oxIhrHoONlYWdCfXhep7PJat+63mJuLqfU1GXWBJ8GzSxt/TxOzIputp9sm
-         yQMy7PXcCsAS018wy3WlrnlCV8CbPUg6z46LG0vV+M2Z3OlOEVB+ef88MWbHBBayvD
-         Kp4UJFLs7S3/Gk8YvIdebhCC+s/8nx0irwpr919M=
+        b=Jq+fyQkTORgcfDlL6UD0rMeURMDGCW8TRzhxU25Z2DHw44vEvRMaczS9O2QO+H9RT
+         0qoITBlZ7CzlNn80hbPNgl3h1/pj0wayGy8yX6DoVKsMUNCUwmnIDYgngAtLvu1PTs
+         9fQB7L+yZSEUBqVF2Et7xv2Q/iLru1DF+4FRzTRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 019/105] exfat: fix i_blocks for files truncated over 4 GiB
-Date:   Mon,  7 Mar 2022 10:18:22 +0100
-Message-Id: <20220307091644.723922958@linuxfoundation.org>
+        stable@vger.kernel.org, Sunil V L <sunilvl@ventanamicro.com>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 5.10 026/105] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return value
+Date:   Mon,  7 Mar 2022 10:18:29 +0100
+Message-Id: <20220307091644.917369222@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -51,81 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
+From: Sunil V L <sunilvl@ventanamicro.com>
 
-[ Upstream commit 92fba084b79e6bc7b12fc118209f1922c1a2df56 ]
+commit dcf0c838854c86e1f41fb1934aea906845d69782 upstream.
 
-In exfat_truncate(), the computation of inode->i_blocks is wrong if
-the file is larger than 4 GiB because a 32-bit variable is used as a
-mask. This is fixed and simplified by using round_up().
+The get_boot_hartid_from_fdt() function currently returns U32_MAX
+for failure case which is not correct because U32_MAX is a valid
+hartid value. This patch fixes the issue by returning error code.
 
-Also fix the same buggy computation in exfat_read_root() and another
-(correct) one in exfat_fill_inode(). The latter was fixed another way
-last month but can be simplified by using round_up() as well. See:
-
-  commit 0c336d6e33f4 ("exfat: fix incorrect loading of i_blocks for
-                        large files")
-
-Fixes: 98d917047e8b ("exfat: add file operations")
-Cc: stable@vger.kernel.org # v5.7+
-Suggested-by: Matthew Wilcox <willy@infradead.org>
-Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Christophe Vu-Brugier <christophe.vu-brugier@seagate.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: d7071743db31 ("RISC-V: Add EFI stub support.")
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/exfat/file.c  | 4 ++--
- fs/exfat/inode.c | 4 ++--
- fs/exfat/super.c | 4 ++--
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/firmware/efi/libstub/riscv-stub.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/fs/exfat/file.c b/fs/exfat/file.c
-index 6258c5da3060b..c819e8427ea57 100644
---- a/fs/exfat/file.c
-+++ b/fs/exfat/file.c
-@@ -250,8 +250,8 @@ void exfat_truncate(struct inode *inode, loff_t size)
- 	else
- 		mark_inode_dirty(inode);
+diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
+index 380e4e251399..9c460843442f 100644
+--- a/drivers/firmware/efi/libstub/riscv-stub.c
++++ b/drivers/firmware/efi/libstub/riscv-stub.c
+@@ -25,7 +25,7 @@ typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
--			~(sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- write_size:
- 	aligned_size = i_size_read(inode);
- 	if (aligned_size & (blocksize - 1)) {
-diff --git a/fs/exfat/inode.c b/fs/exfat/inode.c
-index d7f11b7ab46c5..2a9f6a80584ee 100644
---- a/fs/exfat/inode.c
-+++ b/fs/exfat/inode.c
-@@ -600,8 +600,8 @@ static int exfat_fill_inode(struct inode *inode, struct exfat_dir_entry *info)
+ static u32 hartid;
  
- 	exfat_save_attr(inode, info->attr);
+-static u32 get_boot_hartid_from_fdt(void)
++static int get_boot_hartid_from_fdt(void)
+ {
+ 	const void *fdt;
+ 	int chosen_node, len;
+@@ -33,23 +33,26 @@ static u32 get_boot_hartid_from_fdt(void)
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1)) &
--		~((loff_t)sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- 	inode->i_mtime = info->mtime;
- 	inode->i_ctime = info->mtime;
- 	ei->i_crtime = info->crtime;
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 7b91214a4110e..cd04c912f02e0 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -364,8 +364,8 @@ static int exfat_read_root(struct inode *inode)
- 	inode->i_op = &exfat_dir_inode_operations;
- 	inode->i_fop = &exfat_dir_operations;
+ 	fdt = get_efi_config_table(DEVICE_TREE_GUID);
+ 	if (!fdt)
+-		return U32_MAX;
++		return -EINVAL;
  
--	inode->i_blocks = ((i_size_read(inode) + (sbi->cluster_size - 1))
--			& ~(sbi->cluster_size - 1)) >> inode->i_blkbits;
-+	inode->i_blocks = round_up(i_size_read(inode), sbi->cluster_size) >>
-+				inode->i_blkbits;
- 	ei->i_pos = ((loff_t)sbi->root_dir << 32) | 0xffffffff;
- 	ei->i_size_aligned = i_size_read(inode);
- 	ei->i_size_ondisk = i_size_read(inode);
+ 	chosen_node = fdt_path_offset(fdt, "/chosen");
+ 	if (chosen_node < 0)
+-		return U32_MAX;
++		return -EINVAL;
+ 
+ 	prop = fdt_getprop((void *)fdt, chosen_node, "boot-hartid", &len);
+ 	if (!prop || len != sizeof(u32))
+-		return U32_MAX;
++		return -EINVAL;
+ 
+-	return fdt32_to_cpu(*prop);
++	hartid = fdt32_to_cpu(*prop);
++	return 0;
+ }
+ 
+ efi_status_t check_platform_features(void)
+ {
+-	hartid = get_boot_hartid_from_fdt();
+-	if (hartid == U32_MAX) {
++	int ret;
++
++	ret = get_boot_hartid_from_fdt();
++	if (ret) {
+ 		efi_err("/chosen/boot-hartid missing or invalid!\n");
+ 		return EFI_UNSUPPORTED;
+ 	}
 -- 
-2.34.1
+2.35.1
 
 
 
