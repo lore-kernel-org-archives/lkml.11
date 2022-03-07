@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238533AbiCGJwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S238559AbiCGJwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiCGJlp (ORCPT
+        with ESMTP id S241011AbiCGJlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C2C6D3A0;
-        Mon,  7 Mar 2022 01:39:09 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810D46D393;
+        Mon,  7 Mar 2022 01:39:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5EE46116E;
-        Mon,  7 Mar 2022 09:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63707C340E9;
-        Mon,  7 Mar 2022 09:39:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BCF6B810B2;
+        Mon,  7 Mar 2022 09:39:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8F9C340E9;
+        Mon,  7 Mar 2022 09:39:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645948;
-        bh=jelnZl3ZRX+l4OmSRmakzD+X6v4N54ckjAV75aGfZgE=;
+        s=korg; t=1646645944;
+        bh=R8/1XpnUCRmWuxRq57W415mmpgzGhzNlkkynV5S82N0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1/kOnKLvjsq13SrCsmcX0rCXteKxIB01PGC4xHC4O/UvT0iRSw6q5Wv+V6Wx740Y
-         GJuNdtSWx+880Cj6UYf1H3EY23qvPQGS4UjiN626SVpm7QXgP1wb1WPAjyIqx7zq29
-         pylDWorkLiUoSxTXZdmlTbqhdSAw+J4M9mImOZLc=
+        b=qgSkcnEPNH2k5aHF0wwmZwIftXBSAnjFUbvTvr0DjSEX7TvZrTQInTnKwdyTVvT/L
+         ZC+kqJqWTveqs3elVwe538HmuJi2EaFbDSA0jlepmbo4hriFojvWYFhmKUf2YDyYfA
+         +mcloMJ/iva1vHr712DHWAS6xmgqUXswhhnbD8ww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Xu <haoxu@linux.alibaba.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/262] io_uring: fix no lock protection for ctx->cq_extra
-Date:   Mon,  7 Mar 2022 10:16:29 +0100
-Message-Id: <20220307091703.794659099@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Paul <seanpaul@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 083/262] drm/atomic: Check new_crtc_state->active to determine if CRTC needs disable in self refresh mode
+Date:   Mon,  7 Mar 2022 10:17:07 +0100
+Message-Id: <20220307091704.827402975@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,41 +55,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Xu <haoxu@linux.alibaba.com>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit e302f1046f4c209291b07ff7bc4d15ca26891f16 ]
+[ Upstream commit 69e630016ef4e4a1745310c446f204dc6243e907 ]
 
-ctx->cq_extra should be protected by completion lock so that the
-req_need_defer() does the right check.
+Actual hardware state of CRTC is controlled by the member 'active' in
+struct drm_crtc_state instead of the member 'enable', according to the
+kernel doc of the member 'enable'.  In fact, the drm client modeset
+and atomic helpers are using the member 'active' to do the control.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Hao Xu <haoxu@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20211125092103.224502-2-haoxu@linux.alibaba.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Referencing the member 'enable' of new_crtc_state, the function
+crtc_needs_disable() may fail to reflect if CRTC needs disable in
+self refresh mode, e.g., when the framebuffer emulation will be blanked
+through the client modeset helper with the next commit, the member
+'enable' of new_crtc_state is still true while the member 'active' is
+false, hence the relevant potential encoder and bridges won't be disabled.
+
+So, let's check new_crtc_state->active to determine if CRTC needs disable
+in self refresh mode instead of new_crtc_state->enable.
+
+Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh mode in drivers")
+Cc: Sean Paul <seanpaul@chromium.org>
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211230040626.646807-1-victor.liu@nxp.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/drm_atomic_helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index d7e49e87b49b9..156c54ebb62b7 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6573,11 +6573,14 @@ static bool io_drain_req(struct io_kiocb *req)
- 	}
+diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
+index 2c0c6ec928200..ff2bc9a118011 100644
+--- a/drivers/gpu/drm/drm_atomic_helper.c
++++ b/drivers/gpu/drm/drm_atomic_helper.c
+@@ -1001,7 +1001,7 @@ crtc_needs_disable(struct drm_crtc_state *old_state,
+ 	 * it's in self refresh mode and needs to be fully disabled.
+ 	 */
+ 	return old_state->active ||
+-	       (old_state->self_refresh_active && !new_state->enable) ||
++	       (old_state->self_refresh_active && !new_state->active) ||
+ 	       new_state->self_refresh_active;
+ }
  
- 	/* Still need defer if there is pending req in defer list. */
-+	spin_lock(&ctx->completion_lock);
- 	if (likely(list_empty_careful(&ctx->defer_list) &&
- 		!(req->flags & REQ_F_IO_DRAIN))) {
-+		spin_unlock(&ctx->completion_lock);
- 		ctx->drain_active = false;
- 		return false;
- 	}
-+	spin_unlock(&ctx->completion_lock);
- 
- 	seq = io_get_sequence(req);
- 	/* Still a chance to pass the sequence check */
 -- 
 2.34.1
 
