@@ -2,86 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B61D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235569AbiCGKYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        id S238511AbiCGKY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241104AbiCGKBm (ORCPT
+        with ESMTP id S241202AbiCGKBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7198770F64;
-        Mon,  7 Mar 2022 01:51:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B694FB810D9;
-        Mon,  7 Mar 2022 09:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2755EC340F5;
-        Mon,  7 Mar 2022 09:51:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646681;
-        bh=3Q6HfLvnyk20c5KteC9b+hLzCTbQ2st3hb44bFNMDzQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1x6aeVERMqCZeVnCQ285IBdyQIeDvJlI+5Cr91isfKdoX4KrWkNEcCrmZEcZJ5zZz
-         WCiM1olqZzf6BinIdDGTLuHOaWaHAozk5iGcnkNIbYBTE+cfOyfo2rwMOsJSvrYFre
-         hWWC08ipt/XyrWCM+d7G1I2NXWclFg40cB1laAws=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 022/186] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Mon,  7 Mar 2022 10:17:40 +0100
-Message-Id: <20220307091654.716977591@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
-References: <20220307091654.092878898@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 7 Mar 2022 05:01:46 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE53171C9F;
+        Mon,  7 Mar 2022 01:51:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=F33OJew4f+X9EGyrX9UFDzNmD+8SJD5GlTnGdBvVako=; b=l29VVU0vNjudQfmRlD//2Ai5r4
+        Rb+GvW9iJclOfRU4GCvEkvP37BglXQGkWNdbR9UtqNDH7Bd7uNMQTzk6GQO/3RrgBAK92YJPN+Gxz
+        hmdhnmemQGbjdAakq68Sl3xDp2W7oSx7yoYDF+U55QRcn1hqpaDZX/h1Zyw3Sv7rLP/+rdGyTBYZA
+        irmfqZgm8l2HmkKiZZ31K7VhEMil+fheol+qvc06hlmbEo4d8FiIGMLtmGd3lA47z7T/HYJz48Sge
+        QILp/zYvt2fLhpl9YQcEH7SYyGRpLEYHP4sDoMdMnAg5VRIOhIN4hykzWAtmP/fB3VicXW0j1V6fh
+        ioJsNaJw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRA16-00F53J-8g; Mon, 07 Mar 2022 09:51:00 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 513993002BE;
+        Mon,  7 Mar 2022 10:50:57 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id EC3C92BA7BE19; Mon,  7 Mar 2022 10:50:56 +0100 (CET)
+Date:   Mon, 7 Mar 2022 10:50:56 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Leo Yan <leo.yan@linaro.org>, jgross@suse.com,
+        sdeep@vmware.com, pv-drivers@vmware.com, pbonzini@redhat.com,
+        seanjc@google.com, kys@microsoft.com, sthemmin@microsoft.com,
+        virtualization@lists.linux-foundation.org,
+        Andrew.Cooper3@citrix.com
+Subject: Re: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as
+ a perf event clock
+Message-ID: <YiXVgEk/1UClkygX@hirez.programming.kicks-ass.net>
+References: <20220214110914.268126-1-adrian.hunter@intel.com>
+ <20220214110914.268126-4-adrian.hunter@intel.com>
+ <YiIXFmA4vpcTSk2L@hirez.programming.kicks-ass.net>
+ <853ce127-25f0-d0fe-1d8f-0b0dd4f3ce71@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <853ce127-25f0-d0fe-1d8f-0b0dd4f3ce71@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+On Fri, Mar 04, 2022 at 08:27:45PM +0200, Adrian Hunter wrote:
+> On 04/03/2022 15:41, Peter Zijlstra wrote:
+> > On Mon, Feb 14, 2022 at 01:09:06PM +0200, Adrian Hunter wrote:
+> >> Currently, when Intel PT is used within a VM guest, it is not possible to
+> >> make use of TSC because perf clock is subject to paravirtualization.
+> > 
+> > Yeah, so how much of that still makes sense, or ever did? AFAIK the
+> > whole pv_clock thing is utter crazy. Should we not fix that instead?
+> 
+> Presumably pv_clock must work with different host operating systems.
+> Similarly, KVM must work with different guest operating systems.
+> Perhaps I'm wrong, but I imagine re-engineering time virtualization
+> might be a pretty big deal,  far exceeding the scope of these patches.
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+I think not; on both counts. That is, I don't think it's going to be
+hard, and even it if were, it would still be the right thing to do.
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+We're not going to add interface just to work around a known broken
+piece of crap just because we don't want to fix it.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So I'm thinking we should do the below and simply ignore any paravirt
+sched clock offered when there's ART on.
+
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index 7f72b3f4cd1ae..19ac95c0098f0 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
+index 4420499f7bb4..a1f179ed39bf 100644
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -145,6 +145,15 @@ DEFINE_STATIC_CALL(pv_sched_clock, native_sched_clock);
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
-+		}
+ void paravirt_set_sched_clock(u64 (*func)(void))
+ {
++	/*
++	 * Anything with ART on promises to have sane TSC, otherwise the whole
++	 * ART thing is useless. In order to make ART useful for guests, we
++	 * should continue to use the TSC. As such, ignore any paravirt
++	 * muckery.
++	 */
++	if (cpu_feature_enabled(X86_FEATURE_ART))
++		return;
++
+ 	static_call_update(pv_sched_clock, func);
+ }
  
- 		pm_runtime_barrier(schan->dev);
- 
--- 
-2.34.1
-
-
-
