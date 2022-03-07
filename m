@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB91C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C54C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240683AbiCGKhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:37:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
+        id S240701AbiCGKhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242034AbiCGKLM (ORCPT
+        with ESMTP id S241991AbiCGKLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3A685977;
-        Mon,  7 Mar 2022 01:54:16 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD4983033;
+        Mon,  7 Mar 2022 01:54:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5BF1B810B9;
-        Mon,  7 Mar 2022 09:53:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C837BC340F3;
-        Mon,  7 Mar 2022 09:53:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD6B0B810AA;
+        Mon,  7 Mar 2022 09:54:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D92C340F3;
+        Mon,  7 Mar 2022 09:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646815;
-        bh=ho+1fk4JbqUuOdumvMPIOqALlMHuN+23rs2JHlchIaA=;
+        s=korg; t=1646646842;
+        bh=kRj+XBMOcfrG227XydWXXvppgPuI8HRuN5RwQWY38uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QVaVnHpVH0oqbpMWn9Y0Iio01TkZ0V4jc57k4GGkSRm1C+tgXEE15hEPBRjJ1XRkO
-         +gwozDQTDB/i03perMPynRZ7clg0N/yzOAi8ukqzFfGhJb5+zMNGaMRp9kumMGhs1U
-         euiXbpIKZWZ3GcjitpvTDmHZ8jGUahGi2irP6JCU=
+        b=bKdYKOttD9e8Z0V0fbUqc77kF/U5F/Vk6rphFamxz+jfLz7h3Xd6NRmiocyOkJa0I
+         +vrDlth+LeaUYo1yjih5GYA2MdoocwCki6Fbo3w/dVc5vt1/zs4PZ7eulSCDFJSTd0
+         mHENqsnGImT0vTOYP54USGp/4gQ0EDg+QVdCi2Pk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 101/186] ASoC: cs4265: Fix the duplicated control name
-Date:   Mon,  7 Mar 2022 10:18:59 +0100
-Message-Id: <20220307091656.905256816@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 071/186] e1000e: Correct NVM checksum verification flow
+Date:   Mon,  7 Mar 2022 10:18:29 +0100
+Message-Id: <20220307091656.075983069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -49,54 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-commit c5487b9cdea5c1ede38a7ec94db0fc59963c8e86 upstream.
+commit ffd24fa2fcc76ecb2e61e7a4ef8588177bcb42a6 upstream.
 
-Currently, the following error messages are seen during boot:
+Update MAC type check e1000_pch_tgp because for e1000_pch_cnp,
+NVM checksum update is still possible.
+Emit a more detailed warning message.
 
-asoc-simple-card sound: control 2:0:0:SPDIF Switch:0 is already present
-cs4265 1-004f: ASoC: failed to add widget SPDIF dapm kcontrol SPDIF Switch: -16
-
-Quoting Mark Brown:
-
-"The driver is just plain buggy, it defines both a regular SPIDF Switch
-control and a SND_SOC_DAPM_SWITCH() called SPDIF both of which will
-create an identically named control, it can never have loaded without
-error.  One or both of those has to be renamed or they need to be
-merged into one thing."
-
-Fix the duplicated control name by combining the two SPDIF controls here
-and move the register bits onto the DAPM widget and have DAPM control them.
-
-Fixes: f853d6b3ba34 ("ASoC: cs4265: Add a S/PDIF enable switch")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220215120514.1760628-1-festevam@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Bugzilla: https://bugzilla.opensuse.org/show_bug.cgi?id=1191663
+Fixes: 4051f68318ca ("e1000e: Do not take care about recovery NVM checksum")
+Reported-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/cs4265.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/codecs/cs4265.c
-+++ b/sound/soc/codecs/cs4265.c
-@@ -150,7 +150,6 @@ static const struct snd_kcontrol_new cs4
- 	SOC_SINGLE("E to F Buffer Disable Switch", CS4265_SPDIF_CTL1,
- 				6, 1, 0),
- 	SOC_ENUM("C Data Access", cam_mode_enum),
--	SOC_SINGLE("SPDIF Switch", CS4265_SPDIF_CTL2, 5, 1, 1),
- 	SOC_SINGLE("Validity Bit Control Switch", CS4265_SPDIF_CTL2,
- 				3, 1, 0),
- 	SOC_ENUM("SPDIF Mono/Stereo", spdif_mono_stereo_enum),
-@@ -186,7 +185,7 @@ static const struct snd_soc_dapm_widget
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -4136,9 +4136,9 @@ static s32 e1000_validate_nvm_checksum_i
+ 		return ret_val;
  
- 	SND_SOC_DAPM_SWITCH("Loopback", SND_SOC_NOPM, 0, 0,
- 			&loopback_ctl),
--	SND_SOC_DAPM_SWITCH("SPDIF", SND_SOC_NOPM, 0, 0,
-+	SND_SOC_DAPM_SWITCH("SPDIF", CS4265_SPDIF_CTL2, 5, 1,
- 			&spdif_switch),
- 	SND_SOC_DAPM_SWITCH("DAC", CS4265_PWRCTL, 1, 1,
- 			&dac_switch),
+ 	if (!(data & valid_csum_mask)) {
+-		e_dbg("NVM Checksum Invalid\n");
++		e_dbg("NVM Checksum valid bit not set\n");
+ 
+-		if (hw->mac.type < e1000_pch_cnp) {
++		if (hw->mac.type < e1000_pch_tgp) {
+ 			data |= valid_csum_mask;
+ 			ret_val = e1000_write_nvm(hw, word, 1, &data);
+ 			if (ret_val)
 
 
