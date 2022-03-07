@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F06C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12091C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiCGKQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
+        id S239415AbiCGKQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240321AbiCGKA4 (ORCPT
+        with ESMTP id S240328AbiCGKA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:00:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A627EA3B;
-        Mon,  7 Mar 2022 01:47:24 -0800 (PST)
+        Mon, 7 Mar 2022 05:00:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2955DE65;
+        Mon,  7 Mar 2022 01:47:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05AD06122D;
-        Mon,  7 Mar 2022 09:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16DCC340F5;
-        Mon,  7 Mar 2022 09:47:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B9C960FB3;
+        Mon,  7 Mar 2022 09:47:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC90C340E9;
+        Mon,  7 Mar 2022 09:47:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646443;
-        bh=uJCPOqF2xI6+TMmEk1hZkWXqx5KU3QzRdV2V91L7ACI=;
+        s=korg; t=1646646447;
+        bh=Tnx6U9YC1Pu0Qjrz/5h6IdvKiHowjP2ehmNNPaZpqeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SyTdki4M8yrrbk7sYhKXrwn4apKu0XtuzbBtOQ1/0uTp2vueByub2tTXoLpy/6Icq
-         FAAKUVCLotwdV3BP2tqmVBRetv4jYYdwyb1xZD1a8VNkUNh37QMwZvS7KWQ/R9wQQr
-         vDqTFjWObuBql7UHRgLh6WNgrJsRrQmUrJI2LhEY=
+        b=Q+rWzz4AhsP59oGDv5oYzJOqeNRK38a/qOwy9Xq4xhYcjCQ+BMfsn46nD2xzuCIyV
+         1D72wcACMil6iumXZ3Z2cD8Bko0FfvxmD6my28SUD40z766cqL4tIpZiJ5XqpcJnbj
+         3SjS++fsvjXNcCcKwL2C8ndTW7LIAac4eudo0ywc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Assmann <sassmann@kpanic.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
         Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 244/262] iavf: do not override the adapter state in the watchdog task (again)
-Date:   Mon,  7 Mar 2022 10:19:48 +0100
-Message-Id: <20220307091710.389352962@linuxfoundation.org>
+Subject: [PATCH 5.15 245/262] iavf: missing unlocks in iavf_watchdog_task()
+Date:   Mon,  7 Mar 2022 10:19:49 +0100
+Message-Id: <20220307091710.437712940@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,35 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit fe523d7c9a8332855376ad5eb1aa301091129ba4 upstream.
+commit bc2f39a6252ee40d9bfc2743d4437d420aec5f6e upstream.
 
-The watchdog task incorrectly changes the state to __IAVF_RESETTING,
-instead of letting the reset task take care of that. This was already
-resolved by commit 22c8fd71d3a5 ("iavf: do not override the adapter
-state in the watchdog task") but the problem was reintroduced by the
-recent code refactoring in commit 45eebd62999d ("iavf: Refactor iavf
-state machine tracking").
+This code was re-organized and there some unlocks missing now.
 
-Fixes: 45eebd62999d ("iavf: Refactor iavf state machine tracking")
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+Fixes: 898ef1cb1cb2 ("iavf: Combine init and watchdog state machines")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2110,7 +2110,6 @@ static void iavf_watchdog_task(struct wo
- 	/* check for hw reset */
- 	reg_val = rd32(hw, IAVF_VF_ARQLEN1) & IAVF_VF_ARQLEN1_ARQENABLE_MASK;
- 	if (!reg_val) {
--		iavf_change_state(adapter, __IAVF_RESETTING);
- 		adapter->flags |= IAVF_FLAG_RESET_PENDING;
+@@ -2071,6 +2071,7 @@ static void iavf_watchdog_task(struct wo
+ 		}
  		adapter->aq_required = 0;
  		adapter->current_op = VIRTCHNL_OP_UNKNOWN;
++		mutex_unlock(&adapter->crit_lock);
+ 		queue_delayed_work(iavf_wq,
+ 				   &adapter->watchdog_task,
+ 				   msecs_to_jiffies(10));
+@@ -2101,9 +2102,8 @@ static void iavf_watchdog_task(struct wo
+ 			iavf_detect_recover_hung(&adapter->vsi);
+ 		break;
+ 	case __IAVF_REMOVE:
+-		mutex_unlock(&adapter->crit_lock);
+-		return;
+ 	default:
++		mutex_unlock(&adapter->crit_lock);
+ 		return;
+ 	}
+ 
 
 
