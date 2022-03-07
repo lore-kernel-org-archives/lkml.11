@@ -2,161 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7762C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF89FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235882AbiCGKqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:46:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        id S241323AbiCGKrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:47:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241203AbiCGKqX (ORCPT
+        with ESMTP id S241066AbiCGKrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:46:23 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5879E546;
-        Mon,  7 Mar 2022 02:07:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646647622; x=1678183622;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L1jx+V8E552T2PPRm+4WoanMaIRUFpfYGagJ4ohp3Bc=;
-  b=Nc3PUtEQ93fOPMakSsCp/OrYJ76yC9nZKtGYcsvVFEv0qLtur5C4A7BH
-   jFXNvkSfHG3X5QhSCZPX7ndFSu/SeGShmVrVaWcjv/Wiov0g0pW0bYVaV
-   B3p32xa+gJ7G58yWlgPenDeDfoH4Sgs4x5AM0hZd5xKAOtZFvfXfZSLta
-   8fx050RVvwqX8RWKEkVW5JDkbn/zMzHVJ5H+UzQ1PsEqg5N8J/AUpg71U
-   cBx8U+qy/zVhUU6ay+ciyB25O5YoUQHqcKUyz8FANtrDLyANwlr0m0IcQ
-   sb6nXiN9EZ3qoOk28gqLgAfZaFg775nrJgn1QlK9dp+ZoYTNKW6QgSUB2
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254083323"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="254083323"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 02:06:44 -0800
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="643188785"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 02:06:41 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRAFY-00ChWh-J3;
-        Mon, 07 Mar 2022 12:05:56 +0200
-Date:   Mon, 7 Mar 2022 12:05:56 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v4 1/7] device property: Helper to match multiple
- connections
-Message-ID: <YiXZBMG7cK6Cm7wP@smile.fi.intel.com>
-References: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
+        Mon, 7 Mar 2022 05:47:03 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2822C7EB3F;
+        Mon,  7 Mar 2022 02:07:20 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4BA82100014;
+        Mon,  7 Mar 2022 10:05:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646647558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lQQlMA2nuLJLAo0+B3NtqW+DcgylzMgC76dvoXeTZRA=;
+        b=knu6CeM3PC7ksEhlVQu73z7qVuqYJykFGSYiszYLV6B3chz1mpF4biC7xv2M7daFHKM6fk
+        Bp5koFCVR7C5sELfiZyJkW4QWrq9/JJHwSz4ETNuM1GTrBfYMj/f2ios5fNy0SEdCV5Rig
+        iJjsUv35U3HYxS1v8pMVUN+vjjI7B3zbSkABdvbD7+W3OF7SyseDQesjrPUZzak0DtNPBz
+        /BSZjEbi3+sroEx7UXzYpqmL10GAvFIC5qCoOz1Fx6l/uChSSIxivwxQwRmMKBc2DWsF6N
+        LZE9TMjujZy3BMB6Vb/0MCK/a8J1q+oKZfDsv/qGE2mxeir72sxL4NNv6bJkGg==
+Date:   Mon, 7 Mar 2022 11:04:34 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Etienne Carriere <etienne.carriere@linaro.org>
+Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH] rtc: optee: add RTC driver for OP-TEE RTC PTA
+Message-ID: <20220307110434.33fd2f87@fixe.home>
+In-Reply-To: <CAN5uoS9J7P-74Zi-AuiXfTMesFOPEmFSmT2GcO8QmR6ebCXGAw@mail.gmail.com>
+References: <20220302150717.11193-1-clement.leger@bootlin.com>
+        <CAN5uoS9J7P-74Zi-AuiXfTMesFOPEmFSmT2GcO8QmR6ebCXGAw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307034040.1111107-1-bjorn.andersson@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 07:40:34PM -0800, Bjorn Andersson wrote:
-> In some cases multiple connections with the same connection id
-> needs to be resolved from a fwnode graph.
-> 
-> One such example is when separate hardware is used for performing muxing
-> and/or orientation switching of the SuperSpeed and SBU lines in a USB
-> Type-C connector. In this case the connector needs to belong to a graph
-> with multiple matching remote endpoints, and the Type-C controller needs
-> to be able to resolve them both.
-> 
-> Add a new API that allows this kind of lookup.
+Le Sun, 6 Mar 2022 22:08:48 +0100,
+Etienne Carriere <etienne.carriere@linaro.org> a =C3=A9crit :
 
-Thanks for the update!
+> Hello Clement,
+>=20
+> In the code, rtc-optee driver opens a session with optee and allocates
+> shared memory from probe to remove time.
+> This uses resources in the TEE but RTC is not accessed often by Linux I g=
+uess.
+> Would it be interesting if a session is opened and shared memory
+> allocated only when a RPC command is to be invoked?
 
-First of all, I have noticed that subject misses the verb, something like Add
-or Introduce.
+Hi Etienne, that is an idea that could be added later I guess ?
 
-...
+>=20
+> Minor comments below.
 
-> +/**
-> + * fwnode_connection_find_matches - Find connections from a device node
-> + * @fwnode: Device node with the connection
-> + * @con_id: Identifier for the connection
-> + * @data: Data for the match function
-> + * @match: Function to check and convert the connection description
-> + * @matches: Array of pointers to fill with matches
+Thanks for the review.
 
-(Optional) array...
-
-> + * @matches_len: Length of @matches
-> + *
-> + * Find up to @matches_len connections with unique identifier @con_id between
-> + * @fwnode and other device nodes. @match will be used to convert the
-> + * connection description to data the caller is expecting to be returned
-> + * through the @matches array.
-
-> + * If @matches is NULL @matches_len is ignored and the total number of resolved
-> + * matches is returned.
-
-I would require matches_len to be 0, see below.
-
-> + * Return: Number of matches resolved, or negative errno.
-> + */
-> +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
-> +				   const char *con_id, void *data,
-> +				   devcon_match_fn_t match,
-> +				   void **matches, unsigned int matches_len)
-> +{
-> +	unsigned int count_graph;
-> +	unsigned int count_ref;
-> +
-> +	if (!fwnode || !match)
-> +		return -EINVAL;
-> +
-> +	count_graph = fwnode_graph_devcon_matches(fwnode, con_id, data, match,
-> +						  matches, matches_len);
-
-> +	if (matches) {
-> +		matches += count_graph;
-> +		matches_len -= count_graph;
-> +	}
-
-So, the valid case is matches != NULL and matches_len == 0. For example, when
-we have run something previously on the buffer and it becomes full.
-
-In this case we have carefully handle this case.
-
-	if (matches) {
-		matches += count_graph;
-		if (matches_len)
-			matches_len -= count_graph;
-	}
-
-Seems it can be also
-
-	if (matches)
-		matches += count_graph;
-
-	if (matches_len)
-		matches_len -= count_graph;
-
-That said, do we have a test cases for this?
-
-> +	count_ref = fwnode_devcon_matches(fwnode, con_id, data, match,
-> +					  matches, matches_len);
-> +
-> +	return count_graph + count_ref;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
