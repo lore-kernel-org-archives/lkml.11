@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF17C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68821C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239490AbiCGJ7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:59:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S239397AbiCGJ67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:58:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240275AbiCGJkv (ORCPT
+        with ESMTP id S240198AbiCGJkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:40:51 -0500
+        Mon, 7 Mar 2022 04:40:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ACC5D67E;
-        Mon,  7 Mar 2022 01:37:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2206949E;
+        Mon,  7 Mar 2022 01:37:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 207A5611D5;
-        Mon,  7 Mar 2022 09:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD63C340F3;
-        Mon,  7 Mar 2022 09:37:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA1E612E7;
+        Mon,  7 Mar 2022 09:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1134FC340E9;
+        Mon,  7 Mar 2022 09:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645833;
-        bh=fXl+KhFkFNVvhrHdnsaC4Mi8oIwGhOlNMCYqYf9MWAU=;
+        s=korg; t=1646645810;
+        bh=/TuSRVhhNgcRtaFhCwFzRY1d6sThkyuKd+NanmVdqy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YDoYklcHSIDqxQuz5pJHZge9mRrFjmkZy+C/1jUfPamSYjIhO0+YK7UN/9L5L9rgU
-         2JouQ+DviyXEPvzSEBfUtVbnK3i8Omb7zqmqBrHATmvIkF2Hdg3npuVSY4x6yI8HbD
-         zZIevQcbYpOeMdXhFM/ZdSoUhxuN9C4FD3x7wUlc=
+        b=b8iMOqqg3VfkfBOx39U4bHMEtdUbkZenCPtsHejCN6p9Fx2NvA0ABCXfpBbT6JWYO
+         +4H2ywy+7np6P52snj3QwfGJYoaC1JBuQjh6IhNVEBbyIGrgAz8X/fJ2NlGU7U9uGw
+         Lx388bDPK/RxDEXsSRYAF/EuaUsQqHJWBmrxuWQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qizhong Cheng <qizhong.cheng@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Oliver Barta <oliver.barta@aptiv.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/262] PCI: mediatek-gen3: Disable DVFSRC voltage request
-Date:   Mon,  7 Mar 2022 10:16:35 +0100
-Message-Id: <20220307091703.958788169@linuxfoundation.org>
+Subject: [PATCH 5.15 006/262] regulator: core: fix false positive in regulator_late_cleanup()
+Date:   Mon,  7 Mar 2022 10:15:50 +0100
+Message-Id: <20220307091702.560296010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,57 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianjun Wang <jianjun.wang@mediatek.com>
+From: Oliver Barta <oliver.barta@aptiv.com>
 
-[ Upstream commit ab344fd43f2958726d17d651c0cb692c67dca382 ]
+[ Upstream commit 4e2a354e3775870ca823f1fb29bbbffbe11059a6 ]
 
-When the DVFSRC (dynamic voltage and frequency scaling resource collector)
-feature is not implemented, the PCIe hardware will assert a voltage request
-signal when exit from the L1 PM Substates to request a specific Vcore
-voltage, but cannot receive the voltage ready signal, which will cause
-the link to fail to exit the L1 PM Substates.
+The check done by regulator_late_cleanup() to detect whether a regulator
+is on was inconsistent with the check done by _regulator_is_enabled().
+While _regulator_is_enabled() takes the enable GPIO into account,
+regulator_late_cleanup() was not doing that.
 
-Disable DVFSRC voltage request by default, we need to find a common way to
-enable it in the future.
+This resulted in a false positive, e.g. when a GPIO-controlled fixed
+regulator was used, which was not enabled at boot time, e.g.
 
-Link: https://lore.kernel.org/r/20211015063602.29058-1-jianjun.wang@mediatek.com
-Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
-Tested-by: Qizhong Cheng <qizhong.cheng@mediatek.com>
-Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+reg_disp_1v2: reg_disp_1v2 {
+	compatible = "regulator-fixed";
+	regulator-name = "display_1v2";
+	regulator-min-microvolt = <1200000>;
+	regulator-max-microvolt = <1200000>;
+	gpio = <&tlmm 148 0>;
+	enable-active-high;
+};
+
+Such regulator doesn't have an is_enabled() operation. Nevertheless
+it's state can be determined based on the enable GPIO. The check in
+regulator_late_cleanup() wrongly assumed that the regulator is on and
+tried to disable it.
+
+Signed-off-by: Oliver Barta <oliver.barta@aptiv.com>
+Link: https://lore.kernel.org/r/20220208084645.8686-1-oliver.barta@aptiv.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/regulator/core.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 17c59b0d6978b..21207df680ccf 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -79,6 +79,9 @@
- #define PCIE_ICMD_PM_REG		0x198
- #define PCIE_TURN_OFF_LINK		BIT(4)
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index ca6caba8a191a..46e76b5b21efe 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -6010,9 +6010,8 @@ core_initcall(regulator_init);
+ static int regulator_late_cleanup(struct device *dev, void *data)
+ {
+ 	struct regulator_dev *rdev = dev_to_rdev(dev);
+-	const struct regulator_ops *ops = rdev->desc->ops;
+ 	struct regulation_constraints *c = rdev->constraints;
+-	int enabled, ret;
++	int ret;
  
-+#define PCIE_MISC_CTRL_REG		0x348
-+#define PCIE_DISABLE_DVFSRC_VLT_REQ	BIT(1)
-+
- #define PCIE_TRANS_TABLE_BASE_REG	0x800
- #define PCIE_ATR_SRC_ADDR_MSB_OFFSET	0x4
- #define PCIE_ATR_TRSL_ADDR_LSB_OFFSET	0x8
-@@ -297,6 +300,11 @@ static int mtk_pcie_startup_port(struct mtk_pcie_port *port)
- 	val &= ~PCIE_INTX_ENABLE;
- 	writel_relaxed(val, port->base + PCIE_INT_ENABLE_REG);
+ 	if (c && c->always_on)
+ 		return 0;
+@@ -6025,14 +6024,8 @@ static int regulator_late_cleanup(struct device *dev, void *data)
+ 	if (rdev->use_count)
+ 		goto unlock;
  
-+	/* Disable DVFSRC voltage request */
-+	val = readl_relaxed(port->base + PCIE_MISC_CTRL_REG);
-+	val |= PCIE_DISABLE_DVFSRC_VLT_REQ;
-+	writel_relaxed(val, port->base + PCIE_MISC_CTRL_REG);
-+
- 	/* Assert all reset signals */
- 	val = readl_relaxed(port->base + PCIE_RST_CTRL_REG);
- 	val |= PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB;
+-	/* If we can't read the status assume it's always on. */
+-	if (ops->is_enabled)
+-		enabled = ops->is_enabled(rdev);
+-	else
+-		enabled = 1;
+-
+-	/* But if reading the status failed, assume that it's off. */
+-	if (enabled <= 0)
++	/* If reading the status failed, assume that it's off. */
++	if (_regulator_is_enabled(rdev) <= 0)
+ 		goto unlock;
+ 
+ 	if (have_full_constraints()) {
 -- 
 2.34.1
 
