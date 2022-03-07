@@ -2,41 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DFDC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136F5C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237916AbiCGJdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        id S237988AbiCGJd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:33:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238494AbiCGJ3P (ORCPT
+        with ESMTP id S238516AbiCGJ3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7D1DFEB;
-        Mon,  7 Mar 2022 01:27:29 -0800 (PST)
+        Mon, 7 Mar 2022 04:29:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AD317ABF;
+        Mon,  7 Mar 2022 01:27:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FCC5B810C2;
-        Mon,  7 Mar 2022 09:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFEBC340F3;
-        Mon,  7 Mar 2022 09:27:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E129CB810CB;
+        Mon,  7 Mar 2022 09:27:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CF03C340E9;
+        Mon,  7 Mar 2022 09:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645225;
-        bh=i/rdGyW6fSrYnsb71QPxSkriOn3JnYMA/1oexnxwVhc=;
+        s=korg; t=1646645247;
+        bh=pwaHIUkFVkwyCUOWpenqiulA9JSxoyj9bjJ4aO3JWNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O9Cv2ANwMo7w55ziBV0moK00X8L+n5nAOWXUVBVJ+wh9slEZEb9nMTr50J59j6e7A
-         beh5sVf1MqEAcItUEX+9qvrb+CRDkLxczEbBsEqnVOdbwKpoiPtk5gIfFlKs/3Unzd
-         XrQDtyZZjCZqx4kltSZhmOXzO0K69FSj1GA3yPrU=
+        b=14Y4fGmGwPHq/YHvFPgexL+OrpAkfgy4XrAKkGUTVaw6lL8qcfqasiwP7+FvoTzNc
+         tVLBK1JkRaTO0LUbKSyodWHJnBcf19DADaT5PecjnF5qRf22/kbFAAdI5Z7o6khDWU
+         kgkaI/u5uD441750D0RG0CXKB/eZLjhMSvQArtA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 26/64] net: dcb: flush lingering app table entries for unregistered devices
-Date:   Mon,  7 Mar 2022 10:18:59 +0100
-Message-Id: <20220307091639.887992052@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Sergei Trofimovich <slyfox@gentoo.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Anatoly Pugachev <matorola@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.4 33/64] ia64: ensure proper NUMA distance and possible map initialization
+Date:   Mon,  7 Mar 2022 10:19:06 +0100
+Message-Id: <20220307091640.084798925@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -48,103 +58,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-commit 91b0383fef06f20b847fa9e4f0e3054ead0b1a1b upstream.
+commit b22a8f7b4bde4e4ab73b64908ffd5d90ecdcdbfd upstream.
 
-If I'm not mistaken (and I don't think I am), the way in which the
-dcbnl_ops work is that drivers call dcb_ieee_setapp() and this populates
-the application table with dynamically allocated struct dcb_app_type
-entries that are kept in the module-global dcb_app_list.
+John Paul reported a warning about bogus NUMA distance values spurred by
+commit:
 
-However, nobody keeps exact track of these entries, and although
-dcb_ieee_delapp() is supposed to remove them, nobody does so when the
-interface goes away (example: driver unbinds from device). So the
-dcb_app_list will contain lingering entries with an ifindex that no
-longer matches any device in dcb_app_lookup().
+  620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
 
-Reclaim the lost memory by listening for the NETDEV_UNREGISTER event and
-flushing the app table entries of interfaces that are now gone.
+In this case, the afflicted machine comes up with a reported 256 possible
+nodes, all of which are 0 distance away from one another.  This was
+previously silently ignored, but is now caught by the aforementioned
+commit.
 
-In fact something like this used to be done as part of the initial
-commit (blamed below), but it was done in dcbnl_exit() -> dcb_flushapp(),
-essentially at module_exit time. That became dead code after commit
-7a6b6f515f77 ("DCB: fix kconfig option") which essentially merged
-"tristate config DCB" and "bool config DCBNL" into a single "bool config
-DCB", so net/dcb/dcbnl.c could not be built as a module anymore.
+The culprit is ia64's node_possible_map which remains unchanged from its
+initialization value of NODE_MASK_ALL.  In John's case, the machine
+doesn't have any SRAT nor SLIT table, but AIUI the possible map remains
+untouched regardless of what ACPI tables end up being parsed.  Thus,
+!online && possible nodes remain with a bogus distance of 0 (distances \in
+[0, 9] are "reserved and have no meaning" as per the ACPI spec).
 
-Commit 36b9ad8084bd ("net/dcb: make dcbnl.c explicitly non-modular")
-recognized this and deleted dcbnl_exit() and dcb_flushapp() altogether,
-leaving us with the version we have today.
+Follow x86 / drivers/base/arch_numa's example and set the possible map to
+the parsed map, which in this case seems to be the online map.
 
-Since flushing application table entries can and should be done as soon
-as the netdevice disappears, fundamentally the commit that is to blame
-is the one that introduced the design of this API.
-
-Fixes: 9ab933ab2cc8 ("dcbnl: add appliction tlv handlers")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: http://lore.kernel.org/r/255d6b5d-194e-eb0e-ecdd-97477a534441@physik.fu-berlin.de
+Link: https://lkml.kernel.org/r/20210318130617.896309-1-valentin.schneider@arm.com
+Fixes: 620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Tested-by: Sergei Trofimovich <slyfox@gentoo.org>
+Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Anatoly Pugachev <matorola@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dcb/dcbnl.c |   44 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ arch/ia64/kernel/acpi.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -2063,10 +2063,54 @@ u8 dcb_ieee_getapp_default_prio_mask(con
+--- a/arch/ia64/kernel/acpi.c
++++ b/arch/ia64/kernel/acpi.c
+@@ -448,7 +448,8 @@ void __init acpi_numa_fixup(void)
+ 	if (srat_num_cpus == 0) {
+ 		node_set_online(0);
+ 		node_cpuid[0].phys_id = hard_smp_processor_id();
+-		return;
++		slit_distance(0, 0) = LOCAL_DISTANCE;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -491,7 +492,7 @@ void __init acpi_numa_fixup(void)
+ 			for (j = 0; j < MAX_NUMNODES; j++)
+ 				slit_distance(i, j) = i == j ?
+ 					LOCAL_DISTANCE : REMOTE_DISTANCE;
+-		return;
++		goto out;
+ 	}
+ 
+ 	memset(numa_slit, -1, sizeof(numa_slit));
+@@ -516,6 +517,8 @@ void __init acpi_numa_fixup(void)
+ 		printk("\n");
+ 	}
+ #endif
++out:
++	node_possible_map = node_online_map;
  }
- EXPORT_SYMBOL(dcb_ieee_getapp_default_prio_mask);
- 
-+static void dcbnl_flush_dev(struct net_device *dev)
-+{
-+	struct dcb_app_type *itr, *tmp;
-+
-+	spin_lock(&dcb_lock);
-+
-+	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
-+		if (itr->ifindex == dev->ifindex) {
-+			list_del(&itr->list);
-+			kfree(itr);
-+		}
-+	}
-+
-+	spin_unlock(&dcb_lock);
-+}
-+
-+static int dcbnl_netdevice_event(struct notifier_block *nb,
-+				 unsigned long event, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+
-+	switch (event) {
-+	case NETDEV_UNREGISTER:
-+		if (!dev->dcbnl_ops)
-+			return NOTIFY_DONE;
-+
-+		dcbnl_flush_dev(dev);
-+
-+		return NOTIFY_OK;
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+}
-+
-+static struct notifier_block dcbnl_nb __read_mostly = {
-+	.notifier_call  = dcbnl_netdevice_event,
-+};
-+
- static int __init dcbnl_init(void)
- {
-+	int err;
-+
- 	INIT_LIST_HEAD(&dcb_app_list);
- 
-+	err = register_netdevice_notifier(&dcbnl_nb);
-+	if (err)
-+		return err;
-+
- 	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, 0);
- 	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, 0);
+ #endif				/* CONFIG_ACPI_NUMA */
  
 
 
