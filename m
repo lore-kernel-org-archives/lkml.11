@@ -2,149 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AECAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E161C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236057AbiCGLJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:09:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
+        id S236460AbiCGLJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:09:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241507AbiCGLJK (ORCPT
+        with ESMTP id S236489AbiCGLJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:09:10 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C835C73069;
-        Mon,  7 Mar 2022 02:31:28 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id z26so11502484lji.8;
-        Mon, 07 Mar 2022 02:31:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:references:from
-         :in-reply-to:content-transfer-encoding;
-        bh=2nv1iXhepFFIDDtB8qcqMhOJPOHWwdUEN5oCGM6Jfco=;
-        b=P+qgQtT2g5DRJU98tJo+fR3FQkLaSVdZRrllCfYJRhQ7HyekEWFKKJIU76/kqU6i/r
-         6mKW84L9ZGUlb77m+tYbib91dNdmTYbJikjdeqlPrKLTIY0cO/5pB30DrKUZgJ2jes81
-         bl9TC+UsSbpXFTTmibX7MmBRp7hD8gZwQE3qaAVMLF/5rtdv1lZW+jt7sLfeS9p3sc5L
-         uEgoW2EjHdSEta7abOd2VV51Ffm0pZSfKN/SjLupm+13Yy6dlgmAuXn/+X9Z2FWLDNwN
-         zM1b3Hj0SFKP8SOKBzWglAZk+T1l9d6AJUVpInfvicoFshQGYZIvaZfRIW4rEBa2Fhrc
-         n7XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:references:from:in-reply-to:content-transfer-encoding;
-        bh=2nv1iXhepFFIDDtB8qcqMhOJPOHWwdUEN5oCGM6Jfco=;
-        b=uKv0sea7hsB8OlxH6V4J0V7xUxufYmlwg3SYWJV6WqoF0vaV1LqMjmWpqGIsDyO9Mm
-         aI+8jD1BSmhvmdAlyAc0X9kW+TcwyBVOBmISxuvWreUtjWgfNON8Un9CAhfuZ8s2xNkg
-         YETZL0WpNAvH4pjcosqGMHrNYG/GHcWQPoOC86hzUu2vQZn4e8jmUHbgDBehPBPlJ9tN
-         M30FeGxhXB6TMeWZYKNgphgtI1k9K5P8v1j0ecNonkal6wBl4CCFl282wClV8Hagj5eg
-         nNbshF1/0wzP7Dptafpw46/UDdc9cIHyR09V/XpVSgId3WcUa/l43KIkyPZOwXUjh2OG
-         HCew==
-X-Gm-Message-State: AOAM532S8+pRO9a1fHFeuBmBzeQ1DBCRdN6JoDkXZK7MQoOS5XOZRzlk
-        wpSFdVdzXqhYdz2gxnye8n4=
-X-Google-Smtp-Source: ABdhPJwMwea0Gg9ZDQJ9Cg+UHGuu9HkIpFH2+kI2LpDNW+vSQsbke0JK8lt1exWBOkP0bEYFf+6t2A==
-X-Received: by 2002:a2e:9847:0:b0:244:bbdf:8f72 with SMTP id e7-20020a2e9847000000b00244bbdf8f72mr7291471ljj.69.1646649086397;
-        Mon, 07 Mar 2022 02:31:26 -0800 (PST)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id t10-20020a19ad0a000000b00443d203833csm2780374lfc.122.2022.03.07.02.31.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 02:31:26 -0800 (PST)
-Message-ID: <d605473d-35b1-6c6d-3f13-988a04b48c32@gmail.com>
-Date:   Mon, 7 Mar 2022 11:31:23 +0100
+        Mon, 7 Mar 2022 06:09:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFE474DDC;
+        Mon,  7 Mar 2022 02:31:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BC17B810A8;
+        Mon,  7 Mar 2022 10:31:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C359C340F3;
+        Mon,  7 Mar 2022 10:31:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646649113;
+        bh=Lgr1PxuWQUaLcGiy4CPxnWCoWa8OOlsa4U4rZyLS3yQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MIT2QDi9yIgAgOBoQYDDyCFuprOeJSa/U5/Ui2geEat6f0BFPQR12RwfitVnb0Jas
+         98/X66PvGpGLhnzIsaTXFYR3a9wOhtmUrEjuSftziCZ4uV6ih8vJiiH4sY23Mac7Lt
+         uJxyphwLkyU7NmO0zYFToLCMBclG6BIy/IAIOmek=
+Date:   Mon, 7 Mar 2022 11:31:50 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daehwan Jung <dh10.jung@samsung.com>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        cpgs@samsung.com, cpgsproxy5@samsung.com
+Subject: Re: [PATCH v2 4/4] usb: host: add xhci-exynos module
+Message-ID: <YiXfFnDCRWIJEZGo@kroah.com>
+References: <1646648256-105214-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220307101852epcas2p2639761a90e794f0b4a4a842a17ba534e@epcas2p2.samsung.com>
+ <1646648256-105214-5-git-send-email-dh10.jung@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH V2] dt-bindings: nvmem: add U-Boot environment variables
- binding
-To:     Rob Herring <robh@kernel.org>, Tom Rini <trini@konsulko.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Ricardo Salveti <ricardo@foundries.io>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Jorge Ramirez-Ortiz <jorge@foundries.io>,
-        Sean Anderson <seanga2@gmail.com>, devicetree@vger.kernel.org,
-        u-boot@lists.denx.de, linux-kernel@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20220217130235.7450-1-zajec5@gmail.com>
- <YhkHAQclxNHqmBwO@robh.at.kernel.org>
- <96f5a8d3-83db-fa1f-a27c-5c27d7c143e1@gmail.com>
- <YiXdRiM3ZREngl0N@ada-deb-carambola.ifak-system.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <YiXdRiM3ZREngl0N@ada-deb-carambola.ifak-system.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646648256-105214-5-git-send-email-dh10.jung@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7.03.2022 11:24, Alexander Dahl wrote:
-> Hei hei,
+On Mon, Mar 07, 2022 at 07:17:36PM +0900, Daehwan Jung wrote:
+> This is for reference to introduce usb offload as seeing how a user does.
+> We only care DCBAA, Device Context, Transfer Ring, Event Ring, and ERST.
+> They are allocated on specific address(SRAM) for Co-Processor.
+> Co-processor could use them directly without xhci driver after then.
 > 
-> just want to give a little more background here from embedded non
-> openwrt point of view.  See below.
-> 
-> Am Mon, Feb 28, 2022 at 12:32:11PM +0100 schrieb Rafał Miłecki:
->> On 25.02.2022 17:42, Rob Herring wrote:
->>> On Thu, Feb 17, 2022 at 02:02:35PM +0100, Rafał Miłecki wrote:
->>>> From: Rafał Miłecki <rafal@milecki.pl>
->>>>
->>>> U-Boot uses environment variables for storing device setup data. It
->>>> usually needs to be accessed by a bootloader, kernel and often
->>>> user-space.
->>>
->>> How much of this is already in use vs. proposed? I know I've seen
->>> something, but that may have been a u-boot env string in 'label' and
->>> that's it.
->>
->> [bootloader]
->> Right now U-Boot doesn't use any binding for describing env variables.
->> It's location is usually hardcoded, see (in U-Boot):
->> * CONFIG_ENV_ADDR
->> * CONFIG_ENV_SECT_SIZE
->> * CONFIG_ENV_ADDR_REDUND
-> 
-> And more … U-Boot has a variety of options to store the U-Boot env,
-> from the top of my head:
-> 
-> - at some offset in raw flash / mtd partition on NAND, NOR, serial dataflash, etc.
-> - at some offset on a block device, e.g. on eMMC
-> - as a file in a FAT partition
-> - in a UBI volume
-> - …
-> 
-> And yes, it's determined by some build option and hardcoded at compile
-> time.
-> 
->> [kernel]
->> There is no support for accessing U-Boot env data. This patch is the
->> first step for adding such a support.
->>
->> [user-space]
->> OpenWrt uses bash script to store a list of devices and their U-Boot env
->> variables location. In a long term I'd like to replace it and use DT
->> info + possibly a kernel exposed NVMEM data.
-> 
-> U-Boot source itself has userspace tools fw_setenv and fw_printenv
-> and those look into /etc/fw_env.config on how that env should be
-> accessed.
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+> ---
+>  drivers/usb/host/xhci-exynos.c | 2025 ++++++++++++++++++++++++++++++++
+>  drivers/usb/host/xhci-exynos.h |  150 +++
+>  2 files changed, 2175 insertions(+)
+>  create mode 100644 drivers/usb/host/xhci-exynos.c
+>  create mode 100644 drivers/usb/host/xhci-exynos.h
 
-I wasn't 100% clear on that but OpenWrt actually uses those U-Boot tools
+Please test-build your patches before sending them out :(
 
-OpenWrt scripts I mentioned can be found there:
-https://git.openwrt.org/?p=openwrt/openwrt.git;a=tree;f=package/boot/uboot-envtools/files;h=687c89806f72756053457a7ab7245bff1c4dcfe8;hb=HEAD
-
-Random example:
-
-linksys,wrt1900ac-v1)
-	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x20000"
-	;;
-linksys,wrt3200acm|\
-linksys,wrt32x)
-	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
-	;;
-
-So those scripts simply generate /etc/fw_env.config required by
-fw_printenv / fw_setenv. They have to match what's used by U-Boot at
-compilation time.
-
-My long term plan is to move that info to DTS and share it across
-projects.
