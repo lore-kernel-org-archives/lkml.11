@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188B4C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFF0C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238751AbiCGJsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:48:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
+        id S238733AbiCGJsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239007AbiCGJjI (ORCPT
+        with ESMTP id S239012AbiCGJjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:39:08 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CFE7032C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B494E70332;
         Mon,  7 Mar 2022 01:34:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 60FA3CE0E99;
-        Mon,  7 Mar 2022 09:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33FC5C340F4;
-        Mon,  7 Mar 2022 09:33:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4091CB810B6;
+        Mon,  7 Mar 2022 09:33:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F85BC340F3;
+        Mon,  7 Mar 2022 09:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645639;
-        bh=WgRToQln7oEI2/57FJBoQdzJjSp7WbyOK5X7eehcAIc=;
+        s=korg; t=1646645606;
+        bh=1zPQ1h+JVqvtBMyT8pf3fIRvne3QVF7gguqyCR2aGf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0B2wV5wJ0YY4Ur2u1CgaMdzKTNjMP/ItCmVgd+dV4NCZbh688ygecScYeiUBOMqE/
-         l8YU8tVoeIpS5vWu9t+2pmLX48eGD50e4bwxp482m7ZQHE22W2LwXIL/PjUhjav2OY
-         pNbBErOJadwg116SpeijgX4d9+TlC5H3akO35zA0=
+        b=AD/w47Aj1HDLoaaY8OAUvsKz2jtbFjvHcunDipJPDrgdnWzkKSwCmyQIlbPCKoaVt
+         K0RvMsaxgyenWhKe+hKxoDrCFF8Gti9Djnbq3Q0a5ISSDGsanpP3UCJf3H380Om66b
+         szrUdP1Jw83c6bLFvLV2SRDzGWHJutPAoqcMKTgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 095/105] Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
-Date:   Mon,  7 Mar 2022 10:19:38 +0100
-Message-Id: <20220307091646.849774842@linuxfoundation.org>
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 085/105] soc: fsl: guts: Add a missing memory allocation failure check
+Date:   Mon,  7 Mar 2022 10:19:28 +0100
+Message-Id: <20220307091646.571002433@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -48,125 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 81a36d8ce554b82b0a08e2b95d0bd44fcbff339b upstream.
+[ Upstream commit b9abe942cda43a1d46a0fd96efb54f1aa909f757 ]
 
-elan_disable_power() is called conditionally on suspend, where as
-elan_enable_power() is always called on resume. This leads to
-an imbalance in the regulator's enable count.
+If 'devm_kstrdup()' fails, we should return -ENOMEM.
 
-Move the regulator_[en|dis]able() calls out of elan_[en|dis]able_power()
-in preparation of fixing this.
+While at it, move the 'of_node_put()' call in the error handling path and
+after the 'machine' has been copied.
+Better safe than sorry.
 
-No functional changes intended.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131135436.29638-1-hdegoede@redhat.com
-[dtor: consolidate elan_[en|dis]able() into elan_set_power()]
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a6fc3b698130 ("soc: fsl: add GUTS driver for QorIQ platforms")
+Depends-on: fddacc7ff4dd ("soc: fsl: guts: Revert commit 3c0d64e867ed")
+Suggested-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Li Yang <leoyang.li@nxp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/elan_i2c_core.c |   62 ++++++++++++------------------------
- 1 file changed, 22 insertions(+), 40 deletions(-)
+ drivers/soc/fsl/guts.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -153,55 +153,21 @@ static int elan_get_fwinfo(u16 ic_type,
- 	return 0;
- }
- 
--static int elan_enable_power(struct elan_tp_data *data)
-+static int elan_set_power(struct elan_tp_data *data, bool on)
- {
- 	int repeat = ETP_RETRY_COUNT;
- 	int error;
- 
--	error = regulator_enable(data->vcc);
--	if (error) {
--		dev_err(&data->client->dev,
--			"failed to enable regulator: %d\n", error);
--		return error;
--	}
--
- 	do {
--		error = data->ops->power_control(data->client, true);
-+		error = data->ops->power_control(data->client, on);
- 		if (error >= 0)
- 			return 0;
- 
- 		msleep(30);
- 	} while (--repeat > 0);
- 
--	dev_err(&data->client->dev, "failed to enable power: %d\n", error);
--	return error;
--}
--
--static int elan_disable_power(struct elan_tp_data *data)
--{
--	int repeat = ETP_RETRY_COUNT;
--	int error;
--
--	do {
--		error = data->ops->power_control(data->client, false);
--		if (!error) {
--			error = regulator_disable(data->vcc);
--			if (error) {
--				dev_err(&data->client->dev,
--					"failed to disable regulator: %d\n",
--					error);
--				/* Attempt to power the chip back up */
--				data->ops->power_control(data->client, true);
--				break;
--			}
--
--			return 0;
--		}
--
--		msleep(30);
--	} while (--repeat > 0);
--
--	dev_err(&data->client->dev, "failed to disable power: %d\n", error);
-+	dev_err(&data->client->dev, "failed to set power %s: %d\n",
-+		on ? "on" : "off", error);
- 	return error;
- }
- 
-@@ -1361,9 +1327,19 @@ static int __maybe_unused elan_suspend(s
- 		/* Enable wake from IRQ */
- 		data->irq_wake = (enable_irq_wake(client->irq) == 0);
- 	} else {
--		ret = elan_disable_power(data);
-+		ret = elan_set_power(data, false);
-+		if (ret)
-+			goto err;
-+
-+		ret = regulator_disable(data->vcc);
-+		if (ret) {
-+			dev_err(dev, "error %d disabling regulator\n", ret);
-+			/* Attempt to power the chip back up */
-+			elan_set_power(data, true);
+diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+index 6d7465afd6fd..091e94c04f30 100644
+--- a/drivers/soc/fsl/guts.c
++++ b/drivers/soc/fsl/guts.c
+@@ -160,9 +160,14 @@ static int fsl_guts_probe(struct platform_device *pdev)
+ 	root = of_find_node_by_path("/");
+ 	if (of_property_read_string(root, "model", &machine))
+ 		of_property_read_string_index(root, "compatible", 0, &machine);
+-	of_node_put(root);
+-	if (machine)
++	if (machine) {
+ 		soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
++		if (!soc_dev_attr.machine) {
++			of_node_put(root);
++			return -ENOMEM;
 +		}
- 	}
- 
-+err:
- 	mutex_unlock(&data->sysfs_mutex);
- 	return ret;
- }
-@@ -1379,7 +1355,13 @@ static int __maybe_unused elan_resume(st
- 		data->irq_wake = false;
- 	}
- 
--	error = elan_enable_power(data);
-+	error = regulator_enable(data->vcc);
-+	if (error) {
-+		dev_err(dev, "error %d enabling regulator\n", error);
-+		goto err;
 +	}
-+
-+	error = elan_set_power(data, true);
- 	if (error) {
- 		dev_err(dev, "power up when resuming failed: %d\n", error);
- 		goto err;
++	of_node_put(root);
+ 
+ 	svr = fsl_guts_get_svr();
+ 	soc_die = fsl_soc_die_match(svr, fsl_soc_die);
+-- 
+2.34.1
+
 
 
