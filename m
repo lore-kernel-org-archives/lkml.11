@@ -2,177 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB67C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 17:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243831AbiCGRfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 12:35:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
+        id S239968AbiCGRhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 12:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231509AbiCGRfS (ORCPT
+        with ESMTP id S231509AbiCGRhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 12:35:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA76F580FC
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:34:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646674462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FbdNSKrGS4JCoM1jH1uzcLnG2rPnhs6mYtyt0Arre8w=;
-        b=dv8iAeCrVmJmr4WFBvR6/WTFT1ecr7zUJzGkCHLofsnkm9ikdojxCmuOogIiCTJcOWYjDr
-        O2ILdUaX5Z//pxYkctVf+HNwv6K/R3QhgjxUiqcWlEvMebogE8wyEzsy5ZgMpf+8WUm6DJ
-        l8/ptS5WO6TFC5FM+8XvXTEFDOl/Rkc=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-149--CFLNOgeNyO7Vzv0KSE2LQ-1; Mon, 07 Mar 2022 12:34:21 -0500
-X-MC-Unique: -CFLNOgeNyO7Vzv0KSE2LQ-1
-Received: by mail-ed1-f71.google.com with SMTP id y10-20020a056402358a00b00410deddea4cso9048449edc.16
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 09:34:21 -0800 (PST)
+        Mon, 7 Mar 2022 12:37:15 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453238F993
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 09:36:21 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DA7003F1AF
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 17:36:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646674579;
+        bh=3HG+K+k5QA/B8ff7N43iW1x5z1qS4k2KKhb2cegl518=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=vHTP3IIeNp0CCnFLLGeTicQpH3qwvQ59tlc47kKynVmO/+qI1/QuZQnDKr0xc3ikK
+         wp2mCTD/r5EclH/77ZhrB7gQNroYCQG4GUNcv/N58aeoj9gL/3l20McXeEq/UJBCCl
+         SKYcsGl80L/7vAmNs2KJ7JNc9PVZWPmxP3YIWgGfq5hg1HRmaSfSPQFWEaizlHucpQ
+         tuXalP+EZuiVeotyWf1IoBvRzAOR4NLX9bMiKC/PxE3/+0IgbAFO+ouagnUOFgbSzC
+         bd8xnir0EeSBfM3A4O7r6MVLu+6D8UzPLJi9I+Jr5p3r14xC2TrgUmR7QbEcrmbZw4
+         q1P4t4bfGrqdw==
+Received: by mail-ej1-f69.google.com with SMTP id i14-20020a17090639ce00b006dabe6a112fso3571866eje.13
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 09:36:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FbdNSKrGS4JCoM1jH1uzcLnG2rPnhs6mYtyt0Arre8w=;
-        b=JoTIlwanJYqK65U0t+Mby7CeZaeay0JbGNt2t5fmLE0Ltk1rQDbipa3Zv8nlBY3brK
-         7zya8IjUineul7I0/6yVARbax9NiKIBekQhUtagEo6Fwr24tT/NjEQjXEKaaiLSZy2uV
-         hUnYD/MHYvi5qwx+GMniEfrO3bvsGyUudtvqMISRR+i6w7Hf+8cG/3cLuxATJHVGSp4l
-         ypJ2XZwUeguJMiXXEX7FMPnT/cz89Zr/zewwOFmeFTOhrl0TPi+0f3jIyEZLkuSheQJ+
-         34P3LR1b41RbYqoW7CxH4/gtLB+Xkz5NEh+FxZd2nXM8GsPQdl0syLFhTd7iH0CQFAoR
-         X9WQ==
-X-Gm-Message-State: AOAM53050M8ua7ep0IHaKDjGX3UPEyZGUwq8efn93E02+88DMNNvyjF7
-        GvbFChqJ7DL7LsvjaQ/zBIEdgYlnBJvc4fJQZovvCjlUUDoRjWEIOM3qO+ryNTUJghnUElHOtLR
-        iOhyrjesBO6iaDogRBjrY0nyQ
-X-Received: by 2002:a05:6402:292c:b0:416:8eb:3fc4 with SMTP id ee44-20020a056402292c00b0041608eb3fc4mr12030111edb.2.1646674460479;
-        Mon, 07 Mar 2022 09:34:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwWa96UGbyv2h0LnPbaGrA8o8YFfAmGRjN5CFcGQ22V5m7lS0/DD1p/0fxHylTw7f/14YG/Jg==
-X-Received: by 2002:a05:6402:292c:b0:416:8eb:3fc4 with SMTP id ee44-20020a056402292c00b0041608eb3fc4mr12030095edb.2.1646674460257;
-        Mon, 07 Mar 2022 09:34:20 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id fs6-20020a170907600600b006da8ec6e4a6sm4940420ejc.26.2022.03.07.09.34.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 09:34:19 -0800 (PST)
-Message-ID: <743f08ed-1a26-8cc0-4f7a-32e41f5040f1@redhat.com>
-Date:   Mon, 7 Mar 2022 18:34:19 +0100
+        bh=3HG+K+k5QA/B8ff7N43iW1x5z1qS4k2KKhb2cegl518=;
+        b=sRQDithPgNpuMOXCyrkZ1xbqhiUKXrQK+i5kb1Et69Zm5SW+7cLedFw0z18EbMnwuz
+         IIRxpbQRQuwV07i0igiFkfBHS+jgz6HXkIWsaXPT6sG2WJj4iyUoCk44GFAjK6bKLPky
+         POHEBr+3l3UKIboNi4mh2jRpMexWJBy16Lai+cY0m0lmrnpM9gtpyBuaJzGJLu9mQgvx
+         Opljv/6oGpRj88ZRfpByTapgR4mpJ13fMh3U1aguzukVPrkGK+zkgh2YjycJhQ0w+avA
+         GYvAhCuSOsBQiS9OJRRPdImDro/aELXSEbm03caqJB7MY2mvHoK0L/Ge+wOXLkezrapK
+         MhbA==
+X-Gm-Message-State: AOAM5331lRF1G8R3f3lG+MYcxRriiTu9Q8db3bh8uux2SAShhdKJvwWv
+        qNsHChXl/tKLSsdmriIwfJeoHkEI0jEH3lJdjr32EgEFlkaO+U0czBA0JoT3puFt9ZjDJMBQVOC
+        rpnhgPng5ZxIJHPxf2+mUpTx1Yvhi+hEV6hY3X1QYkw==
+X-Received: by 2002:a17:906:585b:b0:6b7:73bc:5395 with SMTP id h27-20020a170906585b00b006b773bc5395mr10109317ejs.519.1646674579334;
+        Mon, 07 Mar 2022 09:36:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzKjiixge1fWdZzZQpMZjyr+5Ie33xOV4IY4yStu5Ftd/B2YpKtjTs3nermPtLrgHBcoNxM1w==
+X-Received: by 2002:a17:906:585b:b0:6b7:73bc:5395 with SMTP id h27-20020a170906585b00b006b773bc5395mr10109307ejs.519.1646674579149;
+        Mon, 07 Mar 2022 09:36:19 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id i6-20020a17090685c600b006daecf0b350sm3284875ejy.75.2022.03.07.09.36.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 09:36:18 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Chanho Min <chanho.min@lge.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [GIT PULL] arm64: dts: various cleanup for v5.18
+Date:   Mon,  7 Mar 2022 18:36:14 +0100
+Message-Id: <20220307173614.157884-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 2/2] mfd: arizona-spi: Add Android board ACPI table
- handling
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-References: <20220223134222.730886-1-hdegoede@redhat.com>
- <20220223134222.730886-2-hdegoede@redhat.com> <YiYb+Ea7aKO99gXL@google.com>
- <ac21f173-2cba-0ddc-67db-27e06950c2d4@redhat.com>
- <YiYicoaSc7KYTbvj@google.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YiYicoaSc7KYTbvj@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Arnd and Olof,
 
-On 3/7/22 16:19, Lee Jones wrote:
-> On Mon, 07 Mar 2022, Hans de Goede wrote:
-> 
->> Hi,
->>
->> On 3/7/22 15:51, Lee Jones wrote:
->>> On Wed, 23 Feb 2022, Hans de Goede wrote:
->>>
->>>> x86/ACPI boards with an arizona WM5102 codec ship with either Windows or
->>>> Android as factory installed OS.
->>>>
->>>> The ACPI fwnode for the codec on Android boards misses 2 things compared
->>>> to the Windows boards (this is hardcoded in the Android board kernels):
->>>>
->>>> 1. There is no CLKE ACPI method to enabe the 32 KHz clock the codec needs
->>>>    for jack-detection.
->>>>
->>>> 2. The GPIOs used by the codec are not listed in the fwnode for the codec.
->>>>
->>>> The ACPI tables on x86/ACPI boards shipped with Android being incomplete
->>>> happens a lot. The special drivers/platform/x86/x86-android-tablets.c
->>>> module contains DMI based per model handling to compensate for this.
->>>>
->>>> This module will enable the 32KHz clock through the pinctrl framework
->>>> to fix 1. and it will also register a gpio-lookup table for all GPIOs
->>>> needed by the codec + machine driver, including the GPIOs coming from
->>>> the codec itself.
->>>>
->>>> Add an arizona_spi_acpi_android_probe() function which waits for the
->>>> x86-android-tablets to have set things up before continue with probing
->>>> the arizona WM5102 codec.
->>>>
->>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->>>> ---
->>>>  drivers/mfd/arizona-spi.c | 34 +++++++++++++++++++++++++++++++++-
->>>>  1 file changed, 33 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/mfd/arizona-spi.c b/drivers/mfd/arizona-spi.c
->>>> index 238355542ab1..2c686e71db21 100644
->>>> --- a/drivers/mfd/arizona-spi.c
->>>> +++ b/drivers/mfd/arizona-spi.c
->>>> @@ -81,6 +81,29 @@ static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
->>>>  	return 0;
->>>>  }
->>>>  
->>>> +/* For ACPI tables from boards which ship with Android as factory OS */
->>>> +static int arizona_spi_acpi_android_probe(struct arizona *arizona)
->>>> +{
->>>> +	int ret;
->>>> +
->>>> +	/*
->>>> +	 * Get the reset GPIO, treating -ENOENT as -EPROBE_DEFER to wait for
->>>> +	 * the x86-android-tablets module to register the board specific GPIO
->>>> +	 * lookup table.
->>>> +	 */
->>>> +	arizona->pdata.reset = devm_gpiod_get(arizona->dev, "reset", GPIOD_OUT_LOW);
->>>> +	if (IS_ERR(arizona->pdata.reset)) {
->>>> +		ret = PTR_ERR(arizona->pdata.reset);
->>>> +		if (ret == -ENOENT) {
->>>> +			dev_info_once(arizona->dev, "Deferring probe till GPIO lookup is registered\n");
->>>
->>> Nit: How many chars is this?
->>
->> 105.
->>
->>> I thought we were drawing the line at 100 these days?
->>
->> We have an exception for log lines, since we don't want to break them
->> up because that makes grepping for them impossible.
->>
->>> Does this patch pass checkpatch.pl?
->>
->> Yes because of the exception for log lines:
->>
->> [hans@x1 linux]$ scripts/checkpatch.pl 0001-mfd-arizona-spi-Add-Android-board-ACPI-table-handlin.patch 
->> total: 0 errors, 0 warnings, 54 lines checked
->>
->> 0001-mfd-arizona-spi-Add-Android-board-ACPI-table-handlin.patch has no obvious style problems and is ready for submission.
-> 
-> What do you mean by long lines?
+These patches were for very long time on the mailing list, but they were not
+picked up. LG maintainer acked the LG part, ARM Juno remains unanswered.
 
-Not long lines, log lines, as in lines logging a message,
-sorry if that was unclear.
+These are considered cleanups, not fixes, although they fix real
+dt_bindings_check warnings.
 
-> I'm aware of the exception for long strings.
-> 
-> Not sure why anyone would grep for "dev_info_once(arizona->dev, ".
-> 
-> I would break this after the first comma.
+Could you pick them up for v5.18?
 
-Ok, I'll send a v2 with a break after the first comma.
+Best regards,
+Krzysztof
 
-Regards,
 
-Hans
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/dt64-cleanup-5.18
+
+for you to fetch changes up to ad3c72b0c6b912a0e917ae8010c62cc98012ab1e:
+
+  arm64: dts: lg: align pl330 node name with dtschema (2022-03-02 20:25:14 +0100)
+
+----------------------------------------------------------------
+Minor cleanup of ARM64 DTS for v5.18
+
+The DT schema expects DMA controller nodes to follow certain node naming
+and having dma-cells property.  Adjust the DTS files to pass DT schema
+checks.
+
+----------------------------------------------------------------
+Krzysztof Kozlowski (3):
+      arm64: dts: juno: align pl330 node name with dtschema
+      arm64: dts: lg: add dma-cells to pl330 node
+      arm64: dts: lg: align pl330 node name with dtschema
+
+ arch/arm64/boot/dts/arm/juno-base.dtsi | 2 +-
+ arch/arm64/boot/dts/lg/lg1312.dtsi     | 3 ++-
+ arch/arm64/boot/dts/lg/lg1313.dtsi     | 3 ++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
