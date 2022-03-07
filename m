@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AEDEC35278
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 277CCC41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiCGJtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41816 "EHLO
+        id S238791AbiCGJso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:48:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239501AbiCGJjq (ORCPT
+        with ESMTP id S239054AbiCGJjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:46 -0500
+        Mon, 7 Mar 2022 04:39:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EDC71ED7;
-        Mon,  7 Mar 2022 01:35:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DE970906;
+        Mon,  7 Mar 2022 01:34:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EE7A6112D;
-        Mon,  7 Mar 2022 09:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A43B2C340E9;
-        Mon,  7 Mar 2022 09:34:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B8C561256;
+        Mon,  7 Mar 2022 09:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 570DAC340F8;
+        Mon,  7 Mar 2022 09:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645696;
-        bh=pd5FHJ2XVl+8PlV+dOhaAoN4Pt20CrlB4vG0n/3ZJYg=;
+        s=korg; t=1646645648;
+        bh=v0mhPLi2aLsr/GqtGnRVGGrhS+JfUPZXyYIEqPQ6pS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dWhsf4bgper7iTObegTjs8rgJRXhweenTax5Kp6XuzM+MEN9/FbbYZ6lMetClAy+j
-         UyZhhSguM4ytz021OziONpEsJYAVsLbTUuM1ZThsvnbiCa/gHLNN87c3rBVbN2T2sH
-         kYSDsXbZ35mm2+Swj38zf+xl5P5SXkhUiGXLrvRQ=
+        b=INxb7qSWufW1dhfelAoAoUpLO8vxRT3KgM4n2wkj9KEh+tvEilMTzlYsXe2m8cPr6
+         YlYMw9kFD35RCco/lj3c1+SAJ7j/udkK7PvB42iggcIzfGNBl7CwPK18CbtIza0pMg
+         G17AaTS9OT24ujvWDwy3GUY8s/Feedl1S3Kp9T/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 063/105] iavf: Fix missing check for running netdev
-Date:   Mon,  7 Mar 2022 10:19:06 +0100
-Message-Id: <20220307091645.952463049@linuxfoundation.org>
+        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.10 098/105] HID: add mapping for KEY_DICTATE
+Date:   Mon,  7 Mar 2022 10:19:41 +0100
+Message-Id: <20220307091646.934685451@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -52,43 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: William Mahon <wmahon@chromium.org>
 
-commit d2c0f45fcceb0995f208c441d9c9a453623f9ccf upstream.
+commit bfa26ba343c727e055223be04e08f2ebdd43c293 upstream.
 
-The driver was queueing reset_task regardless of the netdev
-state.
+Numerous keyboards are adding dictate keys which allows for text
+messages to be dictated by a microphone.
 
-Do not queue the reset task in iavf_change_mtu if netdev
-is not running.
+This patch adds a new key definition KEY_DICTATE and maps 0x0c/0x0d8
+usage code to this new keycode. Additionally hid-debug is adjusted to
+recognize this new usage code as well.
 
-Fixes: fdd4044ffdc8 ("iavf: Remove timer for work triggering, use delaying work instead")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: William Mahon <wmahon@chromium.org>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20220303021501.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/hid/hid-debug.c                |    1 +
+ drivers/hid/hid-input.c                |    1 +
+ include/uapi/linux/input-event-codes.h |    1 +
+ 3 files changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3317,8 +3317,11 @@ static int iavf_change_mtu(struct net_de
- 		iavf_notify_client_l2_params(&adapter->vsi);
- 		adapter->flags |= IAVF_FLAG_SERVICE_CLIENT_REQUESTED;
- 	}
--	adapter->flags |= IAVF_FLAG_RESET_NEEDED;
--	queue_work(iavf_wq, &adapter->reset_task);
-+
-+	if (netif_running(netdev)) {
-+		adapter->flags |= IAVF_FLAG_RESET_NEEDED;
-+		queue_work(iavf_wq, &adapter->reset_task);
-+	}
+--- a/drivers/hid/hid-debug.c
++++ b/drivers/hid/hid-debug.c
+@@ -930,6 +930,7 @@ static const char *keys[KEY_MAX + 1] = {
+ 	[KEY_SCREENSAVER] = "ScreenSaver",
+ 	[KEY_VOICECOMMAND] = "VoiceCommand",
+ 	[KEY_EMOJI_PICKER] = "EmojiPicker",
++	[KEY_DICTATE] = "Dictate",
+ 	[KEY_BRIGHTNESS_MIN] = "BrightnessMin",
+ 	[KEY_BRIGHTNESS_MAX] = "BrightnessMax",
+ 	[KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -956,6 +956,7 @@ static void hidinput_configure_usage(str
+ 		case 0x0cd: map_key_clear(KEY_PLAYPAUSE);	break;
+ 		case 0x0cf: map_key_clear(KEY_VOICECOMMAND);	break;
  
- 	return 0;
- }
++		case 0x0d8: map_key_clear(KEY_DICTATE);		break;
+ 		case 0x0d9: map_key_clear(KEY_EMOJI_PICKER);	break;
+ 
+ 		case 0x0e0: map_abs_clear(ABS_VOLUME);		break;
+--- a/include/uapi/linux/input-event-codes.h
++++ b/include/uapi/linux/input-event-codes.h
+@@ -612,6 +612,7 @@
+ #define KEY_ASSISTANT		0x247	/* AL Context-aware desktop assistant */
+ #define KEY_KBD_LAYOUT_NEXT	0x248	/* AC Next Keyboard Layout Select */
+ #define KEY_EMOJI_PICKER	0x249	/* Show/hide emoji picker (HUTRR101) */
++#define KEY_DICTATE		0x24a	/* Start or Stop Voice Dictation Session (HUTRR99) */
+ 
+ #define KEY_BRIGHTNESS_MIN		0x250	/* Set Brightness to Minimum */
+ #define KEY_BRIGHTNESS_MAX		0x251	/* Set Brightness to Maximum */
 
 
