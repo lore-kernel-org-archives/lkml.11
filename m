@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D77FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF06C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240094AbiCGKF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S237871AbiCGKGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:06:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238230AbiCGJo7 (ORCPT
+        with ESMTP id S238303AbiCGJpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:44:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C528961A20;
-        Mon,  7 Mar 2022 01:41:42 -0800 (PST)
+        Mon, 7 Mar 2022 04:45:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC7C65432;
+        Mon,  7 Mar 2022 01:41:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72E0DB8102B;
-        Mon,  7 Mar 2022 09:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A4FC340E9;
-        Mon,  7 Mar 2022 09:41:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC64F612C9;
+        Mon,  7 Mar 2022 09:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4053C340F3;
+        Mon,  7 Mar 2022 09:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646100;
-        bh=SmVEn4GoyNBFLoGjar7lW6qHLF92Ww9k0BA4JayBMZ0=;
+        s=korg; t=1646646103;
+        bh=ZRudVY4cCl8/MQQO5V8VjUC2mo62hikaH/uo7E/qylE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XKzLqa1HFsWdkxPz4EWFnB0/ej0Hcl2SbipmVHGLx+7zv38wIYRaNir7orw9yuO1i
-         0wYbGZGrpzC9tdEvoa3i+oB0DlppH25iK4Sgkehzr6/fRCu14i0/6NHJoZVxsmEru0
-         yvjAMPYQL9XE6R2q7seDCfmFRdS8YNG+nwPdGFog=
+        b=WuQMm6qa3dqfBS5uEaTT7yYFViHRx2O/T5d7UIL8aYlmRFDHC0E68bM8mKwWhXjsb
+         7YOeUPgUfDaCWigEJaZIfZTqV/rcPVQmUyv9u0ubH7YWoRGkw8KL+Q3Osmt86HaHLt
+         n0y5l5NG1+XIR4pqqhqUU+Y//dBxSTzp7BuPXxUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 093/262] kasan: fix quarantine conflicting with init_on_free
-Date:   Mon,  7 Mar 2022 10:17:17 +0100
-Message-Id: <20220307091705.100178265@linuxfoundation.org>
+        stable@vger.kernel.org, Jeremy Pallotta <jmpallotta@gmail.com>,
+        Kelvin Cao <kelvin.cao@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 084/262] ntb_hw_switchtec: Fix pff ioread to read into mmio_part_cfg_all
+Date:   Mon,  7 Mar 2022 10:17:08 +0100
+Message-Id: <20220307091704.855171721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -55,61 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Jeremy Pallotta <jmpallotta@gmail.com>
 
-[ Upstream commit 26dca996ea7b1ac7008b6b6063fc88b849e3ac3e ]
+[ Upstream commit 32c3d375b0ed84b6acb51ae5ebef35ff0d649d85 ]
 
-KASAN's quarantine might save its metadata inside freed objects.  As
-this happens after the memory is zeroed by the slab allocator when
-init_on_free is enabled, the memory coming out of quarantine is not
-properly zeroed.
+Array mmio_part_cfg_all holds the partition configuration of all
+partitions, with partition number as index. Fix this by reading into
+mmio_part_cfg_all for pff.
 
-This causes lib/test_meminit.c tests to fail with Generic KASAN.
-
-Zero the metadata when the object is removed from quarantine.
-
-Link: https://lkml.kernel.org/r/2805da5df4b57138fdacd671f5d227d58950ba54.1640037083.git.andreyknvl@google.com
-Fixes: 6471384af2a6 ("mm: security: introduce init_on_alloc=1 and init_on_free=1 boot options")
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Marco Elver <elver@google.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 0ee28f26f378 ("NTB: switchtec_ntb: Add link management")
+Signed-off-by: Jeremy Pallotta <jmpallotta@gmail.com>
+Signed-off-by: Kelvin Cao <kelvin.cao@microchip.com>
+Signed-off-by: Jon Mason <jdmason@kudzu.us>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kasan/quarantine.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/ntb/hw/mscc/ntb_hw_switchtec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/kasan/quarantine.c b/mm/kasan/quarantine.c
-index d8ccff4c1275e..47ed4fc33a29e 100644
---- a/mm/kasan/quarantine.c
-+++ b/mm/kasan/quarantine.c
-@@ -132,11 +132,22 @@ static void *qlink_to_object(struct qlist_node *qlink, struct kmem_cache *cache)
- static void qlink_free(struct qlist_node *qlink, struct kmem_cache *cache)
+diff --git a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+index 4c6eb61a6ac62..6603c77c0a848 100644
+--- a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
++++ b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+@@ -419,8 +419,8 @@ static void switchtec_ntb_part_link_speed(struct switchtec_ntb *sndev,
+ 					  enum ntb_width *width)
  {
- 	void *object = qlink_to_object(qlink, cache);
-+	struct kasan_free_meta *meta = kasan_get_free_meta(cache, object);
- 	unsigned long flags;
+ 	struct switchtec_dev *stdev = sndev->stdev;
+-
+-	u32 pff = ioread32(&stdev->mmio_part_cfg[partition].vep_pff_inst_id);
++	u32 pff =
++		ioread32(&stdev->mmio_part_cfg_all[partition].vep_pff_inst_id);
+ 	u32 linksta = ioread32(&stdev->mmio_pff_csr[pff].pci_cap_region[13]);
  
- 	if (IS_ENABLED(CONFIG_SLAB))
- 		local_irq_save(flags);
- 
-+	/*
-+	 * If init_on_free is enabled and KASAN's free metadata is stored in
-+	 * the object, zero the metadata. Otherwise, the object's memory will
-+	 * not be properly zeroed, as KASAN saves the metadata after the slab
-+	 * allocator zeroes the object.
-+	 */
-+	if (slab_want_init_on_free(cache) &&
-+	    cache->kasan_info.free_meta_offset == 0)
-+		memzero_explicit(meta, sizeof(*meta));
-+
- 	/*
- 	 * As the object now gets freed from the quarantine, assume that its
- 	 * free track is no longer valid.
+ 	if (speed)
 -- 
 2.34.1
 
