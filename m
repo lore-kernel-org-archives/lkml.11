@@ -2,191 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 364F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766B4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234510AbiCGNDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
+        id S239510AbiCGNEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:04:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiCGNDd (ORCPT
+        with ESMTP id S232482AbiCGNEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:03:33 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2041.outbound.protection.outlook.com [40.107.96.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424C027CF2;
-        Mon,  7 Mar 2022 05:02:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dAooKV+D2wzGMRQXq2kuNwU+HmW+ZPl38dgEVMPLBmPsPcMFGZmofltNdtaQetXNP3Jh9uDZMuCJ3BTicm8nCcFTZn5oThRVZnrHYGNWTliunEEMtrHsMnpR56UyU3MGsR+yQhbfO3XjB5JycFCv2hP0Zz98glLc9BOJ+w1SiDyssk0Bnlahw4BlNJK7jlPoeEAYyjPGVIJYIZPwBuJJ04i/cFph69gRN7XgHLkCpMXoXQAILHS8IAjlSp1r2Rl0eVQgzZVeqEmX8Bdsd87pQyLTQfzWKkJWPE8Qdi15nRUfc087NOtVJM2g1y/fpjLlp5vI3rhoeY5Xd4r7KYA2Hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y1MTIfgqWOY2sV2RMcaPvqk32JUKm8dgrz/NNd/2+WM=;
- b=PbwqdXYv4C8N8oHUCTCOq+oSo3NUNYk818Lv09mchNSwoS2iPvToLpszpWy+iJ5/i2Cx6Wl6+y8I4KXSrJ5FjWfQT5IMxewrjDl1lV+JhtjQUpmIVac48LdrZs+RwatVCJAMBdsttCiGo3ZVde5szfvu2qK3gMVBjnxtZOjZ0e7VoLDdNSS0ogmdBNlPfHm47djc3EaZ0u+JJwMxPKv6/7ePuhkt/EFHWX4OnxbwwypHuj6fqcdi+tbkC7M0H/UF1ZWJFfxCCB4rVocXgv5J+etsFLL82jCSUcsh7TKYQVvXfHTyD379EaR3UyK8oiTAUPPocTUFZSJ9orgqRrJgBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y1MTIfgqWOY2sV2RMcaPvqk32JUKm8dgrz/NNd/2+WM=;
- b=hXEqB4CoFzjoVxzLo1vOEih+/HtFrZyvMku+ns2v304+trzNuMRjct2gZd61D6FJYqYVg/fdn/3UP5msNAL0raegldDBkJy8dA+kQ2Ur0VlPV++BdfIwpGra0bP89x7mOzXTvYyfOe5+KgQ9E5LjwlEbGH+2f9x9fCCAgEoVXDE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB2470.namprd12.prod.outlook.com (2603:10b6:4:b4::39) by
- BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
- 2022 13:02:36 +0000
-Received: from DM5PR12MB2470.namprd12.prod.outlook.com
- ([fe80::83f:7a86:6caf:f6ab]) by DM5PR12MB2470.namprd12.prod.outlook.com
- ([fe80::83f:7a86:6caf:f6ab%4]) with mapi id 15.20.5038.027; Mon, 7 Mar 2022
- 13:02:35 +0000
-Message-ID: <adbd9285-d6a0-3112-2ba2-cf33fdf39bae@amd.com>
-Date:   Mon, 7 Mar 2022 18:32:19 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bharata B Rao <bharata@amd.com>
-Subject: Re: [RFC PATCH 0/6] KVM: SVM: Defer page pinning for SEV guests
-Content-Language: en-US
-To:     Mingwei Zhang <mizhang@google.com>
-References: <20220118110621.62462-1-nikunj@amd.com>
- <YiUUcuEuWbQrPs2E@google.com>
-From:   "Nikunj A. Dadhania" <nikunj@amd.com>
-In-Reply-To: <YiUUcuEuWbQrPs2E@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BM1PR0101CA0015.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:18::25) To DM5PR12MB2470.namprd12.prod.outlook.com
- (2603:10b6:4:b4::39)
+        Mon, 7 Mar 2022 08:04:32 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAEFA70CEF;
+        Mon,  7 Mar 2022 05:03:37 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 02A4BD6E;
+        Mon,  7 Mar 2022 05:03:37 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 195CE3F66F;
+        Mon,  7 Mar 2022 05:03:34 -0800 (PST)
+Message-ID: <371ef3f2-883d-91ab-ed96-da8921efb465@arm.com>
+Date:   Mon, 7 Mar 2022 13:03:28 +0000
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 876812f6-eb22-4b0d-e5a2-08da003abfb9
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4322:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB432298E0B1DE634A23A31BFEE2089@BY5PR12MB4322.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sbzJmQpX0WG1HDdzfXWTFzUuo8P5sEKL+JRTFknb+tcPsY3GHXRGh5UoyuKf5AA0PhgKgz1TXHLg6x+lGMfssRYTTJfCArlnXfjEZjcmnYhwHJd+xtl479gze195au8WMn9pGV+1txQFAyAJCdYUhPnftO6js7/GrXVefokQMTQTGIuhT9kO3MWzcFlay/dnHXV54DcP8PTxCkO4yhyE7h+6kUyfaBVgd4JJcbt0grZUiQfG2j0YOniOWnPVw3aQaUDfVX5pqDJr/uT1VyfV9OPbJVVOGHz6FevPtUpTbxa+ADif6wgAeyvSwKgDK8cAQb3EXVfaPwxjV4Ktzbr0pzMb/hON6I8E5F3ZKvg+zNmAU9ZcKdyaRT7gVB94BVpVtTNLFTYXe5A0u57jTSOvqz/qQpZprrFktsFTQ6p0Au6sybHA88khlxN/ad1mEx/bu0kEC8KcsfnSlLxXs/Dy2PRq07UWqzidopa8ExxX+3wz7Pp0LCOzdDg4uBwJsJmbINdn8X2qEWZFFcr+A9uFmHkvksF+MfVZcbCPpzEJPJT2vYxhL160AbkD9ak4BXEnKY0ox6lOIWRUmghN+ElwMc+ddIml+uJyl4jnVaSgZAzDDpgGOP10Gr7jQILwxlLLjQpAqGSAy0kjX4NUcTFa1/z3eKXae/IsOo4hHJnkYjRj5zjrUbF26OL09C8J+qb1M60gdmYjJXMysuLDxBVO95Rof1QPQX5kzlvdcaOy8Nr/yBj+4+FJ0Zi9hGh6S3gTBkJ2qxAILrQRceFTmUl/YLeEJAFu3H7AMMVfWhJ2eDafJZiXV6ihzMONFtpkswtJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB2470.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(2906002)(66476007)(66946007)(66556008)(8676002)(508600001)(4326008)(7416002)(36756003)(8936002)(6486002)(6512007)(966005)(38100700002)(6506007)(53546011)(26005)(31686004)(186003)(6916009)(54906003)(31696002)(83380400001)(316002)(5660300002)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y1RiK0NvOXdMbmp1TmwyMThQUS9KbnRuanB2V2JrN0lUa0VNMEdmSmJtdE5P?=
- =?utf-8?B?TWZDa09Za2hmQmhzU2RGcW5sVmRZMnorU0Y1SmN5enIvVkppQVR6d09qbVFk?=
- =?utf-8?B?WUVJZHhldlVIa3VndzF4SU5wdXJHZ0JpanBsREpoWVBLYTV5SGtpa282TmlH?=
- =?utf-8?B?UGRtSjZJR0JkUTV3azdyUi9OSG9BRjBlZDNNbGZpbkIyS2xhbnZlMzYveUtX?=
- =?utf-8?B?akI0c3ZGZjVOdUdvZ2o1YWxLaTJDZTBmVXBQUnZSaVczV20zUW1HdGFCekJr?=
- =?utf-8?B?enE0TC93cUVKRTlYNHlYMmZQdy83eWw1RE9tWitVMXNpWEtVWFZvc0R0TWYx?=
- =?utf-8?B?UXE1U0ttdU5JYUhtSWZyeUJDZXBiYmYrejJrUU4zVDNWcGN2WldXMHRON0FY?=
- =?utf-8?B?RXQ4bTlLMVdPRldTNER1enZnZnllbjNDU3ZOelUyZkY4WlRSaTcwOTE1c2R0?=
- =?utf-8?B?OGtoRXBlQUR6WnZYbGxydlpQVWFuYzJIeXFGMzZ5a0FxcncwOVA4N09RVDBB?=
- =?utf-8?B?eVBTNnhEMHRnYUNFR1d4cDZyTW5xTEUxalh1aERHMlZjS2lGT1VTZjhlVWF1?=
- =?utf-8?B?aXZYMVBTZ2o4aWM3TmtGQW9DeUpDcXZMVmdRd1hlcjI5MGpQTHRsWEZ4cjk0?=
- =?utf-8?B?dFI5NjRTNkFaRldNbEt3R1VBN3R6cnhwaURWdGNtSTVaOEp0K08yQVhoQUtq?=
- =?utf-8?B?L1JPSXR6R1JLd3cwTG1CdU02dVgxWllQYzRTL0F1U3BXc2hIK00wRzEyODl2?=
- =?utf-8?B?NTNhUjNNcG52MWE1SXRSVnk2TGJmOUFjU09JWnFRd2tENGxpZkVmZEpmN0p6?=
- =?utf-8?B?blNoYm9TS3hrOW5POGYwbXlIR0MzY3kyTTg2U2QrR0wwOWc3VDkvdUpYZFBT?=
- =?utf-8?B?dDJ1eDNtL0d2bytoaythQkRjcjVuT2pSY2EyV2dEMTdSSUdRbmdwN0pKUXBk?=
- =?utf-8?B?VCtKREtlbXNncG5ZR3hxYktDbzNwN00rcEFUQ09mN0E4YzU4eFBrWG8xM3pS?=
- =?utf-8?B?VlBscUw3WEpWeDY0cFZTZndzcmF3N2MvaVBpTmpOaGZqa0FoU2ltcVNOdVFK?=
- =?utf-8?B?YndwT1dUQnAzL201ZEhtZE9ENnRERDBiVE5KQ0RqOUhrc1pXTTd1cEZBS3Ax?=
- =?utf-8?B?YmRMUWJMbGJpc2R3Yy93Q2drdlhDSWFpQ0RGKy9WdUh5NHFURk0zSEpkNkN3?=
- =?utf-8?B?NDdBRTVGU0x1NStpNGdVM2crbVIzdWVVSFJlVEVHQjlzSkl0dThFVnBXNDc4?=
- =?utf-8?B?Q3Frek9sS3A1UkpYQUw3L1NmQ0l1TkUzcmlaeUJ4U3dPUkswVU5DMy9WQitl?=
- =?utf-8?B?V1RSVFpWRm9CNERRRGd0LzMwQjJQeTJYTzZMb2ExakZuVFB0cWR3THdFZVcv?=
- =?utf-8?B?cHRRWHA3NkZBN01hWU95cjAvdDVRdDUweXFzcXJkUnRSNWg3ZWRpRURiRXJG?=
- =?utf-8?B?ZTNVVUJ3d3B0MDl1ZlJxQkN4QzJoMHA1UDliS0VzdHc1MzNJc2hXOWdYMmh6?=
- =?utf-8?B?bTBCdjFBeVdtUVlWSUcvTGljSDJjQ29YQy93ckliMUpRT1FWZDN0WEdjMkFa?=
- =?utf-8?B?aDdxYUl6RXkyTnJVd0kvanZoZjFZR2NSNG8vUE1TMFVVTDF2ZWN1RmpIS0tR?=
- =?utf-8?B?TUxRSjdYVWI1NmZ2MXpXQ3M2d2o5N1BHK3VkT09jVU40aFNpTkVvU1NZNG1l?=
- =?utf-8?B?Wk11dWU4c0xnenVWREFYK1MrbCt5QlZWZmdzb2p4V2U3a2UyMk1aVnhKb2M5?=
- =?utf-8?B?VGd3eFlmbk5BeWlCNUxXTEJINjdieHpPRlJHT29HbktnZEpkNkVsVGw1dXcx?=
- =?utf-8?B?cTlSL0ZJK2xsVEU2M3liMDlXaDNJNHFXREF0NUlLWnpGNzJzd3l3S3hkN08y?=
- =?utf-8?B?TExORUhXNkRzVHoxa2gvYWY1ckpSVXJUcXhPN2tZTE9yUkRhSVNtazRjalJh?=
- =?utf-8?B?cG0zclpZTFVtby9RUk54SGdpV3BWeUl0ZUthM0duVnV5VTMwUUhSRWRSMWt0?=
- =?utf-8?B?WnhHL0RPaEhoOFpEQzVZY0JvVFgzS0tFNXE5Slo0dG1zeFAzMnU2YlduSVN3?=
- =?utf-8?B?RXVmTUg5cnA1MjIrY1oxQkYzcVFmRTIrRkNSRy8xR1ZmWDB3VDFMblpnWFBP?=
- =?utf-8?B?Rk4xbVZVcHM0WVBtNFdVdDcxbWRlanV0R2hoK2toZU9rU0htK1JKcldYa1ZG?=
- =?utf-8?Q?ui2j+VIl69e3BohwViS4tv0=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 876812f6-eb22-4b0d-e5a2-08da003abfb9
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB2470.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 13:02:35.4674
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h+TKEUxyWVaxX+lcLfrh1Wpuhg3hcIs5DVpb6PAmGfGvGfKXH7pvUTduNmFp+K2+xg1mvaz7UjGymZzjIgtP9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4322
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [BUG] crypto: ccree: driver does not handle case where cryptlen =
+ authsize =0
+Content-Language: en-GB
+To:     Gilad Ben-Yossef <gilad@benyossef.com>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christoph Hellwig <hch@lst.de>, m.szyprowski@samsung.com,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        iommu@lists.linux-foundation.org
+References: <CAOtvUMeoYcVm7OQdqXd1V5iPSXW_BkVxx6TA6nF7zTLVeHe0Ww@mail.gmail.com>
+ <CAOtvUMfy1fF35B2sfbOMui8n9Q4iCke9rgn5TiYMUMjd8gqHsA@mail.gmail.com>
+ <YhKV55t90HWm6bhv@Red>
+ <CAOtvUMdRU4wnRCXsC+U5XBDp+b+u8w7W7JCUKW2+ohuJz3PVhQ@mail.gmail.com>
+ <YhOcEQEjIKBrbMIZ@Red>
+ <CAOtvUMfN8U4+eG-TEVW4bSE6kOzuOSsJE4dOYGXYuWQKNzv7wQ@mail.gmail.com>
+ <CAOtvUMeRb=j=NDrc88x8aB-3=D1mxZ_-aA1d4FfvJmj7Jrbi4w@mail.gmail.com>
+ <YiIUXtxd44ut5uzV@Red> <YiUsWosH+MKMF7DQ@gondor.apana.org.au>
+ <CAOtvUMcudG3ySU+VeE7hfneDVWGLKFTnws-xjhq4hgFYSj0qOg@mail.gmail.com>
+ <YiXjCcXXk0f18FDL@Red> <aca4117c-b7a5-f7eb-eb03-4e1f1a93a730@arm.com>
+ <CAOtvUMePFR4e2jgHZKOvs3J3Xt4NzRbzD_=vr_49Qgs5HTrvHw@mail.gmail.com>
+ <6cf91f43-df23-3ac9-e9b5-958d99d37422@arm.com>
+ <CAOtvUMedqSNKx9Aah0R_aAyjKO0pn4K75MrCnbh_zX+Zw9vRQA@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAOtvUMedqSNKx9Aah0R_aAyjKO0pn4K75MrCnbh_zX+Zw9vRQA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/2022 1:37 AM, Mingwei Zhang wrote:
-> On Tue, Jan 18, 2022, Nikunj A Dadhania wrote:
->> SEV guest requires the guest's pages to be pinned in host physical
->> memory as migration of encrypted pages is not supported. The memory
->> encryption scheme uses the physical address of the memory being
->> encrypted. If guest pages are moved by the host, content decrypted in
->> the guest would be incorrect thereby corrupting guest's memory.
+On 2022-03-07 12:47, Gilad Ben-Yossef wrote:
+> On Mon, Mar 7, 2022 at 2:36 PM Robin Murphy <robin.murphy@arm.com> wrote:
 >>
->> For SEV/SEV-ES guests, the hypervisor doesn't know which pages are
->> encrypted and when the guest is done using those pages. Hypervisor
->> should treat all the guest pages as encrypted until the guest is
->> destroyed.
-> "Hypervisor should treat all the guest pages as encrypted until they are
-> deallocated or the guest is destroyed".
+>> On 2022-03-07 12:17, Gilad Ben-Yossef wrote:
+>>> On Mon, Mar 7, 2022 at 1:14 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>>
+>>>> The "overlap" is in the sense of having more than one mapping within the
+>>>> same cacheline:
+>>>>
+>>>> [  142.458120] DMA-API: add_dma_entry start P=ba79f200 N=ba79f
+>>>> D=ba79f200 L=10 DMA_FROM_DEVICE attrs=0
+>>>> [  142.458156] DMA-API: add_dma_entry start P=445dc010 N=445dc
+>>>> D=445dc010 L=10 DMA_TO_DEVICE attrs=0
+>>>> [  142.458178] sun8i-ss 1c15000.crypto: SRC 0/1/1 445dc000 len=16 bi=0
+>>>> [  142.458215] sun8i-ss 1c15000.crypto: DST 0/1/1 ba79f200 len=16 bi=0
+>>>> [  142.458234] DMA-API: add_dma_entry start P=ba79f210 N=ba79f
+>>>> D=ba79f210 L=10 DMA_FROM_DEVICE attrs=0
+>>>>
+>>>> This actually illustrates exactly the reason why this is unsupportable.
+>>>> ba79f200 is mapped for DMA_FROM_DEVICE, therefore subsequently mapping
+>>>> ba79f210 for DMA_TO_DEVICE may cause the cacheline covering the range
+>>>> ba79f200-ba79f23f to be written back over the top of data that the
+>>>> device has already started to write to memory. Hello data corruption.
+>>>>
+>>>> Separate DMA mappings should be from separate memory allocations,
+>>>> respecting ARCH_DMA_MINALIGN.
+>>>
+>>> hmm... I know I'm missing something here, but how does this align with
+>>> the following from active_cacheline_insert() in kernel/dma/debug.c ?
+>>>
+>>>           /* If the device is not writing memory then we don't have any
+>>>            * concerns about the cpu consuming stale data.  This mitigates
+>>>            * legitimate usages of overlapping mappings.
+>>>            */
+>>>           if (entry->direction == DMA_TO_DEVICE)
+>>>                   return 0;
+>>
+>> It's OK to have multiple mappings that are *all* DMA_TO_DEVICE, which
+>> looks to be the case that this check was intended to allow. However I
+>> think you're right that it should still actually check for conflicting
+>> directions between the new entry and any existing ones, otherwise it
+>> ends up a bit too lenient.
+>>
+>> Cheers,
+>> Robin.
 > 
-> Note: in general, the guest VM could ask the user-level VMM to free the
-> page by either free the memslot or free the pages (munmap(2)).
-> 
+> I understand what you are saying about why checking for conflicting
+> directions may be a good thing, but given that the code is as it is
+> right now, how are we seeing the warning for two mapping that one of
+> them is DMA_TO_DEVICE?
 
-Sure, will update
+Because it's the second one that isn't. The warning is triggered by 
+adding the DMA_FROM_DEVICE entry, which *is* checked, and finds the 
+DMA_TO_DEVICE entry already present. What's not great is that if those 
+two mappings happened to be made in the opposite order then it would be 
+missed entirely.
 
->>
->> Actual pinning management is handled by vendor code via new
->> kvm_x86_ops hooks. MMU calls in to vendor code to pin the page on
->> demand. Metadata of the pinning is stored in architecture specific
->> memslot area. During the memslot freeing path guest pages are
->> unpinned.
-> 
-> "During the memslot freeing path and deallocation path"
-
-Sure.
-
-> 
->>
->> Initially started with [1], where the idea was to store the pinning
->> information using the software bit in the SPTE to track the pinned
->> page. That is not feasible for the following reason:
->>
->> The pinned SPTE information gets stored in the shadow pages(SP). The
->> way current MMU is designed, the full MMU context gets dropped
->> multiple number of times even when CR0.WP bit gets flipped. Due to
->> dropping of the MMU context (aka roots), there is a huge amount of SP
->> alloc/remove churn. Pinned information stored in the SP gets lost
->> during the dropping of the root and subsequent SP at the child levels.
->> Without this information making decisions about re-pinnning page or
->> unpinning during the guest shutdown will not be possible
->>
->> [1] https://patchwork.kernel.org/project/kvm/cover/20200731212323.21746-1-sean.j.christopherson@intel.com/ 
->>
-> 
-> A general feedback: I really like this patch set and I think doing
-> memory pinning at fault path in kernel and storing the metadata in
-> memslot is the right thing to do.
-> 
-> This basically solves all the problems triggered by the KVM based API
-> that trusts the user-level VMM to do the memory pinning.
-> 
-Thanks for the feedback.
-
-Regards
-Nikunj
+Robin.
