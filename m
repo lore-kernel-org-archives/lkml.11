@@ -2,120 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E324C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA08C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243513AbiCGOxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:53:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        id S234511AbiCGOxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:53:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243589AbiCGOwa (ORCPT
+        with ESMTP id S243657AbiCGOww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:52:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6069490FC8
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:51:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646664672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AJxhfbbUpp3TCfbP2M1jKurKEmQJOIdOoRd+GiZKb4c=;
-        b=bqxyjQoOYIbywMw7Q6EKNjm3xLnQkXyGN6YS9aCvDm5o+f6lIXGOl80r/5tdddCOngLymp
-        /y7t52BUqtRWcTK2jif++aGcfxfkEk2FXTNcTpPomTnCdzxG5F26h+tM30V/b5oeLlrDcg
-        AcBUMFuKTJQoprqTuKrjR+ZB+noBtFM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-219-041ypFUNM-uLvCoahMND_g-1; Mon, 07 Mar 2022 09:51:09 -0500
-X-MC-Unique: 041ypFUNM-uLvCoahMND_g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FC618066F3;
-        Mon,  7 Mar 2022 14:51:07 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.193.244])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 32E577F0D6;
-        Mon,  7 Mar 2022 14:51:05 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 14/19] KVM: x86: hyper-v: Introduce fast kvm_hv_direct_tlb_flush_exposed() check
-Date:   Mon,  7 Mar 2022 15:50:18 +0100
-Message-Id: <20220307145023.1913205-15-vkuznets@redhat.com>
-In-Reply-To: <20220307145023.1913205-1-vkuznets@redhat.com>
-References: <20220307145023.1913205-1-vkuznets@redhat.com>
+        Mon, 7 Mar 2022 09:52:52 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E629026E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:51:41 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id q14so8148953wrc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 06:51:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=tLF7Vqm/MokjXYyJgUoQC6rHN9RDfGgaeSS+6MW4O9k=;
+        b=if8Ns1oVLlLSj8htpo7xBHeUDQbgcDkQ4JBdR7ySBz3R0u3lRdpO6o9WOVIHQkLqoP
+         60grUoSIbC4oeVFI/pmhh01pdjS1WNJKRiglOwRCVQ4yg+/jkpDZYueKeAPhfOg/2ipx
+         YxepXgkTbnt9v8+5gMA/yIxLsvYsfZBxg/cio5R0e9bk4UHqS7RqJX2FTFMTb5GvV3j3
+         qo9j+Xjb7aWFhS4kqiMj7udB29lNN24u8gtC9plQok4UuYBOjLKKMF4awUY+1zHTTlIX
+         lm0oJasrfU/20tGHkc9M7SY7/z5xcN3YEHrUDyEiF//LccelPaL5THDdulxw9JACGv6R
+         8RBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=tLF7Vqm/MokjXYyJgUoQC6rHN9RDfGgaeSS+6MW4O9k=;
+        b=b+Q8lLqnYPIwrHAXcoQM4VLfbIKuFs3SCg/sja3N6VnbFttx031Vvl7regXpfMkgDG
+         kCteva491EL/2cWDWR+lAo800+D60fFW2qVvL1//samBqoaISZcFezvi5xZISbuqad65
+         YlWbZHigr9hvkU03KjLN/147ACeCO0MtS7R+oXttPa7V6fMqxFW2SKMNgimivse8G+72
+         NaNYl6MdRfpCJ+x6DCOuQeovm2LRwWLx7sU9By3j3xKpPaSn9UU4+5Z8ZT3yJyn1cUSO
+         8WHOmQmJYO8hAzdOY8FHZPAUCSibk470Bmz5avpRMbA9J8Ng54Vcd5Oy8sqKTThbOUdT
+         BurQ==
+X-Gm-Message-State: AOAM532yXgAxDhzm4szKlTxzEnur2iLcqNpRvUHE0aUYQqVJm2zkDFwk
+        sc5DaZwodaHgy8MArEsJb+rDBg==
+X-Google-Smtp-Source: ABdhPJyaxRnmx31qJ773otOhIpiXrXVdNl7oAU0R9US0JIEF7l9/xbvUABmD0Zb2JretgdZ+u0nZKA==
+X-Received: by 2002:adf:d1cc:0:b0:1f0:4570:bf75 with SMTP id b12-20020adfd1cc000000b001f04570bf75mr8705611wrd.656.1646664698673;
+        Mon, 07 Mar 2022 06:51:38 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d4891000000b001e74e998bf9sm11502846wrq.33.2022.03.07.06.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 06:51:38 -0800 (PST)
+Date:   Mon, 7 Mar 2022 14:51:36 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] mfd: arizona-spi: Add Android board ACPI table
+ handling
+Message-ID: <YiYb+Ea7aKO99gXL@google.com>
+References: <20220223134222.730886-1-hdegoede@redhat.com>
+ <20220223134222.730886-2-hdegoede@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20220223134222.730886-2-hdegoede@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
-from L2 in L0 to process Direct TLB flush requests.
+On Wed, 23 Feb 2022, Hans de Goede wrote:
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/include/asm/kvm_host.h | 1 +
- arch/x86/kvm/hyperv.c           | 6 ++++++
- arch/x86/kvm/hyperv.h           | 7 +++++++
- 3 files changed, 14 insertions(+)
+> x86/ACPI boards with an arizona WM5102 codec ship with either Windows or
+> Android as factory installed OS.
+> 
+> The ACPI fwnode for the codec on Android boards misses 2 things compared
+> to the Windows boards (this is hardcoded in the Android board kernels):
+> 
+> 1. There is no CLKE ACPI method to enabe the 32 KHz clock the codec needs
+>    for jack-detection.
+> 
+> 2. The GPIOs used by the codec are not listed in the fwnode for the codec.
+> 
+> The ACPI tables on x86/ACPI boards shipped with Android being incomplete
+> happens a lot. The special drivers/platform/x86/x86-android-tablets.c
+> module contains DMI based per model handling to compensate for this.
+> 
+> This module will enable the 32KHz clock through the pinctrl framework
+> to fix 1. and it will also register a gpio-lookup table for all GPIOs
+> needed by the codec + machine driver, including the GPIOs coming from
+> the codec itself.
+> 
+> Add an arizona_spi_acpi_android_probe() function which waits for the
+> x86-android-tablets to have set things up before continue with probing
+> the arizona WM5102 codec.
+> 
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  drivers/mfd/arizona-spi.c | 34 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 33 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mfd/arizona-spi.c b/drivers/mfd/arizona-spi.c
+> index 238355542ab1..2c686e71db21 100644
+> --- a/drivers/mfd/arizona-spi.c
+> +++ b/drivers/mfd/arizona-spi.c
+> @@ -81,6 +81,29 @@ static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
+>  	return 0;
+>  }
+>  
+> +/* For ACPI tables from boards which ship with Android as factory OS */
+> +static int arizona_spi_acpi_android_probe(struct arizona *arizona)
+> +{
+> +	int ret;
+> +
+> +	/*
+> +	 * Get the reset GPIO, treating -ENOENT as -EPROBE_DEFER to wait for
+> +	 * the x86-android-tablets module to register the board specific GPIO
+> +	 * lookup table.
+> +	 */
+> +	arizona->pdata.reset = devm_gpiod_get(arizona->dev, "reset", GPIOD_OUT_LOW);
+> +	if (IS_ERR(arizona->pdata.reset)) {
+> +		ret = PTR_ERR(arizona->pdata.reset);
+> +		if (ret == -ENOENT) {
+> +			dev_info_once(arizona->dev, "Deferring probe till GPIO lookup is registered\n");
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 45ee05f4f1a0..bcaf05951628 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -611,6 +611,7 @@ struct kvm_vcpu_hv {
- 		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
- 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
- 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
-+		u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
- 	} cpuid_cache;
- 
- 	/* Two rings for regular Hyper-V TLB flush and Direct TLB flush */
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 865b4d9a26fe..31acc08a6b23 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2270,6 +2270,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
- 		hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
- 	else
- 		hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
-+	if (entry)
-+		hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
-+	else
-+		hv_vcpu->cpuid_cache.nested_features_eax = 0;
- }
- 
- int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index 0c0877a6aa74..0c9062aed182 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -169,6 +169,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
- 	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
- }
- 
-+static inline bool kvm_hv_direct_tlb_flush_exposed(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
-+}
-+
- static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+Nit: How many chars is this?
+
+I thought we were drawing the line at 100 these days?
+
+Does this patch pass checkpatch.pl?
+
+> +			ret = -EPROBE_DEFER;
+> +		}
+> +		return dev_err_probe(arizona->dev, ret, "getting reset GPIO\n");
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * The AOSP 3.5 mm Headset: Accessory Specification gives the following values:
+>   * Function A Play/Pause:           0 ohm
+> @@ -102,9 +125,14 @@ static const struct arizona_micd_range arizona_micd_aosp_ranges[] = {
+>  
+>  static int arizona_spi_acpi_probe(struct arizona *arizona)
+>  {
+> +	struct acpi_device *adev = ACPI_COMPANION(arizona->dev);
+>  	int ret;
+>  
+> -	ret = arizona_spi_acpi_windows_probe(arizona);
+> +	if (acpi_dev_hid_uid_match(adev, "10WM5102", NULL))
+> +		ret = arizona_spi_acpi_android_probe(arizona);
+> +	else
+> +		ret = arizona_spi_acpi_windows_probe(arizona);
+> +
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -142,6 +170,10 @@ static const struct acpi_device_id arizona_acpi_match[] = {
+>  		.id = "WM510205",
+>  		.driver_data = WM5102,
+>  	},
+> +	{
+> +		.id = "10WM5102",
+> +		.driver_data = WM5102,
+> +	},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(acpi, arizona_acpi_match);
+
 -- 
-2.35.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
