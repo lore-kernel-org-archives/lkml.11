@@ -2,75 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F589C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E440C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242946AbiCGN7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:59:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
+        id S242957AbiCGOBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:01:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237489AbiCGN7p (ORCPT
+        with ESMTP id S239786AbiCGOB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:59:45 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353323A5DC;
-        Mon,  7 Mar 2022 05:58:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646661531; x=1678197531;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iOYwNBZ7SWLE0LYmBh3sE36eosAdsT/ywY3fPycTBgA=;
-  b=OlFCRn7OFIh+9oLm8zHek4tZub7yRdQ7ErXoqAcuShs6CEmXqBNwqi3d
-   rWGmgaq0rqJDlm515W6danJqsM3qg61OGjqbv1ZFhUE2HCxaPHqWybFRL
-   vCnbslzV03kYTpJvbEpNZGuDgpmiaIB456ldCxyznyexFSdFPIzjgxu9A
-   j3S7R0ubIMNNCHGFQFVKhUCDjtxStFJzvs+SJp0yzZekyTnHDEq/7sJlo
-   NqIzp6V4cW8kEFQTWkPLY0B/ym+F1PNIr6PHmcmDdzkZQfk5rW2xQOPe9
-   F6sHnPgKgVnk7ARWqCUlKIx5yHSPwE7wUYnkiCaZN8gtFSSEziK+wfDJE
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="234348269"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="234348269"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 05:58:50 -0800
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="495066821"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 05:58:47 -0800
-Received: by lahna (sSMTP sendmail emulation); Mon, 07 Mar 2022 15:56:33 +0200
-Date:   Mon, 7 Mar 2022 15:56:33 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: Re: [PATCH v1 1/1] gpiolib: acpi: Convert ACPI value of debounce to
- microseconds
-Message-ID: <YiYPETHe39pU7Hoi@lahna>
-References: <20220307115623.37492-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307115623.37492-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Mon, 7 Mar 2022 09:01:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA03889333;
+        Mon,  7 Mar 2022 06:00:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E7F61266;
+        Mon,  7 Mar 2022 14:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54DF5C340EB;
+        Mon,  7 Mar 2022 14:00:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646661633;
+        bh=AUTZ4SHzz2itvOQ5SUm88SHoX24HvJUW+0NaQzv8J3k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=F2td//5fwB39fMMh4fLb1tfGTG7iJWRLyOteTNLVh3RSr7ZDvo6TI5EoHtEmkldr3
+         JHettZzepZj6pizKJFWpNJOPkrGYfw0hjj3nO54kOmGilLmflhHz/au6guRoCLiAQQ
+         xArwZmCN2pbLODGTDEdML7aYksfF62X6/rGLeSkwVGAsxhWkB9WOYHALLVuf7xhik/
+         T5c5EJY/3T3/j0OOwETzv0rktoa19OAdGNW7dC2pGwIr4m9qQltiOWS8z8i0lsO1vh
+         m0l5yJbkSfCHreDcZgmA7uz83N7gK2UvdAUiqHTfwMuSFL6tqoG2nJ0DYYqS2+hddc
+         4rmFvAw3Haetw==
+Date:   Mon, 7 Mar 2022 23:00:27 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v9 02/11] fprobe: Add ftrace based probe APIs
+Message-Id: <20220307230027.679cca95a201b094e700716d@kernel.org>
+In-Reply-To: <YiYAw64nDTWB/V0t@krava>
+References: <164655933970.1674510.3809060481512713846.stgit@devnote2>
+        <164655936328.1674510.15506582463881824113.stgit@devnote2>
+        <YiYAw64nDTWB/V0t@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 01:56:23PM +0200, Andy Shevchenko wrote:
-> It appears that GPIO ACPI library uses ACPI debounce values directly.
-> However, the GPIO library APIs expect the debounce timeout to be in
-> microseconds.
-> 
-> Convert ACPI value of debounce to microseconds.
-> 
-> While at it, document this detail where it is appropriate.
-> 
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215664
-> Reported-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Fixes: 8dcb7a15a585 ("gpiolib: acpi: Take into account debounce settings")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Mon, 7 Mar 2022 13:55:31 +0100
+Jiri Olsa <olsajiri@gmail.com> wrote:
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> On Sun, Mar 06, 2022 at 06:36:03PM +0900, Masami Hiramatsu wrote:
+> 
+> SNIP
+> 
+> > +}
+> > +NOKPROBE_SYMBOL(fprobe_handler);
+> > +
+> > +/* Convert ftrace location address from symbols */
+> > +static unsigned long *get_ftrace_locations(const char **syms, int num)
+> > +{
+> > +	unsigned long addr, size;
+> > +	unsigned long *addrs;
+> > +	int i;
+> > +
+> > +	/* Convert symbols to symbol address */
+> > +	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
+> > +	if (!addrs)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	for (i = 0; i < num; i++) {
+> > +		addrs[i] = kallsyms_lookup_name(syms[i]);
+> > +		if (!addrs[i])	/* Maybe wrong symbol */
+> > +			goto error;
+> > +	}
+> > +
+> > +	/* Convert symbol address to ftrace location. */
+> > +	for (i = 0; i < num; i++) {
+> > +		if (!kallsyms_lookup_size_offset(addrs[i], &size, NULL) || !size)
+> > +			goto error;
+> > +		addr = ftrace_location_range(addrs[i], addrs[i] + size - 1);
+> > +		if (!addr) /* No dynamic ftrace there. */
+> > +			goto error;
+> > +		addrs[i] = addr;
+> > +	}
+> 
+> why not one just single loop ?
+
+Indeed :-D Thanks!
+
+> 
+> jirka
+> 
+> 
+> > +
+> > +	return addrs;
+> > +
+> > +error:
+> > +	kfree(addrs);
+> > +
+> > +	return ERR_PTR(-ENOENT);
+> > +}
+> > +
+> > +static void fprobe_init(struct fprobe *fp)
+> > +{
+> > +	fp->nmissed = 0;
+> > +	fp->ops.func = fprobe_handler;
+> > +	fp->ops.flags |= FTRACE_OPS_FL_SAVE_REGS;
+> > +}
+> 
+> SNIP
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
