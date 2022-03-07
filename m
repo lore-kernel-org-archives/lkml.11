@@ -2,91 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91534C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 16:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244110AbiCGQVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 11:21:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
+        id S244116AbiCGQVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 11:21:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiCGQVM (ORCPT
+        with ESMTP id S239693AbiCGQVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 11:21:12 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429754C414
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 08:20:18 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id p8so14281110pfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 08:20:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=+wV1FY8U0FWB4VAPUiegJjEIq4RD3FNiqaa9wr6HZiU=;
-        b=HHxBwJWvb+zcfYI6s9N+7pQZWwRNUv3GxQ6D78pso72TORyjd7Eoi7G9ZoGfaTtuvT
-         +YGxjcgJNHZWubIdOEwRzBEmMlMeCxU6xnn1f9XqzuOOKCKZEE3tpPK3j+ID10hUCguZ
-         mHOATnIR8CkGYTCe6H27Px6VUPMR5+JMrlpyHxw6vMj1MNjuazGNc5Y0F/PmAqBvVlTI
-         Kv4UnmBTAxOAH+YXealbXzJMmAmoTZKL+68os0S0/EPJle5tuR0W5FsA7Nfgcc2pexey
-         IDSK+9jDYCZdtn5MbsEssOwC2ebqPhbqCYaGzp158jtWQVu2VuUfq++MJyoHi2rzXy3d
-         zzGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=+wV1FY8U0FWB4VAPUiegJjEIq4RD3FNiqaa9wr6HZiU=;
-        b=dXicTlr/Dc+GRS2xcostFTaheiQvIsQa9uIJiMMhwG7mxY2CYNXYKmj7oO7/ebixa2
-         Yn3QPKFj0on7Bv/q1Ft1HvL+85kKBM8/S9axiygAnan07ejIQ94NOvrRbm9gAnFAzx3x
-         WdaPIFeWAVnOUE94mqMixxfdss6cH/h9zzahi1earf1atlAmxYx+hyfr+TpECmnrJ2ap
-         ahHaU0MtLHnxPxqD+0cxJQI54uFudL1ZqRV9x17RRNPcn3jguliIvKpOIKrwunBBRgDU
-         fGb32GrOiOQFgpunrY6pt9DnTiGL7DUHLLxiVMxgvaab9fKu13rGRbRY7B+/4Iq2UHsC
-         w52Q==
-X-Gm-Message-State: AOAM532nRB0jjtQTXhNqjA2mZiQXVqBYjNr/SpUSWmRIfzX+wZ3Eq4it
-        pJsY6ujGG1kzGVc6cNIlQJalhAXwm6Z1yKNbOE98rg==
-X-Google-Smtp-Source: ABdhPJx/V3uLVWBI8/E8KCOJyzUgUR2RjgCZBR6Hgu1VcR0R4QgDq/3T8EiSucOBT+/CPouLZFgIw7Ts/R5qlhZ+a60=
-X-Received: by 2002:a05:6a00:24c5:b0:4d1:65bf:1fe0 with SMTP id
- d5-20020a056a0024c500b004d165bf1fe0mr13441313pfv.0.1646670017759; Mon, 07 Mar
- 2022 08:20:17 -0800 (PST)
+        Mon, 7 Mar 2022 11:21:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E2589CD5;
+        Mon,  7 Mar 2022 08:20:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67127B81628;
+        Mon,  7 Mar 2022 16:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772CEC340E9;
+        Mon,  7 Mar 2022 16:20:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646670049;
+        bh=QQdou9mghXN2Rem2PuBoMaDpoGKx45EZ/NsKNrRqeto=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ff2zrdg5SDpnxEm+X51iAUiwziqlDQjfngefbScA1lMPcd6WiT63UaYtpLdz21BcB
+         hu+rRl73QP/k+zGIru24lgU4OlJPisqhKLrrCZ5Vn9YnPk/bjd14DTP9Vp0WRFLAfh
+         /zXeAnyLpny5xbsmKQl2EvCGFK8oidAIb45/Tbyc=
+Date:   Mon, 7 Mar 2022 17:20:46 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
+Message-ID: <YiYw3hV2r8DTa7fb@kroah.com>
+References: <20220307091702.378509770@linuxfoundation.org>
+ <24c54a05-bb80-a128-d0ba-a78c6d5d101c@roeck-us.net>
 MIME-Version: 1.0
-References: <20220307154558.2505734-1-robert.foss@linaro.org> <20220307154558.2505734-3-robert.foss@linaro.org>
-In-Reply-To: <20220307154558.2505734-3-robert.foss@linaro.org>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 7 Mar 2022 17:20:06 +0100
-Message-ID: <CAG3jFytGV3NNfkEPqx_rZX9O9aZjTjzo2tpeSK8mFimOrYt9zw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] Revert "arm64: dts: mt8183: jacuzzi: Fix bus
- properties in anx's DSI endpoint"
-To:     airlied@linux.ie, daniel@ffwll.ch, robh+dt@kernel.org,
-        matthias.bgg@gmail.com, robert.foss@linaro.org,
-        xji@analogixsemi.com, hsinyi@chromium.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Chen-Yu Tsai <wenst@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24c54a05-bb80-a128-d0ba-a78c6d5d101c@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
+On Mon, Mar 07, 2022 at 06:36:22AM -0800, Guenter Roeck wrote:
+> On 3/7/22 01:15, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.27 release.
+> > There are 262 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> > Anything received after that time might be too late.
+> > 
+> 
+> In addition to other reported build errors:
+> 
+> Building mips:allmodconfig ... failed
+> --------------
+> Error log:
+> drivers/net/hamradio/mkiss.c:35: error: "END" redefined
 
-On Mon, 7 Mar 2022 at 16:46, Robert Foss <robert.foss@linaro.org> wrote:
->
-> This reverts commit 32568ae37596b529628ac09b875f4874e614f63f.
-> ---
->  arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 --
->  1 file changed, 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> index e8f133dc96b95..8f7bf33f607da 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> @@ -171,8 +171,6 @@ port@0 {
->
->                         anx7625_in: endpoint {
->                                 remote-endpoint = <&dsi_out>;
-> -                               bus-type = <5>;
-> -                               data-lanes = <0 1 2 3>;
->                         };
->                 };
->
-> --
-> 2.32.0
->
+That is odd, I don't see any changes to that driver, nor any MIPS
+changes that touch "END".
+
+I don't even see "END" in the diff anywhere.
+
+Any chance you can bisect?
+
+I'll go push out -rc2 versions with everything else fixed up
+(hopefully).
+
+thanks,
+
+greg k-h
