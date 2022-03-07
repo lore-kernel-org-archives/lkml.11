@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0380BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 08:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236273AbiCGIzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 03:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
+        id S235258AbiCGIzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 03:55:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236269AbiCGIyw (ORCPT
+        with ESMTP id S236224AbiCGIzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 03:54:52 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23D31C124;
-        Mon,  7 Mar 2022 00:53:50 -0800 (PST)
+        Mon, 7 Mar 2022 03:55:04 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34581BE9F;
+        Mon,  7 Mar 2022 00:54:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646643231; x=1678179231;
+  t=1646643243; x=1678179243;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QpI2V/hfnUcmU3OAA7yk9HZ/2w/XcuWAii0cTKvKcMc=;
-  b=hljjfpqwH0TXveHzyK4PxkZKkGCoc8Vlz0yWGJOMIejshRSqL2KpV/Cv
-   91cXrJRqjaTaXrgi3ClxTss2U2FCznkCnixXvOYTzCgbscr/y9mFclZYN
-   6Z8rJMbyWB4ZUwZWpRmOYrSodhW99u9QMnbVvSbo6cwjSbqR3CRRLgdCe
-   yWw3TMS02Ej8JLTlDP4YEjIdFaQYPn2mCjpmYqTnLXHTCG2ClODPRZdcA
-   3+Yla5RwHvu6gYdG/k/bvnK/WhjOgcMOyFcPdumDBvTdZBBFQFJg3pgmY
-   xyevB7R/b3sRtjIgMFeqfo2Gm3EuAY+BVPGOXvHc7+xNzhEcrO2dh12o0
+  bh=EvrV1aGzmlhAstG1jIOQ8TZBHfJtCCwC9riYSVrz9Fs=;
+  b=NXh/IIwoIb+3PB+HwHJGIZEwtR+4UctgYSPzXQarhEzKs1J5iGPntVZl
+   mPw9Jax58cFqPPQPXnF/E9U7vFoLdDNoVx1ETHC4g78H4a5fY1TlPpxY4
+   wZtns56QypE24dcKah37ucd/TUvqaLUdzslXcrLw9v4sblUBSPvOkPTnv
+   7Qz4ldpZMA7cJWSSVN/LtI69TtzqZVb5iH7w7dFH4HF1R/1FjseYbY/p8
+   pH99Qh6ACv4N1FOP8QT4aqjIWqCWEwgbCJyiJ8KyqLDvdkWNHpDl3kta5
+   m1oFgeC3Lk4VrozZCf+MEW9a09iVgjsFUy7n/jDfepdqiUye5c7e1NmOP
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="241771870"
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="279042729"
 X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="241771870"
+   d="scan'208";a="279042729"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 00:53:50 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 00:53:59 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="537033604"
+   d="scan'208";a="537033649"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 00:53:46 -0800
+  by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 00:53:55 -0800
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
@@ -50,9 +50,9 @@ Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
         Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH V3 08/10] perf intel-pt: Add support for new clock IDs
-Date:   Mon,  7 Mar 2022 10:53:10 +0200
-Message-Id: <20220307085312.1814506-9-adrian.hunter@intel.com>
+Subject: [PATCH V3 10/10] perf intel-pt: Add documentation for new clock IDs
+Date:   Mon,  7 Mar 2022 10:53:12 +0200
+Message-Id: <20220307085312.1814506-11-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220307085312.1814506-1-adrian.hunter@intel.com>
 References: <20220307085312.1814506-1-adrian.hunter@intel.com>
@@ -63,159 +63,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for new clock IDs CLOCK_PERF_HW_CLOCK and
-CLOCK_PERF_HW_CLOCK_NS. Mainly this means also keeping TSC conversion
-information for CLOCK_PERF_HW_CLOCK_NS when CLOCK_PERF_HW_CLOCK is
-being used, so that conversions from nanoseconds can still be done when
-the perf event clock is TSC.
+Add brief documentation for new clock IDs CLOCK_PERF_HW_CLOCK and
+CLOCK_PERF_HW_CLOCK_NS, as well as new config variables
+intel-pt.max_nonturbo_ratio and intel-pt.tsc_art_ratio.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/arch/x86/util/intel-pt.c | 37 ++++++++++++++++++++++++++---
- tools/perf/util/intel-pt.c          | 24 +++++++++++++++----
- tools/perf/util/intel-pt.h          |  2 +-
- 3 files changed, 55 insertions(+), 8 deletions(-)
+ tools/perf/Documentation/perf-intel-pt.txt | 45 ++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
-index 8c31578d6f4a..5bc05b8dd7f0 100644
---- a/tools/perf/arch/x86/util/intel-pt.c
-+++ b/tools/perf/arch/x86/util/intel-pt.c
-@@ -31,6 +31,7 @@
- #include "../../../util/tsc.h"
- #include <internal/lib.h> // page_size
- #include "../../../util/intel-pt.h"
-+#include "../../../util/clockid.h"
+diff --git a/tools/perf/Documentation/perf-intel-pt.txt b/tools/perf/Documentation/perf-intel-pt.txt
+index ff58bd4c381b..383126d05577 100644
+--- a/tools/perf/Documentation/perf-intel-pt.txt
++++ b/tools/perf/Documentation/perf-intel-pt.txt
+@@ -509,6 +509,29 @@ notnt		Disable TNT packets.  Without TNT packets, it is not possible to walk
+ 		"0" otherwise.
  
- #define KiB(x) ((x) * 1024)
- #define MiB(x) ((x) * 1024 * 1024)
-@@ -290,6 +291,20 @@ static const char *intel_pt_find_filter(struct evlist *evlist,
- 	return NULL;
- }
  
-+static bool intel_pt_clockid(struct evlist *evlist, struct perf_pmu *intel_pt_pmu, s32 clockid)
-+{
-+	struct evsel *evsel;
++perf event clock
++~~~~~~~~~~~~~~~~
 +
-+	evlist__for_each_entry(evlist, evsel) {
-+		if (evsel->core.attr.type == intel_pt_pmu->type &&
-+		    evsel->core.attr.use_clockid &&
-+		    evsel->core.attr.clockid == clockid)
-+			return true;
-+	}
++Newer kernel and tools support 2 special clocks: CLOCK_PERF_HW_CLOCK which is
++TSC and CLOCK_PERF_HW_CLOCK_NS which is TSC converted to nanoseconds.
++CLOCK_PERF_HW_CLOCK_NS is the same as the default perf event clock, but it is
++not subject to paravirtualization, so it still works with Intel PT in a VM
++guest.  Note however, TSC may not be being fully virtualized, so the results
++may be unexpected.
 +
-+	return false;
-+}
++	--clockid CLOCK_PERF_HW_CLOCK_NS
 +
- static size_t intel_pt_filter_bytes(const char *filter)
- {
- 	size_t len = filter ? strlen(filter) : 0;
-@@ -304,9 +319,11 @@ intel_pt_info_priv_size(struct auxtrace_record *itr, struct evlist *evlist)
- 			container_of(itr, struct intel_pt_recording, itr);
- 	const char *filter = intel_pt_find_filter(evlist, ptr->intel_pt_pmu);
- 
--	ptr->priv_size = (INTEL_PT_AUXTRACE_PRIV_MAX * sizeof(u64)) +
-+	ptr->priv_size = (INTEL_PT_AUXTRACE_PRIV_FIXED * sizeof(u64)) +
- 			 intel_pt_filter_bytes(filter);
- 	ptr->priv_size += sizeof(u64); /* Cap Event Trace */
-+	ptr->priv_size += sizeof(u64); /* ns Time Shift */
-+	ptr->priv_size += sizeof(u64); /* ns Time Multiplier */
- 
- 	return ptr->priv_size;
- }
-@@ -414,6 +431,18 @@ static int intel_pt_info_fill(struct auxtrace_record *itr,
- 
- 	*info++ = event_trace;
- 
-+	if (intel_pt_clockid(session->evlist, ptr->intel_pt_pmu, CLOCK_PERF_HW_CLOCK)) {
-+		struct perf_tsc_conversion ns_tc;
++To use TSC instead of nanoseconds, use the option:
 +
-+		if (perf_read_tsc_conv_for_clockid(CLOCK_PERF_HW_CLOCK_NS, &ns_tc))
-+			return -EINVAL;
-+		*info++ = ns_tc.time_shift;
-+		*info++ = ns_tc.time_mult;
-+	} else {
-+		*info++ = tc.time_shift;
-+		*info++ = tc.time_mult;
-+	}
++	--clockid CLOCK_PERF_HW_CLOCK
 +
- 	return 0;
- }
- 
-@@ -664,8 +693,10 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
- 		return -EINVAL;
- 	}
- 
--	if (opts->use_clockid) {
--		pr_err("Cannot use clockid (-k option) with " INTEL_PT_PMU_NAME "\n");
-+	if (opts->use_clockid && opts->clockid != CLOCK_PERF_HW_CLOCK_NS &&
-+	    opts->clockid != CLOCK_PERF_HW_CLOCK) {
-+		pr_err("Cannot use clockid (-k option) with " INTEL_PT_PMU_NAME
-+		       " except CLOCK_PERF_HW_CLOCK_NS and CLOCK_PERF_HW_CLOCK\n");
- 		return -EINVAL;
- 	}
- 
-diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-index ec43d364d0de..677ad0774464 100644
---- a/tools/perf/util/intel-pt.c
-+++ b/tools/perf/util/intel-pt.c
-@@ -89,6 +89,8 @@ struct intel_pt {
- 
- 	struct perf_tsc_conversion tc;
- 	bool cap_user_time_zero;
-+	u16 ns_time_shift;
-+	u32 ns_time_mult;
- 
- 	struct itrace_synth_opts synth_opts;
- 
-@@ -1100,10 +1102,10 @@ static u64 intel_pt_ns_to_ticks(const struct intel_pt *pt, u64 ns)
- {
- 	u64 quot, rem;
- 
--	quot = ns / pt->tc.time_mult;
--	rem  = ns % pt->tc.time_mult;
--	return (quot << pt->tc.time_shift) + (rem << pt->tc.time_shift) /
--		pt->tc.time_mult;
-+	quot = ns / pt->ns_time_mult;
-+	rem  = ns % pt->ns_time_mult;
-+	return (quot << pt->ns_time_shift) + (rem << pt->ns_time_shift) /
-+		pt->ns_time_mult;
- }
- 
- static struct ip_callchain *intel_pt_alloc_chain(struct intel_pt *pt)
-@@ -3987,6 +3989,20 @@ int intel_pt_process_auxtrace_info(union perf_event *event,
- 				pt->cap_event_trace);
- 	}
- 
-+	if ((void *)info < info_end) {
-+		pt->ns_time_shift = *info++;
-+		pt->ns_time_mult  = *info++;
-+		if (dump_trace) {
-+			fprintf(stdout, "  ns Time Shift       %d\n", pt->ns_time_shift);
-+			fprintf(stdout, "  ns Time Multiplier  %d\n", pt->ns_time_mult);
-+		}
-+	} else {
-+		pt->ns_time_shift = pt->tc.time_shift;
-+		pt->ns_time_mult  = pt->tc.time_mult;
-+	}
-+	if (!pt->ns_time_mult)
-+		pt->ns_time_mult = 1;
++Beware forgetting that the time stamp of events will show TSC ticks
++(divided by 1,000,000,000) not seconds.
 +
- 	pt->timeless_decoding = intel_pt_timeless_decoding(pt);
- 	if (pt->timeless_decoding && !pt->tc.time_mult)
- 		pt->tc.time_mult = 1;
-diff --git a/tools/perf/util/intel-pt.h b/tools/perf/util/intel-pt.h
-index c7d6068e3a6b..a2c4474641c0 100644
---- a/tools/perf/util/intel-pt.h
-+++ b/tools/perf/util/intel-pt.h
-@@ -27,7 +27,7 @@ enum {
- 	INTEL_PT_CYC_BIT,
- 	INTEL_PT_MAX_NONTURBO_RATIO,
- 	INTEL_PT_FILTER_STR_LEN,
--	INTEL_PT_AUXTRACE_PRIV_MAX,
-+	INTEL_PT_AUXTRACE_PRIV_FIXED,
- };
++Other clocks are not supported for use with Intel PT because they cannot be
++converted to/from TSC.
++
++
+ AUX area sampling option
+ ~~~~~~~~~~~~~~~~~~~~~~~~
  
- struct auxtrace_record;
+@@ -1398,6 +1421,28 @@ There were none.
+           :17006 17006 [001] 11500.262869216:  ffffffff8220116e error_entry+0xe ([guest.kernel.kallsyms])               pushq  %rax
+ 
+ 
++Tracing within a Virtual Machine
++--------------------------------
++
++When supported, using Intel PT within a virtual machine does not support TSC
++because the perf event clock is subject to paravirtualization.  That is
++overcome by the new CLOCK_PERF_HW_CLOCK_NS clock - refer 'perf event clock'
++above.  In addition, in a VM, the following might be zero:
++
++	/sys/bus/event_source/devices/intel_pt/max_nonturbo_ratio
++	/sys/bus/event_source/devices/intel_pt/tsc_art_ratio
++
++The decoder needs this information to correctly interpret timing packets,
++so the values can be provided by config variables in that case. Note in
++the absence of VMCS TSC Scaling, this is probably the same as the host values.
++The config variables are:
++
++	intel-pt.max_nonturbo_ratio
++	intel-pt.tsc_art_ratio
++
++For more information about perf config variables, refer linkperf:perf-config[1]
++
++
+ Event Trace
+ -----------
+ 
 -- 
 2.25.1
 
