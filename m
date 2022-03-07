@@ -2,70 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40056C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B51DBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 03:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234984AbiCGDZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 6 Mar 2022 22:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
+        id S234997AbiCGDZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 6 Mar 2022 22:25:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiCGDZg (ORCPT
+        with ESMTP id S230080AbiCGDZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 6 Mar 2022 22:25:36 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1034BBA2;
-        Sun,  6 Mar 2022 19:24:42 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id j24so13833215oii.11;
-        Sun, 06 Mar 2022 19:24:42 -0800 (PST)
+        Sun, 6 Mar 2022 22:25:37 -0500
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630A44C401;
+        Sun,  6 Mar 2022 19:24:44 -0800 (PST)
+Received: by mail-oo1-f52.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so16233653ooi.0;
+        Sun, 06 Mar 2022 19:24:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=rRMcIDFNsMrHVcQpeNAQgGAzCpgyd1bViwvm+oMJecM=;
-        b=PINQ6b7nyVNEH6feh/BgAzCRB92IOhRhHv+LSpr3bJ0A2y59x0r7c6cijmLBqVCx4k
-         p9ddD958LiwFP18JEJLUZ+rvXcC3V8387FXkEgzqaDVSvZQuLVEJUF6S1PGaVp9/mIKP
-         VdH62GPoB3kqsNV5gD76LegyfMjJlN+Q2VMA6OQaqOyyZ4+nlRNzIXgpjDL5ceCVEABS
-         mgxX4mcqFndgrWH/yjxgwy0MTPX8ZfacIqtsHkGXP3pwCcTly/Sc12VaUUZQBriuxttc
-         8reWxwbKznixw+M8UOVp54ToJUoV3MoJUixthuYjuDn/bte+AePy/HMSVwaAr70N+cYE
-         WnxA==
-X-Gm-Message-State: AOAM532VFNgQUzvbktMwZH1+Cn+AYPheKzcIbOG5O1zkncHlWSsBv3RS
-        8PXo59onf2j9nrPz1PW36g==
-X-Google-Smtp-Source: ABdhPJy42wbu90nS67eyfE8eddlgGnQI0b2lTBeVISHiL1rJAcZBiB7zCyWKHAdFAHxDyc4nxw5SdA==
-X-Received: by 2002:a05:6808:2387:b0:2d9:a01a:48a0 with SMTP id bp7-20020a056808238700b002d9a01a48a0mr6340597oib.235.1646623481829;
-        Sun, 06 Mar 2022 19:24:41 -0800 (PST)
+        bh=d+wQHvIVygqyBwtniWZR0uvXCr9KYxfN8+WYYAjCuSc=;
+        b=GHl0L8oj30HHwTuJp1juEp9o5vW89uMhXgBD/ROK5yESWSR5Q1hnVv7bAlf/IRJhO+
+         qqLBHaSRYT76yM4OiIFot4nhZwkExcpvI1BaLn5PTrFOfm1X7lMmiihSwCdXY2JSPMXv
+         bg+s37LKPOHv2RqDuD9Ib10rRes0ysnr2EMsxECTIDL2oUzyq9y3GEU7i5sXk5CqYrfs
+         goqmJ/f/T+c8/rWcOwG7h+j6ex5PTxuOEIM6F+9+lHMAcnIzsQ8aM6+HV2maL2dFu/aJ
+         +y3GBzSktWw21DF5oMLh6OdPrNCbQ19gtbUfDGrO/UW3aNfhwEuuspLEv/MBgB+GPUAS
+         sSPw==
+X-Gm-Message-State: AOAM530lvFeTEwirctm2SZnEF8VJcWHu6zjqlYeY+augyoo/3XZVZDBY
+        tl+oCuyD/MjU+By1oF0p0w==
+X-Google-Smtp-Source: ABdhPJyo+cVwfftoH3b/RmqIsCrh9wn28oxnbtJzcd9pD8qcd3HGAHqGVSVU1h18cO8sKLG5SldA8A==
+X-Received: by 2002:a05:6870:6085:b0:d9:a258:df59 with SMTP id t5-20020a056870608500b000d9a258df59mr13560336oae.90.1646623483719;
+        Sun, 06 Mar 2022 19:24:43 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x25-20020a056830409900b005af164235b4sm5556600ott.2.2022.03.06.19.24.40
+        by smtp.gmail.com with ESMTPSA id f188-20020a4a58c5000000b0031ccb8272f1sm5367939oob.33.2022.03.06.19.24.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 19:24:41 -0800 (PST)
-Received: (nullmailer pid 1496441 invoked by uid 1000);
+        Sun, 06 Mar 2022 19:24:43 -0800 (PST)
+Received: (nullmailer pid 1496444 invoked by uid 1000);
         Mon, 07 Mar 2022 03:24:40 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Vincent Shih <vincent.sunplus@gmail.com>
-Cc:     linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        stern@rowland.harvard.edu, devicetree@vger.kernel.org,
-        p.zabel@pengutronix.de, wells.lu@sunplus.com,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
-In-Reply-To: <1646547036-14885-3-git-send-email-vincent.sunplus@gmail.com>
-References: <1646547036-14885-1-git-send-email-vincent.sunplus@gmail.com> <1646547036-14885-3-git-send-email-vincent.sunplus@gmail.com>
-Subject: Re: [PATCH v3 2/2] dt-bindings: usb: Add bindings doc for Sunplus EHCI driver
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>, Jan Kotas <jank@cadence.com>,
+        linux-arm-msm@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Avri Altman <avri.altman@wdc.com>,
+        Wei Xu <xuwei5@hisilicon.com>, devicetree@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Li Wei <liwei213@huawei.com>, linux-kernel@vger.kernel.org,
+        Stanley Chu <stanley.chu@mediatek.com>
+In-Reply-To: <20220306111125.116455-4-krzysztof.kozlowski@canonical.com>
+References: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com> <20220306111125.116455-4-krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v3 03/12] dt-bindings: ufs: cdns,ufshc: convert to dtschema
 Date:   Sun, 06 Mar 2022 21:24:40 -0600
-Message-Id: <1646623480.199192.1496440.nullmailer@robh.at.kernel.org>
+Message-Id: <1646623480.209864.1496443.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 06 Mar 2022 14:10:36 +0800, Vincent Shih wrote:
-> Add bindings doc for Sunplus EHCI driver
+On Sun, 06 Mar 2022 12:11:16 +0100, Krzysztof Kozlowski wrote:
+> Convert the Cadence Universal Flash Storage (UFS) Controlle to DT schema
+> format.
 > 
-> Signed-off-by: Vincent Shih <vincent.sunplus@gmail.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
-> Changes in v2:
->   - Address the comments by Rob Herring.
-> 
->  .../bindings/usb/sunplus,sp7021-usb-ehci.yaml      | 63 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 64 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml
+>  .../devicetree/bindings/ufs/cdns,ufshc.txt    | 32 ---------
+>  .../devicetree/bindings/ufs/cdns,ufshc.yaml   | 68 +++++++++++++++++++
+>  .../devicetree/bindings/ufs/ti,j721e-ufs.yaml |  7 +-
+>  3 files changed, 71 insertions(+), 36 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.txt
+>  create mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -74,15 +85,14 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.example.dts:37.5-6 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1398: dt_binding_check] Error 2
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/ufs/cdns,ufshc.example.dt.yaml: ufs@fd030000: freq-table-hz: 'anyOf' conditional failed, one must be fixed:
+	[[0, 0], [0, 0]] is too long
+	[0, 0] is too long
+	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/property-units.yaml
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1601662
+See https://patchwork.ozlabs.org/patch/1601674
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
