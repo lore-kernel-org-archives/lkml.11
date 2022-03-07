@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A3BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96210C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240219AbiCGKGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:06:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        id S240225AbiCGKGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:06:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238364AbiCGJpB (ORCPT
+        with ESMTP id S238392AbiCGJpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:45:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E219265483;
-        Mon,  7 Mar 2022 01:41:44 -0800 (PST)
+        Mon, 7 Mar 2022 04:45:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9BC66AFA;
+        Mon,  7 Mar 2022 01:41:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 05C2CCE0EA6;
-        Mon,  7 Mar 2022 09:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1127C340E9;
-        Mon,  7 Mar 2022 09:36:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E9C0B810B9;
+        Mon,  7 Mar 2022 09:41:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFA08C340E9;
+        Mon,  7 Mar 2022 09:41:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645798;
-        bh=M4VKDxamwSQeNGGlXuPwb4g02Kpws/cOYKRyL0pwvRg=;
+        s=korg; t=1646646106;
+        bh=0dmLrK1qMtQoUWt/uHyXwuJ+mEZOHXrSg0gn9w1hEwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8sRntp/kr8TtsDHdDPWlVvgpenw3AJ6CQYuUk6ZcJ5QEFXtiqYKBUQPMqMEJdKFk
-         SZyyl93ttJGsntpisTvufp9mrtZkCJGk9afCKTrk2zIpsZ+2HmPvYALFzG9dMp7GMd
-         6ppQd+jM1FCGgrufW5O7KmJyCPAcZWaNK+ERiIH4=
+        b=rMjbrRWnpJ7AKXopE8EkluqEV5BGCc1mM8qN/eLv4jv1P570SL8/JKNF+Nb5eWWVE
+         SiWuVxReqe2KYSBy/Iy9qkR+3iQjrfmr0k5ZRmx/A9PNCaI3iWxeNnJRH4fHI72DBv
+         c0fwhw/hEJTwJFiYRo1mXvblu6vUIgHewtpFAmyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 038/262] sched/fair: Fix fault in reweight_entity
-Date:   Mon,  7 Mar 2022 10:16:22 +0100
-Message-Id: <20220307091703.600785457@linuxfoundation.org>
+Subject: [PATCH 5.15 128/262] drm/mediatek: mtk_dsi: Avoid EPROBE_DEFER loop with external bridge
+Date:   Mon,  7 Mar 2022 10:17:52 +0100
+Message-Id: <20220307091706.068438693@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -52,100 +54,263 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit 13765de8148f71fa795e0a6607de37c49ea5915a ]
+[ Upstream commit 647474b8d980256b26b1cd112d7333a4dbd4260a ]
 
-Syzbot found a GPF in reweight_entity. This has been bisected to
-commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
-sched_task_group")
+DRM bridge drivers are now attaching their DSI device at probe time,
+which requires us to register our DSI host in order to let the bridge
+to probe: this recently started producing an endless -EPROBE_DEFER
+loop on some machines that are using external bridges, like the
+parade-ps8640, found on the ACER Chromebook R13.
 
-There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
-within a thread group that causes a null-ptr-deref in
-reweight_entity() in CFS. The scenario is that the main process spawns
-number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
-wait, and exit.  For each of the new threads the copy_process() gets
-invoked, which adds the new task_struct and calls sched_post_fork()
-for it.
+Now that the DSI hosts/devices probe sequence is documented, we can
+do adjustments to the mtk_dsi driver as to both fix now and make sure
+to avoid this situation in the future: for this, following what is
+documented in drm_bridge.c, move the mtk_dsi component_add() to the
+mtk_dsi_ops.attach callback and delete it in the detach callback;
+keeping in mind that we are registering a drm_bridge for our DSI,
+which is only used/attached if the DSI Host is bound, it wouldn't
+make sense to keep adding our bridge at probe time (as it would
+be useless to have it if mtk_dsi_ops.attach() fails!), so also move
+that one to the dsi host attach function (and remove it in detach).
 
-In the above scenario there is a possibility that
-setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
-in the group that is just being created by copy_process(), and for
-which the sched_post_fork() has not been executed yet. This will
-trigger a null pointer dereference in reweight_entity(), as it will
-try to access the run queue pointer, which hasn't been set.
-
-Before the mentioned change the cfs_rq pointer for the task  has been
-set in sched_fork(), which is called much earlier in copy_process(),
-before the new task is added to the thread_group.  Now it is done in
-the sched_post_fork(), which is called after that.  To fix the issue
-the remove the update_load param from the update_load param() function
-and call reweight_task() only if the task flag doesn't have the
-TASK_NEW flag set.
-
-Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
-Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 167 +++++++++++++++--------------
+ 1 file changed, 84 insertions(+), 83 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index c2dec6ce98091..57e5c79142964 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1199,8 +1199,9 @@ int tg_nop(struct task_group *tg, void *data)
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index 5d90d2eb00193..bced4c7d668e3 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -786,18 +786,101 @@ void mtk_dsi_ddp_stop(struct device *dev)
+ 	mtk_dsi_poweroff(dsi);
  }
- #endif
  
--static void set_load_weight(struct task_struct *p, bool update_load)
-+static void set_load_weight(struct task_struct *p)
++static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
++{
++	int ret;
++
++	ret = drm_simple_encoder_init(drm, &dsi->encoder,
++				      DRM_MODE_ENCODER_DSI);
++	if (ret) {
++		DRM_ERROR("Failed to encoder init to drm\n");
++		return ret;
++	}
++
++	dsi->encoder.possible_crtcs = mtk_drm_find_possible_crtc_by_comp(drm, dsi->host.dev);
++
++	ret = drm_bridge_attach(&dsi->encoder, &dsi->bridge, NULL,
++				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
++	if (ret)
++		goto err_cleanup_encoder;
++
++	dsi->connector = drm_bridge_connector_init(drm, &dsi->encoder);
++	if (IS_ERR(dsi->connector)) {
++		DRM_ERROR("Unable to create bridge connector\n");
++		ret = PTR_ERR(dsi->connector);
++		goto err_cleanup_encoder;
++	}
++	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
++
++	return 0;
++
++err_cleanup_encoder:
++	drm_encoder_cleanup(&dsi->encoder);
++	return ret;
++}
++
++static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
++{
++	int ret;
++	struct drm_device *drm = data;
++	struct mtk_dsi *dsi = dev_get_drvdata(dev);
++
++	ret = mtk_dsi_encoder_init(drm, dsi);
++	if (ret)
++		return ret;
++
++	return device_reset_optional(dev);
++}
++
++static void mtk_dsi_unbind(struct device *dev, struct device *master,
++			   void *data)
++{
++	struct mtk_dsi *dsi = dev_get_drvdata(dev);
++
++	drm_encoder_cleanup(&dsi->encoder);
++}
++
++static const struct component_ops mtk_dsi_component_ops = {
++	.bind = mtk_dsi_bind,
++	.unbind = mtk_dsi_unbind,
++};
++
+ static int mtk_dsi_host_attach(struct mipi_dsi_host *host,
+ 			       struct mipi_dsi_device *device)
  {
-+	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
- 	int prio = p->static_prio - MAX_RT_PRIO;
- 	struct load_weight *load = &p->se.load;
+ 	struct mtk_dsi *dsi = host_to_dsi(host);
++	struct device *dev = host->dev;
++	int ret;
  
-@@ -4358,7 +4359,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
- 			p->static_prio = NICE_TO_PRIO(0);
+ 	dsi->lanes = device->lanes;
+ 	dsi->format = device->format;
+ 	dsi->mode_flags = device->mode_flags;
++	dsi->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
++	if (IS_ERR(dsi->next_bridge))
++		return PTR_ERR(dsi->next_bridge);
++
++	drm_bridge_add(&dsi->bridge);
++
++	ret = component_add(host->dev, &mtk_dsi_component_ops);
++	if (ret) {
++		DRM_ERROR("failed to add dsi_host component: %d\n", ret);
++		drm_bridge_remove(&dsi->bridge);
++		return ret;
++	}
  
- 		p->prio = p->normal_prio = p->static_prio;
--		set_load_weight(p, false);
-+		set_load_weight(p);
- 
- 		/*
- 		 * We don't need the reset flag anymore after the fork. It has
-@@ -6902,7 +6903,7 @@ void set_user_nice(struct task_struct *p, long nice)
- 		put_prev_task(rq, p);
- 
- 	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
-+	set_load_weight(p);
- 	old_prio = p->prio;
- 	p->prio = effective_prio(p);
- 
-@@ -7193,7 +7194,7 @@ static void __setscheduler_params(struct task_struct *p,
- 	 */
- 	p->rt_priority = attr->sched_priority;
- 	p->normal_prio = normal_prio(p);
--	set_load_weight(p, true);
-+	set_load_weight(p);
+ 	return 0;
  }
  
- /*
-@@ -9431,7 +9432,7 @@ void __init sched_init(void)
- #endif
++static int mtk_dsi_host_detach(struct mipi_dsi_host *host,
++			       struct mipi_dsi_device *device)
++{
++	struct mtk_dsi *dsi = host_to_dsi(host);
++
++	component_del(host->dev, &mtk_dsi_component_ops);
++	drm_bridge_remove(&dsi->bridge);
++	return 0;
++}
++
+ static void mtk_dsi_wait_for_idle(struct mtk_dsi *dsi)
+ {
+ 	int ret;
+@@ -938,73 +1021,14 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
+ 
+ static const struct mipi_dsi_host_ops mtk_dsi_ops = {
+ 	.attach = mtk_dsi_host_attach,
++	.detach = mtk_dsi_host_detach,
+ 	.transfer = mtk_dsi_host_transfer,
+ };
+ 
+-static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+-{
+-	int ret;
+-
+-	ret = drm_simple_encoder_init(drm, &dsi->encoder,
+-				      DRM_MODE_ENCODER_DSI);
+-	if (ret) {
+-		DRM_ERROR("Failed to encoder init to drm\n");
+-		return ret;
+-	}
+-
+-	dsi->encoder.possible_crtcs = mtk_drm_find_possible_crtc_by_comp(drm, dsi->host.dev);
+-
+-	ret = drm_bridge_attach(&dsi->encoder, &dsi->bridge, NULL,
+-				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+-	if (ret)
+-		goto err_cleanup_encoder;
+-
+-	dsi->connector = drm_bridge_connector_init(drm, &dsi->encoder);
+-	if (IS_ERR(dsi->connector)) {
+-		DRM_ERROR("Unable to create bridge connector\n");
+-		ret = PTR_ERR(dsi->connector);
+-		goto err_cleanup_encoder;
+-	}
+-	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
+-
+-	return 0;
+-
+-err_cleanup_encoder:
+-	drm_encoder_cleanup(&dsi->encoder);
+-	return ret;
+-}
+-
+-static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+-{
+-	int ret;
+-	struct drm_device *drm = data;
+-	struct mtk_dsi *dsi = dev_get_drvdata(dev);
+-
+-	ret = mtk_dsi_encoder_init(drm, dsi);
+-	if (ret)
+-		return ret;
+-
+-	return device_reset_optional(dev);
+-}
+-
+-static void mtk_dsi_unbind(struct device *dev, struct device *master,
+-			   void *data)
+-{
+-	struct mtk_dsi *dsi = dev_get_drvdata(dev);
+-
+-	drm_encoder_cleanup(&dsi->encoder);
+-}
+-
+-static const struct component_ops mtk_dsi_component_ops = {
+-	.bind = mtk_dsi_bind,
+-	.unbind = mtk_dsi_unbind,
+-};
+-
+ static int mtk_dsi_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_dsi *dsi;
+ 	struct device *dev = &pdev->dev;
+-	struct drm_panel *panel;
+ 	struct resource *regs;
+ 	int irq_num;
+ 	int ret;
+@@ -1021,19 +1045,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+ 		return ret;
  	}
  
--	set_load_weight(&init_task, false);
-+	set_load_weight(&init_task);
+-	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
+-					  &panel, &dsi->next_bridge);
+-	if (ret)
+-		goto err_unregister_host;
+-
+-	if (panel) {
+-		dsi->next_bridge = devm_drm_panel_bridge_add(dev, panel);
+-		if (IS_ERR(dsi->next_bridge)) {
+-			ret = PTR_ERR(dsi->next_bridge);
+-			goto err_unregister_host;
+-		}
+-	}
+-
+ 	dsi->driver_data = of_device_get_match_data(dev);
  
- 	/*
- 	 * The boot idle thread does lazy MMU switching as well:
+ 	dsi->engine_clk = devm_clk_get(dev, "engine");
+@@ -1098,14 +1109,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+ 	dsi->bridge.of_node = dev->of_node;
+ 	dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
+ 
+-	drm_bridge_add(&dsi->bridge);
+-
+-	ret = component_add(&pdev->dev, &mtk_dsi_component_ops);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to add component: %d\n", ret);
+-		goto err_unregister_host;
+-	}
+-
+ 	return 0;
+ 
+ err_unregister_host:
+@@ -1118,8 +1121,6 @@ static int mtk_dsi_remove(struct platform_device *pdev)
+ 	struct mtk_dsi *dsi = platform_get_drvdata(pdev);
+ 
+ 	mtk_output_dsi_disable(dsi);
+-	drm_bridge_remove(&dsi->bridge);
+-	component_del(&pdev->dev, &mtk_dsi_component_ops);
+ 	mipi_dsi_host_unregister(&dsi->host);
+ 
+ 	return 0;
 -- 
 2.34.1
 
