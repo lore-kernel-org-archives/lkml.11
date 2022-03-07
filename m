@@ -2,246 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456E6C43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 14:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243562AbiCGOxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        id S243550AbiCGOxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 09:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243686AbiCGOwy (ORCPT
+        with ESMTP id S243720AbiCGOw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:52:54 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80048.outbound.protection.outlook.com [40.107.8.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D7D91AF6;
-        Mon,  7 Mar 2022 06:51:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BNyN94fqKYI3gEyiRrbnx56UETq6m4HfQiAw+S+bkMYcM8pkv5H7HsijnQsZTN3U3kbWoSp5v6qrFTSy0JKvtE3SJZTTosoxWMeMCPxs7MiNypT1h69dSbGF3VHzDZfB7hqfoQnTWzaZCo7KZddBZ2SdUXXEER8gpUyXdVBu04402P43rzAYHitbKzlRJkNPZZbRUwS8x/LYBIKsLGjGAyFvhTiBZpL03u8ik5Az5vLYpPZ2f0wcbhH2dYtOdyT83eHQ+bEKBebiUre7ULvZRxpUOY3OYkQmqibQWk1KK4L75XEoGaighluvDpXMaw9rbxu5JVtqp9k5H2+xYDhRjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UGKocbnDUtaF0jveVBi7DzSqizhKT0LP71WilsO4fUE=;
- b=IP0SQ9GocPN3vjEL4WuEllbkvhE+p3fYXzRM61V38Qy/CInPXXTrvcbJY3JEQXF2T6hkqtvgJm1nr3Sq1+CQXc/Kw5rO11nOfq3igOl2xb0Ubgf9J6vd+LVm1agUTjQgljCKCGvB/sqg4o4NNXOW9Yv7/Iwljk7EFXpBnW7H7Xn1XBUpnAt1zmDHlLP+n743DefDWNiB/QOibwnHrMpn7KLQO0h5GOh/J6bY5mW1nZZgXEyh9fYnBq1Ea9DEL2l5ey5ISM3tkuy26nJ4+0hK4U58dFYIVM2P9gXutpHxFboSYd6ugBhBrnKQZ/Tyke2TwfJD8jCX2Laac0DzM1nDOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UGKocbnDUtaF0jveVBi7DzSqizhKT0LP71WilsO4fUE=;
- b=mKaf5WFBkV9vTo3c1dYUNS5yG9bmn15AmLXHyAl9WtK1WJm0TTSCFLM+Unlz8yxX5WhfBWI5duEtTHDf3Rmbr0IiUjPFDyRW5Wv3YdPXYcRB2Ld5ULdYNbWqdCJaoRFzPBJAPL2MNVjl8xC58XDx/fIgeJDKOymcC3tJ8eks4F8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from VI1PR0402MB3902.eurprd04.prod.outlook.com
- (2603:10a6:803:22::27) by DB7PR04MB5226.eurprd04.prod.outlook.com
- (2603:10a6:10:21::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.18; Mon, 7 Mar
- 2022 14:51:31 +0000
-Received: from VI1PR0402MB3902.eurprd04.prod.outlook.com
- ([fe80::7075:9a92:d8b1:61cf]) by VI1PR0402MB3902.eurprd04.prod.outlook.com
- ([fe80::7075:9a92:d8b1:61cf%3]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
- 14:51:31 +0000
-Date:   Mon, 7 Mar 2022 16:51:28 +0200
-From:   Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: i2c: max9286: fix kernel oops when removing module
-Message-ID: <20220307145128.x6cxhj4dgvyyjqj2@fsr-ub1664-121.ea.freescale.net>
-References: <20220307133750.29708-1-laurentiu.palcu@oss.nxp.com>
- <164666323196.11309.2192554853786525085@Monstersaurus>
- <YiYYQE4gyGY468Jz@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiYYQE4gyGY468Jz@pendragon.ideasonboard.com>
-User-Agent: NeoMutt/20171215
-X-ClientProxiedBy: FR0P281CA0046.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:48::23) To VI1PR0402MB3902.eurprd04.prod.outlook.com
- (2603:10a6:803:22::27)
+        Mon, 7 Mar 2022 09:52:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 835358F99A
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 06:51:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646664685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u3c9w/aK7c+8N73IFmes1GpB1imyjMjXrb2rGtlAH/I=;
+        b=IHg0GMdUKHRvQOWdFjYjmqCFL8/y01N0PSeIPPSMbGF5UKfNHpA6OSdp5wl3rNhit1wc3B
+        Ph0DMWOiD6DWnSJY3VaxrkIW6gV2LZTM4/hYmXKyn9k4IVMFDpYjUCc7DDoMvljZhrmgCS
+        jT7i+fzKiNGP33lblgrxF42oTlTbLc0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-X5bKvnBEMXuB8DhXj7GQAg-1; Mon, 07 Mar 2022 09:51:20 -0500
+X-MC-Unique: X5bKvnBEMXuB8DhXj7GQAg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B447C1091DA0;
+        Mon,  7 Mar 2022 14:51:17 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.193.244])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 69AC57F0DF;
+        Mon,  7 Mar 2022 14:51:15 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RFC 18/19] KVM: nSVM: hyper-v: Direct TLB flush
+Date:   Mon,  7 Mar 2022 15:50:22 +0100
+Message-Id: <20220307145023.1913205-19-vkuznets@redhat.com>
+In-Reply-To: <20220307145023.1913205-1-vkuznets@redhat.com>
+References: <20220307145023.1913205-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 487e08b9-416b-4636-f2b9-08da0049f745
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5226:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB522636B4CBD719E0559090C1BE089@DB7PR04MB5226.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Evo+63Fq/DbEg8unm1IOpBKXEywMReqjRSAY40BTOCT6zES60y8UxFEBc1hmNkd2H1DqXZKjus2NIvaI57NrcpSunULWqAx+bduZ2U+SogHfx4XyptRm6f7IcfqjvSDCgRoBzaGx+y9C5Rt7ft6LhbKy2op/GRhGkyck4JUJIuO46DsdmMd0KDaAtqbrnQFOhKr2K3U53prydrNCHRJwDLWnMrGY66erZmkvnCPHnbiwRxB4epeTrSSVqfFFwj5OeWahjChudsGIfm5ZNU9XXoHMf1bitnFsIEDg0yKFEMx84JwUiXI2sxFQmMn89nSIjUMIGC/VtlB+C3zbSGU99AhOGR6cb2wl43W0B0JCrFKhIOPW94FvaJLSIfKRG3RJ3OE0TFV85v53igmp4N1EQywsNbNDKGcnpvQrMEsK9JBtcPowRHY2sJZm/+1WKhOOAqPhaIPLl36INKUgxnt1fgF/DmOD2YhCRW0cAwZmt/TK3ohSUTzJgw4pRRPFMuC2ita7483sJHkGZ81zXqoYMLoYeRIezCK8bKP8YtbA1f5M/WAcc/SFB7cgq7Np9gBH2DOAGiYyt6kyRhRboBsp1kVo7FyOvMvwISF2zD7sJ4OjH37TToyp45YT01lc6/n7+0HPCc26cH/S0ft8A7rh3v1Xe7icCjrvx2F7ZEMNq0TPznTzc3vFU/8bR0hqeZBALjnj/JyFgptzQgUmvmA+SA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3902.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(54906003)(6486002)(508600001)(45080400002)(66946007)(4326008)(8676002)(2906002)(8936002)(5660300002)(44832011)(86362001)(66476007)(66556008)(316002)(38350700002)(6916009)(186003)(52116002)(9686003)(6666004)(6512007)(6506007)(83380400001)(38100700002)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VpEcuFYgNvMq4gFGyIldpfVTgn5ZgJhhEQby5EolvsRh+cIWaW59h/Hsc+E6?=
- =?us-ascii?Q?ZlZKaY1b0rxt7QRJj/feEihmaL9K4qOzCK+PavSg5PUzXXf51PHFz+RjzXb3?=
- =?us-ascii?Q?Ifgdu4AUocdwncoAMkaqS8qNBh+QeM1ae2yBlYjksnS2JiCHFXs2VTu2zDdo?=
- =?us-ascii?Q?jmFqYSdqG9i6o1I15/zkS/vKK+HgRvUkWgux+ow5znW+4ze6LdrqzL+tQFX6?=
- =?us-ascii?Q?YY8G7cBvmiA5eMgxzPBSl7/A7sDBQQO7d2xPMAfH4yB3uSKl04rz0kqbwlnq?=
- =?us-ascii?Q?KeIP7iOQuIn2eIwqLwSub7ZLFFIr+NiT/L/DfjZKXIWh+vIoHha32ZCx17vA?=
- =?us-ascii?Q?iQ2ylR2S9wcErju81/2ISSgpgGySXY7MGbLjcLdG2Brr29L79H+OhbCn37W6?=
- =?us-ascii?Q?c8WIRqNNICc1Z79QE8iAwQnqisCRMkOprI/qyee0cQhuxoXMKwUKoM4B4lXE?=
- =?us-ascii?Q?KoOObr2xErsvcNg0swx8h4BIPxkA3ekDcLNY8F7+vDwZrQ7bvWgP83o3hjcV?=
- =?us-ascii?Q?g5Z1Uzb3GpPdX9H1720Q2M8kxwwh1fa2yCi3RPmwGIRFDQQ1DHqUl4JLRM/3?=
- =?us-ascii?Q?706FudtiCL6lzjqZRROzPJZJ4046TmN1F3LNBYYMgO+sAUl/92PHTT4ERDma?=
- =?us-ascii?Q?GFna7FYAc6Wd9UWeLm5zOwxVLufQcdR3Yt5VeV3IizfJkDnRWBjbpMxZPBPc?=
- =?us-ascii?Q?cx/c66JPUO7LY5tbRAwTYjI/6Rm5CCmV/Svy9XZvv8bn8FYeH5CBQxsow9F0?=
- =?us-ascii?Q?ulKKh8o7hrUtpKx9k186rS7xqC5H1XOqkYkHbVYMkz4GyySottLGSxTU4kjd?=
- =?us-ascii?Q?TrofYjSDZpHjYj/8xE+0Trh8I9bOikxct7/z5IKE+cEihBuJ1rUHpiHuh2BL?=
- =?us-ascii?Q?t8KaKYr10IMxoH5V6egG7rNOzfQ+76V6Mc6EiYZgQHXYmhnGyXt8mkXAX8ZA?=
- =?us-ascii?Q?RNqIFokThVhoGl65nTTYwPbD5bnR32KWgDJL/zRpjC00bU1hZVg5+wWzMG2O?=
- =?us-ascii?Q?JG2IzQSBxB1Swh5kBQkBFFZlWHjV3SXF60+8gNSWvJ0Zi9HQKZ4DXHctIDn8?=
- =?us-ascii?Q?a+SY+HPjUQAZiGZMYerzm7CgKqw0W0oG6Mi95T8W7//dXi9twHXLNQHBWXjY?=
- =?us-ascii?Q?cH2k4QG3MbB0S5snkw5GwBXqgmpRL8V+mDG+H3famxnQN94mxnDRrzIKDEWi?=
- =?us-ascii?Q?sjQoo/TPjSqa1dpUT5+xV2oQlVRr7mofNXjiU0wz3PMG5qsIWI2FbFd8tRSo?=
- =?us-ascii?Q?aV//6bjqfibRc8wdSRmlCB99kNm5rMeW1Y5eTQo/ad75Jd+2redinm4hbo+q?=
- =?us-ascii?Q?mrMhQ4czh9P7T2Agl62FNED0tojQBhMEVgOaKdRna46EKJtSw6QZpH2HhI2D?=
- =?us-ascii?Q?kKQVUWjdw7Ko8mcU9iF5SZ+xbbHwvi3qCxygYVNZjyJdZvSd3oHjBTsM23A7?=
- =?us-ascii?Q?q9rYKy20NgDT2TbSUrCBTZ9FeQsEdkpCcS0qR1YxcXTQviDvXwcMdRhnj83E?=
- =?us-ascii?Q?YZgqDBjEajD0mTYPxWT4unf0wNqs5jTtpYN7EfvYJbmurLK1PpqgCcPpaQ4F?=
- =?us-ascii?Q?tXUmjI9GUnFyjC8ekDLd6SM6vyxgvIsJHhxtlZSqXZcnWgCacFkAFay/qYrL?=
- =?us-ascii?Q?NUgvT36sM20pocVGWClAoHU=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 487e08b9-416b-4636-f2b9-08da0049f745
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3902.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 14:51:31.0484
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w+4BvgyAol67uqgQeQAVaKOOydx0a1OyeoTaV2gaUO4T0mNgBxmLpN/miCjpRp/KAmIb/YlSDRgIotOnvIXzFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5226
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kieran, Laurent,
+Implement Hyper-V Direct TLB flush for nSVM feature. The feature needs
+to be enabled both in extended 'nested controls' in VMCB and partition
+assist page. According to TLFS, synthetic vmexit to L1 is performed
+with
+- HV_SVM_EXITCODE_ENL exit_code.
+- HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH exit_info_1.
 
-On Mon, Mar 07, 2022 at 04:35:44PM +0200, Laurent Pinchart wrote:
-> On Mon, Mar 07, 2022 at 02:27:11PM +0000, Kieran Bingham wrote:
-> > Hi Laurentiu,
-> > 
-> > Quoting Laurentiu Palcu (2022-03-07 13:37:50)
-> > > When removing the max9286 module we get a kernel oops:
-> > > 
-> > > Unable to handle kernel paging request at virtual address 000000aa00000094
-> > > Mem abort info:
-> > >   ESR = 0x96000004
-> > >   EC = 0x25: DABT (current EL), IL = 32 bits
-> > >   SET = 0, FnV = 0
-> > >   EA = 0, S1PTW = 0
-> > >   FSC = 0x04: level 0 translation fault
-> > > Data abort info:
-> > >   ISV = 0, ISS = 0x00000004
-> > >   CM = 0, WnR = 0
-> > > user pgtable: 4k pages, 48-bit VAs, pgdp=0000000880d85000
-> > > [000000aa00000094] pgd=0000000000000000, p4d=0000000000000000
-> > > Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> > > Modules linked in: fsl_jr_uio caam_jr rng_core libdes caamkeyblob_desc caamhash_desc caamalg_desc crypto_engine max9271 authenc crct10dif_ce mxc_jpeg_encdec
-> > > CPU: 2 PID: 713 Comm: rmmod Tainted: G         C        5.15.5-00057-gaebcd29c8ed7-dirty #5
-> > > Hardware name: Freescale i.MX8QXP MEK (DT)
-> > > pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > > pc : i2c_mux_del_adapters+0x24/0xf0
-> > > lr : max9286_remove+0x28/0xd0 [max9286]
-> > > sp : ffff800013a9bbf0
-> > > x29: ffff800013a9bbf0 x28: ffff00080b6da940 x27: 0000000000000000
-> > > x26: 0000000000000000 x25: 0000000000000000 x24: 0000000000000000
-> > > x23: ffff000801a5b970 x22: ffff0008048b0890 x21: ffff800009297000
-> > > x20: ffff0008048b0f70 x19: 000000aa00000064 x18: 0000000000000000
-> > > x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-> > > x14: 0000000000000014 x13: 0000000000000000 x12: ffff000802da49e8
-> > > x11: ffff000802051918 x10: ffff000802da4920 x9 : ffff000800030098
-> > > x8 : 0101010101010101 x7 : 7f7f7f7f7f7f7f7f x6 : fefefeff6364626d
-> > > x5 : 8080808000000000 x4 : 0000000000000000 x3 : 0000000000000000
-> > > x2 : ffffffffffffffff x1 : ffff00080b6da940 x0 : 0000000000000000
-> > > Call trace:
-> > >  i2c_mux_del_adapters+0x24/0xf0
-> > >  max9286_remove+0x28/0xd0 [max9286]
-> > >  i2c_device_remove+0x40/0x110
-> > >  __device_release_driver+0x188/0x234
-> > >  driver_detach+0xc4/0x150
-> > >  bus_remove_driver+0x60/0xe0
-> > >  driver_unregister+0x34/0x64
-> > >  i2c_del_driver+0x58/0xa0
-> > >  max9286_i2c_driver_exit+0x1c/0x490 [max9286]
-> > >  __arm64_sys_delete_module+0x194/0x260
-> > >  invoke_syscall+0x48/0x114
-> > >  el0_svc_common.constprop.0+0xd4/0xfc
-> > >  do_el0_svc+0x2c/0x94
-> > >  el0_svc+0x28/0x80
-> > >  el0t_64_sync_handler+0xa8/0x130
-> > >  el0t_64_sync+0x1a0/0x1a4
-> > > 
-> > > The Oops happens because the I2C client data does not point to
-> > > max9286_priv anymore but to v4l2_subdev. The change happened in
-> > > max9286_init() which calls v4l2_i2c_subdev_init() later on...
-> > > 
-> > 
-> > I think this needs a Fixes tag, but it looks like it happened when we
-> > merged the driver. So that makes it:
-> > 
-> > Fixes: 66d8c9d2422d ("media: i2c: Add MAX9286 driver")
-> > 
-> > I see in max9286_probe() we set
-> > 	i2c_set_clientdata(client, (struct max9286_priv) priv);
-> > 
-> > And indeed, then we call 
-> > 
-> > max9286_init()
-> >  max9286_v4l2_register()
-> >   v4l2_i2c_subdev_init(&priv->sd, priv->client, &max9286_subdev_ops);
-> > 
-> > So I think this patch should probably also remove the call to 
-> > i2c_set_clientdata() in probe to prevent confusion.
-> 
-> Agreed.
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/svm/hyperv.c |  7 +++++++
+ arch/x86/kvm/svm/hyperv.h | 20 ++++++++++++++++++++
+ arch/x86/kvm/svm/nested.c | 22 +++++++++++++++++++++-
+ 3 files changed, 48 insertions(+), 1 deletion(-)
 
-I suppose the reason why i2c_set_clientdata() is called in probe() is
-because max9286_init() uses i2c_get_clientdata() to get priv. But, that
-would be easily fixed if we change the function declaration to
+diff --git a/arch/x86/kvm/svm/hyperv.c b/arch/x86/kvm/svm/hyperv.c
+index 0142fde34738..f3298c70053e 100644
+--- a/arch/x86/kvm/svm/hyperv.c
++++ b/arch/x86/kvm/svm/hyperv.c
+@@ -8,4 +8,11 @@
+ 
+ void svm_post_hv_direct_flush(struct kvm_vcpu *vcpu)
+ {
++	struct vcpu_svm *svm = to_svm(vcpu);
++
++	svm->vmcb->control.exit_code = HV_SVM_EXITCODE_ENL;
++	svm->vmcb->control.exit_code_hi = 0;
++	svm->vmcb->control.exit_info_1 = HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH;
++	svm->vmcb->control.exit_info_2 = 0;
++	nested_svm_vmexit(svm);
+ }
+diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
+index 478db6f61d69..80d12e075b4f 100644
+--- a/arch/x86/kvm/svm/hyperv.h
++++ b/arch/x86/kvm/svm/hyperv.h
+@@ -9,6 +9,7 @@
+ #include <asm/mshyperv.h>
+ 
+ #include "../hyperv.h"
++#include "svm.h"
+ 
+ /*
+  * Hyper-V uses the software reserved 32 bytes in VMCB
+@@ -32,6 +33,9 @@ struct hv_enlightenments {
+  */
+ #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
+ 
++#define HV_SVM_EXITCODE_ENL 0xF0000000
++#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
++
+ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+@@ -47,6 +51,22 @@ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
+ 	hv_vcpu->nested.vp_id = hve->hv_vp_id;
+ }
+ 
++static inline bool nested_svm_direct_flush_enabled(struct kvm_vcpu *vcpu)
++{
++	struct vcpu_svm *svm = to_svm(vcpu);
++	struct hv_enlightenments *hve =
++		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
++	struct hv_vp_assist_page assist_page;
++
++	if (unlikely(!kvm_hv_get_assist_page(vcpu, &assist_page)))
++		return false;
++
++	if (!hve->hv_enlightenments_control.nested_flush_hypercall)
++		return false;
++
++	return assist_page.nested_control.features.directhypercall;
++}
++
+ void svm_post_hv_direct_flush(struct kvm_vcpu *vcpu);
+ 
+ #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index 46ea234363cf..3f6c2f088e26 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -153,7 +153,8 @@ void recalc_intercepts(struct vcpu_svm *svm)
+ 	}
+ 
+ 	/* We don't want to see VMMCALLs from a nested guest */
+-	vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
++	if (!nested_svm_direct_flush_enabled(&svm->vcpu))
++		vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
+ 
+ 	for (i = 0; i < MAX_INTERCEPT; i++)
+ 		c->intercepts[i] |= g->intercepts[i];
+@@ -461,6 +462,17 @@ static inline bool nested_npt_enabled(struct vcpu_svm *svm)
+ 
+ static void nested_svm_transition_tlb_flush(struct kvm_vcpu *vcpu)
+ {
++	/*
++	 * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VPID or
++	 * L2's VPID upon request from the guest. Make sure we check for
++	 * pending entries for the case when the request got misplaced (e.g.
++	 * a transition from L2->L1 happened while processing Direct TLB flush
++	 * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
++	 * anything if there are no requests in the corresponding buffer.
++	 */
++	if (to_hv_vcpu(vcpu))
++		kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++
+ 	/*
+ 	 * TODO: optimize unconditional TLB flush/MMU sync.  A partial list of
+ 	 * things to fix before this can be conditional:
+@@ -1266,6 +1278,7 @@ static int svm_check_nested_events(struct kvm_vcpu *vcpu)
+ int nested_svm_exit_special(struct vcpu_svm *svm)
+ {
+ 	u32 exit_code = svm->vmcb->control.exit_code;
++	struct kvm_vcpu *vcpu = &svm->vcpu;
+ 
+ 	switch (exit_code) {
+ 	case SVM_EXIT_INTR:
+@@ -1284,6 +1297,13 @@ int nested_svm_exit_special(struct vcpu_svm *svm)
+ 			return NESTED_EXIT_HOST;
+ 		break;
+ 	}
++	case SVM_EXIT_VMMCALL:
++		/* Hyper-V Direct TLB flush hypercall is handled by L0 */
++		if (kvm_hv_direct_tlb_flush_exposed(vcpu) &&
++		    nested_svm_direct_flush_enabled(vcpu) &&
++		    kvm_hv_is_tlb_flush_hcall(vcpu))
++			return NESTED_EXIT_HOST;
++		break;
+ 	default:
+ 		break;
+ 	}
+-- 
+2.35.1
 
-static int max9286_init(struct max9286_priv *priv)
-
-From priv we can get both client and dev, which are used inside the
-function.
-
-I'll send a v2 shortly.
-
-Thanks,
-Laurentiu
-
-> 
-> > > Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-> > > ---
-> > >  drivers/media/i2c/max9286.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/media/i2c/max9286.c b/drivers/media/i2c/max9286.c
-> > > index d2a4915ed9f7..04f5b7e3a9e5 100644
-> > > --- a/drivers/media/i2c/max9286.c
-> > > +++ b/drivers/media/i2c/max9286.c
-> > > @@ -1385,7 +1385,7 @@ static int max9286_probe(struct i2c_client *client)
-> > >  
-> > >  static int max9286_remove(struct i2c_client *client)
-> > >  {
-> > > -       struct max9286_priv *priv = i2c_get_clientdata(client);
-> > > +       struct max9286_priv *priv = sd_to_max9286(i2c_get_clientdata(client));
-> > 
-> > What happens if the module load failed before calling max9286_init(), in
-> > that case, would the i2c_get_clientdata() return NULL?
-> > 
-> > If so, should this be checked?
-> 
-> .remove() isn't called if .probe() fails, so it should be fine
-> 
-> > >  
-> > >         i2c_mux_del_adapters(priv->mux);
-> > >  
-> 
-> -- 
-> Regards,
-> 
-> Laurent Pinchart
