@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43683C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19FCC43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239002AbiCGJ5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:57:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S239184AbiCGJ6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:58:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239385AbiCGJjk (ORCPT
+        with ESMTP id S239656AbiCGJkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:39:40 -0500
+        Mon, 7 Mar 2022 04:40:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC9870F77;
-        Mon,  7 Mar 2022 01:35:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCF1723CE;
+        Mon,  7 Mar 2022 01:36:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3722360FF6;
-        Mon,  7 Mar 2022 09:34:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F992C340F4;
-        Mon,  7 Mar 2022 09:34:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A92D612EC;
+        Mon,  7 Mar 2022 09:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E089C340F3;
+        Mon,  7 Mar 2022 09:35:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645678;
-        bh=mmQHfL/dWtz66XuI74oyMZ5+BBUM8m0i4K/ns0OOhG0=;
+        s=korg; t=1646645736;
+        bh=bUoUjXun1H5cleJ/gc0H1qiSuKbmHGKHPKKSjZmqy6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SqqUN4FzDphbYhXbcPfSnmjvd5kYwRMyZGyDPY7U86ND4TtFLcrOc+YafVTqAkf9j
-         SciacTHpV0bydzJgz3L14lwCgerRpSoBG72yrmSrmxZrKdC8q1VlMtYXaz9Ut5zOvH
-         y2Ig/NMQvkPizzjZglKgn3lZGh2NF5fOwLhJ+h2E=
+        b=W+4ihXbDswtzuIrNfKKY9d+ZeQbVHV/KDu3dzbhQYOpsFlOL/zFKg6y3CprPNIao8
+         r9W47Zd5lKcHHnsE9/IbUuWsS9H/uto4roELW11RYlzze4ZRhKMpoAtcfrqdENguSm
+         2QeJe9Zg+1oghJq8BjlHQECpVGz8mcpuKvT3ADzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Alyssa Ross <hi@alyssa.is>, Sudeep Holla <sudeep.holla@arm.com>
-Subject: [PATCH 5.10 069/105] firmware: arm_scmi: Remove space in MODULE_ALIAS name
-Date:   Mon,  7 Mar 2022 10:19:12 +0100
-Message-Id: <20220307091646.118521376@linuxfoundation.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 020/262] selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
+Date:   Mon,  7 Mar 2022 10:16:04 +0100
+Message-Id: <20220307091702.944597336@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
-References: <20220307091644.179885033@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+References: <20220307091702.378509770@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alyssa Ross <hi@alyssa.is>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit 1ba603f56568c3b4c2542dfba07afa25f21dcff3 upstream.
+[ Upstream commit 6fec1ab67f8d60704cc7de64abcfd389ab131542 ]
 
-modprobe can't handle spaces in aliases. Get rid of it to fix the issue.
+The PREEMPT_RT patchset does not use do_softirq() function thus trying
+to filter for do_softirq fails for such kernel:
 
-Link: https://lore.kernel.org/r/20220211102704.128354-1-sudeep.holla@arm.com
-Fixes: aa4f886f3893 ("firmware: arm_scmi: add basic driver infrastructure for SCMI")
-Reviewed-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Alyssa Ross <hi@alyssa.is>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  echo do_softirq
+  ftracetest: 81: echo: echo: I/O error
+
+Choose some other visible function for the test.  The function does not
+have to be actually executed during the test, because it is only testing
+filter API interface.
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scmi/driver.c |    2 +-
+ .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -979,7 +979,7 @@ static void __exit scmi_driver_exit(void
- }
- module_exit(scmi_driver_exit);
+diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+index e96e279e0533a..25432b8cd5bd2 100644
+--- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
++++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+@@ -19,7 +19,7 @@ fail() { # mesg
  
--MODULE_ALIAS("platform: arm-scmi");
-+MODULE_ALIAS("platform:arm-scmi");
- MODULE_AUTHOR("Sudeep Holla <sudeep.holla@arm.com>");
- MODULE_DESCRIPTION("ARM SCMI protocol driver");
- MODULE_LICENSE("GPL v2");
+ FILTER=set_ftrace_filter
+ FUNC1="schedule"
+-FUNC2="do_softirq"
++FUNC2="scheduler_tick"
+ 
+ ALL_FUNCS="#### all functions enabled ####"
+ 
+-- 
+2.34.1
+
 
 
