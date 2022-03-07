@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D813C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5AAC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238030AbiCGJh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:37:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        id S238182AbiCGJiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238816AbiCGJ3r (ORCPT
+        with ESMTP id S234615AbiCGJ1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB3BF30;
-        Mon,  7 Mar 2022 01:28:52 -0800 (PST)
+        Mon, 7 Mar 2022 04:27:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1E366AEF;
+        Mon,  7 Mar 2022 01:24:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EC9EB80F9F;
-        Mon,  7 Mar 2022 09:28:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3393C340E9;
-        Mon,  7 Mar 2022 09:28:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3360061147;
+        Mon,  7 Mar 2022 09:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A82FC340E9;
+        Mon,  7 Mar 2022 09:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645330;
-        bh=QRptUylu6ioyya4CszpLn1NWYLWY1tZxmQs1STtJB34=;
+        s=korg; t=1646645080;
+        bh=Gm4v8ZjMM0wOfI7MuPJdBUYVi8qe54nykDQmJ+xR7Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cyPleQcy47qUb8Om1MWL5L6h2mWIIG/ciA/xKyuSYzEW93gRi9h8J4eUM5t2ANEeN
-         OYjfqvlJyffAxThaO4wRusXcE9rM4isBpK9gT6SszHK4x3SO7Hbr6YrmXbTRLFRGfz
-         YiFakfADbrqUJRPurHzAc8506Eac39tDhUp4yiYc=
+        b=PK8/2hZ+AkdbfyPHF4en5AafSQVGY8uNGJNiKMovAHZwVMCwcRqqE6K9+Z6nRPCYW
+         LPjZfuwfI65J/WH7Ml37Ry56x9QfYN6PF9HY9U7wbjcXF8/VifSK+3DF4zPFk+TiNh
+         t5ttBFQShXsRONoJKZNZvmRksLl3VUAaxRo6WhF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 61/64] btrfs: qgroup: fix deadlock between rescan worker and remove qgroup
-Date:   Mon,  7 Mar 2022 10:19:34 +0100
-Message-Id: <20220307091640.881547064@linuxfoundation.org>
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 08/51] dmaengine: shdma: Fix runtime PM imbalance on error
+Date:   Mon,  7 Mar 2022 10:18:43 +0100
+Message-Id: <20220307091637.231601025@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
-References: <20220307091639.136830784@linuxfoundation.org>
+In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
+References: <20220307091636.988950823@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,82 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidong Yang <realwakka@gmail.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-commit d4aef1e122d8bbdc15ce3bd0bc813d6b44a7d63a upstream.
+[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
 
-The commit e804861bd4e6 ("btrfs: fix deadlock between quota disable and
-qgroup rescan worker") by Kawasaki resolves deadlock between quota
-disable and qgroup rescan worker. But also there is a deadlock case like
-it. It's about enabling or disabling quota and creating or removing
-qgroup. It can be reproduced in simple script below.
+pm_runtime_get_() increments the runtime PM usage counter even
+when it returns an error code, thus a matching decrement is needed on
+the error handling path to keep the counter balanced.
 
-for i in {1..100}
-do
-    btrfs quota enable /mnt &
-    btrfs qgroup create 1/0 /mnt &
-    btrfs qgroup destroy 1/0 /mnt &
-    btrfs quota disable /mnt &
-done
-
-Here's why the deadlock happens:
-
-1) The quota rescan task is running.
-
-2) Task A calls btrfs_quota_disable(), locks the qgroup_ioctl_lock
-   mutex, and then calls btrfs_qgroup_wait_for_completion(), to wait for
-   the quota rescan task to complete.
-
-3) Task B calls btrfs_remove_qgroup() and it blocks when trying to lock
-   the qgroup_ioctl_lock mutex, because it's being held by task A. At that
-   point task B is holding a transaction handle for the current transaction.
-
-4) The quota rescan task calls btrfs_commit_transaction(). This results
-   in it waiting for all other tasks to release their handles on the
-   transaction, but task B is blocked on the qgroup_ioctl_lock mutex
-   while holding a handle on the transaction, and that mutex is being held
-   by task A, which is waiting for the quota rescan task to complete,
-   resulting in a deadlock between these 3 tasks.
-
-To resolve this issue, the thread disabling quota should unlock
-qgroup_ioctl_lock before waiting rescan completion. Move
-btrfs_qgroup_wait_for_completion() after unlock of qgroup_ioctl_lock.
-
-Fixes: e804861bd4e6 ("btrfs: fix deadlock between quota disable and qgroup rescan worker")
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Signed-off-by: Sidong Yang <realwakka@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/qgroup.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/dma/sh/shdma-base.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/qgroup.c
-+++ b/fs/btrfs/qgroup.c
-@@ -1117,13 +1117,20 @@ int btrfs_quota_disable(struct btrfs_fs_
- 		goto out;
+diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+index 6b5626e299b22..419c841aef34d 100644
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -118,8 +118,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
+ 		ret = pm_runtime_get(schan->dev);
  
- 	/*
-+	 * Unlock the qgroup_ioctl_lock mutex before waiting for the rescan worker to
-+	 * complete. Otherwise we can deadlock because btrfs_remove_qgroup() needs
-+	 * to lock that mutex while holding a transaction handle and the rescan
-+	 * worker needs to commit a transaction.
-+	 */
-+	mutex_unlock(&fs_info->qgroup_ioctl_lock);
-+
-+	/*
- 	 * Request qgroup rescan worker to complete and wait for it. This wait
- 	 * must be done before transaction start for quota disable since it may
- 	 * deadlock with transaction by the qgroup rescan worker.
- 	 */
- 	clear_bit(BTRFS_FS_QUOTA_ENABLED, &fs_info->flags);
- 	btrfs_qgroup_wait_for_completion(fs_info, false);
--	mutex_unlock(&fs_info->qgroup_ioctl_lock);
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0)
++		if (ret < 0) {
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
++			pm_runtime_put(schan->dev);
++		}
  
- 	/*
- 	 * 1 For the root item
+ 		pm_runtime_barrier(schan->dev);
+ 
+-- 
+2.34.1
+
 
 
