@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB150C41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D619C38A04
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242736AbiCGKLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:11:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
+        id S242234AbiCGKLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:11:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239908AbiCGJuV (ORCPT
+        with ESMTP id S240064AbiCGJuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:50:21 -0500
+        Mon, 7 Mar 2022 04:50:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1136F723C1;
-        Mon,  7 Mar 2022 01:43:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB9846B24;
+        Mon,  7 Mar 2022 01:44:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1504261224;
-        Mon,  7 Mar 2022 09:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 108DBC340F3;
-        Mon,  7 Mar 2022 09:43:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28C8961052;
+        Mon,  7 Mar 2022 09:44:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15661C340F3;
+        Mon,  7 Mar 2022 09:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646228;
-        bh=pTjuL6BPXjGQj8a+GNkF6+8a01Bmr4IZIrwdI89SEF8=;
+        s=korg; t=1646646243;
+        bh=UVM/XEc3dj/uRbWktOGGecRDab/qgjKpsicqFCWm4Js=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5uKPs/vtW6zDMPrTwRhyige+UeLoQ5Wi8iDKtlB0lr2OTkd0wwJDJA2rFYj62yub
-         KUNSf4oio0Sw0ecPkZiAN1HjT65DtQ3HlnaMDbc823huVNACNkg1wqaGz5V/TNYJ3U
-         dbjCN/r/NSnt3NDPxIvdpXBTzvGK1SfoyY4pqfhA=
+        b=UNRKGJCfCK53Elh/3OYrKFJ+W4CWAEKRWRvz0Pl7QiK1u8w1GmlTXbxL2p3z3H0Pa
+         nzgeQnhyeblC1KOrm7ESUk7aTU5Os5GQk2RZ1v5/KBysEHBv5HU+uS/oaF5DuVi3Tq
+         C8xNj1zSXzOj0/pKK17XBoHNzUZuW22dDpajRoj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Palus <jpalus@fastmail.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/262] PCI: mvebu: Fix device enumeration regression
-Date:   Mon,  7 Mar 2022 10:17:58 +0100
-Message-Id: <20220307091706.238853666@linuxfoundation.org>
+        stable@vger.kernel.org, Slawomir Laba <slawomirx.laba@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.15 181/262] iavf: Fix deadlock in iavf_reset_task
+Date:   Mon,  7 Mar 2022 10:18:45 +0100
+Message-Id: <20220307091707.523317030@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -50,51 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-[ Upstream commit c49ae619905eebd3f54598a84e4cd2bd58ba8fe9 ]
+commit e85ff9c631e1bf109ce8428848dfc8e8b0041f48 upstream.
 
-Jan reported that on Turris Omnia (Armada 385), no PCIe devices were
-detected after upgrading from v5.16.1 to v5.16.3 and identified the cause
-as the backport of 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus
-of PCIe Root Port via emulated bridge"), which appeared in v5.17-rc1.
+There exists a missing mutex_unlock call on crit_lock in
+iavf_reset_task call path.
 
-91a8d79fc797 was incorrectly applied from mailing list patch [1] to the
-linux git repository [2] probably due to resolving merge conflicts
-incorrectly. Fix it now.
+Unlock the crit_lock before returning from reset task.
 
-[1] https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
-[2] https://git.kernel.org/linus/91a8d79fc797
-
-[bhelgaas: commit log]
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
-Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
-Link: https://lore.kernel.org/r/20220214110228.25825-1-pali@kernel.org
-Link: https://lore.kernel.org/r/20220127234917.GA150851@bhelgaas
-Reported-by: Jan Palus <jpalus@fastmail.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5ac49f3c2702 ("iavf: use mutexes for locking of critical sections")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 357e9a293edf7..2a3bf82aa4e26 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -1288,7 +1288,8 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
- 		 * indirectly via kernel emulated PCI bridge driver.
- 		 */
- 		mvebu_pcie_setup_hw(port);
--		mvebu_pcie_set_local_dev_nr(port, 0);
-+		mvebu_pcie_set_local_dev_nr(port, 1);
-+		mvebu_pcie_set_local_bus_nr(port, 0);
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2206,6 +2206,7 @@ static void iavf_reset_task(struct work_
+ 			reg_val);
+ 		iavf_disable_vf(adapter);
+ 		mutex_unlock(&adapter->client_lock);
++		mutex_unlock(&adapter->crit_lock);
+ 		return; /* Do not attempt to reinit. It's dead, Jim. */
  	}
  
- 	pcie->nports = i;
--- 
-2.34.1
-
 
 
