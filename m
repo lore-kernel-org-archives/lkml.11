@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BCFC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E2EC46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237950AbiCGJhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:37:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S238516AbiCGJib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:38:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238746AbiCGJ3j (ORCPT
+        with ESMTP id S237179AbiCGJas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:29:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C9B5C36F;
-        Mon,  7 Mar 2022 01:28:05 -0800 (PST)
+        Mon, 7 Mar 2022 04:30:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF0966AE6;
+        Mon,  7 Mar 2022 01:29:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1FDE61119;
-        Mon,  7 Mar 2022 09:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B65C340E9;
-        Mon,  7 Mar 2022 09:28:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8749DB810C2;
+        Mon,  7 Mar 2022 09:29:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDDA9C340F5;
+        Mon,  7 Mar 2022 09:29:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645284;
-        bh=75ZY1WfUHU2Io4whiLfTwywajK/W9695AyieS52ILww=;
+        s=korg; t=1646645355;
+        bh=1nCylEt4xZXRVmiyGcL+zvkEjpc+jznFvRBMGSf+VeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wr/eSdJqjxO+p1bXBS/xxRuQT03g9eiTWGvFizNkIil6K+x+6h7kwce1NbHazGGqx
-         Sjsi1sn3hS394o381kHCscyQ2/Y8fvt/Dkzf3v8P8+cTOUdzM7nSkqAyeBSaoWukRB
-         1UO16rgC6/71PJy52oANduXuWmpGyzUID8FGdzQw=
+        b=zwkxfi7UGGdXetEiwyhIa6YQXi2Kxl3ChR2K0Lp7Zwne4bOzHjNXEhUAIX7EmlDwO
+         COKLJtylRdvXchROKGV1f6uLoWKfXAMBPkPOCLZUomX4Et/EWuZDK8aOzy14jkpXrY
+         5+FF8Fsa8KQF8fjmOlykWVo6ix+yPDldxc2XVRgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.4 44/64] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
-Date:   Mon,  7 Mar 2022 10:19:17 +0100
-Message-Id: <20220307091640.402267811@linuxfoundation.org>
+        stable@vger.kernel.org, William Mahon <wmahon@chromium.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.4 56/64] HID: add mapping for KEY_DICTATE
+Date:   Mon,  7 Mar 2022 10:19:29 +0100
+Message-Id: <20220307091640.740099277@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091639.136830784@linuxfoundation.org>
 References: <20220307091639.136830784@linuxfoundation.org>
@@ -49,67 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: William Mahon <wmahon@chromium.org>
 
-commit b5fbaf7d779f5f02b7f75b080e7707222573be2a upstream.
+commit bfa26ba343c727e055223be04e08f2ebdd43c293 upstream.
 
-Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-switched the platform to SPDIF, but we didn't fix up the device tree.
+Numerous keyboards are adding dictate keys which allows for text
+messages to be dictated by a microphone.
 
-Drop the pinctrl settings, because the 'spdif_bus' pins are either:
- * unused (on kevin, bob), so the settings is ~harmless
- * used by a different function (on scarlet), which causes probe
-   failures (!!)
+This patch adds a new key definition KEY_DICTATE and maps 0x0c/0x0d8
+usage code to this new keycode. Additionally hid-debug is adjusted to
+recognize this new usage code as well.
 
-Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Link: https://lore.kernel.org/r/20220114150129.v2.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: William Mahon <wmahon@chromium.org>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20220303021501.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi |   17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/hid/hid-debug.c                |    1 +
+ drivers/hid/hid-input.c                |    1 +
+ include/uapi/linux/input-event-codes.h |    1 +
+ 3 files changed, 3 insertions(+)
 
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-@@ -281,7 +281,7 @@
+--- a/drivers/hid/hid-debug.c
++++ b/drivers/hid/hid-debug.c
+@@ -930,6 +930,7 @@ static const char *keys[KEY_MAX + 1] = {
+ 	[KEY_SCREENSAVER] = "ScreenSaver",
+ 	[KEY_VOICECOMMAND] = "VoiceCommand",
+ 	[KEY_EMOJI_PICKER] = "EmojiPicker",
++	[KEY_DICTATE] = "Dictate",
+ 	[KEY_BRIGHTNESS_MIN] = "BrightnessMin",
+ 	[KEY_BRIGHTNESS_MAX] = "BrightnessMax",
+ 	[KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -956,6 +956,7 @@ static void hidinput_configure_usage(str
+ 		case 0x0cd: map_key_clear(KEY_PLAYPAUSE);	break;
+ 		case 0x0cf: map_key_clear(KEY_VOICECOMMAND);	break;
  
- 	sound: sound {
- 		compatible = "rockchip,rk3399-gru-sound";
--		rockchip,cpu = <&i2s0 &i2s2>;
-+		rockchip,cpu = <&i2s0 &spdif>;
- 	};
- };
++		case 0x0d8: map_key_clear(KEY_DICTATE);		break;
+ 		case 0x0d9: map_key_clear(KEY_EMOJI_PICKER);	break;
  
-@@ -432,10 +432,6 @@ ap_i2c_audio: &i2c8 {
- 	status = "okay";
- };
+ 		case 0x0e0: map_abs_clear(ABS_VOLUME);		break;
+--- a/include/uapi/linux/input-event-codes.h
++++ b/include/uapi/linux/input-event-codes.h
+@@ -608,6 +608,7 @@
+ #define KEY_ASSISTANT		0x247	/* AL Context-aware desktop assistant */
+ #define KEY_KBD_LAYOUT_NEXT	0x248	/* AC Next Keyboard Layout Select */
+ #define KEY_EMOJI_PICKER	0x249	/* Show/hide emoji picker (HUTRR101) */
++#define KEY_DICTATE		0x24a	/* Start or Stop Voice Dictation Session (HUTRR99) */
  
--&i2s2 {
--	status = "okay";
--};
--
- &io_domains {
- 	status = "okay";
- 
-@@ -532,6 +528,17 @@ ap_i2c_audio: &i2c8 {
- 	vqmmc-supply = <&ppvar_sd_card_io>;
- };
- 
-+&spdif {
-+	status = "okay";
-+
-+	/*
-+	 * SPDIF is routed internally to DP; we either don't use these pins, or
-+	 * mux them to something else.
-+	 */
-+	/delete-property/ pinctrl-0;
-+	/delete-property/ pinctrl-names;
-+};
-+
- &spi1 {
- 	status = "okay";
- 
+ #define KEY_BRIGHTNESS_MIN		0x250	/* Set Brightness to Minimum */
+ #define KEY_BRIGHTNESS_MAX		0x251	/* Set Brightness to Maximum */
 
 
