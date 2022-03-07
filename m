@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5095C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239396AbiCGKek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50406 "EHLO
+        id S239529AbiCGKeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:34:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242729AbiCGKLu (ORCPT
+        with ESMTP id S242687AbiCGKLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:11:50 -0500
+        Mon, 7 Mar 2022 05:11:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8252E77A9D;
-        Mon,  7 Mar 2022 01:55:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C4D8BF45;
+        Mon,  7 Mar 2022 01:55:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6581660E88;
-        Mon,  7 Mar 2022 09:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76568C340F3;
-        Mon,  7 Mar 2022 09:55:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73E3360C6F;
+        Mon,  7 Mar 2022 09:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7328EC340E9;
+        Mon,  7 Mar 2022 09:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646946;
-        bh=GfPXcg5jHccKntDEWNH0wepVlina7+j0X/yRTDyoBJU=;
+        s=korg; t=1646646940;
+        bh=KrTFHDpNYz0Hi1piL5IXO5zTjCF0l7e7t4xnvie0lic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pZA8FKzn40tHG4BCWqvky9P2aoc8KyGFsA43qyr16NMMYu0VStXevcusygVBpsbu5
-         +8KABRMEH+/nIsHct+WqGQANMmBbGzWbT9ck063Lajp99Jv10zwwQFEclk7puQfSiW
-         kWDIzHPDYVW0NB8A2ZuHAQ45tEe8xzz9R3aUQlEM=
+        b=F5wI6ZrrDtud11bKk6Zxmmxb9lNHNi9WP5mfakXXEnIj5enIApGL6AH3NqlTwmjZQ
+         oYSee1PseEPE6hWQ6EQrYYjofLd5SRjX2cbH6rm65aJcR5l/XBO5YjQx2GTV6dDmGD
+         8BOe9LpwdFhFgkn3xVKg0+IGc2cS8aYnVExtxErU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 142/186] ibmvnic: complete init_done on transport events
-Date:   Mon,  7 Mar 2022 10:19:40 +0100
-Message-Id: <20220307091658.047570817@linuxfoundation.org>
+Subject: [PATCH 5.16 140/186] ibmvnic: initialize rc before completing wait
+Date:   Mon,  7 Mar 2022 10:19:38 +0100
+Message-Id: <20220307091657.992591568@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,38 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-[ Upstream commit 36491f2df9ad2501e5a4ec25d3d95d72bafd2781 ]
+[ Upstream commit 765559b10ce514eb1576595834f23cdc92125fee ]
 
-If we get a transport event, set the error and mark the init as
-complete so the attempt to send crq-init or login fail sooner
-rather than wait for the timeout.
+We should initialize ->init_done_rc before calling complete(). Otherwise
+the waiting thread may see ->init_done_rc as 0 before we have updated it
+and may assume that the CRQ was successful.
 
-Fixes: bbd669a868bb ("ibmvnic: Fix completion structure initialization")
+Fixes: 6b278c0cb378 ("ibmvnic delay complete()")
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 5c8264e3979a..16e772f80ec5 100644
+index 996da870dafe..945a84c2134f 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5352,6 +5352,13 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
- 			adapter->fw_done_rc = -EIO;
- 			complete(&adapter->fw_done);
- 		}
-+
-+		/* if we got here during crq-init, retry crq-init */
-+		if (!completion_done(&adapter->init_done)) {
-+			adapter->init_done_rc = -EAGAIN;
-+			complete(&adapter->init_done);
-+		}
-+
- 		if (!completion_done(&adapter->stats_done))
- 			complete(&adapter->stats_done);
- 		if (test_bit(0, &adapter->resetting))
+@@ -5319,9 +5319,9 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
+ 			}
+ 
+ 			if (!completion_done(&adapter->init_done)) {
+-				complete(&adapter->init_done);
+ 				if (!adapter->init_done_rc)
+ 					adapter->init_done_rc = -EAGAIN;
++				complete(&adapter->init_done);
+ 			}
+ 
+ 			break;
 -- 
 2.34.1
 
