@@ -2,108 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39743C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 13:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbiCGNRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 08:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
+        id S242798AbiCGNSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 08:18:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241581AbiCGNRW (ORCPT
+        with ESMTP id S236361AbiCGNSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 08:17:22 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBCD8BF46;
-        Mon,  7 Mar 2022 05:16:25 -0800 (PST)
-Received: from mail-wm1-f54.google.com ([209.85.128.54]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mlf8e-1nrEZB2dTG-00iih2; Mon, 07 Mar 2022 14:16:23 +0100
-Received: by mail-wm1-f54.google.com with SMTP id bi14-20020a05600c3d8e00b00386f2897400so5559291wmb.5;
-        Mon, 07 Mar 2022 05:16:23 -0800 (PST)
-X-Gm-Message-State: AOAM530Z21qC5OU6RfI9f7s+aOzJUCNxoQ+zVqSZ7JFRXBBxbhqP3wr9
-        cgD37uURIsN7wXV01A8jPzgrpMtqNWvK4t7v2lo=
-X-Google-Smtp-Source: ABdhPJysabRPmKcRrE/Kx/6xr0pdCTUYYBYzw9UdGhnsD750vY5MOm+A6ymUb8srsaOas8KbFQonhsx1JUb8yl80qaQ=
-X-Received: by 2002:a1c:7919:0:b0:389:79c5:fe83 with SMTP id
- l25-20020a1c7919000000b0038979c5fe83mr10387102wme.173.1646658983039; Mon, 07
- Mar 2022 05:16:23 -0800 (PST)
+        Mon, 7 Mar 2022 08:18:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9486A2649;
+        Mon,  7 Mar 2022 05:17:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25CA3611FE;
+        Mon,  7 Mar 2022 13:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09884C340E9;
+        Mon,  7 Mar 2022 13:17:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646659055;
+        bh=KXqVJsDGXLlSnyeaHKWpPIVZqxg9O3xVmH+wFrsgfeg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hCpGcO8HZcqQApVVZm6OEvQrrIR4vyEHePNnzVROHw1K1NkFuEfNdTu1I59Pj136m
+         4rX6fL04mPPpcVfgqfegolGRx6CRsxOiRqFeONVkYWTB6X9EcC5pWRk7rEUGXwdqU6
+         OvEMg+WzhEBC6xQTzvpMuPW0Z7aAedCqClhox8xbo/mIon3gdW3d/6JNZjCYFLY4FS
+         10pjlBodTW1xrm6ejzkguCe+Ekh4JJCoJJ2mSCIq0lgnb+KYirBLVYOdxv5JfFOaTJ
+         0Fzo4KQ6CulRfULGVd4l8OZP4WX94xCRchBbHGrVpM8g8sXszWhkjT9Jfz9c+lUM6v
+         8PJS0P6GeVloQ==
+Date:   Mon, 7 Mar 2022 15:16:54 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mm@kvack.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-sgx@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Thomas =?iso-8859-1?Q?Hellstr=F6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        zhangyiru <zhangyiru3@huawei.com>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        Alexey Gladkov <legion@kernel.org>, linux-mips@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        codalist@coda.cs.cmu.edu, linux-unionfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH RFC 1/3] mm: Add f_ops->populate()
+Message-ID: <YiYFxq87p2WVkZcz@iki.fi>
+References: <20220306053211.135762-1-jarkko@kernel.org>
+ <20220306053211.135762-2-jarkko@kernel.org>
+ <YiSGgCV9u9NglYsM@kroah.com>
+ <YiTpQTM+V6rlDy6G@iki.fi>
+ <YiU5E6qqYAI+WPw9@casper.infradead.org>
 MIME-Version: 1.0
-References: <20211224041352.29405-1-quan@os.amperecomputing.com>
- <20211224041352.29405-9-quan@os.amperecomputing.com> <51603aa7-4113-dba4-9a38-0a6683a1d249@os.amperecomputing.com>
-In-Reply-To: <51603aa7-4113-dba4-9a38-0a6683a1d249@os.amperecomputing.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 7 Mar 2022 14:16:06 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1Fw5cdxtr3LeG=tNbrTRbseXP+fDzfr-2B+LqbShA99w@mail.gmail.com>
-Message-ID: <CAK8P3a1Fw5cdxtr3LeG=tNbrTRbseXP+fDzfr-2B+LqbShA99w@mail.gmail.com>
-Subject: Re: [PATCH v6 8/9] misc: smpro-misc: Add Ampere's Altra SMpro misc driver
-To:     Quan Nguyen <quan@os.amperecomputing.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Pz4zb/GLH1qI19x07wJW5N9i+PPZOvCU5axiU12F9XtpS19weck
- b0y5o9IF0eONu5cHJidiJhMBWqr3WbNHA8PvsH3rm8nBhRQb0mwzrvuqLHIowVzMvBV1dC9
- HL2OLK1WTgbZfKKsMlQhT55g72fc8M9YnEivajODS3VI1wQ3A1FL/z40siURtQQAvqJKPld
- hDf1WyCO7IFrR2oQpKbhw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nwmwTtx+NwI=:PjFNEcviuydLjHqeumDBlC
- 8egcuNZTMxwVo1ZZRfu+27KDFfRydZjRnpkgsE7+kcMPu1mYSevWbTykn+cEvcdfzuqMu51RH
- csOWZpl2wZm/0OQFvzLDv+VIxZtt5/mur+OG0+atJQvX8mYTT6OuOVA5++Zj2E2B0e2cOmSSg
- aommICQ6awRLTfKyKnz+Z6k1CubhBiP+w48BNNzKSbBv00dIFgSLADvqvRM2JEOc2pnvKI/03
- m2z6wO1o1n64u6IuSYky/TCWWwfqE4fvWKSBdfN2jNPrSyMtgcPUIaXmLQn8827H5QU3o6fa/
- ZvhaTBn5VjtFOH7Ib1uF5NWmh0luaeJNdVw0x7idg5895WzYXZ2Cqc/GLu7ow1LVuYzCKTTHO
- gZXRGEIf9QkpAscFzLPt9obplKDsSv4WKzaP6lckufct9sR1lQI81opH9kg61k+qAhPD4XP0x
- X9e3w/dWj26pSKFLAcuam1UNPl8KlTYQqN25yaQQOs9vNJlHBezIKQGAq9Np+3nQQqNTbFzD/
- TbQrG/Vt/7A/j9VSm8uv5ZWI0nnocpwQkWltCxeQuZXLfFa4KhvG45rjwFq9vIFKB+8n46KZQ
- PRfKZ1SR2eFUOQCieNO0Gaa/h+WfaXXLqssM9E8/Hj3FT4YIiYLPxfreHUk87G4TuyqJr1ZT1
- nFxEeqNXKkOhNz1cNR/0sf8ljlImJnVRWpWqrZnyc67/MzTn9t8mhj92EN5f+lgEI/eXUVHH8
- jOouD+jzcEa+2gwbsLiHWT3LvHfjgkui9RiNVaRQQ2QwjEZJHVdjaOYjR0ksmaE+s4XNYtOPf
- LM7uM4WRpZXpHr7BRcIUq/Khemir+0jut0HCEhqZgEJHE89ysE=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiU5E6qqYAI+WPw9@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 9:32 AM Quan Nguyen <quan@os.amperecomputing.com> wrote:
-> > diff --git a/drivers/mfd/smpro-mfd.c b/drivers/mfd/smpro-mfd.c
-> > index a7cd64bf9eaa..5611dd30f8f4 100644
-> > --- a/drivers/mfd/smpro-mfd.c
-> > +++ b/drivers/mfd/smpro-mfd.c
-> > @@ -28,6 +28,7 @@ static const struct regmap_config simple_word_regmap_config = {
-> >   static const struct mfd_cell smpro_devs[] = {
-> >       MFD_CELL_NAME("smpro-hwmon"),
-> >       MFD_CELL_NAME("smpro-errmon"),
-> > +     MFD_CELL_NAME("smpro-misc"),
->
-> [Lee Jones]
-> Misc is a Linuxisum which are not allowed in DT.
->
-> What does this driver actually do?
->
-> [Quan]
-> This drivers is to report the boot progress to BMC and allow BMC to
-> configure the Soc Power Limit of Ampere's Altra family processor.
+On Sun, Mar 06, 2022 at 10:43:31PM +0000, Matthew Wilcox wrote:
+> On Sun, Mar 06, 2022 at 07:02:57PM +0200, Jarkko Sakkinen wrote:
+> > So can I conclude from this that in general having populate available for
+> > device memory is something horrid, or just the implementation path?
+> 
+> You haven't even attempted to explain what the problem is you're trying
+> to solve.  You've shown up with some terrible code and said "Hey, is
+> this a good idea".  No, no, it's not.
 
-That doesn't sound like it should be platform specific at all, but rather
-a generic BMC interface. I see you already have the openbmc list on Cc,
-so I assume the right people can see this. Presumably this is a BMC that
-already runs on openbmc and can have a platform-independent interface
-for doing this.
+The problem is that in order to include memory to enclave, which is
+essentially a reserved address range processes virtual address space
+there's two steps into it:
 
-        Arnd
+1. Host side (kernel) does ENCLS[EAUG] to request a new page to be
+   added to the enclave.
+2. Enclave accepts request with ENCLU[EACCEPT] or ENCLU[EACCEPTCOPY].
+
+In the current SGX2 patch set this taken care by the page fault
+handler. I.e. the enclave calls ENCLU[EACCEPT] for an empty address
+and the #PF handler then does EAUG for a single page.
+
+So if you want to process a batch of pages this generates O(n)
+round-trips.
+
+So if there was a way pre-do a batch of EAUG's, that would allow
+to load data to the enclave without causing page faults happening
+constantly.
+
+One solution for this simply add ioctl:
+
+https://lore.kernel.org/linux-sgx/YiLRBglTEbu8cHP9@iki.fi/T/#m195ec84bf85614a140abeee245c5118c22ace8f3
+
+But in practice when you wanted to use it, you would setup the
+parameters so that they match the mmap() range. So for pratical
+user space API having mmap() take care of this would be much more
+lean option.
+
+BR, Jarkko
