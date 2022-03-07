@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E500C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B25EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232246AbiCGJ4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:56:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S238554AbiCGJ4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238334AbiCGJiR (ORCPT
+        with ESMTP id S238697AbiCGJim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:38:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B972AE4E;
-        Mon,  7 Mar 2022 01:32:29 -0800 (PST)
+        Mon, 7 Mar 2022 04:38:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73C54EA2E;
+        Mon,  7 Mar 2022 01:33:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A63261225;
-        Mon,  7 Mar 2022 09:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F31DC340E9;
-        Mon,  7 Mar 2022 09:31:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5884DB810BD;
+        Mon,  7 Mar 2022 09:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD981C340F3;
+        Mon,  7 Mar 2022 09:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645505;
-        bh=XDc477/3beWxxSmCW2K4WGCl4Y/J3tDQ9d+epshTneI=;
+        s=korg; t=1646645591;
+        bh=J2IJqSVavxlY4rZ2bGBmDCSa/4rvdwBbNFQjq4mtJSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gH8V8gf91saaT6YLF59aTh1LsNAN+Zz7jX0o9XxdCR6788evzcXJyzOWdqzVoSXIn
-         Ro639+qdtVmbeNhEEkRr9hduqlscjXWeWNsysrd7ZqRly2pXNC4z4Lsq1nrRMBFbc/
-         SM2h4ce9FEy4Ahg5/AzrO56EL35V8eB8ov+W+Je8=
+        b=lv0OaVKHVfIlA36qOfonnVquY0AHXY8RaJaKMhybJQSONoIopEBjpGqPn0qmMCPHM
+         EHbGnk/+LxKQLjkXhdqbLfnaZ1SuiS02EKAD+hCH+4a5+p/8aKe5bPdDWbnQPlVPpr
+         Fan/RBpswdVp8LJDTHMIhIhb7NxxhMfuFh8zom2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Wythe" <alibuda@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 051/105] net/smc: fix connection leak
-Date:   Mon,  7 Mar 2022 10:18:54 +0100
-Message-Id: <20220307091645.619198431@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Leoshkevich <iii@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.10 081/105] s390/extable: fix exception table sorting
+Date:   Mon,  7 Mar 2022 10:19:24 +0100
+Message-Id: <20220307091646.456727351@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
 References: <20220307091644.179885033@linuxfoundation.org>
@@ -49,85 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: D. Wythe <alibuda@linux.alibaba.com>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-commit 9f1c50cf39167ff71dc5953a3234f3f6eeb8fcb5 upstream.
+commit c194dad21025dfd043210912653baab823bdff67 upstream.
 
-There's a potential leak issue under following execution sequence :
+s390 has a swap_ex_entry_fixup function, however it is not being used
+since common code expects a swap_ex_entry_fixup define. If it is not
+defined the default implementation will be used. So fix this by adding
+a proper define.
+However also the implementation of the function must be fixed, since a
+NULL value for handler has a special meaning and must not be adjusted.
 
-smc_release  				smc_connect_work
-if (sk->sk_state == SMC_INIT)
-					send_clc_confirim
-	tcp_abort();
-					...
-					sk.sk_state = SMC_ACTIVE
-smc_close_active
-switch(sk->sk_state) {
-...
-case SMC_ACTIVE:
-	smc_close_final()
-	// then wait peer closed
+Luckily all of this doesn't fix a real bug currently: the main extable
+is correctly sorted during build time, and for runtime sorting there
+is currently no case where the handler field is not NULL.
 
-Unfortunately, tcp_abort() may discard CLC CONFIRM messages that are
-still in the tcp send buffer, in which case our connection token cannot
-be delivered to the server side, which means that we cannot get a
-passive close message at all. Therefore, it is impossible for the to be
-disconnected at all.
-
-This patch tries a very simple way to avoid this issue, once the state
-has changed to SMC_ACTIVE after tcp_abort(), we can actively abort the
-smc connection, considering that the state is SMC_INIT before
-tcp_abort(), abandoning the complete disconnection process should not
-cause too much problem.
-
-In fact, this problem may exist as long as the CLC CONFIRM message is
-not received by the server. Whether a timer should be added after
-smc_close_final() needs to be discussed in the future. But even so, this
-patch provides a faster release for connection in above case, it should
-also be valuable.
-
-Fixes: 39f41f367b08 ("net/smc: common release code for non-accepted sockets")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 05a68e892e89 ("s390/kernel: expand exception table logic to allow new handling options")
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/af_smc.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/s390/include/asm/extable.h |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -180,7 +180,7 @@ static int smc_release(struct socket *so
+--- a/arch/s390/include/asm/extable.h
++++ b/arch/s390/include/asm/extable.h
+@@ -69,8 +69,13 @@ static inline void swap_ex_entry_fixup(s
  {
- 	struct sock *sk = sock->sk;
- 	struct smc_sock *smc;
--	int rc = 0;
-+	int old_state, rc = 0;
+ 	a->fixup = b->fixup + delta;
+ 	b->fixup = tmp.fixup - delta;
+-	a->handler = b->handler + delta;
+-	b->handler = tmp.handler - delta;
++	a->handler = b->handler;
++	if (a->handler)
++		a->handler += delta;
++	b->handler = tmp.handler;
++	if (b->handler)
++		b->handler -= delta;
+ }
++#define swap_ex_entry_fixup swap_ex_entry_fixup
  
- 	if (!sk)
- 		goto out;
-@@ -188,8 +188,10 @@ static int smc_release(struct socket *so
- 	sock_hold(sk); /* sock_put below */
- 	smc = smc_sk(sk);
- 
-+	old_state = sk->sk_state;
-+
- 	/* cleanup for a dangling non-blocking connect */
--	if (smc->connect_nonblock && sk->sk_state == SMC_INIT)
-+	if (smc->connect_nonblock && old_state == SMC_INIT)
- 		tcp_abort(smc->clcsock->sk, ECONNABORTED);
- 
- 	if (cancel_work_sync(&smc->connect_work))
-@@ -203,6 +205,10 @@ static int smc_release(struct socket *so
- 	else
- 		lock_sock(sk);
- 
-+	if (old_state == SMC_INIT && sk->sk_state == SMC_ACTIVE &&
-+	    !smc->use_fallback)
-+		smc_close_active_abort(smc);
-+
- 	rc = __smc_release(smc);
- 
- 	/* detach socket */
+ #endif
 
 
