@@ -2,97 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5735C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236430AbiCGJVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
+        id S236438AbiCGJVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:21:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236431AbiCGJUs (ORCPT
+        with ESMTP id S236434AbiCGJUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:20:48 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A5150E34
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:19:36 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id u1so22097307wrg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 01:19:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=9VDgvD8hgLbmfBQ2zpnnO+0UA2G5Bd0GMuXy+xL9DLE=;
-        b=kxG0AOY86sXrBpEmaWKRdNzoBJU4gaafM8rFPgSWHPyRTNLmVo+9jqlR0OBm3LSYuA
-         7l/JZsRbjwASKTUnAfyQeaXOG9tzCngV3yudjo/GsrY1xkU9s/rxr2yxyZ8S+JMd/Yu1
-         0YMZYkAK5T1B5MHGnm4VBYr9w1Ad1joSwJTwxwo3XUj9I9oMQm52RYEen6Bb1JF45cRb
-         AOPhwCzf4n4tKvPHW3p2dv5M/iVGJkAd2tb0JKB7BbP0Dt75+i5FD4httw+5IqpVXpex
-         PhlpxKkUwFFmXMRA/dyE4KSa+wLCg3Oa9igrp9+vGqummjizOvn3H7y30pcYcI53KZud
-         1ldg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=9VDgvD8hgLbmfBQ2zpnnO+0UA2G5Bd0GMuXy+xL9DLE=;
-        b=DabTFubKuwatqFzydA1io73DiEIkHUxHUg6sS18cS+6lXhJxFstGeqR9z/zCnL+Pj2
-         mg4Rtzcbt31VBPNSGDkbI4/ERqNwKGfDzBPaOYEU+PCu6RgA+KNaLU1Fcv84K+5N76oW
-         yVL4n1yF/A9tY5V3OW+28wyvJ5R6GjPVcm5XX0FH7ogdqORyVb0cBYmv5vqeBUKkszck
-         7IvcdU3W+aivR3uMrjArkgEo/bxOedjoYnSPmJ93SNYmYZ1337+Ecqn1ddQ68tOrvf4L
-         LHMLrKLOSDHMaPnuguqTAQ4xJ6lm2e+Ro9sHiJv26n/5YLwTbiTShKCCJ1R5mbksly7z
-         SOPw==
-X-Gm-Message-State: AOAM530taH3UNRQM/EOOHYjxpPjLSBu/BfJIEgYS021pRyRRtgdRAVLl
-        7j5irVwprd4oMd7G67SJbZ3XKQ==
-X-Google-Smtp-Source: ABdhPJw+ypTz3r2S5HKUX8p6+AeQ61RLKFg/YGgOcFB4jHbUfNirM8akMekPBR4Uvi6ybhQjjP+KKw==
-X-Received: by 2002:a5d:6f15:0:b0:1f1:f305:df0d with SMTP id ay21-20020a5d6f15000000b001f1f305df0dmr3756472wrb.504.1646644775533;
-        Mon, 07 Mar 2022 01:19:35 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id n5-20020a5d5985000000b001f0122f63e1sm5431000wri.85.2022.03.07.01.19.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 01:19:35 -0800 (PST)
-Date:   Mon, 7 Mar 2022 09:19:32 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/3] dt-bindings: mfd: maxim,max77802: convert to
- dtschema
-Message-ID: <YiXOJMUz9fmuK7pT@google.com>
-References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
- <20220111175430.224421-3-krzysztof.kozlowski@canonical.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604505133B;
+        Mon,  7 Mar 2022 01:19:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDE7B6101F;
+        Mon,  7 Mar 2022 09:19:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F12D3C340E9;
+        Mon,  7 Mar 2022 09:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646644777;
+        bh=vCgL2hV3nGo0goigmoCYE77tBg14/GA4u2bI+Jja/Yg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FGcaJGVVagRPThdo5Nqbmw29XQF5tS/YU+Uc5wFfECrPadrjKI5bJVaPaARMffiqz
+         S+o9SJsnT8d7WJOwVatBA+L54vM54/FYUibMPGW0J4R9UKZQzQSiifxRpQtjKEAbXU
+         /fCNDyGi7CeCrG0NcXzxLh+YhVD6HveX5kcgPibU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Remi Pommarel <repk@triplefau.lt>,
+        Nicolas Escande <nico.escande@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.9 19/32] mac80211: fix forwarded mesh frames AC & queue selection
+Date:   Mon,  7 Mar 2022 10:18:45 +0100
+Message-Id: <20220307091634.985087061@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
+References: <20220307091634.434478485@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220111175430.224421-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022, Krzysztof Kozlowski wrote:
+From: Nicolas Escande <nico.escande@gmail.com>
 
-> Convert the MFD part of Maxim MAX77802 PMIC to DT schema format.  The
-> example DTS was copied from existing DTS (exynos5800-peach-pi.dts), so
-> keep the license as GPL-2.0-only.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/mfd/max77802.txt      |  25 ---
->  .../bindings/mfd/maxim,max77802.yaml          | 194 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 195 insertions(+), 26 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/max77802.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77802.yaml
+commit 859ae7018316daa4adbc496012dcbbb458d7e510 upstream.
 
-Applied, thanks.
+There are two problems with the current code that have been highlighted
+with the AQL feature that is now enbaled by default.
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+First problem is in ieee80211_rx_h_mesh_fwding(),
+ieee80211_select_queue_80211() is used on received packets to choose
+the sending AC queue of the forwarding packet although this function
+should only be called on TX packet (it uses ieee80211_tx_info).
+This ends with forwarded mesh packets been sent on unrelated random AC
+queue. To fix that, AC queue can directly be infered from skb->priority
+which has been extracted from QOS info (see ieee80211_parse_qos()).
+
+Second problem is the value of queue_mapping set on forwarded mesh
+frames via skb_set_queue_mapping() is not the AC of the packet but a
+hardware queue index. This may or may not work depending on AC to HW
+queue mapping which is driver specific.
+
+Both of these issues lead to improper AC selection while forwarding
+mesh packets but more importantly due to improper airtime accounting
+(which is done on a per STA, per AC basis) caused traffic stall with
+the introduction of AQL.
+
+Fixes: cf44012810cc ("mac80211: fix unnecessary frame drops in mesh fwding")
+Fixes: d3c1597b8d1b ("mac80211: fix forwarded mesh frame queue mapping")
+Co-developed-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Signed-off-by: Nicolas Escande <nico.escande@gmail.com>
+Link: https://lore.kernel.org/r/20220214173214.368862-1-nico.escande@gmail.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/mac80211/rx.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2607,13 +2607,13 @@ ieee80211_rx_h_mesh_fwding(struct ieee80
+ 	    ether_addr_equal(sdata->vif.addr, hdr->addr3))
+ 		return RX_CONTINUE;
+ 
+-	ac = ieee80211_select_queue_80211(sdata, skb, hdr);
++	ac = ieee802_1d_to_ac[skb->priority];
+ 	q = sdata->vif.hw_queue[ac];
+ 	if (ieee80211_queue_stopped(&local->hw, q)) {
+ 		IEEE80211_IFSTA_MESH_CTR_INC(ifmsh, dropped_frames_congestion);
+ 		return RX_DROP_MONITOR;
+ 	}
+-	skb_set_queue_mapping(skb, q);
++	skb_set_queue_mapping(skb, ac);
+ 
+ 	if (!--mesh_hdr->ttl) {
+ 		if (!is_multicast_ether_addr(hdr->addr1))
+
+
