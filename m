@@ -2,108 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235382AbiCGLLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:11:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
+        id S237111AbiCGLLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:11:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241895AbiCGLKf (ORCPT
+        with ESMTP id S237782AbiCGLK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:10:35 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7EA5373E;
-        Mon,  7 Mar 2022 02:32:49 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 75C481F43920
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646649168;
-        bh=PesHG5E9XWbmSJlu7I167mK5yVdbSK02UCAMGo049pQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Dw5qXgQNfkLcKFLIdYteeaVz2PeRPjWRY/Y0R8CXAB/5hXopw9c+kg+ANQXd+iV9G
-         EPNAP9xDxiEPo2IEgk7Hi2tGGluboOOm/FZGeyxRkvhUcHnWn5AJZdlgxIuh1LkWdg
-         0fnXNz8PwHnQcqOuf+rDwI44j186+HSaz5B5Xvn6oW2kQ8Q4vnkhc844IAm45X04Gg
-         oCFPYxo7bmVWbXs20PUvlNfVn9/dp/FzCwK8biefNwLL83o2tX7lYGQto7YVIP+v95
-         HMslHNz0F4DIlgiRQpDT1jsoN2ayKflymDDDGdDRIRqMAwqnHmb2xMt2ZUjCJBeNVo
-         En4ZaIuBYE2qA==
-Message-ID: <b3950b6b-bfbe-da80-90cc-1a836958f931@collabora.com>
-Date:   Mon, 7 Mar 2022 11:32:44 +0100
+        Mon, 7 Mar 2022 06:10:56 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D945549E
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:33:04 -0800 (PST)
+Received: from epcas3p4.samsung.com (unknown [182.195.41.22])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220307103302epoutp01bb4f8678611f00199aada29685d44d00~aErUGbt2V1552315523epoutp01Z
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 10:33:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220307103302epoutp01bb4f8678611f00199aada29685d44d00~aErUGbt2V1552315523epoutp01Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646649182;
+        bh=fZlgU1nbX7F2XKQr2SixygYb5L+8CKc3dsNWy01m7+E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BwywJxE5cAHxdgkDe+Q7HVQB3HTd9zIxpyq8h6f53x65JUbhTut77M1ov6CMcfj1d
+         mMN5RlOhrayzcwXdEwcf2WFQ9i0GCNG6MUFxs/Aj6uSQVMXlCUjAriFCVCE1WsNG9Q
+         BmdhyFy9vROKkIIbwj5J0C2Xk/9ISQsqM33KFbA8=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas3p4.samsung.com (KnoxPortal) with ESMTP id
+        20220307103301epcas3p42a0d12ad0ab318c6b3df330fe90e526f~aErTh6_l22736127361epcas3p4A;
+        Mon,  7 Mar 2022 10:33:01 +0000 (GMT)
+Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp4.localdomain
+        (Postfix) with ESMTP id 4KBvtP5ltVz4x9Q6; Mon,  7 Mar 2022 10:33:01 +0000
+        (GMT)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220307102715epcas2p3dbe8b3cd5683daa900849e208bb6406e~aEmRUI9fZ3131931319epcas2p3F;
+        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220307102715epsmtrp2c799d1036d4f3796c5e0405e400d20b7~aEmRTIPQs3120831208epsmtrp2L;
+        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
+X-AuditID: b6c32a29-41fff700000074af-a4-6225de039ad9
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F1.32.29871.30ED5226; Mon,  7 Mar 2022 19:27:15 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220307102715epsmtip285bb1fbbb799031fc22ac7835679adae~aEmRFvutL1012810128epsmtip2Q;
+        Mon,  7 Mar 2022 10:27:15 +0000 (GMT)
+Date:   Mon, 7 Mar 2022 19:26:11 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>,
+        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
+        cpgs@samsung.com, cpgsproxy5@samsung.com
+Subject: Re: [PATCH v1 4/4] usb: host: add xhci-exynos module
+Message-ID: <1983025922.01646649181793.JavaMail.epsvc@epcpadp4>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH V3 2/7] dt-bindings: spi: Add compatible for MT7986 with
- single mode
-Content-Language: en-US
-To:     Leilk Liu <leilk.liu@mediatek.com>, Mark Brown <broonie@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, Rob Herring <robh@kernel.org>
-References: <20220307065230.12655-1-leilk.liu@mediatek.com>
- <20220307065230.12655-3-leilk.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220307065230.12655-3-leilk.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnkeLIzCtJLcpLzFFi42LZdlhJXpf5nmqSwabfuhYrDs9jtHh5SNNi
+        88MrbBZPjixit2hevJ7N4vqf94wW7c8vsFmcP7+B3eLyrjlsFouWtTJbNG+awmoxc62yxds7
+        01ksuu7eYHTg87jc18vksWBTqcfmFVoei/e8ZPLYtKqTzWP/3DXsHi0n97N49G1ZxejxeZNc
+        AGcUl01Kak5mWWqRvl0CV8auU7+ZCxpEK15uVG9g/CLQxcjJISFgInFnwxvGLkYuDiGB3YwS
+        19tesUEkJCWWzr3BDmELS9xvOcIKUfSIUWLTvOPMXYwcHCwCKhKTLpeB1LAJaEnc+3GCGcQW
+        EdCUuP73O1g9s8BzZonOG5eZQBLCArYSy46/BCviFdCR2HJ2NwvE0GYmib+dIBtAEoISJ2c+
+        YQGxmYGm3vj3kglkGbOAtMTyfxwgYU4BO4k9n5exgoRFgW54dbB+AqPgLCTNs5A0z0JoXsDI
+        vIpRMrWgODc9t9iwwDAvtVyvODG3uDQvXS85P3cTIzjOtDR3MG5f9UHvECMTB+MhRgkOZiUR
+        3vvnVZKEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoEk2Xi4JRqYBJb
+        3bFq4RQLzkjFsqZPT615ejvjrd4p77ydbNrtk6jc8SfVmq9BxlV4wq5/X1mzVEwjDpUw2Cdv
+        q/TSWpb++e6rpJznuo5FnhMcxcUtbUMrzzLJV+srKM3fFHDr8seKg3Xs/HwOhXenCKvXB52S
+        mHBvxu5fBgYxH6exCCfU9Z5L5pzlyyllur75rzD/ij9lBvP7jrzXTnAXEvrDl2E142u++P/5
+        Sa8ZdyzpqDKUbo7dHy9S1ii8jH+PddvxmY3s39Y8Vn19Kuj67ysGoQE2JqeXCEy7Es1mqfn+
+        6y2WuE//j74QZ3j5Nu9o5e6cB+cvbli5pO/U3kdMSc9/S39aeqvB79UWP44qleqnIWY7lViK
+        MxINtZiLihMBuSdceyIDAAA=
+X-CMS-MailID: 20220307102715epcas2p3dbe8b3cd5683daa900849e208bb6406e
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-Hop-Count: 3
+X-CMS-RootMailID: 20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb
+References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
+        <CGME20220304062618epcas2p2e3c73b5c4ed0c9bc0ca0c02aa658d3fb@epcas2p2.samsung.com>
+        <1027007693.21646375582736.JavaMail.epsvc@epcpadp4>
+        <32e72657-a43d-0ae1-1bf2-d15b7426765f@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 07/03/22 07:52, Leilk Liu ha scritto:
-> This patch adds dt-binding documentation for MT7986 with single mode.
+------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+
+On Mon, Mar 07, 2022 at 11:07:04AM +0100, Krzysztof Kozlowski wrote:
+> On 04/03/2022 07:23, Daehwan Jung wrote:
+> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 > 
-> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->   Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml | 1 +
->   1 file changed, 1 insertion(+)
+> +Cc Randy,
+> I guess here is the rest of the patches.
 > 
-> diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-> index bfa44acb1bdd..48024b98408a 100644
-> --- a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-> +++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-> @@ -41,6 +41,7 @@ properties:
->                 - mediatek,mt8135-spi
->                 - mediatek,mt8173-spi
->                 - mediatek,mt8183-spi
-> +              - mediatek,mt7986-spi-single
->   
->     reg:
->       maxItems: 1
+> > ---
+> >  drivers/usb/host/xhci-exynos.c | 2025 ++++++++++++++++++++++++++++++++
+> >  drivers/usb/host/xhci-exynos.h |  150 +++
+> >  2 files changed, 2175 insertions(+)
+> >  create mode 100644 drivers/usb/host/xhci-exynos.c
+> >  create mode 100644 drivers/usb/host/xhci-exynos.h
+> > 
+> > diff --git a/drivers/usb/host/xhci-exynos.c b/drivers/usb/host/xhci-exynos.c
+> > new file mode 100644
+> > index 000000000000..3913c48d4b20
+> > --- /dev/null
+> > +++ b/drivers/usb/host/xhci-exynos.c
+> > @@ -0,0 +1,2025 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * xhci-exynos.c - xHCI host controller driver platform Bus Glue for Exynos.
+> > + *
+> > + * Copyright (C) 2022 Samsung Electronics Incorporated - http://www.samsung.com
+> > + * Author: Daehwan Jung <dh10.jung@samsung.com>
+> > + *
+> > + * A lot of code borrowed from the Linux xHCI driver.
+> 
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/dma-mapping.h>
+> > +#include <linux/module.h>
+> > +#include <linux/pci.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/usb/phy.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/phy/phy.h>
+> > +#include <linux/acpi.h>
+> > +#include <linux/usb/of.h>
+> > +#ifdef CONFIG_SND_EXYNOS_USB_AUDIO
+> 
+> This does not exist.
+> 
+> Please do not add dead code to Linux kernel.
+> 
+> > +#include "../../../sound/usb/exynos_usb_audio.h"
+> > +#include <linux/types.h>
+> > +#include "xhci-trace.h"
+> > +#endif
+> > +
+> > +#include "../core/hub.h"
+> > +#include "../core/phy.h"
+> > +#include "xhci.h"
+> > +#include "xhci-plat.h"
+> > +#include "xhci-mvebu.h"
+> > +#include "xhci-rcar.h"
+> > +#include "../dwc3/dwc3-exynos.h"
+> > +#include "../dwc3/exynos-otg.h"
+> 
+> No, how XHCI is related to dwc3? What if different block provides XHCI,
+> not DWC3?
+> 
+> > +#include "xhci-exynos.h"
+> > +#include <soc/samsung/exynos-cpupm.h>
+> 
+> This does not exist and does not even compile.
+> 
+> Please do not send code which does not compile... Also, just in case -
+> do not send code which compiles but does not work. :)
+> 
 
-I think that the best way to do this is to better organize the compatibles
-per-hardware, here... or the compatibles list will eventually grow out of
-control for little reason.
+Hi Krzysztof
 
-Since "IPM" is a new SPI controller IP, I would expect more and more MediaTek
-SoCs using it in the future, so here's my proposal:
+I'm sorry to confuse you. But, it's just for reference module to introduce
+new feature. That's why I just submitted source code and header without
+makefile. It's not going to compiled at all now.
 
-- Add a generic (const) compatible "mediatek,spi-ipm" to describe the hardware
-- Add an enumeration with "mediatek,mt7986-spi-ipm" as the only member, as to
-   prepare this binding for the future.
-- Single and quad mode can be expressed with generic SPI bindings!
+Best Regards,
+Jung Deahwan
 
-Specifically, you can express that with "spi-rx-bus-width" for SPI_RX_{....}
-and "spi-tx-bus-width" for SPI_TX_{....}, so you don't need different compatibles
-for "mediatek,mt7986-spi-single" and "mediatek,mt7896-spi-quad".
+> 
+> Best regards,
+> Krzysztof
+> 
 
-Fast example:
+------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_
+Content-Type: text/plain; charset="utf-8"
 
-spi@12345678 {
-     compatible = "mediatek,mt7986-spi-ipm", "mediatek,spi-ipm";
-     reg = <....>
-     /* Quad mode */
-     spi-rx-bus-width = <4>;
-     spi-tx-bus-width = <4>;
 
-     .... etc ....
-}
-
-Regards,
-Angelo
-
+------CUqsqxLmMDErsaokmqc0SEMtAD8UUZAtQ-YfwGBggeHIq32N=_19fca8_--
 
