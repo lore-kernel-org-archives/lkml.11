@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9C8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E8AC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238559AbiCGJwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        id S238603AbiCGJwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:52:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241011AbiCGJlp (ORCPT
+        with ESMTP id S241035AbiCGJlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:41:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810D46D393;
-        Mon,  7 Mar 2022 01:39:07 -0800 (PST)
+        Mon, 7 Mar 2022 04:41:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBB16D4F9;
+        Mon,  7 Mar 2022 01:39:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BCF6B810B2;
-        Mon,  7 Mar 2022 09:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8F9C340E9;
-        Mon,  7 Mar 2022 09:39:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E2D611D5;
+        Mon,  7 Mar 2022 09:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A01C340E9;
+        Mon,  7 Mar 2022 09:39:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645944;
-        bh=R8/1XpnUCRmWuxRq57W415mmpgzGhzNlkkynV5S82N0=;
+        s=korg; t=1646645966;
+        bh=PuPDInC1r/GLcY+Vi+sQObVdNBoB1cbEQ8SKVAlGUU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qgSkcnEPNH2k5aHF0wwmZwIftXBSAnjFUbvTvr0DjSEX7TvZrTQInTnKwdyTVvT/L
-         ZC+kqJqWTveqs3elVwe538HmuJi2EaFbDSA0jlepmbo4hriFojvWYFhmKUf2YDyYfA
-         +mcloMJ/iva1vHr712DHWAS6xmgqUXswhhnbD8ww=
+        b=nnZD1aCBBo4aEGUnDWd7ZfJ0djITBUMWgdOV+KNvyajLbhnyyM+uXQSffXBM69CKM
+         kHZcAZ2cwAJaBM16FvrJnn0eBgKIOyQtIFBvtwBLSVtlkgXZI8anUJFjFlSP8tDCAx
+         Zn5if8l+E8iAdZHuoGBsy8Kkk68Y5wG5HDtrd/tY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Paul <seanpaul@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/262] drm/atomic: Check new_crtc_state->active to determine if CRTC needs disable in self refresh mode
-Date:   Mon,  7 Mar 2022 10:17:07 +0100
-Message-Id: <20220307091704.827402975@linuxfoundation.org>
+        stable@vger.kernel.org, Wesley Sheng <wesley.sheng@microchip.com>,
+        Kelvin Cao <kelvin.cao@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 085/262] ntb_hw_switchtec: Fix bug with more than 32 partitions
+Date:   Mon,  7 Mar 2022 10:17:09 +0100
+Message-Id: <20220307091704.882023540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -55,55 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Wesley Sheng <wesley.sheng@microchip.com>
 
-[ Upstream commit 69e630016ef4e4a1745310c446f204dc6243e907 ]
+[ Upstream commit 7ff351c86b6b258f387502ab2c9b9d04f82c1c3d ]
 
-Actual hardware state of CRTC is controlled by the member 'active' in
-struct drm_crtc_state instead of the member 'enable', according to the
-kernel doc of the member 'enable'.  In fact, the drm client modeset
-and atomic helpers are using the member 'active' to do the control.
+Switchtec could support as mush as 48 partitions, but ffs & fls are
+for 32 bit argument, in case of partition index larger than 31, the
+current code could not parse the peer partition index correctly.
+Change to the 64 bit version __ffs64 & fls64 accordingly to fix this
+bug.
 
-Referencing the member 'enable' of new_crtc_state, the function
-crtc_needs_disable() may fail to reflect if CRTC needs disable in
-self refresh mode, e.g., when the framebuffer emulation will be blanked
-through the client modeset helper with the next commit, the member
-'enable' of new_crtc_state is still true while the member 'active' is
-false, hence the relevant potential encoder and bridges won't be disabled.
-
-So, let's check new_crtc_state->active to determine if CRTC needs disable
-in self refresh mode instead of new_crtc_state->enable.
-
-Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh mode in drivers")
-Cc: Sean Paul <seanpaul@chromium.org>
-Cc: Rob Clark <robdclark@chromium.org>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211230040626.646807-1-victor.liu@nxp.com
+Fixes: 3df54c870f52 ("ntb_hw_switchtec: Allow using Switchtec NTB in multi-partition setups")
+Signed-off-by: Wesley Sheng <wesley.sheng@microchip.com>
+Signed-off-by: Kelvin Cao <kelvin.cao@microchip.com>
+Signed-off-by: Jon Mason <jdmason@kudzu.us>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_atomic_helper.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ntb/hw/mscc/ntb_hw_switchtec.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
-index 2c0c6ec928200..ff2bc9a118011 100644
---- a/drivers/gpu/drm/drm_atomic_helper.c
-+++ b/drivers/gpu/drm/drm_atomic_helper.c
-@@ -1001,7 +1001,7 @@ crtc_needs_disable(struct drm_crtc_state *old_state,
- 	 * it's in self refresh mode and needs to be fully disabled.
- 	 */
- 	return old_state->active ||
--	       (old_state->self_refresh_active && !new_state->enable) ||
-+	       (old_state->self_refresh_active && !new_state->active) ||
- 	       new_state->self_refresh_active;
- }
+diff --git a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+index 6603c77c0a848..ec9cb6c81edae 100644
+--- a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
++++ b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+@@ -840,7 +840,6 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
+ 	u64 tpart_vec;
+ 	int self;
+ 	u64 part_map;
+-	int bit;
  
+ 	sndev->ntb.pdev = sndev->stdev->pdev;
+ 	sndev->ntb.topo = NTB_TOPO_SWITCH;
+@@ -861,29 +860,28 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
+ 	part_map = ioread64(&sndev->mmio_ntb->ep_map);
+ 	part_map &= ~(1 << sndev->self_partition);
+ 
+-	if (!ffs(tpart_vec)) {
++	if (!tpart_vec) {
+ 		if (sndev->stdev->partition_count != 2) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb target partition not defined\n");
+ 			return -ENODEV;
+ 		}
+ 
+-		bit = ffs(part_map);
+-		if (!bit) {
++		if (!part_map) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"peer partition is not NT partition\n");
+ 			return -ENODEV;
+ 		}
+ 
+-		sndev->peer_partition = bit - 1;
++		sndev->peer_partition = __ffs64(part_map);
+ 	} else {
+-		if (ffs(tpart_vec) != fls(tpart_vec)) {
++		if (__ffs64(tpart_vec) != (fls64(tpart_vec) - 1)) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb driver only supports 1 pair of 1-1 ntb mapping\n");
+ 			return -ENODEV;
+ 		}
+ 
+-		sndev->peer_partition = ffs(tpart_vec) - 1;
++		sndev->peer_partition = __ffs64(tpart_vec);
+ 		if (!(part_map & (1ULL << sndev->peer_partition))) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb target partition is not NT partition\n");
 -- 
 2.34.1
 
