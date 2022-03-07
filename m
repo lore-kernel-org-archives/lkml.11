@@ -2,92 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A46C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238094AbiCGJoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:44:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        id S238123AbiCGJot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:44:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237602AbiCGJdE (ORCPT
+        with ESMTP id S238114AbiCGJde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:33:04 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B87E62125
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 01:29:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646645395; x=1678181395;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=i5j1caJdqVJ0kTbO7103DrR0dBeK5IIEmJAv21zNSqA=;
-  b=XBck555Gn0shtNBhO4NoCAbTrEKn3jevEzgTmOyuZ8kAPY+2xedSXLns
-   le69AievqmStLxFRTh/z1xN/p9gnQQnL4HezAD9UqDWUg5K4qYD0MGY2X
-   S72SsfCBfFEK559OE+gYIpyypENZr5CN2KQFs9m2BObO3W9ybj0hJ9APl
-   9LUKj8/DFT6da8GjqnZ/3WlnswMDQq7VFD2UJmeOxeqqh4oGXTsm7hqRP
-   VlBAi4kTCaEIg9st2JUWLuqmo9cF9l3eb98WrdflvnmFhk8NdG/rIfuCj
-   4kmMi2k7g5hoL0K9CSXju6NI+ID83eE+lz5C3etZ4HJpCW5CrH/A8lT1P
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="315061531"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="315061531"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:29:35 -0800
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="643178291"
-Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.175.216]) ([10.249.175.216])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:29:29 -0800
-Message-ID: <e8452e86-4063-c85b-5e21-c7cd6ce51423@intel.com>
-Date:   Mon, 7 Mar 2022 17:29:27 +0800
+        Mon, 7 Mar 2022 04:33:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF086D182;
+        Mon,  7 Mar 2022 01:30:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9032B810C6;
+        Mon,  7 Mar 2022 09:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECFBFC340E9;
+        Mon,  7 Mar 2022 09:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646645406;
+        bh=YHxPyR9nU1QEakJ9ptTge83WeKXRSnbPMpbGOYgU0lw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ybg7r366PAd9qut7m7oN70LlzBYECD7kqEyzv6CTNJDvJGJhF4dL4B7we+VqHmuOL
+         GBjd5JkX1RLqg/Rl0tyMKhu5iCqEa/yDY7Y9MKWO+z+BSmFseicl6exQ/u6UsKfQhj
+         FQzfk8AskKJljgvXhpke1FMI0v/pvN/BxkNkzWMg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Shuming Fan <shumingf@realtek.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 004/105] ASoC: rt5668: do not block workqueue if card is unbound
+Date:   Mon,  7 Mar 2022 10:18:07 +0100
+Message-Id: <20220307091644.307470457@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091644.179885033@linuxfoundation.org>
+References: <20220307091644.179885033@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.6.1
-Subject: Re: [PATCHv5 23/30] x86/boot: Avoid #VE during boot for TDX platforms
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
- <20220302142806.51844-24-kirill.shutemov@linux.intel.com>
-From:   Xiaoyao Li <xiaoyao.li@intel.com>
-In-Reply-To: <20220302142806.51844-24-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/2022 10:27 PM, Kirill A. Shutemov wrote:
-> From: Sean Christopherson <seanjc@google.com>
-> 
-> There are a few MSRs and control register bits that the kernel
-> normally needs to modify during boot. But, TDX disallows
-> modification of these registers to help provide consistent security
-> guarantees. Fortunately, TDX ensures that these are all in the correct
-> state before the kernel loads, which means the kernel does not need to
-> modify them.
-> 
-> The conditions to avoid are:
-> 
->   * Any writes to the EFER MSR
->   * Clearing CR3.MCE
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-typo. CR4.MCE
+[ Upstream commit a6d78661dc903d90a327892bbc34268f3a5f4b9c ]
 
-BTW, I remember there was a patch to clear X86_FEATURE_MCE for TDX 
-guest. Why does that get dropped?
+The current rt5668_jack_detect_handler() assumes the component
+and card will always show up and implements an infinite usleep
+loop waiting for them to show up.
 
-Even though CPUID reports MCE is supported, all the access to MCE 
-related MSRs causes #VE. If they are accessed via mce_rdmsrl(), the #VE 
-will be fixed up and goes to ex_handler_msr_mce(). Finally lead to panic().
+This does not hold true if a codec interrupt (or other
+event) occurs when the card is unbound. The codec driver's
+remove  or shutdown functions cannot cancel the workqueue due
+to the wait loop. As a result, code can either end up blocking
+the workqueue, or hit a kernel oops when the card is freed.
+
+Fix the issue by rescheduling the jack detect handler in
+case the card is not ready. In case card never shows up,
+the shutdown/remove/suspend calls can now cancel the detect
+task.
+
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Shuming Fan <shumingf@realtek.com>
+Link: https://lore.kernel.org/r/20220207153000.3452802-2-kai.vehmanen@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/rt5668.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/sound/soc/codecs/rt5668.c b/sound/soc/codecs/rt5668.c
+index bc69adc9c8b70..e625df57c69e5 100644
+--- a/sound/soc/codecs/rt5668.c
++++ b/sound/soc/codecs/rt5668.c
+@@ -1022,11 +1022,13 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
+ 		container_of(work, struct rt5668_priv, jack_detect_work.work);
+ 	int val, btn_type;
+ 
+-	while (!rt5668->component)
+-		usleep_range(10000, 15000);
+-
+-	while (!rt5668->component->card->instantiated)
+-		usleep_range(10000, 15000);
++	if (!rt5668->component || !rt5668->component->card ||
++	    !rt5668->component->card->instantiated) {
++		/* card not yet ready, try later */
++		mod_delayed_work(system_power_efficient_wq,
++				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
++		return;
++	}
+ 
+ 	mutex_lock(&rt5668->calibrate_mutex);
+ 
+-- 
+2.34.1
 
 
 
