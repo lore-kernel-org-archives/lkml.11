@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CB8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA0EC43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234504AbiCGKcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:32:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
+        id S241837AbiCGKdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:33:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241341AbiCGKKH (ORCPT
+        with ESMTP id S242279AbiCGKLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:10:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE532B18D;
-        Mon,  7 Mar 2022 01:52:59 -0800 (PST)
+        Mon, 7 Mar 2022 05:11:24 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7506188B24;
+        Mon,  7 Mar 2022 01:54:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 728CB609D1;
-        Mon,  7 Mar 2022 09:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A9D9C340F3;
-        Mon,  7 Mar 2022 09:52:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 040A7CE0DF4;
+        Mon,  7 Mar 2022 09:54:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D23C1C340F3;
+        Mon,  7 Mar 2022 09:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646777;
-        bh=9ShKFuTkwxgMpVFPhQ4d+lcBovad1yuO5CD79LCg/mo=;
+        s=korg; t=1646646851;
+        bh=3O7SKRQEdlC3yZRHIUkedYLvoKSYVX7m7c9iwfV19E0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=brUpTyhwpupmLMT1gMTfvwtuHcbG6dwgLn90sLsoYwggGrrl7D8sC6Lup4mzTc5yf
-         T/T//RtQMaq1kddEDg362V99hLN9ugp5x3CWCXLgPhCp9OrnTM+aiuABwchfJjoIrH
-         gseaFfI1HWLPI+T3k77Aacm8GFsz4i1nnRniiQY0=
+        b=hg1wz6NsVC5uM7fzC82T+IhxkDm7b4z+XK6OSKCAw3Gdw3uSAoutNBmsURXlTG9Gf
+         A44nA1hmaky180RnclufvLgsHw+dL/zWskr0jeAdaUu0xirfVejfnknS9OV3UD207e
+         ZUCYbOt9gpa9rRCh3pqRG8/R05qv4zQKWBMEp0CA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 090/186] net: stmmac: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 10:18:48 +0100
-Message-Id: <20220307091656.600679187@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 115/186] ibmvnic: free reset-work-item when flushing
+Date:   Mon,  7 Mar 2022 10:19:13 +0100
+Message-Id: <20220307091657.293586677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -52,53 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-commit e01b042e580f1fbf4fd8da467442451da00c7a90 upstream.
+commit 8d0657f39f487d904fca713e0bc39c2707382553 upstream.
 
-__setup() handlers should return 1 on success, i.e., the parameter
-has been handled. A return of 0 causes the "option=value" string to be
-added to init's environment strings, polluting it.
+Fix a tiny memory leak when flushing the reset work queue.
 
-Fixes: 47dd7a540b8a ("net: add support for STMicroelectronics Ethernet controllers.")
-Fixes: f3240e2811f0 ("stmmac: remove warning when compile as built-in (V2)")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Link: https://lore.kernel.org/r/20220224033536.25056-1-rdunlap@infradead.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7353,7 +7353,7 @@ static int __init stmmac_cmdline_opt(cha
- 	char *opt;
- 
- 	if (!str || !*str)
--		return -EINVAL;
-+		return 1;
- 	while ((opt = strsep(&str, ",")) != NULL) {
- 		if (!strncmp(opt, "debug:", 6)) {
- 			if (kstrtoint(opt + 6, 0, &debug))
-@@ -7384,11 +7384,11 @@ static int __init stmmac_cmdline_opt(cha
- 				goto err;
- 		}
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2780,8 +2780,10 @@ static int ibmvnic_reset(struct ibmvnic_
+ 	 * flush reset queue and process this reset
+ 	 */
+ 	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
+-		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
++		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list) {
+ 			list_del(entry);
++			kfree(list_entry(entry, struct ibmvnic_rwi, list));
++		}
  	}
--	return 0;
-+	return 1;
- 
- err:
- 	pr_err("%s: ERROR broken module parameter conversion", __func__);
--	return -EINVAL;
-+	return 1;
- }
- 
- __setup("stmmaceth=", stmmac_cmdline_opt);
+ 	rwi->reset_reason = reason;
+ 	list_add_tail(&rwi->list, &adapter->rwi_list);
 
 
