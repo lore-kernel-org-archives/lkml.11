@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC04C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbiCGKHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:07:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S239861AbiCGKH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:07:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238894AbiCGJsv (ORCPT
+        with ESMTP id S238519AbiCGJrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:48:51 -0500
+        Mon, 7 Mar 2022 04:47:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539786E341;
-        Mon,  7 Mar 2022 01:42:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0EF6BDD8;
+        Mon,  7 Mar 2022 01:42:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CEC861312;
-        Mon,  7 Mar 2022 09:42:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89014C340F6;
-        Mon,  7 Mar 2022 09:42:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B0A61224;
+        Mon,  7 Mar 2022 09:42:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62542C340F3;
+        Mon,  7 Mar 2022 09:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646150;
-        bh=6gcCmo2niaY1ICfThriAwiWMgJuKdrDVjhBfnsf86Ks=;
+        s=korg; t=1646646142;
+        bh=9fZaDAJh9dR/swLNoK3CtyGoe0XhHC15pTb6g6Q59bM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJrA5lWB+DEBy2TtmSMrYmAQ6rweIGVaeqhtaqDb0drh/MZDJZ7Y78YZl6EBxST6O
-         7pD5sOdG9Bg2zSOvVpszpu9DbZK3qoI+U02tfiIy6idrIiLVLv+EmNz1U1H4VVcVn0
-         Re2Gv09CubP+rV6rRgPC3T6ZlTl+Hf+10sAy6bJQ=
+        b=RgbxvVv6y0UTCnZWsSemEyNaiGV6zBq4/ycIXVsLphJb6LRt1Te1nRZ4ISkRIfPXX
+         YQ3OMNIydZ/56b4snRaW413RX3POAFmY5qZi9JTE9rbt2frk/ekIxPlm2sCr67VxOC
+         i0BGr44FupSD6XUH2pr9PIKKd2wsM2kWI3c2s6oM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Deren Wu <deren.wu@mediatek.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 149/262] mac80211: fix EAPoL rekey fail in 802.3 rx path
-Date:   Mon,  7 Mar 2022 10:18:13 +0100
-Message-Id: <20220307091706.647053440@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 129/262] cifs: protect session channel fields with chan_lock
+Date:   Mon,  7 Mar 2022 10:17:53 +0100
+Message-Id: <20220307091706.100978799@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -48,65 +50,317 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deren Wu <deren.wu@mediatek.com>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-commit 610d086d6df0b15c3732a7b4a5b0f1c3e1b84d4c upstream.
+[ Upstream commit 724244cdb3828522109c88e56a0242537aefabe9 ]
 
-mac80211 set capability NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211
-to upper layer by default. That means we should pass EAPoL packets through
-nl80211 path only, and should not send the EAPoL skb to netdevice diretly.
-At the meanwhile, wpa_supplicant would not register sock to listen EAPoL
-skb on the netdevice.
+Introducing a new spin lock to protect all the channel related
+fields in a cifs_ses struct. This lock should be taken
+whenever dealing with the channel fields, and should be held
+only for very short intervals which will not sleep.
 
-However, there is no control_port_protocol handler in mac80211 for 802.3 RX
-packets, mac80211 driver would pass up the EAPoL rekey frame to netdevice
-and wpa_supplicant would be never interactive with this kind of packets,
-if SUPPORTS_RX_DECAP_OFFLOAD is enabled. This causes STA always rekey fail
-if EAPoL frame go through 802.3 path.
+Currently, all channel related fields in cifs_ses structure
+are protected by session_mutex. However, this mutex is held for
+long periods (sometimes while waiting for a reply from server).
+This makes the codepath quite tricky to change.
 
-To avoid this problem, align the same process as 802.11 type to handle
-this frame before put it into network stack.
-
-This also addresses a potential security issue in 802.3 RX mode that was
-previously fixed in commit a8c4d76a8dd4 ("mac80211: do not accept/forward
-invalid EAPOL frames").
-
-Cc: stable@vger.kernel.org # 5.12+
-Fixes: 80a915ec4427 ("mac80211: add rx decapsulation offload support")
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
-Link: https://lore.kernel.org/r/6889c9fced5859ebb088564035f84fd0fa792a49.1644680751.git.deren.wu@mediatek.com
-[fix typos, update comment and add note about security issue]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ fs/cifs/cifs_debug.c |  2 ++
+ fs/cifs/cifsglob.h   |  5 +++++
+ fs/cifs/connect.c    | 25 +++++++++++++++++++---
+ fs/cifs/misc.c       |  1 +
+ fs/cifs/sess.c       | 50 +++++++++++++++++++++++++++++++++-----------
+ fs/cifs/transport.c  |  3 +++
+ 6 files changed, 71 insertions(+), 15 deletions(-)
 
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -2602,7 +2602,8 @@ static void ieee80211_deliver_skb_to_loc
- 		 * address, so that the authenticator (e.g. hostapd) will see
- 		 * the frame, but bridge won't forward it anywhere else. Note
- 		 * that due to earlier filtering, the only other address can
--		 * be the PAE group address.
-+		 * be the PAE group address, unless the hardware allowed them
-+		 * through in 802.3 offloaded mode.
- 		 */
- 		if (unlikely(skb->protocol == sdata->control_port_protocol &&
- 			     !ether_addr_equal(ehdr->h_dest, sdata->vif.addr)))
-@@ -4518,12 +4519,7 @@ static void ieee80211_rx_8023(struct iee
+diff --git a/fs/cifs/cifs_debug.c b/fs/cifs/cifs_debug.c
+index 905a901f7f80b..248a8f973cf9c 100644
+--- a/fs/cifs/cifs_debug.c
++++ b/fs/cifs/cifs_debug.c
+@@ -414,12 +414,14 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
+ 				   from_kuid(&init_user_ns, ses->linux_uid),
+ 				   from_kuid(&init_user_ns, ses->cred_uid));
  
- 	/* deliver to local stack */
- 	skb->protocol = eth_type_trans(skb, fast_rx->dev);
--	memset(skb->cb, 0, sizeof(skb->cb));
--	if (rx->list)
--		list_add_tail(&skb->list, rx->list);
--	else
--		netif_receive_skb(skb);
--
-+	ieee80211_deliver_skb_to_local_stack(skb, rx);
++			spin_lock(&ses->chan_lock);
+ 			if (ses->chan_count > 1) {
+ 				seq_printf(m, "\n\n\tExtra Channels: %zu ",
+ 					   ses->chan_count-1);
+ 				for (j = 1; j < ses->chan_count; j++)
+ 					cifs_dump_channel(m, j, &ses->chans[j]);
+ 			}
++			spin_unlock(&ses->chan_lock);
+ 
+ 			seq_puts(m, "\n\n\tShares: ");
+ 			j = 0;
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 3e5b8e177cfa7..b33835b2943e9 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -934,16 +934,21 @@ struct cifs_ses {
+ 	 * iface_lock should be taken when accessing any of these fields
+ 	 */
+ 	spinlock_t iface_lock;
++	/* ========= begin: protected by iface_lock ======== */
+ 	struct cifs_server_iface *iface_list;
+ 	size_t iface_count;
+ 	unsigned long iface_last_update; /* jiffies */
++	/* ========= end: protected by iface_lock ======== */
+ 
++	spinlock_t chan_lock;
++	/* ========= begin: protected by chan_lock ======== */
+ #define CIFS_MAX_CHANNELS 16
+ 	struct cifs_chan chans[CIFS_MAX_CHANNELS];
+ 	struct cifs_chan *binding_chan;
+ 	size_t chan_count;
+ 	size_t chan_max;
+ 	atomic_t chan_seq; /* round robin state */
++	/* ========= end: protected by chan_lock ======== */
+ };
+ 
+ /*
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 439f02f1886c1..70da1d27be3db 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -1526,8 +1526,12 @@ static int match_session(struct cifs_ses *ses, struct smb3_fs_context *ctx)
+ 	 * If an existing session is limited to less channels than
+ 	 * requested, it should not be reused
+ 	 */
+-	if (ses->chan_max < ctx->max_channels)
++	spin_lock(&ses->chan_lock);
++	if (ses->chan_max < ctx->max_channels) {
++		spin_unlock(&ses->chan_lock);
+ 		return 0;
++	}
++	spin_unlock(&ses->chan_lock);
+ 
+ 	switch (ses->sectype) {
+ 	case Kerberos:
+@@ -1662,6 +1666,7 @@ cifs_find_smb_ses(struct TCP_Server_Info *server, struct smb3_fs_context *ctx)
+ void cifs_put_smb_ses(struct cifs_ses *ses)
+ {
+ 	unsigned int rc, xid;
++	unsigned int chan_count;
+ 	struct TCP_Server_Info *server = ses->server;
+ 	cifs_dbg(FYI, "%s: ses_count=%d\n", __func__, ses->ses_count);
+ 
+@@ -1703,12 +1708,24 @@ void cifs_put_smb_ses(struct cifs_ses *ses)
+ 	list_del_init(&ses->smb_ses_list);
+ 	spin_unlock(&cifs_tcp_ses_lock);
+ 
++	spin_lock(&ses->chan_lock);
++	chan_count = ses->chan_count;
++	spin_unlock(&ses->chan_lock);
++
+ 	/* close any extra channels */
+-	if (ses->chan_count > 1) {
++	if (chan_count > 1) {
+ 		int i;
+ 
+-		for (i = 1; i < ses->chan_count; i++)
++		for (i = 1; i < chan_count; i++) {
++			/*
++			 * note: for now, we're okay accessing ses->chans
++			 * without chan_lock. But when chans can go away, we'll
++			 * need to introduce ref counting to make sure that chan
++			 * is not freed from under us.
++			 */
+ 			cifs_put_tcp_session(ses->chans[i].server, 0);
++			ses->chans[i].server = NULL;
++		}
+ 	}
+ 
+ 	sesInfoFree(ses);
+@@ -1959,9 +1976,11 @@ cifs_get_smb_ses(struct TCP_Server_Info *server, struct smb3_fs_context *ctx)
+ 	mutex_lock(&ses->session_mutex);
+ 
+ 	/* add server as first channel */
++	spin_lock(&ses->chan_lock);
+ 	ses->chans[0].server = server;
+ 	ses->chan_count = 1;
+ 	ses->chan_max = ctx->multichannel ? ctx->max_channels:1;
++	spin_unlock(&ses->chan_lock);
+ 
+ 	rc = cifs_negotiate_protocol(xid, ses);
+ 	if (!rc)
+diff --git a/fs/cifs/misc.c b/fs/cifs/misc.c
+index bb1185fff8cc4..0a0d0724c4294 100644
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -75,6 +75,7 @@ sesInfoAlloc(void)
+ 		INIT_LIST_HEAD(&ret_buf->tcon_list);
+ 		mutex_init(&ret_buf->session_mutex);
+ 		spin_lock_init(&ret_buf->iface_lock);
++		spin_lock_init(&ret_buf->chan_lock);
+ 	}
+ 	return ret_buf;
+ }
+diff --git a/fs/cifs/sess.c b/fs/cifs/sess.c
+index 23e02db7923f6..a1e688113645f 100644
+--- a/fs/cifs/sess.c
++++ b/fs/cifs/sess.c
+@@ -54,41 +54,53 @@ bool is_ses_using_iface(struct cifs_ses *ses, struct cifs_server_iface *iface)
+ {
+ 	int i;
+ 
++	spin_lock(&ses->chan_lock);
+ 	for (i = 0; i < ses->chan_count; i++) {
+-		if (is_server_using_iface(ses->chans[i].server, iface))
++		if (is_server_using_iface(ses->chans[i].server, iface)) {
++			spin_unlock(&ses->chan_lock);
+ 			return true;
++		}
+ 	}
++	spin_unlock(&ses->chan_lock);
+ 	return false;
  }
  
- static bool ieee80211_invoke_fast_rx(struct ieee80211_rx_data *rx,
+ /* returns number of channels added */
+ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
+ {
+-	int old_chan_count = ses->chan_count;
+-	int left = ses->chan_max - ses->chan_count;
++	int old_chan_count, new_chan_count;
++	int left;
+ 	int i = 0;
+ 	int rc = 0;
+ 	int tries = 0;
+ 	struct cifs_server_iface *ifaces = NULL;
+ 	size_t iface_count;
+ 
++	if (ses->server->dialect < SMB30_PROT_ID) {
++		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
++		return 0;
++	}
++
++	spin_lock(&ses->chan_lock);
++
++	new_chan_count = old_chan_count = ses->chan_count;
++	left = ses->chan_max - ses->chan_count;
++
+ 	if (left <= 0) {
+ 		cifs_dbg(FYI,
+ 			 "ses already at max_channels (%zu), nothing to open\n",
+ 			 ses->chan_max);
+-		return 0;
+-	}
+-
+-	if (ses->server->dialect < SMB30_PROT_ID) {
+-		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
++		spin_unlock(&ses->chan_lock);
+ 		return 0;
+ 	}
+ 
+ 	if (!(ses->server->capabilities & SMB2_GLOBAL_CAP_MULTI_CHANNEL)) {
+ 		cifs_dbg(VFS, "server %s does not support multichannel\n", ses->server->hostname);
+ 		ses->chan_max = 1;
++		spin_unlock(&ses->chan_lock);
+ 		return 0;
+ 	}
++	spin_unlock(&ses->chan_lock);
+ 
+ 	/*
+ 	 * Make a copy of the iface list at the time and use that
+@@ -142,10 +154,11 @@ int cifs_try_adding_channels(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses)
+ 		cifs_dbg(FYI, "successfully opened new channel on iface#%d\n",
+ 			 i);
+ 		left--;
++		new_chan_count++;
+ 	}
+ 
+ 	kfree(ifaces);
+-	return ses->chan_count - old_chan_count;
++	return new_chan_count - old_chan_count;
+ }
+ 
+ /*
+@@ -157,10 +170,14 @@ cifs_ses_find_chan(struct cifs_ses *ses, struct TCP_Server_Info *server)
+ {
+ 	int i;
+ 
++	spin_lock(&ses->chan_lock);
+ 	for (i = 0; i < ses->chan_count; i++) {
+-		if (ses->chans[i].server == server)
++		if (ses->chans[i].server == server) {
++			spin_unlock(&ses->chan_lock);
+ 			return &ses->chans[i];
++		}
+ 	}
++	spin_unlock(&ses->chan_lock);
+ 	return NULL;
+ }
+ 
+@@ -168,6 +185,7 @@ static int
+ cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
+ 		     struct cifs_server_iface *iface)
+ {
++	struct TCP_Server_Info *chan_server;
+ 	struct cifs_chan *chan;
+ 	struct smb3_fs_context ctx = {NULL};
+ 	static const char unc_fmt[] = "\\%s\\foo";
+@@ -240,15 +258,20 @@ cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
+ 	       SMB2_CLIENT_GUID_SIZE);
+ 	ctx.use_client_guid = true;
+ 
+-	mutex_lock(&ses->session_mutex);
++	chan_server = cifs_get_tcp_session(&ctx);
+ 
++	mutex_lock(&ses->session_mutex);
++	spin_lock(&ses->chan_lock);
+ 	chan = ses->binding_chan = &ses->chans[ses->chan_count];
+-	chan->server = cifs_get_tcp_session(&ctx);
++	chan->server = chan_server;
+ 	if (IS_ERR(chan->server)) {
+ 		rc = PTR_ERR(chan->server);
+ 		chan->server = NULL;
++		spin_unlock(&ses->chan_lock);
+ 		goto out;
+ 	}
++	spin_unlock(&ses->chan_lock);
++
+ 	spin_lock(&cifs_tcp_ses_lock);
+ 	chan->server->is_channel = true;
+ 	spin_unlock(&cifs_tcp_ses_lock);
+@@ -283,8 +306,11 @@ cifs_ses_add_channel(struct cifs_sb_info *cifs_sb, struct cifs_ses *ses,
+ 	 * ses to the new server.
+ 	 */
+ 
++	spin_lock(&ses->chan_lock);
+ 	ses->chan_count++;
+ 	atomic_set(&ses->chan_seq, 0);
++	spin_unlock(&ses->chan_lock);
++
+ out:
+ 	ses->binding = false;
+ 	ses->binding_chan = NULL;
+diff --git a/fs/cifs/transport.c b/fs/cifs/transport.c
+index b7379329b741c..61ea3d3f95b4a 100644
+--- a/fs/cifs/transport.c
++++ b/fs/cifs/transport.c
+@@ -1044,14 +1044,17 @@ struct TCP_Server_Info *cifs_pick_channel(struct cifs_ses *ses)
+ 	if (!ses)
+ 		return NULL;
+ 
++	spin_lock(&ses->chan_lock);
+ 	if (!ses->binding) {
+ 		/* round robin */
+ 		if (ses->chan_count > 1) {
+ 			index = (uint)atomic_inc_return(&ses->chan_seq);
+ 			index %= ses->chan_count;
+ 		}
++		spin_unlock(&ses->chan_lock);
+ 		return ses->chans[index].server;
+ 	} else {
++		spin_unlock(&ses->chan_lock);
+ 		return cifs_ses_server(ses);
+ 	}
+ }
+-- 
+2.34.1
+
 
 
