@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015DDC43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CE9C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237079AbiCGJaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
+        id S237085AbiCGJaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237066AbiCGJ1O (ORCPT
+        with ESMTP id S237137AbiCGJ1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:27:14 -0500
+        Mon, 7 Mar 2022 04:27:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF87B65145;
-        Mon,  7 Mar 2022 01:24:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFC458E4B;
+        Mon,  7 Mar 2022 01:24:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F72760C00;
-        Mon,  7 Mar 2022 09:24:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B454C340F3;
-        Mon,  7 Mar 2022 09:24:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E02061009;
+        Mon,  7 Mar 2022 09:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9ABC340E9;
+        Mon,  7 Mar 2022 09:24:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645071;
-        bh=BvI6XKS2a6C7yafGKdew4q9Fsz5hDA4ieFJRLYviGN0=;
+        s=korg; t=1646645083;
+        bh=jLKMO32rA0KjtQgvheUPI/dFWNoxa++1fZrLUNzJ5aw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DtETj7rk5uZ8MWpV1nCzkl++G8p1/NBiF6DppXbdi6eaPd//J8BOkhb/o5Y4fjTPs
-         WdkWSPUg4xJfTtqbYF2AU2wlMtITt8D/3PZw0OznoWkT0Wad+jSh7feOQzvd4mR67o
-         2TQWLlV48d16Bims8l8pN7DX0CaokErGFM8OwgwQ=
+        b=eNOs5zRdCPpwjWTKv7iYVNa9/gOIlIJ6dUk1nk3NidITRUHM/vz5a2QahhlYMUPx9
+         LQuVPfD5PyK/o4n09+U40kfhcF/GyZGLSEOeWoOseaqngabju7CMm7Te3M708I8Lq0
+         l6pn1+NUHcvmnK7k9vK2aqBQhtfOeXfpxEJF9ujk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 05/51] ASoC: rt5682: do not block workqueue if card is unbound
-Date:   Mon,  7 Mar 2022 10:18:40 +0100
-Message-Id: <20220307091637.147743007@linuxfoundation.org>
+Subject: [PATCH 4.19 09/51] i2c: cadence: allow COMPILE_TEST
+Date:   Mon,  7 Mar 2022 10:18:44 +0100
+Message-Id: <20220307091637.259399865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -55,61 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit 4c33de0673ced9c7c37b3bbd9bfe0fda72340b2a ]
+[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
 
-The current rt5682_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
-
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
-
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-3-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index 7a78bb00f874d..5979165ac37cf 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1039,11 +1039,13 @@ static void rt5682_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5682_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 017aec34a238d..3a2f85d811f75 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -445,7 +445,7 @@ config I2C_BRCMSTB
  
--	while (!rt5682->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5682->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5682->component || !rt5682->component->card ||
-+	    !rt5682->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5682->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
- 
- 	mutex_lock(&rt5682->calibrate_mutex);
- 
+ config I2C_CADENCE
+ 	tristate "Cadence I2C Controller"
+-	depends on ARCH_ZYNQ || ARM64 || XTENSA
++	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
+ 	help
+ 	  Say yes here to select Cadence I2C Host Controller. This controller is
+ 	  e.g. used by Xilinx Zynq.
 -- 
 2.34.1
 
