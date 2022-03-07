@@ -2,179 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4734C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 05:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235315AbiCGF1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 00:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
+        id S231848AbiCGFa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 00:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233217AbiCGF1K (ORCPT
+        with ESMTP id S230457AbiCGFaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 00:27:10 -0500
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E0620197
-        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:26:16 -0800 (PST)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220307052610epoutp0232c1a0d6818c3ad441ccd853290bd052~aAfYK92Cd2991929919epoutp02i
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 05:26:10 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220307052610epoutp0232c1a0d6818c3ad441ccd853290bd052~aAfYK92Cd2991929919epoutp02i
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646630770;
-        bh=9tjq2zNlTSzLqr3qckKG9tmOLZlxb8W7Esn7UKQRyV0=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=lWlax/Hau5sbfWnYBPT1sgA9Hu/pcFW47J5vmrN7hoJPuGR4Phwk2GYNGztu5E2zB
-         TGGj9ShVnOD6kXdWuA9jkibZwuSBCDM+B0YuH9yJbl1ndCb7eznb3INl5Ku499Gjv0
-         c9BpuldZY+lZdQakrso7a7/58x31ThpcFINfAYxk=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220307052609epcas2p25bc106c55f44992c76ba6489993e4e2e~aAfXiihYj1775517755epcas2p2R;
-        Mon,  7 Mar 2022 05:26:09 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KBn4H2vwrz4x9QP; Mon,  7 Mar
-        2022 05:26:07 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        50.4C.51767.D6795226; Mon,  7 Mar 2022 14:26:05 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220307052605epcas2p2b84f6db2642863ed61373070f508e200~aAfTw8EZd2036320363epcas2p2K;
-        Mon,  7 Mar 2022 05:26:05 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220307052605epsmtrp175691b06cd1275ed69afb439f3a7f8c2~aAfTwJ1Ui1024710247epsmtrp1d;
-        Mon,  7 Mar 2022 05:26:05 +0000 (GMT)
-X-AuditID: b6c32a45-447ff7000000ca37-d5-6225976d1f84
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        87.5C.29871.D6795226; Mon,  7 Mar 2022 14:26:05 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220307052605epsmtip11291b6c3684732bf2275c54f6d7f48e0~aAfTlCOcX0030500305epsmtip1_;
-        Mon,  7 Mar 2022 05:26:05 +0000 (GMT)
-From:   JaeHun Jung <jh0801.jung@samsung.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org (open list:USB XHCI DRIVER),
-        linux-kernel@vger.kernel.org (open list),
-        Seungchull Suh <sc.suh@samsung.com>,
-        Daehwan Jung <dh10.jung@samsung.com>,
-        JaeHun Jung <jh0801.jung@samsung.com>
-Subject: [PATCH] usb: dwc3: Add dwc3 lock for blocking interrupt storming
-Date:   Mon,  7 Mar 2022 14:24:39 +0900
-Message-Id: <1646630679-121585-1-git-send-email-jh0801.jung@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrJKsWRmVeSWpSXmKPExsWy7bCmuW7udNUkg5m3dCyOtT1ht7izYBqT
-        RfPi9WwWdx/+YLG4vGsOm8WiZa3MFl13bzA6sHtsWtXJ5rF/7hp2j74tqxg9Pm+SC2CJyrbJ
-        SE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMAbpASaEsMacU
-        KBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgXqBXnJhbXJqXrpeXWmJlaGBgZApUmJCdsfXF
-        W7aC78IV+7dPYG1gvCLQxcjBISFgIvH7LGsXIxeHkMAORom+r4/ZIZxPjBKrtt5hgXC+MUrc
-        vNzM3MXICdbRvHYzE0RiL6PEw8WroKp+MEpsWHWPCaSKTUBbYt+cRewgtohAmMTEZfvAipgF
-        bjNKrJh3gREkISzgKbG2YSoriM0ioCrx9tkksGZeAQ+JXwteskCsk5O4ea4TavUqdom3V5Ig
-        bBeJV9/vsELYwhKvjm9hh7ClJF72t0HZxRKdmw4xgiyWEGhglPh2oIMJImEsMetZOyMoBJgF
-        NCXW79KHBIayxJFbYGuZBfgkOg7/ZYcI80p0tAlBNKpKHGy8CXWZtMS33neMECUeEtuOcYOE
-        hQRiJW5tbmOewCg7C2H8AkbGVYxiqQXFuempxUYFhvA4Ss7P3cQITlNarjsYJ7/9oHeIkYmD
-        8RCjBAezkgjv/fMqSUK8KYmVValF+fFFpTmpxYcYTYGhNZFZSjQ5H5go80riDU0sDUzMzAzN
-        jUwNzJXEeb1SNiQKCaQnlqRmp6YWpBbB9DFxcEo1MB23tRXefbSoQlol3H6qeAuTlHnJYst4
-        RtXJi2sLlnh7ZpV5Bfz7JqpYP6X6hlDDEabWg1K86llCb+8fj7l3bpre88Mz5YRk5yq/ufBC
-        W2dV0BufHw7P+Op1LpkKqWvvD5OYbVL30+DmdcudL3xnntHxWrwzc5XJWla3hTtid0i/VH+9
-        yZMzZrt2eWL6vqCPTNnKIf8sQlU+ato0nvResVj0u+vPd+LmypssNprn6S492dJ++tna47ef
-        69jMX72Gsaskz4D7ZmcMr9Dcpfu2+80M/tR1/fSxzPWPSjvfB/js823+LXA36+GquzMmr8zg
-        jP//7MNSY3Fbqc6LYs+8Hb4Grf8h/LprzSJ+L8UTj5RYijMSDbWYi4oTAdTDuQbcAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNJMWRmVeSWpSXmKPExsWy7bCSnG7udNUkg9O/uCyOtT1ht7izYBqT
-        RfPi9WwWdx/+YLG4vGsOm8WiZa3MFl13bzA6sHtsWtXJ5rF/7hp2j74tqxg9Pm+SC2CJ4rJJ
-        Sc3JLEst0rdL4MrY+uItW8F34Yr92yewNjBeEehi5OSQEDCRaF67mamLkYtDSGA3o8SKvlnM
-        EAlpiZ2dU5kgbGGJ+y1HWCGKvjFK3H85nR0kwSagLbFvziIwW0QgTOLfo4ssIEXMAncZJZpO
-        TGQDSQgLeEqsbZjKCmKzCKhKvH02CWwqr4CHxK8FL1kgNshJ3DzXyTyBkWcBI8MqRsnUguLc
-        9NxiwwLDvNRyveLE3OLSvHS95PzcTYzg8NHS3MG4fdUHvUOMTByMhxglOJiVRHjvn1dJEuJN
-        SaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJanZqakFqEUyWiYNTqoEpVHNV1YZqX7bz
-        Lk7Lru3Sd8us2Dil4Pk+rYmpzqIrD2Z4Ns3hO7howYTnlRNOOiRYKP4W13zFJ6JcKrQ2MUU9
-        osHkfMz8Wws6r26QYn8j2Npy11+oVrlm3WWf3WVp6W7bDUyM9TZLNixfFLkiaNHa06o+B1Ry
-        zvQJ1t17snXPu7m5qWEV99X1ZfNu2sv9PPIg65tBehiDJsOmiruXl2VnLTNa/Dw8eUG3wr3N
-        t456zVHw3n9G931t8tFD+jGmBnfkOJSv1D/pSDjXFWV5hWPN9ZeN117NSFK5c3ySQrsFS9yp
-        5L4zu9fypElkpn9RemEnIfTUVdBsrUnprs+GxdIX5e7Jziq99e7oUV6tbaVKLMUZiYZazEXF
-        iQDjvkCnjgIAAA==
-X-CMS-MailID: 20220307052605epcas2p2b84f6db2642863ed61373070f508e200
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220307052605epcas2p2b84f6db2642863ed61373070f508e200
-References: <CGME20220307052605epcas2p2b84f6db2642863ed61373070f508e200@epcas2p2.samsung.com>
+        Mon, 7 Mar 2022 00:30:25 -0500
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922C54D26C
+        for <linux-kernel@vger.kernel.org>; Sun,  6 Mar 2022 21:29:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1646630969;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=PYL2+nfFveOBDxu8oSAjkR6wgoWTMSulu+kLnrHAIKM=;
+        b=AyhcOapLxRUIe9DJTRR4iW+GB47qM/fqlybJX0/rZYik/N5GrNjUmsLltSjFF2FVCE2B9o
+        s3PfmIHEvu9EzMjZzg/V5rTxRztuZs3vGTNM5mC87gZBUaOgLxum9kYHzngYLITAWOVKqx
+        V62oaInK3Tkcy436hAD9Rxa6kY0bCyk=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2057.outbound.protection.outlook.com [104.47.14.57]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-3-wssm1ythMjCLyW7Wtv3zuQ-1; Mon, 07 Mar 2022 06:29:28 +0100
+X-MC-Unique: wssm1ythMjCLyW7Wtv3zuQ-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eUWBVCf0cthj7MD1c5VTRfaaa25GM0PPbt0IZm4B3uN4WgXcFOy2CoqkR/T0DgUlRgsviWRKAsw99aJdY1NyGzEmJ3ctNd4G7gI/gEfnrSv5hjScfYcn31L7kzOPZETcnObP7Zw1lj1gdaxHLeYBMKGIEu+x9heKp0REzpm3nH1FEfg9mIFzASX6Tf/S+KZBXAwpIYYb+pYUX1NlkbCXWQsZ0eVu9Guj8Ek1OEg5T19XbY2h4tq10YwegHu0WJnFpbPsWZN/LgmTnqxXK7LLwS+ncvgjFek/2wlkTD8uY4lwaE0vt9XSIxFRYuE5C45Zxlsg+YIu2oS/RpicNN0Y9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PYL2+nfFveOBDxu8oSAjkR6wgoWTMSulu+kLnrHAIKM=;
+ b=SjJF+Tlkp4eixsFs7YhSppyRIHMtMEGqLytCMGmlBalZiIkh+/a/hNjoxDa3cifLr5OuNLPOB63/KsXvLxOOMhpDsTFa2yju7UupXD1PKtz3wTgQnhjO2cFNrTHJaqUUw6S/0KpYhhvZw8txoVUZhdvggBAHPy6dCundN4xLLnit0P22KQIo134nm1ygAakalcVUsy6dzmpP+xQiy75v68yjJpotMlUuq754nyIyL1W3XRwTBQlf6706tSjV3a7W5oLZO4IVI2G9So+kGjLqYvdJeEeGwt7+JWyQ0KhKYYcRuW8Gm2VdJLjBblokJCmDYliN9RFJApSugQoxApf1SA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB9PR04MB8107.eurprd04.prod.outlook.com (2603:10a6:10:243::20)
+ by DBAPR04MB7206.eurprd04.prod.outlook.com (2603:10a6:10:1a4::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13; Mon, 7 Mar
+ 2022 05:29:27 +0000
+Received: from DB9PR04MB8107.eurprd04.prod.outlook.com
+ ([fe80::5d4:d76f:ecea:e459]) by DB9PR04MB8107.eurprd04.prod.outlook.com
+ ([fe80::5d4:d76f:ecea:e459%9]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
+ 05:29:27 +0000
+Date:   Mon, 7 Mar 2022 13:29:18 +0800
+From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
+To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH bpf-next] bpf: determine buf_info inside check_buffer_access()
+Message-ID: <YiWYLnAkEZXBP/gH@syu-laptop>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-ClientProxiedBy: HK2PR0401CA0004.apcprd04.prod.outlook.com
+ (2603:1096:202:2::14) To DB9PR04MB8107.eurprd04.prod.outlook.com
+ (2603:10a6:10:243::20)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e1465ea1-b428-483c-8c05-08d9fffb7257
+X-MS-TrafficTypeDiagnostic: DBAPR04MB7206:EE_
+X-Microsoft-Antispam-PRVS: <DBAPR04MB7206B20241CC91C4AC23B391BF089@DBAPR04MB7206.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9FbX3T2VqJb74HWEHPuTjL6432q6GKJhJn+XrB8pQHeNucV5Sa6KJeNxdtWY6LI2VyCrntNndPlbRYyAq9W3Nn27KxaCov7qB07uQe/DJaCCj0eZ4GV6SxSRJpFISoonCeW02z7/EiFgZtpP1BzanZ2NRaIfojo4rCr9mE2YLwfNZ5Ej84O4pX8KQg+iGxAphQ0X9vQHocvi5oxG0bG2xjtuvKYy1UdvX/60MMnfVw/ikhAh4X2t5bpT6aXA5c/4oWDREZTmGoXBwA0CbX4YWBPHzcA6rF42a3zeyV+TjSDoIG0g55mpBIq8qh1sSIEc8yYnWhQ/IH8MSXhOXDRqszxsgQN8e35lk1PhuN7CiPhlRyE9GJWApFACyfpE0q34tYPpMDbMqy9PNUeBUqBffyH/Gwu/YbNeBnfrEE0ltAnCZOpAhNdWt9F474sc9Q37K55deEkz8BCbUbzRMMJBB6MVyZ5WQ1C06DN2tt0nIeEeukHKzGu+T0JG8ohJQu3zBsA8UahBrZbpsUheNdxE7N9X4bJ+3GBhi9R+TRkOzbs2DJUZV7wQip1XwiBRDsE1pVw2JfAAPubfp6iWhSfPlhyJt8Oyq+3lbe/Zs8FV+gp1OWdi9F4B8ocwm4cwlbXR/D2SjBWGxtKxZxUpyDQsNw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8107.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(7416002)(66946007)(66556008)(4326008)(508600001)(6512007)(9686003)(6506007)(6666004)(83380400001)(33716001)(186003)(26005)(8676002)(66476007)(86362001)(2906002)(316002)(6486002)(54906003)(5660300002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eWJhVENDc2hUMm4vYTJDbUJZa1J0K3lVYU1QcG1QY1VNL0d3bzJsaGhtdk5p?=
+ =?utf-8?B?L014QzYwRmFHQ1c4QWRXWndKV2Z2M0Y0MXNFaldsdlRpbEZlVDVGcW40SzhE?=
+ =?utf-8?B?cVltSW8wMHlXNXo1TkpVdkVKMGtJVWxhckt3b2oyVUwwNC9NTkxNSnRDOWdp?=
+ =?utf-8?B?ZThld05xS0F5ZGdKdCs0ZVhDSFFRcHpBbG10REJzNVA1Q2lJWC90YTdXdnJk?=
+ =?utf-8?B?QkhDMlJOY25RbFBtSC9oVFpoN1RjemFDVlMzTkdSdGtWSDU0Y1BndU1FMjQ5?=
+ =?utf-8?B?d3QxODFTZ3JiTGFoLzlaa0dvaGxxMUNCVWdmSjl2Q29VRmpBbG1TWEZzakpa?=
+ =?utf-8?B?T1hWUEc4cGZGUEYyRDNwc3NDOEN5UjB1c3R3TGFMOWFrL3d0aS9zS3hnSG51?=
+ =?utf-8?B?MjVKR2lpSkM4RlVYd1VDRmVITkQrREZWa2wzcmM2V2tKU054M1R5bDBFcjJZ?=
+ =?utf-8?B?bjlvWHJicFBySU9XcW82eUplVG5lK2ZBSVNyZnMxUExmQWJ0czYrQ1ZlNG5s?=
+ =?utf-8?B?dVV6MUNvQjZ4TnBTaFBzTDZha2t1Q1piTWhhM3VvbnZaOUwvanYzV045V0I5?=
+ =?utf-8?B?N3hMeGREbWIxeHBxc0pUVHE3N21FejQvaU9nbDNtMnVBa2h2YlV6Y1hQcGM2?=
+ =?utf-8?B?dXJmcm9GNVJlTm96R0RQU1dveWpCdEczbHVDcFhUYVBZckVpMHhtNjlHZGxu?=
+ =?utf-8?B?RmRIaHFjK2F4SjNxS1YvZkYzbWx5UGl6S2JrRXhKd0kxQThwQUtDMUo2U1l6?=
+ =?utf-8?B?TUhZSWpYdXhpVk5NMEo5dWdQQm84eFFCQ2xkUHhreFRKUm1qL3AyUlNjS0JJ?=
+ =?utf-8?B?TVpjQlBZOXBtcFNvUnV1S1V2ZEpPUmxwYXJIR2JGdFFlbkduTG1mWVgvWnNV?=
+ =?utf-8?B?Zm4wUUYrVzY5WW5LYTcreVpOd2FtNnpCemtjOFl0ak1YZEZrK3k4a0tOQTZN?=
+ =?utf-8?B?L0l3N3pJelh2bktmVWV2TTdYc3pkWlpnNlNMMjFlMVNSZDJQL1FVRzBmTWdj?=
+ =?utf-8?B?WGxvSy9MVUdFV09KQ0dZV0VHbjN5a1dvaGpkQnptam5uTWVoeGVxenYzdXYv?=
+ =?utf-8?B?eDVqTmtETUNLak1CazBuakoxRTZNSGw4VWRtQTVvVWJxbUIzcUJEUytESm9s?=
+ =?utf-8?B?Qk1oZzNxY3ZCV25FUlBRcEFNclllYWVjcWtzUWxLa1oxVEs3N1JFQ2VZZXZt?=
+ =?utf-8?B?UHRicFZVTjhqaEcvRlBDZG5yei9GSk1xdmYvVzlnb2lhYWI3bEFWMXl0a0Zs?=
+ =?utf-8?B?U1dlUHhtOWdZb1h2eFpMZU50TnhqZkJ3ekp2azJsZGppTHpBWHMyNFJGR1ND?=
+ =?utf-8?B?dVNZemYxUEorMmpabWhkMWZyZE9OMHpiMTJQZUFxQmN2MFROUVdUT0t4YjBu?=
+ =?utf-8?B?NVE3RnhyOXhseWlJYnYzbHl5M3k3QndFOFBzaXBLM1oxdTBnOFRxZ0FWNlNP?=
+ =?utf-8?B?bWxXc29oZWxuVHNXUk5JbTdqdFQrK3V0VzNxdVhrWS9XdWJvSG1Ick1zZnAx?=
+ =?utf-8?B?K3hmenBoUXZDWG01ajY0VkdiSjJYTUh6RnRBKzNEOHcrWmNvREVxbThWMUZi?=
+ =?utf-8?B?QWZXZG5MTkVrOUxqKzlpYWpUbE9CVE1Wdm1jY3JoUWNrQm8wY1Y4UnQyRkYv?=
+ =?utf-8?B?MFJhNGlIWHlBODRzamZUeENnZ0tqMVF5N2Uzc0prNC96dXl0TVdxR3UwRFor?=
+ =?utf-8?B?aE1IZFVvZXJtQ25MWUVxenN5ZEhTZHgvdEVwYjZrMHhhWUd2TW10RUsvRzZC?=
+ =?utf-8?B?N3BHSSt2UXFWVkh0c1NiS2pNOUQ0dGlEL2xFZmJlakRmcUVoemY0QnI1dmR2?=
+ =?utf-8?B?RlRMNVY1cGdlNVZBaVAycDNlVDB5U3gvbTJoNWFXalFwTC9MZTZndlBDMVRQ?=
+ =?utf-8?B?ZXhsWWt6d0lwMFlSODNxdWJZZmdpYllxQW1MY0Q2dERxN00zQ2dkdVQzZndN?=
+ =?utf-8?B?WS9PTDR2TnZ2MjRCY1lxZkJ4bXhHQld4WS9KV1dqN0tnU2ZacVJhNEtPcjB3?=
+ =?utf-8?B?NWNPNURMMGFNUE9tZFlBazdQWEdGZ0VHV1c3UC9xSWZ6eEllQVUwVWVzV05m?=
+ =?utf-8?B?aGF0U0VrSjlCbllXbGZ4UkZBWTgybnUyNUVRbk51Zjk3QWxwRUVyQXBaVUI2?=
+ =?utf-8?B?S2h5MXhVQk1rUG4wMnY4b2hpV09RVkVxbzAzMmdnbDdKNy9sVUJrbk0xYVpw?=
+ =?utf-8?B?WGc9PQ==?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1465ea1-b428-483c-8c05-08d9fffb7257
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8107.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 05:29:27.1103
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V4macZq3ALJI/kA3fuihijo+BxPt5gxWOm4zTA9CpDQS0CjGO0xliePSzTeSYeimsveuZ5XzD3ax8SsPq66o0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7206
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interrupt Storming occurred with a very low probability of occurrence.
-The occurrence of the problem is estimated to be caused by a race condition
-between the top half and bottom half of the interrupt service routine.
-It was confirmed that variables have values that cannot be held
-when ISR occurs through normal H / W irq.
-=====================================================================
-(struct dwc3_event_buffer *) ev_buf = 0xFFFFFF88DE6A0380 (
-	(void *) buf = 0xFFFFFFC01594E000,
-	(void *) cache = 0xFFFFFF88DDC14080,
-	(unsigned int) length = 4096,
-	(unsigned int) lpos = 0,
-	(unsigned int) count = 0, <<
-	(unsigned int) flags = 1, <<
-=====================================================================
-"evt->count=0" and "evt->flags=DWC3_EVENT_PENDING" cannot be set
-at the same time.
+Instead of determining buf_info string in the caller of
+check_buffer_access(), we can determine whether the register type is read-only
+through type_is_rdonly_mem() helper inside check_buffer_access() and construct
+buf_info, making the code slightly cleaner.
 
-We estimate that a race condition occurred
-between dwc3_interrupt() and dwc3_process_event_buf()
-called by dwc3_gadget_process_pending_events().
-So I try to block the race condition through spin_lock.
-
-Signed-off-by: JaeHun Jung <jh0801.jung@samsung.com>
+Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
 ---
- drivers/usb/dwc3/gadget.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index a0c883f19a41..88f9ecf8cbfe 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -4172,6 +4172,7 @@ static irqreturn_t dwc3_thread_interrupt(int irq, void *_evt)
- static irqreturn_t dwc3_check_event_buf(struct dwc3_event_buffer *evt)
+Initially I tried to remove the buf_info argument from
+__check_buffer_access(), however check_tp_buffer_access() uses "tracepoint"
+(rather than the usual "rdonly"/"rdwr") as it's buf_info, thus I decide to
+leave __check_buffer_access() as-is, and only change check_buffer_access()
+instead.
+
+ kernel/bpf/verifier.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index a39eedecc93a..518238029e46 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4047,9 +4047,9 @@ static int check_buffer_access(struct bpf_verifier_env *env,
+ 			       const struct bpf_reg_state *reg,
+ 			       int regno, int off, int size,
+ 			       bool zero_size_allowed,
+-			       const char *buf_info,
+ 			       u32 *max_access)
  {
- 	struct dwc3 *dwc = evt->dwc;
-+	unsigned long flags;
- 	u32 amount;
- 	u32 count;
++	const char *buf_info = type_is_rdonly_mem(reg->type) ? "rdonly" : "rdwr";
+ 	int err;
  
-@@ -4188,13 +4189,18 @@ static irqreturn_t dwc3_check_event_buf(struct dwc3_event_buffer *evt)
- 	 * irq event handler completes before caching new event to prevent
- 	 * losing events.
- 	 */
--	if (evt->flags & DWC3_EVENT_PENDING)
-+	spin_lock_irqsave(&dwc->lock, flags);
-+	if (evt->flags & DWC3_EVENT_PENDING) {
-+		spin_unlock_irqrestore(&dwc->lock, flags);
- 		return IRQ_HANDLED;
-+	}
+ 	err = __check_buffer_access(env, buf_info, reg, regno, off, size);
+@@ -4543,7 +4543,6 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 					      value_regno);
+ 	} else if (base_type(reg->type) == PTR_TO_BUF) {
+ 		bool rdonly_mem = type_is_rdonly_mem(reg->type);
+-		const char *buf_info;
+ 		u32 *max_access;
  
- 	count = dwc3_readl(dwc->regs, DWC3_GEVNTCOUNT(0));
- 	count &= DWC3_GEVNTCOUNT_MASK;
--	if (!count)
-+	if (!count) {
-+		spin_unlock_irqrestore(&dwc->lock, flags);
- 		return IRQ_NONE;
-+	}
+ 		if (rdonly_mem) {
+@@ -4552,15 +4551,13 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 					regno, reg_type_str(env, reg->type));
+ 				return -EACCES;
+ 			}
+-			buf_info = "rdonly";
+ 			max_access = &env->prog->aux->max_rdonly_access;
+ 		} else {
+-			buf_info = "rdwr";
+ 			max_access = &env->prog->aux->max_rdwr_access;
+ 		}
  
- 	evt->count = count;
- 	evt->flags |= DWC3_EVENT_PENDING;
-@@ -4210,6 +4216,7 @@ static irqreturn_t dwc3_check_event_buf(struct dwc3_event_buffer *evt)
- 		memcpy(evt->cache, evt->buf, count - amount);
+ 		err = check_buffer_access(env, reg, regno, off, size, false,
+-					  buf_info, max_access);
++					  max_access);
  
- 	dwc3_writel(dwc->regs, DWC3_GEVNTCOUNT(0), count);
-+	spin_unlock_irqrestore(&dwc->lock, flags);
+ 		if (!err && value_regno >= 0 && (rdonly_mem || t == BPF_READ))
+ 			mark_reg_unknown(env, regs, value_regno);
+@@ -4823,7 +4820,6 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+ 				   struct bpf_call_arg_meta *meta)
+ {
+ 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+-	const char *buf_info;
+ 	u32 *max_access;
  
- 	return IRQ_WAKE_THREAD;
- }
+ 	switch (base_type(reg->type)) {
+@@ -4850,15 +4846,13 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+ 			if (meta && meta->raw_mode)
+ 				return -EACCES;
+ 
+-			buf_info = "rdonly";
+ 			max_access = &env->prog->aux->max_rdonly_access;
+ 		} else {
+-			buf_info = "rdwr";
+ 			max_access = &env->prog->aux->max_rdwr_access;
+ 		}
+ 		return check_buffer_access(env, reg, regno, reg->off,
+ 					   access_size, zero_size_allowed,
+-					   buf_info, max_access);
++					   max_access);
+ 	case PTR_TO_STACK:
+ 		return check_stack_range_initialized(
+ 				env,
 -- 
-2.31.1
+2.35.1
 
