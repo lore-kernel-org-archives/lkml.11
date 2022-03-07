@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D98C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A919C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236772AbiCGJY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
+        id S236782AbiCGJZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237218AbiCGJXe (ORCPT
+        with ESMTP id S237171AbiCGJX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:23:34 -0500
+        Mon, 7 Mar 2022 04:23:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB34553702;
-        Mon,  7 Mar 2022 01:22:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF4551327;
+        Mon,  7 Mar 2022 01:22:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE336B810C3;
-        Mon,  7 Mar 2022 09:22:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21ACBC340E9;
-        Mon,  7 Mar 2022 09:22:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9367B810BC;
+        Mon,  7 Mar 2022 09:21:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 524E1C340E9;
+        Mon,  7 Mar 2022 09:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646644927;
-        bh=z26jdcz8ETQiT0yMjJkEpAN2tFFILIDjhzcZj/5HSQU=;
+        s=korg; t=1646644918;
+        bh=p3NpOOloCl+up0CATJ/0J6lmGf3pYfYwJI3ux1MhqfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VfarMTS+Rb2OMsXAMoQ6IS7KdDAZJxaPt3tYfOTUGExexJpc6vydk+24zzxFpfOPh
-         abOoIpp+EeJsNnKfpr8RQ6+RfxwVyB08NUjD/whzFKnm//0b7RoiNmC+MvSvxpgCfE
-         BioIQ1eeX7UUw/RB34z8vg1CCpkbCGjdoFVjLOvc=
+        b=IoftWsXUwxzLimZdYJC4r9IZ1Dp7TqXZaMGhd+jT4NEZpxLnAsLnXPbOVr3b5WoD8
+         WczGHKkCOZXyJ80xRocgnquHJmuFwGVzGnK9keUqjyEwKJkG9r6qgZGCdKPoWj/H6J
+         v/KHBGKHqz1eJ8SRAuY6UUe3/n5EzmBFQ3lKfRaA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 06/42] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Mon,  7 Mar 2022 10:18:40 +0100
-Message-Id: <20220307091636.335953428@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 03/42] i2c: bcm2835: Avoid clock stretching timeouts
+Date:   Mon,  7 Mar 2022 10:18:37 +0100
+Message-Id: <20220307091636.248501558@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.146155347@linuxfoundation.org>
 References: <20220307091636.146155347@linuxfoundation.org>
@@ -48,38 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Eric Anholt <eric@anholt.net>
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+[ Upstream commit 9495b9b31abe525ebd93da58de2c88b9f66d3a0e ]
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+The CLKT register contains at poweron 0x40, which at our typical 100kHz
+bus rate means .64ms. But there is no specified limit to how long devices
+should be able to stretch the clocks, so just disable the timeout. We
+still have a timeout wrapping the entire transfer.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+BugLink: https://github.com/raspberrypi/linux/issues/3064
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-bcm2835.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index 12fa48e380cf5..4f8dfe77da3c5 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -118,8 +118,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 4d19254f78c8a..db1ab9ccc30e7 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -28,6 +28,11 @@
+ #define BCM2835_I2C_FIFO	0x10
+ #define BCM2835_I2C_DIV		0x14
+ #define BCM2835_I2C_DEL		0x18
++/*
++ * 16-bit field for the number of SCL cycles to wait after rising SCL
++ * before deciding the slave is not responding. 0 disables the
++ * timeout detection.
++ */
+ #define BCM2835_I2C_CLKT	0x1c
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
-+		}
+ #define BCM2835_I2C_C_READ	BIT(0)
+@@ -398,6 +403,12 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 	adap->dev.of_node = pdev->dev.of_node;
+ 	adap->quirks = &bcm2835_i2c_quirks;
  
- 		pm_runtime_barrier(schan->dev);
++	/*
++	 * Disable the hardware clock stretching timeout. SMBUS
++	 * specifies a limit for how long the device can stretch the
++	 * clock, but core I2C doesn't.
++	 */
++	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_CLKT, 0);
+ 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, 0);
  
+ 	ret = i2c_add_adapter(adap);
 -- 
 2.34.1
 
