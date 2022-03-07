@@ -2,140 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2257CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 20:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245315AbiCGUxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 15:53:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        id S244229AbiCGUx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:53:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245320AbiCGUwy (ORCPT
+        with ESMTP id S237646AbiCGUxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 15:52:54 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569396E348;
-        Mon,  7 Mar 2022 12:51:59 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id w4so4747181ply.13;
-        Mon, 07 Mar 2022 12:51:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yR4pOnNNi+W5qKC3ntFghkt+5izb2a8c8+qMVgl1ApA=;
-        b=NMPhOzq/mMkrZi5s2ob46xsjhUImMM+S51Ohw253Be5IB2AqUfkoGWIsRG78GPNIe9
-         l49K8cC320ZDVF6hl6ODxby80/z1d5Dg2rk8YnabapY45nxqBojFbGsAOxe8jR+Rv3/5
-         s4uZnESwccKzVjg8DwSBZ5kzofetAnaVvOMuBRdni8yqHc0+KXC8fGLoT6Sq8SxhDkb1
-         j1vlzr8iCKaO2GIuxisUt2ZU4XAKG2dgWce+2fOmMZs05WasPdJw6LfyXgbGzK/Tp+p7
-         cuBZH5YD7194STKKMIyxTkosa/8JXebt2/kqqZgWLwHwkoYCUlQ7WeMfWb7XU7xGPpGY
-         SizQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yR4pOnNNi+W5qKC3ntFghkt+5izb2a8c8+qMVgl1ApA=;
-        b=5JSjylugoIY/mB5sdKLgER41jkjkxxNG099bbV1lqK2//kkQjr5eT0nwwXtpzxkicq
-         K1r7+XN5vndWQiwqZbB9x+gYQKRA4zD2f8m5skjizhc7BIpMS05D4x77UFXf0wU0r5Y3
-         40PPgOG1RZYsezWx3yPWrJJNerpHZGi5yvgTy1CehzR53vJ3zXxMd3R6idnNQTMmIl/5
-         0ITIfemf+qUNSb/P1yEODJKLPkT6y8F1+dg0AeN6bEyZqEmuwWJlr9lEHsA6GFmHfClR
-         +6LzDB0ccT6mTkKCg0GMBFJx04j6KhtXVgbfJ2gXIssHSpEoID7m6cwsGTgmFV0HRNfu
-         Cudw==
-X-Gm-Message-State: AOAM530/549iLNOFg74HvNxi7omwQH1kgBwOx72qesChFoNIkJjPOqky
-        5utQmQcxvOgE3/slANX8c3M=
-X-Google-Smtp-Source: ABdhPJxHqcU3WIyLk0oEV7FvoQHKglguPDulf9d2KfRb9YdFvgiso16bvhyigvSgEvM7VMU799xHcw==
-X-Received: by 2002:a17:902:7595:b0:151:7b0b:11c4 with SMTP id j21-20020a170902759500b001517b0b11c4mr14337470pll.126.1646686318792;
-        Mon, 07 Mar 2022 12:51:58 -0800 (PST)
-Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id f7-20020a056a0022c700b004e11d3d0459sm17440929pfj.65.2022.03.07.12.51.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 12:51:58 -0800 (PST)
-Date:   Tue, 8 Mar 2022 02:21:56 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 6/8] compiler_types.h: Add unified
- __diag_ignore_all for GCC/LLVM
-Message-ID: <20220307205156.g5pv4jg3iihhffxc@apollo.legion>
-References: <20220304224645.3677453-1-memxor@gmail.com>
- <20220304224645.3677453-7-memxor@gmail.com>
- <YiZdSoNcaESkzvBs@google.com>
+        Mon, 7 Mar 2022 15:53:52 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3041CFD8
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 12:52:56 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6100:2d37:4115:c358])
+        by xavier.telenet-ops.be with bizsmtp
+        id 3Ysq2700J1Yj8bA01Ysq8m; Mon, 07 Mar 2022 21:52:54 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLY-0036Qf-Bk; Mon, 07 Mar 2022 21:52:48 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRKLX-0034hT-Tz; Mon, 07 Mar 2022 21:52:47 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 03/10] drm/client: Use actual bpp when allocating frame buffers
+Date:   Mon,  7 Mar 2022 21:52:38 +0100
+Message-Id: <8f29a983d42d9d68bd8cae2f9481d3c139f8750a.1646683502.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646683502.git.geert@linux-m68k.org>
+References: <cover.1646683502.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiZdSoNcaESkzvBs@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 01:00:18AM IST, Nick Desaulniers wrote:
-> On Sat, Mar 05, 2022 at 04:16:43AM +0530, Kumar Kartikeya Dwivedi wrote:
-> > Add a __diag_ignore_all macro, to ignore warnings for both GCC and LLVM,
-> > without having to specify the compiler type and version. By default, GCC
-> > 8 and clang 11 are used. This will be used by bpf subsystem to ignore
-> > -Wmissing-prototypes warning for functions that are meant to be global
-> > functions so that they are in vmlinux BTF, but don't have a prototype.
-> >
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > ---
-> >  include/linux/compiler-clang.h | 3 +++
-> >  include/linux/compiler-gcc.h   | 3 +++
-> >  include/linux/compiler_types.h | 4 ++++
-> >  3 files changed, 10 insertions(+)
-> >
-> > diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-> > index f1aa41d520bd..babb1347148c 100644
-> > --- a/include/linux/compiler-clang.h
-> > +++ b/include/linux/compiler-clang.h
-> > @@ -90,3 +90,6 @@
-> >  #else
-> >  #define __diag_clang_11(s)
-> >  #endif
-> > +
-> > +#define __diag_ignore_all(option, comment) \
-> > +	__diag_clang(11, ignore, option)
-> > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> > index ccbbd31b3aae..d364c98a4a80 100644
-> > --- a/include/linux/compiler-gcc.h
-> > +++ b/include/linux/compiler-gcc.h
-> > @@ -151,6 +151,9 @@
-> >  #define __diag_GCC_8(s)
-> >  #endif
-> >
-> > +#define __diag_ignore_all(option, comment) \
-> > +	__diag_GCC(8, ignore, option)
->
-> While this approach will work for clang, it doesn't seem scalable for
-> GCC. Documentation/process/changes.rst documents that we support gcc
-> 5.1+. This approach will only disable diagnostics for gcc 8+.
->
+When allocating a frame buffer, the number of bits per pixel needed is
+derived from the deprecated drm_format_info.cpp[] field.  While this
+works for formats using less than 8 bits per pixel, it does lead to a
+large overallocation.
 
-ISTM the original commit adding these macros only defined them for GCC 8+, so
-coverage for previous versions is already not there, unrelated to this change.
-I am not sure what the reason for that was, though.
+Reduce memory consumption by using the actual number of bits per pixel
+instead.
 
-> > +
-> >  /*
-> >   * Prior to 9.1, -Wno-alloc-size-larger-than (and therefore the "alloc_size"
-> >   * attribute) do not work, and must be disabled.
-> > diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> > index 3f31ff400432..8e5d2f50f951 100644
-> > --- a/include/linux/compiler_types.h
-> > +++ b/include/linux/compiler_types.h
-> > @@ -371,4 +371,8 @@ struct ftrace_likely_data {
-> >  #define __diag_error(compiler, version, option, comment) \
-> >  	__diag_ ## compiler(version, error, option)
-> >
-> > +#ifndef __diag_ignore_all
-> > +#define __diag_ignore_all(option, comment)
-> > +#endif
-> > +
-> >  #endif /* __LINUX_COMPILER_TYPES_H */
-> > --
-> > 2.35.1
-> >
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
+v2:
+  - Add Acked-by.
+---
+ drivers/gpu/drm/drm_client.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---
-Kartikeya
+diff --git a/drivers/gpu/drm/drm_client.c b/drivers/gpu/drm/drm_client.c
+index ce45e380f4a2028f..c6a279e3de95591a 100644
+--- a/drivers/gpu/drm/drm_client.c
++++ b/drivers/gpu/drm/drm_client.c
+@@ -264,7 +264,7 @@ drm_client_buffer_create(struct drm_client_dev *client, u32 width, u32 height, u
+ 
+ 	dumb_args.width = width;
+ 	dumb_args.height = height;
+-	dumb_args.bpp = info->cpp[0] * 8;
++	dumb_args.bpp = drm_format_info_bpp(info, 0);
+ 	ret = drm_mode_create_dumb(dev, &dumb_args, client->file);
+ 	if (ret)
+ 		goto err_delete;
+@@ -372,7 +372,7 @@ static int drm_client_buffer_addfb(struct drm_client_buffer *buffer,
+ 	int ret;
+ 
+ 	info = drm_format_info(format);
+-	fb_req.bpp = info->cpp[0] * 8;
++	fb_req.bpp = drm_format_info_bpp(info, 0);
+ 	fb_req.depth = info->depth;
+ 	fb_req.width = width;
+ 	fb_req.height = height;
+-- 
+2.25.1
+
