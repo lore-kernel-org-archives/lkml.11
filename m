@@ -2,102 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 289FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4200DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233444AbiCGKhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:37:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
+        id S237751AbiCGKhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:37:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242171AbiCGKLQ (ORCPT
+        with ESMTP id S242158AbiCGKLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:11:16 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3418594B;
-        Mon,  7 Mar 2022 01:54:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646646873; x=1678182873;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oNXACFYKG4F5Tz1+rdZejBKBbY4j/rF46x+4mIppVY4=;
-  b=ekD9XG3EEPMtqx3EXWbBgcwMGGMmQJEXcLmOw/ORfSPAvktvZOuE6Mzo
-   ikuBODzTmCzTfUGMy5qFrFW9tCk8bH0WaEQLK3DkR1qxpLaQUHGpl0NOK
-   /1e3IrQ5huTuO1vNMsncTfWosCLj37+QvHFng6IPkvnDFqgSlNt9rO23U
-   2ua7JTP1R2UdFMDboz49kEAD7Fea1gCOEb1S+7j3j5EJ6jNRbRl1E/C5D
-   mSuUGzezBMPmmTDZj1aWJ3tSTJuxVN1nnckCChJSKvkVL51Sfihn0BNUa
-   E9Z/CxiD+X7JNcHC09t+zrY/y6Fe8N/BNB6l5rCXHy+ovLRS0nkA7jjVX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254081098"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="254081098"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:53:54 -0800
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="553090025"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:53:53 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRA3A-00ChEM-UW;
-        Mon, 07 Mar 2022 11:53:08 +0200
-Date:   Mon, 7 Mar 2022 11:53:08 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] gpiolib: check for overflow when reading the 'ngpios'
- property
-Message-ID: <YiXWBAlQ4GHiPkDg@smile.fi.intel.com>
-References: <20220306193420.99714-1-brgl@bgdev.pl>
- <CAHp75Vfgsa5Ru5aA7Bx_mV--h-GFKSX9Uocf+njvh8Rc1yNTow@mail.gmail.com>
- <CAHp75Vd8Z-XmSE-JxM55rLAzMqFqm5D7B2HsQ+P_vdh==deOJQ@mail.gmail.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E82887B5;
+        Mon,  7 Mar 2022 01:54:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38FD460B6F;
+        Mon,  7 Mar 2022 09:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350B8C340E9;
+        Mon,  7 Mar 2022 09:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646646871;
+        bh=TGDEm7/2812po9GORf08IwKMORinJ4Qursm9zlLlTP8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=evL89cgD7KoPlvMsBHd+gtFRZuh+73qsTrfdb1c2KDzJ/JY61dShzQwjU6mxrDDWb
+         KKI4FsfMNrlathgyHGdDTzbGg9tO6oDdUSmXFnJO9PSiT3dTougRAn7juAo5ERlaXb
+         tRAS7Zrqq+3+MLQq5Fi1nj2oTXxh0eveg5DwNXZk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 120/186] arm64: dts: rockchip: drop pclk_xpcs from gmac0 on rk3568
+Date:   Mon,  7 Mar 2022 10:19:18 +0100
+Message-Id: <20220307091657.434434017@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
+References: <20220307091654.092878898@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vd8Z-XmSE-JxM55rLAzMqFqm5D7B2HsQ+P_vdh==deOJQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 12:23:03AM +0200, Andy Shevchenko wrote:
-> On Mon, Mar 7, 2022 at 12:19 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Mon, Mar 7, 2022 at 12:11 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> > >
-> > > The ngpio fields both in struct gpio_device as well as gpio_chip are
-> > > 16-bit unsigned integers. Let's not risk an overflow and check if the
-> > > property value represented as a 32-bit unsigned integer is not greater
-> > > than U16_MAX.
-> >
-> > ...
-> >
-> > > +               if (ngpios > U16_MAX) {
-> > > +                       ret = EINVAL;
-> > > +                       goto err_free_descs;
-> > > +               }
-> >
-> > I don't think it's a fatal error in this case. I would perhaps print a
-> > warning and simply use a masked (which is done implicitly by an
-> > assignment of the different type) value. Note, the above is buggy on
-> > the buggy DTs, where the upper part of the value is not used. After
-> > this patch you effectively make a regression on, yes, broken DTs.
-> 
-> Like
-> 
->     if (ngpios > U16_MAX)
->         chip_warn(gc, "line cnt %u is greater than supported; use
-> %u\n", ngpios, (u16)ngpio);
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Or to be on safer side move this after == 0 check as
+[ Upstream commit 85a8bccfa945680dc561f06b65ea01341d2033fc ]
 
-	if (gc->ngpio != ngpios)
-		chip_warn(gc, "line cnt %u is greater than supported; use %u\n", ngpios, gc->ngpio);
+pclk_xpcs is not supported by mainline driver and breaks dtbs_check
 
+following warnings occour, and many more
+
+rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clocks:
+    [[15, 386], [15, 389], [15, 389], [15, 184], [15, 180], [15, 181],
+    [15, 389], [15, 185], [15, 172]] is too long
+	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clock-names:
+    ['stmmaceth', 'mac_clk_rx', 'mac_clk_tx', 'clk_mac_refout', 'aclk_mac',
+    'pclk_mac', 'clk_mac_speed', 'ptp_ref', 'pclk_xpcs'] is too long
+	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+
+after removing it, the clock and other warnings are gone.
+
+pclk_xpcs on gmac is used to support QSGMII, but this requires a driver
+supporting it.
+Once xpcs support is introduced, the clock can be added to the
+documentation and both controllers.
+
+Fixes: b8d41e5053cd ("arm64: dts: rockchip: add gmac0 node to rk3568")
+Co-developed-by: Peter Geis <pgwipeout@gmail.com>
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Acked-by: Michael Riesch <michael.riesch@wolfvision.net>
+Link: https://lore.kernel.org/r/20220123133510.135651-1-linux@fw-web.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/rockchip/rk3568.dtsi | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+index 2fd313a295f8..d91df1cde736 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+@@ -32,13 +32,11 @@
+ 		clocks = <&cru SCLK_GMAC0>, <&cru SCLK_GMAC0_RX_TX>,
+ 			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_MAC0_REFOUT>,
+ 			 <&cru ACLK_GMAC0>, <&cru PCLK_GMAC0>,
+-			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>,
+-			 <&cru PCLK_XPCS>;
++			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>;
+ 		clock-names = "stmmaceth", "mac_clk_rx",
+ 			      "mac_clk_tx", "clk_mac_refout",
+ 			      "aclk_mac", "pclk_mac",
+-			      "clk_mac_speed", "ptp_ref",
+-			      "pclk_xpcs";
++			      "clk_mac_speed", "ptp_ref";
+ 		resets = <&cru SRST_A_GMAC0>;
+ 		reset-names = "stmmaceth";
+ 		rockchip,grf = <&grf>;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
 
 
