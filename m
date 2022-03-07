@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00587C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234649AbiCGKfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:35:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        id S238646AbiCGKfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:35:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242641AbiCGKLm (ORCPT
+        with ESMTP id S242613AbiCGKLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 05:11:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F09E8BF14;
-        Mon,  7 Mar 2022 01:55:36 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E58C8BE33;
+        Mon,  7 Mar 2022 01:55:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77BB460929;
-        Mon,  7 Mar 2022 09:55:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809DCC340F4;
-        Mon,  7 Mar 2022 09:55:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5762360A27;
+        Mon,  7 Mar 2022 09:55:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32EE8C340E9;
+        Mon,  7 Mar 2022 09:55:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646646934;
-        bh=L7RKs74ysQEn+9s6AjvZhS1X91Rg/qbUhMXlbmV99dg=;
+        s=korg; t=1646646931;
+        bh=AbS0plN3wl9M/BBk2Eh0BdNxchcCA1b1qetcw+4wI9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+Ir1urEYVolOt44Nb9MQmqmfpv1IIrTMyisDeX6JUfRtte2hYCwW0sJLt9+gdLil
-         QMVMkN02NE2Y8iAZ7yy/MfNfCD93mD155PVTNSUZv60QTT+DgnwPP5DXPz82lFRbBD
-         wJv6QYCL0xZDiqLKScNnz/LKaTElj+TrWtAcm9w4=
+        b=gvl+N00H9lStVBIMcIfSHejlfEEs0PydRiphLCVSTvz49e2yMdngRzi4FTEchyKuk
+         CZ/flVNu0irfb1AYLDbJyyL7RwfO+kWVE6ndHY5jfIUkuzki/3k3qBSP1O54GjRYvZ
+         qsq/1H7VUkmR1eFW1csSCNJe9VDeMY7aUh2UDqGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 138/186] net: stmmac: enhance XDP ZC driver level switching performance
-Date:   Mon,  7 Mar 2022 10:19:36 +0100
-Message-Id: <20220307091657.936928509@linuxfoundation.org>
+Subject: [PATCH 5.16 137/186] can: etas_es58x: change opened_channel_cnts type from atomic_t to u8
+Date:   Mon,  7 Mar 2022 10:19:35 +0100
+Message-Id: <20220307091657.909256173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091654.092878898@linuxfoundation.org>
 References: <20220307091654.092878898@linuxfoundation.org>
@@ -50,253 +50,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit ac746c8520d9d056b6963ecca8ff1da9929d02f1 ]
+[ Upstream commit f4896248e9025ff744b4147e6758274a1cb8cbae ]
 
-The previous stmmac_xdp_set_prog() implementation uses stmmac_release()
-and stmmac_open() which tear down the PHY device and causes undesirable
-autonegotiation which causes a delay whenever AFXDP ZC is setup.
+The driver uses an atomic_t variable: struct
+es58x_device::opened_channel_cnt to keep track of the number of opened
+channels in order to only allocate memory for the URBs when this count
+changes from zero to one.
 
-This patch introduces two new functions that just sufficiently tear
-down DMA descriptors, buffer, NAPI process, and IRQs and reestablish
-them accordingly in both stmmac_xdp_release() and stammac_xdp_open().
+While the intent was to prevent race conditions, the choice of an
+atomic_t turns out to be a bad idea for several reasons:
 
-As the results of this enhancement, we get rid of transient state
-introduced by the link auto-negotiation:
+- implementation is incorrect and fails to decrement
+  opened_channel_cnt when the URB allocation fails as reported in
+  [1].
 
-$ ./xdpsock -i eth0 -t -z
+- even if opened_channel_cnt were to be correctly decremented,
+  atomic_t is insufficient to cover edge cases: there can be a race
+  condition in which 1/ a first process fails to allocate URBs
+  memory 2/ a second process enters es58x_open() before the first
+  process does its cleanup and decrements opened_channed_cnt. In
+  which case, the second process would successfully return despite
+  the URBs memory not being allocated.
 
- sock0@eth0:0 txonly xdp-drv
-                   pps            pkts           1.00
-rx                 0              0
-tx                 634444         634560
+- actually, any kind of locking mechanism was useless here because
+  it is redundant with the network stack big kernel lock
+  (a.k.a. rtnl_lock) which is being hold by all the callers of
+  net_device_ops:ndo_open() and net_device_ops:ndo_close(). c.f. the
+  ASSERST_RTNL() calls in __dev_open() [2] and __dev_close_many()
+  [3].
 
- sock0@eth0:0 txonly xdp-drv
-                   pps            pkts           1.00
-rx                 0              0
-tx                 632330         1267072
+The atmomic_t is thus replaced by a simple u8 type and the logic to
+increment and decrement es58x_device:opened_channel_cnt is simplified
+accordingly fixing the bug reported in [1]. We do not check again for
+ASSERST_RTNL() as this is already done by the callers.
 
- sock0@eth0:0 txonly xdp-drv
-                   pps            pkts           1.00
-rx                 0              0
-tx                 632438         1899584
+[1] https://lore.kernel.org/linux-can/20220201140351.GA2548@kili/T/#u
+[2] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1463
+[3] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1541
 
- sock0@eth0:0 txonly xdp-drv
-                   pps            pkts           1.00
-rx                 0              0
-tx                 632502         2532160
-
-Reported-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Link: https://lore.kernel.org/all/20220212112713.577957-1-mailhol.vincent@wanadoo.fr
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   4 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 137 +++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/stmmac_xdp.c  |   4 +-
- 3 files changed, 139 insertions(+), 6 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 9 +++++----
+ drivers/net/can/usb/etas_es58x/es58x_core.h | 8 +++++---
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 873b9e3e5da2..05b5371ca036 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -334,8 +334,8 @@ void stmmac_set_ethtool_ops(struct net_device *netdev);
- int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags);
- void stmmac_ptp_register(struct stmmac_priv *priv);
- void stmmac_ptp_unregister(struct stmmac_priv *priv);
--int stmmac_open(struct net_device *dev);
--int stmmac_release(struct net_device *dev);
-+int stmmac_xdp_open(struct net_device *dev);
-+void stmmac_xdp_release(struct net_device *dev);
- int stmmac_resume(struct device *dev);
- int stmmac_suspend(struct device *dev);
- int stmmac_dvr_remove(struct device *dev);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 240dffe20fc3..2b3752bd1ac9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3679,7 +3679,7 @@ static int stmmac_request_irq(struct net_device *dev)
-  *  0 on success and an appropriate (-)ve integer as defined in errno.h
-  *  file on failure.
-  */
--int stmmac_open(struct net_device *dev)
-+static int stmmac_open(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int mode = priv->plat->phy_interface;
-@@ -3803,7 +3803,7 @@ static void stmmac_fpe_stop_wq(struct stmmac_priv *priv)
-  *  Description:
-  *  This is the stop entry point of the driver.
-  */
--int stmmac_release(struct net_device *dev)
-+static int stmmac_release(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	u32 chan;
-@@ -6473,6 +6473,139 @@ void stmmac_enable_tx_queue(struct stmmac_priv *priv, u32 queue)
- 	spin_unlock_irqrestore(&ch->lock, flags);
- }
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index fb07c33ba0c3..78d0a5947ba1 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -1787,7 +1787,7 @@ static int es58x_open(struct net_device *netdev)
+ 	struct es58x_device *es58x_dev = es58x_priv(netdev)->es58x_dev;
+ 	int ret;
  
-+void stmmac_xdp_release(struct net_device *dev)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	u32 chan;
-+
-+	/* Disable NAPI process */
-+	stmmac_disable_all_queues(priv);
-+
-+	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-+		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
-+
-+	/* Free the IRQ lines */
-+	stmmac_free_irq(dev, REQ_IRQ_ERR_ALL, 0);
-+
-+	/* Stop TX/RX DMA channels */
-+	stmmac_stop_all_dma(priv);
-+
-+	/* Release and free the Rx/Tx resources */
-+	free_dma_desc_resources(priv);
-+
-+	/* Disable the MAC Rx/Tx */
-+	stmmac_mac_set(priv, priv->ioaddr, false);
-+
-+	/* set trans_start so we don't get spurious
-+	 * watchdogs during reset
-+	 */
-+	netif_trans_update(dev);
-+	netif_carrier_off(dev);
-+}
-+
-+int stmmac_xdp_open(struct net_device *dev)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	u32 rx_cnt = priv->plat->rx_queues_to_use;
-+	u32 tx_cnt = priv->plat->tx_queues_to_use;
-+	u32 dma_csr_ch = max(rx_cnt, tx_cnt);
-+	struct stmmac_rx_queue *rx_q;
-+	struct stmmac_tx_queue *tx_q;
-+	u32 buf_size;
-+	bool sph_en;
-+	u32 chan;
-+	int ret;
-+
-+	ret = alloc_dma_desc_resources(priv);
-+	if (ret < 0) {
-+		netdev_err(dev, "%s: DMA descriptors allocation failed\n",
-+			   __func__);
-+		goto dma_desc_error;
-+	}
-+
-+	ret = init_dma_desc_rings(dev, GFP_KERNEL);
-+	if (ret < 0) {
-+		netdev_err(dev, "%s: DMA descriptors initialization failed\n",
-+			   __func__);
-+		goto init_error;
-+	}
-+
-+	/* DMA CSR Channel configuration */
-+	for (chan = 0; chan < dma_csr_ch; chan++)
-+		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-+
-+	/* Adjust Split header */
-+	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
-+
-+	/* DMA RX Channel Configuration */
-+	for (chan = 0; chan < rx_cnt; chan++) {
-+		rx_q = &priv->rx_queue[chan];
-+
-+		stmmac_init_rx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
-+				    rx_q->dma_rx_phy, chan);
-+
-+		rx_q->rx_tail_addr = rx_q->dma_rx_phy +
-+				     (rx_q->buf_alloc_num *
-+				      sizeof(struct dma_desc));
-+		stmmac_set_rx_tail_ptr(priv, priv->ioaddr,
-+				       rx_q->rx_tail_addr, chan);
-+
-+		if (rx_q->xsk_pool && rx_q->buf_alloc_num) {
-+			buf_size = xsk_pool_get_rx_frame_size(rx_q->xsk_pool);
-+			stmmac_set_dma_bfsize(priv, priv->ioaddr,
-+					      buf_size,
-+					      rx_q->queue_index);
-+		} else {
-+			stmmac_set_dma_bfsize(priv, priv->ioaddr,
-+					      priv->dma_buf_sz,
-+					      rx_q->queue_index);
-+		}
-+
-+		stmmac_enable_sph(priv, priv->ioaddr, sph_en, chan);
-+	}
-+
-+	/* DMA TX Channel Configuration */
-+	for (chan = 0; chan < tx_cnt; chan++) {
-+		tx_q = &priv->tx_queue[chan];
-+
-+		stmmac_init_tx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
-+				    tx_q->dma_tx_phy, chan);
-+
-+		tx_q->tx_tail_addr = tx_q->dma_tx_phy;
-+		stmmac_set_tx_tail_ptr(priv, priv->ioaddr,
-+				       tx_q->tx_tail_addr, chan);
-+	}
-+
-+	/* Enable the MAC Rx/Tx */
-+	stmmac_mac_set(priv, priv->ioaddr, true);
-+
-+	/* Start Rx & Tx DMA Channels */
-+	stmmac_start_all_dma(priv);
-+
-+	stmmac_init_coalesce(priv);
-+
-+	ret = stmmac_request_irq(dev);
-+	if (ret)
-+		goto irq_error;
-+
-+	/* Enable NAPI process*/
-+	stmmac_enable_all_queues(priv);
-+	netif_carrier_on(dev);
-+	netif_tx_start_all_queues(dev);
-+
-+	return 0;
-+
-+irq_error:
-+	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-+		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
-+
-+	stmmac_hw_teardown(dev);
-+init_error:
-+	free_dma_desc_resources(priv);
-+dma_desc_error:
-+	return ret;
-+}
-+
- int stmmac_xsk_wakeup(struct net_device *dev, u32 queue, u32 flags)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
-index 2a616c6f7cd0..9d4d8c3dad0a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
-@@ -119,7 +119,7 @@ int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
+-	if (atomic_inc_return(&es58x_dev->opened_channel_cnt) == 1) {
++	if (!es58x_dev->opened_channel_cnt) {
+ 		ret = es58x_alloc_rx_urbs(es58x_dev);
+ 		if (ret)
+ 			return ret;
+@@ -1805,12 +1805,13 @@ static int es58x_open(struct net_device *netdev)
+ 	if (ret)
+ 		goto free_urbs;
  
- 	need_update = !!priv->xdp_prog != !!prog;
- 	if (if_running && need_update)
--		stmmac_release(dev);
-+		stmmac_xdp_release(dev);
++	es58x_dev->opened_channel_cnt++;
+ 	netif_start_queue(netdev);
  
- 	old_prog = xchg(&priv->xdp_prog, prog);
- 	if (old_prog)
-@@ -129,7 +129,7 @@ int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
- 	priv->sph = priv->sph_cap && !stmmac_xdp_is_enabled(priv);
+ 	return ret;
  
- 	if (if_running && need_update)
--		stmmac_open(dev);
-+		stmmac_xdp_open(dev);
+  free_urbs:
+-	if (atomic_dec_and_test(&es58x_dev->opened_channel_cnt))
++	if (!es58x_dev->opened_channel_cnt)
+ 		es58x_free_urbs(es58x_dev);
+ 	netdev_err(netdev, "%s: Could not open the network device: %pe\n",
+ 		   __func__, ERR_PTR(ret));
+@@ -1845,7 +1846,8 @@ static int es58x_stop(struct net_device *netdev)
+ 
+ 	es58x_flush_pending_tx_msg(netdev);
+ 
+-	if (atomic_dec_and_test(&es58x_dev->opened_channel_cnt))
++	es58x_dev->opened_channel_cnt--;
++	if (!es58x_dev->opened_channel_cnt)
+ 		es58x_free_urbs(es58x_dev);
  
  	return 0;
- }
+@@ -2214,7 +2216,6 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ 	init_usb_anchor(&es58x_dev->tx_urbs_idle);
+ 	init_usb_anchor(&es58x_dev->tx_urbs_busy);
+ 	atomic_set(&es58x_dev->tx_urbs_idle_cnt, 0);
+-	atomic_set(&es58x_dev->opened_channel_cnt, 0);
+ 	usb_set_intfdata(intf, es58x_dev);
+ 
+ 	es58x_dev->rx_pipe = usb_rcvbulkpipe(es58x_dev->udev,
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
+index 826a15871573..e5033cb5e695 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.h
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
+@@ -373,8 +373,6 @@ struct es58x_operators {
+  *	queue wake/stop logic should prevent this URB from getting
+  *	empty. Please refer to es58x_get_tx_urb() for more details.
+  * @tx_urbs_idle_cnt: number of urbs in @tx_urbs_idle.
+- * @opened_channel_cnt: number of channels opened (c.f. es58x_open()
+- *	and es58x_stop()).
+  * @ktime_req_ns: kernel timestamp when es58x_set_realtime_diff_ns()
+  *	was called.
+  * @realtime_diff_ns: difference in nanoseconds between the clocks of
+@@ -384,6 +382,10 @@ struct es58x_operators {
+  *	in RX branches.
+  * @rx_max_packet_size: Maximum length of bulk-in URB.
+  * @num_can_ch: Number of CAN channel (i.e. number of elements of @netdev).
++ * @opened_channel_cnt: number of channels opened. Free of race
++ *	conditions because its two users (net_device_ops:ndo_open()
++ *	and net_device_ops:ndo_close()) guarantee that the network
++ *	stack big kernel lock (a.k.a. rtnl_mutex) is being hold.
+  * @rx_cmd_buf_len: Length of @rx_cmd_buf.
+  * @rx_cmd_buf: The device might split the URB commands in an
+  *	arbitrary amount of pieces. This buffer is used to concatenate
+@@ -406,7 +408,6 @@ struct es58x_device {
+ 	struct usb_anchor tx_urbs_busy;
+ 	struct usb_anchor tx_urbs_idle;
+ 	atomic_t tx_urbs_idle_cnt;
+-	atomic_t opened_channel_cnt;
+ 
+ 	u64 ktime_req_ns;
+ 	s64 realtime_diff_ns;
+@@ -415,6 +416,7 @@ struct es58x_device {
+ 
+ 	u16 rx_max_packet_size;
+ 	u8 num_can_ch;
++	u8 opened_channel_cnt;
+ 
+ 	u16 rx_cmd_buf_len;
+ 	union es58x_urb_cmd rx_cmd_buf;
 -- 
 2.34.1
 
