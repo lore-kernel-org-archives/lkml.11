@@ -2,100 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244753AbiCGSWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        id S244744AbiCGSWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:22:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244732AbiCGSWI (ORCPT
+        with ESMTP id S236052AbiCGSWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:22:08 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F4F818AC;
-        Mon,  7 Mar 2022 10:21:14 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id p8so14806498pfh.8;
-        Mon, 07 Mar 2022 10:21:14 -0800 (PST)
+        Mon, 7 Mar 2022 13:22:30 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32A882D08;
+        Mon,  7 Mar 2022 10:21:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=h8VKW3KucGatzYLlN7O6KhroN7xX8cfI5ePJaahJhr8=;
-        b=qXloZCd25pfaaeManAbAUBZpoWdm1OzF4/nEt00iEgN0AAK0QDo2rnZZLMRnkFKrpM
-         XWCPa+YpS03+E2PAO1Z0D7BnKXi9Ay8w5uVDVIeJHvK4SEJzoJ8Sg0So4dYFj/YhUPSC
-         vVF582vHCMd5D+OrGLUNs3HC9aaIfLqFXLG1gExx4a95oPzXb4KnZxDZrrc7lCS+jU4D
-         gKqJlfvN2JHzKRRZ9SYluwzjvo9kRqGeGCvA/g3UdADdFQN3agjmgEgxdlc5trCg+nU4
-         Ldol1lriGWAwt1DTwL0Gesn0PGrJrNcHpk0hTdp2h8Y0nRf2leeBXv3UyJNCnpKSbpHs
-         +W5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=h8VKW3KucGatzYLlN7O6KhroN7xX8cfI5ePJaahJhr8=;
-        b=QHrAixnZEAsk3plreO2xVOyM4kpKmDwnxdmZbARRQp38Oi/p72wcj2NFhQBPG4zMOp
-         2RQCjPwfg9DyKrtZrio+aX28nSUsiFMlKYZKRQS14g58+C+ztCGKLrocbiQlrMpf7i14
-         kqUhSaVStsPQI3JMzKz8ISFmfIeyE2N8HHp2ghgzGrFQVa7O/iAb94vU4AWD29ao7bOy
-         h5VeAuo8mgznqftnYhEGXdPypKF/ixpu++kuXmt25U5jKiLZpBr3WwL0W1mJfoqMRcWE
-         f9juHSB4eHsdM5WTR6JzXvlYcpO0gSP0u5eceUIi8zL6UHmhLWinyDwfEg8758/JcLXm
-         1fgg==
-X-Gm-Message-State: AOAM532bcw3knvG9iTkA5/zipmBgkJtkyAoiGViFGaiIfY5T9Z1ogeJQ
-        gz1hOvde+aXk2JPZGuK/IC4=
-X-Google-Smtp-Source: ABdhPJzXl4xFXnuTGX09muyLAhW0L0eXYapNdcDy+OXqESsWVXXd7ctu/NOFEPICzR+UZBOrDsOQCg==
-X-Received: by 2002:a63:c00c:0:b0:37c:942e:6c3c with SMTP id h12-20020a63c00c000000b0037c942e6c3cmr10947396pgg.336.1646677273705;
-        Mon, 07 Mar 2022 10:21:13 -0800 (PST)
-Received: from localhost.localdomain ([122.161.53.68])
-        by smtp.gmail.com with ESMTPSA id t190-20020a632dc7000000b003759f87f38csm12245809pgt.17.2022.03.07.10.21.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 10:21:13 -0800 (PST)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Cc:     Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>
-Subject: [PATCH 3/3] arm64: dts: stingray: Fix spi clock name
-Date:   Mon,  7 Mar 2022 23:51:01 +0530
-Message-Id: <20220307182101.84730-3-singh.kuldeep87k@gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646677295; x=1678213295;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3LQ0B6lHtp/iHliRWS/KHEmauspBEfzknxmYTnH13Bk=;
+  b=Jrl1mEom2jIti5Rcl/euFLNE5KXVTXlBzo3NR7g2uq1Z0jQdigRwsSUe
+   mhMOOJSyq44S4mPQENCBiLXLZw9Mhz9odvDRNSnyKkRi7pWGNe/BXu5/+
+   brjNp1Kg3fRqsRc4oHuP1XCb21Ysp+4Xnxny9jN8EgaDaCabEKUl7gd/f
+   E=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Mar 2022 10:21:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 10:21:35 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 7 Mar 2022 10:21:35 -0800
+Received: from maru.qualcomm.com (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 7 Mar 2022
+ 10:21:34 -0800
+From:   Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+To:     Wolfram Sang <wsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ingo Molnar" <mingo@redhat.com>
+CC:     Jamie Iles <quic_jiles@quicinc.com>,
+        Graeme Gregory <quic_ggregory@quicinc.com>,
+        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Subject: [PATCH] i2c: add tracepoints for I2C slave events
+Date:   Mon, 7 Mar 2022 10:20:49 -0800
+Message-ID: <20220307182049.3790905-1-quic_jaehyoo@quicinc.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220307182101.84730-1-singh.kuldeep87k@gmail.com>
-References: <20220307182101.84730-1-singh.kuldeep87k@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SPI clock name for pl022 is "sspclk" and not "spiclk".
-Also fix below dtc warning:
-clock-names:0: 'spiclk' is not one of ['SSPCLK', 'sspclk']
+I2C slave events tracepoints can be enabled by:
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+	echo 1 > /sys/kernel/tracing/events/i2c_slave/enable
+
+and logs in /sys/kernel/tracing/trace will look like:
+
+	... i2c_slave: i2c-0 a=010 WR_REQ []
+	... i2c_slave: i2c-0 a=010 WR_RCV [02]
+	... i2c_slave: i2c-0 a=010 WR_RCV [0c]
+	... i2c_slave: i2c-0 a=010   STOP []
+	... i2c_slave: i2c-0 a=010 RD_REQ [04]
+	... i2c_slave: i2c-0 a=010 RD_PRO [b4]
+	... i2c_slave: i2c-0 a=010   STOP []
+
+formatted as:
+
+	i2c-<adapter-nr>
+	a=<addr>
+	<event>
+	[<data>]
+
+trace printings can be selected by adding a filter like:
+
+	echo adapter_nr==1 >/sys/kernel/tracing/events/i2c_slave/filter
+
+Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
 ---
- arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/i2c/i2c-core-slave.c     | 15 +++++++++
+ include/linux/i2c.h              |  8 ++---
+ include/trace/events/i2c_slave.h | 57 ++++++++++++++++++++++++++++++++
+ 3 files changed, 74 insertions(+), 6 deletions(-)
+ create mode 100644 include/trace/events/i2c_slave.h
 
-diff --git a/arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi b/arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi
-index 4135246b6e72..7f1b8efd0883 100644
---- a/arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/stingray/stingray.dtsi
-@@ -519,7 +519,7 @@ ssp0: spi@180000 {
- 			reg = <0x00180000 0x1000>;
- 			interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&hsls_div2_clk>, <&hsls_div2_clk>;
--			clock-names = "spiclk", "apb_pclk";
-+			clock-names = "sspclk", "apb_pclk";
- 			num-cs = <1>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -531,7 +531,7 @@ ssp1: spi@190000 {
- 			reg = <0x00190000 0x1000>;
- 			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&hsls_div2_clk>, <&hsls_div2_clk>;
--			clock-names = "spiclk", "apb_pclk";
-+			clock-names = "sspclk", "apb_pclk";
- 			num-cs = <1>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/drivers/i2c/i2c-core-slave.c b/drivers/i2c/i2c-core-slave.c
+index 1589179d5eb9..4968a17328b3 100644
+--- a/drivers/i2c/i2c-core-slave.c
++++ b/drivers/i2c/i2c-core-slave.c
+@@ -14,6 +14,9 @@
+ 
+ #include "i2c-core.h"
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/i2c_slave.h>
++
+ int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
+ {
+ 	int ret;
+@@ -79,6 +82,18 @@ int i2c_slave_unregister(struct i2c_client *client)
+ }
+ EXPORT_SYMBOL_GPL(i2c_slave_unregister);
+ 
++int i2c_slave_event(struct i2c_client *client,
++		    enum i2c_slave_event event, u8 *val)
++{
++	int ret = client->slave_cb(client, event, val);
++
++	if (!ret)
++		trace_i2c_slave(client, event, val);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(i2c_slave_event);
++
+ /**
+  * i2c_detect_slave_mode - detect operation mode
+  * @dev: The device owning the bus
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index 7d4f52ceb7b5..fbda5ada2afc 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -392,12 +392,8 @@ enum i2c_slave_event {
+ int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb);
+ int i2c_slave_unregister(struct i2c_client *client);
+ bool i2c_detect_slave_mode(struct device *dev);
+-
+-static inline int i2c_slave_event(struct i2c_client *client,
+-				  enum i2c_slave_event event, u8 *val)
+-{
+-	return client->slave_cb(client, event, val);
+-}
++int i2c_slave_event(struct i2c_client *client,
++		    enum i2c_slave_event event, u8 *val);
+ #else
+ static inline bool i2c_detect_slave_mode(struct device *dev) { return false; }
+ #endif
+diff --git a/include/trace/events/i2c_slave.h b/include/trace/events/i2c_slave.h
+new file mode 100644
+index 000000000000..1f0c1cfbf2ef
+--- /dev/null
++++ b/include/trace/events/i2c_slave.h
+@@ -0,0 +1,57 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * I2C slave tracepoints
++ *
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM i2c_slave
++
++#if !defined(_TRACE_I2C_SLAVE_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_I2C_SLAVE_H
++
++#include <linux/i2c.h>
++#include <linux/tracepoint.h>
++
++TRACE_EVENT(i2c_slave,
++	TP_PROTO(const struct i2c_client *client, enum i2c_slave_event event,
++		 __u8 *val),
++	TP_ARGS(client, event, val),
++	TP_STRUCT__entry(
++		__field(int,				adapter_nr	)
++		__field(__u16,				addr		)
++		__field(enum i2c_slave_event,		event		)
++		__field(__u16,				len		)
++		__dynamic_array(__u8, buf, 1)				),
++
++	TP_fast_assign(
++		__entry->adapter_nr = client->adapter->nr;
++		__entry->addr = client->addr;
++		__entry->event = event;
++		switch (event) {
++		case I2C_SLAVE_READ_REQUESTED:
++		case I2C_SLAVE_READ_PROCESSED:
++		case I2C_SLAVE_WRITE_RECEIVED:
++			__entry->len = 1;
++			memcpy(__get_dynamic_array(buf), val, __entry->len);
++			break;
++		default:
++			__entry->len = 0;
++			break;
++		}
++		),
++	TP_printk("i2c-%d a=%03x %s [%*phD]",
++		__entry->adapter_nr, __entry->addr,
++		__print_symbolic(__entry->event,
++				 { I2C_SLAVE_READ_REQUESTED,	"RD_REQ" },
++				 { I2C_SLAVE_WRITE_REQUESTED,	"WR_REQ" },
++				 { I2C_SLAVE_READ_PROCESSED,	"RD_PRO" },
++				 { I2C_SLAVE_WRITE_RECEIVED,	"WR_RCV" },
++				 { I2C_SLAVE_STOP,		"  STOP" }),
++		__entry->len, __get_dynamic_array(buf)
++		));
++
++#endif /* _TRACE_I2C_SLAVE_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
 -- 
 2.25.1
 
