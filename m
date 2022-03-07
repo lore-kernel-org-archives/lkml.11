@@ -2,145 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1523BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A034C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 11:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240086AbiCGL1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:27:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
+        id S242024AbiCGL3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:29:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238245AbiCGL1Q (ORCPT
+        with ESMTP id S242204AbiCGL2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:27:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E78A4B43E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 03:03:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646651022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=gNPPt7IcCgazViAJnPdJB9z9Owb+g+PUdYAZ9hinRqk=;
-        b=V/Kot64+pJmhaGIV+uTpQRskZ1NbErh8D7kNb4orWTioIVOKo8/tHXV2bUJOh3oxpAbm47
-        bcpV6iEGniSk6ASo+LqHDiKmC/CUkQpZ9KeJ4pgXibb33gmYuXF9Y6HoPmAU9F8jDcBj4M
-        AdG1sCO+cwVVM5W06E310MCTJnL1ack=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-522-EMlJF1ksPh-zVJOcUiqd0w-1; Mon, 07 Mar 2022 06:03:39 -0500
-X-MC-Unique: EMlJF1ksPh-zVJOcUiqd0w-1
-Received: by mail-ed1-f72.google.com with SMTP id u28-20020a50d51c000000b004159ffb8f24so8416322edi.4
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 03:03:39 -0800 (PST)
+        Mon, 7 Mar 2022 06:28:00 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D6ADF2;
+        Mon,  7 Mar 2022 03:07:33 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id e2so13422275pls.10;
+        Mon, 07 Mar 2022 03:07:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=wtN3Z4hu9DNNZsfVCCWCUX7EPIjeuOZMz8lPtSM94AA=;
+        b=JVKWDWuGuWf8NOgIhnT7t6MzO2VBqqigFqsTn47zX1sjFQ2OZJZyGIl6bU7oVya5wO
+         fcIUNsnJs9CQ0EXft03h5g/13d7GQlFxIUayP6atyXPJrXGTovx674hQaizBLhuPGjb5
+         iTsUaNiwBrOA7Bl3trfN8boQLEnBdnGZE5YQMSTlKplHMW50usJ1KtIESfzHkvsWFHz7
+         uuNlVUkeJ2bjcgRyYn6lXXYUuNku5kBMTNr8Ij+hwBAApXN+wWu7qcTDPUc2HX0hL/5n
+         0hecOfpWPyDyJVyyHAhOApoCbCZrHQvQGlGCn5W5Bv/ZYLHPNjkit/Qq81AtgzMGF+cX
+         U68Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=gNPPt7IcCgazViAJnPdJB9z9Owb+g+PUdYAZ9hinRqk=;
-        b=JJDvOyCXmCdeoZuRftEqYSmmBtpBY97s2aLxoDoafYU7LnNp+Geyt69AWsMjzi8ZQc
-         dk4DTYN25l8gKTDc8GQqbbG2x081uzSQW8fqX06zgWujB2nlQxj4sdSDs6Mjf+VSs5Ki
-         0JLTOjUyvX0UIseyrYJiKoTxW60FCR18QtNYPkICyh37W04MC+O4/pQXxo/heRRUM22/
-         0tgBYUH4HwacruxTN5AJT50HHWt1/B/wy7oqvxI0psMB3g27iKy/vLUb4aJflKUlKBwf
-         GGEPZLTTtTXDHyV/WAtCQM7ye4G14sAkoQ20L9bauVoOY9oeaek/c144sQjE04x3nSWf
-         3KVA==
-X-Gm-Message-State: AOAM531pmD9+ck2QUxC0G/uVOqThT9PwAUVrXRrOkbeE6LoRunx28ttr
-        dwKTonVG3YwzHf+Qm3AXQkTFxZU3qnPYDLOh72OM2SMK2D1Bm6poyeYQiEVj4ljWklDllMFgHmN
-        WYIVUu/siMP6PiLyK5TD/XB4/
-X-Received: by 2002:a05:6402:1e91:b0:415:ecdb:bb42 with SMTP id f17-20020a0564021e9100b00415ecdbbb42mr10485776edf.367.1646651017438;
-        Mon, 07 Mar 2022 03:03:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzm045HAXHomDdQ4eh2BMpTcblB2cVV+JVDBoNGC3+rpUKylFjFOJZk78RZ+xJFhn3Hw+5UaQ==
-X-Received: by 2002:a05:6402:1e91:b0:415:ecdb:bb42 with SMTP id f17-20020a0564021e9100b00415ecdbbb42mr10485752edf.367.1646651017235;
-        Mon, 07 Mar 2022 03:03:37 -0800 (PST)
-Received: from redhat.com ([2.55.138.228])
-        by smtp.gmail.com with ESMTPSA id er12-20020a056402448c00b00413d03ac4a2sm5718316edb.69.2022.03.07.03.03.34
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=wtN3Z4hu9DNNZsfVCCWCUX7EPIjeuOZMz8lPtSM94AA=;
+        b=r+UI3tpGCx52Le6vvattU9+zbeP7PgqPTqFXLmXEdmYkhyo2f66qnuB1T1EmfpHkDP
+         VtB5x6sb4mynpNSixAVeBTitpg/NwYVN1DbfCsFovZa58KIokXr84t/EGMloqwizenLd
+         EYm0noPU2nwCqLQa/a7kuf/Mv1jR/i8H0yUbQ7e8yqlXiZ80cWixqptdUEVOAto1dxP4
+         dNTHxp+VtMfdbz0mMhpQSN/vqeuiICdiztIiKM0LfNGFgQoJlGsulnzQgr3a/QdDHUGb
+         LbTpZzTulD8Psacbj0UrwcJGyGEM9LGx6oSEApWRbNqivR5HmLadK3BasazPBAUbhVPw
+         jCsw==
+X-Gm-Message-State: AOAM532p4Rzyi/p+ezY8VLrhOJ+p9w+z98u2kX1ll6AVse/C9UXAWbMV
+        2bRIzxnqLTB0dXjeENjtmic=
+X-Google-Smtp-Source: ABdhPJxJlr2TmxJIPSEAagsB9lKMYvMjMJKCv7dNT+TRvwB+QyldjyevwGf/Fvb1qbTU3aNXCpGG7Q==
+X-Received: by 2002:a17:903:1209:b0:14e:e31c:b8c4 with SMTP id l9-20020a170903120900b0014ee31cb8c4mr11655809plh.153.1646651253190;
+        Mon, 07 Mar 2022 03:07:33 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id a22-20020a056a000c9600b004f10137a096sm16363458pfv.50.2022.03.07.03.07.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 03:03:36 -0800 (PST)
-Date:   Mon, 7 Mar 2022 06:03:32 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, david@redhat.com, jasowang@redhat.com,
-        lkp@intel.com, mail@anirudhrb.com, mst@redhat.com,
-        pasic@linux.ibm.com, sgarzare@redhat.com, si-wei.liu@oracle.com,
-        stable@vger.kernel.org,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        wang.yi59@zte.com.cn, xieyongji@bytedance.com,
-        zhang.min9@zte.com.cn
-Subject: [GIT PULL] virtio: last minute fixes
-Message-ID: <20220307060332-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+        Mon, 07 Mar 2022 03:07:33 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwrng: nomadik: Change clk_disable to clk_disable_unprepare
+Date:   Mon,  7 Mar 2022 11:07:24 +0000
+Message-Id: <20220307110728.15635-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3:
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable_unprepare.
 
-  Linux 5.17-rc6 (2022-02-27 14:36:33 -0800)
+Fix this by changing clk_disable to clk_disable_unprepare.
 
-are available in the Git repository at:
+Fixes: beca35d05cc2 ("hwrng: nomadik - use clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/char/hw_random/nomadik-rng.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 3dd7d135e75cb37c8501ba02977332a2a487dd39:
-
-  tools/virtio: handle fallout from folio work (2022-03-06 06:06:50 -0500)
-
-----------------------------------------------------------------
-virtio: last minute fixes
-
-Some fixes that took a while to get ready. Not regressions,
-but they look safe and seem to be worth to have.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Anirudh Rayabharam (1):
-      vhost: fix hung thread due to erroneous iotlb entries
-
-Michael S. Tsirkin (6):
-      virtio: unexport virtio_finalize_features
-      virtio: acknowledge all features before access
-      virtio: document virtio_reset_device
-      virtio_console: break out of buf poll on remove
-      virtio: drop default for virtio-mem
-      tools/virtio: handle fallout from folio work
-
-Si-Wei Liu (3):
-      vdpa: factor out vdpa_set_features_unlocked for vdpa internal use
-      vdpa/mlx5: should verify CTRL_VQ feature exists for MQ
-      vdpa/mlx5: add validation for VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
-
-Stefano Garzarella (2):
-      vhost: remove avail_event arg from vhost_update_avail_event()
-      tools/virtio: fix virtio_test execution
-
-Xie Yongji (3):
-      vduse: Fix returning wrong type in vduse_domain_alloc_iova()
-      virtio-blk: Don't use MAX_DISCARD_SEGMENTS if max_discard_seg is zero
-      virtio-blk: Remove BUG_ON() in virtio_queue_rq()
-
-Zhang Min (1):
-      vdpa: fix use-after-free on vp_vdpa_remove
-
- drivers/block/virtio_blk.c           | 20 ++++++-------
- drivers/char/virtio_console.c        |  7 +++++
- drivers/vdpa/mlx5/net/mlx5_vnet.c    | 34 ++++++++++++++++++++--
- drivers/vdpa/vdpa.c                  |  2 +-
- drivers/vdpa/vdpa_user/iova_domain.c |  2 +-
- drivers/vdpa/virtio_pci/vp_vdpa.c    |  2 +-
- drivers/vhost/iotlb.c                | 11 +++++++
- drivers/vhost/vdpa.c                 |  2 +-
- drivers/vhost/vhost.c                |  9 ++++--
- drivers/virtio/Kconfig               |  1 -
- drivers/virtio/virtio.c              | 56 ++++++++++++++++++++++++------------
- drivers/virtio/virtio_vdpa.c         |  2 +-
- include/linux/vdpa.h                 | 18 ++++++++----
- include/linux/virtio.h               |  1 -
- include/linux/virtio_config.h        |  3 +-
- tools/virtio/linux/mm_types.h        |  3 ++
- tools/virtio/virtio_test.c           |  1 +
- 17 files changed, 127 insertions(+), 47 deletions(-)
- create mode 100644 tools/virtio/linux/mm_types.h
+diff --git a/drivers/char/hw_random/nomadik-rng.c b/drivers/char/hw_random/nomadik-rng.c
+index 67947a19aa22..e8f9621e7954 100644
+--- a/drivers/char/hw_random/nomadik-rng.c
++++ b/drivers/char/hw_random/nomadik-rng.c
+@@ -65,14 +65,14 @@ static int nmk_rng_probe(struct amba_device *dev, const struct amba_id *id)
+ out_release:
+ 	amba_release_regions(dev);
+ out_clk:
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ 	return ret;
+ }
+ 
+ static void nmk_rng_remove(struct amba_device *dev)
+ {
+ 	amba_release_regions(dev);
+-	clk_disable(rng_clk);
++	clk_disable_unprepare(rng_clk);
+ }
+ 
+ static const struct amba_id nmk_rng_ids[] = {
+-- 
+2.17.1
 
