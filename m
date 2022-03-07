@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 10:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241863AbiCGK7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:59:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
+        id S241756AbiCGK5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 05:57:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242215AbiCGK6R (ORCPT
+        with ESMTP id S236188AbiCGK5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:58:17 -0500
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D31FB2503;
-        Mon,  7 Mar 2022 02:21:42 -0800 (PST)
-Received: by mail-ej1-f46.google.com with SMTP id qx21so30740003ejb.13;
-        Mon, 07 Mar 2022 02:21:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jf/GD3lX9xWfe/iu177slIn/V/6kDkhTlXOWIbwA4xI=;
-        b=BkfmmS09cND6UkGoVvLxWKstP+P9Gsdr1UNIDlfqPEDCCIawn6KeGMquMgz+lzEaLu
-         91rFAlRClrHvuIK6abzwI+Lx0iFPtZdmUXqq1oAuKqAwgZbdg3fqhFDVu94DVxlVmMIA
-         6RjrE8Dp2yw4oFZMg4A650VBdb5DK755utbo3AvScEbojRBmCWgXGXH18jJIBs+5uuIl
-         lDWODmuFU3dfhbHW78dAtRL7SYqfeH5wr7ulP887hxyV3ULrOvCJ6lU161brdD51RUm4
-         +NwEF72dSPJNxDIQjVHkhKWDfkYNnMNXxNwV1dGK/HDGEurlYiWFW9WY2A+rFCJnqgmP
-         9Rrg==
-X-Gm-Message-State: AOAM533uU604D+k9x6J4kDWAtwMvr5oabkmZ92MecTVfpGTgDxEY8ENe
-        uFTULGpagoPCIBHbl3otH7c=
-X-Google-Smtp-Source: ABdhPJy0CNXacgt9IOOvyUBsdxj7giOFyo3spCJGHyaJ6pzoypynhQGb7uRGTCATzEXtGc6BmNdwKQ==
-X-Received: by 2002:a17:906:1603:b0:6ce:362:c938 with SMTP id m3-20020a170906160300b006ce0362c938mr8329497ejd.253.1646648500554;
-        Mon, 07 Mar 2022 02:21:40 -0800 (PST)
-Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id f26-20020a50ee9a000000b004160c295356sm4204640edr.5.2022.03.07.02.21.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 02:21:40 -0800 (PST)
-Message-ID: <e89aefad-4742-4e29-23d9-4beacd59aa29@kernel.org>
-Date:   Mon, 7 Mar 2022 11:21:39 +0100
+        Mon, 7 Mar 2022 05:57:34 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6E3655A
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 02:17:22 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 799CC100002;
+        Mon,  7 Mar 2022 10:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646648240;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=tutWd4trGKBphGeeWfYnezhoEF7V9uU5s6qavtK4MLY=;
+        b=H4XtxXy/yXX4RbE1L0JLmDp2sJfxQkbW87TLMhNqKpZzBaUPtKR830LOUgdaWDuHbw0HWN
+        +wGy7aeJoZCPLD9RNGZE4lT4Ag0f7chnoA2M/0E5D6IkAA/t8iyNePAQ4tlAynCrpgL4kB
+        1eHduvg9iPb16RgSLAfC3IluRk4ZLdleYP6Qy8/kWrNqJsfnL+Mi5btx6G1i4x6JpIFeVM
+        /2pYGE9Y2wHtKQ+OI7hK9dHVMRfOsV35HHRhtjOjYvM6H3D9i2dG5mmJY6B5eg8EGw4vjX
+        wzfYRBVPzxsagkDJJ5FN440Dtk/7H9wCylzzJXU4qCcy9rYVlpul7P+ejFeRVA==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v2 0/2] ARM: at91: add support for secure suspend on sama5d2
+Date:   Mon,  7 Mar 2022 11:15:48 +0100
+Message-Id: <20220307101550.95538-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller
- bindings
-Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, robh+dt@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, arnd@arndb.de,
-        olof@lixom.net
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220307091923.9909-1-ychuang3@nuvoton.com>
- <20220307091923.9909-3-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220307091923.9909-3-ychuang3@nuvoton.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/03/2022 10:19, Jacky Huang wrote:
-> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
-> 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> ---
+Now that OP-TEE support for sama5d2 is more complete, add support to
+execute SMC calls and to set suspend mode. This series adds new files
+to be able to execute SMC calls targeting OP-TEE secure monitor and
+secure suspend support uses it.
 
-(...)
+---
 
-> 
-> ________________________________
-> ________________________________
->  The privileged confidential information contained in this email is intended for use only by the addressees as indicated by the original sender of this email. If you are not the addressee indicated in this email or are not responsible for delivery of the email to such a person, please kindly reply to the sender indicating this fact and delete all copies of it from your computer and network server immediately. Your cooperation is highly appreciated. It is advised that any unauthorized use of confidential information of Nuvoton is strictly prohibited; and any information in this email irrelevant to the official business of Nuvoton shall be deemed as neither given nor endorsed by Nuvoton.
+Changes V2:
+ - Add suspend mode SMC in already existing secure support
 
-NAK.
+Clément Léger (2):
+  ARM: at91: add code to handle secure calls
+  ARM: at91: pm: add support for sama5d2 secure suspend
 
-Best regards,
-Krzysztof
+ arch/arm/mach-at91/Kconfig      | 12 ++++++++-
+ arch/arm/mach-at91/Makefile     |  2 +-
+ arch/arm/mach-at91/pm.c         | 38 +++++++++++++++++++++++++++
+ arch/arm/mach-at91/sam_secure.c | 46 +++++++++++++++++++++++++++++++++
+ arch/arm/mach-at91/sam_secure.h | 18 +++++++++++++
+ arch/arm/mach-at91/sama5.c      |  2 ++
+ 6 files changed, 116 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm/mach-at91/sam_secure.c
+ create mode 100644 arch/arm/mach-at91/sam_secure.h
+
+-- 
+2.34.1
+
