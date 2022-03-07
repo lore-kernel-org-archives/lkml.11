@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBCAC43217
-	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53633C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237320AbiCGJb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:31:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        id S237120AbiCGJbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237712AbiCGJ2W (ORCPT
+        with ESMTP id S237813AbiCGJ21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:28:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F01B5C84E;
-        Mon,  7 Mar 2022 01:25:55 -0800 (PST)
+        Mon, 7 Mar 2022 04:28:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D66B082;
+        Mon,  7 Mar 2022 01:26:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECBE46114D;
-        Mon,  7 Mar 2022 09:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63F1C340F4;
-        Mon,  7 Mar 2022 09:25:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFF7AB810BF;
+        Mon,  7 Mar 2022 09:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29B15C340F3;
+        Mon,  7 Mar 2022 09:25:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645139;
-        bh=yTOllWjCgOoc5lILcUbRa5RKg2Cr4i89zGrd/HAZhkc=;
+        s=korg; t=1646645148;
+        bh=4Do5akYphTBtPcYBc/ozTHbz6rGCD1xHyIWyKYfRseI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kdgKUt3CnmmXhiJU68xc1D2l/zeRPWfqsdo1sxbm21JVt4EHKkGmE0jhVvXnL2llw
-         2wX3wpSX78pjIbDPforXeEMKIcTeIvhybZ7oKsnGsJHznxf95r0l1Ol6MYtw1wzfv2
-         WX2oILQqjyun/DrpO4rmXRqTMrOSW3PkHSB2SZTg=
+        b=tFc7jhmHZ7XRiyTra2Yxt06C/XvhVlU8UzmYJc2WXVabRIULIpLrrEJqzgVAwrdNa
+         41+oHLp1IZmoRwhOF+cvac17OOUe/xCvzXXEC9mC04kNi3urfDDXZOvC9zNEBOWP2z
+         3t4m3rrzWDNtd/iRvevD1S2+eVpGjbLvey8TUtfw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.19 50/51] btrfs: add missing run of delayed items after unlink during log replay
-Date:   Mon,  7 Mar 2022 10:19:25 +0100
-Message-Id: <20220307091638.412482256@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stuart Hayes <stuart.w.hayes@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 30/51] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+Date:   Mon,  7 Mar 2022 10:19:05 +0100
+Message-Id: <20220307091637.848544322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
 References: <20220307091636.988950823@linuxfoundation.org>
@@ -48,72 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit 4751dc99627e4d1465c5bfa8cb7ab31ed418eff5 upstream.
+commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
 
-During log replay, whenever we need to check if a name (dentry) exists in
-a directory we do searches on the subvolume tree for inode references or
-or directory entries (BTRFS_DIR_INDEX_KEY keys, and BTRFS_DIR_ITEM_KEY
-keys as well, before kernel 5.17). However when during log replay we
-unlink a name, through btrfs_unlink_inode(), we may not delete inode
-references and dir index keys from a subvolume tree and instead just add
-the deletions to the delayed inode's delayed items, which will only be
-run when we commit the transaction used for log replay. This means that
-after an unlink operation during log replay, if we attempt to search for
-the same name during log replay, we will not see that the name was already
-deleted, since the deletion is recorded only on the delayed items.
+The Power Fault Detected bit in the Slot Status register differs from
+all other hotplug events in that it is sticky:  It can only be cleared
+after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
 
-We run delayed items after every unlink operation during log replay,
-except at unlink_old_inode_refs() and at add_inode_ref(). This was due
-to an overlook, as delayed items should be run after evert unlink, for
-the reasons stated above.
+  If a power controller detects a main power fault on the hot-plug slot,
+  it must automatically set its internal main power fault latch [...].
+  The main power fault latch is cleared when software turns off power to
+  the hot-plug slot.
 
-So fix those two cases.
+The stickiness used to cause interrupt storms and infinite loops which
+were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
+interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
+software notification on empty slots").
 
-Fixes: 0d836392cadd5 ("Btrfs: fix mount failure after fsync due to hard link recreation")
-Fixes: 1f250e929a9c9 ("Btrfs: fix log replay failure after unlink and link combination")
-CC: stable@vger.kernel.org # 4.19+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Unfortunately in 2020 the infinite loop issue was inadvertently
+reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
+race"):  The hardirq handler pciehp_isr() clears the PFD bit until
+pciehp's power_fault_detected flag is set.  That happens in the IRQ
+thread pciehp_ist(), which never learns of the event because the hardirq
+handler is stuck in an infinite loop.  Fix by setting the
+power_fault_detected flag already in the hardirq handler.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
+Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
+Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
+Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
+Reported-by: Joseph Bao <joseph.bao@intel.com>
+Tested-by: Joseph Bao <joseph.bao@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -1289,6 +1289,15 @@ again:
- 						 inode, name, namelen);
- 			kfree(name);
- 			iput(dir);
-+			/*
-+			 * Whenever we need to check if a name exists or not, we
-+			 * check the subvolume tree. So after an unlink we must
-+			 * run delayed items, so that future checks for a name
-+			 * during log replay see that the name does not exists
-+			 * anymore.
-+			 */
-+			if (!ret)
-+				ret = btrfs_run_delayed_items(trans);
- 			if (ret)
- 				goto out;
- 			goto again;
-@@ -1480,6 +1489,15 @@ static noinline int add_inode_ref(struct
- 				 */
- 				if (!ret && inode->i_nlink == 0)
- 					inc_nlink(inode);
-+				/*
-+				 * Whenever we need to check if a name exists or
-+				 * not, we check the subvolume tree. So after an
-+				 * unlink we must run delayed items, so that future
-+				 * checks for a name during log replay see that the
-+				 * name does not exists anymore.
-+				 */
-+				if (!ret)
-+					ret = btrfs_run_delayed_items(trans);
- 			}
- 			if (ret < 0)
- 				goto out;
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -576,6 +576,8 @@ read_status:
+ 	 */
+ 	if (ctrl->power_fault_detected)
+ 		status &= ~PCI_EXP_SLTSTA_PFD;
++	else if (status & PCI_EXP_SLTSTA_PFD)
++		ctrl->power_fault_detected = true;
+ 
+ 	events |= status;
+ 	if (!events) {
+@@ -585,7 +587,7 @@ read_status:
+ 	}
+ 
+ 	if (status) {
+-		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
++		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+ 
+ 		/*
+ 		 * In MSI mode, all event bits must be zero before the port
+@@ -660,8 +662,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 	}
+ 
+ 	/* Check Power Fault Detected */
+-	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
+-		ctrl->power_fault_detected = 1;
++	if (events & PCI_EXP_SLTSTA_PFD) {
+ 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(slot));
+ 		pciehp_set_attention_status(slot, 1);
+ 		pciehp_green_led_off(slot);
 
 
