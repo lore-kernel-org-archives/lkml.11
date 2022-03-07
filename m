@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E8AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E8DC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  7 Mar 2022 09:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238603AbiCGJwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:52:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S238658AbiCGJxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:53:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241035AbiCGJlq (ORCPT
+        with ESMTP id S241032AbiCGJlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 7 Mar 2022 04:41:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBB16D4F9;
-        Mon,  7 Mar 2022 01:39:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503B26D4EF;
+        Mon,  7 Mar 2022 01:39:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E2D611D5;
-        Mon,  7 Mar 2022 09:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A01C340E9;
-        Mon,  7 Mar 2022 09:39:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD3E261219;
+        Mon,  7 Mar 2022 09:39:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC75C340E9;
+        Mon,  7 Mar 2022 09:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646645966;
-        bh=PuPDInC1r/GLcY+Vi+sQObVdNBoB1cbEQ8SKVAlGUU0=;
+        s=korg; t=1646645963;
+        bh=itkFADjjYEkMvDwj674Xo1U+p/cXui1ckfMneVVXOnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnZD1aCBBo4aEGUnDWd7ZfJ0djITBUMWgdOV+KNvyajLbhnyyM+uXQSffXBM69CKM
-         kHZcAZ2cwAJaBM16FvrJnn0eBgKIOyQtIFBvtwBLSVtlkgXZI8anUJFjFlSP8tDCAx
-         Zn5if8l+E8iAdZHuoGBsy8Kkk68Y5wG5HDtrd/tY=
+        b=ELDa++y8eHgC1GFJ3ZZwyIN8vjgVx00xKFvZJ5KbNCA0/PIZGM02sduwObOi/qonC
+         R0ig2hdRClA5Koh19t+YNUP859KvHlljOeRohIEJ5mN6WOqlN7cz8QDb3l3wDX6pP9
+         I8PVBFgyFjiFpqUBF0OxPEAi8hQuL15XkRc+77z8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wesley Sheng <wesley.sheng@microchip.com>,
-        Kelvin Cao <kelvin.cao@microchip.com>,
-        Jon Mason <jdmason@kudzu.us>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 085/262] ntb_hw_switchtec: Fix bug with more than 32 partitions
-Date:   Mon,  7 Mar 2022 10:17:09 +0100
-Message-Id: <20220307091704.882023540@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Qiang Yu <qiang.yu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 040/262] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
+Date:   Mon,  7 Mar 2022 10:16:24 +0100
+Message-Id: <20220307091703.656240750@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
 References: <20220307091702.378509770@linuxfoundation.org>
@@ -49,72 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wesley Sheng <wesley.sheng@microchip.com>
+From: Qiang Yu <qiang.yu@amd.com>
 
-[ Upstream commit 7ff351c86b6b258f387502ab2c9b9d04f82c1c3d ]
+[ Upstream commit c1a66c3bc425ff93774fb2f6eefa67b83170dd7e ]
 
-Switchtec could support as mush as 48 partitions, but ffs & fls are
-for 32 bit argument, in case of partition index larger than 31, the
-current code could not parse the peer partition index correctly.
-Change to the 64 bit version __ffs64 & fls64 accordingly to fix this
-bug.
+Workstation application ANSA/META v21.1.4 get this error dmesg when
+running CI test suite provided by ANSA/META:
+[drm:amdgpu_gem_va_ioctl [amdgpu]] *ERROR* Couldn't update BO_VA (-16)
 
-Fixes: 3df54c870f52 ("ntb_hw_switchtec: Allow using Switchtec NTB in multi-partition setups")
-Signed-off-by: Wesley Sheng <wesley.sheng@microchip.com>
-Signed-off-by: Kelvin Cao <kelvin.cao@microchip.com>
-Signed-off-by: Jon Mason <jdmason@kudzu.us>
+This is caused by:
+1. create a 256MB buffer in invisible VRAM
+2. CPU map the buffer and access it causes vm_fault and try to move
+   it to visible VRAM
+3. force visible VRAM space and traverse all VRAM bos to check if
+   evicting this bo is valuable
+4. when checking a VM bo (in invisible VRAM), amdgpu_vm_evictable()
+   will set amdgpu_vm->evicting, but latter due to not in visible
+   VRAM, won't really evict it so not add it to amdgpu_vm->evicted
+5. before next CS to clear the amdgpu_vm->evicting, user VM ops
+   ioctl will pass amdgpu_vm_ready() (check amdgpu_vm->evicted)
+   but fail in amdgpu_vm_bo_update_mapping() (check
+   amdgpu_vm->evicting) and get this error log
+
+This error won't affect functionality as next CS will finish the
+waiting VM ops. But we'd better clear the error log by checking
+the amdgpu_vm->evicting flag in amdgpu_vm_ready() to stop calling
+amdgpu_vm_bo_update_mapping() later.
+
+Another reason is amdgpu_vm->evicted list holds all BOs (both
+user buffer and page table), but only page table BOs' eviction
+prevent VM ops. amdgpu_vm->evicting flag is set only for page
+table BOs, so we should use evicting flag instead of evicted list
+in amdgpu_vm_ready().
+
+The side effect of this change is: previously blocked VM op (user
+buffer in "evicted" list but no page table in it) gets done
+immediately.
+
+v2: update commit comments.
+
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Qiang Yu <qiang.yu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ntb/hw/mscc/ntb_hw_switchtec.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
-index 6603c77c0a848..ec9cb6c81edae 100644
---- a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
-+++ b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
-@@ -840,7 +840,6 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
- 	u64 tpart_vec;
- 	int self;
- 	u64 part_map;
--	int bit;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+index 6b15cad78de9d..a33cb2f4d7444 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+@@ -768,11 +768,16 @@ int amdgpu_vm_validate_pt_bos(struct amdgpu_device *adev, struct amdgpu_vm *vm,
+  * Check if all VM PDs/PTs are ready for updates
+  *
+  * Returns:
+- * True if eviction list is empty.
++ * True if VM is not evicting.
+  */
+ bool amdgpu_vm_ready(struct amdgpu_vm *vm)
+ {
+-	return list_empty(&vm->evicted);
++	bool ret;
++
++	amdgpu_vm_eviction_lock(vm);
++	ret = !vm->evicting;
++	amdgpu_vm_eviction_unlock(vm);
++	return ret;
+ }
  
- 	sndev->ntb.pdev = sndev->stdev->pdev;
- 	sndev->ntb.topo = NTB_TOPO_SWITCH;
-@@ -861,29 +860,28 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
- 	part_map = ioread64(&sndev->mmio_ntb->ep_map);
- 	part_map &= ~(1 << sndev->self_partition);
- 
--	if (!ffs(tpart_vec)) {
-+	if (!tpart_vec) {
- 		if (sndev->stdev->partition_count != 2) {
- 			dev_err(&sndev->stdev->dev,
- 				"ntb target partition not defined\n");
- 			return -ENODEV;
- 		}
- 
--		bit = ffs(part_map);
--		if (!bit) {
-+		if (!part_map) {
- 			dev_err(&sndev->stdev->dev,
- 				"peer partition is not NT partition\n");
- 			return -ENODEV;
- 		}
- 
--		sndev->peer_partition = bit - 1;
-+		sndev->peer_partition = __ffs64(part_map);
- 	} else {
--		if (ffs(tpart_vec) != fls(tpart_vec)) {
-+		if (__ffs64(tpart_vec) != (fls64(tpart_vec) - 1)) {
- 			dev_err(&sndev->stdev->dev,
- 				"ntb driver only supports 1 pair of 1-1 ntb mapping\n");
- 			return -ENODEV;
- 		}
- 
--		sndev->peer_partition = ffs(tpart_vec) - 1;
-+		sndev->peer_partition = __ffs64(tpart_vec);
- 		if (!(part_map & (1ULL << sndev->peer_partition))) {
- 			dev_err(&sndev->stdev->dev,
- 				"ntb target partition is not NT partition\n");
+ /**
 -- 
 2.34.1
 
