@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A321FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8757EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349184AbiCHRZ3 (ORCPT
+        id S1349198AbiCHRZd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:25:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
+        Tue, 8 Mar 2022 12:25:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349472AbiCHRXL (ORCPT
+        with ESMTP id S1349365AbiCHRXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:23:11 -0500
+        Tue, 8 Mar 2022 12:23:02 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836F855BFA;
-        Tue,  8 Mar 2022 09:21:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A3355BD6;
+        Tue,  8 Mar 2022 09:21:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D891E610A5;
-        Tue,  8 Mar 2022 17:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2BF7C36AE2;
-        Tue,  8 Mar 2022 17:21:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD214610AB;
+        Tue,  8 Mar 2022 17:21:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 495B4C340F4;
+        Tue,  8 Mar 2022 17:21:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646760094;
-        bh=KlRfzov3KRSL1cuBCuyq8zTY4jx270V+a07sLCTkRkM=;
+        s=k20201202; t=1646760077;
+        bh=r0phUWwXuodlZB9g376p0WnbRKfdUHRWw2XOE/O6cE8=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=ZZHpB33iVP+vk43vDhAvl6lvBs1UVmfXfOsgzP8ejineh60wdgV3YHsvt2b6IRABA
-         2pxTwdG9hCyrUKHG1JerAnQhgHJlvUnxJuUkIYhveHjlaMwhnhUu2+VBZgp8mqBKzF
-         rVijxpy7/dzwpVtFDcI7mqRWi9BpA1aJeeTHG3cAQVXb7x9wNCvDTTink9umBWFxlf
-         CYmIEeHxmXDJtblCveDZaYJd3a1j94+nm4u2Ma0d3N6WPndXNBOafyoRQk1qO3JnGh
-         mnQaHzY+mO54CL6kGG9hzKWpgc/O+4JoWsgI58+3vXDs43SKOQI7ynPH88zIYfRymd
-         4EEtwqWti4GZg==
+        b=mNdns1GKRgyX9nw4gEM7EBaXTiHkW0e9F9nrn4BQ33AO3t7Ze/yUrAFKy3ii0uYdu
+         tIsOi5nASBmnmjMNhzPWx9YLgxqSWD6V3Sk2rq7vcxpgVs4wLIXG1P/A3Oexp28/b+
+         fR76HmJs9PZVv10MZA0TTUm228WWE+jnK/xQX3JDjGEz0n7x7MlKQboT3KrtuUMs2o
+         j4UsyGBDZTqiS8TtEVG0QBXgctLu4UAGaJiqeLCYgKPpANHOUE/beFeTHatFHiQfuf
+         AmZYZPZ6pH1WA776ASoVFQs/GElnyl0mlj/HiYwZW63f8TaaD7Cwp+Q3wUzlfErscn
+         Nwdiyt8rGCvAg==
 From:   Mark Brown <broonie@kernel.org>
-To:     thierry.reding@gmail.com,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>,
-        linux-tegra@vger.kernel.org, linux-spi@vger.kernel.org,
-        ashishsingha@nvidia.com, jonathanh@nvidia.com
-Cc:     ldewangan@nvidia.com, robh+dt@kernel.org, skomatineni@nvidia.com,
-        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
+To:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
         devicetree@vger.kernel.org
-In-Reply-To: <20220307165519.38380-1-kyarlagadda@nvidia.com>
-References: <20220307165519.38380-1-kyarlagadda@nvidia.com>
-Subject: Re: (subset) [PATCH v3 0/3] Tegra QUAD SPI combined sequence mode
-Message-Id: <164676009171.54618.4072327060855634430.b4-ty@kernel.org>
-Date:   Tue, 08 Mar 2022 17:21:31 +0000
+Cc:     robh+dt@kernel.org, nicolas.ferre@microchip.com, perex@perex.cz,
+        lars@metafoo.de, tiwai@suse.com
+In-Reply-To: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
+References: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
+Subject: Re: (subset) [PATCH v3 0/6] Add driver for SAMA7G5's PDMC
+Message-Id: <164676007501.54315.7100142758313239597.b4-ty@kernel.org>
+Date:   Tue, 08 Mar 2022 17:21:15 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -53,33 +52,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 22:25:16 +0530, Krishna Yarlagadda wrote:
-> Add ACPI support for Tegra210 QUAD SPI driver
-> Support new Tegra194 feature, combined sequence mode.
-> Add Tegra234 bindings.
-> 
-> v3 changes:
-> - document runtime pm disabled in ACPI
-> - clear cmb register for non combined sequence
-> - fixes for errors reported by kernel test robot
-> - skip approved patches
-> v2 changes:
-> - use combined sequence mode as default
-> - remove property to switch transfer modes
-> - fix compilation warnings
+On Mon, 7 Mar 2022 14:21:56 +0200, Codrin Ciubotariu wrote:
+> This patch series adds support for Pulse Density Microphone Controller
+> (PDMC), present on Microchip's SAMA7G5.
+> The PDMC interfaces up to 4 digital microphones having Pulse Density
+> Modulated (PDM) outputs. It generates a single clock line and samples 1 or
+> 2 data lines. The signal path includes an audio grade programmable
+> decimation filter and outputs 24-bit audio words.
+> The source of each channel can be independently defined as PDMC_DS0 or
+> PDMC_DS1, sampled at the rising or falling edge of PDMC_CLK.
 > 
 > [...]
 
 Applied to
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
 Thanks!
 
-[1/3] spi: tegra210-quad: add acpi support
-      commit: 75a1b44a54bd97500e524cf42e8c81cc632672b3
-[2/3] spi: tegra210-quad: combined sequence mode
-      commit: 1b8342cc4a387933780c50f0cf51c94455be7d11
+[1/6] ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+      commit: 9a1e13440a4f2e7566fd4c5eae6a53e6400e08a4
+[2/6] ASoC: dt-bindings: Document Microchip's PDMC
+      commit: 015044e9610c8523794ea6cb55d5388bc00ba96a
+[3/6] ASoC: atmel: mchp-pdmc: add PDMC driver
+      commit: 50291652af5269813baa6024eb0e81b5f0bbb451
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
