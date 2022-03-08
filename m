@@ -2,240 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E48AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344129AbiCHAME (ORCPT
+        id S1344139AbiCHAMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 19:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
+        Mon, 7 Mar 2022 19:12:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344110AbiCHALh (ORCPT
+        with ESMTP id S1344131AbiCHAMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 19:11:37 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B5138BCD
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:10:32 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id t187so10636623pgb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 16:10:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rU/WmKtGF4aym/wTFIaRDtTDG4TLl/BdBtfttgE23Ag=;
-        b=TVD1mjin5wJZ4UJaJm/QXnb+WcioinaTpjR3eeFHQ0JAgKwd2v94ywPR8LQHl9sqbO
-         cWts2ekIxbvv67r6zBlexYyQRktCjxpkfKceI7xY9VNqyG4J1y8Lto33UzUIj0AIZIXe
-         KdeUmtiZVC/pqhm9kujUmQaq1lqJ3BokIXwkA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rU/WmKtGF4aym/wTFIaRDtTDG4TLl/BdBtfttgE23Ag=;
-        b=7MoiT6DGmsJPqiRu+i48/B//IzKrjuyxjQQJOMStGfOC0UxKHeAExDOC4N6RKDzkZz
-         m/iAK3e/J4/p4PGYkDx9C1UwiOLLdE9sLHino0OvCc7GCzbrFfhfurROiKMSJNPRVgz3
-         XJoqaB4ZqrFZLRaF2iarE+QjQhJTMifJ5eKocuQJPKfOVXKKp5/SfHJrH5fAVJbS6GK0
-         zbcp8tEQss/KVM0p8XBkTB0mq59kkmlh6vmnA1/1vZI1XUhcWZ/tShK3zeI73IbOjpFV
-         D5YP9tDcXdV2sHRyGXNbcm2HcekgohS3QmWNUQ6flEcViSLXEYX+JNS9Z40QbDfmpvH3
-         a5EQ==
-X-Gm-Message-State: AOAM533incbb4zVsfhsvww8nC1mr0qYtxWK1KlUI1ecY6oV3cn0i3ao4
-        YQbVvy5uvvkM2TqYfajiczHt4w==
-X-Google-Smtp-Source: ABdhPJzL2r58vNjLtCrdtdNxaqnZ9zxgzJJyP7Sa+3mJN/ZwiynkhujkVw8S3vhsMpnAWZ6L+W1gkQ==
-X-Received: by 2002:aa7:8211:0:b0:4f7:8b7:239b with SMTP id k17-20020aa78211000000b004f708b7239bmr6366065pfi.64.1646698231704;
-        Mon, 07 Mar 2022 16:10:31 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:e551:44dc:2842:57f1])
-        by smtp.gmail.com with UTF8SMTPSA id kk12-20020a17090b4a0c00b001bed1ff3717sm476738pjb.6.2022.03.07.16.10.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 16:10:31 -0800 (PST)
-From:   Brian Norris <briannorris@chromium.org>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Lin Huang <hl@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>,
-        Derek Basehore <dbasehore@chromium.org>,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@collabora.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v3 12/15] arm64: dts: rockchip: Enable dmc and dfi nodes on gru
-Date:   Mon,  7 Mar 2022 16:09:42 -0800
-Message-Id: <20220307160918.v3.12.I3a5c7f21ecd8221b42c2dbcd618386bce7b3e9a6@changeid>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-In-Reply-To: <20220308000945.706701-1-briannorris@chromium.org>
-References: <20220308000945.706701-1-briannorris@chromium.org>
+        Mon, 7 Mar 2022 19:12:13 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DAA37022;
+        Mon,  7 Mar 2022 16:10:47 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KCG1w4KWpz4xvZ;
+        Tue,  8 Mar 2022 11:10:44 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646698245;
+        bh=iCc7WGqpMMXHLsEb4wHBI2GkdKkCV+OSxpSWkMIBTYY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JwmUJjud7iCrNTUYEcGIQldPHSYsP8JtH01Uh1w+emR6fwtrHmErBj+7LcMa3IEwR
+         D12JzmVKtlVbZyHLUXGBHUOcp4wbMvgirUhhZk251gGWe+unwiFYoyub0D/8hy7yuN
+         eIy+eBjLvcU2Exx427Rl1Odex0rtvF7M8Et6CSWtwSg7nip4/LK4F0spzVBA7T2V9d
+         1d7dDm0ZsShxJS8syirQf5J4FI06LftVlqqr7KfEFD8xqRtYIR5mO3qhxkV25QD5I7
+         LReAWcGCG3nF4qi/P9E0Z5awfX5/QgOCMGc6Oqmny4/+AOahzwpntwtS/HqPdCyM/K
+         bie2dHKzmtvXA==
+Date:   Tue, 8 Mar 2022 11:10:43 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, Greg KH <greg@kroah.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: linux-next: manual merge of the net-next tree with the
+ staging.current tree
+Message-ID: <20220308111043.1018a59d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/kqz183InSqHJBsAYyJUDYub";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Huang <hl@rock-chips.com>
+--Sig_/kqz183InSqHJBsAYyJUDYub
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Enable the DMC (Dynamic Memory Controller) and the DFI (DDR PHY
-Interface) nodes on gru boards so we can support DDR DVFS.
+Hi all,
 
-Signed-off-by: Lin Huang <hl@rock-chips.com>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Signed-off-by: Gaël PORTAY <gael.portay@collabora.com>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
+Today's linux-next merge of the net-next tree got a conflict in:
 
-(no changes since v2)
+  drivers/staging/gdm724x/gdm_lte.c
 
-Changes in v2:
- - Adapt to new properties
+between commit:
 
-Changes in v1:
-This was part of a previous series, at:
-https://lore.kernel.org/r/20210308233858.24741-3-daniel.lezcano@linaro.org
-I've picked up a bunch of changes and fixes, so I've restarted the patch
-series numbering. Updates since the old series:
- - reordered alphabetically by phandle name, per style
- - drop a ton of deprecated/unused properties
- - add required center-supply for scarlet
- - add new *_idle_dis_freq properties
- - drop the lowest (200 MHz) OPP; this was never stabilized for
-   production
- - bump the voltage (0.9V -> 0.925V) for the highest OPP on Chromebook
-   models; later (tablet) models were more stable, with a fixed DDR
-   regulator
- - bump odt_dis_freq to 666 MHz; early versions used 333 MHz, but
-   stabilization efforts landed on 666 MHz for production
+  fc7f750dc9d1 ("staging: gdm724x: fix use after free in gdm_lte_rx()")
 
- .../dts/rockchip/rk3399-gru-chromebook.dtsi   |  7 +++++
- .../boot/dts/rockchip/rk3399-gru-scarlet.dtsi | 12 ++++++++
- arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi  | 28 +++++++++++++++++++
- .../boot/dts/rockchip/rk3399-op1-opp.dtsi     | 25 +++++++++++++++++
- 4 files changed, 72 insertions(+)
+from the staging.current tree and commit:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-index 3355fb90fa54..50d459ee4831 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi
-@@ -234,6 +234,13 @@ &cdn_dp {
- 	extcon = <&usbc_extcon0>, <&usbc_extcon1>;
- };
- 
-+&dmc {
-+	center-supply = <&ppvar_centerlogic>;
-+	rockchip,pd-idle-dis-freq-hz = <800000000>;
-+	rockchip,sr-idle-dis-freq-hz = <800000000>;
-+	rockchip,sr-mc-gate-idle-dis-freq-hz = <800000000>;
-+};
-+
- &edp {
- 	status = "okay";
- 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-index a9817b3d7edc..913d845eb51a 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-@@ -391,6 +391,18 @@ &cru {
- 		<400000000>;
- };
- 
-+/* The center supply is fixed to .9V on scarlet */
-+&dmc {
-+	center-supply = <&pp900_s0>;
-+};
-+
-+/* We don't need .925 V for 928 MHz on scarlet */
-+&dmc_opp_table {
-+	opp03 {
-+		opp-microvolt = <900000>;
-+	};
-+};
-+
- &gpio0 {
- 	gpio-line-names = /* GPIO0 A 0-7 */
- 			  "CLK_32K_AP",
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-index 162f08bca0d4..23bfba86daab 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
-@@ -373,6 +373,34 @@ &cru {
- 		<200000000>;
- };
- 
-+&dfi {
-+	status = "okay";
-+};
-+
-+&dmc {
-+	status = "okay";
-+
-+	rockchip,pd-idle-ns = <160>;
-+	rockchip,sr-idle-ns = <10240>;
-+	rockchip,sr-mc-gate-idle-ns = <40960>;
-+	rockchip,srpd-lite-idle-ns = <61440>;
-+	rockchip,standby-idle-ns = <81920>;
-+
-+	rockchip,ddr3_odt_dis_freq = <666000000>;
-+	rockchip,lpddr3_odt_dis_freq = <666000000>;
-+	rockchip,lpddr4_odt_dis_freq = <666000000>;
-+
-+	rockchip,sr-mc-gate-idle-dis-freq-hz = <1000000000>;
-+	rockchip,srpd-lite-idle-dis-freq-hz = <0>;
-+	rockchip,standby-idle-dis-freq-hz = <928000000>;
-+};
-+
-+&dmc_opp_table {
-+	opp03 {
-+		opp-suspend;
-+	};
-+};
-+
- &emmc_phy {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-op1-opp.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-op1-opp.dtsi
-index 2180e0f75003..6e29e74f6fc6 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-op1-opp.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-op1-opp.dtsi
-@@ -110,6 +110,27 @@ opp05 {
- 			opp-microvolt = <1075000>;
- 		};
- 	};
-+
-+	dmc_opp_table: dmc_opp_table {
-+		compatible = "operating-points-v2";
-+
-+		opp00 {
-+			opp-hz = /bits/ 64 <400000000>;
-+			opp-microvolt = <900000>;
-+		};
-+		opp01 {
-+			opp-hz = /bits/ 64 <666000000>;
-+			opp-microvolt = <900000>;
-+		};
-+		opp02 {
-+			opp-hz = /bits/ 64 <800000000>;
-+			opp-microvolt = <900000>;
-+		};
-+		opp03 {
-+			opp-hz = /bits/ 64 <928000000>;
-+			opp-microvolt = <925000>;
-+		};
-+	};
- };
- 
- &cpu_l0 {
-@@ -136,6 +157,10 @@ &cpu_b1 {
- 	operating-points-v2 = <&cluster1_opp>;
- };
- 
-+&dmc {
-+	operating-points-v2 = <&dmc_opp_table>;
-+};
-+
- &gpu {
- 	operating-points-v2 = <&gpu_opp_table>;
- };
--- 
-2.35.1.616.g0bdcbb4464-goog
+  4bcc4249b4cf ("staging: Use netif_rx().")
 
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/staging/gdm724x/gdm_lte.c
+index 0d8d8fed283d,2587309da766..000000000000
+--- a/drivers/staging/gdm724x/gdm_lte.c
++++ b/drivers/staging/gdm724x/gdm_lte.c
+@@@ -76,10 -76,9 +76,10 @@@ static void tx_complete(void *arg
+ =20
+  static int gdm_lte_rx(struct sk_buff *skb, struct nic *nic, int nic_type)
+  {
+ -	int ret;
+ +	int ret, len;
+ =20
+ +	len =3D skb->len + ETH_HLEN;
+- 	ret =3D netif_rx_ni(skb);
++ 	ret =3D netif_rx(skb);
+  	if (ret =3D=3D NET_RX_DROP) {
+  		nic->stats.rx_dropped++;
+  	} else {
+
+--Sig_/kqz183InSqHJBsAYyJUDYub
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmImnwMACgkQAVBC80lX
+0GwyxwgAnquv2V3vkBKq9jW3/OUDq739TUPLq4opdFRHIawwN+xJJ/yLt050eod+
+WmHwX7uHNPNCgjs9vCB5IHkiCG6yw5nBFXexW3TbiQWHssGtcN1cJj/9BiGfDVtl
+xsKRUWCIOjpa3V8OoeQ6ZO8AuYA/Ic5b8ez/cKjOQddDde8mSN9DFuKJp3EU417+
+9GMF6SBOSbXnOtla5/kYV4/go0xzQ1DC6uBW/qPB6WJGALNxiPeZhPiu9E1eaV7F
+pGn+uXBkdADovcM61YhC/zLTkxC2mYmquVNxkoFvV9ZvyqhRnpgDn6Un+BtSnzFk
+vxyhLBsO3+BR7V1ujvlYAK2EofnmPQ==
+=plsM
+-----END PGP SIGNATURE-----
+
+--Sig_/kqz183InSqHJBsAYyJUDYub--
