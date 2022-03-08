@@ -2,119 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56241C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245521AbiCHFqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 00:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S245533AbiCHFrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 00:47:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbiCHFqt (ORCPT
+        with ESMTP id S245719AbiCHFrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 00:46:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE613BBD1;
-        Mon,  7 Mar 2022 21:45:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A73B61574;
-        Tue,  8 Mar 2022 05:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AF1C340EB;
-        Tue,  8 Mar 2022 05:45:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646718352;
-        bh=Y8xpjnCaZqjpKAi6LH7psa4XoBGA667VBgBc+PH2nLU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mx31lcmtoMKA2ZBo/RU8iqV+gJN1S6CXEHizj1ptrPAsEWcD+SctSZK3N7b9x3/xe
-         POuXp8Eo72XT3OIykVrom6BbZ/Zyi1xNzV/1520yN5alcXPInUABF3+4+ACw493ewC
-         FhvPmRDtFyVK33kDjnnZYz9kzl1apHU00BOLGcYPnqRAAJQODDFz20RzCOrUBLG3Ko
-         ja/APFTJXnAt5dXeh77V/T4/kymHSNvIf6mJ9DIrMF1cu497Qta9bBxA3ED945YaGt
-         Hy2K3PjUVGkxDXPvNdC9blAwRS/Wk1LtRxI/mI09nmGNt+JzECmMIr0KYoxllvS6hv
-         hJj8s8lfkj0dg==
-Date:   Mon, 7 Mar 2022 21:45:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        David Ahern <dsahern@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
- extension header support
-Message-ID: <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
-References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
-        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
-        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
-        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
-        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
-        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
-        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
-        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+        Tue, 8 Mar 2022 00:47:08 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00983BF84;
+        Mon,  7 Mar 2022 21:46:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646718367; x=1678254367;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=h5Gl6i6ysgskZd8ciPyhjY2DGz3Py3n895BxmTYcWhk=;
+  b=K6EHQM8T8KguQ/lzykC+28innXkyknfzLDJyh6Eped+Q5eSV5CMv7fHr
+   GE5MyYAquFgpEk6+YOYxrenGC9/ELvefN22OqbbajfMk1n038eFIrbbU4
+   Ccj9s7RWXrTf5hhaxxMFTBAWm1bQBb1pJuAxeSPN0nKAO/FSVfjxCsyeg
+   l3dl39J7Y7CV6gXv0vzfujIg3UmmAXWaxnJ9B22M5uA72k+5iWEZw2HMq
+   BXbdRp7vnATLaGIxpDo7wMQALb/OjWqYrWazmmbIx7mCg6LYD/mePA6oG
+   t9HXkcwtZoYWOPg8YiRNc5emGX1hOLF5eonJQ+x5AXvs5aF5H5tmbpCRd
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254789237"
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="254789237"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 21:46:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="537429984"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 21:46:00 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Date:   Tue,  8 Mar 2022 13:44:10 +0800
+Message-Id: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 01:04:00 +0100 Ilya Maximets wrote:
-> > Thanks for the explanation, we can apply a revert if that'd help your
-> > CI / ongoing development but sounds like the fix really is in user
-> > space. Expecting netlink attribute lists not to grow is not fair.  
-> 
-> I don't think it was intentional, just a careless mistake.  Unfortunately,
-> all OVS binaries built during the last 5 years rely on that unwanted
-> expectation (re-build will also not help as they are using a copy of the
-> uAPI header and the clash will be there anyway).  If we want to keep them
-> working, kernel uAPI has to be carefully updated with current userspace-only
-> attributes before we add any new ones.  That is not great, but I don't see
-> any other option right now that doesn't require code changes in userspace.
-> 
-> I'd say that we need to revert the current patch and re-introduce it
-> later when the uAPI problem is sorted out.  This way we will avoid blocking
-> the net-next testing and will also avoid problems in case the uAPI changes
-> are not ready at the moment of the new kernel release.
-> 
-> What do you think?
+Hi folks,
 
-Let me add some people I associate with genetlink work in my head
-(fairly or not) to keep me fair here.
+The iommu group is the minimal isolation boundary for DMA. Devices in
+a group can access each other's MMIO registers via peer to peer DMA
+and also need share the same I/O address space.
 
-It's highly unacceptable for user space to straight up rewrite kernel
-uAPI types but if it already happened the only fix is something like:
+Once the I/O address space is assigned to user control it is no longer
+available to the dma_map* API, which effectively makes the DMA API
+non-working.
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 9d1710f20505..ab6755621e02 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -351,11 +351,16 @@ enum ovs_key_attr {
-        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
-        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
-        OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
--       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
- 
- #ifdef __KERNEL__
-        OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
- #endif
-+       /* User space decided to squat on types 30 and 31 */
-+       OVS_KEY_ATTR_IPV6_EXTHDRS = 32, /* struct ovs_key_ipv6_exthdr */
-+       /* WARNING: <scary warning to avoid the problem coming back> */
-+
-        __OVS_KEY_ATTR_MAX
- };
+Second, userspace can use DMA initiated by a device that it controls
+to access the MMIO spaces of other devices in the group. This allows
+userspace to indirectly attack any kernel owned device and it's driver.
 
+Therefore groups must either be entirely under kernel control or
+userspace control, never a mixture. Unfortunately some systems have
+problems with the granularity of groups and there are a couple of
+important exceptions:
 
-right?
+ - pci_stub allows the admin to block driver binding on a device and
+   make it permanently shared with userspace. Since PCI stub does not
+   do DMA it is safe, however the admin must understand that using
+   pci_stub allows userspace to attack whatever device it was bound
+   it.
 
-> > Since ovs uses genetlink you should be able to dump the policy from 
-> > the kernel and at least validate that it doesn't overlap.  
-> 
-> That is interesting.  Indeed, this functionality can be used to detect
-> problems or to define userspace-only attributes in runtime based on the
-> kernel reply.  Thanks for the pointer!
+ - PCI bridges are sometimes included in groups. Typically PCI bridges
+   do not use DMA, and generally do not have MMIO regions.
+
+Generally any device that does not have any MMIO registers is a
+possible candidate for an exception.
+
+Currently vfio adopts a workaround to detect violations of the above
+restrictions by monitoring the driver core BOUND event, and hardwiring
+the above exceptions. Since there is no way for vfio to reject driver
+binding at this point, BUG_ON() is triggered if a violation is
+captured (kernel driver BOUND event on a group which already has some
+devices assigned to userspace). Aside from the bad user experience
+this opens a way for root userspace to crash the kernel, even in high
+integrity configurations, by manipulating the module binding and
+triggering the BUG_ON.
+
+This series solves this problem by making the user/kernel ownership a
+core concept at the IOMMU layer. The driver core enforces kernel
+ownership while drivers are bound and violations now result in a error
+codes during probe, not BUG_ON failures.
+
+Patch partitions:
+  [PATCH 1-4]: Detect DMA ownership conflicts during driver binding;
+  [PATCH 5-7]: Add security context management for assigned devices;
+  [PATCH 8-11]: Various cleanups.
+
+This is also part one of three initial series for IOMMUFD:
+ * Move IOMMU Group security into the iommu layer
+ - Generic IOMMUFD implementation
+ - VFIO ability to consume IOMMUFD
+
+Change log:
+v1: initial post
+  - https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/
+
+v2:
+  - https://lore.kernel.org/linux-iommu/20211128025051.355578-1-baolu.lu@linux.intel.com/
+
+  - Move kernel dma ownership auto-claiming from driver core to bus
+    callback. [Greg/Christoph/Robin/Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#m153706912b770682cb12e3c28f57e171aa1f9d0c
+
+  - Code and interface refactoring for iommu_set/release_dma_owner()
+    interfaces. [Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
+
+  - [NEW]Add new iommu_attach/detach_device_shared() interfaces for
+    multiple devices group. [Robin/Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
+
+  - [NEW]Use iommu_attach/detach_device_shared() in drm/tegra drivers.
+
+  - Refactoring and description refinement.
+
+v3:
+  - https://lore.kernel.org/linux-iommu/20211206015903.88687-1-baolu.lu@linux.intel.com/
+
+  - Rename bus_type::dma_unconfigure to bus_type::dma_cleanup. [Greg]
+    https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m6711e041e47cb0cbe3964fad0a3466f5ae4b3b9b
+
+  - Avoid _platform_dma_configure for platform_bus_type::dma_configure.
+    [Greg]
+    https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m43fc46286611aa56a5c0eeaad99d539e5519f3f6
+
+  - Patch "0012-iommu-Add-iommu_at-de-tach_device_shared-for-mult.patch"
+    and "0018-drm-tegra-Use-the-iommu-dma_owner-mechanism.patch" have
+    been tested by Dmitry Osipenko <digetx@gmail.com>.
+
+v4:
+  - https://lore.kernel.org/linux-iommu/20211217063708.1740334-1-baolu.lu@linux.intel.com/
+  - Remove unnecessary tegra->domain chech in the tegra patch. (Jason)
+  - Remove DMA_OWNER_NONE. (Joerg)
+  - Change refcount to unsigned int. (Christoph)
+  - Move mutex lock into group set_dma_owner functions. (Christoph)
+  - Add kernel doc for iommu_attach/detach_domain_shared(). (Christoph)
+  - Move dma auto-claim into driver core. (Jason/Christoph)
+
+v5:
+  - https://lore.kernel.org/linux-iommu/20220104015644.2294354-1-baolu.lu@linux.intel.com/
+  - Move kernel dma ownership auto-claiming from driver core to bus
+    callback. (Greg)
+  - Refactor the iommu interfaces to make them more specific.
+    (Jason/Robin)
+  - Simplify the dma ownership implementation by removing the owner
+    type. (Jason)
+  - Commit message refactoring for PCI drivers. (Bjorn)
+  - Move iommu_attach/detach_device() improvement patches into another
+    series as there are a lot of code refactoring and cleanup staffs
+    in various device drivers.
+
+v6:
+  - https://lore.kernel.org/linux-iommu/20220218005521.172832-1-baolu.lu@linux.intel.com/
+  - Refine comments and commit mesages.
+  - Rename iommu_group_set_dma_owner() to iommu_group_claim_dma_owner().
+  - Rename iommu_device_use/unuse_kernel_dma() to
+    iommu_device_use/unuse_default_domain().
+  - Remove unnecessary EXPORT_SYMBOL_GPL.
+  - Change flag name from no_kernel_api_dma to driver_managed_dma.
+  - Merge 4 "Add driver dma ownership management" patches into single
+    one.
+
+v7:
+  - We discussed about adding some fields in driver structure and
+    intercepting it in the bus notifier for driver unbinding. We agreed
+    that the driver structure should not be used out of the driver core.
+  - As iommu_group_claim/release_dma_owner() are only used by the VFIO,
+    there're no use cases for multiple calls for a single group.
+  - Add some commit messages in "vfio: Set DMA ownership for
+    VFIO" to describe the intentional enhancement of unsafe bridge
+    drivers.
+  - Comments refinement.
+
+v8:
+  - Move iommu_use_default_domain() to the end of .dma_configure
+    callback to avoid firmware-data-ordering thing.
+    Link: https://lore.kernel.org/linux-iommu/e2698dbe-18e2-1a82-8a12-fe45bc9be534@arm.com/
+  - Add Acked-by from PCI and VFIO maintainers.
+
+This is based on next branch of linux-iommu tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+and also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-dma-ownership-v8
+
+Best regards,
+baolu
+
+Jason Gunthorpe (1):
+  vfio: Delete the unbound_list
+
+Lu Baolu (10):
+  iommu: Add DMA ownership management interfaces
+  driver core: Add dma_cleanup callback in bus_type
+  amba: Stop sharing platform_dma_configure()
+  bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
+  PCI: pci_stub: Set driver_managed_dma
+  PCI: portdrv: Set driver_managed_dma
+  vfio: Set DMA ownership for VFIO devices
+  vfio: Remove use of vfio_group_viable()
+  vfio: Remove iommu group notifier
+  iommu: Remove iommu group changes notifier
+
+ include/linux/amba/bus.h              |   8 +
+ include/linux/device/bus.h            |   3 +
+ include/linux/fsl/mc.h                |   8 +
+ include/linux/iommu.h                 |  54 +++---
+ include/linux/pci.h                   |   8 +
+ include/linux/platform_device.h       |  10 +-
+ drivers/amba/bus.c                    |  37 +++-
+ drivers/base/dd.c                     |   5 +
+ drivers/base/platform.c               |  21 ++-
+ drivers/bus/fsl-mc/fsl-mc-bus.c       |  24 ++-
+ drivers/iommu/iommu.c                 | 228 ++++++++++++++++--------
+ drivers/pci/pci-driver.c              |  18 ++
+ drivers/pci/pci-stub.c                |   1 +
+ drivers/pci/pcie/portdrv_pci.c        |   2 +
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c     |   1 +
+ drivers/vfio/pci/vfio_pci.c           |   1 +
+ drivers/vfio/platform/vfio_amba.c     |   1 +
+ drivers/vfio/platform/vfio_platform.c |   1 +
+ drivers/vfio/vfio.c                   | 245 ++------------------------
+ 19 files changed, 338 insertions(+), 338 deletions(-)
+
+-- 
+2.25.1
+
