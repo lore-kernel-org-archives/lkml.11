@@ -2,79 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06DDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243997AbiCHQzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:55:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
+        id S1348186AbiCHQ4E (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232531AbiCHQzS (ORCPT
+        with ESMTP id S1345576AbiCHQ4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:55:18 -0500
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEEB4EA31
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:54:21 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646758459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=eqmkPSBm5WulTOgzZAJ0UbU+BwECVBvh4ECQqxckohA=;
-        b=hJpgRdv8RgK9TlJiH3MjGiK4Cru06lqcFR6RrRaYZt1MQUfUFyKgz4IdNr171CRW6piMNv
-        zwkyhl317eMF0enuZ+CJEViDwRjhzahLVbSPbQ6nfMBLo8PQxTxX2vk+cYrIH09lrNsGNC
-        jrTIV4Dcy0XINDnxRqu7SeS+GKs2khU=
-From:   andrey.konovalov@linux.dev
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Vasily Gorbik <gor@linux.ibm.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH mm] fix for "kasan, vmalloc: only tag normal vmalloc allocations"
-Date:   Tue,  8 Mar 2022 17:54:17 +0100
-Message-Id: <de4587d6a719232e83c760113e46ed2d4d8da61e.1646757322.git.andreyknvl@google.com>
+        Tue, 8 Mar 2022 11:56:02 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190964ECF9;
+        Tue,  8 Mar 2022 08:55:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646758505; x=1678294505;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6C2mZ4cPAPhBiwzAinOa3KOV00eNAxZd7Qi1+RwReUs=;
+  b=aTubupD8D5HKsnE67ZLaQjaNN214lw3UGfxIuKW46Kzoldvkayl5bQPS
+   GwlpMF5/vtbsGBQ6/zEc14f5pPDBP6n//ezAwHuBgw3rPXQjDS3mjTwYv
+   NEA1yseutes3wTD6HsG3RWqXxKH2AMkcj2hJ1h49Rv7HxpQHcSCPo0a3G
+   IkRXPCe8L7+2MbxcwjMXjaRBSf2dfNEKxc2faUAD43wL+MAZm6JQTcqNo
+   LQgFXAOfYaIsGmzIu40Oz3DkH2GAO7HxXOrRMVud89VOgNxgTofoL3uke
+   hAfNCWB0DKw+XkstiD3iPdKperjpaDlefceJ4b3JngwIZod2/mgMPn+LS
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
+   d="scan'208";a="88232263"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 09:55:05 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 09:55:05 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 8 Mar 2022 09:55:03 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
+Date:   Tue, 8 Mar 2022 17:57:27 +0100
+Message-ID: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+Replace 'readx_poll_timeout_atomic' with a simple while loop + timeout
+when checking if it is possible to write to the HW the next word of the
+frame.
+Doing this will improve the TX bitrate by 65%. The measurements were
+done using iperf3.
 
-"kasan, vmalloc: only tag normal vmalloc allocations" unintentionally
-disabled poisoning of executable memory for the Generic mode. Fix it.
+Before:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.03  sec  55.2 MBytes  46.2 Mbits/sec    0 sender
+[  5]   0.00-10.04  sec  53.8 MBytes  45.0 Mbits/sec      receiver
 
-Reported-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+After:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.02  sec  91.4 MBytes  76.6 Mbits/sec    0 sender
+[  5]   0.00-10.03  sec  90.2 MBytes  75.5 Mbits/sec      receiver
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- mm/kasan/shadow.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../ethernet/microchip/lan966x/lan966x_main.c | 20 ++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
-index 7272e248db87..a4f07de21771 100644
---- a/mm/kasan/shadow.c
-+++ b/mm/kasan/shadow.c
-@@ -489,10 +489,11 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
- 		return (void *)start;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 81c01665d01e..f6cef29b9d36 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -176,18 +176,20 @@ static int lan966x_port_stop(struct net_device *dev)
+ 	return 0;
+ }
  
- 	/*
--	 * Don't tag executable memory.
-+	 * Don't tag executable memory with the tag-based mode.
- 	 * The kernel doesn't tolerate having the PC register tagged.
- 	 */
--	if (!(flags & KASAN_VMALLOC_PROT_NORMAL))
-+	if (IS_ENABLED(CONFIG_KASAN_SW_TAGS) &&
-+	    !(flags & KASAN_VMALLOC_PROT_NORMAL))
- 		return (void *)start;
+-static int lan966x_port_inj_status(struct lan966x *lan966x)
+-{
+-	return lan_rd(lan966x, QS_INJ_STATUS);
+-}
+-
+ static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
+ {
+-	u32 val;
++	unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
++	int ret = 0;
  
- 	start = set_tag(start, kasan_random_tag());
+-	return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
+-					 QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
+-					 READL_SLEEP_US, READL_TIMEOUT_US);
++	while (!(lan_rd(lan966x, QS_INJ_STATUS) &
++		 QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
++		if (time_after(jiffies, time)) {
++			ret = -ETIMEDOUT;
++			break;
++		}
++	}
++
++	return ret;
+ }
+ 
+ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
 -- 
-2.25.1
+2.33.0
 
