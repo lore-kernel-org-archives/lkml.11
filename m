@@ -2,113 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244756AbiCHNuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:50:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S1347138AbiCHNwo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 08:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiCHNt7 (ORCPT
+        with ESMTP id S230457AbiCHNwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:49:59 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E347A1C129;
-        Tue,  8 Mar 2022 05:49:02 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9A7F21F397;
-        Tue,  8 Mar 2022 13:49:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646747341; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SyTgM5F6+9CT4oBrYUK4bC/XMWpEt2BZNDE3I1Sk7Ys=;
-        b=SOLJf8KzF3lpV2Z1nK2RtJ/mCHih8E/LOT3+NtV9WjuFZrbvkvNGfz9md9KsmuMAmYb4xl
-        mrgfppZj4eTymdy2LnRjU7ToP7z5QKvHD+Fb5G9Y3hGjHgDOXnP7/F9d/3dhoWrdQoV6gE
-        PQ9kK/Trd67H0yxar7509l2hpkGD6SA=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 8 Mar 2022 08:52:41 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D7740E56
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:51:45 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6A0E5A3B85;
-        Tue,  8 Mar 2022 13:49:01 +0000 (UTC)
-Date:   Tue, 8 Mar 2022 14:49:01 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org
-Subject: Re: [PATCH 2/3] mm: use vmalloc_array and vcalloc for array
- allocations
-Message-ID: <YidezSPVZBCQcGJ4@dhcp22.suse.cz>
-References: <20220308105918.615575-1-pbonzini@redhat.com>
- <20220308105918.615575-3-pbonzini@redhat.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E29DC3F4C2
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:51:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646747502;
+        bh=gfyiehsHSCfxlKgNkCwVdg7pcAcR1+WSTjtuQee0hjc=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=CBEJzHxUgr+Qw0BD/FZ/GCN6XoBt1JE/0ywZc4gf2wXJpNXOq6yi2NhHFFBU1/+HB
+         6RgJVne8zfY2wO1YsixXcVPFkQp4jZPZ3YQtFHlYFgcqFAcv/jn57EArlh/ZXYYc0E
+         oJJVvygotOsXkwPCxpIhiCYwN+BO8leEmRy53H2uPg1siwL/hSZZkXgZGe52sK6TvK
+         7EvN5yJoanW9mFXdtp/MBr3IPgggnhZXZ3jo8BMk/LHGuflt8OD2cdzRPrNXxJyFmF
+         SzQOjO3Gg735VT2AMMpv6XoVGuHFsZQErp1XLtp0RbsBRpVqc9p1sBO3E57ndITUH4
+         veqjWod+WdF8w==
+Received: by mail-ej1-f70.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso8683248eje.20
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 05:51:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gfyiehsHSCfxlKgNkCwVdg7pcAcR1+WSTjtuQee0hjc=;
+        b=wpjRDg9Y1VRi5vorOoX071uXBq6+oyyAzcVDJF5c8oH8Ma+liqLbqVgkzE183oBOVr
+         ybsKshd9PKbjf4zwV7AcTPzlhMFREfpwJ32YgLrb04VIx30INQ2HBjpR8EmgaGTHwpyK
+         XrPXA39JISPECo/BrRf0Oyybk1biQx1ZLCZKUoWyIYeGV26muA1r9YkuX7svbMoBc6Ya
+         FV6diy9pgJsdOPvLc5OhJTrtQJwl3NnUv8Hi9jQJW9HYNeKVnJiUAxNhVJrb7l8AibxD
+         tPvGo5fzEh8WEy2HObVoka80+iFDlEkBQh6Xx8DOy5crUgX7p2nDNb1Xfg/wvajKMrbx
+         Zy/g==
+X-Gm-Message-State: AOAM532Zi9j6MmNnV3o9IBO4nWJ/sJt7D7RfFOPzX0CKy+4nd5f1g3Ol
+        M+PktvTVzWtmjWC7HJpe0ueQBnDNTb3yKHPB+vW1RB7XXT5z6Zy7bpIXcW+UYoeJ3iAclzfnfty
+        Ud5HbW+1PaaMyObUMN/5OL3NyiScsCRX+Upzrejl6hw==
+X-Received: by 2002:a17:906:2b93:b0:6cf:bb48:5a80 with SMTP id m19-20020a1709062b9300b006cfbb485a80mr12934380ejg.681.1646747502549;
+        Tue, 08 Mar 2022 05:51:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJysAvtt7THWDP/7AQq9m26HPhDMKhrOPlwL6m0Q4Ozl6W8r2lgyPin1uXHPmX+Ti1qYgfKN0w==
+X-Received: by 2002:a17:906:2b93:b0:6cf:bb48:5a80 with SMTP id m19-20020a1709062b9300b006cfbb485a80mr12934365ejg.681.1646747502267;
+        Tue, 08 Mar 2022 05:51:42 -0800 (PST)
+Received: from localhost.localdomain (p5087f509.dip0.t-ipconnect.de. [80.135.245.9])
+        by smtp.gmail.com with ESMTPSA id b15-20020a50cccf000000b0040f74c6abedsm7606163edj.77.2022.03.08.05.51.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 05:51:41 -0800 (PST)
+From:   Kleber Sacilotto de Souza <kleber.souza@canonical.com>
+To:     kuba@kernel.org, davem@davemloft.net, shuah@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH] net: netdevsim: fix byte order on ipsec debugfs file
+Date:   Tue,  8 Mar 2022 14:51:06 +0100
+Message-Id: <20220308135106.890270-1-kleber.souza@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308105918.615575-3-pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 08-03-22 05:59:17, Paolo Bonzini wrote:
-> Instead of using array_size or just a multiply, use a function that
-> takes care of both the multiplication and the overflow checks.
-> 
-> Cc: linux-mm@kvack.org
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+When adding a new xfrm state, the data provided via struct xfrm_state
+is stored in network byte order. This needs to be taken into
+consideration when exporting the SAs data to userspace via debugfs,
+otherwise the content will depend on the system endianness. Fix this by
+converting all multi-byte fields from network to host order.
 
-Acked-by: Michal Hocko <mhocko@suse.com>
+Also fix the selftest script which was expecting the data as exported by
+a little-endian system, which was inverted.
 
-The resulting code is easier to read indeed.
+Fixes: 7699353da875 ("netdevsim: add ipsec offload testing")
+Fixes: 2766a11161cc ("selftests: rtnetlink: add ipsec offload API test")
+Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
+---
+ drivers/net/netdevsim/ipsec.c            | 13 +++++++------
+ tools/testing/selftests/net/rtnetlink.sh | 10 +++++-----
+ 2 files changed, 12 insertions(+), 11 deletions(-)
 
-> ---
->  mm/percpu-stats.c | 2 +-
->  mm/swap_cgroup.c  | 4 +---
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/percpu-stats.c b/mm/percpu-stats.c
-> index c6bd092ff7a3..e71651cda2de 100644
-> --- a/mm/percpu-stats.c
-> +++ b/mm/percpu-stats.c
-> @@ -144,7 +144,7 @@ static int percpu_stats_show(struct seq_file *m, void *v)
->  	spin_unlock_irq(&pcpu_lock);
->  
->  	/* there can be at most this many free and allocated fragments */
-> -	buffer = vmalloc(array_size(sizeof(int), (2 * max_nr_alloc + 1)));
-> +	buffer = vmalloc_array(2 * max_nr_alloc + 1, sizeof(int));
->  	if (!buffer)
->  		return -ENOMEM;
->  
-> diff --git a/mm/swap_cgroup.c b/mm/swap_cgroup.c
-> index 7f34343c075a..5a9442979a18 100644
-> --- a/mm/swap_cgroup.c
-> +++ b/mm/swap_cgroup.c
-> @@ -167,14 +167,12 @@ unsigned short lookup_swap_cgroup_id(swp_entry_t ent)
->  int swap_cgroup_swapon(int type, unsigned long max_pages)
->  {
->  	void *array;
-> -	unsigned long array_size;
->  	unsigned long length;
->  	struct swap_cgroup_ctrl *ctrl;
->  
->  	length = DIV_ROUND_UP(max_pages, SC_PER_PAGE);
-> -	array_size = length * sizeof(void *);
->  
-> -	array = vzalloc(array_size);
-> +	array = vcalloc(length, sizeof(void *));
->  	if (!array)
->  		goto nomem;
->  
-> -- 
-> 2.31.1
-> 
-> 
-
+diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.c
+index b80ed2ffd45e..03fb8b56edc4 100644
+--- a/drivers/net/netdevsim/ipsec.c
++++ b/drivers/net/netdevsim/ipsec.c
+@@ -41,16 +41,17 @@ static ssize_t nsim_dbg_netdev_ops_read(struct file *filp,
+ 
+ 		p += scnprintf(p, bufsize - (p - buf),
+ 			       "sa[%i] %cx ipaddr=0x%08x %08x %08x %08x\n",
+-			       i, (sap->rx ? 'r' : 't'), sap->ipaddr[0],
+-			       sap->ipaddr[1], sap->ipaddr[2], sap->ipaddr[3]);
++			       i, (sap->rx ? 'r' : 't'), ntohl(sap->ipaddr[0]),
++			       ntohl(sap->ipaddr[1]), ntohl(sap->ipaddr[2]),
++			       ntohl(sap->ipaddr[3]));
+ 		p += scnprintf(p, bufsize - (p - buf),
+ 			       "sa[%i]    spi=0x%08x proto=0x%x salt=0x%08x crypt=%d\n",
+-			       i, be32_to_cpu(sap->xs->id.spi),
+-			       sap->xs->id.proto, sap->salt, sap->crypt);
++			       i, ntohl(sap->xs->id.spi),
++			       sap->xs->id.proto, ntohl(sap->salt), sap->crypt);
+ 		p += scnprintf(p, bufsize - (p - buf),
+ 			       "sa[%i]    key=0x%08x %08x %08x %08x\n",
+-			       i, sap->key[0], sap->key[1],
+-			       sap->key[2], sap->key[3]);
++			       i, ntohl(sap->key[0]), ntohl(sap->key[1]),
++			       ntohl(sap->key[2]), ntohl(sap->key[3]));
+ 	}
+ 
+ 	len = simple_read_from_buffer(buffer, count, ppos, buf, p - buf);
+diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+index c9ce3dfa42ee..8b1f20947673 100755
+--- a/tools/testing/selftests/net/rtnetlink.sh
++++ b/tools/testing/selftests/net/rtnetlink.sh
+@@ -814,11 +814,11 @@ kci_test_ipsec_offload()
+ 	diff $sysfsf - << EOF
+ SA count=2 tx=3
+ sa[0] tx ipaddr=0x00000000 00000000 00000000 00000000
+-sa[0]    spi=0x00000009 proto=0x32 salt=0x61626364 crypt=1
+-sa[0]    key=0x34333231 38373635 32313039 36353433
+-sa[1] rx ipaddr=0x00000000 00000000 00000000 037ba8c0
+-sa[1]    spi=0x00000009 proto=0x32 salt=0x61626364 crypt=1
+-sa[1]    key=0x34333231 38373635 32313039 36353433
++sa[0]    spi=0x00000009 proto=0x32 salt=0x64636261 crypt=1
++sa[0]    key=0x31323334 35363738 39303132 33343536
++sa[1] rx ipaddr=0x00000000 00000000 00000000 c0a87b03
++sa[1]    spi=0x00000009 proto=0x32 salt=0x64636261 crypt=1
++sa[1]    key=0x31323334 35363738 39303132 33343536
+ EOF
+ 	if [ $? -ne 0 ] ; then
+ 		echo "FAIL: ipsec_offload incorrect driver data"
 -- 
-Michal Hocko
-SUSE Labs
+2.32.0
+
