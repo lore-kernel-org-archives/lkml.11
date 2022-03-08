@@ -2,309 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C34AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346697AbiCHMIT (ORCPT
+        id S1346704AbiCHMIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
+        Tue, 8 Mar 2022 07:08:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346673AbiCHMIL (ORCPT
+        with ESMTP id S1346678AbiCHMIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 07:08:11 -0500
-Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9827028E14
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:07:14 -0800 (PST)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KCYwZ0qMczMqHjh;
-        Tue,  8 Mar 2022 13:07:10 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KCYwW0hXyzlhMBq;
-        Tue,  8 Mar 2022 13:07:06 +0100 (CET)
-Message-ID: <995fc93b-531b-9840-1523-21ae2adbe4ba@digikod.net>
-Date:   Tue, 8 Mar 2022 13:18:28 +0100
-MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-References: <20210712170313.884724-1-mic@digikod.net>
- <20210712170313.884724-6-mic@digikod.net> <YidDznCPSmFmfNwE@iki.fi>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v8 5/5] certs: Allow root user to append signed hashes to
- the blacklist keyring
-In-Reply-To: <YidDznCPSmFmfNwE@iki.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89C12FFCB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:07:13 -0800 (PST)
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220308120711epoutp0483a038eadefa1889d6a95e6ad7586266~aZmzz0k7F3138531385epoutp04N
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:07:11 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220308120711epoutp0483a038eadefa1889d6a95e6ad7586266~aZmzz0k7F3138531385epoutp04N
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646741231;
+        bh=lEcoaPQ0wXcqoYAXTOO0tu1gYfLWrks8XW836Y3b+ZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fsCS/+PfU4+VcpLMeqZyL4IRziA+ZrDtDLtLPjlnXqlW0cbMohZ5cbNHl24pydJ+c
+         nM+i4Rnxp03VfdbEvjJ0iOO/Xr5dbXpLfzptY1A0+NsuK7Fo+M7KDxVoIHBwTTp76Q
+         Bv5bQLVxBB/uAxcwXGsFyntEpTui/K2q66Tp/bAo=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220308120711epcas5p1807eac5e4de9c0f10ef5668f7261fb93~aZmzXll0Q1111211112epcas5p14;
+        Tue,  8 Mar 2022 12:07:11 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.182]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KCYwV3DmLz4x9Q1; Tue,  8 Mar
+        2022 12:07:06 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        ED.C6.05590.AE647226; Tue,  8 Mar 2022 21:07:06 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2~aZmuTgLS52571125711epcas5p2M;
+        Tue,  8 Mar 2022 12:07:05 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220308120705epsmtrp27766982a47bfd56b961a818cc47fcde7~aZmuSlDcb3197431974epsmtrp23;
+        Tue,  8 Mar 2022 12:07:05 +0000 (GMT)
+X-AuditID: b6c32a4b-739ff700000015d6-42-622746eaae3f
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        89.8B.29871.9E647226; Tue,  8 Mar 2022 21:07:05 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220308120703epsmtip14761939bdaf6e1f980febe8da9f3a2a2~aZmsQcw4Z0869908699epsmtip1d;
+        Tue,  8 Mar 2022 12:07:03 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linus.walleij@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        broonie@kernel.org, andi@etezian.org, linux-spi@vger.kernel.org,
+        lee.jones@linaro.org, Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-fsd@tesla.com, Aswani Reddy <aswani.reddy@samsung.com>
+Subject: [RESEND PATCH v3 2/2] spi: s3c64xx: Add spi port configuration for
+ Tesla FSD SoC
+Date:   Tue,  8 Mar 2022 17:46:40 +0530
+Message-Id: <20220308121640.27344-2-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220308121640.27344-1-alim.akhtar@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpjk+LIzCtJLcpLzFFi42LZdlhTQ/eVm3qSwa25ohYP5m1js1j84zmT
+        xaHNW9ktpj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
+        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
+        b5IL4IjKtslITUxJLVJIzUvOT8nMS7dV8g6Od443NTMw1DW0tDBXUshLzE21VXLxCdB1y8wB
+        ul1JoSwxpxQoFJBYXKykb2dTlF9akqqQkV9cYquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBk
+        ClSYkJ3xsH8pY8E57oqjr06xNDA+4Oxi5OSQEDCR2PF6I3MXIxeHkMBuRokpu9qgnE+MEis7
+        jjOBVAkJfGOUuHuOH6Zj8ps/TBBFexklJn1byQbhtDBJ3DzyjBWkik1AW+Lu9C1g3SICbhI3
+        GjvAbGaBT0wSC5fmg9jCAtES7/ZeZQGxWQRUJZYdW8cMYvMK2Eh8nLiZFWKbvMTqDQeA4hwc
+        nAK2Eu+nOYPskhCYyiFx8f5uFogaF4lzU+YzQtjCEq+Ob2GHsKUkPr/bywbSKyGQLdGzyxgi
+        XCOxdN4xqFZ7iQNX5rCAlDALaEqs36UPcSWfRO/vJ0wQnbwSHW1CENWqEs3vrkJ1SktM7O6G
+        OtJDYvGOadBwm8AosXvWVfYJjLKzEKYuYGRcxSiZWlCcm55abFpgnJdaDo+m5PzcTYzgBKnl
+        vYPx0YMPeocYmTgYDzFKcDArifDeP6+SJMSbklhZlVqUH19UmpNafIjRFBhiE5mlRJPzgSk6
+        ryTe0MTSwMTMzMzE0tjMUEmc91T6hkQhgfTEktTs1NSC1CKYPiYOTqkGplmOVWsWL36s9XzK
+        Sw0OvdiglVzaDzb5cj9N92qY8VD/cJLU3JCWs48vNpxgS5Let+3izUmFt5hjcoPKn8qYspWy
+        pYkfze29NmEe3/PKy67P13snRswIrb5q9WF+8qp/Zd3mG5LvlV7lLL579G66xNsFK8yCLp88
+        waf0rDSU/UWC/oX9l/IVvBd+teA8ZuF36toL7biEjRerddImMz6SOR+znMXkpcx1m87v737M
+        +nrOaWqggpmzW3HFwyWrvOKLLmzZ2Tg9i7n1UZRl9GpudoP1UepndH6XJHKV9ckrrVdtmqlf
+        4NrilJq0OGPD1YAVXleNe1e2Xni8/Nfq/pXShTtK3u6SkmFuca8O5RfbqMRSnJFoqMVcVJwI
+        AOG9wGkZBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNLMWRmVeSWpSXmKPExsWy7bCSnO5LN/Ukg5ddZhYP5m1js1j84zmT
+        xaHNW9ktpj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
+        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
+        b5IL4IjisklJzcksSy3St0vgynjYv5Sx4Bx3xdFXp1gaGB9wdjFyckgImEhMfvOHCcQWEtjN
+        KNG1KgUiLi1xfeMEdghbWGLlv+dANhdQTROTxJ5nV1hBEmwC2hJ3p28BaxYR8JBo+3ePGaSI
+        WaCBWWL9jn5mkISwQKTE9hV7GEFsFgFViWXH1oHFeQVsJD5O3MwKsUFeYvWGA0BxDg5OAVuJ
+        99OcIQ6ykZhxpZ91AiPfAkaGVYySqQXFuem5xYYFhnmp5XrFibnFpXnpesn5uZsYweGtpbmD
+        cfuqD3qHGJk4GA8xSnAwK4nw3j+vkiTEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTE
+        ktTs1NSC1CKYLBMHp1QDU6Xi0rBX81S3sxbnKTusN8pvuL2b27697JfuVEH/luPyDf3ycziY
+        IuREWkwWnr34Rmjrd/UaNkPVazHH2hTn2sQfLIzYXHnw64aIhmczzhlfrcrd+J55U861NwLa
+        MbntXw+rSz/b9WEnGxP7owfbt+15yZ53iqvs/RnFie6btwZU5brmiKw+eb13/40dDbPtpCzr
+        T566p7Ynu/3uTXvVvdv71Mw+L1pvyLV76xPfnhfHxab0MHTmrTrZyPU2/KyMV9L0OQGuNcsr
+        zLqSdZJnCwvbbb6y9qOfyN4fjYU6JrsneaTyvf3clWTWoeiv8k01pXhN5N9I5S7GuC9Cmmtq
+        vW95TZkxS+LIE1sJ3tRwJZbijERDLeai4kQAwrXRxN4CAAA=
+X-CMS-MailID: 20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2
+References: <20220308121640.27344-1-alim.akhtar@samsung.com>
+        <CGME20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add compatible and port configuration for spi controller
+for Tesla Full Self-Driving SoC.
 
-On 08/03/2022 12:53, Jarkko Sakkinen wrote:
-> On Mon, Jul 12, 2021 at 07:03:13PM +0200, Mickaël Salaün wrote:
->> From: Mickaël Salaün <mic@linux.microsoft.com>
->>
->> Add a kernel option SYSTEM_BLACKLIST_AUTH_UPDATE to enable the root user
->> to dynamically add new keys to the blacklist keyring.  This enables to
->> invalidate new certificates, either from being loaded in a keyring, or
->> from being trusted in a PKCS#7 certificate chain.  This also enables to
->> add new file hashes to be denied by the integrity infrastructure.
->>
->> Being able to untrust a certificate which could have normaly been
->> trusted is a sensitive operation.  This is why adding new hashes to the
->> blacklist keyring is only allowed when these hashes are signed and
->> vouched by the builtin trusted keyring.  A blacklist hash is stored as a
->> key description.  The PKCS#7 signature of this description must be
->> provided as the key payload.
->>
->> Marking a certificate as untrusted should be enforced while the system
->> is running.  It is then forbiden to remove such blacklist keys.
->>
->> Update blacklist keyring, blacklist key and revoked certificate access rights:
->> * allows the root user to search for a specific blacklisted hash, which
->>    make sense because the descriptions are already viewable;
->> * forbids key update (blacklist and asymmetric ones);
->> * restricts kernel rights on the blacklist keyring to align with the
->>    root user rights.
->>
->> See help in tools/certs/print-cert-tbs-hash.sh .
->>
->> Cc: David Howells <dhowells@redhat.com>
->> Cc: David Woodhouse <dwmw2@infradead.org>
->> Cc: Eric Snowberg <eric.snowberg@oracle.com>
->> Cc: Jarkko Sakkinen <jarkko@kernel.org>
->> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
->> Link: https://lore.kernel.org/r/20210712170313.884724-6-mic@digikod.net
->> ---
->>
->> Changes since v6:
->> * Rebase on keys-cve-2020-26541-v3: commit ebd9c2ae369a ("integrity:
->>    Load mokx variables into the blacklist keyring").
->>
->> Changes since v5:
->> * Rebase on keys-next, fix Kconfig conflict, and update the asymmetric
->>    key rights added to the blacklist keyring by the new
->>    add_key_to_revocation_list(): align with blacklist key rights by
->>    removing KEY_POS_WRITE as a safeguard, and add
->>    KEY_ALLOC_BYPASS_RESTRICTION to not be subject to
->>    restrict_link_for_blacklist() that only allows blacklist key types to
->>    be added to the keyring.
->> * Change the return code for restrict_link_for_blacklist() from -EPERM
->>    to -EOPNOTSUPP to align with asymmetric key keyrings.
->>
->> Changes since v3:
->> * Update commit message for print-cert-tbs-hash.sh .
->>
->> Changes since v2:
->> * Add comment for blacklist_key_instantiate().
->> ---
->>   certs/Kconfig     | 10 +++++
->>   certs/blacklist.c | 96 ++++++++++++++++++++++++++++++++++++-----------
->>   2 files changed, 85 insertions(+), 21 deletions(-)
->>
->> diff --git a/certs/Kconfig b/certs/Kconfig
->> index 0fbe184ceca5..e0e524b7eff9 100644
->> --- a/certs/Kconfig
->> +++ b/certs/Kconfig
->> @@ -103,4 +103,14 @@ config SYSTEM_REVOCATION_KEYS
->>   	  containing X.509 certificates to be included in the default blacklist
->>   	  keyring.
->>   
->> +config SYSTEM_BLACKLIST_AUTH_UPDATE
->> +	bool "Allow root to add signed blacklist keys"
->> +	depends on SYSTEM_BLACKLIST_KEYRING
->> +	depends on SYSTEM_DATA_VERIFICATION
->> +	help
->> +	  If set, provide the ability to load new blacklist keys at run time if
->> +	  they are signed and vouched by a certificate from the builtin trusted
->> +	  keyring.  The PKCS#7 signature of the description is set in the key
->> +	  payload.  Blacklist keys cannot be removed.
->> +
->>   endmenu
->> diff --git a/certs/blacklist.c b/certs/blacklist.c
->> index b254c87ceb3a..486ce0dd8e9c 100644
->> --- a/certs/blacklist.c
->> +++ b/certs/blacklist.c
->> @@ -15,6 +15,7 @@
->>   #include <linux/err.h>
->>   #include <linux/seq_file.h>
->>   #include <linux/uidgid.h>
->> +#include <linux/verification.h>
->>   #include <keys/system_keyring.h>
->>   #include "blacklist.h"
->>   #include "common.h"
->> @@ -26,6 +27,9 @@
->>    */
->>   #define MAX_HASH_LEN	128
->>   
->> +#define BLACKLIST_KEY_PERM (KEY_POS_SEARCH | KEY_POS_VIEW | \
->> +			    KEY_USR_SEARCH | KEY_USR_VIEW)
->> +
->>   static const char tbs_prefix[] = "tbs";
->>   static const char bin_prefix[] = "bin";
->>   
->> @@ -80,19 +84,51 @@ static int blacklist_vet_description(const char *desc)
->>   	return 0;
->>   }
->>   
->> -/*
->> - * The hash to be blacklisted is expected to be in the description.  There will
->> - * be no payload.
->> - */
->> -static int blacklist_preparse(struct key_preparsed_payload *prep)
->> +static int blacklist_key_instantiate(struct key *key,
->> +		struct key_preparsed_payload *prep)
->>   {
->> -	if (prep->datalen > 0)
->> -		return -EINVAL;
->> -	return 0;
->> +#ifdef CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE
->> +	int err;
->> +#endif
->> +
->> +	/* Sets safe default permissions for keys loaded by user space. */
->> +	key->perm = BLACKLIST_KEY_PERM;
->> +
->> +	/*
->> +	 * Skips the authentication step for builtin hashes, they are not
->> +	 * signed but still trusted.
->> +	 */
->> +	if (key->flags & (1 << KEY_FLAG_BUILTIN))
->> +		goto out;
->> +
->> +#ifdef CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE
->> +	/*
->> +	 * Verifies the description's PKCS#7 signature against the builtin
->> +	 * trusted keyring.
->> +	 */
->> +	err = verify_pkcs7_signature(key->description,
->> +			strlen(key->description), prep->data, prep->datalen,
->> +			NULL, VERIFYING_UNSPECIFIED_SIGNATURE, NULL, NULL);
->> +	if (err)
->> +		return err;
->> +#else
->> +	/*
->> +	 * It should not be possible to come here because the keyring doesn't
->> +	 * have KEY_USR_WRITE and the only other way to call this function is
->> +	 * for builtin hashes.
->> +	 */
->> +	WARN_ON_ONCE(1);
->> +	return -EPERM;
->> +#endif
->> +
->> +out:
->> +	return generic_key_instantiate(key, prep);
->>   }
->>   
->> -static void blacklist_free_preparse(struct key_preparsed_payload *prep)
->> +static int blacklist_key_update(struct key *key,
->> +		struct key_preparsed_payload *prep)
->>   {
->> +	return -EPERM;
->>   }
->>   
->>   static void blacklist_describe(const struct key *key, struct seq_file *m)
->> @@ -103,9 +139,8 @@ static void blacklist_describe(const struct key *key, struct seq_file *m)
->>   static struct key_type key_type_blacklist = {
->>   	.name			= "blacklist",
->>   	.vet_description	= blacklist_vet_description,
->> -	.preparse		= blacklist_preparse,
->> -	.free_preparse		= blacklist_free_preparse,
->> -	.instantiate		= generic_key_instantiate,
->> +	.instantiate		= blacklist_key_instantiate,
->> +	.update			= blacklist_key_update,
->>   	.describe		= blacklist_describe,
->>   };
->>   
->> @@ -154,8 +189,7 @@ static int mark_raw_hash_blacklisted(const char *hash)
->>   				   hash,
->>   				   NULL,
->>   				   0,
->> -				   ((KEY_POS_ALL & ~KEY_POS_SETATTR) |
->> -				    KEY_USR_VIEW),
->> +				   BLACKLIST_KEY_PERM,
->>   				   KEY_ALLOC_NOT_IN_QUOTA |
->>   				   KEY_ALLOC_BUILT_IN);
->>   	if (IS_ERR(key)) {
->> @@ -232,8 +266,10 @@ int add_key_to_revocation_list(const char *data, size_t size)
->>   				   NULL,
->>   				   data,
->>   				   size,
->> -				   ((KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW),
->> -				   KEY_ALLOC_NOT_IN_QUOTA | KEY_ALLOC_BUILT_IN);
->> +				   KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH
->> +				   | KEY_USR_VIEW,
->> +				   KEY_ALLOC_NOT_IN_QUOTA | KEY_ALLOC_BUILT_IN
->> +				   | KEY_ALLOC_BYPASS_RESTRICTION);
->>   
->>   	if (IS_ERR(key)) {
->>   		pr_err("Problem with revocation key (%ld)\n", PTR_ERR(key));
->> @@ -260,25 +296,43 @@ int is_key_on_revocation_list(struct pkcs7_message *pkcs7)
->>   }
->>   #endif
->>   
->> +static int restrict_link_for_blacklist(struct key *dest_keyring,
->> +		const struct key_type *type, const union key_payload *payload,
->> +		struct key *restrict_key)
->> +{
->> +	if (type == &key_type_blacklist)
->> +		return 0;
->> +	return -EOPNOTSUPP;
->> +}
->> +
->>   /*
->>    * Initialise the blacklist
->>    */
->>   static int __init blacklist_init(void)
->>   {
->>   	const char *const *bl;
->> +	struct key_restriction *restriction;
->>   
->>   	if (register_key_type(&key_type_blacklist) < 0)
->>   		panic("Can't allocate system blacklist key type\n");
->>   
->> +	restriction = kzalloc(sizeof(*restriction), GFP_KERNEL);
->> +	if (!restriction)
->> +		panic("Can't allocate blacklist keyring restriction\n");
-> 
-> 
-> This prevents me from taking this to my pull request. In moderns standards,
-> no new BUG_ON(), panic() etc. should never added to the kernel.
-> 
-> I missed this in my review.
-> 
-> This should rather be e.g.
-> 
->          restriction = kzalloc(sizeof(*restriction), GFP_KERNEL);
-> 	if (!restriction) {
-> 		pr_err("Can't allocate blacklist keyring restriction\n");
->                  return 0;
->          }
-> 
-> Unfortunately I need to drop this patch set, because adding new panic()
-> is simply a no-go.
+Cc: linux-fsd@tesla.com
+Signed-off-by: Aswani Reddy <aswani.reddy@samsung.com>
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Andi Shyti <andi@etezian.org>
+---
+ drivers/spi/spi-s3c64xx.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-I agree that panic() is not great in general, but I followed the other 
-part of the code (just above) that do the same. This part of the kernel 
-should failed if critical memory allocation failed at boot time (only). 
-It doesn't impact the kernel once it is running. I don't think that just 
-ignoring this error with return 0 is fine, after all it's a critical 
-error right?
+diff --git a/drivers/spi/spi-s3c64xx.c b/drivers/spi/spi-s3c64xx.c
+index 386550fca81c..423518bf0270 100644
+--- a/drivers/spi/spi-s3c64xx.c
++++ b/drivers/spi/spi-s3c64xx.c
+@@ -1440,6 +1440,16 @@ static const struct s3c64xx_spi_port_config exynos5433_spi_port_config = {
+ 	.quirks		= S3C64XX_SPI_QUIRK_CS_AUTO,
+ };
+ 
++static struct s3c64xx_spi_port_config fsd_spi_port_config = {
++	.fifo_lvl_mask	= { 0x7f, 0x7f, 0x7f, 0x7f, 0x7f},
++	.rx_lvl_offset	= 15,
++	.tx_st_done	= 25,
++	.high_speed	= true,
++	.clk_from_cmu	= true,
++	.clk_ioclk	= false,
++	.quirks		= S3C64XX_SPI_QUIRK_CS_AUTO,
++};
++
+ static const struct platform_device_id s3c64xx_spi_driver_ids[] = {
+ 	{
+ 		.name		= "s3c2443-spi",
+@@ -1470,6 +1480,9 @@ static const struct of_device_id s3c64xx_spi_dt_match[] = {
+ 	{ .compatible = "samsung,exynos5433-spi",
+ 			.data = (void *)&exynos5433_spi_port_config,
+ 	},
++	{ .compatible = "tesla,fsd-spi",
++			.data = (void *)&fsd_spi_port_config,
++	},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, s3c64xx_spi_dt_match);
+-- 
+2.25.1
 
-Calling panic() seems OK here. Is there a better way to stop the kernel 
-for such critical error? If the kernel cannot allocate memory at this 
-time, it would be useless to try continuing booting.
