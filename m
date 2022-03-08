@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0396C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EEEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235049AbiCHP5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:57:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
+        id S1348153AbiCHP5L (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348041AbiCHP4E (ORCPT
+        with ESMTP id S1348043AbiCHP4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:04 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D154F9CD
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95074F9CE
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=iwGCnfXB3kwKpXZ2OxhUFUJdGuoD7mQ0N21yE4UJlcY=; b=gdZplKgAVvGkpPjjoOpbLc3mD7
-        eijW3uIpZJ6506Uzm5URs176gq+RqCIqOYQG0Q59ZUgP68pnW3HaAN1WEzvgnpnr/CxyMIegWM1uo
-        U7b5ZWSiDfFvv3mu3y12QeC/+uMKcjgCdkmYeiU+dbMT0NWu7Te0ZB4ilVJKm4sahCsP5vXU4axUf
-        E7OX1AOxKBjwmaWD6TQDUBxMTlmqQ3sf771fefEYQex1SrUbmuAhXW+e104KmTKsdCA17Xs223fhP
-        pCU1vwuPmQ1aR2a4++B28G5cIhy5l/SBWOguq1QJxrbJzH/EwbI6/Qo7+T6FqGuURG/LUsSpvMztz
-        jimxGV5w==;
+        bh=N852q9aWEiK0I+Tjg4v4NRP8lVB+Lypx5hQ0mJxyRSo=; b=uHBky8qUbVEnD4beh5Xt3fDSbz
+        1uKLADBp/b7uDGppsDtuNhXhRqfHAsNsATnLwe6al5u/lxNshzvKDi1j00hZ3m97I0pcflNg3rl7s
+        uvYm2gwx20pmPMxH2pWHBOg4lwa4n0OBASwKHjM8CMLx59pjiyBLaOo7JznNBKzpCa2NgRkuJvtnO
+        Qa+Kf1AQiFRhsiQV7wPDCexv7VTeILXLv2msBqrla8qXJ9GSqYSQFTV8FBjLjlMzAAaJ4givH7kqp
+        GIHEieslEe0Q824y8rL18WOpzIppsZ2l02GcWplG8A7E45Sd9ult9PeXo8s4/YA4ZD1uTPw8wZQC0
+        wYcWxgcw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAb-00GIup-Fz; Tue, 08 Mar 2022 15:54:41 +0000
+        id 1nRcAc-00GIv3-BU; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D7C423003BC;
-        Tue,  8 Mar 2022 16:54:38 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 33C3B30175B;
+        Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id BA3A12B55FFB7; Tue,  8 Mar 2022 16:54:38 +0100 (CET)
-Message-ID: <20220308154317.282720146@infradead.org>
+        id 258BB2B56191C; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.168850084@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:13 +0100
+Date:   Tue, 08 Mar 2022 16:30:28 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 02/45] objtool: Add --dry-run
+Subject: [PATCH v4 17/45] x86/ibt,kvm: Add ENDBR to fastops
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,59 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a --dry-run argument to skip writing the modifications. This is
-convenient for debugging.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
 ---
- tools/objtool/builtin-check.c           |    3 ++-
- tools/objtool/elf.c                     |    3 +++
- tools/objtool/include/objtool/builtin.h |    2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -20,7 +20,7 @@
- #include <objtool/objtool.h>
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -189,7 +189,7 @@
+ #define X16(x...) X8(x), X8(x)
  
- bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
--     validate_dup, vmlinux, mcount, noinstr, backup, sls;
-+     validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
+ #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
+-#define FASTOP_SIZE 8
++#define FASTOP_SIZE (8 * (1 + HAS_KERNEL_IBT))
  
- static const char * const check_usage[] = {
- 	"objtool check [<options>] file.o",
-@@ -46,6 +46,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('M', "mcount", &mcount, "generate __mcount_loc"),
- 	OPT_BOOLEAN('B', "backup", &backup, "create .orig files before modification"),
- 	OPT_BOOLEAN('S', "sls", &sls, "validate straight-line-speculation"),
-+	OPT_BOOLEAN(0, "dry-run", &dryrun, "don't write the modifications"),
- 	OPT_END(),
- };
+ struct opcode {
+ 	u64 flags;
+@@ -311,7 +311,8 @@ static int fastop(struct x86_emulate_ctx
+ #define __FOP_FUNC(name) \
+ 	".align " __stringify(FASTOP_SIZE) " \n\t" \
+ 	".type " name ", @function \n\t" \
+-	name ":\n\t"
++	name ":\n\t" \
++	ASM_ENDBR
  
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -1019,6 +1019,9 @@ int elf_write(struct elf *elf)
- 	struct section *sec;
- 	Elf_Scn *s;
- 
-+	if (dryrun)
-+		return 0;
-+
- 	/* Update changed relocation sections and section headers: */
- 	list_for_each_entry(sec, &elf->sections, list) {
- 		if (sec->changed) {
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -9,7 +9,7 @@
- 
- extern const struct option check_options[];
- extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
--            validate_dup, vmlinux, mcount, noinstr, backup, sls;
-+            validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
- 
- extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
+ #define FOP_FUNC(name) \
+ 	__FOP_FUNC(#name)
+@@ -433,6 +434,7 @@ static int fastop(struct x86_emulate_ctx
+ 	".align 4 \n\t" \
+ 	".type " #op ", @function \n\t" \
+ 	#op ": \n\t" \
++	ASM_ENDBR \
+ 	#op " %al \n\t" \
+ 	__FOP_RET(#op)
  
 
 
