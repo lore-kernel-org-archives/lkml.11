@@ -2,292 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF397C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D18C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241693AbiCHVvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
+        id S234403AbiCHVx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 16:53:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350559AbiCHVuj (ORCPT
+        with ESMTP id S230105AbiCHVxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:50:39 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A596655BC3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646776181; x=1678312181;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FZ/ybwXSKTVeE31D+sksw3hOpY4mhpv0+x5U06HGPoE=;
-  b=TUCvam39Qp/G33jBnwed81y99CBxyA9+z7QizYEHJey9H5UFBa+JmkwR
-   EczMd07Iy91emeQ0M/rXFGEwcBTCu3OVY7y1J8N2xS9f7Sp35wGMyub5X
-   jxKt0A+xjNgjziC1hTXM0bEco9LdueZXyzAUlLXSWfOxUi4ZiBJBzr6v2
-   9k/pM3Uk5YIFh68YDUYX83r+MzwuK/KeOYSVvWAtI/GFZCBrg7mimzw1h
-   1/BEIdoEthhXK11LO3usTXM6vUldMT1obuTtkOi9snWmasAmNem6iKxRv
-   kIW67udaSdL2cmi5JndlB3edyl5ekfIbzyI829L4EJItAlp3ZIlnZ0d4x
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553239"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="254553239"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:39 -0800
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="495612848"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.239.204])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:39 -0800
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mcgrof@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
-        hao.wu@intel.com, matthew.gerlach@intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v1 7/8] test_firmware: Error injection for firmware upload
-Date:   Tue,  8 Mar 2022 13:49:31 -0800
-Message-Id: <20220308214932.24477-8-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220308214932.24477-1-russell.h.weight@intel.com>
-References: <20220308214932.24477-1-russell.h.weight@intel.com>
+        Tue, 8 Mar 2022 16:53:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 96382344FB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646776376;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NzjXlBirb+xRpK0AjbCq+oEkMZQAkLue8HFEU88UcqU=;
+        b=V+zADMwOwCn6/JL0g9zurd2/JXNlzMZbY5aon8P6zJkPHUcvTpTtd6nrPdbatDB0dyNp+a
+        mINpXTFfspJYgHuQckbDDUWfVnpZWBoAHRU2AzuIHm6Y5rOTHQ7Hjc7jdR9Aj1lVNCZJP6
+        0fAvC31Jchy5iOfrQbzgUJJi8oi7AzE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-14iLTJPnONOwL58BgUFfrQ-1; Tue, 08 Mar 2022 16:52:53 -0500
+X-MC-Unique: 14iLTJPnONOwL58BgUFfrQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5D395800050;
+        Tue,  8 Mar 2022 21:52:52 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4284EADF1;
+        Tue,  8 Mar 2022 21:52:42 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] cachefiles: Fix volume coherency attribute
+From:   David Howells <dhowells@redhat.com>
+To:     rohiths.msft@gmail.com
+Cc:     Steve French <smfrench@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
+        linux-cachefs@redhat.com, dhowells@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 08 Mar 2022 21:52:41 +0000
+Message-ID: <164677636135.1191348.1664733858863676368.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add error injection capability to the test_firmware module specifically
-for firmware upload testing. Error injection instructions are transferred
-as the first part of the firmware payload. The format of an error
-injection string is similar to the error strings that may be read from
-the error sysfs node.
+A network filesystem may set coherency data on a volume cookie, and if
+given, cachefiles will store this in an xattr on the directory in the cache
+corresponding to the volume.
 
-To inject the error "programming:hw-error", one would use the error
-injection string "inject:programming:hw-error" as the firmware payload:
+The function that sets the xattr just stores the contents of the volume
+coherency buffer directly into the xattr, with nothing added; the checking
+function, on the other hand, has a cut'n'paste error whereby it tries to
+interpret the xattr contents as would be the xattr on an ordinary file
+(using the cachefiles_xattr struct).  This results in a failure to match
+the coherency data because the buffer ends up being shifted by 18 bytes.
 
-$ echo 1 > loading
-$ echo inject:programming:hw-error > data
-$ echo 0 > loading
-$ cat status
-idle
-$ cat error
-programming:hw-error
+Fix this by defining a structure specifically for the volume xattr and
+making both the setting and checking functions use it.
 
-The first part of the error string is the progress state of the upload at
-the time of the error. The progress state would be one of the following:
-"preparing", "transferring", or "programming". The second part of the
-error string is one of the following: "hw-error", "timeout", "device-busy",
-"invalid-file-size", "read-write-error", "flash-wearout", and "user-abort".
+Since the volume coherency doesn't work if used, take the opportunity to
+insert a reserved field for future use, set it to 0 and check that it is 0.
+Log mismatch through the appropriate tracepoint.
 
-Note that all of the error strings except "user-abort" will fail without
-delay. The "user-abort" error will cause the firmware upload to stall at
-the requested progress state for up to 5 minutes to allow you to echo 1
-to the cancel sysfs node. It is this cancellation that causes the
-'user-abort" error. If the upload is not cancelled within the 5 minute
-time period, then the upload will complete without an error.
+Note that this only affects cifs; 9p, afs, ceph and nfs don't use the
+volume coherency data at the moment.
 
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+Fixes: 32e150037dce ("fscache, cachefiles: Store the volume coherency data")
+Reported-by: Rohith Surabattula <rohiths.msft@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <smfrench@gmail.com>
+cc: Jeff Layton <jlayton@kernel.org>
+cc: linux-cifs@vger.kernel.org
+cc: linux-cachefs@redhat.com
 ---
- lib/test_firmware.c | 127 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 122 insertions(+), 5 deletions(-)
 
-diff --git a/lib/test_firmware.c b/lib/test_firmware.c
-index d6fe00c4972f..e9f9deeb3a2f 100644
---- a/lib/test_firmware.c
-+++ b/lib/test_firmware.c
-@@ -117,12 +117,18 @@ struct test_config {
- 			    struct device *device);
- };
+ fs/cachefiles/xattr.c             |   23 ++++++++++++++++++++---
+ include/trace/events/cachefiles.h |    2 ++
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/fs/cachefiles/xattr.c b/fs/cachefiles/xattr.c
+index 83f41bd0c3a9..35465109d9c4 100644
+--- a/fs/cachefiles/xattr.c
++++ b/fs/cachefiles/xattr.c
+@@ -28,6 +28,11 @@ struct cachefiles_xattr {
+ static const char cachefiles_xattr_cache[] =
+ 	XATTR_USER_PREFIX "CacheFiles.cache";
  
-+struct upload_inject_err {
-+	const char *prog;
-+	enum fw_upload_err err_code;
-+};
++struct cachefiles_vol_xattr {
++	__be32	reserved;	/* Reserved, should be 0 */
++	__u8	data[];		/* netfs volume coherency data */
++} __packed;
 +
- struct test_firmware_upload {
- 	char *name;
- 	struct list_head node;
- 	char *buf;
- 	size_t size;
- 	bool cancel_request;
-+	struct upload_inject_err inject;
- 	struct fw_upload *fwl;
- };
- 
-@@ -1067,20 +1073,105 @@ static void upload_release_all(void)
- 	test_fw_config->upload_name = NULL;
- }
- 
-+/*
-+ * This table is replicated from .../firmware_loader/sysfs_upload.c
-+ * and needs to be kept in sync.
-+ */
-+static const char * const fw_upload_err_str[] = {
-+	[FW_UPLOAD_ERR_NONE]	     = "none",
-+	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
-+	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
-+	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
-+	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
-+	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
-+	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
-+	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
-+};
-+
-+static void upload_err_inject_error(struct test_firmware_upload *tst,
-+				    const u8 *p, const char *prog)
-+{
-+	enum fw_upload_err err;
-+
-+	for (err = FW_UPLOAD_ERR_NONE + 1; err < FW_UPLOAD_ERR_MAX; err++) {
-+		if (strncmp(p, fw_upload_err_str[err],
-+			    strlen(fw_upload_err_str[err])) == 0) {
-+			tst->inject.prog = prog;
-+			tst->inject.err_code = err;
-+			return;
-+		}
-+	}
-+}
-+
-+static void upload_err_inject_prog(struct test_firmware_upload *tst,
-+				   const u8 *p)
-+{
-+	static const char * const progs[] = {
-+		"preparing:", "transferring:", "programming:"
-+	};
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(progs); i++) {
-+		if (strncmp(p, progs[i], strlen(progs[i])) == 0) {
-+			upload_err_inject_error(tst, p + strlen(progs[i]),
-+						progs[i]);
-+			return;
-+		}
-+	}
-+}
-+
-+#define FIVE_MINUTES_MS	(5 * 60 * 1000)
-+static enum fw_upload_err
-+fw_upload_wait_on_cancel(struct test_firmware_upload *tst)
-+{
-+	int ms_delay;
-+
-+	for (ms_delay = 0; ms_delay < FIVE_MINUTES_MS; ms_delay += 100) {
-+		msleep(100);
-+		if (tst->cancel_request)
-+			return FW_UPLOAD_ERR_CANCELED;
-+	}
-+	return FW_UPLOAD_ERR_NONE;
-+}
-+
- static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
- 						 const u8 *data, u32 size)
+ /*
+  * set the state xattr on a cache file
+  */
+@@ -185,6 +190,7 @@ void cachefiles_prepare_to_write(struct fscache_cookie *cookie)
+  */
+ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
  {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	enum fw_upload_err ret = FW_UPLOAD_ERR_NONE;
-+	const char *progress = "preparing:";
++	struct cachefiles_vol_xattr *buf;
+ 	unsigned int len = volume->vcookie->coherency_len;
+ 	const void *p = volume->vcookie->coherency;
+ 	struct dentry *dentry = volume->dentry;
+@@ -192,10 +198,17 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
  
- 	tst->cancel_request = false;
+ 	_enter("%x,#%d", volume->vcookie->debug_id, len);
  
--	if (!size || size > TEST_UPLOAD_MAX_SIZE)
--		return FW_UPLOAD_ERR_INVALID_SIZE;
-+	if (!size || size > TEST_UPLOAD_MAX_SIZE) {
-+		ret = FW_UPLOAD_ERR_INVALID_SIZE;
-+		goto err_out;
-+	}
++	len += sizeof(*buf);
++	buf = kmalloc(len, GFP_KERNEL);
++	if (!buf)
++		return false;
++	buf->reserved = cpu_to_be32(0);
++	memcpy(buf->data, p, len);
 +
-+	if (strncmp(data, "inject:", strlen("inject:")) == 0)
-+		upload_err_inject_prog(tst, data + strlen("inject:"));
+ 	ret = cachefiles_inject_write_error();
+ 	if (ret == 0)
+ 		ret = vfs_setxattr(&init_user_ns, dentry, cachefiles_xattr_cache,
+-				   p, len, 0);
++				   buf, len, 0);
+ 	if (ret < 0) {
+ 		trace_cachefiles_vfs_error(NULL, d_inode(dentry), ret,
+ 					   cachefiles_trace_setxattr_error);
+@@ -209,6 +222,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+ 					       cachefiles_coherency_vol_set_ok);
+ 	}
  
- 	memset(tst->buf, 0, TEST_UPLOAD_MAX_SIZE);
- 	tst->size = size;
- 
--	return FW_UPLOAD_ERR_NONE;
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		ret = fw_upload_wait_on_cancel(tst);
-+	else
-+		ret = tst->inject.err_code;
-+
-+err_out:
-+	/*
-+	 * The cleanup op only executes if the prepare op succeeds.
-+	 * If the prepare op fails, it must do it's own clean-up.
-+	 */
-+	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
-+	tst->inject.prog = NULL;
-+
-+	return ret;
++	kfree(buf);
+ 	_leave(" = %d", ret);
+ 	return ret == 0;
  }
- 
- static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
-@@ -1088,6 +1179,7 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
- 					       u32 size, u32 *written)
+@@ -218,7 +232,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+  */
+ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
  {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	const char *progress = "transferring:";
- 	u32 blk_size;
+-	struct cachefiles_xattr *buf;
++	struct cachefiles_vol_xattr *buf;
+ 	struct dentry *dentry = volume->dentry;
+ 	unsigned int len = volume->vcookie->coherency_len;
+ 	const void *p = volume->vcookie->coherency;
+@@ -228,6 +242,7 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
  
- 	if (tst->cancel_request)
-@@ -1097,17 +1189,33 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
- 	memcpy(tst->buf + offset, data + offset, blk_size);
+ 	_enter("");
  
- 	*written = blk_size;
--	return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		return fw_upload_wait_on_cancel(tst);
-+
-+	return tst->inject.err_code;
- }
- 
- static enum fw_upload_err test_fw_upload_complete(struct fw_upload *fwl)
- {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	const char *progress = "programming:";
- 
- 	if (tst->cancel_request)
- 		return FW_UPLOAD_ERR_CANCELED;
- 
--	return FW_UPLOAD_ERR_NONE;
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		return fw_upload_wait_on_cancel(tst);
-+
-+	return tst->inject.err_code;
- }
- 
- static void test_fw_upload_cancel(struct fw_upload *fwl)
-@@ -1117,11 +1225,20 @@ static void test_fw_upload_cancel(struct fw_upload *fwl)
- 	tst->cancel_request = true;
- }
- 
-+static void test_fw_cleanup(struct fw_upload *fwl)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+
-+	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
-+	tst->inject.prog = NULL;
-+}
-+
- static const struct fw_upload_ops upload_test_ops = {
- 	.prepare = test_fw_upload_prepare,
- 	.write = test_fw_upload_write,
- 	.poll_complete = test_fw_upload_complete,
- 	.cancel = test_fw_upload_cancel,
-+	.cleanup = test_fw_cleanup
- };
- 
- static ssize_t upload_register_store(struct device *dev,
--- 
-2.25.1
++	len += sizeof(*buf);
+ 	buf = kmalloc(len, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
+@@ -245,7 +260,9 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+ 					"Failed to read xattr with error %zd", xlen);
+ 		}
+ 		why = cachefiles_coherency_vol_check_xattr;
+-	} else if (memcmp(buf->data, p, len) != 0) {
++	} else if (buf->reserved != cpu_to_be32(0)) {
++		why = cachefiles_coherency_vol_check_resv;
++	} else if (memcmp(buf->data, p, len - sizeof(*buf)) != 0) {
+ 		why = cachefiles_coherency_vol_check_cmp;
+ 	} else {
+ 		why = cachefiles_coherency_vol_check_ok;
+diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
+index 002d0ae4f9bc..311c14a20e70 100644
+--- a/include/trace/events/cachefiles.h
++++ b/include/trace/events/cachefiles.h
+@@ -56,6 +56,7 @@ enum cachefiles_coherency_trace {
+ 	cachefiles_coherency_set_ok,
+ 	cachefiles_coherency_vol_check_cmp,
+ 	cachefiles_coherency_vol_check_ok,
++	cachefiles_coherency_vol_check_resv,
+ 	cachefiles_coherency_vol_check_xattr,
+ 	cachefiles_coherency_vol_set_fail,
+ 	cachefiles_coherency_vol_set_ok,
+@@ -139,6 +140,7 @@ enum cachefiles_error_trace {
+ 	EM(cachefiles_coherency_set_ok,		"SET ok  ")		\
+ 	EM(cachefiles_coherency_vol_check_cmp,	"VOL BAD cmp ")		\
+ 	EM(cachefiles_coherency_vol_check_ok,	"VOL OK      ")		\
++	EM(cachefiles_coherency_vol_check_resv,	"VOL BAD resv")	\
+ 	EM(cachefiles_coherency_vol_check_xattr,"VOL BAD xatt")		\
+ 	EM(cachefiles_coherency_vol_set_fail,	"VOL SET fail")		\
+ 	E_(cachefiles_coherency_vol_set_ok,	"VOL SET ok  ")
+
 
