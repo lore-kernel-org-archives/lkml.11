@@ -2,93 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C203DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C99E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347015AbiCHSFK (ORCPT
+        id S1349363AbiCHSFc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:05:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
+        Tue, 8 Mar 2022 13:05:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231637AbiCHSFI (ORCPT
+        with ESMTP id S231637AbiCHSFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:05:08 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AED369F5
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646762651; x=1678298651;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=SHpKuGI9oHFfctlODTuptb1JZ19Bc9t1iU7ejKEcWwY=;
-  b=YkMMiSi1P4lkJK3isTb8H3uywSGtPTeGpvjV+eFbOEpBI81QfdD/4d0P
-   NA+pgEAw0GC3Km9lhyYTEB9eih57Mxf1VxRcxqEp7RSUAcpKLbIQs7PJJ
-   xbPOhT87pL1ZlMKVFVrS/XkXn9Shx0mV+Dxzi7CYt53aWqBVwsdxi4POW
-   wIHvjMdsRCtiG58CXYUsMSGHqVlMi6Yt/P2AjkrPrxleXOgJ2wDXkg72n
-   1q43jrzQIgrhfZ1c0LwWjrOavKOoRLAhbjY+hOWXF5hgmf6U5N6CApax7
-   DyP7LlM+ArnigrwB1NXCu26zMuekr+I6dCSeL1d7ccSytxRg6VCoNArmd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254959795"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="254959795"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 10:03:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="513208708"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 08 Mar 2022 10:03:34 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nReBJ-0001nC-U1; Tue, 08 Mar 2022 18:03:33 +0000
-Date:   Wed, 9 Mar 2022 02:03:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: pcie.c:undefined reference to `pci_remap_iospace'
-Message-ID: <202203090147.24cUL0De-lkp@intel.com>
+        Tue, 8 Mar 2022 13:05:25 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB735521D;
+        Tue,  8 Mar 2022 10:04:28 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id h14so8686110lfk.11;
+        Tue, 08 Mar 2022 10:04:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6SHxHLXJ2eYyw1tnxtVXf2yck6AofzgpVIfso9u7DAE=;
+        b=YWxBm6Jx9v7Wlb2fdyVA4R/eCLykHIu5057o5yoxhiNe1ckeEcYcuoIlvL0CXgyUUS
+         iCcHfjSkiUebD2r7d935yPKizxOzpol4fVwzGhe1sxB1SXtbSjuBLWqAfhVvXomhyf7V
+         BnXT8+SGpjmpIZ/L55h1bxZ3H2uZjmLJz3IlPnl59Ufs7nykyUUz1vFD+GJdAuAbfX72
+         aDVKhnqFKkHplJiX2aOCMqJuGarphm3J7iBCGW4p41f350GRxKuiNvo8YaK6XmNTj1kT
+         RwpAlAlpMgMInq7c/Fe45mxLaG95Ut4PwQ1pI+fqY/6Q5msR6vrqmQMsjGVAp/pbCwXr
+         RpyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6SHxHLXJ2eYyw1tnxtVXf2yck6AofzgpVIfso9u7DAE=;
+        b=lDBaT3/xIImb5z61/nNpvi8aXv8Y4u3xWma3Mru8rgRiKz8DwQQfWkHs/yqAl1RV2a
+         ipNPpbtjG1/krBElTnAafrP3eB4DeV+5/Zi1PTFHkA2JOxNCLVt0iAX9pKEqSDetiyRx
+         PMnWlXVpM4ycZr5jOfiJbz2m7hR6LFjjOthfyb7Od2CN8ZqSbKC+eNVdUtgL4S0KO8sT
+         UlCMIhw5Feg8EHurBigsWQeHAO7Vad/mL9tdmGtQR0YwxD5bwbyIAx9hZ46KhY4LOiDn
+         +14/7AAqm0WFUXSkHPeF2H/04tZxuFVSZeYpAWhGIr0wmpU9EQMPoJ/ep7THYb0e6WUZ
+         GJbg==
+X-Gm-Message-State: AOAM530Om+IiySecn3ONSCXt1YrYXdYk5v8uqFSNjeiy6FeegCkvWXQH
+        aeevQD85h6yZUjWmRk4Juxc=
+X-Google-Smtp-Source: ABdhPJzM/6dGiiSrzkwSlZG8G/sBalDM4RxDurXpIFsD9rt6m80xcXA4TbZGf9jQFZCFTRpLPDs6cA==
+X-Received: by 2002:a05:6512:3ca2:b0:445:98f6:40df with SMTP id h34-20020a0565123ca200b0044598f640dfmr11391467lfv.293.1646762664244;
+        Tue, 08 Mar 2022 10:04:24 -0800 (PST)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id l11-20020a2e834b000000b00246308690e2sm3986488ljh.85.2022.03.08.10.04.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 10:04:23 -0800 (PST)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Tue, 8 Mar 2022 19:04:21 +0100
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "Zhang, Qiang1" <qiang1.zhang@intel.com>, paulmck@kernel.org,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        rcu@vger.kernel.org, bigeasy@linutronix.de
+Subject: Re: [PATCH] rcu: Only boost rcu reader tasks with lower priority
+ than boost kthreads
+Message-ID: <YieapfzKvy2chaHT@pc638.lan>
+References: <20220304092631.4123188-1-qiang1.zhang@intel.com>
+ <81f69dd4-6ca9-760c-bec5-5cb27afbe788@quicinc.com>
+ <PH0PR11MB5880026EBBE3E195549E2245DA089@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220307191512.GN4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220307191512.GN4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pali,
+> On Mon, Mar 07, 2022 at 02:03:17AM +0000, Zhang, Qiang1 wrote:
+> > On 3/4/2022 2:56 PM, Zqiang wrote:
+> > > When RCU_BOOST is enabled, the boost kthreads will boosting readers
+> > > who are blocking a given grace period, if the current reader tasks
+> > > have a higher priority than boost kthreads(the boost kthreads priority
+> > > not always 1, if the kthread_prio is set), boosting is useless, skip
+> > > current task and select next task to boosting, reduce the time for a
+> > > given grace period.
+> > > 
+> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> 
+> Adding to CC to get more eyes on this.  I am not necessarily opposed to
+> it, but I don't do that much RT work myself these days.
+> 
+> 							Thanx, Paul
+> 
+> > > ---
+> > >   kernel/rcu/tree_plugin.h | 10 +++++++++-
+> > >   1 file changed, 9 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+> > > index c3d212bc5338..d35b6da66bbd 100644
+> > > --- a/kernel/rcu/tree_plugin.h
+> > > +++ b/kernel/rcu/tree_plugin.h
+> > > @@ -12,6 +12,7 @@
+> > >    */
+> > >   
+> > >   #include "../locking/rtmutex_common.h"
+> > > +#include <linux/sched/deadline.h>
+> > >   
+> > >   static bool rcu_rdp_is_offloaded(struct rcu_data *rdp)
+> > >   {
+> > > @@ -1065,13 +1066,20 @@ static int rcu_boost(struct rcu_node *rnp)
+> > >   	 * section.
+> > >   	 */
+> > >   	t = container_of(tb, struct task_struct, rcu_node_entry);
+> > > +	if (!rnp->exp_tasks && (dl_task(t) || t->prio <= current->prio)) {
+> > > +		tb = rcu_next_node_entry(t, rnp);
+> > > +		WRITE_ONCE(rnp->boost_tasks, tb);
+> > > +		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+> > > +		goto end;
+> > > +	}
+> > > +
+Why do you bypass the expedited grace period and boost any tasks anyway?
+Same way the expedited gp can be blocked by higher prior tasks SCHED_DEADLINE
+or SCHED_FIFO.
 
-FYI, the error/warning still remains.
+Thanks!
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ea4424be16887a37735d6550cfd0611528dbe5d9
-commit: 6198461ef509356e7f0fe5b04e88009aa698a065 arm: ioremap: Replace pci_ioremap_io() usage by pci_remap_iospace()
-date:   3 months ago
-config: arm-randconfig-r033-20220308 (https://download.01.org/0day-ci/archive/20220309/202203090147.24cUL0De-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6198461ef509356e7f0fe5b04e88009aa698a065
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6198461ef509356e7f0fe5b04e88009aa698a065
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arm-linux-gnueabi-ld: arch/arm/mach-dove/pcie.o: in function `dove_pcie_setup':
->> pcie.c:(.init.text+0xd4): undefined reference to `pci_remap_iospace'
-   arm-linux-gnueabi-ld: drivers/pci/pci.o: in function `devm_pci_remap_iospace':
-   (.text+0x1372): undefined reference to `pci_remap_iospace'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+--
+Vlad Rezki
