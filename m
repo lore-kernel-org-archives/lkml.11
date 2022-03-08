@@ -2,142 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA20C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8142C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345413AbiCHJpq (ORCPT
+        id S1345420AbiCHJqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
+        Tue, 8 Mar 2022 04:46:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345126AbiCHJpp (ORCPT
+        with ESMTP id S236177AbiCHJq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:45:45 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7D03E5D2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 01:44:49 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nRWOF-0004l1-EX; Tue, 08 Mar 2022 10:44:23 +0100
-Message-ID: <b23e4089-6431-de26-8666-bae4c3c8df88@pengutronix.de>
-Date:   Tue, 8 Mar 2022 10:44:14 +0100
+        Tue, 8 Mar 2022 04:46:29 -0500
+Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72BC3E5C9;
+        Tue,  8 Mar 2022 01:45:32 -0800 (PST)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
+        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nRVyL-0005VG-99; Tue, 08 Mar 2022 09:17:37 +0000
+Message-ID: <10794ea9-95ff-2cde-5851-b757a73b00ee@codethink.co.uk>
+Date:   Tue, 8 Mar 2022 09:45:36 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [BUG] mtd: cfi_cmdset_0002: write regression since v4.17-rc1
-Content-Language: en-US
-To:     Tokunori Ikegami <ikegami.t@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-mtd@lists.infradead.org, Joakim.Tjernlund@infinera.com,
-        miquel.raynal@bootlin.com, vigneshr@ti.com, richard@nod.at,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Brian Norris <computersforpeace@gmail.com>,
-        David Woodhouse <dwmw2@infradead.org>, marek.vasut@gmail.com,
-        cyrille.pitchen@wedev4u.fr,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linuxppc-dev@lists.ozlabs.org
-References: <b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de>
- <dff2abcc-5813-2f2c-35ba-f03cd1f35ac3@leemhuis.info>
- <e11b76dc-5539-fb7e-da1c-a5005713d6b0@gmail.com>
- <3dbbcee5-81fc-cdf5-9f8b-b6ccb95beddc@pengutronix.de>
- <0f2cfcac-83ca-51a9-f92c-ff6495dca1d7@gmail.com>
- <b231b498-c8d2-28af-ce66-db8c168047f7@pengutronix.de>
- <66ee55d9-4f20-6722-6097-e53c2108ea07@gmail.com>
- <579eab10-594c-d6b2-0ddb-ea6ab8e02856@pengutronix.de>
- <cedb1604-e024-2738-5b33-15703a653803@gmail.com>
- <117facba-ba33-349d-1085-25315cc1ae92@gmail.com>
- <f9e46b61-37e5-a280-edb0-27f8e81a8680@pengutronix.de>
- <9621c512-06f2-17b2-5c68-943b1f0981eb@gmail.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <9621c512-06f2-17b2-5c68-943b1f0981eb@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+ Thunderbird/91.6.0
+Subject: Re: [RFC] PCI: fu740: Force Gen1 to fix initial device probing on
+ some boards
+Content-Language: en-GB
+To:     helgaas@kernel.org, linux-pci@vger.kernel.org
+Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
+        lorenzo.pieralisi@arm.com, robh@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220228232206.2928784-1-ben.dooks@codethink.co.uk>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <20220228232206.2928784-1-ben.dooks@codethink.co.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Tokunori,
-
-On 06.03.22 16:49, Tokunori Ikegami wrote:
-> Hi,
+On 28/02/2022 23:22, Ben Dooks wrote:
+> The fu740 PCIe core does not probe any devices on the SiFive Unmatched
+> board without this fix (or having U-Boot explicitly start the PCIe via
+> either boot-script or user command). The fix is to start the link at
+> Gen1 speeds and once the link is up then change the speed back.
 > 
-> On 2022/03/04 20:11, Ahmad Fatoum wrote:
->> Hello Tokunori-san,
->>
->> On 20.02.22 13:22, Tokunori Ikegami wrote:
->>> Hi Ahmad-san,
->>>
->>> Could you please try the version 2 patch attached for the error case?
->>> This version is to check the DQ true data 0xFF by chip_good().
->> I had a similar patch locally as well at first. I just tested yours
->> and I can't reproduce the issue.
-> Thanks for your support.
-> Sorry if possible could you please retest the attached the patch again since this fixed the version 1 patch maintainer review comments?
-
-Works good.
-
-Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-
->>> But I am not sure if this works or not since the error is possible to be caused by Hi-Z 0xff on floating bus or etc.
->> That it works for me could be because of Hi-Z 0xff, which is why
->> decided against it.
-> I see.
->>
->>>>>>> What seems to work for me is checking if chip_good or chip_ready
->>>>>>> and map_word is equal to 0xFF. I can't justify why this is ok though.
->>>>>>> (Worst case bus is floating at this point of time and Hi-Z is read
->>>>>>> as 0xff on CPU data lines...)
->>>>>> Sorry I am not sure about this.
->>>>>> I thought the chip_ready() itself is correct as implemented as the data sheet in the past.
->>>>>> But it did not work correctly so changed to use chip_good() instead as it is also correct.
->>>>> What exactly in the datasheet makes you believe chip_good is not appropriate?
->>>> I just mentioned about the actual issue behaviors as not worked chip_good() on S29GL964N and not worked chip_ready() on MX29GL512FHT2I-11G before etc.
->>>> Anyway let me recheck the data sheet details as just checked it again quickly but needed more investigation to understand.
->>> As far as I checked still both chip_good() and chip_ready() seem correct but still the root cause is unknown.
->>> If as you mentioned the issue was cased by the DQ true data 0xFF I am not sure why the read work without any error after the write operation.
->>> Also if the error was caused by the Hi-Z 0xff on floating bus as mentioned I am not sure why the read work without any error after the write operation with chip_ready().
->>> Sorry anyway the root cause is also unknown when the write operation was changed to use chip_good() instead of chip_ready().
->> I've be ok with v1 then. Restores working behavior for me and shouldn't break others.
+> The U-Boot driver claims to set the link-speed to Gen1 to get the probe
+> to work (and U-Boot does print link up at Gen1) in the following code:
+> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
 > 
-> Noted but still I am thinking the version 2 patch to check 0xff seems better than to use chip_ready() so let me consider this again later.
+> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+> --
+> Note, this patch has had significant re-work since the previous 4
+> sets, including trying to fix style, message, reliance on the U-Boot
+> fix and the comments about usage of LINK_CAP and reserved fields.
 
-The original version has less room for surprise as it restores previously
-working behavior. Assuming 0xFF to be good without backing from documentation
-is more risky IMO.
+The internal feedback is this version is passing on our CI.
 
-Thanks for your continued support,
-Ahmad
+If there are no comments on this soon, I will post this as either the
+v5 of the original or as a new patch.
 
+> ---
+>   drivers/pci/controller/dwc/pcie-fu740.c | 51 ++++++++++++++++++++++++-
+>   1 file changed, 50 insertions(+), 1 deletion(-)
 > 
-> Regards,
-> Ikegami
-> 
->>
->> Cheers and thanks again,
->> Ahmad
->>
->>> Regards,
->>> Ikegami
->>>
->>>> Regards,
->>>> Ikegami
->>>>
->>>>> Cheers,
->>>>> Ahmad
->>>>>
->>>>>
->>
+> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+> index 842b7202b96e..16ad52f53490 100644
+> --- a/drivers/pci/controller/dwc/pcie-fu740.c
+> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
+> @@ -181,10 +181,59 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
+>   {
+>   	struct device *dev = pci->dev;
+>   	struct fu740_pcie *afp = dev_get_drvdata(dev);
+> +	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+> +	int ret;
+> +	u32 orig, tmp;
+> +
+> +	/*
+> +	 * Force Gen1 when starting link, due to some devices not
+> +	 * probing at higher speeds. This happens with the PCIe switch
+> +	 * on the Unmatched board. The fix in U-Boot is to force Gen1
+> +	 * and hope later resets will clear this capaility.
+> +	 */
+> +
+> +	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
+> +	dw_pcie_dbi_ro_wr_en(pci);
+> +
+> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
+> +	orig = tmp & PCI_EXP_LNKCAP_SLS;
+> +	tmp &= ~PCI_EXP_LNKCAP_SLS;
+> +	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
+> +	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
+>   
+>   	/* Enable LTSSM */
+>   	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
+> -	return 0;
+> +
+> +	ret = dw_pcie_wait_for_link(pci);
+> +	if (ret) {
+> +		dev_err(dev, "error: link did not start\n");
+> +		goto err;
+> +	}
+> +
+> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
+> +	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
+> +		dev_dbg(dev, "changing speed back to original\n");
+> +
+> +		tmp &= ~PCI_EXP_LNKCAP_SLS;
+> +		tmp |= orig;
+> +		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
+> +
+> +		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
+> +		tmp |= PORT_LOGIC_SPEED_CHANGE;
+> +		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
+> +
+> +		ret = dw_pcie_wait_for_link(pci);
+> +		if (ret) {
+> +			dev_err(dev, "error: link did not start at new speed\n");
+> +			goto err;
+> +		}
+> +	}
+> +
+> +	ret = 0;
+> +err:
+> +	// todo - if we do have an unliekly error, what do we do here?
+> +	dw_pcie_dbi_ro_wr_dis(pci);
+> +	return ret;
+>   }
+>   
+>   static int fu740_pcie_host_init(struct pcie_port *pp)
 
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
+
+https://www.codethink.co.uk/privacy.html
