@@ -2,127 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B7DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B65EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344921AbiCHIa5 (ORCPT
+        id S1344945AbiCHIbQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        Tue, 8 Mar 2022 03:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343878AbiCHIay (ORCPT
+        with ESMTP id S243549AbiCHIbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:30:54 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A163F88A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:29:57 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id w37so15818433pga.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 00:29:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=biY5ams/L/8gAUldcXYdkodIReIruP+fnC3UwnEvKik=;
-        b=FR5UYtStER6p/1YZQvrw3ScM5SgcgyBONMffv5EQPqlHUrnjdoxfZZ+yRdnVbYNFxb
-         w2ZvfSdx3sslpCnGLI6akBCeP5omUHdhKvrlVjutHND41gfD89CXojsSAnLK1GO/DR6A
-         oxsx8HCMN402k9J7sAsMuVWb/eiLNQV6/Nvhvqqcv6uwPgRYT37sNuBxrsUMyjWGIYlt
-         Eij8Eso6oHN5v9aEAUk3BYRCtCuyS6fFIa2nSsQtgukRMg4q+To4Xc14xbqQqtHR8z0H
-         2G36AgBMtUHhcbZg8HzlPBY8neN/HVTz6ppBryGonswOhmkhPs+ErpWt+Zj/QCO+VmfC
-         SFeA==
+        Tue, 8 Mar 2022 03:31:14 -0500
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521D53F88A;
+        Tue,  8 Mar 2022 00:30:18 -0800 (PST)
+Received: by mail-qk1-f174.google.com with SMTP id bm39so14252954qkb.0;
+        Tue, 08 Mar 2022 00:30:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=biY5ams/L/8gAUldcXYdkodIReIruP+fnC3UwnEvKik=;
-        b=eM0sJ/nX8apUgzR7mrkFaQawPkhP7y3IHSXco280FMmBBQoGKA0z+j3b5cdRHBtAsL
-         z4OENQdpNmd2TbCaMmEKM61F+xGXmngPtlJlcWo/nBBNn32+T5kl/1KOVd3eFai5FE/n
-         BhNbHQmY3uDlg//pbyVu0H0BrQZDN1GnDm8zn2xS9Jg6iDtiGypti7GZf+EUEABNgYoI
-         1TJj9B/SLoZ3NONY+/tHYf3dO8lj17dLxdsdu1fD8BlTUWt8HsivHZDBtAH/gxSq0Tgd
-         rcryw9LdPYC9xTZ0K33vWfwgxICtobIIGxO/M5z7UaetzAijrGbe9dLFqJlK8GQD3o4z
-         DOCg==
-X-Gm-Message-State: AOAM5339SFkuGhJrI8VG1fbLDNLoDj8p0euc1Eqkiy9uw1iKYpTWelzK
-        l0RpSfiIg97OF0HLhUurE5aJYg==
-X-Google-Smtp-Source: ABdhPJwtleDHDeXzrBf/O+A+/gweObqeGpJC3OV68tzPuEyMJ5MfEfsiH62i5lEDEawS1VIox5YjAA==
-X-Received: by 2002:a05:6a00:2815:b0:4f6:ecc6:1173 with SMTP id bl21-20020a056a00281500b004f6ecc61173mr12739958pfb.74.1646728196621;
-        Tue, 08 Mar 2022 00:29:56 -0800 (PST)
-Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id e18-20020a056a001a9200b004bc82d0e125sm18369364pfv.119.2022.03.08.00.29.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 00:29:56 -0800 (PST)
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH v2] cpuidle: psci: Iterate backwards over list in psci_pd_remove()
-Date:   Tue,  8 Mar 2022 16:29:31 +0800
-Message-Id: <20220308082931.3385902-1-shawn.guo@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=dHuw8rcBQo8eimNFyCyzKNs2ir0oOakCUjJ/z8E/Csw=;
+        b=1bh7vXh/sgBPE29dk1rsgZCZ2J6OcefvUB8nj2cU9pEosSap/6RhX6BuA5pROhDMUx
+         2kJ5WOXd5BVlxu2QpDf8SkY18M0xlIgnT5h/XSktGMfd6ckOmCW33/xSNs/uDw43qu2w
+         G+EhQ5eqnu8YuH0oR/yRoESyJqPnYj7Z+DvfNPjt2O0pksszX7becVbaIkE0ZjotpKvR
+         yYjw9+N80FL4Cgt8L4vLk4SpvF/SkMc4kISPjyAmxwPpAcAI5hO/YTdedeA69Ax9RYlD
+         DnBC0HXBXKbFF3nRXG+8gjBxumZ3vCyRvLEPFxteSdgYMRJKE9fF6bZ/y4anggpIPAX7
+         UxUA==
+X-Gm-Message-State: AOAM5337Gpoe8TO+sOuz37LxbTdixJKnSqx4Qdoyg2bVyjAXyNrq6y4i
+        IVbDPHr/wkv1IUWVnzzVj7TDYQfW36T7Kg==
+X-Google-Smtp-Source: ABdhPJzHQpigLxGNWNelrn8HyYzFXR1cCJNZSQ7Smgm93R+NtSzGDOqG8S4hxq+IBephv+EtrnAFLQ==
+X-Received: by 2002:a05:620a:d87:b0:67b:3105:4f7f with SMTP id q7-20020a05620a0d8700b0067b31054f7fmr5231622qkl.230.1646728216805;
+        Tue, 08 Mar 2022 00:30:16 -0800 (PST)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id g9-20020ac85d49000000b002dff273cce5sm10339753qtx.72.2022.03.08.00.30.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 00:30:15 -0800 (PST)
+Received: by mail-yb1-f175.google.com with SMTP id u10so16418158ybd.9;
+        Tue, 08 Mar 2022 00:30:09 -0800 (PST)
+X-Received: by 2002:a5b:5d0:0:b0:623:c68d:d473 with SMTP id
+ w16-20020a5b05d0000000b00623c68dd473mr11274013ybp.506.1646728209389; Tue, 08
+ Mar 2022 00:30:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
+ <163282533892.34438.1878675609177525004.b4-ty@canonical.com>
+ <CAMuHMdUqQLo7=NFaNEukqniTJbx-mSZv7eQNB9eCT=L28y3u=A@mail.gmail.com> <YicSCZfl4wLUzvEJ@shikoro>
+In-Reply-To: <YicSCZfl4wLUzvEJ@shikoro>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Mar 2022 09:29:55 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUTgooY6SRfp4LB3tSa=-GtS0EH=BD5zo5orLTKp0hjBg@mail.gmail.com>
+Message-ID: <CAMuHMdUTgooY6SRfp4LB3tSa=-GtS0EH=BD5zo5orLTKp0hjBg@mail.gmail.com>
+Subject: Re: [RFC PATCH] memory: renesas-rpc-if: Correct QSPI data transfer in
+ Manual mode
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case that psci_pd_init_topology() fails for some reason,
-psci_pd_remove() will be responsible for deleting provider and removing
-genpd from psci_pd_providers list.  There will be a failure when removing
-the cluster PD, because the cpu (child) PDs haven't been removed.
+Hi Wolfram,
 
-[    0.050232] CPUidle PSCI: init PM domain cpu0
-[    0.050278] CPUidle PSCI: init PM domain cpu1
-[    0.050329] CPUidle PSCI: init PM domain cpu2
-[    0.050370] CPUidle PSCI: init PM domain cpu3
-[    0.050422] CPUidle PSCI: init PM domain cpu-cluster0
-[    0.050475] PM: genpd_remove: unable to remove cpu-cluster0
-[    0.051412] PM: genpd_remove: removed cpu3
-[    0.051449] PM: genpd_remove: removed cpu2
-[    0.051499] PM: genpd_remove: removed cpu1
-[    0.051546] PM: genpd_remove: removed cpu0
+On Tue, Mar 8, 2022 at 9:21 AM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> > Wolfram: which platform did you use for QSPI testing, so I don't
+> > break that again?
+>
+> I did my refactoring using an Eagle board and once this worked, I
+> enabled QSPI on Falcon. All remotely. Condor was another candidate but
+> it was broken in the lab at that time.
 
-Fix the problem by iterating the provider list reversely, so that parent
-PD gets removed after child's PDs like below.
+OK, thanks!
 
-[    0.029052] CPUidle PSCI: init PM domain cpu0
-[    0.029076] CPUidle PSCI: init PM domain cpu1
-[    0.029103] CPUidle PSCI: init PM domain cpu2
-[    0.029124] CPUidle PSCI: init PM domain cpu3
-[    0.029151] CPUidle PSCI: init PM domain cpu-cluster0
-[    0.029647] PM: genpd_remove: removed cpu0
-[    0.029666] PM: genpd_remove: removed cpu1
-[    0.029690] PM: genpd_remove: removed cpu2
-[    0.029714] PM: genpd_remove: removed cpu3
-[    0.029738] PM: genpd_remove: removed cpu-cluster0
+> >     Without that (e.g. old H3 R-Car ES1.0), it crashes with an
+>
+> Frankly, I wouldn't trust ES1.0 as a reliable source for QSPI. Could you
+> start with the newest Gen3 board you have and then go to previous ones?
 
-Fixes: a65a397f2451 ("cpuidle: psci: Add support for PM domains by using genpd")
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
----
-Changes since v1:
-- Fix commit log
-- Pick up Reviewed-by tag from Sudeep and Ulf (Thanks!)
-- Add Fixes tag as suggested by Ulf
+This is not QSPI, but HF.
 
- drivers/cpuidle/cpuidle-psci-domain.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Building a new firmware for R-Car H3 ES1.0 with HF unlocked will be
+complicated, as it is not supported by upstream TF-A.
 
-diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
-index ff2c3f8e4668..ce5c415fb04d 100644
---- a/drivers/cpuidle/cpuidle-psci-domain.c
-+++ b/drivers/cpuidle/cpuidle-psci-domain.c
-@@ -182,7 +182,8 @@ static void psci_pd_remove(void)
- 	struct psci_pd_provider *pd_provider, *it;
- 	struct generic_pm_domain *genpd;
- 
--	list_for_each_entry_safe(pd_provider, it, &psci_pd_providers, link) {
-+	list_for_each_entry_safe_reverse(pd_provider, it,
-+					 &psci_pd_providers, link) {
- 		of_genpd_del_provider(pd_provider->node);
- 
- 		genpd = of_genpd_remove_last(pd_provider->node);
--- 
-2.25.1
+Note that HF also fails to probe on R-Car M3-W and M3-N ES1.0.
+Haven't tried it on R-Car E3 yet.  All those have a (not so new) TF-A,
+but built with RCAR_RPC_HYPERFLASH_LOCKED=0.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
