@@ -2,111 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 996C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB017C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345262AbiCHI7D (ORCPT
+        id S1345113AbiCHJCw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:59:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
+        Tue, 8 Mar 2022 04:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345259AbiCHI7A (ORCPT
+        with ESMTP id S1345105AbiCHJCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:59:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B74E3C4AF;
-        Tue,  8 Mar 2022 00:58:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DF69B817D4;
-        Tue,  8 Mar 2022 08:58:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA6AC340EB;
-        Tue,  8 Mar 2022 08:58:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646729880;
-        bh=g8JnrciyA5hVe9iyiMja39wfKFTI4eghy2XVxEq8voQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t/s29xuMklvlvsfmHRfDg9OiclbQlbVZX8uChLs/iNDYVHYxBhBhmcB/RTVBN8DrM
-         sg4pdWLQEckaaK6banT+xBdd6RHSBthFqKnhND6G/1OFKtgE+z7J909kFBLzLQWXKQ
-         pqo+UZmD8jNT0P7y8UJ53GCHfD2zkk2UVSkJViy8=
-Date:   Tue, 8 Mar 2022 09:57:57 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <Yicalf1I6oBytbse@kroah.com>
-References: <20220307191757.3177139-1-lee.jones@linaro.org>
- <YiZeB7l49KC2Y5Gz@kroah.com>
- <YicPXnNFHpoJHcUN@google.com>
+        Tue, 8 Mar 2022 04:02:46 -0500
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FCC3914F;
+        Tue,  8 Mar 2022 01:01:50 -0800 (PST)
+Received: by mail-qk1-f173.google.com with SMTP id r127so3254640qke.13;
+        Tue, 08 Mar 2022 01:01:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/0A3fiI6SF5FkbWt8i2s+Fk+OXU1UOQjwNrha0L6c9s=;
+        b=c/ovzKt+T8ns6swRibqXcCl7nCDL1fq3Jd6+PazKY10o8Y0cTuSETuD8flOloIRL36
+         YQ148lbHU+LUV7ksREOVF0/feHykb+mESh//Xt8z9dQOHzNbJAoxn2rqC0jRaYNPDBDc
+         b5ZTkLLpcuJB3TgCqPdWZeY1/REzye/dZhvJU4BRAACdoKdxSzOIvLALm9juG4uTj6Nl
+         IErpRlljmKK3b2B7LdyDzdGOC2kTNIDbU1Sd7ILyOy1yMPZ7foeDx1G3Ex5yfBaWA7/9
+         qpUpUjF0b1YP8xw/ogWHI6MuFzzfKXKm/IOX700ozI4J27WLHt5m/ogDmbrkb9ONbqtB
+         mrsQ==
+X-Gm-Message-State: AOAM531HgdLxbhTowQYNbo9sdVN6aZ3YvbWXuf3iBJutSlaycoglxS35
+        wEvr6PlwfDRndbvSyYroJ8A5cCsOrllEFA==
+X-Google-Smtp-Source: ABdhPJxk+Uyi25qvPlYvu1p4PomyOf9VNNgEc1JsPXCUH71SY4dDPeLAUOc1dWQlbZCkMTdvlwUdsw==
+X-Received: by 2002:a05:620a:1903:b0:67d:243b:a8ae with SMTP id bj3-20020a05620a190300b0067d243ba8aemr217701qkb.142.1646730109522;
+        Tue, 08 Mar 2022 01:01:49 -0800 (PST)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id j11-20020a37a00b000000b0067b436faccesm1596499qke.122.2022.03.08.01.01.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 01:01:49 -0800 (PST)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2d6d0cb5da4so193403507b3.10;
+        Tue, 08 Mar 2022 01:01:48 -0800 (PST)
+X-Received: by 2002:a81:5247:0:b0:2dc:2171:d42 with SMTP id
+ g68-20020a815247000000b002dc21710d42mr11891435ywb.438.1646730108371; Tue, 08
+ Mar 2022 01:01:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YicPXnNFHpoJHcUN@google.com>
+References: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
+ <163282533892.34438.1878675609177525004.b4-ty@canonical.com>
+ <CAMuHMdUqQLo7=NFaNEukqniTJbx-mSZv7eQNB9eCT=L28y3u=A@mail.gmail.com>
+ <YicSCZfl4wLUzvEJ@shikoro> <CAMuHMdUTgooY6SRfp4LB3tSa=-GtS0EH=BD5zo5orLTKp0hjBg@mail.gmail.com>
+ <YicX67PsQO0+bMTZ@shikoro>
+In-Reply-To: <YicX67PsQO0+bMTZ@shikoro>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 8 Mar 2022 10:01:36 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX6h8s0AaonKGNwmqriMikC5tUXjrtoXURqqN4w+ZM5eg@mail.gmail.com>
+Message-ID: <CAMuHMdX6h8s0AaonKGNwmqriMikC5tUXjrtoXURqqN4w+ZM5eg@mail.gmail.com>
+Subject: Re: [RFC PATCH] memory: renesas-rpc-if: Correct QSPI data transfer in
+ Manual mode
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
-> On Mon, 07 Mar 2022, Greg KH wrote:
-> 
-> > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
-> > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > > during virtqueue clean-up and we mitigate the reported issues.
-> > > 
-> > > Also WARN() as a precautionary measure.  The purpose of this is to
-> > > capture possible future race conditions which may pop up over time.
-> > > 
-> > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > > 
-> > > Cc: <stable@vger.kernel.org>
-> > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > ---
-> > >  drivers/vhost/vhost.c | 10 ++++++++++
-> > >  1 file changed, 10 insertions(+)
-> > > 
-> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > index 59edb5a1ffe28..ef7e371e3e649 100644
-> > > --- a/drivers/vhost/vhost.c
-> > > +++ b/drivers/vhost/vhost.c
-> > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > >  	int i;
-> > >  
-> > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > +		/* No workers should run here by design. However, races have
-> > > +		 * previously occurred where drivers have been unable to flush
-> > > +		 * all work properly prior to clean-up.  Without a successful
-> > > +		 * flush the guest will malfunction, but avoiding host memory
-> > > +		 * corruption in those cases does seem preferable.
-> > > +		 */
-> > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > 
-> > So you are trading one syzbot triggered issue for another one in the
-> > future?  :)
-> > 
-> > If this ever can happen, handle it, but don't log it with a WARN_ON() as
-> > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
-> > you want that to happen?
-> 
-> No, Syzbot doesn't report warnings, only BUGs and memory corruption.
+Hi Wolfram,
 
-Has it changed?  Last I looked, it did trigger on WARN_* calls, which
-has resulted in a huge number of kernel fixes because of that.
+On Tue, Mar 8, 2022 at 9:46 AM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> > This is not QSPI, but HF.
+>
+> Ah, okay.
+>
+> > Building a new firmware for R-Car H3 ES1.0 with HF unlocked will be
+> > complicated, as it is not supported by upstream TF-A.
+>
+> You mean QSPI here?
 
-> > And what happens if the mutex is locked _RIGHT_ after you checked it?
-> > You still have a race...
-> 
-> No, we miss a warning that one time.  Memory is still protected.
+No, HF. Salvator-X(S) boots from HF.
 
-Then don't warn on something that doesn't matter.  This line can be
-dropped as there's nothing anyone can do about it, right?
+> > Note that HF also fails to probe on R-Car M3-W and M3-N ES1.0.
+>
+> Do you have this patch form Andrew in your tree:
+>
+> [PATCH] memory: renesas-rpc-if: Avoid unaligned bus access for HyperFlash
 
-thanks,
+Sure I have it. It's in v5.16 ;-)
 
-greg k-h
+> Even if so, I don't think that reverting patches is the solution. As you
+
+Sure, a plain revert is definitely not the right solution.
+
+> could see from Andrew's patch, HyperFlash was also broken before and it
+> just may need more fixes for Gen3 perhaps? IIRC my patches didn't break
+> Andrew's tests but maybe we should ask him again. Maybe Andrew has also
+> some more ideas, I only did QSPI.
+
+My understanding from reading the threads is that Andrew's patch and
+yours arrived in parallel, and are believed to fix two different and
+non-intersecting things (QSPI vs. HF).  I also found no explicit mention
+that Andrew tried your patch.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
