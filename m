@@ -2,245 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1975C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244237AbiCHF2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 00:28:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S244328AbiCHFag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 00:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241389AbiCHF2e (ORCPT
+        with ESMTP id S231243AbiCHFae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 00:28:34 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A201E0D9
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:27:35 -0800 (PST)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2281sisC003613;
-        Tue, 8 Mar 2022 05:26:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=2NuPl/gKTfNiuEy8jxBmbGhyS01zHEB1cp3HGCW8c40=;
- b=ofcnTAK2IzY0XY2LtnOw1NEVeJxrpBFU4Mksb42x36v8Vkv2dwRTsIwYKJZwRU1nMZYS
- /4gmKLJZuHlPnycKEFRGgnyku3ExAgLJbQgXB8kEaVu799NNlXaJnJh9bbqC44XW4sc4
- hpytXKOZTikpSX1TrjOdQvx4baNV7GOGSG7yT6fbkpRcY6ezpfSEueOQvKs7FG35aXTY
- AaxhyHCQW4NDRuCjNkh4VZOkx2gXf2KVVEbO/+rVbUx9GgTufghA7MykUbfqxFnPqv+/
- m07alKpWEXW73cxh9SQTqlxIl6skIxPD/SbdOlTPb7DMIol2Ma31VFkJhB3vlZ1W5G2q SA== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3enww73p6w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 05:26:57 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2285CWIN016187;
-        Tue, 8 Mar 2022 05:26:54 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3ekyg8dh4x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 05:26:54 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2285QpXI50921940
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Mar 2022 05:26:51 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 394F5AE045;
-        Tue,  8 Mar 2022 05:26:51 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A6012AE053;
-        Tue,  8 Mar 2022 05:26:46 +0000 (GMT)
-Received: from [9.43.61.97] (unknown [9.43.61.97])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Mar 2022 05:26:46 +0000 (GMT)
-Message-ID: <38ab9d45-e756-80b2-1b56-287c43c84ca2@linux.ibm.com>
-Date:   Tue, 8 Mar 2022 10:56:45 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v7 0/4] Add perf interface to expose nvdimm
-Content-Language: en-US
-To:     mpe@ellerman.id.au, linuxppc-dev@lists.ozlabs.org,
-        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, dan.j.williams@intel.com,
-        ira.weiny@intel.com, vishal.l.verma@intel.com
-Cc:     santosh@fossix.org, maddy@linux.ibm.com, rnsastry@linux.ibm.com,
-        aneesh.kumar@linux.ibm.com, atrajeev@linux.vnet.ibm.com,
-        vaibhav@linux.ibm.com, tglx@linutronix.de
-References: <20220225143024.47947-1-kjain@linux.ibm.com>
-From:   kajoljain <kjain@linux.ibm.com>
-In-Reply-To: <20220225143024.47947-1-kjain@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6lmNjVgsjJFS08nZkTtsgDi_kKhZ8v8k
-X-Proofpoint-GUID: 6lmNjVgsjJFS08nZkTtsgDi_kKhZ8v8k
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 8 Mar 2022 00:30:34 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8332C22BDD
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:29:38 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id e13so16084118plh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 21:29:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H0vjB4LhDXi7QSy6fRqdPlD7Qk1SfEX7MwnN7FiKGsk=;
+        b=K5xZQW4FSG0AwQk78uctp+7ieDiri1nE0kAIbOd0P4RY/tZvDK0mkLHgXHMNh7+EnH
+         9+9RpeemFzC5MsSEdgdOsi+4zLr76RHlS2TSlcRvoV4gGFoXwqfJMmwuHv5rENkXlkGz
+         ooYBMNSIwwmrymCi6lsFuf1r1WTpO2yMnzoUDFKTGjNAChCdY2XhhZr56A2G7XsXEZh1
+         WpEhrinjLF917I7ug+mDDsSWHevuDW0JQl/qtdZRWV70Nq2vxIk6SJQMfXdnNph+HFaj
+         +kkcUhjz4qtELmYhh6kFAH33aXpLp2L4GN3brfAuIpLhlMl5Th8WVImKCT6MIM8CcR1L
+         +rkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H0vjB4LhDXi7QSy6fRqdPlD7Qk1SfEX7MwnN7FiKGsk=;
+        b=km3tn5KN3+ADBp4/ER8TDT48oUpn3HJzhEtWB4ScvNVBjmcCla0lzRyqSkwWdLp6rX
+         A218sikx7GTa+2dnI41m84lcLI9Qo73cLdLKtwkLuqD7fsmkfTfDxBeAZnn9E7ZkdG1+
+         Qu3HhnqhkJ/VZG2i9D95gT2bGdcRRlJwwKQe6W4nC8pVKRlfExgKErKNJ9lE3EbT+mz4
+         1C9mYuwle+Qg+erg3O7+lRusUaX1M88l9Sy5xguFAX63EGs/zTxoPwsaa75mddV2ncrA
+         AR/BZ5Y6DG09CNe5olwsGLx5mL5ZvoOlyTPl93yY5/gvXh3Z2IXW4dBlaGl1GfY3qE6r
+         Duyw==
+X-Gm-Message-State: AOAM533VbmAvA85Ix1ywMEHrCdMf1CWNQFvTDpLCvQvAQ6gJbwNP0Tt/
+        unqe5xKmCOKgzwt18R+d+2It4hbaohGqvOzM9BQ=
+X-Google-Smtp-Source: ABdhPJzQCmoHetwvICyKDq+FjNCCmJ0zxHZ97kcLUUPejVKBw7nLSqgJTXlf8uNkmJ1RadVpM5ASOJwUkUdckr7UQOY=
+X-Received: by 2002:a17:90b:4b4b:b0:1be:fd9a:c279 with SMTP id
+ mi11-20020a17090b4b4b00b001befd9ac279mr2850397pjb.83.1646717378007; Mon, 07
+ Mar 2022 21:29:38 -0800 (PST)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-08_01,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 bulkscore=0 adultscore=0 clxscore=1015
- priorityscore=1501 malwarescore=0 impostorscore=0 spamscore=0
- mlxlogscore=999 phishscore=0 mlxscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203080022
+References: <20220307074057.902222-1-42.hyeyoo@gmail.com> <20220307074057.902222-3-42.hyeyoo@gmail.com>
+ <CAEVVKH-zYxn62wd8CzZx5Sw=6wTe2ZBMUyTSv8V2PR5bRoW-tA@mail.gmail.com> <YibSe/txAsubzqUw@ip-172-31-19-208.ap-northeast-1.compute.internal>
+In-Reply-To: <YibSe/txAsubzqUw@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Xiongwei Song <sxwjean@gmail.com>
+Date:   Tue, 8 Mar 2022 13:29:11 +0800
+Message-ID: <CAEVVKH9UkNkF7mM-mj3bZ2y2kSd8+fu031XV3_30Midui7QYVA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] mm/slub: refactor deactivate_slab()
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
-    Can you take this patch-set if it looks fine to you.
+On Tue, Mar 8, 2022 at 11:50 AM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+>
+> On Tue, Mar 08, 2022 at 09:40:07AM +0800, Xiongwei Song wrote:
+> > Hello,
+> >
+> > On Mon, Mar 7, 2022 at 3:41 PM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+> > >
+> > > Simplify deactivate_slab() by unlocking n->list_lock and retrying
+> > > cmpxchg_double() when cmpxchg_double() fails, and perform
+> > > add_{partial,full} only when it succeed.
+> > >
+> > > Releasing and taking n->list_lock again here is not harmful as SLUB
+> > > avoids deactivating slabs as much as possible.
+> > >
+> > > [ vbabka@suse.cz: perform add_{partial,full} when cmpxchg_double()
+> > >   succeed.
+> > >
+> > >   count deactivating full slabs even if debugging flag is not set. ]
+> > >
+> > > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> > > ---
+> > >  mm/slub.c | 91 +++++++++++++++++++++++--------------------------------
+> > >  1 file changed, 38 insertions(+), 53 deletions(-)
+> > >
+> > > diff --git a/mm/slub.c b/mm/slub.c
+> > > index 1ce09b0347ad..f0cb9d0443ac 100644
+> > > --- a/mm/slub.c
+> > > +++ b/mm/slub.c
+> > > @@ -2348,10 +2348,10 @@ static void init_kmem_cache_cpus(struct kmem_cache *s)
+> > >  static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+> > >                             void *freelist)
+> > >  {
+> > > -       enum slab_modes { M_NONE, M_PARTIAL, M_FULL, M_FREE };
+> > > +       enum slab_modes { M_NONE, M_PARTIAL, M_FULL, M_FREE, M_FULL_NOLIST };
+> > >         struct kmem_cache_node *n = get_node(s, slab_nid(slab));
+> > > -       int lock = 0, free_delta = 0;
+> > > -       enum slab_modes l = M_NONE, m = M_NONE;
+> > > +       int free_delta = 0;
+> > > +       enum slab_modes mode = M_NONE;
+> > >         void *nextfree, *freelist_iter, *freelist_tail;
+> > >         int tail = DEACTIVATE_TO_HEAD;
+> > >         unsigned long flags = 0;
+> > > @@ -2393,14 +2393,10 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+> > >          * Ensure that the slab is unfrozen while the list presence
+> > >          * reflects the actual number of objects during unfreeze.
+> > >          *
+> > > -        * We setup the list membership and then perform a cmpxchg
+> > > -        * with the count. If there is a mismatch then the slab
+> > > -        * is not unfrozen but the slab is on the wrong list.
+> > > -        *
+> > > -        * Then we restart the process which may have to remove
+> > > -        * the slab from the list that we just put it on again
+> > > -        * because the number of objects in the slab may have
+> > > -        * changed.
+> > > +        * We first perform cmpxchg holding lock and insert to list
+> > > +        * when it succeed. If there is mismatch then the slab is not
+> > > +        * unfrozen and number of objects in the slab may have changed.
+> > > +        * Then release lock and retry cmpxchg again.
+> > >          */
+> > >  redo:
+> > >
+> > > @@ -2420,61 +2416,50 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+> > >         new.frozen = 0;
+> > >
+> > >         if (!new.inuse && n->nr_partial >= s->min_partial)
+> > > -               m = M_FREE;
+> > > +               mode = M_FREE;
+> > >         else if (new.freelist) {
+> > > -               m = M_PARTIAL;
+> > > -               if (!lock) {
+> > > -                       lock = 1;
+> > > -                       /*
+> > > -                        * Taking the spinlock removes the possibility that
+> > > -                        * acquire_slab() will see a slab that is frozen
+> > > -                        */
+> > > -                       spin_lock_irqsave(&n->list_lock, flags);
+> > > -               }
+> > > -       } else {
+> > > -               m = M_FULL;
+> > > -               if (kmem_cache_debug_flags(s, SLAB_STORE_USER) && !lock) {
+> > > -                       lock = 1;
+> > > -                       /*
+> > > -                        * This also ensures that the scanning of full
+> > > -                        * slabs from diagnostic functions will not see
+> > > -                        * any frozen slabs.
+> > > -                        */
+> > > -                       spin_lock_irqsave(&n->list_lock, flags);
+> > > -               }
+> > > -       }
+> > > -
+> > > -       if (l != m) {
+> > > -               if (l == M_PARTIAL)
+> > > -                       remove_partial(n, slab);
+> > > -               else if (l == M_FULL)
+> > > -                       remove_full(s, n, slab);
+> > > +               mode = M_PARTIAL;
+> > > +               /*
+> > > +                * Taking the spinlock removes the possibility that
+> > > +                * acquire_slab() will see a slab that is frozen
+> > > +                */
+> > > +               spin_lock_irqsave(&n->list_lock, flags);
+> > > +       } else if (kmem_cache_debug_flags(s, SLAB_STORE_USER)) {
+> > > +               mode = M_FULL;
+> > > +               /*
+> > > +                * This also ensures that the scanning of full
+> > > +                * slabs from diagnostic functions will not see
+> > > +                * any frozen slabs.
+> > > +                */
+> > > +               spin_lock_irqsave(&n->list_lock, flags);
+> > > +       } else
+> > > +               mode = M_FULL_NOLIST;
+> > >
+> > > -               if (m == M_PARTIAL)
+> > > -                       add_partial(n, slab, tail);
+> > > -               else if (m == M_FULL)
+> i> > -                       add_full(s, n, slab);
+> > > -       }
+> > >
+> > > -       l = m;
+> > >         if (!cmpxchg_double_slab(s, slab,
+> > >                                 old.freelist, old.counters,
+> > >                                 new.freelist, new.counters,
+> > > -                               "unfreezing slab"))
+> > > +                               "unfreezing slab")) {
+> > > +               if (mode == M_PARTIAL || mode == M_FULL)
+> > > +                       spin_unlock_irqrestore(&n->list_lock, flags);
+> >
+> > The slab doesn't belong to any node here, should we remove locking/unlocking
+> > spin for cmpxchg_double_slab() call? Just calling spin_lock_irqsave() before
+> > add_partial()/add_full call is fine?
+> >
+>
+> I thought about that, and tested, but that is not okay.
+>
+> taking spinlock around cmpxchg prevents race between __slab_free() and
+> deactivate_slab(). list can be corrupted without spinlock.
+>
+>
+> think about case below: (when SLAB_STORE_USER is set)
+>
+> __slab_free()                   deactivate_slab()
+> =================               =================
+>                                 (deactivating full slab)
+>                                 cmpxchg_double()
+>
+>
+> spin_lock_irqsave()
+> cmpxchg_double()
+>
+> /* not in full list yet */
+> remove_full()
+> add_partial()
+> spin_unlock_irqrestore()
+>                                 spin_lock_irqsave()
+>                                 add_full()
+>                                 spin_unlock_irqrestore()
+>
 
-Thanks,
-Kajol Jain
+Oh... Looks reasonable. Thanks for the detailed explanation.
 
-On 2/25/22 20:00, Kajol Jain wrote:
-> Patchset adds performance stats reporting support for nvdimm.
-> Added interface includes support for pmu register/unregister
-> functions. A structure is added called nvdimm_pmu to be used for
-> adding arch/platform specific data such as cpumask, nvdimm device
-> pointer and pmu event functions like event_init/add/read/del.
-> User could use the standard perf tool to access perf events
-> exposed via pmu.
-> 
-> Interface also defines supported event list, config fields for the
-> event attributes and their corresponding bit values which are exported
-> via sysfs. Patch 3 exposes IBM pseries platform nmem* device
-> performance stats using this interface.
-> 
-> Result from power9 pseries lpar with 2 nvdimm device:
-> 
-> Ex: List all event by perf list
-> 
-> command:# perf list nmem
-> 
->   nmem0/cache_rh_cnt/                                [Kernel PMU event]
->   nmem0/cache_wh_cnt/                                [Kernel PMU event]
->   nmem0/cri_res_util/                                [Kernel PMU event]
->   nmem0/ctl_res_cnt/                                 [Kernel PMU event]
->   nmem0/ctl_res_tm/                                  [Kernel PMU event]
->   nmem0/fast_w_cnt/                                  [Kernel PMU event]
->   nmem0/host_l_cnt/                                  [Kernel PMU event]
->   nmem0/host_l_dur/                                  [Kernel PMU event]
->   nmem0/host_s_cnt/                                  [Kernel PMU event]
->   nmem0/host_s_dur/                                  [Kernel PMU event]
->   nmem0/med_r_cnt/                                   [Kernel PMU event]
->   nmem0/med_r_dur/                                   [Kernel PMU event]
->   nmem0/med_w_cnt/                                   [Kernel PMU event]
->   nmem0/med_w_dur/                                   [Kernel PMU event]
->   nmem0/mem_life/                                    [Kernel PMU event]
->   nmem0/poweron_secs/                                [Kernel PMU event]
->   ...
->   nmem1/mem_life/                                    [Kernel PMU event]
->   nmem1/poweron_secs/                                [Kernel PMU event]
-> 
-> Patch1:
->         Introduces the nvdimm_pmu structure
-> Patch2:
->         Adds common interface to add arch/platform specific data
->         includes nvdimm device pointer, pmu data along with
->         pmu event functions. It also defines supported event list
->         and adds attribute groups for format, events and cpumask.
->         It also adds code for cpu hotplug support.
-> Patch3:
->         Add code in arch/powerpc/platform/pseries/papr_scm.c to expose
->         nmem* pmu. It fills in the nvdimm_pmu structure with pmu name,
->         capabilities, cpumask and event functions and then registers
->         the pmu by adding callbacks to register_nvdimm_pmu.
-> Patch4:
->         Sysfs documentation patch
-> 
-> Changelog
-> ---
-> v6 -> v7
-> - Add function call to numa_map_to_online_node function inorder to
->   get online numa node. As the node id returned by function dev_to_node
->   can be offline in some scenarios and can create issue in hotplug code
->   as reported by Nageswara R Sastry.
-> 
-> - Add function declaration of perf_pmu_register, perf_pmu_unregister
->   and  perf_pmu_migrate_context functions in nd.h file to resolve
->   the implicit-function-declaration warning as reported by kernel test
->   robot.
->   Link: https://lore.kernel.org/all/202202241242.zqzGkguy-lkp@intel.com/
-> 
-> - Add Tested-by, Acked-by and Reported-by tags from Peter Zijlstra
->   and Nageswara R Sastry.
-> 
-> - Link to the patchset v6: https://lkml.org/lkml/2022/2/17/857
-> 
-> Resend v5 -> v6
-> - No logic change, just a rebase to latest upstream and
->   tested the patchset.
-> 
-> - Link to the patchset Resend v5: https://lkml.org/lkml/2021/11/15/3979
-> 
-> v5 -> Resend v5
-> - Resend the patchset
-> 
-> - Link to the patchset v5: https://lkml.org/lkml/2021/9/28/643
-> 
-> v4 -> v5:
-> - Remove multiple variables defined in nvdimm_pmu structure include
->   name and pmu functions(event_int/add/del/read) as they are just
->   used to copy them again in pmu variable. Now we are directly doing
->   this step in arch specific code as suggested by Dan Williams.
-> 
-> - Remove attribute group field from nvdimm pmu structure and
->   defined these attribute groups in common interface which
->   includes format, event list along with cpumask as suggested by
->   Dan Williams.
->   Since we added static defination for attrbute groups needed in
->   common interface, removes corresponding code from papr.
-> 
-> - Add nvdimm pmu event list with event codes in the common interface.
-> 
-> - Remove Acked-by/Reviewed-by/Tested-by tags as code is refactored
->   to handle review comments from Dan.
-> 
-> - Make nvdimm_pmu_free_hotplug_memory function static as reported
->   by kernel test robot, also add corresponding Reported-by tag.
-> 
-> - Link to the patchset v4: https://lkml.org/lkml/2021/9/3/45
-> 
-> v3 -> v4
-> - Rebase code on top of current papr_scm code without any logical
->   changes.
-> 
-> - Added Acked-by tag from Peter Zijlstra and Reviewed by tag
->   from Madhavan Srinivasan.
-> 
-> - Link to the patchset v3: https://lkml.org/lkml/2021/6/17/605
-> 
-> v2 -> v3
-> - Added Tested-by tag.
-> 
-> - Fix nvdimm mailing list in the ABI Documentation.
-> 
-> - Link to the patchset v2: https://lkml.org/lkml/2021/6/14/25
-> 
-> v1 -> v2
-> - Fix hotplug code by adding pmu migration call
->   incase current designated cpu got offline. As
->   pointed by Peter Zijlstra.
-> 
-> - Removed the retun -1 part from cpu hotplug offline
->   function.
-> 
-> - Link to the patchset v1: https://lkml.org/lkml/2021/6/8/500
-> 
-> Kajol Jain (4):
->   drivers/nvdimm: Add nvdimm pmu structure
->   drivers/nvdimm: Add perf interface to expose nvdimm performance stats
->   powerpc/papr_scm: Add perf interface support
->   docs: ABI: sysfs-bus-nvdimm: Document sysfs event format entries for
->     nvdimm pmu
-> 
->  Documentation/ABI/testing/sysfs-bus-nvdimm |  35 +++
->  arch/powerpc/include/asm/device.h          |   5 +
->  arch/powerpc/platforms/pseries/papr_scm.c  | 225 ++++++++++++++
->  drivers/nvdimm/Makefile                    |   1 +
->  drivers/nvdimm/nd_perf.c                   | 328 +++++++++++++++++++++
->  include/linux/nd.h                         |  44 +++
->  6 files changed, 638 insertions(+)
->  create mode 100644 drivers/nvdimm/nd_perf.c
-> 
+>
+>
+> > >                 goto redo;
+> >
+> > How about do {...} while(!cmpxchg_double_slab())? The readability looks better?
+> >
+>
+> This will be:
+>
+> do {
+>         if (mode == M_PARTIAL || mode == M_FULL)
+>                 spin_unlock_irqrestore();
+>
+>         [...]
+>
+> } while (!cmpxchg_double_slab());
+>
+
+I saw __slab_free() is doing so. Not a big deal.
+
+Regards,
+Xiongwei
+
+> I think goto version is better for reading?
+>
+> Thanks!
+>
+> > Regards,
+> > Xiongwei
+> >
+> > > +       }
+> > >
+> > > -       if (lock)
+> > > -               spin_unlock_irqrestore(&n->list_lock, flags);
+> > >
+> > > -       if (m == M_PARTIAL)
+> > > +       if (mode == M_PARTIAL) {
+> > > +               add_partial(n, slab, tail);
+> > > +               spin_unlock_irqrestore(&n->list_lock, flags);
+> > >                 stat(s, tail);
+> > > -       else if (m == M_FULL)
+> > > -               stat(s, DEACTIVATE_FULL);
+> > > -       else if (m == M_FREE) {
+> > > +       } else if (mode == M_FREE) {
+> > >                 stat(s, DEACTIVATE_EMPTY);
+> > >                 discard_slab(s, slab);
+> > >                 stat(s, FREE_SLAB);
+> > > -       }
+> > > +       } else if (mode == M_FULL) {
+> > > +               add_full(s, n, slab);
+> > > +               spin_unlock_irqrestore(&n->list_lock, flags);y
+> > > +               stat(s, DEACTIVATE_FULL);
+> > > +       } else if (mode == M_FULL_NOLIST)
+> > > +               stat(s, DEACTIVATE_FULL);
+> > >  }
+> > >
+> > >  #ifdef CONFIG_SLUB_CPU_PARTIAL
+> > > --
+> > > 2.33.1
+> > >
+> > >
+>
+> --
+> Thank you, You are awesome!
+> Hyeonggon :-)
