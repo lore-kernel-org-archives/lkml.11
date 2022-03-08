@@ -2,176 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B497C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349110AbiCHR0f (ORCPT
+        id S1349121AbiCHR07 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:26:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
+        Tue, 8 Mar 2022 12:26:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349169AbiCHR0W (ORCPT
+        with ESMTP id S1349097AbiCHR05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:26:22 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DFB54FB4;
-        Tue,  8 Mar 2022 09:25:08 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 228GnNfu008771;
-        Tue, 8 Mar 2022 17:24:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=6du0T4N6ilo5fMTttsSURmmis0Vlnh5pDDC36kg+e78=;
- b=BRyLr2wOPrUgdGp8gKKDxugYFsJyQMB9OJMW2Zgwk4IX8oQskUy5oJP9r6MiZLtgwQG+
- VeWEzlSMVYbSo0/9TqG+bBirYjVtRdM0YBEMnMcrQU+OzEZVI26bQ0PLnXvO+nc5+CEp
- eDKPyDpn3vXlHrtUrETtHqlX70xy15NpRXmy34I8Pa09RR2t4+RcyqVRLPM2flfIt6wI
- mrxkCnn8xPhnP7Z1Z4PAtBIjO9Y2EXgPAZL0AASV3UakJrky3XN7JNCLy5aff9MCFgh+
- iKq3oblZtp3RU8VnMBv4a8utWyOgR3oT2vzkS9m1mqTjCAApElsYrbvRz1J19czRP8AM TQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ekyraqda6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 08 Mar 2022 17:24:55 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 228HKPIh072219;
-        Tue, 8 Mar 2022 17:24:53 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2107.outbound.protection.outlook.com [104.47.70.107])
-        by userp3030.oracle.com with ESMTP id 3ekvyv42nn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 08 Mar 2022 17:24:53 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MHUCQZ90idMCcDPWkrz+Keq0UFDlqjkeretkRyxKOPN2aR0Rj6SLO514GESr1LIzVPXNRZ4KKIHcHU1TOY/vo9J2v27XOKt8vfIeIUBan4st8wANxJj5r9lt8NRfCgvn0FvPGOYpqc3CepVYL/yosm/8glCjm/YrTjHIiae2txDOALMhOSftKSHXTSYpnemJaEduUlxywlmYhWRltD3eVLAHcOVjOn5RmyMoB32OzZSl7ZaQlO8j61YaXw1+DR4/4s5uOJsK52Dqkmy7Dkxsh+V1KOxBW+A0FGTH1MMXuO4fBUmcsb3vqDYNlak1WBoqfAfmSFis4QR59cz8Pi09jQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6du0T4N6ilo5fMTttsSURmmis0Vlnh5pDDC36kg+e78=;
- b=CxwjxJFHFf7Mq9EuU43QnwH5aFgJJBiZu49S0JKBtJE9I5C18gGoAbozFmoCPoIfBiAVxv4lr433Sc28vjGdyUAYP/nxWPAzRRN7Rxi9xKHFvzs1NMqO7LV7+6BjhRf5W+dtPzVLtyQCQjdoohbSbaeXhQy8sjOaWFYehSRL8LHZXFb02jB8Pl8ysSr+HlFThDK5/nQj7AVA8uMRnwSEID9wOsphm/VNMqdfw0XeWYoyrTkprujZxHTTStEY3i09D658hjEAk4QM5SS7WSc0a5SKSmCpDguRMdny61BRNRww0HNYMdbcn/43JXWlgH2j0IZYxevQIzbVxl7vJkvL8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6du0T4N6ilo5fMTttsSURmmis0Vlnh5pDDC36kg+e78=;
- b=OmyBdE9T2tDgUBTwsQCHqLxNOg3Emt5k2obxOWm3PiA/4vj/UCjJ/g6i52qKRtRC6dUguU+0YbuZ02+VwHIcyzMtVT6/cbDGW+TDEDv0WdnYW5rnwXxIGWvyzsVafPILQwnRFz2O9BKnXuX/VLfES69/MO837gTl36r2ku+V9eA=
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com (2603:10b6:3:b::7) by
- MN2PR10MB4064.namprd10.prod.outlook.com (2603:10b6:208:1ba::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Tue, 8 Mar
- 2022 17:24:51 +0000
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::3dd8:6b8:e2e6:c3a2]) by DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::3dd8:6b8:e2e6:c3a2%12]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
- 17:24:50 +0000
-Message-ID: <e4499a17-0278-5d16-f225-82217fb4f866@oracle.com>
-Date:   Tue, 8 Mar 2022 11:24:48 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2 3/3] scsi:libiscsi: teardown iscsi_cls_conn gracefully
-Content-Language: en-US
-To:     Wenchao Hao <haowenchao@huawei.com>, Lee Duncan <lduncan@suse.com>,
-        Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Wu Bo <wubo40@huawei.com>, Zhiqiang Liu <liuzhiqiang26@huawei.com>,
-        linfeilong@huawei.com
-References: <20220309030916.2932316-1-haowenchao@huawei.com>
- <20220309030916.2932316-4-haowenchao@huawei.com>
-From:   Mike Christie <michael.christie@oracle.com>
-In-Reply-To: <20220309030916.2932316-4-haowenchao@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: DS7PR07CA0024.namprd07.prod.outlook.com
- (2603:10b6:5:3af::6) To DM5PR10MB1466.namprd10.prod.outlook.com
- (2603:10b6:3:b::7)
+        Tue, 8 Mar 2022 12:26:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4433354FB2
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:25:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646760358;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YRPfiRwTtEopNwzDWJUlPDjWJaHcpl4Zzbb9h/ZTBp8=;
+        b=F1QEmxPsVDQxxhkjUmSOdJnbE5I/QtgzbH10AAPo1dIAt3JGKxnLkeHXY5xBmFFzKPRODM
+        Fx+menmv5f+FiepMHgLfGIgooFgEluQ3CI/kViYhdmSP6hKUrOfFtdbCXcPFVCKr4PO+CD
+        7vdIdNm1Ndjr13SU2Rdhtu1KoxIDDZQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-92-JhpDJFO8PIiX9oKg8c7ulg-1; Tue, 08 Mar 2022 12:25:56 -0500
+X-MC-Unique: JhpDJFO8PIiX9oKg8c7ulg-1
+Received: by mail-wm1-f71.google.com with SMTP id 14-20020a05600c104e00b003897a167353so1373998wmx.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:25:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=YRPfiRwTtEopNwzDWJUlPDjWJaHcpl4Zzbb9h/ZTBp8=;
+        b=i6gnXtybqTIbIALkDg2CbnhlDpVfNEZtOBmmjWriM0c6+8EZGB+IFuWDdEcSL/yx8V
+         /kp9qOhIh+edFm4MHk/eZPGtqiadCIqi/DUbCWW/bSikMMP/XTjoCh8vjonjUfYWbFTR
+         i3n7aDRJGp7AxDG4ftMMbPcIQkm4BvIHsSwdGpS4uluog5Up6sUT9XczbbwMwkPLeSWJ
+         DJaSMDrxittvyu9Udm35Szpd02XLElVxIu+8qzSNeLCwqzKS+bmBOr0CfVeU0wzJpm3+
+         tZaZuWPA37gFPDCQTPl+pftbNNAIeNY1Y9qYDNL8D2jnT1Am0cD8jY1KpyZWbZEcZCaN
+         ZSqA==
+X-Gm-Message-State: AOAM533n7Y4+GctabZPS4BaxJXh+TIBaHtOdZ9trJGGt7c4HMq8sU9jT
+        GnHuTJ4UNQXrW8lBLtsn6Wmc9K4rOgpRSuVKGyz+nmXAmEDCJ88y/caKxdDMh1ve0kxgCM273wF
+        tTteCRsRdgxFU5lgbcq/uQI+STY/J3V6Ca9If2ZwQ3VplxgZQDFMu8t7DiRIrLibMJAdYxIHUKq
+        3N
+X-Received: by 2002:a05:600c:4fd6:b0:37f:2a37:87a3 with SMTP id o22-20020a05600c4fd600b0037f2a3787a3mr244508wmq.152.1646760354998;
+        Tue, 08 Mar 2022 09:25:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxQCtyjD7JJnve06tSlsyJnaT1ZlcMSqcqPGm23ZRTGFdc091rphZBbYaPMuy0Qj+mhGHrQ8w==
+X-Received: by 2002:a05:600c:4fd6:b0:37f:2a37:87a3 with SMTP id o22-20020a05600c4fd600b0037f2a3787a3mr244480wmq.152.1646760354638;
+        Tue, 08 Mar 2022 09:25:54 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id r5-20020a5d4945000000b001f06372fa9fsm21544371wrs.54.2022.03.08.09.25.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 09:25:53 -0800 (PST)
+Message-ID: <d5b7d8f0-0f71-b6e5-5acd-d953486ee918@redhat.com>
+Date:   Tue, 8 Mar 2022 18:25:52 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c330e603-761b-4898-592a-08da01288d51
-X-MS-TrafficTypeDiagnostic: MN2PR10MB4064:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR10MB4064E4BF553F3B063DF3D044F1099@MN2PR10MB4064.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yZcqU2sDzJlBWPW2Vx8m7FNCBJ2NEHLDGckdUV/ad75QdpC4byk/+N+qi4RfETINZycgojOsaF7Iptd7xiqJ1WglBSvdJKtIXJgSj58x4PckLDTt/uzDV5YyLLVynb9CvJtxno2H5O9goYlbz1GU19j+BTQN8HYjq9FcIAMtfeeMIiMWVAI9pH5Phb2oncm5FDg+jFsYVwRUNJs+BzfClgsF1Nd76whfM8HIfmI6GJ9FL6Q48Y1egrfCJIE3v+VcRoe13OQK8/XW6fWjqULtlAIgosoFd9GWykEUCMlULSosh+PUWJgJZuxTLj3FrpEuiVUa8fbYmIsuxLESpmWnzZgquZshVP3e7gLn4hEjnGavJdNYwXxsGLSX6QDtF3qcNOUIHTGpJg53Smbae5/vxHyhCsegsrKo1BGquFldPd4Mt0DpIZFTFvVn7yEc2l5hRg/X5bRMpWodqGEH2SMIreMTJnUS4vgMbUoZq0SS1YsCV3sRePB3ChBUgvnB+VxkmNDMYann7oI8WTXYlbLXMfx1mWwh2P74p+ylGIesKOLyVxEcIOkZS9P0aqk2HUknIvh94MKPvUJr+ZC45V8s5OBjm7H1Adus+m7YnYk0htw8T5SlIJSHcOfeGhH/S7kdxtg8pGFHaxBVaAveiqxBT5z5ERcO49UbB6yIn91iW2gObao3gRJDrASnatooROBJFG0QUcKn4jw+sin94SNft6EjE9FTueFym6mShBzXQLnr8RJOMSq+pMoLMxi4tOu+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6486002)(6512007)(508600001)(2616005)(186003)(53546011)(31696002)(26005)(86362001)(83380400001)(31686004)(66476007)(8936002)(5660300002)(7416002)(4326008)(8676002)(66946007)(66556008)(36756003)(4744005)(2906002)(110136005)(316002)(54906003)(38100700002)(6506007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cXlpOURQRyt5c0VKakdlSTBLd2l6U2lDOHVldlE5cFhQVjIxekFMMDFWYWl0?=
- =?utf-8?B?NGV0NjhrWXdKOWg1T2t2L1FwTXdlaDZYVDVJUzhEMHA5dUdlZ1NGRUxIYm1m?=
- =?utf-8?B?QUdjWjlGRnBZOGlTTEM2aGJHV0QwdzZaMGhyWnFFZEZyOFA2REEzNTkySGJL?=
- =?utf-8?B?RGtlazdDR2JDWURCVk5EWXlXMWY2RjY5bmh5NXpmTjB1ZHV1YUpKbm4rb3R3?=
- =?utf-8?B?WHhxbHJHV1ZuZ3FMY3JTVDhJdG9xY0hkVGpTSVR0dGpGeVl3V1NlLzdKc0hN?=
- =?utf-8?B?NWVyckdNTDdsSFBCdURnN0c5WGsrOHlHK1dmc1VFUTBoZXZvNHlKcS80RXZp?=
- =?utf-8?B?TWEvblVEdjlzMCt1U1kvQ2hwanZEKzJxNE5KTEhJZXhyV000b2VWaHNkNEVa?=
- =?utf-8?B?NjlmYXVKcHNFenY5NloxMXNJN2hIOGNadndSUHNxUzhHcHVBSjYrQ2syZFJZ?=
- =?utf-8?B?dEZ4bWVXTkRyMjBKWnQzRWE3Y2toTDlscmRYRUFvbkpnM2l3R1U2UDhaTXd1?=
- =?utf-8?B?WWVzTEg1K1hzdUNwWnk3RkZEZDBKOFd0aVR1ZjZwYWV1ZE5nbVlUcFpwZkty?=
- =?utf-8?B?Z2R0U1l4NUVoNVBjYXozWkJEZElkSEkvTDRDckNOSi9qZHM3YXV5dWZxZElz?=
- =?utf-8?B?KzlwOGgrd0NpMmcxQzQ5UzdxRUJuY0tIWHlEUFFWbVoxbWx5a09GcHlzWXcr?=
- =?utf-8?B?UFBLUjJTV2QyVTlqQ3Arc0ZpMkJUdS9jNCtsSi90UGlIQzFEdUtKSVJmcDA0?=
- =?utf-8?B?SDMzT1Z6VEM4RWtIc0M0WnBZeENma3hhVW1CSjhlUWFvSmt0MTRiMkFkMWhl?=
- =?utf-8?B?TXRyNFVmcko2S1BDSkhtYkhvMHMrYm1yMFVqanVYNzV3bks0ZEVPZko4a1BJ?=
- =?utf-8?B?bWpVYlptNE5mUEJab21FQldLbjl4ZXpOUFZPZnVVQldQYlQ1aU5sM1JBZ092?=
- =?utf-8?B?U1dHZUQxUlM5UXhtOVVzaXZGbEtVa2REOFZCS05xd1ZEUzU5TzFXb3dyMzNO?=
- =?utf-8?B?VjJaeTA2TjBxWG1SUWdjMXRya3VWRTQ1RFJ0bTJRa3o5ZzJRaFJPRkhqcmIx?=
- =?utf-8?B?UTkxNzF0b3RhTVpaVytlc3NvWHRhcGNlL0tXUzIzbkJFMGtRMW1xNVRpcVVT?=
- =?utf-8?B?Z2ZFQ0hkcjNDRlBOVDhrSHV4OTE4NWFUd0RMTEVUaXZCUXlLbDcxek1xa2VI?=
- =?utf-8?B?SjFXYjQ2SWE0bDZxOWF2R3J5L2lvTTBlbi9IbTNPZEZENEVkUEpRSmY5K3FQ?=
- =?utf-8?B?ZmxEci9iZUZQb0hMR1VLSHM4Z0NqOEYyRFFSaFBXSnVNeTdvdEp6NmppcjVj?=
- =?utf-8?B?YUJ4S3g0NFZWUGpIOEpYZWFvSUsyVGh2TWp5eHBhbmdJRUZRSDFtOHI2R012?=
- =?utf-8?B?cE1pRUhCZitnRnpQallQU2Y5QXVsRWE1SEFtQWVlN1RGb0lpZkhkRWxubGQ0?=
- =?utf-8?B?SHY4d0loWFVkRFdKQ1BTQ0dwc2JYaGxzeHhNOUNqK2NRYThSbnNrYjJPeWY3?=
- =?utf-8?B?MzRndHZ1Y2pTQkUzTUZyOWZ4VG8wMXYwdW5Ieks3ajRVendXWDhtT3BXdDlp?=
- =?utf-8?B?RnpQd0VBbmVOMHRtUUlkeDB0SmRWQW1jSzBXVm1WVTlDMXhsVTZIWnpOR21Y?=
- =?utf-8?B?RlUzcytYeld3NVBUMVIrQzJSZitHaDNaeStRVmhiZlQ2YXo0Y0UwVnZld0wr?=
- =?utf-8?B?TWh6VEN6b1kySVZnWTdSY1RlQUd2aGc2WXZhaFcvYVVlUDc0dDREd2FjRkpV?=
- =?utf-8?B?MUl0ZjlPZEE4SW5qUjY3d0VzYTh6TUtuZXNCbVd5eTRQUGxrS0xYWDlDV3dq?=
- =?utf-8?B?bW04YTZkSjVDMndBOXVvb1VFVWtnRTA5cnNtUmFKd3g3V0U4R1prUFNVQzkr?=
- =?utf-8?B?NTJtK1Avd2VVZThJRUFiSytHM0NmN2NNZTF5eDN6RExjUWlGK2RRYmNPUVpE?=
- =?utf-8?B?OWpTeGQ0WTNSaFNoUk9IemlyWUE2TGF6QUI5aVJiUkJlaC9kY29yQ1E2WW5z?=
- =?utf-8?B?NmJLdTJqN3N1c0pjY01iN0VaR3Q5WXpKdysyc0cvMXhTL2M5UzZhWE9LNjdV?=
- =?utf-8?B?SDJQSGI4N3N1ZnNHY0ZqUEljKzdUcXUzN1BmUk1jeGJLakxuVzJJOUZxVzU4?=
- =?utf-8?B?Q1dUUE03alZsRmVwcE9BRU1kRlFBS1htSkp3WSt3bExXaitzN1NRMlVPZXNW?=
- =?utf-8?B?eGxOM0V1akRzNTNObVpCZXlpWjBsOVZlNUlGMWx4ZVZCdmQ3Q0xoZFp3Z2lJ?=
- =?utf-8?B?TVF5WEQyMmNacFF0LzRGaWV0MDF3PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c330e603-761b-4898-592a-08da01288d51
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR10MB1466.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 17:24:50.8522
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yuOV/YTrfeM3ELxmajOrsez/rWFIJT5ugJ5Sjk5tjsgJ6rCpBo9m19vn30nSXYhSQxyK+wf192KLAJyPexAJQXdCCrlU+a0M2KzWF8wJuGo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4064
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10280 signatures=690848
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=836 adultscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203080090
-X-Proofpoint-GUID: J8fOavkFQEIzGeQyz32AvKvqD_gBN8cl
-X-Proofpoint-ORIG-GUID: J8fOavkFQEIzGeQyz32AvKvqD_gBN8cl
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 00/30] KVM: x86/mmu: Overhaul TDP MMU zapping and
+ flushing
+Content-Language: en-US
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+References: <20220303193842.370645-1-pbonzini@redhat.com>
+In-Reply-To: <20220303193842.370645-1-pbonzini@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 9:09 PM, Wenchao Hao wrote:
-> @@ -3143,8 +3145,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
->  	mutex_unlock(&session->eh_mutex);
->  
->  	iscsi_destroy_conn(cls_conn);
+On 3/3/22 20:38, Paolo Bonzini wrote:
+> 
+> Overhaul TDP MMU's handling of zapping and TLB flushing to reduce the
+> number of TLB flushes, fix soft lockups and RCU stalls, avoid blocking
+> vCPUs for long durations while zapping paging structure, and to clean up
+> the zapping code.
+> 
+> The largest cleanup is to separate the flows for zapping roots (zap
+> _everything_), zapping leaf SPTEs (zap guest mappings for whatever reason),
+> and zapping a specific SP (NX recovery).  They're currently smushed into a
+> single zap_gfn_range(), which was a good idea at the time, but became a
+> mess when trying to handle the different rules, e.g. TLB flushes aren't
+> needed when zapping a root because KVM can safely zap a root if and only
+> if it's unreachable.
+> 
+> To solve the soft lockups, stalls, and vCPU performance issues:
+> 
+>   - Defer remote TLB flushes to the caller when zapping TDP MMU shadow
+>     pages by relying on RCU to ensure the paging structure isn't freed
+>     until all vCPUs have exited the guest.
+> 
+>   - Allowing yielding when zapping TDP MMU roots in response to the root's
+>     last reference being put.  This requires a bit of trickery to ensure
+>     the root is reachable via mmu_notifier, but it's not too gross.
+> 
+>   - Zap roots in two passes to avoid holding RCU for potential hundreds of
+>     seconds when zapping guest with terabytes of memory that is backed
+>     entirely by 4kb SPTEs.
+> 
+>   - Zap defunct roots asynchronously via the common work_queue so that a
+>     vCPU doesn't get stuck doing the work if the vCPU happens to drop the
+>     last reference to a root.
+> 
+> The selftest at the end allows populating a guest with the max amount of
+> memory allowed by the underlying architecture.  The most I've tested is
+> ~64tb (MAXPHYADDR=46) as I don't have easy access to a system with
+> MAXPHYADDR=52.  The selftest compiles on arm64 and s390x, but otherwise
+> hasn't been tested outside of x86-64.  It will hopefully do something
+> useful as is, but there's a non-zero chance it won't get past init with
+> a high max memory.  Running on x86 without the TDP MMU is comically slow.
+> 
+> Testing: passes kvm-unit-tests and guest installation tests on Intel.
+> Haven't yet run AMD or selftests.
+> 
+> Thanks,
+> 
+> Paolo
+> 
+> v4:
+> - collected reviews and typo fixes (plus some typo fixes of my own)
+> 
+> - new patches to simplify reader invariants: they are not allowed to
+>    acquire references to invalid roots
+> 
+> - new version of "Allow yielding when zapping GFNs for defunct TDP MMU
+>    root", simplifying the atomic a bit by 1) using xchg and relying on
+>    its implicit memory barriers 2) relying on readers to have the same
+>    behavior for the three stats refcount=0/valid, refcount=0/invalid,
+>    refcount=1/invalid (see previous point)
+> 
+> - switch zapping of invalidated roots to asynchronous workers on a
+>    per-VM workqueue, fixing a bug in v3 where the extra reference added
+>    by kvm_tdp_mmu_put_root could be given back twice.  This also replaces
+>    "KVM: x86/mmu: Use common iterator for walking invalid TDP MMU roots"
+>    in v3, since it gets rid of next_invalidated_root() in a different way.
+> 
+> - because of the previous point, most of the logic in v3's "KVM: x86/mmu:
+>    Zap defunct roots via asynchronous worker" moves to the earlier patch
+>    "KVM: x86/mmu: Zap invalidated roots via asynchronous worker"
+> 
+> 
+> v3:
+> - Drop patches that were applied.
+> - Rebase to latest kvm/queue.
+> - Collect a review. [David]
+> - Use helper instead of goto to zap roots in two passes. [David]
+> - Add patches to disallow REMOVED "old" SPTE when atomically
+>    setting SPTE.
+> 
+> Paolo Bonzini (5):
+>    KVM: x86/mmu: only perform eager page splitting on valid roots
+>    KVM: x86/mmu: do not allow readers to acquire references to invalid roots
+>    KVM: x86/mmu: Zap invalidated roots via asynchronous worker
+>    KVM: x86/mmu: Allow yielding when zapping GFNs for defunct TDP MMU root
+>    KVM: x86/mmu: Zap defunct roots via asynchronous worker
+> 
+> Sean Christopherson (25):
+>    KVM: x86/mmu: Check for present SPTE when clearing dirty bit in TDP MMU
+>    KVM: x86/mmu: Fix wrong/misleading comments in TDP MMU fast zap
+>    KVM: x86/mmu: Formalize TDP MMU's (unintended?) deferred TLB flush logic
+>    KVM: x86/mmu: Document that zapping invalidated roots doesn't need to flush
+>    KVM: x86/mmu: Require mmu_lock be held for write in unyielding root iter
+>    KVM: x86/mmu: Check for !leaf=>leaf, not PFN change, in TDP MMU SP removal
+>    KVM: x86/mmu: Batch TLB flushes from TDP MMU for MMU notifier change_spte
+>    KVM: x86/mmu: Drop RCU after processing each root in MMU notifier hooks
+>    KVM: x86/mmu: Add helpers to read/write TDP MMU SPTEs and document RCU
+>    KVM: x86/mmu: WARN if old _or_ new SPTE is REMOVED in non-atomic path
+>    KVM: x86/mmu: Refactor low-level TDP MMU set SPTE helper to take raw values
+>    KVM: x86/mmu: Zap only the target TDP MMU shadow page in NX recovery
+>    KVM: x86/mmu: Skip remote TLB flush when zapping all of TDP MMU
+>    KVM: x86/mmu: Add dedicated helper to zap TDP MMU root shadow page
+>    KVM: x86/mmu: Require mmu_lock be held for write to zap TDP MMU range
+>    KVM: x86/mmu: Zap only TDP MMU leafs in kvm_zap_gfn_range()
+>    KVM: x86/mmu: Do remote TLB flush before dropping RCU in TDP MMU resched
+>    KVM: x86/mmu: Defer TLB flush to caller when freeing TDP MMU shadow pages
+>    KVM: x86/mmu: Zap roots in two passes to avoid inducing RCU stalls
+>    KVM: x86/mmu: Check for a REMOVED leaf SPTE before making the SPTE
+>    KVM: x86/mmu: WARN on any attempt to atomically update REMOVED SPTE
+>    KVM: selftests: Move raw KVM_SET_USER_MEMORY_REGION helper to utils
+>    KVM: selftests: Split out helper to allocate guest mem via memfd
+>    KVM: selftests: Define cpu_relax() helpers for s390 and x86
+>    KVM: selftests: Add test to populate a VM with the max possible guest mem
+> 
+>   arch/x86/include/asm/kvm_host.h               |   2 +
+>   arch/x86/kvm/mmu/mmu.c                        |  49 +-
+>   arch/x86/kvm/mmu/mmu_internal.h               |  15 +-
+>   arch/x86/kvm/mmu/tdp_iter.c                   |   6 +-
+>   arch/x86/kvm/mmu/tdp_iter.h                   |  15 +-
+>   arch/x86/kvm/mmu/tdp_mmu.c                    | 559 +++++++++++-------
+>   arch/x86/kvm/mmu/tdp_mmu.h                    |  26 +-
+>   tools/testing/selftests/kvm/.gitignore        |   1 +
+>   tools/testing/selftests/kvm/Makefile          |   3 +
+>   .../selftests/kvm/include/kvm_util_base.h     |   5 +
+>   .../selftests/kvm/include/s390x/processor.h   |   8 +
+>   .../selftests/kvm/include/x86_64/processor.h  |   5 +
+>   tools/testing/selftests/kvm/lib/kvm_util.c    |  66 ++-
+>   .../selftests/kvm/max_guest_memory_test.c     | 292 +++++++++
+>   .../selftests/kvm/set_memory_region_test.c    |  35 +-
+>   15 files changed, 794 insertions(+), 293 deletions(-)
+>   create mode 100644 tools/testing/selftests/kvm/max_guest_memory_test.c
+> 
 
-This should then be a iscsi_put_conn.
 
-So basically it balances out.
+Queued, thanks.
 
-iscsi_alloc_conn requires iscsi_put_conn. The put releases what is
-done in the alloc. The put on the parent is done in the release though.
+Paolo
 
-iscsi_add_conn requires iscsi_remove_conn. The remove undoes what
-was done in the add
-
-We don't want a iscsi_destroy_conn which does a iscsi_free_conn
-because it makes it confusing.
