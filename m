@@ -2,70 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07909C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B36FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347996AbiCHPt3 (ORCPT
+        id S1347998AbiCHPvF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:49:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
+        Tue, 8 Mar 2022 10:51:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347984AbiCHPt0 (ORCPT
+        with ESMTP id S236656AbiCHPvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:49:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEF136E28;
-        Tue,  8 Mar 2022 07:48:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04A1CB8199F;
-        Tue,  8 Mar 2022 15:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15C20C340EB;
-        Tue,  8 Mar 2022 15:48:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646754506;
-        bh=UlEV/kcHsBhnvTZ/QRKuS+F+zKNawPdoMIHBiUMf+ps=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lQ6SSReM6PJoqBmLv8ywGRwNuWIZGjS6VtKOz7S++o+/TeIUl7+ovhNCnGMgJWH47
-         t9Svx7pJ6NkOA1ExKPyRztgYGlBuvdRBd/4EheTeiveaZdmyWU8ed971vvtymnZ73x
-         l/tjhhQFryCvr2G8zG4GZd9U/sJpQ2UtMPK8let8=
-Date:   Tue, 8 Mar 2022 16:48:23 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Luna Jernberg <droidbittin@gmail.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
-Message-ID: <Yid6xwAV7+j2xfPr@kroah.com>
-References: <20220307162207.188028559@linuxfoundation.org>
- <97250f69-cde0-37c1-09d0-845047704bdc@linuxfoundation.org>
- <CADo9pHjuByLte3d8WhKf1jWw_=EoW-76405ptW-sZg0-AakxqQ@mail.gmail.com>
- <CADo9pHiJGXFwvXDRqRCjYqowJkkP3GYzkO8jqPQK=z71V_5FOw@mail.gmail.com>
+        Tue, 8 Mar 2022 10:51:03 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E6C4F451;
+        Tue,  8 Mar 2022 07:50:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646754607; x=1678290607;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uoonVeIcIw0ZF7CyzIEfJW8mtwFWH3uBfX/PSuQYy6c=;
+  b=lENOGMPvY3FlhJOwKXaVnqVAm/w3qNBFPKLAEfUxqWFJ6l9XOvhodt57
+   euzxHcsSSZyDDQwYnBvcMCZHK9CFSQSA1iRlv4azMWJuCL/593sRfxEPf
+   NY8fAZYcpKvkCgIGcfY5QIp0MpTvbyOSCt8hdX+b9G8mKszr/yNK+Y91w
+   GAejkdgXkM5veV4azo5uAxXGJJdlgllNkb9HxMVbrwuWl5w1jbwNhmmQE
+   3jo6C1PDi3ljtfGnSjBGZ4YLhuCk/bamiel6g/ZZxCefwpUxHTGcvR+ea
+   UXn2maBFybdEwCD9Y62DchKy7JYnojjnQo+r3WhlEhuVShSTHQjcIm4Tf
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
+   d="scan'208";a="156124961"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 08:50:02 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 08:50:01 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 08:50:01 -0700
+Date:   Tue, 8 Mar 2022 16:52:53 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+CC:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "Kavyasree Kotagiri" <kavyasree.kotagiri@microchip.com>,
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] clk: COMMON_CLK_LAN966X should depend on SOC_LAN966
+Message-ID: <20220308155253.aoedxrdke2l3homa@soft-dev3-1.localhost>
+References: <eb102eae05e5667b9bd342a0c387f7f262d24bda.1645716471.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <CADo9pHiJGXFwvXDRqRCjYqowJkkP3GYzkO8jqPQK=z71V_5FOw@mail.gmail.com>
+In-Reply-To: <eb102eae05e5667b9bd342a0c387f7f262d24bda.1645716471.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 04:29:15PM +0100, Luna Jernberg wrote:
-> oh i meant to send that too the 5.16.13 emails
+The 02/24/2022 16:29, Geert Uytterhoeven wrote:
 > 
-> On Tue, Mar 8, 2022 at 3:30 PM Luna Jernberg <droidbittin@gmail.com> wrote:
+> The LAN966x Generic Clock Controller is only present on Microchip
+> LAN966x SoCs.  Hence add a dependency on SOC_LAN966, to prevent asking
+> the user about this driver when configuring a kernel without LAN966x SoC
+> support.
+
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
 > 
-> > Both rc2, and rc1 works fine from the linux-rc package in AUR on my Arch
-> > Linux systems :)
+> Fixes: 54104ee023333e3b ("clk: lan966x: Add lan966x SoC clock driver")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/clk/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+> index c390e26dadf471f5..1c82a3e1129d4342 100644
+> --- a/drivers/clk/Kconfig
+> +++ b/drivers/clk/Kconfig
+> @@ -232,6 +232,7 @@ config COMMON_CLK_GEMINI
+> 
+>  config COMMON_CLK_LAN966X
+>         bool "Generic Clock Controller driver for LAN966X SoC"
+> +       depends on SOC_LAN966 || COMPILE_TEST
+>         help
+>           This driver provides support for Generic Clock Controller(GCK) on
+>           LAN966X SoC. GCK generates and supplies clock to various peripherals
+> --
+> 2.25.1
+> 
 
-If you respond with a "Tested-by:" line like others do, my scripts will
-automatically put it in the commit log for the release commit if you
-want.
-
-thanks for testing!
-
-greg k-h
+-- 
+/Horatiu
