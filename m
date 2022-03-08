@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F93C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 04:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 04:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245753AbiCHElw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 23:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
+        id S245355AbiCHEl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 23:41:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245429AbiCHElW (ORCPT
+        with ESMTP id S1343572AbiCHElt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 23:41:22 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2050.outbound.protection.outlook.com [40.107.243.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0023B3BA53;
-        Mon,  7 Mar 2022 20:40:20 -0800 (PST)
+        Mon, 7 Mar 2022 23:41:49 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2073.outbound.protection.outlook.com [40.107.220.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789613BBD0;
+        Mon,  7 Mar 2022 20:40:47 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=deUshmlwhjHo4s5UluqRc3e/7pRMU4NnvhYM2MkM8g8gEbtJaKJMqhE787ffZprrHdHTB8P7inHFAihmPlnwGHW7O/Qk95rtB3OEqDNbbKQTvSXQT8ObYBzW6n5rB66GhRrZBvy8DguArFymckzMUqpQQRWQrUkvJbgvwACDuUFGRONO/SD1NwChG6O2/LnZQl86oVJW9VEIQ9BIsGm9bnmCI9LXQ9prFGW6yNCVWJE90pDbozivgcihLL2UfkyxQCS/iPNLCehut/H9uqTEsN/7mAfgln0m3Wz2/c5h3Tgs+/hSe8ARu//3/jtSzuV01vXKbT+cKOGDoTMzeAkbcg==
+ b=Uz9jUe/tkRdm7PjFyeUAPVPgka8dI+APL41DbBbEKl0i+GLd/ypOmnpG++ZQLrzkw04us6ab7GRbcyJIQUSdXrVyISrFJ0c0p2lGh1KB3eeognW8jay8NuJvldAPctwExv+NrG5h8Y/D3i8K6IHeNqhsPjyQKy2eG0giUxa/fnUHLp4guluSireU86FvrBwcJNjtLNRCYyxJ1Lb5/jQR2S/sft+ClhWuq9Pzfo2ZsB37jxQ5sd2BZlQvCIyxZD9Zqx6CUeXWGfX6eo86DCdyuw8fphilaRzc4nwdxPsU4hNtgPfmHve6usnhRhKi5RWSAG0T4bjlgPvOu6UhI+WEsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5qM2tLOnF3ZYpC6ARUyWqAGZBf1ntzZKkRbKsSdrjXY=;
- b=PZbm43/wwhdISPUgMjLYXSM19LlvZCemWMSDtbiAesOlFuNqMXG+zL2qDPx+o9s9biU6IVBFN4h/wvUB8jCbcIxSwrHHqk2/BoWLMvtHDji4zEeDT7XRd/P6fe3AGKP+sQt5rN118zw9K36hc4EuUXUJernYpYTuNgmLjBTMPO6IYv7NT7+MEsGfWGtWft4BFp+doRBAXlnjMg7+J4odv9j5U9byNmcw6YfyBb2RMvIWrI5QscGX0zBX+AE+kHSeXEma/CkU5iszB7H26S6WTpWm5uYJsTEVcK+HA+5qQSslEStCH/iqve53Wc09eYCdifezS9/qss2cQhh3SGk15g==
+ bh=GvKfnx5pDMJVWTqfkckvKFX5tRfjiqPceq5Mk2APk9A=;
+ b=AZZDM/ciAK+4R6mx5jnBwjcewg9aDb51VHKYan9sEQd5Hg8qD6GgXu21fIe8tHHFu5H2YQAnZNUsW3f8dln70a3BJY+KBAvkiURUCJeTdaMCasganxdwcriHtIbp7y/2yFRqPtPkwwpa818KwpWLtimGEq/GwZUl9jMm8AqljWxv3lvH7yiao0/Lsw3S2IO+N+ih1DIXvvnyMni3IKZJ3id5+/tu+GKsjSUfdxCTUlfoke/ql7mTAC0R/59HnavkboUDWOR5qVic/Bh6S/PmdIXv49k/xuY4KLHAfpVNDXi49GF3jPnB+uEvgHrFSYH8nqmqcDpNnqpjuPHaWNKqoA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5qM2tLOnF3ZYpC6ARUyWqAGZBf1ntzZKkRbKsSdrjXY=;
- b=c+yaMZjg9iuGT7DEQMHgi/e95qhGpdxoGnHY37WUnrM1qfXnSWY8k46eAGamt/pnPrvwjBljV4/Iac9bwB0eU1Oy2+baTOfWwWCRzKuUtXXcgDLq3aOpcPZ3h5ZaXCgnJmunIMMOWaSn2F2ZA1tMQHFZ/wJzWhlhcJ4ipo2MrJM=
-Received: from DM6PR11CA0038.namprd11.prod.outlook.com (2603:10b6:5:14c::15)
- by MN2PR12MB4454.namprd12.prod.outlook.com (2603:10b6:208:26c::18) with
+ bh=GvKfnx5pDMJVWTqfkckvKFX5tRfjiqPceq5Mk2APk9A=;
+ b=GpJz3+8KaJMb/MPeUBMAnztkAYTACbyfyM5Lp9eJD2CP2YVvNNhmKB8GjUpCfKFpXeaoO7kfHRsfxai1JQ1idAgAUPO9zPVdQTaO1+AQjtKid5Eq8i/wsT/ZRCh6yWERNbiBVBZGKxHxxfTtSaekLVpPrNM7Tkj3kHHCOlwvXIk=
+Received: from DM5PR10CA0020.namprd10.prod.outlook.com (2603:10b6:4:2::30) by
+ LV2PR12MB5848.namprd12.prod.outlook.com (2603:10b6:408:173::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 04:40:18 +0000
-Received: from DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::1b) by DM6PR11CA0038.outlook.office365.com
- (2603:10b6:5:14c::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Tue, 8 Mar
+ 2022 04:40:33 +0000
+Received: from DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:2:cafe::c) by DM5PR10CA0020.outlook.office365.com
+ (2603:10b6:4:2::30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Tue, 8 Mar 2022 04:40:17 +0000
+ Transport; Tue, 8 Mar 2022 04:40:33 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT024.mail.protection.outlook.com (10.13.172.159) with Microsoft SMTP
+ DM6NAM11FT044.mail.protection.outlook.com (10.13.173.185) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 04:40:17 +0000
+ 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 04:40:32 +0000
 Received: from gomati.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
- 2022 22:40:11 -0600
+ 2022 22:40:27 -0600
 From:   Nikunj A Dadhania <nikunj@amd.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 CC:     Sean Christopherson <seanjc@google.com>,
@@ -69,9 +69,9 @@ CC:     Sean Christopherson <seanjc@google.com>,
         Mingwei Zhang <mizhang@google.com>,
         "David Hildenbrand" <david@redhat.com>, <kvm@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Nikunj A Dadhania <nikunj@amd.com>
-Subject: [PATCH RFC v1 3/9] KVM: x86/mmu: Add hook to pin PFNs on demand in MMU
-Date:   Tue, 8 Mar 2022 10:08:51 +0530
-Message-ID: <20220308043857.13652-4-nikunj@amd.com>
+Subject: [PATCH RFC v1 6/9] KVM: x86/mmu: Introduce kvm_mmu_map_tdp_page() for use by SEV/TDX
+Date:   Tue, 8 Mar 2022 10:08:54 +0530
+Message-ID: <20220308043857.13652-7-nikunj@amd.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220308043857.13652-1-nikunj@amd.com>
 References: <20220308043857.13652-1-nikunj@amd.com>
@@ -83,103 +83,107 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36666c20-36ea-44dd-2e91-08da00bdbeb8
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4454:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB44544188E2E6CFC52EEF0430E2099@MN2PR12MB4454.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: bf52e22b-5c41-4711-4829-08da00bdc804
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5848:EE_
+X-Microsoft-Antispam-PRVS: <LV2PR12MB5848A09E4D680324968932EFE2099@LV2PR12MB5848.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8ZlkOeum9HXdoP8nmeLiupAmhnaiwhvNCFsO+on/c/CsBHqx2ujJKhiLxIuYaj6MDT8X506bSUlwa7K70mRM96+wrIvei3RQERyKlNuCOJvFpXVW1nPjIOGHx5WYTVRQF3C1Pn0p+TkjwH22//DN+5N2Ojw5vMgaumu6N6egCyI4YyF/tilAJC/tsMdftr/KRG+dm9HjpQwL4R87jm4ckyR4DhSmLGC82BZQsrBXTM7WUyRUJCt27jM4Sd1S4qKb956hwzK2kqw8B09Ky/Z3PT9WQTDPUHrkvo9u5T8p9euxLCa0zq7qzsUZJQsKgZ4VMCGROH+J3XmH29d4cXqP1xgR1ti2l4jv6l4v6bm1oEZKFqiZfchAb4liNQjhpSQH1iSDT2o4o9AKNnvMvXYJ+on2VpHSQRwuX68GvzyU44wnbs9y5+n645hXWy6woVR/LoX1e3CejHB8kN1eWmoKqXQkb/hlhiT6LZ9+PTUF0W/QGA0g1wgEB7w0jPS053hq59Pr9shGlzmmkB/0mGb6rW1wolSLirNEeFM61rrHliM7rT+Am7tCmYE7FKRthn3CHUaO7xy0VQNXKGsNab6pcCB2d6J/wPaNKdl6spDnDyWHhHYlHU/oIl5mHYw4bFTe7m/nja+zRlEx2B4VvsGFIJ6H/D7/UNHZBJCZPt92ut9RXsJg36Icg30D3gZH3wa5WA0wtrTQD5Pg0tueCCiPYQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(5660300002)(7416002)(7696005)(8936002)(508600001)(6666004)(8676002)(2906002)(1076003)(186003)(26005)(16526019)(40460700003)(4326008)(82310400004)(70206006)(70586007)(81166007)(47076005)(2616005)(356005)(36860700001)(316002)(426003)(336012)(54906003)(36756003)(6916009)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: dphlwWKdQkXoxK98exJKSqVxlJFDTWEZqC2MvVH/wUVT7nZ+G6jXaHwdIPikoNzIB5Bm33hBO3X/3NgHG0hoeayFL0j3Mo1fIQXILDveKtgmLgTYcpF31QwDRddLqx/edWY01OKKdy/0X9QtVZCUidZXqvGl0v+KYSw7jXr317Fb41mtR0RotjdLrcCE4w7BvWf8SVE3vAkTKdKTEw+qhrEYXFXNHloVFeQeS03zpfTeAB9yci1I+C3r0hOYs9jJjC5szlys8LNX5g/Ap7Y2O/3Gcye//VGYAB+TLAv729wpddP2OQrhn7bSwrh6WSrSDf0TwLcHLTIxJpE1KmHWLziFsMR0hKvJLTEw7jIaWTmsz9Eb+F/oeakvJr2mOI9Bx0ndjc/KlJqOUpv/1heIfzdplmGbxdKLc+G4YAjAzQ0w02ETkU+gyVHEDbI4g76cks1Y4a/kr6SBuFv6o7gwOdlddZtl/qs3KmTCjXoaiHNC+F4c4exdPBz8Cu9oI1ThBisFBp4p/6R0ddYhxFXAvT4g4FJFkR5MAmNrECnsAn+NN2S4TCpwVz3c4jYPMXQZzed385Z5gQMYIor9z6xFMEI2+vZXyO/MqLWmYgTXTbsuZZfCF3a3eWTf/5HGAvXIEHGX6+yCSXCx7qaz/3jl9lA6lq00v6Bf2bOaBd9ipLnUPPeg3G2uDdmT0oW/CqAhrTQlr3+YhXVw5iiMScyORA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(356005)(81166007)(336012)(426003)(40460700003)(186003)(26005)(1076003)(16526019)(83380400001)(8936002)(5660300002)(36756003)(7416002)(2906002)(6916009)(54906003)(6666004)(4326008)(508600001)(70586007)(70206006)(7696005)(8676002)(2616005)(47076005)(316002)(82310400004)(36860700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 04:40:17.3813
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 04:40:32.9795
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36666c20-36ea-44dd-2e91-08da00bdbeb8
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf52e22b-5c41-4711-4829-08da00bdc804
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4454
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5848
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vendor code via kvm_x86_ops hooks for pinning.
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
+Introduce a helper to directly (pun intended) fault-in a TDP page
+without having to go through the full page fault path. This allows
+SEV/TDX to pin pages before booting the guest, provides the resulting
+pfn to vendor code if should be needed in the future, and allows the
+RET_PF_* enums to stay in mmu.c where they belong.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  3 +++
- arch/x86/kvm/mmu/mmu.c             | 15 +++++++++++++++
- 3 files changed, 19 insertions(+)
+ arch/x86/kvm/mmu.h     |  3 +++
+ arch/x86/kvm/mmu/mmu.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index d39e0de06be2..8efb43d92eef 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -88,6 +88,7 @@ KVM_X86_OP(set_tss_addr)
- KVM_X86_OP(set_identity_map_addr)
- KVM_X86_OP(get_mt_mask)
- KVM_X86_OP(load_mmu_pgd)
-+KVM_X86_OP(pin_pfn)
- KVM_X86_OP_NULL(has_wbinvd_exit)
- KVM_X86_OP(get_l2_tsc_offset)
- KVM_X86_OP(get_l2_tsc_multiplier)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index ec9830d2aabf..df11f1fb76de 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1418,6 +1418,9 @@ struct kvm_x86_ops {
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index e9fbb2c8bbe2..0595891dd834 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -202,6 +202,9 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 	return vcpu->arch.mmu->page_fault(vcpu, &fault);
+ }
  
- 	void (*load_mmu_pgd)(struct kvm_vcpu *vcpu, hpa_t root_hpa,
- 			     int root_level);
-+	bool (*pin_pfn)(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
-+			kvm_pfn_t pfn, hva_t hva, bool write,
-+			enum pg_level level);
- 
- 	bool (*has_wbinvd_exit)(void);
- 
++kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
++			       u32 error_code, int max_level);
++
+ /*
+  * Currently, we have two sorts of write-protection, a) the first one
+  * write-protects guest page to sync the guest modification, b) another one is
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index db1feecd6fed..b94e5e71653e 100644
+index b94e5e71653e..5f5da1a4e6be 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4001,6 +4001,16 @@ static bool is_page_fault_stale(struct kvm_vcpu *vcpu,
- 	       mmu_notifier_retry_hva(vcpu->kvm, mmu_seq, fault->hva);
+@@ -4134,6 +4134,44 @@ int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 	return direct_page_fault(vcpu, fault);
  }
  
-+static bool kvm_pin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
++kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
++			       u32 error_code, int max_level)
 +{
-+	if (is_error_noslot_pfn(fault->pfn) || kvm_is_reserved_pfn(fault->pfn) ||
-+	    !kvm_x86_ops.pin_pfn)
-+		return true;
++	int r;
++	struct kvm_page_fault fault = (struct kvm_page_fault) {
++		.addr = gpa,
++		.error_code = error_code,
++		.exec = error_code & PFERR_FETCH_MASK,
++		.write = error_code & PFERR_WRITE_MASK,
++		.present = error_code & PFERR_PRESENT_MASK,
++		.rsvd = error_code & PFERR_RSVD_MASK,
++		.user = error_code & PFERR_USER_MASK,
++		.prefetch = false,
++		.is_tdp = true,
++		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
++	};
 +
-+	return kvm_x86_ops.pin_pfn(vcpu, fault->slot, fault->pfn, fault->hva,
-+				   fault->write, fault->goal_level);
++	if (mmu_topup_memory_caches(vcpu, false))
++		return KVM_PFN_ERR_FAULT;
++
++	/*
++	 * Loop on the page fault path to handle the case where an mmu_notifier
++	 * invalidation triggers RET_PF_RETRY.  In the normal page fault path,
++	 * KVM needs to resume the guest in case the invalidation changed any
++	 * of the page fault properties, i.e. the gpa or error code.  For this
++	 * path, the gpa and error code are fixed by the caller, and the caller
++	 * expects failure if and only if the page fault can't be fixed.
++	 */
++	do {
++		fault.max_level = max_level;
++		fault.req_level = PG_LEVEL_4K;
++		fault.goal_level = PG_LEVEL_4K;
++		r = direct_page_fault(vcpu, &fault);
++	} while (r == RET_PF_RETRY && !is_error_noslot_pfn(fault.pfn));
++	return fault.pfn;
 +}
++EXPORT_SYMBOL_GPL(kvm_mmu_map_tdp_page);
 +
- static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ static void nonpaging_init_context(struct kvm_mmu *context)
  {
- 	bool is_tdp_mmu_fault = is_tdp_mmu(vcpu->arch.mmu);
-@@ -4035,6 +4045,9 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
- 
- 	kvm_mmu_hugepage_adjust(vcpu, fault);
- 
-+	if (memslot_is_encrypted(fault->slot) && !kvm_pin_pfn(vcpu, fault))
-+		goto out_release;
-+
- 	if (is_tdp_mmu_fault)
- 		read_lock(&vcpu->kvm->mmu_lock);
- 	else
-@@ -4057,6 +4070,8 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
- 		read_unlock(&vcpu->kvm->mmu_lock);
- 	else
- 		write_unlock(&vcpu->kvm->mmu_lock);
-+
-+out_release:
- 	kvm_release_pfn_clean(fault->pfn);
- 	return r;
- }
+ 	context->page_fault = nonpaging_page_fault;
 -- 
 2.32.0
 
