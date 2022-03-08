@@ -2,100 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC30C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 277C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbiCIBTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
+        id S230438AbiCIBUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:20:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiCIBS1 (ORCPT
+        with ESMTP id S230507AbiCIBT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:18:27 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92CF12E17D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:08:28 -0800 (PST)
+        Tue, 8 Mar 2022 20:19:57 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF5D30A
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:12:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NUm+eI6I7vXUsufLZj3Ybgr0AUlu0fM8Z9nEWhEtbG4=; b=J2BvjLjQK+kQUeBycrbQzD2N01
-        A0P8NwaE/jEcHIfpsidYyEwAeE8FMX11IhtmE+1KgjrRosjKJVQn5rpovGCyA4IvS4GS3GepULNK/
-        UB5BNggxnhRB6wzPMjwJKYlql7mW/PYlYh99BLVYWlBM7CFK4wtG88BpBFGvNQS7a8cFGcGSXA+rt
-        wJFoXSaWRY63BKrmoxjDnAV3Ajz9PW0Yg4L8ncfnuhEqQLZFYXyHB6AKHNhNLCFaF8mLsjsTk9Ss2
-        k8GRAIVPNCqoXbRgNaodtHvNAjBaq9pjIaTkFhEVLPEASrihE96DwNWHuD2ymD9PlD9U8UaJAZwy3
-        sUZQyoMg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57732)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nRkoN-0001C5-Et; Wed, 09 Mar 2022 01:08:19 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nRkoL-0007Or-U2; Wed, 09 Mar 2022 01:08:17 +0000
-Date:   Wed, 9 Mar 2022 01:08:17 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: boot flooded with unwind: Index not found
-Message-ID: <Yif+AY3DShT9Z6Q+@shell.armlinux.org.uk>
-References: <CAMj1kXEy6n3zZ8Z51kP=tTuOU0xCXLLfC-b6BMpdsjMoM7zGBg@mail.gmail.com>
- <Yh8tWdiWPgZLyQtx@Red>
- <CAMj1kXGRtdftpoqmd7HBonBBS67jO=YWzoESPAagGfQBZUDQWg@mail.gmail.com>
- <Yh8w7ldudhmbYv4N@Red>
- <CAMj1kXHri2_tnYhu2gE9xTUOxLY9v1=zODCo1BGfjFTKukiedA@mail.gmail.com>
- <Yh9CbcrfDvN2Z9Y9@Red>
- <Yh9RI64fThQfnJgS@shell.armlinux.org.uk>
- <CAMj1kXGVwXzAAyDeJqAi+eK1hOB3uShiBb_LORL-_YNvikbsAw@mail.gmail.com>
- <Yh9TdbWwHX/5Bhmt@shell.armlinux.org.uk>
- <YifuVmkcb1ie7bzk@shell.armlinux.org.uk>
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XqYDQ0sO8lLcFH38iNpLV9+za02YSz1bbsT0KsfeIP8=; b=Pjh/y28/PAdf3s2neTwwwFdFwP
+        q2hbcI7URxbuj/rRtMJv+J+/zMaLs1xfegdV5hwwbn1TReO6VUZYFQnesEN9d+VS0DOtvRupX2AFL
+        /mUpbgjG/CCa7zHYIUoIzvf8WvNFHOqK1IZwm9Di9sCZeI0Lm4LS+hVkMc2BvMzeIGDVh/UahgjdK
+        XIoO1f3XX9cgSrxPjX1Flc9HQNbdxAWjNZ//HopeZIxaOmZdaxNOpObW2kc49+SOEWA7BEKrXyQIa
+        NF+qhPF3PZU0H16aajB15UWjkI8Sr3HbdSJ+y1e8cUydVc42gBfRxZXIRbCHDaX/Cvi8OTKS226+A
+        xqE1CzsQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRjJc-00GaWd-EZ; Tue, 08 Mar 2022 23:32:28 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 149C030027B;
+        Wed,  9 Mar 2022 00:32:25 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id AE5D0203C81E0; Wed,  9 Mar 2022 00:32:25 +0100 (CET)
+Date:   Wed, 9 Mar 2022 00:32:25 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        vincent.guittot@linaro.org, bristot@redhat.com,
+        zhaolei@cn.fujitsu.com, tj@kernel.org, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, linux-kernel@vger.kernel.org,
+        Paul McKenney <paulmck@kernel.org>
+Subject: Re: [PATCH v3 2/3] sched/cpuacct: optimize away RCU read lock
+Message-ID: <YifniVyoJ9NNU+pv@hirez.programming.kicks-ass.net>
+References: <20220220051426.5274-1-zhouchengming@bytedance.com>
+ <20220220051426.5274-2-zhouchengming@bytedance.com>
+ <CGME20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f@eucas1p2.samsung.com>
+ <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YifuVmkcb1ie7bzk@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 12:01:26AM +0000, Russell King (Oracle) wrote:
-> To reinterate what I've just put on IRC - we have not got to the bottom
-> of this problem yet - it still very much exists.
+On Wed, Mar 09, 2022 at 12:20:33AM +0100, Marek Szyprowski wrote:
+> On 20.02.2022 06:14, Chengming Zhou wrote:
+> > Since cpuacct_charge() is called from the scheduler update_curr(),
+> > we must already have rq lock held, then the RCU read lock can
+> > be optimized away.
+> >
+> > And do the same thing in it's wrapper cgroup_account_cputime(),
+> > but we can't use lockdep_assert_rq_held() there, which defined
+> > in kernel/sched/sched.h.
+> >
+> > Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 > 
-> There seems to be something of a fundamental issue with the unwinder,
-> it now appears to be going wrong and failing to unwind beyond a
-> couple of functions, and the address it's coming out with appears to
-> be incorrect. I've only just discovered this because I created my very
-> own bug, and yet again, the timing sucks with the proximity of the
-> merge window.
+> This patch landed recently in linux-next as commit dc6e0818bc9a 
+> ("sched/cpuacct: Optimize away RCU read lock"). On my test systems I 
+> found that it triggers a following warning in the early boot stage:
 > 
-> I'm getting:
+> Calibrating delay loop (skipped), value calculated using timer 
+> frequency.. 48.00 BogoMIPS (lpj=240000)
+> pid_max: default: 32768 minimum: 301
+> Mount-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+> Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+> CPU: Testing write buffer coherency: ok
+> CPU0: Spectre v2: using BPIALL workaround
 > 
-> [   13.198803] [<c0017728>] (unwind_backtrace) from [<c0012828>] (show_stack+0x10/0x14)
-> [   13.198820] [<c0012828>] (show_stack) from [<c2be78d4>] (0xc2be78d4)
-> 
-> for the WARN_ON() stacktrace, and that address that apparently called
-> show_stack() is most definitely rubbish and incorrect. This makes any
-> WARN_ON() condition undebuggable.
-> 
-> This is with both 9183/1 and 9184/1 applied on top of pulling your
-> "arm-ftrace-for-rmk" tag and also with just the "arm-vmap-stacks-v6"
-> tag. This seems to point at one of these patches breaking the
-> unwinder:
-> 
-> a1c510d0adc6 ARM: implement support for vmap'ed stacks
-> 532319b9c418 ARM: unwind: disregard unwind info before stack frame is set up
+> =============================
+> WARNING: suspicious RCU usage
+> 5.17.0-rc5-00050-gdc6e0818bc9a #11458 Not tainted
+> -----------------------------
+> ./include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
 
-The above commit appears to be what's breaking the unwinder. Without
-this I get sane stacktraces. With it, the unwinder spits out stupid
-function addresses.
+Arguably, with the flavours folded again, rcu_dereference_check() ought
+to default include rcu_read_lock_sched_held() or its equivalent I
+suppose.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Paul?
