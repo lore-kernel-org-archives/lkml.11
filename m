@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F75C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbiCHQ6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:58:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
+        id S239408AbiCHQ6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:58:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348528AbiCHQ5q (ORCPT
+        with ESMTP id S1343921AbiCHQ5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:57:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B9F52B14
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:56:49 -0800 (PST)
-Date:   Tue, 08 Mar 2022 16:56:47 -0000
+        Tue, 8 Mar 2022 11:57:44 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492FC52B28
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:56:47 -0800 (PST)
+Date:   Tue, 08 Mar 2022 16:56:45 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646758608;
+        s=2020; t=1646758606;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=jr6z0ql6NSM1tZ6X4zSCkf0OpjHo/XlT24PW+DWVe1c=;
-        b=04tb4ZDvsnXHiuTNY2CI4vw8xdlQfL7FxsX+/Y8Aw10ONaBbKfzcvl8LXP2Tt1NLOxK+BR
-        D9ie+m+QZCQEBc2xhWYo40/ftrjgYmadP8nXXdjEg7CTfv6pfL91KWu1pqbilZzQRnF4E9
-        QgzEE9/pG8Q2mOYJCyeWzlx4Qp3rmgFKGKJvwZNTY8l7qZnYOcy0eMDDtlFPkqJ+ssSsze
-        FL+kQI8t5JMcY4hsv4hpZV2dpwqWw+uUwp3awnMpZZ/4eUARZB3y+6+DMNR7DxvMGz3Hox
-        tUZyMlfp3APm89XLfR5fbj8sqEjl3K42Zw9etAD71JlEXBgG3hxG7zJE4M3A4A==
+        bh=0qocFDQkih4E/aDjm6F+QxdWrYOIo51NwAdD8p5AqxA=;
+        b=4qsFRlHTPE7q2liDn2wphh5ggvrpfkX7h5I5tdom0wxX4H5VyXwNsJSYMQlTtWtDD42dXJ
+        40uFiblKpTLmwBSj56kPYScXIsV5ZmIMAnjuKeiip0SE/7KtHvN6U4c2zA2SEJORSk7YTe
+        TYYFu0DaA+43tzdYclg765G9Bn9fwG1hJ8rdz/pFziU4nBUp4xIQTqye/CwKZNKf7p/a3Z
+        T8ZsRzG/Ra83Hrhh8omBcpdzaXhE1kFmvShqYnCPXFH9Ea/HjRJgLTwx8QMPGhaVeafiqE
+        1AnbezEXOgCgZVAbiqQk905r7EtQfdMi3K2OEZioWCCR3lNQdF+Su2EwYrIE+Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646758608;
+        s=2020e; t=1646758606;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=jr6z0ql6NSM1tZ6X4zSCkf0OpjHo/XlT24PW+DWVe1c=;
-        b=ilIAyK90cU+yvoXovhukI+oG6jUvKZn+7RKePvtVETlhf6+LEJbv7u7IUHRF4SWedh/ePw
-        RsyAya7oHPv3bYBw==
+        bh=0qocFDQkih4E/aDjm6F+QxdWrYOIo51NwAdD8p5AqxA=;
+        b=fySJXBjFSjqFXpXNqyIX73h+5AlMQC3WxRV96w4jwEEAsXKrxEXx3pydmzfYRUQ3mw0GNn
+        LafV1Z0v396XKODw==
 From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] dt-bindings: arm-pmu: Document Apple PMU
- compatible strings
-Cc:     Rob Herring <robh@kernel.org>, Hector Martin <marcan@marcan.st>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+Subject: [irqchip: irq/irqchip-next] dt-bindings: apple,aic: Add affinity
+ description for per-cpu pseudo-interrupts
+Cc:     Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        tglx@linutronix.de
 MIME-Version: 1.0
-Message-ID: <164675860706.16921.6958961315324889015.tip-bot2@tip-bot2>
+Message-ID: <164675860502.16921.10151509944058820925.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -55,35 +55,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     5a6bbd1d18cabf5a680e726f0ef8f6dda0105fe8
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/5a6bbd1d18cabf5a680e726f0ef8f6dda0105fe8
+Commit-ID:     dba07ad11384d6a4ece4acda1fbe726222ca7ad0
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/dba07ad11384d6a4ece4acda1fbe726222ca7ad0
 Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Wed, 03 Nov 2021 14:14:53 
+AuthorDate:    Tue, 14 Dec 2021 16:49:04 
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 07 Feb 2022 16:00:41 
+CommitterDate: Mon, 07 Feb 2022 16:00:42 
 
-dt-bindings: arm-pmu: Document Apple PMU compatible strings
+dt-bindings: apple,aic: Add affinity description for per-cpu pseudo-interrupts
 
-As we are about to add support fur the Apple PMUs, document the compatible
-strings associated with the two micro-architectures present in the Apple M1.
+Some of the FIQ per-cpu pseudo-interrupts are better described with
+a specific affinity, the most obvious candidate being the CPU PMUs.
 
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Hector Martin <marcan@marcan.st>
+Augment the AIC binding to be able to specify that affinity in the
+interrupt controller node.
+
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- Documentation/devicetree/bindings/arm/pmu.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/pmu.yaml b/Documentation/devicetree/bindings/arm/pmu.yaml
-index 981bac4..7a04b8a 100644
---- a/Documentation/devicetree/bindings/arm/pmu.yaml
-+++ b/Documentation/devicetree/bindings/arm/pmu.yaml
-@@ -20,6 +20,8 @@ properties:
-     items:
-       - enum:
-           - apm,potenza-pmu
-+          - apple,firestorm-pmu
-+          - apple,icestorm-pmu
-           - arm,armv8-pmuv3 # Only for s/w models
-           - arm,arm1136-pmu
-           - arm,arm1176-pmu
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
+index c7577d4..85c85b6 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
+@@ -70,6 +70,35 @@ properties:
+   power-domains:
+     maxItems: 1
+ 
++  affinities:
++    type: object
++    additionalProperties: false
++    description:
++      FIQ affinity can be expressed as a single "affinities" node,
++      containing a set of sub-nodes, one per FIQ with a non-default
++      affinity.
++    patternProperties:
++      "^.+-affinity$":
++        type: object
++        additionalProperties: false
++        properties:
++          apple,fiq-index:
++            description:
++              The interrupt number specified as a FIQ, and for which
++              the affinity is not the default.
++            $ref: /schemas/types.yaml#/definitions/uint32
++            maximum: 5
++
++          cpus:
++            $ref: /schemas/types.yaml#/definitions/phandle-array
++            description:
++              Should be a list of phandles to CPU nodes (as described in
++              Documentation/devicetree/bindings/arm/cpus.yaml).
++
++        required:
++          - fiq-index
++          - cpus
++
+ required:
+   - compatible
+   - '#interrupt-cells'
