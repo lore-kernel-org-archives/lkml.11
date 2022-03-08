@@ -2,165 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18462C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2996DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347750AbiCHPBz (ORCPT
+        id S1347728AbiCHPDT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
+        Tue, 8 Mar 2022 10:03:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237601AbiCHPBw (ORCPT
+        with ESMTP id S1347778AbiCHPDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:01:52 -0500
-X-Greylist: delayed 87 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 07:00:56 PST
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF522B39;
-        Tue,  8 Mar 2022 07:00:56 -0800 (PST)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nRbK3-0007bV-Mq; Tue, 08 Mar 2022 16:00:23 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nRbK3-0002yZ-7c; Tue, 08 Mar 2022 16:00:23 +0100
-Subject: Re: [PATCH] selftests/bpf: fix array_size.cocci warning
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Guo Zhengkui <guozhengkui@vivo.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Christy Lee <christylee@fb.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
-        <toke@redhat.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Cc:     zhengkui_guo@outlook.com
-References: <20220308091813.28574-1-guozhengkui@vivo.com>
- <cc8cffe8-58ed-27f3-0865-4ac3b2313866@iogearbox.net>
-Message-ID: <b01130f4-0f9c-9fe4-639b-0dcece4ca09a@iogearbox.net>
-Date:   Tue, 8 Mar 2022 16:00:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Tue, 8 Mar 2022 10:03:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F0D4D9C9;
+        Tue,  8 Mar 2022 07:02:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3ABC3B818F0;
+        Tue,  8 Mar 2022 15:02:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053E7C340EF;
+        Tue,  8 Mar 2022 15:02:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646751723;
+        bh=lbiOCENiKzV0l6VKyrVyuJsQgczqHpyQAumIADRX13w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NdcQyOVs9Fby8nijGaLbuWWzj6UwhNyJLRkmo51z74unpAStHy6pXGZLp3zNbr5ec
+         sP4qx+y+f/V1HNQlrGcPR7zsZ9XItIsEGMcgC3HMSMec1FWWPhNTDIJrNzjSdyY0Mu
+         aUN2PGXmZVFPXPwqpM1Oax33cr9UrhBMraDqBLezWSAGqwxMwPkEZ7+TisPMhILuKC
+         9/YQbMay7EEwyWR8PMhI5uxb7zvv9hxK6adoicxlUD8gpypyuoEnb7wD+7CpAFNYWW
+         UqJXF9MPcdI/NsM8dWRVxeABQtV6D5esmBjLnE19FZJEbFbTBWtWKkVfnjqygi+USO
+         YIRiWzEbpqm4Q==
+Date:   Tue, 8 Mar 2022 15:01:57 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     'Lee Jones' <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linus.walleij@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        andi@etezian.org, linux-spi@vger.kernel.org, linux-fsd@tesla.com,
+        'Adithya K V' <adithya.kv@samsung.com>
+Subject: Re: [RESEND PATCH v3 1/2] spi: dt-bindings: samsung: Add fsd spi
+ compatible
+Message-ID: <Yidv5aGB3CljCEWg@sirena.org.uk>
+References: <CGME20220308120701epcas5p3d3d2f5c01055e8c1721ae0ec6c2aa681@epcas5p3.samsung.com>
+ <20220308121640.27344-1-alim.akhtar@samsung.com>
+ <YidY+ncMVhp7bBvh@sirena.org.uk>
+ <Yidg64QGGzIbduQ2@google.com>
+ <YidosChLIwIAKDmG@sirena.org.uk>
+ <010901d832fb$212124f0$63636ed0$@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <cc8cffe8-58ed-27f3-0865-4ac3b2313866@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26475/Tue Mar  8 10:31:43 2022)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jzZHKask1XwDH5wi"
+Content-Disposition: inline
+In-Reply-To: <010901d832fb$212124f0$63636ed0$@samsung.com>
+X-Cookie: Dental health is next to mental health.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 3:59 PM, Daniel Borkmann wrote:
-> On 3/8/22 10:17 AM, Guo Zhengkui wrote:
->> Fix the array_size.cocci warning in tools/testing/selftests/bpf/
->>
->> Use `ARRAY_SIZE(arr)` instead of forms like `sizeof(arr)/sizeof(arr[0])`.
->>
->> syscall.c and test_rdonly_maps.c don't contain header files which
->> implement ARRAY_SIZE() macro. So I add `#include <linux/kernel.h>`,
->> in which ARRAY_SIZE(arr) not only calculates the size of `arr`, but also
->> checks that `arr` is really an array (using __must_be_array(arr)).
->>
->> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> [...]
->> diff --git a/tools/testing/selftests/bpf/progs/syscall.c b/tools/testing/selftests/bpf/progs/syscall.c
->> index e550f728962d..85c6e7849463 100644
->> --- a/tools/testing/selftests/bpf/progs/syscall.c
->> +++ b/tools/testing/selftests/bpf/progs/syscall.c
->> @@ -6,6 +6,7 @@
->>   #include <bpf/bpf_tracing.h>
->>   #include <../../../tools/include/linux/filter.h>
->>   #include <linux/btf.h>
->> +#include <linux/kernel.h>
->>   char _license[] SEC("license") = "GPL";
->> @@ -82,7 +83,7 @@ int bpf_prog(struct args *ctx)
->>       static __u64 value = 34;
->>       static union bpf_attr prog_load_attr = {
->>           .prog_type = BPF_PROG_TYPE_XDP,
->> -        .insn_cnt = sizeof(insns) / sizeof(insns[0]),
->> +        .insn_cnt = ARRAY_SIZE(insns),
->>       };
->>       int ret;
->> diff --git a/tools/testing/selftests/bpf/progs/test_rdonly_maps.c b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
->> index fc8e8a34a3db..ca75aac745a4 100644
->> --- a/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
->> +++ b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
->> @@ -3,6 +3,7 @@
->>   #include <linux/ptrace.h>
->>   #include <linux/bpf.h>
->> +#include <linux/kernel.h>
->>   #include <bpf/bpf_helpers.h>
->>   const struct {
->> @@ -64,7 +65,7 @@ int full_loop(struct pt_regs *ctx)
->>   {
->>       /* prevent compiler to optimize everything out */
->>       unsigned * volatile p = (void *)&rdonly_values.a;
->> -    int i = sizeof(rdonly_values.a) / sizeof(rdonly_values.a[0]);
->> +    int i = ARRAY_SIZE(rdonly_values.a);
->>       unsigned iters = 0, sum = 0;
-> 
-> There's bpf_util.h with ARRAY_SIZE definition which is used in selftests, pls change to
-> reuse that one.
 
-Also, CI failed with your patch:
+--jzZHKask1XwDH5wi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-https://github.com/kernel-patches/bpf/runs/5462211251?check_suite_focus=true
+On Tue, Mar 08, 2022 at 08:15:15PM +0530, Alim Akhtar wrote:
 
-   In file included from progs/test_rdonly_maps.c:6:
-   In file included from /usr/include/linux/kernel.h:5:
-   /usr/include/linux/sysinfo.h:9:2: error: unknown type name '__kernel_long_t'
-           __kernel_long_t uptime;         /* Seconds since boot */
-           ^
-   /usr/include/linux/sysinfo.h:10:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t loads[3];      /* 1, 5, and 15 minute load averages */
-           ^
-   /usr/include/linux/sysinfo.h:11:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t totalram;      /* Total usable main memory size */
-           ^
-   /usr/include/linux/sysinfo.h:12:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t freeram;       /* Available memory size */
-           ^
-   /usr/include/linux/sysinfo.h:13:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t sharedram;     /* Amount of shared memory */
-           ^
-   /usr/include/linux/sysinfo.h:14:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t bufferram;     /* Memory used by buffers */
-           ^
-   /usr/include/linux/sysinfo.h:15:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t totalswap;     /* Total swap space size */
-           ^
-   /usr/include/linux/sysinfo.h:16:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t freeswap;      /* swap space still available */
-           ^
-   /usr/include/linux/sysinfo.h:19:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t totalhigh;     /* Total high memory size */
-           ^
-   /usr/include/linux/sysinfo.h:20:2: error: unknown type name '__kernel_ulong_t'
-           __kernel_ulong_t freehigh;      /* Available high memory size */
-           ^
-   /usr/include/linux/sysinfo.h:22:22: error: use of undeclared identifier '__kernel_ulong_t'
-           char _f[20-2*sizeof(__kernel_ulong_t)-sizeof(__u32)];   /* Padding: libc5 uses this.. */
-                               ^
-   progs/test_rdonly_maps.c:68:10: error: implicit declaration of function 'ARRAY_SIZE' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           int i = ARRAY_SIZE(rdonly_values.a);
-                   ^
-   12 errors generated.
-   make: *** [Makefile:488: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/test_rdonly_maps.o] Error 1
-   make: *** Waiting for unfinished jobs....
-   Error: Process completed with exit code 2.
+> >There were changes adding the FSD SoC as well as DT stuff IIRC.
+
+> FSD SoC DT changes are already in -next.
+> I think this can go with MFD tree because of immutable
+> branch between MFD, SPI and DT due for the v5.18 merge windows.
+> I am not sure if there are better ways to handle this.
+
+I need the changes that are hard dependencies to actually be in my tree
+so my tree is not broken, -next isn't good enough here.  If there are
+dependencies for things you're posting you should explicitly say what
+they are when you post (not just vauge statements that there are
+dependencies), and when you post things that will be dependencies for
+other trees it's good to mention this so that people can think about
+putting them on a separate branch for easier cross merging.
+
+--jzZHKask1XwDH5wi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmInb+QACgkQJNaLcl1U
+h9CDLgf9GwB+d+ke1yyxR+lxSveYjvqXqsOiAoVeXlpr1AE2KMzU72/apoLlE8YJ
+F8gFctTU9Qk9atjp0TWQf6TiovyZVmPtGNcWJT80z2wZHADJvV1TPh63MJOoqdHK
+Yr8aTu5Dv/uMaIVKQvkn/Ds+JD9ssGzR4Okn6SaMJmAMa5Q1rvM/injJPLIWGeUk
+HOxJC4XdX2vgpgMbjcDlNhrhidwlnYsLSdxyUAoNo1ZW82modnuoX++7nBOgsnxf
+p0WjSr462KANi0dH2egxA0wbypxJ6r8/l+qmzcaZv9w2uFvtUPFAXOLc856ynGTZ
+GGyTEzC+9lHlmcTwV3x8vu/Luj4j7w==
+=PZ4j
+-----END PGP SIGNATURE-----
+
+--jzZHKask1XwDH5wi--
