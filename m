@@ -2,106 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1877DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18462C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347739AbiCHPBg (ORCPT
+        id S1347750AbiCHPBz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:01:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
+        Tue, 8 Mar 2022 10:01:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237601AbiCHPBe (ORCPT
+        with ESMTP id S237601AbiCHPBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:01:34 -0500
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6AD4D9C3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:00:37 -0800 (PST)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2dc348dab52so170667897b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 07:00:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bUAHLDNYY/+Ebc3An1BLC3odr9+JTNXOzln9KVkcwC4=;
-        b=Eb3zbDhhDYtoW8uyKUivQ/i8vSSO0MdTyoWQlgp+XfDgA1DqWLekEmlE8HR6tcELtV
-         LKhQMH5CaWrCDEuogqdg/KcWm7SqCb4/Uerj5X5G4U4x84mY0djCafEAZ8y9odXW0C3j
-         KMwd2nUaJBLnmUq+P9Y/1znGiFexfGYSuQWGIlGwm39HDt40d04lo8tH37NHUGLBh2dO
-         U9XLzwZhKJlD7j0So6/5nr4zi+06BGgkdWyaOQSfPLuBjk8gBxKXd3tyfD2pZm37VCg7
-         CF2b0xvJ7xOZdhC0cTOblxzMibi03eU3y5B00LBTHjgaIeSlofyNGbYRxB9DoY+5xsyP
-         Kfiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bUAHLDNYY/+Ebc3An1BLC3odr9+JTNXOzln9KVkcwC4=;
-        b=RrhVx9IzgIu8ZRY3B9VLevylSdCRwtNwl1tXNgQT4aznnT8sbrRvfGBfal31eHO0F9
-         emLObgO6FJG7BZQwuHwrZVdsgUBBSZsm72FhP3tPwYaP3yZ+kC/hHr5c8nmtV2enrEBV
-         Tr2Qrhpls1nv4U+Q+q3hm6y9/hk8NsRSs7Fcu2vIKZE5VVRq7ZVv8N2Ju0sztRex64pG
-         TLe1ZG+Z/EXErg10AG9YQV7hWomlkJeLMDZyBEzSPiko4uKjKYfncLu6PIoXDxPRZJvi
-         RK5iQRBv0rC2z4rQ1FGFT18TUPThcHcSAm2Lhe2P/kyptZ3gi0bR1W94bUY5/9HleKvi
-         SaWw==
-X-Gm-Message-State: AOAM532/bNtU+5zzOHJcLGjlZ/WFBNq1GC9WpUVahcfCxEHA3tC4EShv
-        yENlV612xONMBCuAgVpnniruEGwWIcEV6WKffp+trA==
-X-Google-Smtp-Source: ABdhPJy87nQQG7zs9dOWibvH3Jiaah4Z2Ljz2NusteJs1/GunN3/XSWECuKUwcLUMf1UcKQA14DAjh0lBZy2A+zMl1Y=
-X-Received: by 2002:a0d:e608:0:b0:2dc:1f5d:8c8f with SMTP id
- p8-20020a0de608000000b002dc1f5d8c8fmr13544364ywe.143.1646751636630; Tue, 08
- Mar 2022 07:00:36 -0800 (PST)
+        Tue, 8 Mar 2022 10:01:52 -0500
+X-Greylist: delayed 87 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 07:00:56 PST
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF522B39;
+        Tue,  8 Mar 2022 07:00:56 -0800 (PST)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nRbK3-0007bV-Mq; Tue, 08 Mar 2022 16:00:23 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nRbK3-0002yZ-7c; Tue, 08 Mar 2022 16:00:23 +0100
+Subject: Re: [PATCH] selftests/bpf: fix array_size.cocci warning
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Guo Zhengkui <guozhengkui@vivo.com>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Yucong Sun <sunyucong@gmail.com>,
+        Christy Lee <christylee@fb.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
+        <toke@redhat.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Cc:     zhengkui_guo@outlook.com
+References: <20220308091813.28574-1-guozhengkui@vivo.com>
+ <cc8cffe8-58ed-27f3-0865-4ac3b2313866@iogearbox.net>
+Message-ID: <b01130f4-0f9c-9fe4-639b-0dcece4ca09a@iogearbox.net>
+Date:   Tue, 8 Mar 2022 16:00:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20220307091636.988950823@linuxfoundation.org>
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Tue, 8 Mar 2022 10:00:00 -0500
-Message-ID: <CAG=yYw=v7cN-JCDUtiXRzoVSkAqGQXU1_Y+84jQSXWiNQt=cOg@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/51] 4.19.233-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        torvalds@linux-foundation.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <cc8cffe8-58ed-27f3-0865-4ac3b2313866@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26475/Tue Mar  8 10:31:43 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 4:29 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.19.233 release.
-> There are 51 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.233-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
-hello,
+On 3/8/22 3:59 PM, Daniel Borkmann wrote:
+> On 3/8/22 10:17 AM, Guo Zhengkui wrote:
+>> Fix the array_size.cocci warning in tools/testing/selftests/bpf/
+>>
+>> Use `ARRAY_SIZE(arr)` instead of forms like `sizeof(arr)/sizeof(arr[0])`.
+>>
+>> syscall.c and test_rdonly_maps.c don't contain header files which
+>> implement ARRAY_SIZE() macro. So I add `#include <linux/kernel.h>`,
+>> in which ARRAY_SIZE(arr) not only calculates the size of `arr`, but also
+>> checks that `arr` is really an array (using __must_be_array(arr)).
+>>
+>> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> [...]
+>> diff --git a/tools/testing/selftests/bpf/progs/syscall.c b/tools/testing/selftests/bpf/progs/syscall.c
+>> index e550f728962d..85c6e7849463 100644
+>> --- a/tools/testing/selftests/bpf/progs/syscall.c
+>> +++ b/tools/testing/selftests/bpf/progs/syscall.c
+>> @@ -6,6 +6,7 @@
+>>   #include <bpf/bpf_tracing.h>
+>>   #include <../../../tools/include/linux/filter.h>
+>>   #include <linux/btf.h>
+>> +#include <linux/kernel.h>
+>>   char _license[] SEC("license") = "GPL";
+>> @@ -82,7 +83,7 @@ int bpf_prog(struct args *ctx)
+>>       static __u64 value = 34;
+>>       static union bpf_attr prog_load_attr = {
+>>           .prog_type = BPF_PROG_TYPE_XDP,
+>> -        .insn_cnt = sizeof(insns) / sizeof(insns[0]),
+>> +        .insn_cnt = ARRAY_SIZE(insns),
+>>       };
+>>       int ret;
+>> diff --git a/tools/testing/selftests/bpf/progs/test_rdonly_maps.c b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
+>> index fc8e8a34a3db..ca75aac745a4 100644
+>> --- a/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
+>> +++ b/tools/testing/selftests/bpf/progs/test_rdonly_maps.c
+>> @@ -3,6 +3,7 @@
+>>   #include <linux/ptrace.h>
+>>   #include <linux/bpf.h>
+>> +#include <linux/kernel.h>
+>>   #include <bpf/bpf_helpers.h>
+>>   const struct {
+>> @@ -64,7 +65,7 @@ int full_loop(struct pt_regs *ctx)
+>>   {
+>>       /* prevent compiler to optimize everything out */
+>>       unsigned * volatile p = (void *)&rdonly_values.a;
+>> -    int i = sizeof(rdonly_values.a) / sizeof(rdonly_values.a[0]);
+>> +    int i = ARRAY_SIZE(rdonly_values.a);
+>>       unsigned iters = 0, sum = 0;
+> 
+> There's bpf_util.h with ARRAY_SIZE definition which is used in selftests, pls change to
+> reuse that one.
 
-Compiled and booted  4.19.233-rc1+  on ...
+Also, CI failed with your patch:
 
-Processor Information
-        Socket Designation: FM2
-        Type: Central Processor
-        Family: A-Series
-        Manufacturer: AuthenticAMD
-        ID: 31 0F 61 00 FF FB 8B 17
-        Signature: Family 21, Model 19, Stepping 1
+https://github.com/kernel-patches/bpf/runs/5462211251?check_suite_focus=true
 
-NO new regression or regressions from dmesg.
-
-Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
--- 
-software engineer
-rajagiri school of engineering and technology   -  autonomous
+   In file included from progs/test_rdonly_maps.c:6:
+   In file included from /usr/include/linux/kernel.h:5:
+   /usr/include/linux/sysinfo.h:9:2: error: unknown type name '__kernel_long_t'
+           __kernel_long_t uptime;         /* Seconds since boot */
+           ^
+   /usr/include/linux/sysinfo.h:10:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t loads[3];      /* 1, 5, and 15 minute load averages */
+           ^
+   /usr/include/linux/sysinfo.h:11:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t totalram;      /* Total usable main memory size */
+           ^
+   /usr/include/linux/sysinfo.h:12:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t freeram;       /* Available memory size */
+           ^
+   /usr/include/linux/sysinfo.h:13:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t sharedram;     /* Amount of shared memory */
+           ^
+   /usr/include/linux/sysinfo.h:14:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t bufferram;     /* Memory used by buffers */
+           ^
+   /usr/include/linux/sysinfo.h:15:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t totalswap;     /* Total swap space size */
+           ^
+   /usr/include/linux/sysinfo.h:16:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t freeswap;      /* swap space still available */
+           ^
+   /usr/include/linux/sysinfo.h:19:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t totalhigh;     /* Total high memory size */
+           ^
+   /usr/include/linux/sysinfo.h:20:2: error: unknown type name '__kernel_ulong_t'
+           __kernel_ulong_t freehigh;      /* Available high memory size */
+           ^
+   /usr/include/linux/sysinfo.h:22:22: error: use of undeclared identifier '__kernel_ulong_t'
+           char _f[20-2*sizeof(__kernel_ulong_t)-sizeof(__u32)];   /* Padding: libc5 uses this.. */
+                               ^
+   progs/test_rdonly_maps.c:68:10: error: implicit declaration of function 'ARRAY_SIZE' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           int i = ARRAY_SIZE(rdonly_values.a);
+                   ^
+   12 errors generated.
+   make: *** [Makefile:488: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/test_rdonly_maps.o] Error 1
+   make: *** Waiting for unfinished jobs....
+   Error: Process completed with exit code 2.
