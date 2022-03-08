@@ -2,372 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C15EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345559AbiCHKGF (ORCPT
+        id S1345602AbiCHKGR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:06:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
+        Tue, 8 Mar 2022 05:06:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237481AbiCHKGD (ORCPT
+        with ESMTP id S231400AbiCHKGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:06:03 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03283FDA5
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:05:06 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1nRWi0-00088q-RU; Tue, 08 Mar 2022 11:04:48 +0100
-Message-ID: <74995646cc0e2157d012e148f581d73b6b338e14.camel@pengutronix.de>
-Subject: Re: [PATCH v2 3/7] phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY
- support
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        alexander.stein@ew.tq-group.com
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Tue, 08 Mar 2022 11:04:46 +0100
-In-Reply-To: <1646644054-24421-4-git-send-email-hongxing.zhu@nxp.com>
-References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
-         <1646644054-24421-4-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Tue, 8 Mar 2022 05:06:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66E240919;
+        Tue,  8 Mar 2022 02:05:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646733914; x=1678269914;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=/CuB+cj7wIAwDipqyjRs9f2gsUIjoXrtXDbpqEqnzYM=;
+  b=0VwEs1RZEIx5ydMPJ3DbB4FFiSzCUJG0dXGESVk8UnyyXR5QQ6E24N2f
+   T0A0tJ53pNxHFElShQY2emIOQjS4CwJSn4oWUj7IgerQcHK12Bh9DqIF9
+   dOrYL8xZQaGg5fM7DUXlEmmsk2hvNJ7xQbURdcqWdajxThOOCgEj1dcyB
+   F7304JjC/L5sHdqVU0146/UDKwGZPiQwAqt4U7TosBVNHVK2fbc92u85M
+   PdgbbnMkJyWqc8yxy8DYCahZM9gC72d84/oT/nXYfEmgrkLsqvUBKSBZH
+   CX8AKDkteTsJBhAfy9f0yV4qYImvheuJs4M3e9zr6o/rSkdP0ukg7gNbJ
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,164,1643698800"; 
+   d="scan'208";a="151222886"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 03:05:13 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 03:05:13 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 03:05:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oY4a7uMXWnnHR+Qeo1HcN4kim6VNI79zsLOijPGPcAqU8JJW6hgY7r+bWVvm3F9hCOWMJKRRtLOcZYc+8KQoAw5mQlwMrYTDOkOoD4MJKRxkaH/pIsDsjZIZAmV9UVWmyR1n5/mg7d3c6+g2/5bO5UIuEbCD/s/7JWPDR35yPxapaFtmHyCostcM3lVeTL2B+1jzi0Nx68YkDXA4yDwyMoZD0LWqPPSr2PvvBpu+xZaOWrEH78exkYVBbcHGu6kI3f5n87iayKSNh2OVTvYc1LQC4LWi1NwiORnYFeAYHZ10F4LH7F0rVVvIIk8YizfC4670zJO/AKV7GQjKEixt0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DKjNlqSh67e8kagNslwztgfvYGoWUEI7L/CpdlyBe9s=;
+ b=O3bFbRQcmQP0lTyGjU1DTej3p1uoRM9BBugMra9R2E/A+h9XGSuV9YwRWxdFBUPkQbTRJSda8as9r4GsN8oCIa7IGWgVQo9z+Lds11ZXrG8SSsP/WuzK0mgIYZONVIr2ZmHmFZ1bbpoXzglSxTUPfR910CvYUbpUgLaMGIL/9Q8YgYT5IJqmbvXjuQrsy3QwS/+MKqsNHFOcqovceiAWLWbX9Enxkmsl2x/szyE3nzWE68kmmcyrVJ/rSp9LbSoPE+/kowgxwYmSYPI47TJQL82/kPoOUuGQ5X3k33dFXevDKMMrO0hBCqQUxYwbqE4tQg3XQmRzX3eWAhoC4HGxrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DKjNlqSh67e8kagNslwztgfvYGoWUEI7L/CpdlyBe9s=;
+ b=PMKOD+KTm6S2fjWOOP6zVGpN5QdR3sXJpWE9L+Ou8GVhzXGcT/VzDqfmX4CAcFLKlR9nxKImN8DozEkQcttyu7eXfzFgDspb/tuQnj1P++dvTX5RvqZntv8Vzpto0NmAzsyi9Q1xI7t1IMCsBAJedzqnRUuveD7Di9fH1y4DVIE=
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
+ by BYAPR11MB3656.namprd11.prod.outlook.com (2603:10b6:a03:f8::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Tue, 8 Mar
+ 2022 10:05:08 +0000
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::7861:c716:b171:360]) by CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::7861:c716:b171:360%3]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
+ 10:05:08 +0000
+From:   <Divya.Koppera@microchip.com>
+To:     <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <richardcochran@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>,
+        <Manohar.Puri@microchip.com>
+Subject: RE: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Thread-Topic: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Thread-Index: AQHYL6tdGiDfF8muKUy6jpI4YK/Ta6yvLZmAgAQXZ7CAAKSZAIABWZAA
+Date:   Tue, 8 Mar 2022 10:05:08 +0000
+Message-ID: <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+In-Reply-To: <YiYD2kAFq5EZhU+q@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 125cbc08-396a-4182-06f1-08da00eb2014
+x-ms-traffictypediagnostic: BYAPR11MB3656:EE_
+x-microsoft-antispam-prvs: <BYAPR11MB36566F5B8B7C1E62EEB9C823E2099@BYAPR11MB3656.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GcVBt614fXuK3E3Hlkr6y5xNhhSNygM0+svdIbJ3kYTxtAcOXgvFmLhYgrkPGU4ymF6jK2IAWL0MQ7tiznvTM03bm0mTVzSQQwKZ372bOkqBjV7lVS0ELAcyJBfYhIpepH9VkrwIN0+aQitoAQzDmJFi6D/xcydpwJxW590+MywdmFk1UQNe3z0YIq/CgIHK9i3kvPALY1LrdeitDotP8TuqjwL56ajJ8QlAcdcD14JvDx1/wl8/DBrNGTO0CkEyGDIUbfWuAY1WdAzkiFpRja0j/gsRruqJk8J4b0ic0l8C8HccsSXg89SW5PwgDGYThva9UQw8qqwlzrlI9fbaQcfvLCiOu7zLxQ/Ms51SyvGRtdz6J5zeYLiQde4HJwk76hCHB96o3UjOFuwuFcMl9YxLj461XBCjzLQAa+fiFsC/gBf0dikdAHBQ4lzY8yTxEFifhP6Rulj1n1iXwfZYz1uNkz7i0cmJjM/Y4dyc0nrzbxBdBqRaxY+A3A4k3pL8lLQ+JhJOI0+F+UYyvq5zfBbI8dCCpd+yScqrE3ytcHCoTgnfDHANGS9rKoB7Eh8B+OOvVta/LXWEEwKLoMVhRdfnTxdlNV05BrV+1j0Zh07drGGC5Y7SpufsYfr+5KgMaswyUXTAP2fERzYPGBHd52cgroXjXl1yoDkMARn2VLVRfosGiz+YoiGr4ixZUrcQeWT1ptlh3dg1HeLZVWV/3Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7696005)(38070700005)(6916009)(54906003)(66556008)(76116006)(66946007)(26005)(186003)(122000001)(6506007)(316002)(9686003)(53546011)(71200400001)(8936002)(52536014)(33656002)(38100700002)(83380400001)(86362001)(55016003)(7416002)(4326008)(8676002)(107886003)(64756008)(66446008)(2906002)(66476007)(5660300002)(508600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nCh9TnrvSRvT4ZOWZlsNEaLCHiL5fntzDk4517p9rvL6E1sxa437oopWMUJo?=
+ =?us-ascii?Q?dp0gDkfKl0lN4JbtOoDc0GyIptNHlsJVcTeQ7/F5rlPnRnRABXyNynycLsGk?=
+ =?us-ascii?Q?ERQwPZ+wlnOuDYpsEM492Vu1YC7ftdXj5KStzhpvg4PZ3NAKjPZ4cY4IELdp?=
+ =?us-ascii?Q?dIBVxgaUEL7+yjdlUbcusg9uypnCpj+kW+TiZFEefbWF3xJTN6PA9trwVkop?=
+ =?us-ascii?Q?XR88m3TcLefNiAwRdzKThd2h39omgDkNvhe/e4x9gAJ965Ly4oMnz7VOMxan?=
+ =?us-ascii?Q?LZYTb2WxxM/R4DUZUj9l4hEFUUVLomnGjdDEGhwIuBbEd9qt94YmVSkfa/XA?=
+ =?us-ascii?Q?J1uhkEGUei+GyUxcqYxXnrnWYvkLnY43RPsOSvYIJ4gPVBkn0CeVTB55wZ6Y?=
+ =?us-ascii?Q?zcL1/0bvmb+j5AazLmCCyKiToRL0kAgmeje1g0tHKWt4zn8YVuq70gsRqmQT?=
+ =?us-ascii?Q?5Dmu4quEDGdF3Xt2ZIQca85ve58Is/Tp/M8FKhi6KO5MyHsEnACz5IkrGUuQ?=
+ =?us-ascii?Q?3qUPLCbqDmq1FWWfAZQt2JFCsF10BVDd51Bqf1li15h7bJvNSVioNDWzQYcP?=
+ =?us-ascii?Q?HvIYezysYMBb1bGAOeryvlMTF2xxttbL3Gl7jmbXTNGb5zmM5caMowYi1trF?=
+ =?us-ascii?Q?SfjOtWIJbPvRnzUPMtu/2pANr4yBeQ9u7iA4J/OLh2+VICi8WORoCR2S8pCF?=
+ =?us-ascii?Q?a8Qnm4xdxH9h0f61SYlvkW+eoTvx0Vxki23qZ9vnbAtEiZKrnhu0yFBfZ0lj?=
+ =?us-ascii?Q?0B0MapTFF895mYHeaYvVEAhA9ehaZHO3VI8A+HDz9Lyx2q0fWxKevFtKXOcb?=
+ =?us-ascii?Q?YyhVsxhsbwrjzmSL8HYxCg9YJWh7hMsP/lO+VGzpXpcxuwfOYCUHgGOiCvdP?=
+ =?us-ascii?Q?JwwOICfd4wK3lZ5z7DfSGGeXQaPghwXha1121Y5JUDuEizgkLZALMmx2id3l?=
+ =?us-ascii?Q?jwMSq0ShZJa46UNMuKFzRGGLd2cZa7IfecEIctyzX24RTrd5yZ87AsY/q78X?=
+ =?us-ascii?Q?i2J2IBCFxSa3tzPh/xs6mECRGbJw7sPZHV/qcw7VPVOoJN3PSHNYo1Sfrqn6?=
+ =?us-ascii?Q?E8HGeR1fNWrNLqZm48ul5v7EYLDO47wANiQR2yqT34uTDLy2ItT1JPOIELxS?=
+ =?us-ascii?Q?d4PPwUS7VFUUy2Xz9yLyxW+9L+w59ZQ/H9FvFwfIBQmjwjJgCSxKTNloh9hE?=
+ =?us-ascii?Q?lgY2a5sFvT1ZSOmfFgLymPOjCkkokYhXfXQMDGm1NiAcGcaeJFY3E1IVim+h?=
+ =?us-ascii?Q?EeOCE5C4ZokHpq+7rQbTMrkYJrKZywmn9FQshkrK+9gxL5cjIQPFNN4I2Aqs?=
+ =?us-ascii?Q?AvSf3LuLLOqRAivKcXpd1RgWDYHcfWx17YaIUKC3YcSuCHyJ44VYr/+tPus4?=
+ =?us-ascii?Q?MQ6RXqXXN6+lqKKOxK22VhmcohnHzz4EIl8tv4LrlTbhEjlXZGTiaq670Uda?=
+ =?us-ascii?Q?zO1Ho5VeU3bQpYDxB2Nk9NXJ16LF50ziu2RM2iEW96PXtKPI/XF1c+/6IIBk?=
+ =?us-ascii?Q?TX5a+83zaEC5ReK9wtlFzUTFr0qHhmE3/mgkDdmmZebHjyMbgws36Dw8m/20?=
+ =?us-ascii?Q?OewwhBh64icSTNZV5gh1Y5/A+3rg9GsT4ie/3H3jjTMVLkIrW1PYWICfopfm?=
+ =?us-ascii?Q?znPNoSujs4bYvj/rQeWEtB8tLypdnNCajMvGHJ8ulX84OAf2n5ZVSbrk2yc2?=
+ =?us-ascii?Q?LJptQw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 125cbc08-396a-4182-06f1-08da00eb2014
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2022 10:05:08.0438
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vfM6qDnLKtgjbGvxxqMK3/OjncK6nPAaCBSfL0KlE3pz1k11Ntnb69tPpWqPJY2K7LbU5NvhGDTgihVY6K7nPtAeE7xcJzb4icgkGw8MrP0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3656
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Richard,
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Monday, March 7, 2022 6:39 PM
+> To: Divya Koppera - I30481 <Divya.Koppera@microchip.com>
+> Cc: netdev@vger.kernel.org; hkallweit1@gmail.com; linux@armlinux.org.uk;
+> davem@davemloft.net; kuba@kernel.org; robh+dt@kernel.org;
+> devicetree@vger.kernel.org; richardcochran@gmail.com; linux-
+> kernel@vger.kernel.org; UNGLinuxDriver <UNGLinuxDriver@microchip.com>;
+> Madhuri Sripada - I34878 <Madhuri.Sripada@microchip.com>; Manohar Puri -
+> I30488 <Manohar.Puri@microchip.com>
+> Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure lat=
+ency
+> values and timestamping check for LAN8814 phy
+>=20
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> > > > +
+> > > > + - lan8814,ignore-ts: If present the PHY will not support timestam=
+ping.
+> > > > +
+> > > > +     This option acts as check whether Timestamping is supported b=
+y
+> > > > +     hardware or not. LAN8814 phy support hardware tmestamping.
+> > >
+> > > Does this mean the hardware itself cannot tell you it is missing the
+> > > needed hardware? What happens when you forget to add this flag? Does
+> > > the driver timeout waiting for hardware which does not exists?
+> > >
+> >
+> > If forgot to add this flag, driver will try to register ptp_clock that
+> > needs access to clock related registers, which in turn fails if those r=
+egisters
+> doesn't exists.
+>=20
+> Thanks for the reply, but you did not answer my question:
+>=20
+>   Does this mean the hardware itself cannot tell you it is missing the
+>   needed hardware?
+>=20
+> Don't you have different IDs in register 2 and 3 for those devices with c=
+lock
+> register and those without?
+>=20
 
-Am Montag, dem 07.03.2022 um 17:07 +0800 schrieb Richard Zhu:
-> Add the i.MX8MP PCIe PHY support
-> 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-> ---
->  drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 205 ++++++++++++++++-----
->  1 file changed, 163 insertions(+), 42 deletions(-)
-> 
-> diff --git a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-> index 04b1aafb29f4..3d01da4323a6 100644
-> --- a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-> +++ b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-> @@ -11,6 +11,8 @@
->  #include <linux/mfd/syscon.h>
->  #include <linux/mfd/syscon/imx7-iomuxc-gpr.h>
->  #include <linux/module.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_device.h>
->  #include <linux/phy/phy.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
-> @@ -30,12 +32,10 @@
->  #define IMX8MM_PCIE_PHY_CMN_REG065	0x194
->  #define  ANA_AUX_RX_TERM		(BIT(7) | BIT(4))
->  #define  ANA_AUX_TX_LVL			GENMASK(3, 0)
-> -#define IMX8MM_PCIE_PHY_CMN_REG75	0x1D4
-> -#define  PCIE_PHY_CMN_REG75_PLL_DONE	0x3
-> +#define IMX8MM_PCIE_PHY_CMN_REG075	0x1D4
-> +#define  ANA_PLL_DONE			0x3
->  #define PCIE_PHY_TRSV_REG5		0x414
-> -#define  PCIE_PHY_TRSV_REG5_GEN1_DEEMP	0x2D
->  #define PCIE_PHY_TRSV_REG6		0x418
-> -#define  PCIE_PHY_TRSV_REG6_GEN2_DEEMP	0xF
->  
->  #define IMX8MM_GPR_PCIE_REF_CLK_SEL	GENMASK(25, 24)
->  #define IMX8MM_GPR_PCIE_REF_CLK_PLL	FIELD_PREP(IMX8MM_GPR_PCIE_REF_CLK_SEL, 0x3)
-> @@ -46,16 +46,43 @@
->  #define IMX8MM_GPR_PCIE_SSC_EN		BIT(16)
->  #define IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE	BIT(9)
->  
-> +#define IMX8MP_GPR_REG0			0x0
-> +#define IMX8MP_GPR_CLK_MOD_EN		BIT(0)
-> +#define IMX8MP_GPR_PHY_APB_RST		BIT(4)
-> +#define IMX8MP_GPR_PHY_INIT_RST		BIT(5)
-> +#define IMX8MP_GPR_REG1			0x4
-> +#define IMX8MP_GPR_PM_EN_CORE_CLK	BIT(0)
-> +#define IMX8MP_GPR_PLL_LOCK		BIT(13)
-> +#define IMX8MP_GPR_REG2			0x8
-> +#define IMX8MP_GPR_P_PLL_MASK		GENMASK(5, 0)
-> +#define IMX8MP_GPR_M_PLL_MASK		GENMASK(15, 6)
-> +#define IMX8MP_GPR_S_PLL_MASK		GENMASK(18, 16)
-> +#define IMX8MP_GPR_P_PLL		(0xc << 0)
-> +#define IMX8MP_GPR_M_PLL		(0x320 << 6)
-> +#define IMX8MP_GPR_S_PLL		(0x4 << 16)
-> +#define IMX8MP_GPR_REG3			0xc
-> +#define IMX8MP_GPR_PLL_CKE		BIT(17)
-> +#define IMX8MP_GPR_PLL_RST		BIT(31)
-> +
-> +enum imx8_pcie_phy_type {
-> +	IMX8MM,
-> +	IMX8MP,
-> +};
-> +
->  struct imx8_pcie_phy {
->  	void __iomem		*base;
-> +	struct device		*dev;
->  	struct clk		*clk;
->  	struct phy		*phy;
-> +	struct regmap		*hsio_blk_ctrl;
->  	struct regmap		*iomuxc_gpr;
->  	struct reset_control	*reset;
-> +	struct reset_control	*perst;
->  	u32			refclk_pad_mode;
->  	u32			tx_deemph_gen1;
->  	u32			tx_deemph_gen2;
->  	bool			clkreq_unused;
-> +	enum imx8_pcie_phy_type	variant;
->  };
->  
->  static int imx8_pcie_phy_init(struct phy *phy)
-> @@ -67,6 +94,87 @@ static int imx8_pcie_phy_init(struct phy *phy)
->  	reset_control_assert(imx8_phy->reset);
->  
->  	pad_mode = imx8_phy->refclk_pad_mode;
-> +	switch (imx8_phy->variant) {
-> +	case IMX8MM:
-> +		/* Tune PHY de-emphasis setting to pass PCIe compliance. */
-> +		if (imx8_phy->tx_deemph_gen1)
-> +			writel(imx8_phy->tx_deemph_gen1,
-> +			       imx8_phy->base + PCIE_PHY_TRSV_REG5);
-> +		if (imx8_phy->tx_deemph_gen2)
-> +			writel(imx8_phy->tx_deemph_gen2,
-> +			       imx8_phy->base + PCIE_PHY_TRSV_REG6);
-> +		break;
-> +	case IMX8MP:
-> +		reset_control_assert(imx8_phy->perst);
-> +		/* Set P=12,M=800,S=4 and must set ICP=2'b01. */
-> +		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG2,
-> +				   IMX8MP_GPR_P_PLL_MASK |
-> +				   IMX8MP_GPR_M_PLL_MASK |
-> +				   IMX8MP_GPR_S_PLL_MASK,
-> +				   IMX8MP_GPR_P_PLL |
-> +				   IMX8MP_GPR_M_PLL |
-> +				   IMX8MP_GPR_S_PLL);
-> +		/* wait greater than 1/F_FREF =1/2MHZ=0.5us */
-> +		udelay(1);
-> +
-> +		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG3,
-> +				   IMX8MP_GPR_PLL_RST,
-> +				   IMX8MP_GPR_PLL_RST);
-> +		udelay(10);
-> +
-> +		/* Set 1 to pll_cke of GPR_REG3 */
-> +		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG3,
-> +				   IMX8MP_GPR_PLL_CKE,
-> +				   IMX8MP_GPR_PLL_CKE);
-> +
-> +		/* Lock time should be greater than 300cycle=300*0.5us=150us */
-> +		ret = regmap_read_poll_timeout(imx8_phy->hsio_blk_ctrl,
-> +					     IMX8MP_GPR_REG1, val,
-> +					     val & IMX8MP_GPR_PLL_LOCK,
-> +					     10, 1000);
-> +		if (ret) {
-> +			dev_err(imx8_phy->dev, "PCIe PLL lock timeout\n");
-> +			return ret;
-> +		}
+The purpose of this option is, if both PHY and MAC supports timestamping th=
+en always timestamping is done in PHY.
+If timestamping need to be done in MAC we need a way to stop PHY timestampi=
+ng. If this flag is used then timestamping is taken care by MAC.
 
-As far as I understand the reference manual, this PLL is not exclusive
-to the PCIe core, but can be used as a alternate reference clock for
-the USB PHYs. I think we should not poke the PLL registers from the
-PCIe PHY driver, but should make this PLL a real clock provided by the
-HSIO blk-ctrl.
+> > > > + - lan8814,latency_rx_10: Configures Latency value of phy in
+> > > > + ingress at 10
+> > > Mbps.
+> > > > +
+> > > > + - lan8814,latency_tx_10: Configures Latency value of phy in
+> > > > + egress at 10
+> > > Mbps.
+> > > > +
+> > > > + - lan8814,latency_rx_100: Configures Latency value of phy in
+> > > > + ingress at 100
+> > > Mbps.
+> > > > +
+> > > > + - lan8814,latency_tx_100: Configures Latency value of phy in
+> > > > + egress at 100
+> > > Mbps.
+> > > > +
+> > > > + - lan8814,latency_rx_1000: Configures Latency value of phy in
+> > > > + ingress at
+> > > 1000 Mbps.
+> > > > +
+> > > > + - lan8814,latency_tx_1000: Configures Latency value of phy in
+> > > > + egress at
+> > > 1000 Mbps.
+> > >
+> > > Why does this need to be configured, rather than hard coded? Why
+> > > would the latency for a given speed change? I would of thought
+> > > though you would take the average length of a PTP packet and divide i=
+s by
+> the link speed.
+> > >
+> >
+> > This latency values could be different for different phy's. So hardcodi=
+ng will
+> not work here.
+>=20
+> But you do actually have hard coded defaults. Those odd hex values i poin=
+ted
+> out.
+>=20
+> By different PHYs do you mean different PHY versions? So you can look at
+> register 2 and 3, determine what PHY it is, and so from that what default=
+s
+> should be used? Or do you mean different boards with the same PHY?
+>=20
+> In general, the less tunables you have, the better. If the driver can fig=
+ure it out,
+> it is better to not have DT properties. The PHY will then also work with =
+ACPI
+> and USB etc, where there is no DT. Implementing the user space API Richar=
+d
+> pointed out will also allow your PHY to work with none DP systems.
+>=20
 
-It's probably a good prove of concept for other clocks that need to be
-provided by the blk-ctrls, as the audio blk-ctrl has much more of this
-secondary clock controller functionality.
+Sorry I answered wrong. Latency values vary depending on the position of PH=
+Y in board.=20
+We have used this PHY in different hardware's, where latency values differs=
+ based on PHY positioning.=20
+So we used latency option in DTS file.
+If you have other ideas or I'm wrong please let me know?
 
-Do you want to give it a shot at integrating this into the blk-ctrl
-driver, or should I take a look?
+> > Yes in our case latency values depends on port speed. It is delay
+> > between network medium and PTP timestamp point.
+>=20
+> What are the units. You generally have the units in the property name. So=
+ e.g.
+> lan8814,latency_tx_1000_ns. If need be, the driver then converts to whate=
+ver
+> value you place into the register.
+>=20
+> If you do keep them, please make it clear that these values are optional,=
+ and
+> state what value will be used when the property is not present.
+>=20
 
-Regards,
-Lucas
+Yes units are Nanoseconds.
 
-> +
-> +		/* pcie_clock_module_en */
-> +		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG0,
-> +				   IMX8MP_GPR_CLK_MOD_EN,
-> +				   IMX8MP_GPR_CLK_MOD_EN);
-> +		udelay(10);
-> +
-> +		reset_control_deassert(imx8_phy->reset);
-> +		reset_control_deassert(imx8_phy->perst);
-> +
-> +		/* release pcie_phy_apb_reset and pcie_phy_init_resetn */
-> +		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG0,
-> +				   IMX8MP_GPR_PHY_APB_RST |
-> +				   IMX8MP_GPR_PHY_INIT_RST,
-> +				   IMX8MP_GPR_PHY_APB_RST |
-> +				   IMX8MP_GPR_PHY_INIT_RST);
-> +		break;
-> +	}
-> +
-> +	if (pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT) {
-> +		/* Configure the pad as input */
-> +		val = readl(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> +		writel(val & ~ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> +	} else if (pad_mode == IMX8_PCIE_REFCLK_PAD_OUTPUT) {
-> +		/* Configure the PHY to output the refclock via pad */
-> +		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> +		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_SEL,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG062);
-> +		writel(AUX_PLL_REFCLK_SEL_SYS_PLL,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG063);
-> +		val = ANA_AUX_RX_TX_SEL_TX | ANA_AUX_TX_TERM;
-> +		writel(val | ANA_AUX_RX_TERM_GND_EN,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG064);
-> +		writel(ANA_AUX_RX_TERM | ANA_AUX_TX_LVL,
-> +		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG065);
-> +	}
-> +
->  	/* Set AUX_EN_OVERRIDE 1'b0, when the CLKREQ# isn't hooked */
->  	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
->  			   IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE,
-> @@ -91,42 +199,30 @@ static int imx8_pcie_phy_init(struct phy *phy)
->  	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
->  			   IMX8MM_GPR_PCIE_CMN_RST,
->  			   IMX8MM_GPR_PCIE_CMN_RST);
-> -	usleep_range(200, 500);
->  
-> -	if (pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT) {
-> -		/* Configure the pad as input */
-> -		val = readl(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> -		writel(val & ~ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> -	} else if (pad_mode == IMX8_PCIE_REFCLK_PAD_OUTPUT) {
-> -		/* Configure the PHY to output the refclock via pad */
-> -		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_EN,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG061);
-> -		writel(ANA_PLL_CLK_OUT_TO_EXT_IO_SEL,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG062);
-> -		writel(AUX_PLL_REFCLK_SEL_SYS_PLL,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG063);
-> -		val = ANA_AUX_RX_TX_SEL_TX | ANA_AUX_TX_TERM;
-> -		writel(val | ANA_AUX_RX_TERM_GND_EN,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG064);
-> -		writel(ANA_AUX_RX_TERM | ANA_AUX_TX_LVL,
-> -		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG065);
-> +	switch (imx8_phy->variant) {
-> +	case IMX8MM:
-> +		reset_control_deassert(imx8_phy->reset);
-> +		usleep_range(200, 500);
-> +		break;
-> +
-> +	case IMX8MP:
-> +		/* wait for core_clk enabled */
-> +		ret = regmap_read_poll_timeout(imx8_phy->hsio_blk_ctrl,
-> +					     IMX8MP_GPR_REG1, val,
-> +					     val & IMX8MP_GPR_PM_EN_CORE_CLK,
-> +					     10, 20000);
-> +		if (ret) {
-> +			dev_err(imx8_phy->dev, "PCIe CORE CLK enable failed\n");
-> +			return ret;
-> +		}
-> +
-> +		break;
->  	}
->  
-> -	/* Tune PHY de-emphasis setting to pass PCIe compliance. */
-> -	if (imx8_phy->tx_deemph_gen1)
-> -		writel(imx8_phy->tx_deemph_gen1,
-> -		       imx8_phy->base + PCIE_PHY_TRSV_REG5);
-> -	if (imx8_phy->tx_deemph_gen2)
-> -		writel(imx8_phy->tx_deemph_gen2,
-> -		       imx8_phy->base + PCIE_PHY_TRSV_REG6);
-> -
-> -	reset_control_deassert(imx8_phy->reset);
-> -
->  	/* Polling to check the phy is ready or not. */
-> -	ret = readl_poll_timeout(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG75,
-> -				 val, val == PCIE_PHY_CMN_REG75_PLL_DONE,
-> -				 10, 20000);
-> +	ret = readl_poll_timeout(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG075,
-> +				 val, val == ANA_PLL_DONE, 10, 20000);
->  	return ret;
->  }
->  
-> @@ -153,18 +249,33 @@ static const struct phy_ops imx8_pcie_phy_ops = {
->  	.owner		= THIS_MODULE,
->  };
->  
-> +static const struct of_device_id imx8_pcie_phy_of_match[] = {
-> +	{.compatible = "fsl,imx8mm-pcie-phy", .data = (void *)IMX8MM},
-> +	{.compatible = "fsl,imx8mp-pcie-phy", .data = (void *)IMX8MP},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, imx8_pcie_phy_of_match);
-> +
->  static int imx8_pcie_phy_probe(struct platform_device *pdev)
->  {
->  	struct phy_provider *phy_provider;
->  	struct device *dev = &pdev->dev;
-> +	const struct of_device_id *of_id;
->  	struct device_node *np = dev->of_node;
->  	struct imx8_pcie_phy *imx8_phy;
->  	struct resource *res;
->  
-> +	of_id = of_match_device(imx8_pcie_phy_of_match, dev);
-> +	if (!of_id)
-> +		return -EINVAL;
-> +
->  	imx8_phy = devm_kzalloc(dev, sizeof(*imx8_phy), GFP_KERNEL);
->  	if (!imx8_phy)
->  		return -ENOMEM;
->  
-> +	imx8_phy->dev = dev;
-> +	imx8_phy->variant = (enum imx8_pcie_phy_type)of_id->data;
-> +
->  	/* get PHY refclk pad mode */
->  	of_property_read_u32(np, "fsl,refclk-pad-mode",
->  			     &imx8_phy->refclk_pad_mode);
-> @@ -201,6 +312,22 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
->  		dev_err(dev, "Failed to get PCIEPHY reset control\n");
->  		return PTR_ERR(imx8_phy->reset);
->  	}
-> +	if (imx8_phy->variant == IMX8MP) {
-> +		/* Grab HSIO MIX config register range */
-> +		imx8_phy->hsio_blk_ctrl =
-> +			 syscon_regmap_lookup_by_compatible("fsl,imx8mp-hsio-blk-ctrl");
-> +		if (IS_ERR(imx8_phy->hsio_blk_ctrl)) {
-> +			dev_err(dev, "unable to find hsio mix registers\n");
-> +			return PTR_ERR(imx8_phy->hsio_blk_ctrl);
-> +		}
-> +
-> +		imx8_phy->perst =
-> +			devm_reset_control_get_exclusive(dev, "perst");
-> +		if (IS_ERR(imx8_phy->perst)) {
-> +			dev_err(dev, "Failed to get PCIEPHY perst control\n");
-> +			return PTR_ERR(imx8_phy->perst);
-> +		}
-> +	}
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	imx8_phy->base = devm_ioremap_resource(dev, res);
-> @@ -218,12 +345,6 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
->  	return PTR_ERR_OR_ZERO(phy_provider);
->  }
->  
-> -static const struct of_device_id imx8_pcie_phy_of_match[] = {
-> -	{.compatible = "fsl,imx8mm-pcie-phy",},
-> -	{ },
-> -};
-> -MODULE_DEVICE_TABLE(of, imx8_pcie_phy_of_match);
-> -
->  static struct platform_driver imx8_pcie_phy_driver = {
->  	.probe	= imx8_pcie_phy_probe,
->  	.driver = {
-
-
+>         Andrew
