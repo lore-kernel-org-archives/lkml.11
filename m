@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346791AbiCHMXs (ORCPT
+        id S1346697AbiCHMYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:23:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
+        Tue, 8 Mar 2022 07:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240581AbiCHMXq (ORCPT
+        with ESMTP id S1346785AbiCHMXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:23:46 -0500
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A193939B8D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:22:50 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id f38so37419457ybi.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 04:22:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t74z3Ledcqn/BjWg4UYz5jIdch9UIZsmQgsmq8I4viE=;
-        b=rOteJ3tCwmeSpilhF/Dqlni5/TYQs+OS2AgxTmeaoqKCkYKo2LCFvRMx0v9/BSlas2
-         0mCCTgv+me8Ujd0OnnGludU1xmtnSTEkDNGbMhzD2mbYWJaCo1gBrSP5UXMzrO8h4953
-         lSvuXfwnvMcfCwAgj3Y0ESuhsonOEQNROfo26L6QaZ5eKCPfpmNeL5HJjKccP9use3hc
-         g7ufy2NSPTRIuHDUTB96HuNbmTXrdlyc5ZHIaPP4XHGsHBAOUqhEa3etBOchVzSvCDeF
-         OL0i2P0YQoff6WQtCrpNhKqQt5WOF0/6RaJfztknhVOVezHUZzEsL83eF74B7EeXs4rt
-         taEg==
-X-Gm-Message-State: AOAM533sM8UL3N5x0nhxkQqFH04Ou3jU6iquCPxtmCbVTNRdXrhKhepk
-        wn//uSyG8D8z+AP3HixD/74MVyuvNBspT9joh8g=
-X-Google-Smtp-Source: ABdhPJzjpjQgtJmWlHSSqgciN5yInmcVjGdlPUmkfq4OpPtACKidNlJoNnvF5OuTeCy5cbkCZDuDRmWBDB5ikjDkoDc=
-X-Received: by 2002:a25:d2d0:0:b0:628:7d69:b598 with SMTP id
- j199-20020a25d2d0000000b006287d69b598mr12215707ybg.381.1646742169835; Tue, 08
- Mar 2022 04:22:49 -0800 (PST)
+        Tue, 8 Mar 2022 07:23:50 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BDD3A5D4;
+        Tue,  8 Mar 2022 04:22:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646742173; x=1678278173;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1t2XizitfaB4uMPTTPoQH/R4rBfgRMQMND9uM6rWnHc=;
+  b=naEmr/76iul9yOsCW7wuj4uOKfeoOlGNacDQgsTEINfrouvqEqwgC87z
+   5ipRNYzOg4PQcW8Djqal/IllHtrrEJnYuJIyKXzrfWwWjg200hkYRApss
+   WrgLlIyRTGY4IiMvFoAYHQw6Bv0+1SPpMdfhkRA44TYBL8kUdOV91uGOn
+   4cEJzuXg27WGZQkdr0ddr7fKMuEuA7SIzhx38K8iLr8pNldtG5yiFSb3/
+   KbHco50hUOSN5vQQNxkIqNkyBh/FwIcabzGuOG65iqdnxMBuLibrjj8+b
+   H53XXqLZ8YddFmmsHsEHtvVPop82VX4LrOcGlnyumwU0f8axZEgQHcmM0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="279384013"
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="279384013"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:22:53 -0800
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="632215878"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:22:50 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nRYqs-00DLqR-NQ;
+        Tue, 08 Mar 2022 14:22:06 +0200
+Date:   Tue, 8 Mar 2022 14:22:06 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Subject: Re: [PATCH v3 1/1] device property: Allow error pointer to be passed
+ to fwnode APIs
+Message-ID: <YidKbrRq16NV+zNl@smile.fi.intel.com>
+References: <20220307202949.75300-1-andriy.shevchenko@linux.intel.com>
+ <Yic6yr6aycu7IHHh@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-References: <20220304124416.1181029-1-mailhol.vincent@wanadoo.fr>
- <CAHp75VeT3LbdbSaiwcC2YW40LnA2h8ADtGva-CKU_xh8Edi0nw@mail.gmail.com>
- <20220307105810.1747024-1-alexandr.lobakin@intel.com> <CAHp75Vcht_T5kUJu5zjmsUvn+mN+8D5vWBUvRXKTfo+2ocHOTg@mail.gmail.com>
- <CAMZ6RqK=yxLwVnotZuGRiao4Vu4eFEfVXfPaZV1r4rEOmQARig@mail.gmail.com> <CAHp75VfS0wSB+5dXHvoYfQqe0qEW0dOXGChunqu7PX0BZ4orMA@mail.gmail.com>
-In-Reply-To: <CAHp75VfS0wSB+5dXHvoYfQqe0qEW0dOXGChunqu7PX0BZ4orMA@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 8 Mar 2022 21:22:38 +0900
-Message-ID: <CAMZ6Rq+Esmr4s6eTQPwEX3hjhCDTVgt-wDU=zTaE8gJxBZHg2g@mail.gmail.com>
-Subject: Re: [PATCH] linux/bits.h: fix -Wtype-limits warnings in GENMASK_INPUT_CHECK()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yic6yr6aycu7IHHh@paasikivi.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue. 8 Mar 2022 at 01:33, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> On Mon, Mar 7, 2022 at 4:06 PM Vincent MAILHOL
-> <mailhol.vincent@wanadoo.fr> wrote:
-> > On Mon. 7 Mar 2022 at 22:40, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > > On Mon, Mar 7, 2022 at 1:00 PM Alexander Lobakin
-> > > <alexandr.lobakin@intel.com> wrote:
-> > > > From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > > Date: Fri, 4 Mar 2022 20:46:08 +0200
-> > > > > On Fri, Mar 4, 2022 at 7:36 PM Vincent Mailhol
-> > > > > <mailhol.vincent@wanadoo.fr> wrote:
->
-> ...
->
-> > > > > Have you fixed W=1 warnings?
-> > > > > Without fixing W=1 (which makes much more sense, when used with
-> > > > > WERROR=y && COMPILE_TEST=y) this has no value.
-> > > >
-> > > > How is this connected?
-> > >
-> > > By priorities.
-> > > I don't see much value in fixing W=2 per se if the code doesn't compile for W=1.
-> >
-> > *My code* compiles for W=1. For me, fixing this W=2 in the next in line
-> > if speaking of priorities.
->
-> > I do not understand why I should be forbidden to fix a W=2 in the
-> > file which I am maintaining on the grounds that some code to which
-> > I do not care still has some W=1.
->
-> It's not forbidden. I said something different.
->
-> Whatever, thank you for doing it, perhaps we will have less noise in W=2 case.
+On Tue, Mar 08, 2022 at 01:15:22PM +0200, Sakari Ailus wrote:
+> Hi Andy,
+> 
+> This makes secondary handling quite a big nicer, thanks!
 
-Great! So does it mean you are withdrawing your NAK?
-Or do you still have concern on the patch itself?
+You are welcome!
+
+> A few comments below. Apart from that,
+> 
+> Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+
+Thanks!
+
+...
+
+> On Mon, Mar 07, 2022 at 10:29:49PM +0200, Andy Shevchenko wrote:
+
+> >  #include <linux/acpi.h>
+> >  #include <linux/export.h>
+> > +#include <linux/fwnode.h>
+> 
+> Is this intended? linux/property.h already includes linux/fwnode.h.
+> 
+> >  #include <linux/kernel.h>
+> >  #include <linux/of.h>
+> >  #include <linux/of_address.h>
+
+Yeah, this is a bit messy in the headers. I will drop the inclusion,
+but in the future it would be good to reshuffle property.h, fwnode.h,
+and perhaps extract swnode.h.
+
+...
+
+> >  	bool ret;
+> >  
+> > +	if (IS_ERR_OR_NULL(fwnode))
+> > +		return false;
+
+> > +	if (ret == true)
+> 
+> It's already bool. I'd instead use:
+> 
+> 	if (ret)
+
+Right, will amend this.
+
+> > +		return ret;
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Yours sincerely,
-Vincent Mailhol
