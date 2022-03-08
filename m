@@ -2,140 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A403C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD223C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350540AbiCHVuf (ORCPT
+        id S1350560AbiCHVuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        Tue, 8 Mar 2022 16:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiCHVud (ORCPT
+        with ESMTP id S1350539AbiCHVue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:50:33 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F837F69
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:34 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id o23so253880pgk.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 13:49:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UvxhNuo1pWdGPwLc6pa1lU2igYRccw9Zy2lYHKm+tqE=;
-        b=j3BGSMMz077x39VXI5WDuz3dGrSNFzeWRbnGPrs2GZisCmwxX9g0KzulKe1XNjsdch
-         DNc1a0DMv+yuJBSmE/+3xjeVF6tB1II9fDiI2//2HE2XHm686I1b0MtOirbUcqSfj0wL
-         xhGHDCHOBY5aSxDB2n47oB9IvUh1AhDK91068=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UvxhNuo1pWdGPwLc6pa1lU2igYRccw9Zy2lYHKm+tqE=;
-        b=SR+tFp+2hwAEGhjvyW5prXJyHLrAden5E07YbWlTsOUPHTTGHLntfTvbu4W+c4IGuR
-         +9pKj3dWEujKiUETK9F5Qy5ZzL93YqzPpFlYEOvLIsHr/DObJCDkcItvDp0q6i6pVDCl
-         NstI8MiOIoo+rf94i/vDIKqn7/etwwWrfVfAhN+Vz/aQgFQAECter0Xzlh8Q73rRUYhX
-         J8iyv7QBgwHAT44r/lsJ/Azl87xE1Tb+1eGpBm9eVQ1rH1Grh/Q9BwzXakugV9MO1aUC
-         wRxPl0/luIFS22gL1G8I5mt8JlHGH5KcrfVrP7pWMSuXgDKwFQucoa6Gtgjj2vQfrBCM
-         ICug==
-X-Gm-Message-State: AOAM5324nRhmPu8U5Jtdnwyhp+MnSayUNaXzXrwC+j6L15MsR3WVUoWx
-        YeZudMILgLof7kUKMDH3hAKAgQ==
-X-Google-Smtp-Source: ABdhPJyVVvRyodq7F3sMaUkYdwCNFcxDicKQF/KDk5+fJ3EqXw9JtUH3m/BtiPyz2eanpjv6m7yKaw==
-X-Received: by 2002:a63:8bc4:0:b0:380:af7d:4c7a with SMTP id j187-20020a638bc4000000b00380af7d4c7amr1155825pge.162.1646776173626;
-        Tue, 08 Mar 2022 13:49:33 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d10-20020a056a00198a00b004f72d2c024asm18620pfl.185.2022.03.08.13.49.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 13:49:33 -0800 (PST)
-Date:   Tue, 8 Mar 2022 13:49:32 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <liam.howlett@oracle.com>,
-        Jann Horn <jannh@google.com>, linux-mm@kvack.org
-Subject: Re: [GIT PULL] Fix fill_files_note
-Message-ID: <202203081342.1924AD9@keescook>
-References: <20220131153740.2396974-1-willy@infradead.org>
- <871r0nriy4.fsf@email.froward.int.ebiederm.org>
- <YfgKw5z2uswzMVRQ@casper.infradead.org>
- <877dafq3bw.fsf@email.froward.int.ebiederm.org>
- <YfgPwPvopO1aqcVC@casper.infradead.org>
- <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
- <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
- <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
+        Tue, 8 Mar 2022 16:50:34 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03A7F69
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646776177; x=1678312177;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FUHaFuSppdI2xKFFM4X2S0hnE5v8/SFqnGBliyZhmr4=;
+  b=oCFBHzXEeAeq9/uq7eTiM0lRT8694cdoLqbLJvqLzFxXBIGxjJgj4br4
+   s3knIARTFVu4x8ZuYtSRfHYOMZs1ooRPFVrE2Am8q6c3d5M7nfl/7182I
+   7+J+LhDytLeFLboj/XKyo7YmujQxkJVBUTgafK6y4dKJeF/cLsMDNDrIN
+   otl3E+g0NwHMlpqbxNiqWnb6NaaBYcMKG6pkiskxVEzSJaXMxq7Iczlr5
+   zeQhfunUxsYxOWV1f0Y+4zmVJMQzASPdRdAr5j3cq0mmjpSx2Nj1gaXg7
+   wHLSoh4RAuqIq/USBTXPhTC/pdtKZdlTKTkTVp77knmmwUGp+f8oVaVa3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553224"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="254553224"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:37 -0800
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="495612823"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.239.204])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:37 -0800
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mcgrof@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
+        hao.wu@intel.com, matthew.gerlach@intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [PATCH v1 0/8] Extend FW framework for user FW uploads
+Date:   Tue,  8 Mar 2022 13:49:24 -0800
+Message-Id: <20220308214932.24477-1-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 01:35:03PM -0600, Eric W. Biederman wrote:
-> 
-> Kees,
-> 
-> Please pull the coredump-vma-snapshot-fix branch from the git tree:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
-> 
->   HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
-> 
-> Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
-> which could cause trouble.
-> 
-> Refactor the code and clean it up so that the vma snapshot makes
-> it to fill_files_note, and then use the vma snapshot in fill_files_note.
-> 
-> Eric W. Biederman (5):
->       coredump: Move definition of struct coredump_params into coredump.h
->       coredump: Snapshot the vmas in do_coredump
->       coredump: Remove the WARN_ON in dump_vma_snapshot
->       coredump/elf: Pass coredump_params into fill_note_info
->       coredump: Use the vma snapshot in fill_files_note
-> 
->  fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
->  fs/binfmt_elf_fdpic.c    | 18 +++++--------
->  fs/binfmt_flat.c         |  1 +
->  fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
->  include/linux/binfmts.h  | 13 +---------
->  include/linux/coredump.h | 20 ++++++++++++---
->  6 files changed, 93 insertions(+), 84 deletions(-)
-> 
-> ---
-> 
-> Kees I realized I needed to rebase this on Jann Horn's commit
-> 84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
-> libraries").  Unfortunately before I got that done I got distracted and
-> these changes have been sitting in limbo for most of the development
-> cycle.  Since you are running a tree that is including changes like this
-> including Jann's can you please pull these changes into your tree.
+Extend the firmware loader subsystem to support a persistent sysfs
+interface that userspace may use to initiate a firmware update. For
+example, FPGA based PCIe cards automatically load firmware and FPGA images
+from local FLASH when the card boots. The images in FLASH may be updated
+with new images that are uploaded by the user.
 
-Sure! Can you make a signed tag for this pull?
+A device driver may call firmware_upload_register() to expose persistent
+"loading" and "data" sysfs files at /sys/class/firmare/<NAME>/*. These
+files are used in the same way as the fallback sysfs "loading" and "data"
+files. However, when 0 is written to "loading" to complete the write of
+firmware data, the data is also transferred to the lower-level driver
+using pre-registered call-back functions. The data transfer is done in
+the context of a kernel worker thread.
+
+Additional sysfs nodes are added in the same location as "loading" and
+"data" to monitor the transfer of the image data to the device using
+callback functions provided by the lower-level device driver and to allow
+the data transfer to be cancelled.
+
+Example usage:
+
+$ pwd
+/sys/class/firmware/n3000bmc-sec-update.8
+$ ls
+cancel  device  loading  remaining_size  subsystem
+data    error   power    status          uevent
+$ echo 1 > loading
+$ cat /tmp/firmware.bin > data
+$ echo 0 > loading
+$ while :; do cat status; cat remaining_size ; sleep 3; done
+preparing
+44590080
+<--snip-->
+transferring
+44459008
+transferring
+44311552
+<--snip-->
+transferring
+173056
+<--snip-->
+programming
+0
+<--snip-->
+idle
+0
+^C
+$ cat error
+
+The first two patches in this set make minor changes to enable the
+fw_priv data structure and the sysfs interfaces to be used multiple times
+during the existence of the device driver instance. The third patch is
+mostly a reorganization of existing code in preparation for sharing common
+code with the firmware-upload support. The fourth and fifth patches provide
+the code for user-initiated firmware uploads. The final 3 patches extend
+selftest support to test firmware-upload functionality.
 
 
-If it helps, my workflow look like this, though I assume there might be
-better ways. (tl;dr: "git tag -s TAG BRANCH")
+Changelog RFC -> v1:
+  - Renamed files fw_sysfs.c and fw_sysfs.h to sysfs.c and sysfs.h
+  - Moved "MODULE_IMPORT_NS(FIRMWARE_LOADER_PRIVATE);" from sysfs.c to
+    sysfs.h to address an error identified by the kernel test robot
+    <lkp@intel.com>
+  - renamed fw_upload_register() and fw_upload_unregister() to
+    firmware_upload_register() and fw_upload_unregister().
+  - Moved ifdef'd section of code out of firmware_loading_store() in sysfs.c
+    into a new function, fw_upload_start(), in sysfs_upload.c.
+  - Changed #defines to enums for error codes and progress states
+  - Added additional kernel-doc supported symbols into the documentation.
+    Some rewording in documentation as well.
+  - Added module reference counting for the parent module in the
+    firmware_upload_register() and firmware_upload_unregister() functions
+    to fix problems found when testing with test_firmware module.
+  - Removed unnecessary module reference counting for THIS_MODULE.
+  - Added a new patch to modify the test_firmware module to support
+    testing of the firmware upload mechanism.
+  - Added a new patch to modify the test_firmware module to support
+    error injection for firmware upload.
+  - Added a new patch to extend the existing firmware selftests to cover
+    firmware upload.
 
+Russ Weight (8):
+  firmware_loader: Clear data and size in fw_free_paged_buf
+  firmware_loader: Check fw_state_is_done in loading_store
+  firmware_loader: Split sysfs support from fallback
+  firmware_loader: Add firmware-upload support
+  firmware_loader: Add sysfs nodes to monitor fw_upload
+  test_firmware: Add test support for firmware upload
+  test_firmware: Error injection for firmware upload
+  selftests: firmware: Add firmware upload selftests
 
-PULL_BRANCH=name-of-branch
-BASE=sha-of-base
-FOR=someone
-TOPIC=topic-name
-
-TAG="for-$FOR/$TOPIC"
-SIGNED=~/.pull-request-signed-"$TAG"
-echo "$TOPIC update" > "$SIGNED"
-git request-pull "$BASE" git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git "$PULL_BRANCH" | awk '{print "# " $0}' >> "$SIGNED"
-vi "$SIGNED"
-
-git tag -sF "$SIGNED" "$TAG" "$PULL_BRANCH"
-git push origin "$PULL_BRANCH"
-git push origin +"$TAG"
-
+ .../ABI/testing/sysfs-class-firmware          |  77 ++++
+ .../driver-api/firmware/fw_upload.rst         | 117 +++++
+ Documentation/driver-api/firmware/index.rst   |   1 +
+ drivers/base/firmware_loader/Kconfig          |  18 +
+ drivers/base/firmware_loader/Makefile         |   2 +
+ drivers/base/firmware_loader/fallback.c       | 430 -----------------
+ drivers/base/firmware_loader/fallback.h       |  46 +-
+ drivers/base/firmware_loader/firmware.h       |  11 +
+ drivers/base/firmware_loader/main.c           |  18 +-
+ drivers/base/firmware_loader/sysfs.c          | 435 ++++++++++++++++++
+ drivers/base/firmware_loader/sysfs.h          | 100 ++++
+ drivers/base/firmware_loader/sysfs_upload.c   | 396 ++++++++++++++++
+ drivers/base/firmware_loader/sysfs_upload.h   |  47 ++
+ include/linux/firmware.h                      |  82 ++++
+ lib/test_firmware.c                           | 378 +++++++++++++++
+ tools/testing/selftests/firmware/Makefile     |   2 +-
+ tools/testing/selftests/firmware/config       |   1 +
+ tools/testing/selftests/firmware/fw_lib.sh    |   7 +
+ .../selftests/firmware/fw_run_tests.sh        |   4 +
+ tools/testing/selftests/firmware/fw_upload.sh | 214 +++++++++
+ 20 files changed, 1900 insertions(+), 486 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-firmware
+ create mode 100644 Documentation/driver-api/firmware/fw_upload.rst
+ create mode 100644 drivers/base/firmware_loader/sysfs.c
+ create mode 100644 drivers/base/firmware_loader/sysfs.h
+ create mode 100644 drivers/base/firmware_loader/sysfs_upload.c
+ create mode 100644 drivers/base/firmware_loader/sysfs_upload.h
+ create mode 100755 tools/testing/selftests/firmware/fw_upload.sh
 
 -- 
-Kees Cook
+2.25.1
+
