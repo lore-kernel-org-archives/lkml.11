@@ -2,233 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F148C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348747AbiCHRS6 (ORCPT
+        id S1348756AbiCHRTB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:18:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        Tue, 8 Mar 2022 12:19:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348734AbiCHRSw (ORCPT
+        with ESMTP id S1348744AbiCHRS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:18:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F08817053
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:17:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646759874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XS0ZDRJdbTaFXTIodebwWZ2Zs2A9XDPYU7p1D6O1mf0=;
-        b=dIjGTYSRPyf8AKazEXlpGRVbebGC4btXDfmoHeC6Jbfb4GwJKy6OTd0MbJrNk3IXt7ZHIN
-        t6hK+yMw9CuSIWM0adhzdFOofgGPMwX9hSfJ1P7dS+utshUS0kBaXTWP2CZLf12kIfbtQE
-        Fgh4bVS8xZ6RSnA9G1ApWvI7QHwsKeY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-148-YHx9v0s-NVmKU9F6HMFiSg-1; Tue, 08 Mar 2022 12:17:53 -0500
-X-MC-Unique: YHx9v0s-NVmKU9F6HMFiSg-1
-Received: by mail-wr1-f69.google.com with SMTP id e6-20020a5d4e86000000b001f045d4a962so5495222wru.21
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:17:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=XS0ZDRJdbTaFXTIodebwWZ2Zs2A9XDPYU7p1D6O1mf0=;
-        b=D20inkbfEPXqGVc4tL9m1raz2Ip0pP87P/EMOeOQPiduLJA21a0iLXBt35El7ljf7v
-         muUAtSmcAJnIAmEWEBGRlhWG5G8sDYWabbHxfvJVEmbr5q4ufnb9/i4HAG0OK8L3A1v9
-         wIZv5VZ7ipik+xRoIJzGk/+VgLE+R/Savhe5SNuBeaB5ODyo0vvZfn+eMSMzlVUnQlpF
-         DOqPJYWsWAKaC+1mIP6Nq2oEq9Vo0f44/7dfgF/Ubavt7e7VQqUweOiccSkSzd39GQsO
-         dth4GSpp3aPDYGtG0i6gwVyJubH309wEClbVU9E3kN45dennZ48GDBZ3iZlRRJl6fmGW
-         wicw==
-X-Gm-Message-State: AOAM531PlBbjnIiVmHky70tc8xJumWO3V70+99Uplst66jkB26a73iu8
-        Radj2JaPkmwEwITgLjmddNeMII6wwGlyuQ3A/NW0Nqf9kDbiBmXWzB1u7AU2qh719f8NLb+1u6E
-        PuxibHrbYtI7xDYWW6bgkmGK1
-X-Received: by 2002:a5d:6d88:0:b0:1e3:37c1:3633 with SMTP id l8-20020a5d6d88000000b001e337c13633mr13694519wrs.484.1646759870732;
-        Tue, 08 Mar 2022 09:17:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzaK2eVHRi2q7VHFxDpXED+f3vKvPZuHUTcfgXWJzM+PfGD7TWOts3SCW6T6OiVKQsiFqgzBw==
-X-Received: by 2002:a5d:6d88:0:b0:1e3:37c1:3633 with SMTP id l8-20020a5d6d88000000b001e337c13633mr13694505wrs.484.1646759870390;
-        Tue, 08 Mar 2022 09:17:50 -0800 (PST)
-Received: from redhat.com ([2.55.24.184])
-        by smtp.gmail.com with ESMTPSA id u18-20020adfdd52000000b001f04e9f215fsm13950204wrm.53.2022.03.08.09.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:17:49 -0800 (PST)
-Date:   Tue, 8 Mar 2022 12:17:45 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <20220308120858-mutt-send-email-mst@kernel.org>
-References: <20220307191757.3177139-1-lee.jones@linaro.org>
- <YiZeB7l49KC2Y5Gz@kroah.com>
- <YicPXnNFHpoJHcUN@google.com>
- <Yicalf1I6oBytbse@kroah.com>
- <Yicer3yGg5rrdSIs@google.com>
- <YicolvcbY9VT6AKc@kroah.com>
- <20220308055003-mutt-send-email-mst@kernel.org>
- <YidBz7SxED2ii1Lh@kroah.com>
- <20220308071718-mutt-send-email-mst@kernel.org>
- <YidXT6zP1QN5KZUs@google.com>
+        Tue, 8 Mar 2022 12:18:57 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36071BE8E;
+        Tue,  8 Mar 2022 09:18:00 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 228FxtbW015166;
+        Tue, 8 Mar 2022 11:17:37 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=IsxmqqwZg/HZPXMqd6bzsxFBB97JAt5kfaKVBxnlXNw=;
+ b=Xy4k8/U9wxbeYBYLAJIkLAynztbpaI750XIQhOTGBizAwdgXLUC5mVYgcszWVPI7nIuZ
+ gIxV4776G6DkSgyB+JFpgbxEF4AYy0slkL/wzBTLVG5L3DBdd6ORMFCcZlgcIq4TTaAl
+ YvuFPNFKguoALhsnKxrhlyKAhSYUXQLQ6KFR4wjYCAsxWL59LpRyNxnPt7Vm1nraKF/c
+ /HDldbIzw2rZMSVhSGkbI2LNKfkWIfln4PQNGOXfRM6gPOQXfBYLGKSfdvj0jjp2qgZt
+ liJh2alkLZ3vh+UCsOJ8I9PYHicHe8weXIyCDr41n8005ETXMQ3pcZi0eYAk+wscMRfm Mg== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3em55svhnr-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 08 Mar 2022 11:17:36 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Mar
+ 2022 17:17:35 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Tue, 8 Mar 2022 17:17:35 +0000
+Received: from aryzen.ad.cirrus.com (unknown [198.61.65.38])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 858D9B1A;
+        Tue,  8 Mar 2022 17:17:35 +0000 (UTC)
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v3 12/16] ALSA: hda: cs35l41: Reorganize log for playback actions
+Date:   Tue, 8 Mar 2022 17:17:26 +0000
+Message-ID: <20220308171730.454587-13-tanureal@opensource.cirrus.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
+References: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YidXT6zP1QN5KZUs@google.com>
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: eK-JxT82pWHC64CeSqEHd5DrSY38tz-8
+X-Proofpoint-GUID: eK-JxT82pWHC64CeSqEHd5DrSY38tz-8
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 01:17:03PM +0000, Lee Jones wrote:
-> On Tue, 08 Mar 2022, Michael S. Tsirkin wrote:
-> 
-> > On Tue, Mar 08, 2022 at 12:45:19PM +0100, Greg KH wrote:
-> > > On Tue, Mar 08, 2022 at 05:55:58AM -0500, Michael S. Tsirkin wrote:
-> > > > On Tue, Mar 08, 2022 at 10:57:42AM +0100, Greg KH wrote:
-> > > > > On Tue, Mar 08, 2022 at 09:15:27AM +0000, Lee Jones wrote:
-> > > > > > On Tue, 08 Mar 2022, Greg KH wrote:
-> > > > > > 
-> > > > > > > On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
-> > > > > > > > On Mon, 07 Mar 2022, Greg KH wrote:
-> > > > > > > > 
-> > > > > > > > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
-> > > > > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > > > > > > > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > > > > > > > > > during virtqueue clean-up and we mitigate the reported issues.
-> > > > > > > > > > 
-> > > > > > > > > > Also WARN() as a precautionary measure.  The purpose of this is to
-> > > > > > > > > > capture possible future race conditions which may pop up over time.
-> > > > > > > > > > 
-> > > > > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > > > > > > > > > 
-> > > > > > > > > > Cc: <stable@vger.kernel.org>
-> > > > > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > > > > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > > > > > > ---
-> > > > > > > > > >  drivers/vhost/vhost.c | 10 ++++++++++
-> > > > > > > > > >  1 file changed, 10 insertions(+)
-> > > > > > > > > > 
-> > > > > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > > > > > > > > index 59edb5a1ffe28..ef7e371e3e649 100644
-> > > > > > > > > > --- a/drivers/vhost/vhost.c
-> > > > > > > > > > +++ b/drivers/vhost/vhost.c
-> > > > > > > > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > > > > > > > > >  	int i;
-> > > > > > > > > >  
-> > > > > > > > > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > > > > > > > > +		/* No workers should run here by design. However, races have
-> > > > > > > > > > +		 * previously occurred where drivers have been unable to flush
-> > > > > > > > > > +		 * all work properly prior to clean-up.  Without a successful
-> > > > > > > > > > +		 * flush the guest will malfunction, but avoiding host memory
-> > > > > > > > > > +		 * corruption in those cases does seem preferable.
-> > > > > > > > > > +		 */
-> > > > > > > > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > > > > > > > > 
-> > > > > > > > > So you are trading one syzbot triggered issue for another one in the
-> > > > > > > > > future?  :)
-> > > > > > > > > 
-> > > > > > > > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
-> > > > > > > > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
-> > > > > > > > > you want that to happen?
-> > > > > > > > 
-> > > > > > > > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
-> > > > > > > 
-> > > > > > > Has it changed?  Last I looked, it did trigger on WARN_* calls, which
-> > > > > > > has resulted in a huge number of kernel fixes because of that.
-> > > > > > 
-> > > > > > Everything is customisable in syzkaller, so maybe there are specific
-> > > > > > builds which panic_on_warn enabled, but none that I'm involved with
-> > > > > > do.
-> > > > > 
-> > > > > Many systems run with panic-on-warn (i.e. the cloud), as they want to
-> > > > > drop a box and restart it if anything goes wrong.
-> > > > > 
-> > > > > That's why syzbot reports on WARN_* calls.  They should never be
-> > > > > reachable by userspace actions.
-> > > > > 
-> > > > > > Here follows a topical example.  The report above in the Link: tag
-> > > > > > comes with a crashlog [0].  In there you can see the WARN() at the
-> > > > > > bottom of vhost_dev_cleanup() trigger many times due to a populated
-> > > > > > (non-flushed) worker list, before finally tripping the BUG() which
-> > > > > > triggers the report:
-> > > > > > 
-> > > > > > [0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
-> > > > > 
-> > > > > Ok, so both happens here.  But don't add a warning for something that
-> > > > > can't happen.  Just handle it and move on.  It looks like you are
-> > > > > handling it in this code, so please drop the WARN_ON().
-> > > > > 
-> > > > > thanks,
-> > > > > 
-> > > > > greg k-h
-> > > > 
-> > > > Hmm. Well this will mean if we ever reintroduce the bug then
-> > > > syzkaller will not catch it for us :( And the bug is there,
-> > > > it just results in a hard to reproduce error for userspace.
-> > > 
-> > > Is this an error you can recover from in the kernel?
-> > >  What is userspace
-> > > supposed to know with this information when it sees it?
-> > 
-> > IIUC we are talking about a use after free here since we somehow
-> > managed to have a pointer to the device in a worker while
-> > device is being destroyed.
-> > 
-> > That's the point of the warning as use after free is hard to debug. You
-> > ask can we recover from a use after free? 
-> > 
-> > As regards to the added lock, IIUC it kind of shifts the use after free
-> > window to later and since we zero out some of the memory just before we
-> > free it, it's a bit more likely to recover.  I would still like to see
-> > some more analysis on why the situation is always better than it was
-> > before though.
-> 
-> With the locks in place, the UAF should not occur.
+For each case, only log the last regmap access, so it doesn't get
+overwritten, and as all regmap access should show the same issues
+logging the last one should be enough.
+Change to dev_err to log this error.
 
-This really depends which UAF. Yes use of vq->private_data is protected
-by a lock inside the VQ.
+Also, differentiate between a regmap access failure and invalid
+playback action.
 
-However, we are talking about vhost_net_release, which ends up doing
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-        kfree(n->dev.vqs);
-...
-        kvfree(n);
-
-if someone is holding a pointer to a vq or the device itself at this
-point, no locks that are part of one of said structures will be
-effective in preventing a use after free, and using a lock to delay such
-accesses to this point just might make it more likely there's a use
-after free.
-
-
-All of the above is why we didn't rush to apply the locking patch in the
-first place, for all that it seemed to fix the sysboz crash.
-
-
-
-> The issue here is that you have 2 different tasks processing the
-> same area of memory (via pointers to structs).  In these scenarios you
-> should always provide locking and/or reference counting to prevent
-> memory corruption or UAF.
-
-But we should not have 2 tasks doing that, and if we do then lock
-just might be ineffective since the lock itself is released.
-
-Again maybe in this case it makes sense but it needs a more detailed
-analysis to show it's a net win than just "we have two tasks ergo we
-need locking".
-
-> -- 
-> Lee Jones [李琼斯]
-> Principal Technical Lead - Developer Services
-> Linaro.org │ Open source software for Arm SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 08ce9b8005ec..fda4af323c32 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -144,10 +144,9 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 
+ 	switch (action) {
+ 	case HDA_GEN_PCM_ACT_OPEN:
+-		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
+-					     ARRAY_SIZE(cs35l41_hda_config));
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
++		regmap_multi_reg_write(reg, cs35l41_hda_config, ARRAY_SIZE(cs35l41_hda_config));
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_PREPARE:
+ 		ret = cs35l41_hda_global_enable(cs35l41, 1);
+@@ -157,16 +156,16 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 		ret = cs35l41_hda_global_enable(cs35l41, 0);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_CLOSE:
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
+ 		break;
+ 	default:
+-		ret = -EINVAL;
++		dev_warn(cs35l41->dev, "Playback action not supported: %d\n", action);
+ 		break;
+ 	}
+ 
+ 	if (ret)
+-		dev_warn(cs35l41->dev, "Failed to apply multi reg write: %d\n", ret);
++		dev_err(cs35l41->dev, "Regmap access fail: %d\n", ret);
+ }
+ 
+ static int cs35l41_hda_channel_map(struct device *dev, unsigned int tx_num, unsigned int *tx_slot,
+-- 
+2.35.1
 
