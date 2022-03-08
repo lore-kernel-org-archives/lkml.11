@@ -2,140 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C22C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348474AbiCHQlb (ORCPT
+        id S1346152AbiCHQll (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
+        Tue, 8 Mar 2022 11:41:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348477AbiCHQkx (ORCPT
+        with ESMTP id S1348486AbiCHQkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 11:40:53 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F89517EB;
-        Tue,  8 Mar 2022 08:39:53 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ihD5vV4NNxNIsNnOcp1kRxR/cY9kHvcZbn6P2yrCrya0AOWUml2u6gb8R22m06DyfOHLNlA5ZzKJ8dJxRtm2pH3cz+jLGMo1DDCHux0fNqrHd49sHwpraEh88Bi0DUOAsruoazS3l4CV+5RrbS/4ZF7yXnfnaWz7yxbYEQdnpzFfHEl7OclshUhRVGPn9dF/aq7ZeV031WPJ7S3nitvKmphSxPt6zylJDn8WFWhfJrIIWXJ5Sew0OpBsaeTWQY4Nk541sKcSnV/eepZ5TVWOb3crJLAAhUvFAjum2Ae1d073SDVSX3Y3dZEVygh/mQ713jIIN0Ky/Mjos05dpbmv/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Jlxww9AZ38FkwptDw07Qq2qcu9/6qYcFIx/ENpXtGc=;
- b=FTaqMKdtfPo0QF7Wt8mKaqkdTt1DY1tMe8IS+aj4shxNDyNMgBXCZmVRQ2Ey/LAcMtZJ97a1Ubg4m92rs78EoPLVZHEnPUwNG45uVNzj8Ek12nSO2sgJ8YWc/1/dwlU/VwzzvvcuIiXX5VQ+HYdDr6/D4o6geJvuXH2kHgqacMiUWsO0bWHs7kPQ29zAU/6OVEBteJPEZwtVDL7DC8ofedDBXZXqykRJscRoiatIruH30lASfoz80h48eHaEkSIvfV7AhW8ZO1yclRd6e8ucV4RN0QuImuX2v5r5DH3SSrR/TRFBkJt3OMPHWp2U2JGWVknWT+ItzZ+QKZSAPW3ynA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Jlxww9AZ38FkwptDw07Qq2qcu9/6qYcFIx/ENpXtGc=;
- b=SySFDvf4uHHFhaPpr7+ATILPmzehDNcFlqUTRa0VX5q5BU51yDhsFW7KtMbrOJzjaodZMxZI6HuFRYOdtMSxjaaii6a8QbrbCmioXws8KjWNLkkGuMq17OyqNErGP9DJF42HruQKt4EwPZBBqpqEY2qLAGwSWS17b8AAMt/re2U=
-Received: from BN9PR03CA0327.namprd03.prod.outlook.com (2603:10b6:408:112::32)
- by BY5PR12MB3730.namprd12.prod.outlook.com (2603:10b6:a03:1ac::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 16:39:51 +0000
-Received: from BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:112:cafe::60) by BN9PR03CA0327.outlook.office365.com
- (2603:10b6:408:112::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Tue, 8 Mar 2022 16:39:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT012.mail.protection.outlook.com (10.13.177.55) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 16:39:51 +0000
-Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Mar
- 2022 10:39:47 -0600
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-        <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
-        <terry.bowman@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [RFCv2 PATCH 09/12] KVM: SVM: Refresh AVIC settings when changing APIC mode
-Date:   Tue, 8 Mar 2022 10:39:23 -0600
-Message-ID: <20220308163926.563994-10-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
-References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8E751E53
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:39:57 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so2910253pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 08:39:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jttNtqOCv/g/jfkTi8WCuPi9YGKOdMF84fDPlTGUuek=;
+        b=fqEBFQebFeTvjMPqx1KU0usJ9t9uHgl6HeTepPeEjOhZsS/+LMF8WkKgPbB5aubZMX
+         c9PRgR3F0VqaerE+/1d17p0hYi7W19lhL8Ke/DxWxyNk47FLaHlm4MQS9EarwwG7L2JC
+         J9bw/i4yjpFwbGfkRn8sTA4J0WmyLBqswrwhTvbAoc0TTRCWYensXpOq/lPNwo7kyYks
+         hIxzYPzwmwGTfXFe9xuTWg/z/rGIEHwyEb6m0p6VkhcwGJRkonm2jFt+uCg+doiVqlfg
+         i76tdHnnv2L6mZdeUjImHxvE8Pm46DRID3Mcfvs0qijD5VRL8CkF8Kfor3tlrXlqZz0a
+         ipkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jttNtqOCv/g/jfkTi8WCuPi9YGKOdMF84fDPlTGUuek=;
+        b=wIjws5ZIXGLfenz2pIHgnrj2A7Rd5n9uvXSBigPpaanDfk7Nk9coMupAkStexkQe/I
+         2r1SCQVn+Hjzj/o3lt9xrtoLxCV1ahHwrdP1aUimKckybAHlhKgh6CMkQLrlzNTMqlcq
+         R7C+kc3NBFoanKw2ZVK2yRnp3MAuk/768tznjkCsHL2kKfCAU64t1ItOMaJLlzNi5kC8
+         KkweKtwXJmB4kNm4LNU6kJ7pOgP6AGga8VOzi06h2UJUDvvnclhbIC/8DR2xDEDC/SpG
+         U4aQkVe/iOvt9/SSJSteXnDF/3LT83dINXSsRfYiZv8hKXJjUETy0WQpfBgK/vJIqtRt
+         XrEw==
+X-Gm-Message-State: AOAM5317HivRI6coTDKxhZ8PpVhvTwQkKCrjstgHDTX+dHCX+r39cTKG
+        ZN2gXh2WC+DX5hCjg5ZzidlraA==
+X-Google-Smtp-Source: ABdhPJw22MgZHcaD6/vU/aiK/EoNSPWtz9sq3vJ/NB/X8/lT3V1JK+jb1IWH13VCCg60z3oHl9gosw==
+X-Received: by 2002:a17:90b:4c44:b0:1be:f4be:d69e with SMTP id np4-20020a17090b4c4400b001bef4bed69emr5577702pjb.163.1646757596305;
+        Tue, 08 Mar 2022 08:39:56 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id h6-20020a636c06000000b00363a2533b17sm15513048pgc.8.2022.03.08.08.39.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 08:39:55 -0800 (PST)
+Date:   Tue, 8 Mar 2022 16:39:52 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        dmatlack@google.com
+Subject: Re: [PATCH v2 05/25] KVM: x86/mmu: rephrase unclear comment
+Message-ID: <YieG2J+CdoUTTAB9@google.com>
+References: <20220221162243.683208-1-pbonzini@redhat.com>
+ <20220221162243.683208-6-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fc411b15-97cb-4900-fe09-08da01224454
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3730:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3730F5519E65B6984DD8222DF3099@BY5PR12MB3730.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FWMYKs3ilbbvFprCUQo/a0r2y+jpi/13USBh7/xAQhVT7BzL90NsbBwNY3NUHsOylU9Br4rp5avSGz1apzON4S45cyBWEU/g21jhbutHCV4UvKcZmXGIhkpU68L26KKwHd4b2iMn4RlzAsg8JAbhDyBf7oYIgr9Ra3QioEPWrqTpPrrhqOqQTipaNZxT1VvDVZkb7tdr327TaUf379HvRd/3JbQIMcFlcO4JaLgSKLPYcVh0QURRy/Igy1cSDcTsARJAkFlm4BOY43IuorRcfly5qUysNm6DLfZRDmfsRh8vkKh4U6gH7cRHuEfYbdQv6gDC12y9rJ0qbE/KCb/v8G9CDIt2CI1Zd05C1DxbbJkpvtQr5HJKn0K1xo70Uvt+ZQxZK3+WmAr6B8dZ438MSMxW8877RzR0vbCjCSbdoxgj+x5bb0fq9EdlIkTNKgjs/jbuYZPKr/QaPHVZs+FIEwZYjGbN95YHG/gG/hR5rqgt1SpsyH/+61BAeIsNuV1L7tSzivg7Rgi9XrnlcGrR93AETvrSozqKyTHoJUIy10/wm3p13F+VXrlKFrd65nLgmqPOyl4z+rz0ROVYelx9P+aX/GH9HY7EHJ1VZoo3//DggnfJGiBOGvjLZp+GpSeXmy6Vr4ExM3OcJsFUPP0ZLRE/ABxBNX5BR7jEMUolbxVIoNO+y+U7DAkWn2B/Uy9JZH4M1gnGkoDsb1DwyGT91A==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(70586007)(70206006)(8676002)(8936002)(4326008)(44832011)(5660300002)(2616005)(1076003)(426003)(336012)(26005)(186003)(36756003)(47076005)(2906002)(83380400001)(40460700003)(16526019)(6666004)(7696005)(82310400004)(36860700001)(356005)(81166007)(86362001)(110136005)(54906003)(508600001)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 16:39:51.2658
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc411b15-97cb-4900-fe09-08da01224454
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3730
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221162243.683208-6-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When APIC mode is updated (e.g. from xAPIC to x2APIC),
-KVM needs to update AVIC settings accordingly, whic is
-handled by svm_refresh_apicv_exec_ctrl().
+On Mon, Feb 21, 2022, Paolo Bonzini wrote:
+> If accessed bits are not supported there simple isn't any distinction
+> between accessed and non-accessed gPTEs, so the comment does not make
+> much sense.  Rephrase it in terms of what happens if accessed bits
+> *are* supported.
+> 
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+> index 80b4b291002a..d1d17d28e81b 100644
+> --- a/arch/x86/kvm/mmu/paging_tmpl.h
+> +++ b/arch/x86/kvm/mmu/paging_tmpl.h
+> @@ -193,7 +193,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
+>  	if (!FNAME(is_present_gpte)(gpte))
+>  		goto no_present;
+>  
+> -	/* if accessed bit is not supported prefetch non accessed gpte */
+> +	/* if accessed bit is supported, prefetch only accessed gpte */
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/kvm/svm/avic.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+Can we just reword the whole thing?  A/D bits being disabled is the anomaly,
+leading with the "if" makes the logic we really care about seem like a secondary
+concern.  E.g.
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 7e5a39a8e698..53559b8dfa52 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -625,7 +625,24 @@ void avic_post_state_restore(struct kvm_vcpu *vcpu)
- 
- void svm_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
- {
--	return;
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
-+	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
-+		return;
-+
-+	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID)
-+		WARN_ONCE(true, "Invalid local APIC state");
-+
-+	svm->vmcb->control.avic_vapic_bar = svm->vcpu.arch.apic_base &
-+					    VMCB_AVIC_APIC_BAR_MASK;
-+	kvm_vcpu_update_apicv(&svm->vcpu);
-+
-+	/*
-+	 * The VM could be running w/ AVIC activated switching from APIC
-+	 * to x2APIC mode. We need to all refresh to make sure that all
-+	 * x2AVIC configuration are being done.
-+	 */
-+	svm_refresh_apicv_exec_ctrl(&svm->vcpu);
- }
- 
- void svm_hwapic_irr_update(struct kvm_vcpu *vcpu, int max_irr)
--- 
-2.25.1
+	/* Prefetch only accessed entries (unless A/D bits are disabled). */
 
+>  	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
+>  	    !(gpte & PT_GUEST_ACCESSED_MASK))
+>  		goto no_present;
+> -- 
+> 2.31.1
+> 
+> 
