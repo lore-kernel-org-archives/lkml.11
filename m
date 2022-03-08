@@ -2,132 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350342AbiCHUvn (ORCPT
+        id S1350374AbiCHUvq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 15:51:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        Tue, 8 Mar 2022 15:51:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350324AbiCHUvW (ORCPT
+        with ESMTP id S1350317AbiCHUvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 15:51:22 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C416329BD
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:50:25 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id h16-20020a4a6f10000000b00320507b9ccfso436659ooc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 12:50:25 -0800 (PST)
+        Tue, 8 Mar 2022 15:51:20 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D60136E37
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:50:13 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so296116wmq.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 12:50:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc:content-transfer-encoding;
-        bh=07/Mk2mSRPnnpQpgFzSH5cZEiz+q3LLuujHq7n3nu5A=;
-        b=KHbJzGEeeMAyb2CIStCFirQlLtkUTpRvwtLMjNY9sVufVdQCQF6918bcz6/WQMgpfr
-         ZDQZk/n+ABZlIyEy/c+G7FEOCMiUEjc6k4lXSLuWflbJjmoXWVylGC6b/h7/1aaAyL59
-         gEU43+hkxXFgMCfkl3XxCylMwB/dxXs0k08C8=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=MM4EmkpbqCFdFxxd9GgbYGC5CZg14rKLljTmThXZPjg=;
+        b=sR2qDcSTn/QrrRvC7tDPq3cB3qglIulDBC4pwgEW6YgF+zTEPRRMsvD/qAkX27iW4G
+         t019Neq/9RrAIlHrw3dmUqJuh7L5/K46d01FZXPASJiSwMPJFqLImoD7Mu59Pe/C4mLC
+         aoFVcfi3ZDRixHISwKhYkgTD64xfyDCCf1rh5Uv6qzvtVjI0t2gKR/7Mve1mdfen22gm
+         pM4di5EsTmJPwqAiAoT6VO43/v1P113xqJIYoRgWbTR3xJs5YtAkLQqa2gZd1IExO/k7
+         6IZlsv2Qh1gTg8GXdFgkgeVhE+rqG9Z2PDFT2edl5VKN1h4Wvt92ZNiFmYtDwyhrr3Bg
+         Qt+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc:content-transfer-encoding;
-        bh=07/Mk2mSRPnnpQpgFzSH5cZEiz+q3LLuujHq7n3nu5A=;
-        b=HoU9aw4I0LrMgV8YoBBw8fWr/sxBo9SB6EYkQxRhf4P3YjIvWfZyakp7h/oumg7se8
-         RHD/VKMuQYezrK5uRKOD9NKtETUHg7A65iTjgZl6qQrHSqRVc0ZTTbRvengEovhMcM5a
-         dLzZgAfna0W0FAWd14LNP5PKVLvLmAxMw+WvhS3LzNFjEIIlwRy3U1cTEw7VxvXkjUAZ
-         RdvNbi1ZnJDXFjH/RxkdtsktHiQeV+lRTsrT7kDVO2qI342KpqxU+VTLHtKCsdm68CTm
-         tLIfgiMc4y77DeXPnlBwiVMg0SZmIh35hK0h6GnSMSziuuRFq1pILtI74R7KlTKGJ+xD
-         lWvQ==
-X-Gm-Message-State: AOAM531nVVqXOpcif7PTtf1/Ei/XJlPg77C2jNMwxH5dg45ngIi3p7B/
-        hhd2PT/FuMjw5/ZceuY/THtR6VkovMvEsftfYs1skg==
-X-Google-Smtp-Source: ABdhPJyeIEGjp4wu4+prvM/5vJWOJEne6k+CfpxSdR/ZQubTtI2Y3uQWBjtlKPhKELQekWuo0tfl0JwswwbhoEpsuwU=
-X-Received: by 2002:a05:6870:d250:b0:da:b3f:3211 with SMTP id
- h16-20020a056870d25000b000da0b3f3211mr3521199oac.193.1646772624706; Tue, 08
- Mar 2022 12:50:24 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 8 Mar 2022 12:50:24 -0800
-MIME-Version: 1.0
-In-Reply-To: <7e3d1ff3-f1a0-3a4d-a056-e3dce1a9a28d@quicinc.com>
-References: <1645182064-15843-1-git-send-email-quic_c_skakit@quicinc.com>
- <1645182064-15843-6-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n509bg6RzieOtYuUvicU14D7bmgH-u02F1TB+hBZ+xH4CA@mail.gmail.com>
- <42570508-ed62-af26-220e-c776418a722e@quicinc.com> <CAE-0n50J=4qrkR9ycEGxbKVHwm9Om8S2YSJR_Y71_iErR-wAHw@mail.gmail.com>
- <7e3d1ff3-f1a0-3a4d-a056-e3dce1a9a28d@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 8 Mar 2022 12:50:24 -0800
-Message-ID: <CAE-0n50iuZY0ju+-ZYG16ab0GVTTn7Z8p3BdZJPTKZ-CSoa-TA@mail.gmail.com>
-Subject: Re: [PATCH V7 5/5] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya Kakitapalli <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=MM4EmkpbqCFdFxxd9GgbYGC5CZg14rKLljTmThXZPjg=;
+        b=qWNn3SNoEKmq7Rn20Xs9/IgMmtdY9DvzgoWgGjPx6op8P2tWPxaU/0ehdmNaRMJbwZ
+         VcRSZycBzJJKJFFJSL4NuyLZ3AWMhEuAZ4BMmmIYq3I0WA1elq5EG396s01AtpcfAATC
+         D+VfMbQsQZeNkz4jDsABgdCco9E93RQAnau1ec/LSZG3NuywGFwoeQbjkpTlkDbY5jCn
+         HehiJw0tVujGCvZXwhdhpcHFuhY9llYDr4p3B0iQXS8yzSLawek4XD4SDmmFx3p+H1Q2
+         CSPZF9xiK86q04Meubka9fNq+V9s0UpuWO+sgME0oy6xCsLc3FxnHH9amg06kG5ZR1fs
+         +C1A==
+X-Gm-Message-State: AOAM533Nv4IssvDDFPm5VRLRYUiG0LzWDMzgFkvhMg5PMFnfJRMOjrmu
+        rOp8OKx32EColyDXIhzjTEYxGg==
+X-Google-Smtp-Source: ABdhPJzGFhXp/2CodsJvLCxofK1VbSGwJL/tOn4J0/ZvBH8o4nrDRRmiNjEJ3mSythvPL0q2EYQ1Gw==
+X-Received: by 2002:a1c:7302:0:b0:381:1f9a:a22b with SMTP id d2-20020a1c7302000000b003811f9aa22bmr884036wmb.78.1646772612033;
+        Tue, 08 Mar 2022 12:50:12 -0800 (PST)
+Received: from linaro.org ([2a00:23c5:6809:2201:546d:7d59:1703:bf96])
+        by smtp.gmail.com with ESMTPSA id p26-20020a1c741a000000b00389ab9a53c8sm3245758wmc.36.2022.03.08.12.50.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 12:50:11 -0800 (PST)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, linux-perf-users@vger.kernel.org,
+        leo.yan@linaro.org, Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH 09/10] coresight: etmX.X: stm: Remove unused legacy source trace ID ops
+Date:   Tue,  8 Mar 2022 20:49:59 +0000
+Message-Id: <20220308205000.27646-10-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220308205000.27646-1-mike.leach@linaro.org>
+References: <20220308205000.27646-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya Kakitapalli (Temp) (2022-03-07 06:49:31)
->
-> On 3/1/2022 2:06 AM, Stephen Boyd wrote:
-> > Quoting Satya Priya Kakitapalli (Temp) (2022-02-28 06:25:06)
-> >> On 2/19/2022 7:31 AM, Stephen Boyd wrote:
-> >>> Quoting Satya Priya (2022-02-18 03:01:03)
-> >>>> +               pins =3D "gpio4";
-> >>>> +               function =3D "normal";
-> >>>> +               bias-disable;
-> >>>> +               output-high;
-> >>> Is this a reset signal? Should the driver be deasserting the reset wh=
-en
-> >>> it is ready? That could be the same time the gpio is acquired.
-> >>
-> >> I didn't get your question exactly.. hope this answers your query
-> >>
-> >> The pm8008 chip needs this gpio to be toggled , in order to come out o=
-f
-> >> reset and start any transactions..
-> >>
-> >> Please let me know if you have more queries
-> > Yes that answers it for me. Thanks.
-> >
-> > This is a reset gpio and should be a DT property like
-> >
-> >       reset-gpios =3D <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>
-> >
-> > in the pm8008 node. When the driver probes it should get the gpio and
-> > do any toggling to take it out of reset. It shouldn't be done through
-> > pinconf settings.
->
->
-> Okay, IIUC,=C2=A0 I have to remove the output-high here and add reset-gpi=
-os
-> in pm8008 DT node. And then add below code in pm8008 mfd driver probe
->
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 chip->reset_gpio =3D devm_gpiod_get(chip->dev, "reset",
-> GPIOD_OUT_HIGH);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 if (IS_ERR(chip->reset_gpio)) {
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_err(chip->=
-dev, "failed to acquire reset
-> gpio\n");
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR=
-(chip->reset_gpio);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 }
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 gpiod_set_value(chip->reset_gpio, 1);
->
-> This is working for me, Please let me know if I'm=C2=A0 missing something=
-.
->
+CoreSight sources provide a callback (.trace_id) in the standard source
+ops which returns the ID to the core code. This was used to check that
+sources all had a unique Trace ID.
 
-Yep looks good to me.
+Uniqueness is now gauranteed by the Trace ID allocation system, and the
+check code has been removed from the core.
+
+This patch removes the unneeded and unused .trace_id source ops
+from the ops structure and implementations in etm3x, etm4x and stm.
+
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+---
+ drivers/hwtracing/coresight/coresight-etm.h   |  1 -
+ .../coresight/coresight-etm3x-core.c          | 37 -------------------
+ .../coresight/coresight-etm4x-core.c          |  8 ----
+ drivers/hwtracing/coresight/coresight-stm.c   |  8 ----
+ include/linux/coresight.h                     |  3 --
+ 5 files changed, 57 deletions(-)
+
+diff --git a/drivers/hwtracing/coresight/coresight-etm.h b/drivers/hwtracing/coresight/coresight-etm.h
+index 3667428d38b6..9a0d08b092ae 100644
+--- a/drivers/hwtracing/coresight/coresight-etm.h
++++ b/drivers/hwtracing/coresight/coresight-etm.h
+@@ -283,7 +283,6 @@ static inline unsigned int etm_readl(struct etm_drvdata *drvdata, u32 off)
+ }
+ 
+ extern const struct attribute_group *coresight_etm_groups[];
+-int etm_get_trace_id(struct etm_drvdata *drvdata);
+ void etm_set_default(struct etm_config *config);
+ void etm_config_trace_mode(struct etm_config *config);
+ struct etm_config *get_etm_config(struct etm_drvdata *drvdata);
+diff --git a/drivers/hwtracing/coresight/coresight-etm3x-core.c b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+index 98213503bd09..4cfb8ed699df 100644
+--- a/drivers/hwtracing/coresight/coresight-etm3x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+@@ -455,42 +455,6 @@ static int etm_cpu_id(struct coresight_device *csdev)
+ 	return drvdata->cpu;
+ }
+ 
+-int etm_get_trace_id(struct etm_drvdata *drvdata)
+-{
+-	unsigned long flags;
+-	int trace_id = -1;
+-	struct device *etm_dev;
+-
+-	if (!drvdata)
+-		goto out;
+-
+-	etm_dev = drvdata->csdev->dev.parent;
+-	if (!local_read(&drvdata->mode))
+-		return drvdata->traceid;
+-
+-	pm_runtime_get_sync(etm_dev);
+-
+-	spin_lock_irqsave(&drvdata->spinlock, flags);
+-
+-	CS_UNLOCK(drvdata->base);
+-	trace_id = (etm_readl(drvdata, ETMTRACEIDR) & ETM_TRACEID_MASK);
+-	CS_LOCK(drvdata->base);
+-
+-	spin_unlock_irqrestore(&drvdata->spinlock, flags);
+-	pm_runtime_put(etm_dev);
+-
+-out:
+-	return trace_id;
+-
+-}
+-
+-static int etm_trace_id(struct coresight_device *csdev)
+-{
+-	struct etm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
+-
+-	return etm_get_trace_id(drvdata);
+-}
+-
+ int etm_read_alloc_trace_id(struct etm_drvdata *drvdata)
+ {
+ 	int trace_id;
+@@ -719,7 +683,6 @@ static void etm_disable(struct coresight_device *csdev,
+ 
+ static const struct coresight_ops_source etm_source_ops = {
+ 	.cpu_id		= etm_cpu_id,
+-	.trace_id	= etm_trace_id,
+ 	.enable		= etm_enable,
+ 	.disable	= etm_disable,
+ };
+diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+index aa7ea5ad8b06..565947de702a 100644
+--- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+@@ -228,13 +228,6 @@ static int etm4_cpu_id(struct coresight_device *csdev)
+ 	return drvdata->cpu;
+ }
+ 
+-static int etm4_trace_id(struct coresight_device *csdev)
+-{
+-	struct etmv4_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
+-
+-	return drvdata->trcid;
+-}
+-
+ int etm4_read_alloc_trace_id(struct etmv4_drvdata *drvdata)
+ {
+ 	int trace_id;
+@@ -998,7 +991,6 @@ static void etm4_disable(struct coresight_device *csdev,
+ 
+ static const struct coresight_ops_source etm4_source_ops = {
+ 	.cpu_id		= etm4_cpu_id,
+-	.trace_id	= etm4_trace_id,
+ 	.enable		= etm4_enable,
+ 	.disable	= etm4_disable,
+ };
+diff --git a/drivers/hwtracing/coresight/coresight-stm.c b/drivers/hwtracing/coresight/coresight-stm.c
+index 6c2c29ae99fe..6aa6eb9e4090 100644
+--- a/drivers/hwtracing/coresight/coresight-stm.c
++++ b/drivers/hwtracing/coresight/coresight-stm.c
+@@ -281,15 +281,7 @@ static void stm_disable(struct coresight_device *csdev,
+ 	}
+ }
+ 
+-static int stm_trace_id(struct coresight_device *csdev)
+-{
+-	struct stm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
+-
+-	return drvdata->traceid;
+-}
+-
+ static const struct coresight_ops_source stm_source_ops = {
+-	.trace_id	= stm_trace_id,
+ 	.enable		= stm_enable,
+ 	.disable	= stm_disable,
+ };
+diff --git a/include/linux/coresight.h b/include/linux/coresight.h
+index 9f445f09fcfe..247147c11231 100644
+--- a/include/linux/coresight.h
++++ b/include/linux/coresight.h
+@@ -314,14 +314,11 @@ struct coresight_ops_link {
+  * Operations available for sources.
+  * @cpu_id:	returns the value of the CPU number this component
+  *		is associated to.
+- * @trace_id:	returns the value of the component's trace ID as known
+- *		to the HW.
+  * @enable:	enables tracing for a source.
+  * @disable:	disables tracing for a source.
+  */
+ struct coresight_ops_source {
+ 	int (*cpu_id)(struct coresight_device *csdev);
+-	int (*trace_id)(struct coresight_device *csdev);
+ 	int (*enable)(struct coresight_device *csdev,
+ 		      struct perf_event *event,  u32 mode);
+ 	void (*disable)(struct coresight_device *csdev,
+-- 
+2.17.1
+
