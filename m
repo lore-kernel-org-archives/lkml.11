@@ -2,69 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91977C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A122C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347543AbiCHOjC (ORCPT
+        id S1347524AbiCHOj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:39:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
+        Tue, 8 Mar 2022 09:39:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347530AbiCHOi6 (ORCPT
+        with ESMTP id S235983AbiCHOjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:38:58 -0500
-X-Greylist: delayed 95 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 06:37:59 PST
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6692329B6;
-        Tue,  8 Mar 2022 06:37:58 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646750277;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=o19dQIjkfabXS5JfOfa4bRxa2w2E+xg4aNQtDEegpkc=;
-        b=ocxSqE4vm/1oTNvLUP/VkoHigCg3X3XJMJWg8fVmbVREKpWee5VRMafsVPJL8dQcZ4s9GP
-        ezMcwm9Cx/VeizUrhQ+j5twRcAHjjfOWQHOJEUGUibEWySR9XJ3NZpQyz7dmUJgymLvHR5
-        WXUlDyJrMtddh3rjXecmaml3WtjVY64=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     jgg@nvidia.com, selvin.xavier@broadcom.com, galpress@amazon.com,
-        sleybo@amazon.com, liangwenpeng@huawei.com, liweihang@huawei.com,
-        mustafa.ismail@intel.com, shiraz.saleem@intel.com,
-        leonro@nvidia.com, dennis.dalessandro@cornelisnetworks.com,
-        mike.marciniszyn@cornelisnetworks.com, zyjzyj2000@gmail.com
-Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH for-next 4/9] RDMA/hns:  get rid of create_user_ah
-Date:   Tue,  8 Mar 2022 22:37:40 +0800
-Message-Id: <20220308143740.3404014-1-yajun.deng@linux.dev>
+        Tue, 8 Mar 2022 09:39:25 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9797211158
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:38:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646750308; x=1678286308;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=kU5nXQQ/VJjd9P3v7JAxsyllYaY353/cUzEHeD8xWNY=;
+  b=ZlCF+uBnHixmFUANdlft5yn//Xnmz9+C8gvCq3qWiLOXvxk2ROfrpR5F
+   WNrQDPJz1BJR6s+/zTlatcx3lpaeMTwjcOpRMD0Dq45O4QH/jxkdg0jCc
+   IEBjRMIBSOFaiDptv5HTHKm4YKjXEG//G64mvFbKp4XGCEFlm4PCXl7Ey
+   /YTt4I6Kujhwy7YkMGlL7PRBRSr4bFliIvUKYoLJxYlBQluRUN41O/O5A
+   l13xf52ps8iSBYR9Onr9xqkg1JGqgEVg7sYweIX7MZ9DawgYKSC071yoB
+   8MzX/StKDUGwiggwbLhKkjbpZ9qkjg1KKz5HoL8YznA9lf3xQBPe2gO9E
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="242135116"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="242135116"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 06:38:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="643673403"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 06:38:26 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRayn-0001Xi-Sr; Tue, 08 Mar 2022 14:38:25 +0000
+Date:   Tue, 8 Mar 2022 22:37:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
+ function 'kasan_tag_mismatch'
+Message-ID: <202203082234.bp7VLzQE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no create_user_ah in ib_device_ops, remove it.
+Hi Peter,
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   ea4424be16887a37735d6550cfd0611528dbe5d9
+commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
+date:   10 months ago
+config: arm64-randconfig-r023-20220307 (https://download.01.org/0day-ci/archive/20220308/202203082234.bp7VLzQE-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash mm/kasan/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for function 'kasan_tag_mismatch' [-Wmissing-prototypes]
+   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+        ^
+   mm/kasan/sw_tags.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
+
+   210	
+ > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index f73ba619f375..9b879d247e9b 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -505,7 +505,6 @@ static const struct ib_device_ops hns_roce_dev_ops = {
- 	.alloc_pd = hns_roce_alloc_pd,
- 	.alloc_ucontext = hns_roce_alloc_ucontext,
- 	.create_ah = hns_roce_create_ah,
--	.create_user_ah = hns_roce_create_ah,
- 	.create_cq = hns_roce_create_cq,
- 	.create_qp = hns_roce_create_qp,
- 	.dealloc_pd = hns_roce_dealloc_pd,
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
