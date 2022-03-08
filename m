@@ -2,199 +2,355 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3605CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D52C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346957AbiCHM53 (ORCPT
+        id S1346969AbiCHM7z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:57:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        Tue, 8 Mar 2022 07:59:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233421AbiCHM52 (ORCPT
+        with ESMTP id S233163AbiCHM7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:57:28 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A8847547;
-        Tue,  8 Mar 2022 04:56:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646744168;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=N0uiBZn2X99YIa2R7oMyRvvyodifjNHPrFhmT4qjKWM=;
-    b=dj1V3bPdkot3GmVUYUhCbuoNjRI8Gx2vEUwy//jdJqSnGV25/iIONM2DvcyLAEF1SZ
-    WYjSiZgord8ZWkOSRDMXxMguy5dNNbiAlKb7jhBNC3E9x5J8lct1TEepJTRpT/kKt5HK
-    oxK7+4wKEdanbKnppoUnClrF5qtmrfGGSVRe+sbLUBZnvBQVx2jfgHFzACdU9YD6hI4I
-    b4eIH/h3Tevc32f7bq+KsyNU6BS/PSCjNwh6u25ELOu8v/iCeWlLonHqbTPY4/evUyOY
-    hXHbnWzCvZVmyO8EWUlZfpj1f8ds1IttJ78zgWQjM4pv/RZIwNWQ65zSp/EAMyNXiTQT
-    y/tA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbpc9Y="
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-    by smtp.strato.de (RZmta 47.40.1 DYNA|AUTH)
-    with ESMTPSA id n729cey28Cu7SHj
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 8 Mar 2022 13:56:07 +0100 (CET)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Rob Herring <robh@kernel.org>, Bin Liu <b-liu@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH] partially Revert "usb: musb: Set the DT node on the child device"
-Date:   Tue,  8 Mar 2022 13:56:06 +0100
-Message-Id: <f62f5fc11f9ecae7e57f3fd66939e051bd3b11fc.1646744166.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
+        Tue, 8 Mar 2022 07:59:53 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67B52BB36;
+        Tue,  8 Mar 2022 04:58:53 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 228C4oMk003234;
+        Tue, 8 Mar 2022 12:58:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=b/9bBvjgzbg022NLVuh043z7Uu3m1YE7tOn1F7kdD1c=;
+ b=fXQtNnd2OFDQuJaJq5hZDjdUwsXDCpQSDgYc/FnTrUYwyNeyQRfGzNwzIsexjPqsEvTb
+ o4hvgLKHZApxPZGcbFVGnlJVb1EeUo/y6zq32zLcjqFmd7W642a7Iqr+qi9zHk/PC9uI
+ 8OfPTIXqW5brTTVZUNGNGEShLEOeQ4rVigVCiyfPURutTQOaYwcGWq9TbRn2ZvZt2JKA
+ qDUOd36SDmBlv9Z/iWubu2Pt4lwf3Pbz5/5rYiDRKkJfKUMzIF0X4145rwgf8AXSrdat
+ AZQBRKafHnMnYWf4FFw8oJffYTwyV3tTz6Nl4cWcbzf7v186WB7rZnugEMG81QPybevG Iw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3enww7bprf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Mar 2022 12:58:51 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 228CmO0R017960;
+        Tue, 8 Mar 2022 12:58:51 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3enww7bpqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Mar 2022 12:58:51 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 228CrrHP004752;
+        Tue, 8 Mar 2022 12:58:49 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04fra.de.ibm.com with ESMTP id 3ekyg96dk5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Mar 2022 12:58:48 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 228ClaRQ46268788
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Mar 2022 12:47:36 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 89FEF11C04A;
+        Tue,  8 Mar 2022 12:58:45 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 31F0611C04C;
+        Tue,  8 Mar 2022 12:58:45 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Mar 2022 12:58:45 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Thomas Huth <thuth@redhat.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/5] KVM: s390: selftests: Split memop tests
+Date:   Tue,  8 Mar 2022 13:58:37 +0100
+Message-Id: <20220308125841.3271721-2-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220308125841.3271721-1-scgl@linux.ibm.com>
+References: <20220308125841.3271721-1-scgl@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 31Ie7uDQYHEnwQOgGd73VK-ZrqqBsFLS
+X-Proofpoint-GUID: QE1bEk8mPlMmvhazjAVbq3yDRlS5ibka
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-08_03,2022-03-04_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 adultscore=0 clxscore=1015
+ priorityscore=1501 malwarescore=0 impostorscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 mlxscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203080065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts the omap2430 changes of
+Split success case/copy test from error test, making them independent.
+This means they do not share state and are easier to understand.
+Also, new test can be added in the same manner without affecting the old
+ones. In order to make that simpler, introduce functionality for the
+setup of commonly used variables.
 
-commit cf081d009c44 ("usb: musb: Set the DT node on the child device")
-
-Since v5.17-rc1, musb is broken on the gta04 and openpandora devices
-(omap3530/dm3730). BeagleBone Black (am335x) seems to work.
-
-Symptoms of this bug are
-
-a) main symptom
-
-[   21.336517] using random host ethernet address
-[   21.341430] using host ethernet address: 32:70:05:18:ff:78
-[   21.341461] using self ethernet address: 46:10:3a:b3:af:d9
-[   21.358184] usb0: HOST MAC 32:70:05:18:ff:78
-[   21.376678] usb0: MAC 46:10:3a:b3:af:d9
-[   21.388305] using random self ethernet address
-[   21.393371] using random host ethernet address
-[   21.398162] g_ether gadget: Ethernet Gadget, version: Memorial Day 2008
-[   21.421081] g_ether gadget: g_ether ready
-[   21.492156] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   21.691345] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   21.803192] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   21.819427] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   22.124450] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   22.168518] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   22.179382] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.213592] musb-hdrc musb-hdrc.1.auto: pm runtime get failed in musb_gadget_queue
-[   23.221832] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.227905] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.239440] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.401000] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.407073] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.426361] musb-hdrc musb-hdrc.1.auto: Could not enable: -22
-[   23.734466] musb-hdrc musb-hdrc.1.auto: pm runtime get failed in musb_gadget_queue
-[   23.742462] musb-hdrc musb-hdrc.1.auto: pm runtime get failed in musb_gadget_queue
-[   23.750396] musb-hdrc musb-hdrc.1.auto: pm runtime get failed in musb_gadget_queue
-... (repeats with high frequency)
-
-This stops if the USB cable is unplugged and restarts if it is plugged in again.
-
-b) also found in the log
-
-[    6.498107] ------------[ cut here ]------------
-[    6.502960] WARNING: CPU: 0 PID: 868 at arch/arm/mach-omap2/omap_hwmod.c:1885 _enable+0x50/0x234
-[    6.512207] omap_hwmod: usb_otg_hs: enabled state can only be entered from initialized, idle, or disabled state
-[    6.522766] Modules linked in: omap2430(+) bmp280_i2c bmp280 itg3200 at24 tsc2007 leds_tca6507 bma180 hmc5843_i2c hmc5843_core industrialio_triggered_buffer lis3lv02d_i2c kfifo_buf lis3lv02d phy_twl4030_usb snd_soc_omap_mcbsp snd_soc_ti_sdma musb_hdrc snd_soc_twl4030 gnss_sirf twl4030_vibra twl4030_madc twl4030_charger twl4030_pwrbutton gnss industrialio ehci_omap omapdrm drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm drm_panel_orientation_quirks cec
-[    6.566436] CPU: 0 PID: 868 Comm: udevd Not tainted 5.16.0-rc5-letux+ #8251
-[    6.573730] Hardware name: Generic OMAP36xx (Flattened Device Tree)
-[    6.580322] [<c010ed30>] (unwind_backtrace) from [<c010a1d0>] (show_stack+0x10/0x14)
-[    6.588470] [<c010a1d0>] (show_stack) from [<c0897c14>] (dump_stack_lvl+0x40/0x4c)
-[    6.596405] [<c0897c14>] (dump_stack_lvl) from [<c0130cc4>] (__warn+0xb4/0xdc)
-[    6.604003] [<c0130cc4>] (__warn) from [<c0130d5c>] (warn_slowpath_fmt+0x70/0x9c)
-[    6.611846] [<c0130d5c>] (warn_slowpath_fmt) from [<c011f4d4>] (_enable+0x50/0x234)
-[    6.619903] [<c011f4d4>] (_enable) from [<c012081c>] (omap_hwmod_enable+0x28/0x40)
-[    6.627838] [<c012081c>] (omap_hwmod_enable) from [<c0120ff4>] (omap_device_enable+0x4c/0x78)
-[    6.636779] [<c0120ff4>] (omap_device_enable) from [<c0121030>] (_od_runtime_resume+0x10/0x3c)
-[    6.645812] [<c0121030>] (_od_runtime_resume) from [<c05c688c>] (__rpm_callback+0x3c/0xf4)
-[    6.654510] [<c05c688c>] (__rpm_callback) from [<c05c6994>] (rpm_callback+0x50/0x54)
-[    6.662628] [<c05c6994>] (rpm_callback) from [<c05c66b0>] (rpm_resume+0x448/0x4e4)
-[    6.670593] [<c05c66b0>] (rpm_resume) from [<c05c6784>] (__pm_runtime_resume+0x38/0x50)
-[    6.678985] [<c05c6784>] (__pm_runtime_resume) from [<bf14ab20>] (musb_init_controller+0x350/0xa5c [musb_hdrc])
-[    6.689727] [<bf14ab20>] (musb_init_controller [musb_hdrc]) from [<c05bccb8>] (platform_probe+0x58/0xa8)
-[    6.699737] [<c05bccb8>] (platform_probe) from [<c05badf0>] (really_probe+0x170/0x2fc)
-[    6.708068] [<c05badf0>] (really_probe) from [<c05bb040>] (__driver_probe_device+0xc4/0xd8)
-[    6.716827] [<c05bb040>] (__driver_probe_device) from [<c05bb084>] (driver_probe_device+0x30/0xac)
-[    6.726226] [<c05bb084>] (driver_probe_device) from [<c05bb3d0>] (__device_attach_driver+0x94/0xb4)
-[    6.735717] [<c05bb3d0>] (__device_attach_driver) from [<c05b93f8>] (bus_for_each_drv+0xa0/0xb4)
-[    6.744934] [<c05b93f8>] (bus_for_each_drv) from [<c05bb248>] (__device_attach+0xc0/0x134)
-[    6.753631] [<c05bb248>] (__device_attach) from [<c05b9fcc>] (bus_probe_device+0x28/0x80)
-[    6.762207] [<c05b9fcc>] (bus_probe_device) from [<c05b7e40>] (device_add+0x5fc/0x788)
-[    6.770507] [<c05b7e40>] (device_add) from [<c05bd240>] (platform_device_add+0x70/0x1bc)
-[    6.779022] [<c05bd240>] (platform_device_add) from [<bf177830>] (omap2430_probe+0x260/0x2d4 [omap2430])
-[    6.789001] [<bf177830>] (omap2430_probe [omap2430]) from [<c05bccb8>] (platform_probe+0x58/0xa8)
-[    6.798309] [<c05bccb8>] (platform_probe) from [<c05badf0>] (really_probe+0x170/0x2fc)
-[    6.806610] [<c05badf0>] (really_probe) from [<c05bb040>] (__driver_probe_device+0xc4/0xd8)
-[    6.815399] [<c05bb040>] (__driver_probe_device) from [<c05bb084>] (driver_probe_device+0x30/0xac)
-[    6.824798] [<c05bb084>] (driver_probe_device) from [<c05bb4b4>] (__driver_attach+0xc4/0xd8)
-[    6.833648] [<c05bb4b4>] (__driver_attach) from [<c05b9308>] (bus_for_each_dev+0x64/0xa0)
-[    6.842224] [<c05b9308>] (bus_for_each_dev) from [<c05ba248>] (bus_add_driver+0x148/0x1a4)
-[    6.850891] [<c05ba248>] (bus_add_driver) from [<c05bbd1c>] (driver_register+0xb4/0xf8)
-[    6.859313] [<c05bbd1c>] (driver_register) from [<c0101f54>] (do_one_initcall+0x90/0x1c8)
-[    6.867889] [<c0101f54>] (do_one_initcall) from [<c0893968>] (do_init_module+0x4c/0x204)
-[    6.876373] [<c0893968>] (do_init_module) from [<c01b4c30>] (load_module+0x13f0/0x1928)
-[    6.884796] [<c01b4c30>] (load_module) from [<c01b53a0>] (sys_finit_module+0xa0/0xc0)
-[    6.893005] [<c01b53a0>] (sys_finit_module) from [<c0100080>] (ret_fast_syscall+0x0/0x54)
-[    6.901580] Exception stack(0xc2807fa8 to 0xc2807ff0)
-[    6.906890] 7fa0:                   b6e517d4 00052068 00000006 b6e509f8 00000000 b6e5131c
-[    6.915466] 7fc0: b6e517d4 00052068 cd718000 0000017b 00020000 00037f78 00050048 00063368
-[    6.924011] 7fe0: bed8fef0 bed8fee0 b6e4ac4b b6f55a42
-[    6.929321] ---[ end trace d715ff121b58763c ]---
-
-c) git bisect result on testing for "musb-hdrc" in the console log:
-
-cf081d009c447647c6b36aced535ca427dbebe72 is the first bad commit
-commit cf081d009c447647c6b36aced535ca427dbebe72
-Author: Rob Herring <robh@kernel.org>
-Date:   Wed Dec 15 17:07:57 2021 -0600
-
-  usb: musb: Set the DT node on the child device
-
-  The musb glue drivers just copy the glue resources to the musb child device.
-  Instead, set the musb child device's DT node pointer to the parent device's
-  node so that platform_get_irq_byname() can find the resources in the DT.
-  This removes the need for statically populating the IRQ resources from the
-  DT which has been deprecated for some time.
-
-  Signed-off-by: Rob Herring <robh@kernel.org>
-  Link: https://lore.kernel.org/r/20211215230756.2009115-3-robh@kernel.org
-  Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-drivers/usb/musb/am35x.c    | 2 ++
-drivers/usb/musb/da8xx.c    | 2 ++
-drivers/usb/musb/jz4740.c   | 1 +
-drivers/usb/musb/mediatek.c | 2 ++
-drivers/usb/musb/omap2430.c | 1 +
-drivers/usb/musb/ux500.c    | 1 +
-6 files changed, 9 insertions(+)
-
-Reverting this patch makes musb work again as before.
-
-Fixes: cf081d009c44 ("usb: musb: Set the DT node on the child device")
-Cc: Rob Herring <robh@kernel.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 ---
- drivers/usb/musb/omap2430.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/kvm/s390x/memop.c | 137 +++++++++++++---------
+ 1 file changed, 82 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
-index 7d4d0713f4f0..d2b7e613eb34 100644
---- a/drivers/usb/musb/omap2430.c
-+++ b/drivers/usb/musb/omap2430.c
-@@ -327,7 +327,6 @@ static int omap2430_probe(struct platform_device *pdev)
- 	musb->dev.parent		= &pdev->dev;
- 	musb->dev.dma_mask		= &omap2430_dmamask;
- 	musb->dev.coherent_dma_mask	= omap2430_dmamask;
--	device_set_of_node_from_dev(&musb->dev, &pdev->dev);
+diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+index d19c3ffdea3f..b9b673acb766 100644
+--- a/tools/testing/selftests/kvm/s390x/memop.c
++++ b/tools/testing/selftests/kvm/s390x/memop.c
+@@ -18,71 +18,82 @@
+ static uint8_t mem1[65536];
+ static uint8_t mem2[65536];
  
- 	glue->dev			= &pdev->dev;
- 	glue->musb			= musb;
+-static void guest_code(void)
++struct test_default {
++	struct kvm_vm *kvm_vm;
++	struct kvm_run *run;
++	int size;
++};
++
++static struct test_default test_default_init(void *guest_code)
+ {
+-	int i;
++	struct test_default t;
+ 
+-	for (;;) {
+-		for (i = 0; i < sizeof(mem2); i++)
+-			mem2[i] = mem1[i];
+-		GUEST_SYNC(0);
+-	}
++	t.size = min((size_t)kvm_check_cap(KVM_CAP_S390_MEM_OP), sizeof(mem1));
++	t.kvm_vm = vm_create_default(VCPU_ID, 0, guest_code);
++	t.run = vcpu_state(t.kvm_vm, VCPU_ID);
++	return t;
+ }
+ 
+-int main(int argc, char *argv[])
++static void guest_copy(void)
+ {
+-	struct kvm_vm *vm;
+-	struct kvm_run *run;
+-	struct kvm_s390_mem_op ksmo;
+-	int rv, i, maxsize;
+-
+-	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
+-
+-	maxsize = kvm_check_cap(KVM_CAP_S390_MEM_OP);
+-	if (!maxsize) {
+-		print_skip("CAP_S390_MEM_OP not supported");
+-		exit(KSFT_SKIP);
+-	}
+-	if (maxsize > sizeof(mem1))
+-		maxsize = sizeof(mem1);
++	memcpy(&mem2, &mem1, sizeof(mem2));
++	GUEST_SYNC(0);
++}
+ 
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	run = vcpu_state(vm, VCPU_ID);
++static void test_copy(void)
++{
++	struct test_default t = test_default_init(guest_copy);
++	struct kvm_s390_mem_op ksmo;
++	int i;
+ 
+ 	for (i = 0; i < sizeof(mem1); i++)
+ 		mem1[i] = i * i + i;
+ 
+ 	/* Set the first array */
+-	ksmo.gaddr = addr_gva2gpa(vm, (uintptr_t)mem1);
++	ksmo.gaddr = addr_gva2gpa(t.kvm_vm, (uintptr_t)mem1);
+ 	ksmo.flags = 0;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 
+ 	/* Let the guest code copy the first array to the second */
+-	vcpu_run(vm, VCPU_ID);
+-	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
++	vcpu_run(t.kvm_vm, VCPU_ID);
++	TEST_ASSERT(t.run->exit_reason == KVM_EXIT_S390_SIEIC,
+ 		    "Unexpected exit reason: %u (%s)\n",
+-		    run->exit_reason,
+-		    exit_reason_str(run->exit_reason));
++		    t.run->exit_reason,
++		    exit_reason_str(t.run->exit_reason));
+ 
+ 	memset(mem2, 0xaa, sizeof(mem2));
+ 
+ 	/* Get the second array */
+ 	ksmo.gaddr = (uintptr_t)mem2;
+ 	ksmo.flags = 0;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_READ;
+ 	ksmo.buf = (uintptr_t)mem2;
+ 	ksmo.ar = 0;
+-	vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 
+-	TEST_ASSERT(!memcmp(mem1, mem2, maxsize),
++	TEST_ASSERT(!memcmp(mem1, mem2, t.size),
+ 		    "Memory contents do not match!");
+ 
++	kvm_vm_free(t.kvm_vm);
++}
++
++static void guest_idle(void)
++{
++	for (;;)
++		GUEST_SYNC(0);
++}
++
++static void test_errors(void)
++{
++	struct test_default t = test_default_init(guest_idle);
++	struct kvm_s390_mem_op ksmo;
++	int rv;
++
+ 	/* Check error conditions - first bad size: */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = 0;
+@@ -90,7 +101,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == E2BIG, "ioctl allows insane sizes");
+ 
+ 	/* Zero size: */
+@@ -100,65 +111,65 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && (errno == EINVAL || errno == ENOMEM),
+ 		    "ioctl allows 0 as size");
+ 
+ 	/* Bad flags: */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = -1;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows all flags");
+ 
+ 	/* Bad operation: */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = 0;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = -1;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows bad operations");
+ 
+ 	/* Bad guest address: */
+ 	ksmo.gaddr = ~0xfffUL;
+ 	ksmo.flags = KVM_S390_MEMOP_F_CHECK_ONLY;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory access");
+ 
+ 	/* Bad host address: */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = 0;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = 0;
+ 	ksmo.ar = 0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EFAULT,
+ 		    "ioctl does not report bad host memory address");
+ 
+ 	/* Bad access register: */
+-	run->psw_mask &= ~(3UL << (63 - 17));
+-	run->psw_mask |= 1UL << (63 - 17);  /* Enable AR mode */
+-	vcpu_run(vm, VCPU_ID);              /* To sync new state to SIE block */
++	t.run->psw_mask &= ~(3UL << (63 - 17));
++	t.run->psw_mask |= 1UL << (63 - 17);  /* Enable AR mode */
++	vcpu_run(t.kvm_vm, VCPU_ID);              /* To sync new state to SIE block */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = 0;
+-	ksmo.size = maxsize;
++	ksmo.size = t.size;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 17;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows ARs > 15");
+-	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+-	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
++	t.run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
++	vcpu_run(t.kvm_vm, VCPU_ID);                  /* Run to sync new state */
+ 
+ 	/* Check that the SIDA calls are rejected for non-protected guests */
+ 	ksmo.gaddr = 0;
+@@ -167,15 +178,31 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_SIDA_READ;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.sida_offset = 0x1c0;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL,
+ 		    "ioctl does not reject SIDA_READ in non-protected mode");
+ 	ksmo.op = KVM_S390_MEMOP_SIDA_WRITE;
+-	rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = _vcpu_ioctl(t.kvm_vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL,
+ 		    "ioctl does not reject SIDA_WRITE in non-protected mode");
+ 
+-	kvm_vm_free(vm);
++	kvm_vm_free(t.kvm_vm);
++}
++
++int main(int argc, char *argv[])
++{
++	int memop_cap;
++
++	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
++
++	memop_cap = kvm_check_cap(KVM_CAP_S390_MEM_OP);
++	if (!memop_cap) {
++		print_skip("CAP_S390_MEM_OP not supported");
++		exit(KSFT_SKIP);
++	}
++
++	test_copy();
++	test_errors();
+ 
+ 	return 0;
+ }
 -- 
-2.33.0
+2.32.0
 
