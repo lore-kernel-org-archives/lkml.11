@@ -2,141 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2471C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:20:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350363AbiCHVUi (ORCPT
+        id S1350407AbiCHVU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56210 "EHLO
+        Tue, 8 Mar 2022 16:20:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbiCHVUg (ORCPT
+        with ESMTP id S235444AbiCHVUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:20:36 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C8E4739F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:19:38 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id o12so118908ilg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 13:19:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QLkteIHRhUSwMXJUDME8Lv3LFalvJ1bqMQRnTxAe590=;
-        b=HPHLxDYxsD2+TZ97by9ltALMf5ZHAJRHroJziBzdFwPuSJCKFZe4Yg027YVsTH6yCw
-         i3KnR6zXLuQMsYM4TizAFnN6ywf0cp6as6NL0rWeD34y0dg06ufDv99CZ6frUbi4E0uE
-         ISz7vzV+iA8emrmC8AR103T/jvoipxfWillrs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QLkteIHRhUSwMXJUDME8Lv3LFalvJ1bqMQRnTxAe590=;
-        b=ifuqRamJ8vVgvTZeOSyx84pnJq28yLzEEEvBcgFz50ImmKNBDg9VdIsbU/MqbmVOr3
-         YyznFpCrjjo5KP/qsIaFOrTGFZwFdt5ZC4EFWF6GCmFRDZGEs84wvcT7UZQbSRfjrocq
-         VUtoEr63H6SFV/ln9MtBZfBl9e4z+8cBe9ARn5ApKSTqBleqIO9qpHajeJrjxs2GNmOD
-         2Qc+d0mB36abu1PDuRCUaiIpzjBTzu5yhUrys8Dkd/EAs3EGrGTh6SQpIoiqA/IplyHn
-         lJZfvwk00yElGMZT2+zI1QzmmW0UQ7bBy+4pyJuqfZd2puSjkPMrUB1D26UmUUEsOEwx
-         hIqQ==
-X-Gm-Message-State: AOAM531GJPI22DcuFixVCILShcMle9N80yL/jvbF2hWsDxRSXEoXWiPf
-        YzAtMFndTY63aA6M/yzlHEhrog==
-X-Google-Smtp-Source: ABdhPJyv+OH6SuRIzmqviaFC/odZEMdUR/TmLwGhSf+amvFfnigvBORf3Lp73Pst8YT7Bsp/7ZB+pA==
-X-Received: by 2002:a05:6e02:5b1:b0:2c6:218d:fb38 with SMTP id k17-20020a056e0205b100b002c6218dfb38mr17562252ils.266.1646774377886;
-        Tue, 08 Mar 2022 13:19:37 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id d7-20020a5d9647000000b00638d53cd21esm11212583ios.26.2022.03.08.13.19.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 13:19:37 -0800 (PST)
-Subject: Re: [PATCH] Makefile: Fix separate output directory build of
- kselftests
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     kernel@collabora.com, kernelci@groups.io, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org, keescook@chromium.org,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220223191016.1658728-1-usama.anjum@collabora.com>
- <6e954470-f593-e27a-d15c-ecd5c28f4dca@linuxfoundation.org>
- <2ac8cecb-5e14-a8b2-7629-a9ab9d474585@collabora.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <65c11aba-bcab-28f4-a016-8cad128809ad@linuxfoundation.org>
-Date:   Tue, 8 Mar 2022 14:19:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 8 Mar 2022 16:20:54 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378FA4C791;
+        Tue,  8 Mar 2022 13:19:57 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KCpBL2DH4z4xYy;
+        Wed,  9 Mar 2022 08:19:54 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646774395;
+        bh=BJhkJe4LYs9pxm71zcYYsUcXFCJRkTAxHcVlmOvy4FQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=GE8CDYOek//QOHsPTu53CNjkXO8coI+IHAKymEz2BLm44qxjpIVR6KFIXaX4rWuNT
+         3P2ck31TpIXSb+o2W5OqKuLvv+3ngVXDsxFMgOArkFSVfg2+B4gN/ArGlxxwMjEl+f
+         uZHO0Fl8V2V/oEmDohkFwMfgj7cLHwy1Ty+XnvWTrIsIcxYFA6bjAggN7i9kUP8Ouz
+         0jHQhUi9q+TGx+dj4jKLQTGVXPKm/YaLlYuGNQCg1+1pEUeoDZV6BF2kPx8l8PMJE7
+         lFc0PrtFyqUJOt0cBU7x3/dJ8xns+QPPRU3YeITHyzvuB0verf7MRAtDwygg7hpSM4
+         O0QhcEWPK1JLA==
+Date:   Wed, 9 Mar 2022 08:19:53 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the arm-soc tree
+Message-ID: <20220309081953.49930b56@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <2ac8cecb-5e14-a8b2-7629-a9ab9d474585@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/_hnHC+ddFvuB7KUZqACfo/2";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 1:11 AM, Muhammad Usama Anjum wrote:
-> On 3/4/22 2:32 AM, Shuah Khan wrote:
->> On 2/23/22 12:10 PM, Muhammad Usama Anjum wrote:
->>> Build of kselftests fail if kernel's top most Makefile is used for
->>> running or building kselftests with separate output directory. The
->>> absolute path is needed to reference other files during this kind of
->>> build. Set KBUILD_ABS_SRCTREE to use absolute path during the build. It
->>> fixes the following different types of errors:
->>>
->>> make kselftest-all O=/linux_mainline/build
->>> Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
->>>
->>> make kselftest-all O=build
->>> Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
->>>
->>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->>> ---
->>> I've tested this patch on top of next-20220217. The latest next-20220222
->>> have missing patches.
->>
->> Can you give more details on the use-cases you tested? Did you test all
->> the ways kselftest are built?
->>
-> Yeah, I've tried to test all the ways. Here are the different ways I've
-> used to test it:
-> 1) Same directory build of kselftest (this is already working)
-> make kselftest
-> make kselftest-all
-> make kselftest-install
-> make kselftest-clean
-> make kselftest-gen_tar
-> 
-> 2) These were failing when separate output directory is specified either
-> as relative or absolute path. After adding this patch, these are also
-> working. kselfetst.rst mentions separate output directory build in this way.
-> make kselftest O=build
-> make kselftest-all O=build
-> make kselftest-install O=build
-> make kselftest-clean O=build
-> make kselftest-gen_tar O=build
-> 
-> make kselftest O=/build
-> make kselftest-all O=/build
-> make kselftest-install O=/build
-> make kselftest-clean O=/build
-> make kselftest-gen_tar O=/build
-> 
-> Tested on top of next-20220307 after applying this patch.
-> 
+--Sig_/_hnHC+ddFvuB7KUZqACfo/2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for testing all these use-cases. This is a good comprehensive
-list. Do you mind sending a doc patch for
+Hi all,
 
-Documentation/dev-tools/kselftest.rst
+Commit
 
-The text here could almost as is as a new section after
+  c953c764e505 ("arm64: dts: ns2: Fix spi-cpol and spi-cpha property")
 
-Contributing new tests (details) with a new section that outlines
-the tests to run when adding a new test to selftests/Makefile
-and making changes to kselftest common frameowork: selftests/Makefile,
-selftests/lib.mk
+are missing a Signed-off-by from their committer.
 
-Let me know if you are unable to, I will send a patch in.
+--=20
+Cheers,
+Stephen Rothwell
 
-thanks,
--- Shuah
+--Sig_/_hnHC+ddFvuB7KUZqACfo/2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmInyHkACgkQAVBC80lX
+0GxjvAf/ds4FnsqgKybXCwpNBWsS2B8xf3FLWbxj3foQHi5NnuR1Tkl2aU54fwJp
+4W4vEKZwihSXbnP+gsYZD2ZX2e13cp2mqTioUy4w7uAiowtvx9BlLZNVozfCmkav
+ISKhh3IWMOoyA5dwDy06HlRwVGvrIs8UTx5ehXhPYnIT21mdZA4DlGlnGLGk6ccx
+8oiKx+Xo8e4S1z5jJZs4EfKex6EOReLqNcEgOkr/GJKDdeZpcYJ3ovilCRexQ7pv
+9iRKr91tZVMAjxyvqklUEKmOAb6unpGn/0gNp76OCqOjq+bFW2hZ1PNq1THDWoKQ
+6u0PkVNCHtFkUV01PLc7uwpWZTsGWA==
+=Kp3y
+-----END PGP SIGNATURE-----
+
+--Sig_/_hnHC+ddFvuB7KUZqACfo/2--
