@@ -2,85 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1083C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 07:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A507C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 07:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344699AbiCHH45 (ORCPT
+        id S1344707AbiCHH5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 02:56:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
+        Tue, 8 Mar 2022 02:57:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344694AbiCHH4y (ORCPT
+        with ESMTP id S1344706AbiCHH4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 02:56:54 -0500
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F9AE3E5E0
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 23:55:54 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowAAXH_v8Cydi1kunAg--.11175S2;
-        Tue, 08 Mar 2022 15:55:41 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     m.szyprowski@samsung.com, andrzej.hajda@intel.com,
-        mchehab@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] media: s5p-mfc: Handle error for clk_enable
-Date:   Tue,  8 Mar 2022 15:55:38 +0800
-Message-Id: <20220308075538.1117983-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 8 Mar 2022 02:56:55 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257FB3E5DC;
+        Mon,  7 Mar 2022 23:55:58 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 4FA7B2013FA;
+        Tue,  8 Mar 2022 07:55:55 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id DF9BF801EA; Tue,  8 Mar 2022 08:55:50 +0100 (CET)
+Date:   Tue, 8 Mar 2022 08:55:50 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     conor.dooley@microchip.com
+Cc:     mpm@selenic.com, herbert@gondor.apana.org.au,
+        lewis.hanly@microchip.com, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 1/2] hwrng: mpfs - add polarfire soc hwrng support
+Message-ID: <YicMBhn81HmtJMiF@owl.dominikbrodowski.net>
+References: <20220307154023.813158-1-conor.dooley@microchip.com>
+ <20220307154023.813158-2-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAAXH_v8Cydi1kunAg--.11175S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xr47trW3CF4kuryrAFWrKrg_yoWftFg_C3
-        9rXw4fXr1YgrsIywsrKrySk3yrKFWkuws7XFySqF4fK34rK3W3ZrWqvr47Zw17AF4IvrWf
-        Xr1DXrykCFy3CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbzkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
-        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
-        vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IY
-        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
-        xKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307154023.813158-2-conor.dooley@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Am Mon, Mar 07, 2022 at 03:40:23PM +0000 schrieb conor.dooley@microchip.com:
+> From: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Add a driver to access the hardware random number generator on the
+> Polarfire SoC. The hwrng can only be accessed via the system controller,
+> so use the mailbox interface the system controller exposes to access the
+> hwrng.
+> 
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  drivers/char/hw_random/Kconfig    |  13 ++++
+>  drivers/char/hw_random/Makefile   |   1 +
+>  drivers/char/hw_random/mpfs-rng.c | 103 ++++++++++++++++++++++++++++++
+>  3 files changed, 117 insertions(+)
+>  create mode 100644 drivers/char/hw_random/mpfs-rng.c
+> 
+> diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+> index 9704963f9d50..69f1fd538589 100644
+> --- a/drivers/char/hw_random/Kconfig
+> +++ b/drivers/char/hw_random/Kconfig
+> @@ -385,6 +385,19 @@ config HW_RANDOM_PIC32
+>  
+>  	  If unsure, say Y.
+>  
+> +config HW_RANDOM_POLARFIRE_SOC
+> +	tristate "Microchip PolarFire SoC Random Number Generator support"
+> +	depends on HW_RANDOM && POLARFIRE_SOC_SYS_CTRL
+> +	help
+> +	  This driver provides kernel-side support for the Random Number
+> +	  Generator hardware found on PolarFire SoC (MPFS).
+> +
+> +	  To compile this driver as a module, choose M here. The
+> +	  module will be called mfps_rng.
+> +
+> +	  If unsure, say N.
+> +
+> +
+>  config HW_RANDOM_MESON
+>  	tristate "Amlogic Meson Random Number Generator support"
+>  	depends on HW_RANDOM
+> diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
+> index 584d47ba32f7..3e948cf04476 100644
+> --- a/drivers/char/hw_random/Makefile
+> +++ b/drivers/char/hw_random/Makefile
+> @@ -46,3 +46,4 @@ obj-$(CONFIG_HW_RANDOM_CCTRNG) += cctrng.o
+>  obj-$(CONFIG_HW_RANDOM_XIPHERA) += xiphera-trng.o
+>  obj-$(CONFIG_HW_RANDOM_ARM_SMCCC_TRNG) += arm_smccc_trng.o
+>  obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
+> +obj-$(CONFIG_HW_RANDOM_POLARFIRE_SOC) += mpfs-rng.o
+> diff --git a/drivers/char/hw_random/mpfs-rng.c b/drivers/char/hw_random/mpfs-rng.c
+> new file mode 100644
+> index 000000000000..a103c765d021
+> --- /dev/null
+> +++ b/drivers/char/hw_random/mpfs-rng.c
+> @@ -0,0 +1,103 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Microchip PolarFire SoC (MPFS) hardware random driver
+> + *
+> + * Copyright (c) 2020-2022 Microchip Corporation. All rights reserved.
+> + *
+> + * Author: Conor Dooley <conor.dooley@microchip.com>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/hw_random.h>
+> +#include <linux/platform_device.h>
+> +#include <soc/microchip/mpfs.h>
+> +
+> +#define CMD_OPCODE	0x21
+> +#define CMD_DATA_SIZE	0U
+> +#define CMD_DATA	NULL
+> +#define MBOX_OFFSET	0U
+> +#define RESP_OFFSET	0U
+> +#define RNG_RESP_BYTES	32U
+> +
+> +struct mpfs_rng {
+> +	struct mpfs_sys_controller *sys_controller;
+> +	struct hwrng rng;
+> +};
+> +
+> +static int mpfs_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+> +{
+> +	struct mpfs_rng *rng_priv = container_of(rng, struct mpfs_rng, rng);
+> +	u32 response_msg[RNG_RESP_BYTES / sizeof(u32)];
+> +	unsigned int count = 0, copy_size_bytes;
+> +	int ret;
+> +
+> +	struct mpfs_mss_response response = {
+> +		.resp_status = 0U,
+> +		.resp_msg = (u32 *)response_msg,
+> +		.resp_size = RNG_RESP_BYTES
+> +	};
+> +	struct mpfs_mss_msg msg = {
+> +		.cmd_opcode = CMD_OPCODE,
+> +		.cmd_data_size = CMD_DATA_SIZE,
+> +		.response = &response,
+> +		.cmd_data = CMD_DATA,
+> +		.mbox_offset = MBOX_OFFSET,
+> +		.resp_offset = RESP_OFFSET
+> +	};
+> +
+> +	while (count < max) {
+> +		ret = mpfs_blocking_transaction(rng_priv->sys_controller, &msg);
+> +		if (ret)
+> +			return ret;
+> +
+> +		copy_size_bytes = max - count > RNG_RESP_BYTES ? RNG_RESP_BYTES : max - count;
+> +		memcpy(buf + count, response_msg, copy_size_bytes);
+> +
+> +		count += copy_size_bytes;
+> +		if (!wait)
+> +			break;
+> +	}
+> +
+> +	return count;
+> +}
+> +
+> +static int mpfs_rng_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mpfs_rng *rng_priv;
+> +	int ret;
+> +
+> +	rng_priv = devm_kzalloc(dev, sizeof(*rng_priv), GFP_KERNEL);
+> +	if (!rng_priv)
+> +		return -ENOMEM;
+> +
+> +	rng_priv->sys_controller =  mpfs_sys_controller_get(&pdev->dev);
+> +	if (IS_ERR(rng_priv->sys_controller))
+> +		return dev_err_probe(dev, PTR_ERR(rng_priv->sys_controller),
+> +				     "Failed to register system controller hwrng sub device\n");
+> +
+> +	rng_priv->rng.read = mpfs_rng_read;
+> +	rng_priv->rng.name = pdev->name;
 
-Fixes: 1bce6fb3edf1 ("[media] s5p-mfc: Rework clock handling")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/media/platform/s5p-mfc/s5p_mfc_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Is there also some quality estimation, or should this hwrng only be trusted
+if it passes validation by userspace?
 
-diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_pm.c b/drivers/media/platform/s5p-mfc/s5p_mfc_pm.c
-index 88b7d33c9197..392e6fab0a75 100644
---- a/drivers/media/platform/s5p-mfc/s5p_mfc_pm.c
-+++ b/drivers/media/platform/s5p-mfc/s5p_mfc_pm.c
-@@ -106,10 +106,12 @@ int s5p_mfc_power_on(void)
- 
- int s5p_mfc_power_off(void)
- {
--	int i;
-+	int i, ret;
- 
- 	/* finish software clock gating */
--	clk_enable(pm->clock_gate);
-+	ret = clk_enable(pm->clock_gate);
-+	if (ret)
-+		return ret;
- 
- 	for (i = 0; i < pm->num_clocks; i++)
- 		clk_disable_unprepare(pm->clocks[i]);
--- 
-2.25.1
-
+Thanks,
+	Dominik
