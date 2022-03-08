@@ -2,103 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F218FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349436AbiCHSMu (ORCPT
+        id S1349429AbiCHSNV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
+        Tue, 8 Mar 2022 13:13:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbiCHSMt (ORCPT
+        with ESMTP id S1349430AbiCHSMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:12:49 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890A956C01
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:11:52 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id w37so17159327pga.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:11:52 -0800 (PST)
+        Tue, 8 Mar 2022 13:12:50 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D66156C08
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:11:53 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id w17-20020a056830111100b005b22c584b93so5991504otq.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:11:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=3Pry/tblt+LFz/ggmn7l+mL5TXcjGxyxDzyRMHHrD8E=;
-        b=iiRcRwY3T/AIQxyvmUxxl1ZXTM+Xe219CCId+5cHhXYm4c3M6EVpr4PKX7CJaMoIWV
-         ddBgaReZfIareX8mQH3/EDVMLkf3QmnT97AxxrBs0ENRPKtVc3L/BRUGbw6rmXk2k1Cj
-         JXRGOZIPm1vCu0LrXvNOzZuEIG3jp9/w1SSe7PWBjUO+kgr4d7tWBS5cgoKGfPUxkDY/
-         Mv015bQPu8KnmdbY0wbPJHeVVf2uoFriqXCErz23oAOVmDkqBlVe15dqCd3z9yIvE+Sz
-         PAhtWZPpIWxnoJY0mZK5hpFPjO/r27QnbAKo+5yyxWmVPWU9jkzA2f4lCPAm4NrouF+5
-         cDVw==
+        bh=eCjdrkWFXlI2z3fvVt8j+mPo6k+YDOLeGzfqyXA7qwI=;
+        b=Rt7ZP4DLJ8Wvx6/WSEzVQ+9M9PDDM1AMWmX47E+JoHJJLzlhu1GZ6UBtDpeWJlmCis
+         JElGAotsUYcn60aAgpObiD+qgQ7vWebEub1OIMH1Yt+WOhiFkZlu6nKcvXcA5xMQUexW
+         bQ75EJDkJdHW7EPeiKBCVxbEfvsLdMupm+RRCyoPAWndKIGFS20MAr5SaTQweE8fL7cK
+         rdpxJUO1sxQN4H0yp6pCT4pg+GMD92K7cunI9n1yfLMXAy+OwhlEJZrrPjc646j6VCHp
+         qPXIQ5zK4FLN3mOYJrBjLT4NVSHKN/ng/zOCIyHqQl0iQC0tDnQe6cAweP7FFc3p/ksz
+         Ioww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=3Pry/tblt+LFz/ggmn7l+mL5TXcjGxyxDzyRMHHrD8E=;
-        b=uEXJW2kHiMS9pmzP+rVVTd4eXBP4TzD8ivLBgUz+NwDKw+kZtWYm0MJS4GktBJnmyj
-         vrnv0OW6SW/WRlIEuPJpe9eFkceXpI0bqfryP28Fpxgl21Lb4tIsVJsKg0Ajab1U2xWz
-         lvB4a0hzELomYMWY8khCAe3RgQlrEUZg4VRHvVzeqRc/V0avLbbMVy7Su3AEfLE6Fcnv
-         PDb42YosZvZJvy0EE0srnoXhie8ZW5hwn9bCs4Z+/2UfWERppCErKKaIH4+QWZkPEwqh
-         Pacj6FosKVG9S4K1fVj8I2pPosxfnCFHhgVoSA5HpJbrDAgVeiaR+u4HsRJW9kUTYPT8
-         Pzmw==
-X-Gm-Message-State: AOAM533r+JOWKrAxteLZDpboYgQaBY2jhgf2vD7XjbsKIOo10dxHLCcn
-        8RaLOget9FYMwS0RDGLxbzwMNO23X5tBzQ==
-X-Google-Smtp-Source: ABdhPJw23H0nMwGNL6c3/E2MhVBKJ1wt+jn6EjAyDOMFMNYr+UJ2kNf1ahIjaSEq4gg2mdWjlpX8VA==
-X-Received: by 2002:a05:6a00:781:b0:4f4:2a:2d89 with SMTP id g1-20020a056a00078100b004f4002a2d89mr19305230pfu.13.1646763111731;
-        Tue, 08 Mar 2022 10:11:51 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s9-20020a056a00194900b004e1583f88a2sm20437955pfk.0.2022.03.08.10.11.50
+        bh=eCjdrkWFXlI2z3fvVt8j+mPo6k+YDOLeGzfqyXA7qwI=;
+        b=tWcwBzn39/u9wD+mrqA4ERRnEnweeEuJGyLDN/G8fmwXG5kAGbwCBTalF0nNfdCiFH
+         N0WFcZpbdXSws8UVIyaVobYGq+y4S0hi0yrqoiECzyPZFNsGh4SXt28R8g+WBVBLkQcg
+         oE9yCinB9G3b07OD1fnphZYuiJCxwfaqDOJlLsa+bbN8QmSUkxh/ppJOUro9WFuhIXw5
+         q82gnNYDmsuMF5AQRyl16ys9SON60L83bgJUwzWzLySUdVN6WYcB7S2Kti0gS2BaLfSm
+         kraEg4vyTcV5Kr+i/L1u7hd1gRQhJpRHfquT9cMcY/LGzYzKKRrUywfw4TnBWyePK0rb
+         DeFg==
+X-Gm-Message-State: AOAM532kPHkfRaFvh2irWE84v0ZbGpOEd6Pq6U/+q9gboC7/z+jalaMa
+        iv11IEtG/mXbOGCsEUe3PNAZzg==
+X-Google-Smtp-Source: ABdhPJxvEGLL54Z+BCjwAaRSpUbf47FFGDFMMrjqGpR5+XILsKSYph+QmQPxjTwKOFmXTYhdaeb/wQ==
+X-Received: by 2002:a9d:4e99:0:b0:5b2:54f4:75e7 with SMTP id v25-20020a9d4e99000000b005b254f475e7mr1433951otk.94.1646763112445;
+        Tue, 08 Mar 2022 10:11:52 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05687036c700b000da4bcdae42sm3072206oak.13.2022.03.08.10.11.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 10:11:51 -0800 (PST)
-Date:   Tue, 8 Mar 2022 18:11:47 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-Subject: Re: [PATCH v2 12/25] KVM: x86/mmu: cleanup computation of MMU roles
- for two-dimensional paging
-Message-ID: <YiecYxd/YreGFWpB@google.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-13-pbonzini@redhat.com>
+        Tue, 08 Mar 2022 10:11:52 -0800 (PST)
+Date:   Tue, 8 Mar 2022 10:13:35 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@codeaurora.org,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v10 7/7] pinctrl: qcom: Update clock voting as optional
+Message-ID: <Yieczzo96xSaA7jp@ripper>
+References: <1646737394-4740-1-git-send-email-quic_srivasam@quicinc.com>
+ <1646737394-4740-8-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-13-pbonzini@redhat.com>
+In-Reply-To: <1646737394-4740-8-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> Inline kvm_calc_mmu_role_common into its sole caller, and simplify it
-> by removing the computation of unnecessary bits.
+On Tue 08 Mar 03:03 PST 2022, Srinivasa Rao Mandadapu wrote:
+
+> Update bulk clock voting to optional voting as ADSP bypass platform doesn't
+> need macro and decodec clocks,
+
+Even I am not sure what "ADSP bypass platform" means, so please express
+this better.
+
+Are they optional because sc7280 typically come with ADSP based audio,
+but it might not and if not then we shouldn't control those clocks?
+
+> these are maintained as power domains and
+> operated from lpass audio core cc.
 > 
-> Extended bits are unnecessary because page walking uses the CPU mode,
-> and EFER.NX/CR0.WP can be set to one unconditionally---matching the
-> format of shadow pages rather than the format of guest pages.
 
-But they don't match the format of shadow pages.  EPT has an equivalent to NX in
-that KVM can always clear X, but KVM explicitly supports running with EPT and
-EFER.NX=0 in the host (32-bit non-PAE kernels).
+So there are clocks, but they are exposed as power-domains? Or are you
+just trying to say that the LPASS LPI pinctrl block is always in a
+power-domain controlled by the audio clock-controller?
 
-CR0.WP equally confusing.  Yes, both EPT and NPT enforce write protection at all
-times, but EPT has no concept of user vs. supervisor in the EPT tables themselves,
-at least with respect to writes (thanks mode-based execution for the qualifier...).
-NPT is even worse as the APM explicitly states:
+Regards,
+Bjorn
 
-  The host hCR0.WP bit is ignored under nested paging.
-
-Unless there's some hidden dependency I'm missing, I'd prefer we arbitrarily leave
-them zero.
-
-> The MMU role for two dimensional paging does still depend on the CPU mode,
-
-Heh, don't think it's necessary to spell out TDP, and I think it would be helpful
-to write it as "non-nested TDP" since the surrounding patches deal with both.
-
-> even if only barely so, due to SMM and guest mode; for consistency,
-> pass it down to kvm_calc_tdp_mmu_root_page_role instead of querying
-> the vcpu with is_smm or is_guest_mode.
-
-The changelog should call out this is a _significant_ change in behavior for KVM,
-as it allows reusing shadow pages with different guest MMU "role bits".  E.g. if
-this lands after the changes to not unload MMUs on cr0/cr4 emulation, it will be
-quite the functional change.
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  drivers/pinctrl/qcom/pinctrl-lpass-lpi.c        | 12 +++++++++---
+>  drivers/pinctrl/qcom/pinctrl-lpass-lpi.h        |  1 +
+>  drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c |  1 +
+>  3 files changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> index 1ab572f..c618b74 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> @@ -407,9 +407,15 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
+>  		return dev_err_probe(dev, PTR_ERR(pctrl->slew_base),
+>  				     "Slew resource not provided\n");
+>  
+> -	ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
+> -	if (ret)
+> -		return dev_err_probe(dev, ret, "Can't get clocks\n");
+> +	if (data->is_clk_optional) {
+> +		ret = devm_clk_bulk_get_optional(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "Can't get clocks\n");
+> +	} else {
+> +		ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "Can't get clocks\n");
+> +	}
+>  
+>  	ret = clk_bulk_prepare_enable(MAX_LPI_NUM_CLKS, pctrl->clks);
+>  	if (ret)
+> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+> index afbac2a..3bcede6 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+> @@ -77,6 +77,7 @@ struct lpi_pinctrl_variant_data {
+>  	int ngroups;
+>  	const struct lpi_function *functions;
+>  	int nfunctions;
+> +	int is_clk_optional;
+>  };
+>  
+>  int lpi_pinctrl_probe(struct platform_device *pdev);
+> diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> index d67ff25..304d8a2 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> @@ -142,6 +142,7 @@ static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
+>  	.ngroups = ARRAY_SIZE(sc7280_groups),
+>  	.functions = sc7280_functions,
+>  	.nfunctions = ARRAY_SIZE(sc7280_functions),
+> +	.is_clk_optional = 1,
+>  };
+>  
+>  static const struct of_device_id lpi_pinctrl_of_match[] = {
+> -- 
+> 2.7.4
+> 
