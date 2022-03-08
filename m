@@ -2,154 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE95C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48623C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349463AbiCHSTU (ORCPT
+        id S1349484AbiCHSTm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:19:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
+        Tue, 8 Mar 2022 13:19:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234608AbiCHSTT (ORCPT
+        with ESMTP id S1349464AbiCHSTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:19:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2A02EF;
-        Tue,  8 Mar 2022 10:18:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 794236157C;
-        Tue,  8 Mar 2022 18:18:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7CBC340EB;
-        Tue,  8 Mar 2022 18:18:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646763500;
-        bh=hfliW31AVRSU5p6jjAxSw1HcKyAHEKOmAwFZjydld00=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BhEHsqr3EDTXwEIBwWtIIb/LdCdEwCx9P3HaPD+EkCBnAmRPkzSpaFvJGs84nFuZW
-         f4reBJEEPm8T4qO7GUn1rTm5pX0t1NW/dZPlVc4s4BZHn8gYAfkLT43xAJSm7fDVaL
-         tVFk4gqmjoMOZwpdDdHb/dSIwlSYXMmemtDirUm4gJaeFnjhgT0aQKSPNcdcvWMF0I
-         UzCgdZoI/5/224f43RrsVcOPRbzBPan/peHqSnTCCm/qzMaaVh2fN3rHX+ucCV4Bcb
-         rBZbbrcmq6IhOaD8B8F8ciFQJlJ8Yb6guJixW21bJJCSCE9uuIewLYPPuAEGCXk9hY
-         aUySQg3RkP+0A==
-Message-ID: <66463e26-8564-9f58-ce41-9a2843891d1a@kernel.org>
-Date:   Tue, 8 Mar 2022 11:18:18 -0700
+        Tue, 8 Mar 2022 13:19:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D4FA3D48B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:18:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646763522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SS6f7dRwxzKIXX1gLdfWCfBLoUQykjMr5LR57Ii/WgE=;
+        b=hGcOw1cfvZ3AHtfUmxyiuCJSMi2V4/7vMt0Ev/2lFK8zrwneOhaV6uiolF2iLJuns7+EuX
+        Lzpz3OIZtmB51gi6Mxz1Shqxp7TcUVIBWDeOtQX/wBHUJ+24LSZj7r3kxVMKF0UOqvNRrk
+        wbMcQ5iIR3LlhgEMBwjwcp/rLILbe6U=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-349-Gsix1dlLN4eP0kpdVZ_2aw-1; Tue, 08 Mar 2022 13:18:41 -0500
+X-MC-Unique: Gsix1dlLN4eP0kpdVZ_2aw-1
+Received: by mail-ej1-f69.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso9102527ejk.17
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:18:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SS6f7dRwxzKIXX1gLdfWCfBLoUQykjMr5LR57Ii/WgE=;
+        b=u0u+MUP8x2sMUEq5DYQbPkOv/ZlBUceT+ee2p0EBMUn7AQmep+n8R3unP9uh1/zGJu
+         aeOvzKH/TknwlMCFiQBMo/oSaFfFrlDO3XBYFbxHJBcrMegZdopbk2VKBcLhE92xoUN2
+         0+BZgpE43UdQ8MXm66Txo+BJEhxIlRKnMV861C/ZkCPLVa7tnChhpFAlhr9uaG3DU38m
+         pUXpzrNCAftOfTocsyJ5my1MJpEcJ/oPJ7OCvOyR62yfw7du1XLNpG/xEMM7OpynUuym
+         chJT19v0Ppr7eTo9bg9SeKa9LWJYLGCTvnHqo5rTo092J/Zq4dkQmUhhj+3+RTC7IG8G
+         9FyQ==
+X-Gm-Message-State: AOAM5336FpgatPtXtUpRHeQjvWo5DqziQRHjko1l8zLNXhAnxqJ2cpD3
+        BGXbJQcbHdy9ylW+iFqTtCNAvowSMqhrR3wAluM3ttS7yL0CQdK1sJSz0EhH8wxJn39Ssz9e39Q
+        2bd6paRX/s7fYX6AiAcTaMOQS
+X-Received: by 2002:a17:907:1c0a:b0:6da:7ac4:5349 with SMTP id nc10-20020a1709071c0a00b006da7ac45349mr14620588ejc.596.1646763519559;
+        Tue, 08 Mar 2022 10:18:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy9UKSdlIjJiXmn1spywhUg4vxQcqmWsv7ZWbx3Y7a36yveI+/CikgqEVMnFw0WXKZw0Rc7ZQ==
+X-Received: by 2002:a17:907:1c0a:b0:6da:7ac4:5349 with SMTP id nc10-20020a1709071c0a00b006da7ac45349mr14620563ejc.596.1646763519291;
+        Tue, 08 Mar 2022 10:18:39 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id hb19-20020a170906b89300b006daa95d178esm5501118ejb.60.2022.03.08.10.18.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 10:18:38 -0800 (PST)
+Message-ID: <17bc86ec-b470-e6ce-d467-fdc3b11c9c16@redhat.com>
+Date:   Tue, 8 Mar 2022 19:18:37 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 11/25] KVM: x86/mmu: remove
+ kvm_calc_shadow_root_page_role_common
 Content-Language: en-US
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
- <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
- <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        dmatlack@google.com
+References: <20220221162243.683208-1-pbonzini@redhat.com>
+ <20220221162243.683208-12-pbonzini@redhat.com> <YieW+PZarPdsSnO7@google.com>
+ <f9e7903a-72b6-5bd7-4795-6c568b98f09d@redhat.com>
+ <Yiedukl6MC8OAAog@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yiedukl6MC8OAAog@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 8:43 AM, Tadeusz Struk wrote:
-> Hi David,
-> On 3/7/22 18:58, David Laight wrote:
->>> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
->>> index 4788f6b37053..622345af323e 100644
->>> --- a/net/ipv6/ip6_output.c
->>> +++ b/net/ipv6/ip6_output.c
->>> @@ -1629,6 +1629,13 @@ static int __ip6_append_data(struct sock *sk,
->>>                   err = -EINVAL;
->>>                   goto error;
->>>               }
->>> +            if (unlikely(alloclen < fraglen)) {
->>> +                if (printk_ratelimit())
->>> +                    pr_warn("%s: wrong alloclen: %d, fraglen: %d",
->>> +                        __func__, alloclen, fraglen);
->>> +                alloclen = fraglen;
->>> +            }
->>> +
->> Except that is a valid case, see a few lines higher:
->>
->>                 alloclen = min_t(int, fraglen, MAX_HEADER);
->>                 pagedlen = fraglen - alloclen;
->>
->> You need to report the input values that cause the problem later on.
+On 3/8/22 19:17, Sean Christopherson wrote:
+>>> +	role.base.direct = !____is_cr0_pg(regs);
 > 
-> OK, but in this case it falls into the first if block:
-> https://elixir.bootlin.com/linux/v5.17-rc7/source/net/ipv6/ip6_output.c#L1606
-> 
-> where alloclen is assigned the value of mtu.
-> The values in this case are just before the alloc_skb() are:
-> 
-> alloclen = 1480
-> alloc_extra = 136
-> datalen = 64095
-> fragheaderlen = 1480
-> fraglen = 65575
-> transhdrlen = 0
-> mtu = 1480
-> 
+> On a serious note, can we add a WARN_ON_ONCE(role.base.direct)?  Not so much that
+> the WARN will be helpful, but to document the subtle dependency?  If the relevant
+> code goes away in the end, ignore this requrest.
 
-Does this solve the problem (whitespace damaged on paste, but it is just
-a code move and removing fraglen getting set twice):
+Ok, that can be done.  Either that or !is_cr0_pg().
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e69fac576970..59f036241f1b 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1589,6 +1589,15 @@ static int __ip6_append_data(struct sock *sk,
+Paolo
 
-                        if (datalen > (cork->length <= mtu &&
-!(cork->flags & IPCORK_ALLFRAG) ? mtu : maxfraglen) - fragheaderlen)
-                                datalen = maxfraglen - fragheaderlen -
-rt->dst.trailer_len;
-+
-+                       if (datalen != length + fraggap) {
-+                               /*
-+                                * this is not the last fragment, the
-trailer
-+                                * space is regarded as data space.
-+                                */
-+                               datalen += rt->dst.trailer_len;
-+                       }
-+
-                        fraglen = datalen + fragheaderlen;
-                        pagedlen = 0;
-
-@@ -1615,16 +1624,6 @@ static int __ip6_append_data(struct sock *sk,
-                        }
-                        alloclen += alloc_extra;
-
--                       if (datalen != length + fraggap) {
--                               /*
--                                * this is not the last fragment, the
-trailer
--                                * space is regarded as data space.
--                                */
--                               datalen += rt->dst.trailer_len;
--                       }
--
--                       fraglen = datalen + fragheaderlen;
--
-                        copy = datalen - transhdrlen - fraggap - pagedlen;
-                        if (copy < 0) {
-                                err = -EINVAL;
