@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C26C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 04:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 745BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 04:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245310AbiCHElQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 23:41:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
+        id S245449AbiCHEle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 23:41:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245130AbiCHElL (ORCPT
+        with ESMTP id S245415AbiCHElZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 23:41:11 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2046.outbound.protection.outlook.com [40.107.212.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3452CCA2;
-        Mon,  7 Mar 2022 20:40:14 -0800 (PST)
+        Mon, 7 Mar 2022 23:41:25 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2062.outbound.protection.outlook.com [40.107.220.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3016D3BBCE;
+        Mon,  7 Mar 2022 20:40:25 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aHcB4mAttlyAfLapKjtaUtOLhfYTcKI6dTg0/WOmFRvh0TPtnNYJ85f9Vrcr0wlQP4sRfxLHukP2ZSE4OOScmEMalWiOAhIxQaofzMwC6lY4OP015TVtzh0xnAlSiXw4bPRM3f09WrM7atEc5bsnqM1WA+JrMjf2E2/HSpl/YRqOddF9/o2TmjJa+PxcaLPi4e8p+YcHJRFALbtSt+JquQ6aB6lpbVyxf7QgsO+V/uPfzZTU1dIPq9ATFt+R3AJCuCKUCpvFevhU1In120ilDEh8kjDXN8uhJ9/Mkz7TT53HktKG+y30dmeJBp5McikF+he2Rsm7QhKdf8JXj3dDYg==
+ b=CXhIZflxipEgfh6UDXqcxFqgsLc3305bKE5nwh1lfbu5L5NgNXwAMqWC9RvcQSRvvVi/p3aNx5d69xqttfr58+qXDjcTcHldui2p64In4+OwWZ0+q7DlnWuJR2coIms50iusPq8dcGLJT2/Ka3t29CV8EnwU/GS0i3v/uYlR5GrJ8gQAH9EgOiSCwbm0kqzgUqU3VzHs7UFuKkPPDDLxZbYFJ1OJsxN7Q+WibahPlPPJnPAdBRgfCUeTYNOChcwNVigV9wPDl4IvvtoChEfYnpbpljHlifL4clSQXsbB05UefazZG9GvUCwC5OvwPnmlWUVSbU8eIxNfSFiVswRhpQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AaLxSGDTdIod5jBkm0rL2cgPZM4JG2UMZfSouTwN0MU=;
- b=HiykpBLpbli+Q76sw9t8sO5gfNBzggLmnB46LzmpNELkA9ExhQCswMN22Zud4Sc+kuRvKfajm0q6tBtFWWZctSSUgXzkxuNy54s3/tnzziUnQDyzNnwHAJvw3oHAwR9r/8Wd15lxqWj4e9KhjLIOdJPCk2ZKpdkOgHR6/qIuzIMyDgukEU5x1Gt8K9S745QUwF8LnDL5gNJ2abbcbvcUjO/toBf7rsTTBKYH2wBTfPhH2baxKZcqr7SOF/2g2Jvo2cXlH7B+7p7/AwR1ty2jDCb+tw947E+qCCUVY8FN8qd9SFbUQ6GVAxuAnb/60wlwwUVqGdgArF23w9lxey1THg==
+ bh=lYtVtx3Zm2oBUMFae3DZxhD+8teRR1GNGqNCvIbmrFE=;
+ b=ErjQfdBHTJDFlAkUhacj2AcXHdYXWVj8bJSD43K9YL9YcMShEH7jADnqHEXfpL3vhyy4aaYSDgjE/gvUfeFkPZRtAFnQQX3EaXM4K/cw7vx9H27bBYOlZXUWeiaWm2Q6ONYN7xV4ieQYGFESKYD4dy3EhAah1AWzqFFpfOrZHRtKwOHozZAhMR3kk5lbaS29Uqn+Yori1SkAKgDibLP/eso+PZ70/Jiymfy9BAM19cCDwpSUws6LDYHgeU5uXJQHk4BMsgikf5TfQhIzfS9geD5ozn3fAftkIxUlTI9CEvKaSIZRunTZx1fAG+Xb7Sy0AZlKrhogDZGTDgoSeepNeQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AaLxSGDTdIod5jBkm0rL2cgPZM4JG2UMZfSouTwN0MU=;
- b=31HudVNOfaIwPCIp8XCAIBJkXZou+21qrdafNARVEwPgpbjMWNvAr3X9BxOlq2jf6zaszjbPNnTOhTBGRq68Qj790FKjh8pstbTTFqPB9JAPZaIXzXQRwwPykYErriQzZa5oAY+AABCDNxHbeHhM9XyVVqEcPjqan0n4YOHykz0=
-Received: from DM6PR06CA0010.namprd06.prod.outlook.com (2603:10b6:5:120::23)
- by DM6PR12MB4957.namprd12.prod.outlook.com (2603:10b6:5:20d::14) with
+ bh=lYtVtx3Zm2oBUMFae3DZxhD+8teRR1GNGqNCvIbmrFE=;
+ b=flZmzu5nu1a6gRu2hSG0iwufEsOtjpswaaaPA9CctpTXzyDOgQB3gNV4yFpCw9pqRty2sF9L6ej+fy3ZX6Az9agk2BK5Q9hmrBe/C/VLoBsCXWzf/trXmLd9Szx/IHoWG0+TQB9u8Ne6oy7QMFByJhYHl4eP09W4DdmEx4+IWFo=
+Received: from DM6PR02CA0062.namprd02.prod.outlook.com (2603:10b6:5:177::39)
+ by CH0PR12MB5331.namprd12.prod.outlook.com (2603:10b6:610:d6::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 04:40:13 +0000
-Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:120:cafe::9c) by DM6PR06CA0010.outlook.office365.com
- (2603:10b6:5:120::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Tue, 8 Mar 2022 04:40:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Tue, 8 Mar
+ 2022 04:40:23 +0000
+Received: from DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:177:cafe::91) by DM6PR02CA0062.outlook.office365.com
+ (2603:10b6:5:177::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13 via Frontend
+ Transport; Tue, 8 Mar 2022 04:40:22 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
+ DM6NAM11FT033.mail.protection.outlook.com (10.13.172.221) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 04:40:12 +0000
+ 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 04:40:22 +0000
 Received: from gomati.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 7 Mar
- 2022 22:40:06 -0600
+ 2022 22:40:16 -0600
 From:   Nikunj A Dadhania <nikunj@amd.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 CC:     Sean Christopherson <seanjc@google.com>,
@@ -69,9 +69,9 @@ CC:     Sean Christopherson <seanjc@google.com>,
         Mingwei Zhang <mizhang@google.com>,
         "David Hildenbrand" <david@redhat.com>, <kvm@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Nikunj A Dadhania <nikunj@amd.com>
-Subject: [PATCH RFC v1 2/9] KVM: x86/mmu: Move hugepage adjust to direct_page_fault
-Date:   Tue, 8 Mar 2022 10:08:50 +0530
-Message-ID: <20220308043857.13652-3-nikunj@amd.com>
+Subject: [PATCH RFC v1 4/9] KVM: SVM: Add pinning metadata in the arch memslot
+Date:   Tue, 8 Mar 2022 10:08:52 +0530
+Message-ID: <20220308043857.13652-5-nikunj@amd.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220308043857.13652-1-nikunj@amd.com>
 References: <20220308043857.13652-1-nikunj@amd.com>
@@ -83,75 +83,221 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 78621c51-c1a8-4ca4-b31a-08da00bdbbcb
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4957:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB495747A98DF8E3182C899A4EE2099@DM6PR12MB4957.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: ae454688-23f7-4347-f81a-08da00bdc1c7
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5331:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5331957BE7B5EFEFCD90FD7AE2099@CH0PR12MB5331.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AV3viyRPMl8fC3JzrFbrLV+2JyPPACQZzaGi5A7vACOxdlWspxE2weXPvenGJnlnriVw8LH3f2g7IKXJ2chdTQJ1yQla0hhVrnbtoPxDlFlz9zPtQTj3I6NrPQfm7AWYZgf/D88USB5SN1emJbPm+S6pW4acN6HRyi8rqj/gq9BONqz2zeoPiFaPfVD+2ZWH62YCeNfQJMXZUsx7+IVIoDFnp1fxxTistUKsu8+OB5B3jyQVn4IKjbWst4JZ4T9yIhvM1Mv+KCLCMGTz4jROJMTUhbHr4NXb1/xlCHBaT127L+AoBIy0YjvWm1XujbhIQIRx/nlGZm3Lk62qRGX3zlphDIyNcpYIin1kQMZkFOTaxIPIgoT6IvDSfe0Fx9r+E3KtPTdaAOTK7Iq3ZGcDBXCYtKtFExmlw7siw7Vxx3XbrL8MCqz9tCNiRA+VCs1r+MqEJug9LIL302BQH1hfWfCVt1SgPvcvrUFHFtdNHlAHCdqLcyTIcbXz/eaRJsE7SZfgLaypykspSJNhQATpibEev3xXne+MZzo6COFwkDQwD9q3v1mZYiP3BYc/ER1RXErTyJg2K6DxTMfuKYpoptAmtn2rONO6uM/15bSaQClea6EUYqiHwtLxc/OrnkCdje8Dk8AX9BxrrvJOXn8VRNRBjUWBptXl54NPeG4wYLHhLePNbXoWeChPRtdmm8RlKjzZhe6ZWrP3CmpR6uicJw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(6916009)(54906003)(316002)(40460700003)(186003)(70206006)(81166007)(70586007)(356005)(8676002)(4326008)(36756003)(36860700001)(508600001)(26005)(1076003)(83380400001)(8936002)(6666004)(2616005)(7416002)(5660300002)(47076005)(7696005)(426003)(16526019)(336012)(82310400004)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: U5MfQZjYB4K7xhWBQxyCPwRp6WFpCA/v3HuFlaQ/+VCxwyE8102QT2LfBzq+7uKJtOE1zdXB0s409kACJrqnIW0OxloFexgZltR77NrOSm/e9w0HSZzOUmNkqNuAPILwi7oHFebDgrMdNhFlVHBrDndZ4MEwlfrEfdHkfgV/r6KeesLkVK6MAWlYQQ4aAmY+kCzdJnkmMbczNdpHZtW7L8x/TErLgUGBkobL6mgsVfG9nE9NxhrdnAk10RtxUCQvzpx1XlznND0hPqgQiN5wYZzRXRPfiQbKuQWd76XjmfYdCS4ykxp2JNnAvZCOutBG19oYMmlX+OSL+/Xs+y4v8AbHezlaREsxXGNReYXnQtnXAKyOC0GGMsvzhignBSXAyutzYSgydqXUmc8Da0g2Gpw3aGRoIQ2bQg/mhWdqd25ZIVxX0V0XqZVmK5AYUr8zp77OTJTCvce5Tews5k93FiwIuQfkcPZbCEWQJLslAwFZK+9HnSDNEYCdH8SFt6OazXrGuDTwBkDGK2cC5MqdH+C1xRMczIeFJvikUQuO+fLYinT1mXFmU+XB8ba1YYP0c4WLIZwL9ukzWvczj/cY/gaNKmg4pPPruosUyH+AqnLQ6YKv06GdORGm2NKv3DM0MQpBdKvvZacujYZtV8Cs3vPoVkWJ09nb2iGOsYhBCL2+aThfENCz8xHIt+2j0PHJ60CNvOG7xcJjkmb6AYXZYQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(26005)(36860700001)(2906002)(47076005)(4326008)(36756003)(6666004)(316002)(6916009)(508600001)(7696005)(356005)(1076003)(186003)(2616005)(426003)(81166007)(336012)(16526019)(7416002)(82310400004)(8676002)(70206006)(70586007)(8936002)(83380400001)(40460700003)(5660300002)(54906003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 04:40:12.4760
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 04:40:22.5335
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78621c51-c1a8-4ca4-b31a-08da00bdbbcb
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae454688-23f7-4347-f81a-08da00bdc1c7
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4957
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5331
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both TDP MMU and legacy MMU do hugepage adjust in the mapping routine.
-Adjust the pfn early in the common code. This will be used by the
-following patches for pinning the pages.
+AMD SEV guest requires the guest's pages to be pinned in host
+physical memory. The memory encryption scheme uses the physical
+address of the memory being encrypted. If guest pages are moved,
+content decrypted would be incorrect, corrupting guest's memory.
 
-No functional change intended.
+For SEV/SEV-ES guests, the hypervisor doesn't know which pages are
+encrypted and when the guest is done using those pages. Hypervisor
+should treat all the guest pages as encrypted until they are
+deallocated or the guest is destroyed.
+
+The KVM MMU needs to track the pages that are pinned and the
+corresponding pfns for unpinning them during the guest destroy path
+and deallocation path.
 
 Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
 ---
- arch/x86/kvm/mmu/mmu.c     | 4 ++--
- arch/x86/kvm/mmu/tdp_mmu.c | 2 --
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/kvm-x86-ops.h |  2 ++
+ arch/x86/include/asm/kvm_host.h    |  7 +++++
+ arch/x86/kvm/svm/sev.c             | 49 ++++++++++++++++++++++++++++++
+ arch/x86/kvm/svm/svm.c             |  3 ++
+ arch/x86/kvm/svm/svm.h             |  6 ++++
+ arch/x86/kvm/x86.c                 | 11 ++++++-
+ 6 files changed, 77 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 8e24f73bf60b..db1feecd6fed 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2940,8 +2940,6 @@ static int __direct_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 	int ret;
- 	gfn_t base_gfn = fault->gfn;
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 8efb43d92eef..61ff8a636db6 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -89,6 +89,8 @@ KVM_X86_OP(set_identity_map_addr)
+ KVM_X86_OP(get_mt_mask)
+ KVM_X86_OP(load_mmu_pgd)
+ KVM_X86_OP(pin_pfn)
++KVM_X86_OP(alloc_memslot_metadata)
++KVM_X86_OP(free_memslot)
+ KVM_X86_OP_NULL(has_wbinvd_exit)
+ KVM_X86_OP(get_l2_tsc_offset)
+ KVM_X86_OP(get_l2_tsc_multiplier)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index df11f1fb76de..eeb2c799b59f 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -926,6 +926,8 @@ struct kvm_arch_memory_slot {
+ 	struct kvm_rmap_head *rmap[KVM_NR_PAGE_SIZES];
+ 	struct kvm_lpage_info *lpage_info[KVM_NR_PAGE_SIZES - 1];
+ 	unsigned short *gfn_track[KVM_PAGE_TRACK_MAX];
++	unsigned long *pinned_bitmap;
++	kvm_pfn_t *pfns;
+ };
  
--	kvm_mmu_hugepage_adjust(vcpu, fault);
--
- 	trace_kvm_mmu_spte_requested(fault);
- 	for_each_shadow_entry(vcpu, fault->addr, it) {
- 		/*
-@@ -4035,6 +4033,8 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ /*
+@@ -1421,6 +1423,11 @@ struct kvm_x86_ops {
+ 	bool (*pin_pfn)(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
+ 			kvm_pfn_t pfn, hva_t hva, bool write,
+ 			enum pg_level level);
++	int (*alloc_memslot_metadata)(struct kvm *kvm,
++				      const struct kvm_memory_slot *old,
++				      struct kvm_memory_slot *new);
++	void (*free_memslot)(struct kvm *kvm,
++			     struct kvm_memory_slot *slot);
  
- 	r = RET_PF_RETRY;
+ 	bool (*has_wbinvd_exit)(void);
  
-+	kvm_mmu_hugepage_adjust(vcpu, fault);
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 17b53457d866..bd7572517c99 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2950,3 +2950,52 @@ void sev_vcpu_deliver_sipi_vector(struct kvm_vcpu *vcpu, u8 vector)
+ 
+ 	ghcb_set_sw_exit_info_2(svm->sev_es.ghcb, 1);
+ }
 +
- 	if (is_tdp_mmu_fault)
- 		read_lock(&vcpu->kvm->mmu_lock);
- 	else
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index bc9e3553fba2..e03bf59b2f81 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -959,8 +959,6 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 	u64 new_spte;
- 	int ret;
++void sev_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
++{
++	struct kvm_arch_memory_slot *aslot = &slot->arch;
++
++	if (!sev_guest(kvm))
++		return;
++
++	if (aslot->pinned_bitmap) {
++		kvfree(aslot->pinned_bitmap);
++		aslot->pinned_bitmap = NULL;
++	}
++
++	if (aslot->pfns) {
++		kvfree(aslot->pfns);
++		aslot->pfns = NULL;
++	}
++}
++
++int sev_alloc_memslot_metadata(struct kvm *kvm,
++			       const struct kvm_memory_slot *old,
++			       struct kvm_memory_slot *new)
++{
++	struct kvm_arch_memory_slot *aslot = &new->arch;
++	unsigned long pinned_bytes = new->npages * sizeof(kvm_pfn_t);
++
++	if (!sev_guest(kvm))
++		return 0;
++
++	if (old && old->arch.pinned_bitmap && old->arch.pfns) {
++		WARN_ON(old->npages != new->npages);
++		aslot->pinned_bitmap = old->arch.pinned_bitmap;
++		aslot->pfns = old->arch.pfns;
++		return 0;
++	}
++
++	aslot->pfns = kvcalloc(new->npages, sizeof(*aslot->pfns),
++			      GFP_KERNEL_ACCOUNT);
++	if (!aslot->pfns)
++		return -ENOMEM;
++
++	aslot->pinned_bitmap = kvzalloc(pinned_bytes, GFP_KERNEL_ACCOUNT);
++	if (!aslot->pinned_bitmap) {
++		kvfree(aslot->pfns);
++		aslot->pfns = NULL;
++		return -ENOMEM;
++	}
++	return 0;
++}
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fd3a00c892c7..ec06421cb532 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4658,6 +4658,9 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.complete_emulated_msr = svm_complete_emulated_msr,
  
--	kvm_mmu_hugepage_adjust(vcpu, fault);
--
- 	trace_kvm_mmu_spte_requested(fault);
+ 	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
++
++	.alloc_memslot_metadata = sev_alloc_memslot_metadata,
++	.free_memslot = sev_free_memslot,
+ };
  
- 	rcu_read_lock();
+ /*
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index fa98d6844728..f00364020d7e 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -616,4 +616,10 @@ void sev_es_unmap_ghcb(struct vcpu_svm *svm);
+ void __svm_sev_es_vcpu_run(unsigned long vmcb_pa);
+ void __svm_vcpu_run(unsigned long vmcb_pa, unsigned long *regs);
+ 
++int sev_alloc_memslot_metadata(struct kvm *kvm,
++			       const struct kvm_memory_slot *old,
++			       struct kvm_memory_slot *new);
++void sev_free_memslot(struct kvm *kvm,
++		      struct kvm_memory_slot *slot);
++
+ #endif
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 82a9dcd8c67f..95070aaa1636 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11796,6 +11796,7 @@ void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
+ 	}
+ 
+ 	kvm_page_track_free_memslot(slot);
++	static_call_cond(kvm_x86_free_memslot)(kvm, slot);
+ }
+ 
+ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages)
+@@ -11821,6 +11822,7 @@ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages)
+ }
+ 
+ static int kvm_alloc_memslot_metadata(struct kvm *kvm,
++				      const struct kvm_memory_slot *old,
+ 				      struct kvm_memory_slot *slot)
+ {
+ 	unsigned long npages = slot->npages;
+@@ -11873,8 +11875,15 @@ static int kvm_alloc_memslot_metadata(struct kvm *kvm,
+ 	if (kvm_page_track_create_memslot(kvm, slot, npages))
+ 		goto out_free;
+ 
++	if (kvm_x86_ops.alloc_memslot_metadata &&
++	    static_call(kvm_x86_alloc_memslot_metadata)(kvm, old, slot))
++		goto out_free_page_track;
++
+ 	return 0;
+ 
++out_free_page_track:
++	kvm_page_track_free_memslot(slot);
++
+ out_free:
+ 	memslot_rmap_free(slot);
+ 
+@@ -11907,7 +11916,7 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
+ 				   enum kvm_mr_change change)
+ {
+ 	if (change == KVM_MR_CREATE || change == KVM_MR_MOVE)
+-		return kvm_alloc_memslot_metadata(kvm, new);
++		return kvm_alloc_memslot_metadata(kvm, old, new);
+ 
+ 	if (change == KVM_MR_FLAGS_ONLY)
+ 		memcpy(&new->arch, &old->arch, sizeof(old->arch));
 -- 
 2.32.0
 
