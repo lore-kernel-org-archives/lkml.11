@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E02EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348584AbiCHQlM (ORCPT
+        id S1348594AbiCHQlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:41:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
+        Tue, 8 Mar 2022 11:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348482AbiCHQkx (ORCPT
+        with ESMTP id S1348479AbiCHQkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 11:40:53 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2077.outbound.protection.outlook.com [40.107.243.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2265133E;
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B087517ED;
         Tue,  8 Mar 2022 08:39:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hcqVYj71CZYWCY59XE+35WNQsph7o+x1+az/S7EMeCZoPYE7g7NtwHOI8wz39qSndnSVD7ymI/jLTyCLvqtXCFMsCLBN96PITAUvYdxnUKBfWgU9adZPMrUHqKWX9KL9BmvrDusEXPnTtbOBXDiYgGdpdZYPlAh+RhiSgEM/cTWDU+WAkZOgFb6PLLCNiuwCo49711P1cpeLUMkvUh707xUnmTItxF9Lk7E/6O36b8wZamTuQ+O6hD5vwjFAcIExebx8rxcPqiMUkh512n/hI0b+6qu00+skbUukO2UmXOEQLyRe4PPlAz8zCrX92jlwl8uG8onYoOWSREp6ZDm4zg==
+ b=JmTfsklWAHTHhhStMHr+7vWN76P9bcPoARb3x+9WzRcb77j/BYVnoDARgFMcGkZwnBc48sHitrqzg1ExsArunSdxT3ypp4XlawAaObUXHTzWixKIpp06d5OeoMLZ09hV6ra4K9N4YSm4Mdijca+ZTvkxrudy/fkl0cb3OGEgLlC6nWvgn/kWFFDBENriJ3PYwEzskOibPQkSn+Ut4UJzu0rdxTWa3q0o9Ny+GxUZMowbGcbfjtbwvpGXpf9BmkVi2bZ9AvYLJyNACjngtsCzs3wjmQf0lTnHkryXw0+S34pUNH79Tdk73GSYGVBoqHqciC433AmND8oSoIg6GL/Y9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4UnRT10K4/m2wKs/lYEl5wl8ZQ6X3t9KgM0ydPfTSg8=;
- b=JjJgor1R9GPIMzRfQJ19LGIh5Oj38Avl51TJGmAjjigBe8ZLygNN0STzNBbpExhrG0gXvSnw+/VMjdIV5oE4hDoB4crIaLPkdkAP2QlabV8H4sxJLqdngleZTIBk2rvLiEIuUULDEDLRs8EIWY21iXVFl4m68ftk1zFvxKUWFa6E8lKswFoExNGVYw046yqrlnX3fUTpMIwKL3kQz/V8YtlgnkKVj9/EcnO6q4nkNepFiRr1EIR48mzUE+HAtYCCiwW/RcSNiAY8+uvB5/7KdKDRP5VMqMlYExeqzdpf0+KlwNLhtBZbIJjkVhb8a/AGto4w8pJhsi5OjEbNNM230w==
+ bh=7baV/MSJ9hz4jZx62DxXN+rlD53rHOXeGJvdA+Bv1Gc=;
+ b=hgjX+n/MoMRT/KekQ7DIiglifOsbExgcoC7X6qdIJTO5wkJRG3Lidwv9GaK90TDs5tALqnUm7SI1uX9sYS6E5kgsa5wicWMAhS78LkUCYEHaYppRBZbj0nrDnlse04oDUvNg6J3bV9iuu1ytSou75OhqaDmuaW1Z6fMh2fGHoK19VGApVwojSXjwPTYTOy0k2xT1Wp0u+Vcfmx6OWuYN0s5NhnevyBVBRAtv5+DRj3N1TIBkVgzujwta/UcmBfXupBSmqaAGeuqciDC41ZXpVsqW9hQ84nUHEEDbZIRG8kq6rsdN0rSdyHkezF0m3sIW4g6HHLcELCHkdYSM2GCv1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4UnRT10K4/m2wKs/lYEl5wl8ZQ6X3t9KgM0ydPfTSg8=;
- b=DSZ8LD0YP10Mf1WoK0ThuE/NjnR/Jacg012Lt8kjjEbC8NThRbBm5Ou6tSbrCGKbF+chh/5ElsX4ic0OIJGaNTnRkoUNTK4gz+XBnbTtJWY/Wn2VRGtH/CN3batub3g3KR9vUl63pmWxB8UY1UD8tcuxmmXApZ/R/rHc4OxDw8Q=
-Received: from BN9PR03CA0858.namprd03.prod.outlook.com (2603:10b6:408:13d::23)
- by BN6PR12MB1682.namprd12.prod.outlook.com (2603:10b6:405:4::14) with
+ bh=7baV/MSJ9hz4jZx62DxXN+rlD53rHOXeGJvdA+Bv1Gc=;
+ b=l7B63YWsdt/Tm/a2E1DSlVeWGUf1Mr20q0H29h79Bm173l4u7Rb+CjUFhaVfqgRP/3AgkFXW8jvT7rVS2RO4zQZrEWpAW2kxrNPLy0tzHlvcX34sUzCB/I7+y/jQTXQYGyWM24YAkMDjHlKlpRFrXJczTMsVGo5A4JTVKDztCjQ=
+Received: from BN9PR03CA0846.namprd03.prod.outlook.com (2603:10b6:408:13d::11)
+ by CY4PR12MB1477.namprd12.prod.outlook.com (2603:10b6:910:e::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 16:39:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Tue, 8 Mar
+ 2022 16:39:52 +0000
 Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13d:cafe::4d) by BN9PR03CA0858.outlook.office365.com
- (2603:10b6:408:13d::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.13 via Frontend
- Transport; Tue, 8 Mar 2022 16:39:51 +0000
+ (2603:10b6:408:13d:cafe::68) by BN9PR03CA0846.outlook.office365.com
+ (2603:10b6:408:13d::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
+ Transport; Tue, 8 Mar 2022 16:39:52 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -50,20 +50,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 16:39:50 +0000
+ 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 16:39:52 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Mar
- 2022 10:39:46 -0600
+ 2022 10:39:48 -0600
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
 CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
         <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
         <terry.bowman@amd.com>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [RFCv2 PATCH 08/12] KVM: SVM: Adding support for configuring x2APIC MSRs interception
-Date:   Tue, 8 Mar 2022 10:39:22 -0600
-Message-ID: <20220308163926.563994-9-suravee.suthikulpanit@amd.com>
+Subject: [RFCv2 PATCH 11/12] KVM: SVM: Do not throw warning when calling avic_vcpu_load on a running vcpu
+Date:   Tue, 8 Mar 2022 10:39:25 -0600
+Message-ID: <20220308163926.563994-12-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
 References: <20220308163926.563994-1-suravee.suthikulpanit@amd.com>
@@ -75,210 +75,55 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cfe410ba-aaea-4363-4af1-08da012243fd
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1682:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1682F0356F549F2799420B0BF3099@BN6PR12MB1682.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 0b0695c7-d18f-4c8a-1732-08da012244cf
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1477:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1477FF2203B9255AF1114901F3099@CY4PR12MB1477.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: svyK5FsRt21vUvk13M7y08A8E6TC7LaBV2ZvKTEieZCDU2u1b8fx0BkMJatTdvmRSUEZfdrEgFpsG85MMqXRjSItN0oe4vuMDtqyqzld6d7wrXhm1oOdZIb1tWXYm3hP0t9TWjYPSgeMHJOefLflbTgBtelufB51TNHC5SthwQoW3PbXld9e4a4PdJvYDcWPDqEwJc300n+hmwlybeI2EAz1Wuy+6skFNKf1b28jmxGgmoKxemhiTBPOWmu78gN7TALG+9Cx5RjpNMm4xKRE+s003qLhiE9uVSLGOYIZZCQdJaq/8U0xlLWjELt6l8PF97Xv88gKd59UizxaG6spODaC1l2ZQcIVrFOFtyn62hOK6PY9OVNR8kNYs7T+9Dobm64zoq3VEOcpJG3xz/g4l17nnzpavElydhUpuNWM91O1eLWLLa6HwXk9Q324ONoLyLqXL5uiW0GFL+4qwdolPL2A2a18jonKhSwb3VBETBZjwsrOBdTViI/z7Iu4DGKmKFx6qqKxzrrYntLCdENmpmGh86wBSdTqoa2Nz5FLpLFqA2lfM6RHDJCXYIzJJBRBFxUYhHNtqskMir+XoCUuASngab0ERgt0I8XXcu4nfcNbSD1cDSSnMlVnu5UKYbgvbglV+pUmVRIPdtFTmnwvsIs0ytRzSx8ThLM9isWvHcobPI8JddNnbbr7ugDAz4vRE5dqNynNwgWKvNVr5lEvVg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(82310400004)(70206006)(8936002)(70586007)(4326008)(86362001)(5660300002)(44832011)(1076003)(2616005)(336012)(426003)(26005)(186003)(8676002)(36756003)(47076005)(83380400001)(2906002)(40460700003)(16526019)(7696005)(6666004)(36860700001)(356005)(81166007)(110136005)(54906003)(316002)(508600001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: uc9RofULCHjuGWEBrhGl1wabvlrzpbbogm+GdgtmsCKQUMRSUGLrAnZ3CY0zIRHAkMDblvl/fz8c3cB6TvkRaKX9zgOzdXlkMT5ZwzH1gNVlt1KkF07JouMmMvoHgGzkbKeXCc9oi5Q5FBjmMqU0KcyXydSiASmPDGz7ne5QwMgBDHHUc8b5c7P+YdyMsjyrJnQGpKeul52Ll0552cgdbhgsEvntWmT//LWr+73Sh7KfRgf+d72iqp0ZAMzfRp96ds1dl6pvyE5jIW/TUtWZRo77zaJQuZiE2ghojcuZwZRO7hfdS5v6EeflFbpy9HgUHrTN194g0PE0/MevkFzKu6YeRAShX+Xf+WZXIGWD7EDMlF2PESnLk6D2ZToarI876PyfBMhLif0lHo+MgInNh3NZDPy3Ju3/d/KcQwkqFfLGMmb5I5NFQ6ioBEFt1kWug5hKoQ2FKNnTHxZFyJpwZLeNW5q025mZASO7Y5UnVXx+cdwoly+7+4rONOTiJ6fMu0JQ5w+4mOvNS3Wry1vDQGlQxOajTn2TyrcQW2EyunjF9NmnUWgCfopGeHCFJvrnj2mWiJQ7haX0CPtoAyHCr9Zq4IsmlrM71yeBIRNocDrUbuTJeV0CHbU0kQtu+hlT6Wf/2T8IeSoKhWYdLBP56tlh2s1eKt48Iipnxf6CEy3FFGi05tusmNAgZq5gCtc4QgL8RfInXHPt0U2pVGO0vg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(36860700001)(70586007)(70206006)(47076005)(8676002)(4326008)(36756003)(26005)(336012)(426003)(1076003)(54906003)(186003)(2616005)(316002)(83380400001)(6666004)(7696005)(5660300002)(40460700003)(44832011)(110136005)(8936002)(508600001)(16526019)(81166007)(356005)(2906002)(86362001)(82310400004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 16:39:50.6754
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 16:39:52.0659
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cfe410ba-aaea-4363-4af1-08da012243fd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b0695c7-d18f-4c8a-1732-08da012244cf
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1682
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1477
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When enabling x2APIC virtualization (x2AVIC), the interception of
-x2APIC MSRs must be disabled to let the hardware virtualize guest
-MSR accesses.
+Originalliy, this WARN_ON is designed to detect when calling
+avic_vcpu_load() on an already running vcpu in AVIC mode (i.e. the AVIC
+is_running bit is set).
 
-Current implementation keeps track of MSR interception state
-for generic MSRs in the svm_direct_access_msrs array.
-For x2APIC MSRs, introduce direct_access_x2apic_msrs array.
+However, for x2AVIC, the vCPU can switch from xAPIC to x2APIC mode while in
+running state, in which the avic_vcpu_load() will be called from
+svm_refresh_apicv_exec_ctrl().
+
+Therefore, remove this warning since it is no longer appropriate.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- arch/x86/kvm/svm/svm.c | 67 +++++++++++++++++++++++++++++++-----------
- arch/x86/kvm/svm/svm.h |  7 +++++
- 2 files changed, 57 insertions(+), 17 deletions(-)
+ arch/x86/kvm/svm/avic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 3048f4b758d6..ce3c68a785cf 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -89,7 +89,7 @@ static uint64_t osvw_len = 4, osvw_status;
- static DEFINE_PER_CPU(u64, current_tsc_ratio);
- #define TSC_RATIO_DEFAULT	0x0100000000ULL
- 
--static const struct svm_direct_access_msrs {
-+static struct svm_direct_access_msrs {
- 	u32 index;   /* Index of the MSR */
- 	bool always; /* True if intercept is initially cleared */
- } direct_access_msrs[MAX_DIRECT_ACCESS_MSRS] = {
-@@ -117,6 +117,9 @@ static const struct svm_direct_access_msrs {
- 	{ .index = MSR_INVALID,				.always = false },
- };
- 
-+static struct svm_direct_access_msrs
-+direct_access_x2apic_msrs[NUM_DIRECT_ACCESS_X2APIC_MSRS + 1];
-+
- /*
-  * These 2 parameters are used to config the controls for Pause-Loop Exiting:
-  * pause_filter_count: On processors that support Pause filtering(indicated
-@@ -609,41 +612,42 @@ static int svm_cpu_init(int cpu)
- 
- }
- 
--static int direct_access_msr_slot(u32 msr)
-+static int direct_access_msr_slot(u32 msr, struct svm_direct_access_msrs *msrs)
- {
- 	u32 i;
- 
--	for (i = 0; direct_access_msrs[i].index != MSR_INVALID; i++)
--		if (direct_access_msrs[i].index == msr)
-+	for (i = 0; msrs[i].index != MSR_INVALID; i++)
-+		if (msrs[i].index == msr)
- 			return i;
- 
- 	return -ENOENT;
- }
- 
--static void set_shadow_msr_intercept(struct kvm_vcpu *vcpu, u32 msr, int read,
--				     int write)
-+static void set_shadow_msr_intercept(struct kvm_vcpu *vcpu,
-+				     struct svm_direct_access_msrs *msrs, u32 msr,
-+				     int read, void *read_bits,
-+				     int write, void *write_bits)
- {
--	struct vcpu_svm *svm = to_svm(vcpu);
--	int slot = direct_access_msr_slot(msr);
-+	int slot = direct_access_msr_slot(msr, msrs);
- 
- 	if (slot == -ENOENT)
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index b8d6bf6b6ed5..015888aad8fc 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -1038,7 +1038,6 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
  		return;
  
- 	/* Set the shadow bitmaps to the desired intercept states */
- 	if (read)
--		set_bit(slot, svm->shadow_msr_intercept.read);
-+		set_bit(slot, read_bits);
- 	else
--		clear_bit(slot, svm->shadow_msr_intercept.read);
-+		clear_bit(slot, read_bits);
+ 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+-	WARN_ON(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
  
- 	if (write)
--		set_bit(slot, svm->shadow_msr_intercept.write);
-+		set_bit(slot, write_bits);
- 	else
--		clear_bit(slot, svm->shadow_msr_intercept.write);
-+		clear_bit(slot, write_bits);
- }
- 
--static bool valid_msr_intercept(u32 index)
-+static bool valid_msr_intercept(u32 index, struct svm_direct_access_msrs *msrs)
- {
--	return direct_access_msr_slot(index) != -ENOENT;
-+	return direct_access_msr_slot(index, msrs) != -ENOENT;
- }
- 
- static bool msr_write_intercepted(struct kvm_vcpu *vcpu, u32 msr)
-@@ -674,9 +678,12 @@ static void set_msr_interception_bitmap(struct kvm_vcpu *vcpu, u32 *msrpm,
- 
- 	/*
- 	 * If this warning triggers extend the direct_access_msrs list at the
--	 * beginning of the file
-+	 * beginning of the file. The direct_access_x2apic_msrs is only for
-+	 * x2apic MSRs.
- 	 */
--	WARN_ON(!valid_msr_intercept(msr));
-+	WARN_ON(!valid_msr_intercept(msr, direct_access_msrs) &&
-+		(boot_cpu_has(X86_FEATURE_X2AVIC) &&
-+		 !valid_msr_intercept(msr, direct_access_x2apic_msrs)));
- 
- 	/* Enforce non allowed MSRs to trap */
- 	if (read && !kvm_msr_allowed(vcpu, msr, KVM_MSR_FILTER_READ))
-@@ -704,7 +711,16 @@ static void set_msr_interception_bitmap(struct kvm_vcpu *vcpu, u32 *msrpm,
- void set_msr_interception(struct kvm_vcpu *vcpu, u32 *msrpm, u32 msr,
- 			  int read, int write)
- {
--	set_shadow_msr_intercept(vcpu, msr, read, write);
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
-+	if (msr < 0x800 || msr > 0x8ff)
-+		set_shadow_msr_intercept(vcpu, direct_access_msrs, msr,
-+					 read, svm->shadow_msr_intercept.read,
-+					 write, svm->shadow_msr_intercept.write);
-+	else
-+		set_shadow_msr_intercept(vcpu, direct_access_x2apic_msrs, msr,
-+					 read, svm->shadow_x2apic_msr_intercept.read,
-+					 write, svm->shadow_x2apic_msr_intercept.write);
- 	set_msr_interception_bitmap(vcpu, msrpm, msr, read, write);
- }
- 
-@@ -786,6 +802,22 @@ static void add_msr_offset(u32 offset)
- 	BUG();
- }
- 
-+static void init_direct_access_x2apic_msrs(void)
-+{
-+	int i;
-+
-+	/* Initialize x2APIC direct_access_x2apic_msrs entries */
-+	for (i = 0; i < NUM_DIRECT_ACCESS_X2APIC_MSRS; i++) {
-+		direct_access_x2apic_msrs[i].index = boot_cpu_has(X86_FEATURE_X2AVIC) ?
-+						  (0x800 + i) : MSR_INVALID;
-+		direct_access_x2apic_msrs[i].always = false;
-+	}
-+
-+	/* Initialize last entry */
-+	direct_access_x2apic_msrs[i].index = MSR_INVALID;
-+	direct_access_x2apic_msrs[i].always = false;
-+}
-+
- static void init_msrpm_offsets(void)
- {
- 	int i;
-@@ -4750,6 +4782,7 @@ static __init int svm_hardware_setup(void)
- 	memset(iopm_va, 0xff, PAGE_SIZE * (1 << order));
- 	iopm_base = page_to_pfn(iopm_pages) << PAGE_SHIFT;
- 
-+	init_direct_access_x2apic_msrs();
- 	init_msrpm_offsets();
- 
- 	supported_xcr0 &= ~(XFEATURE_MASK_BNDREGS | XFEATURE_MASK_BNDCSR);
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index b53c83a44ec2..19ad40b8383b 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -29,6 +29,8 @@
- 
- #define MAX_DIRECT_ACCESS_MSRS	20
- #define MSRPM_OFFSETS	16
-+#define NUM_DIRECT_ACCESS_X2APIC_MSRS	0x100
-+
- extern u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
- extern bool npt_enabled;
- extern bool intercept_smi;
-@@ -241,6 +243,11 @@ struct vcpu_svm {
- 		DECLARE_BITMAP(write, MAX_DIRECT_ACCESS_MSRS);
- 	} shadow_msr_intercept;
- 
-+	struct {
-+		DECLARE_BITMAP(read, NUM_DIRECT_ACCESS_X2APIC_MSRS);
-+		DECLARE_BITMAP(write, NUM_DIRECT_ACCESS_X2APIC_MSRS);
-+	} shadow_x2apic_msr_intercept;
-+
- 	struct vcpu_sev_es_state sev_es;
- 
- 	bool guest_state_loaded;
+ 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
+ 	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
 -- 
 2.25.1
 
