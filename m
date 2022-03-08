@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E06C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15271C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350567AbiCHVuo (ORCPT
+        id S1350580AbiCHVur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:50:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        Tue, 8 Mar 2022 16:50:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344945AbiCHVug (ORCPT
+        with ESMTP id S1350548AbiCHVuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:50:36 -0500
+        Tue, 8 Mar 2022 16:50:37 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C67555BC3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACFB55BEB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646776179; x=1678312179;
+  t=1646776180; x=1678312180;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5B867NxD2rUzUfzuiddRfj7M0tvh5dRqn7VBG5tbW4Q=;
-  b=EJVLa3deob0sTv3zd8mQYGIhXK+rBbppMuudMdRXpgr0Kebf8zGcs5tR
-   wPF0mw+wBcmd2KKl/LEezKXTUDVeaTn4jVHDrcYV6yBInvmMDT3n1E4uW
-   6ADtMBRdz+wv+fGcA98v5P5mxD8OLH/oezEEvJfAv+PrbI0MuGbp/exxX
-   gI/lvuxArKDrEKrGx2dMKuduOECLODl3daJo6/ZgrugiH1g87y7gbNED2
-   W2lFx6i92enVNErq8YSKKSl2e025Xsg0bSKVtyqGttIcTr1Hpxl8Jj/II
-   Vq2c8kDTbsFk7aTq0r5zSkDNcEqYW1oRiShZdBmGB+tS7tMBKmo+oDOkr
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553226"
+  bh=kflzhk6cKRrHhEv2QAKqCRuyoY+8IdX0Nrn9UYyu+9Q=;
+  b=flx10As3/lJdkMCibvhecQzVXJIvacUcmx54USr7ZqseV9t7Z1rOLewg
+   NEe4oJupWkNls2Uupa95d1T10lhwh6R5uXi5R3jfe5fncZkO9yGEeezqH
+   GMlYcc0zXVj2BUXheWycsPd85Dp+M1MdpiuOgyV51RYTClUs7CIIokwMC
+   VckUTJin3mWJqFJUYXLY6kGC+hcp4PaLKQgr2fdelxnodeRhs2E0H2byl
+   8baBXvynALRDfg1TpsZFWo4I7Io+7FJ1E182YQZ1qC16ZPCxqfDiF05Qd
+   flcKZSvzzuAVkebxILRl2I0qusBBmZ8K2tK4DFXcUpZf5iOHTAbk6xMca
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553234"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="254553226"
+   d="scan'208";a="254553234"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:37 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:38 -0800
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="495612832"
+   d="scan'208";a="495612842"
 Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.239.204])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:37 -0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:38 -0800
 From:   Russ Weight <russell.h.weight@intel.com>
 To:     mcgrof@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
         linux-kernel@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
         hao.wu@intel.com, matthew.gerlach@intel.com,
         basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
         Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v1 2/8] firmware_loader: Check fw_state_is_done in loading_store
-Date:   Tue,  8 Mar 2022 13:49:26 -0800
-Message-Id: <20220308214932.24477-3-russell.h.weight@intel.com>
+Subject: [PATCH v1 5/8] firmware_loader: Add sysfs nodes to monitor fw_upload
+Date:   Tue,  8 Mar 2022 13:49:29 -0800
+Message-Id: <20220308214932.24477-6-russell.h.weight@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308214932.24477-1-russell.h.weight@intel.com>
 References: <20220308214932.24477-1-russell.h.weight@intel.com>
@@ -57,50 +57,298 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the fw_state_is_done() function and exit early from
-firmware_loading_store() if the state is already "done". This is being done
-in preparation for supporting persistent sysfs nodes to allow userspace to
-upload firmware to a device, potentially reusing the sysfs loading and data
-files multiple times.
+Add additional sysfs nodes to monitor the transfer of firmware upload data
+to the target device:
+
+cancel: Write 1 to cancel the data transfer
+error: Display error status for a failed firmware upload
+remaining_size: Display the remaining amount of data to be transferred
+status: Display the progress of the firmware upload
 
 Signed-off-by: Russ Weight <russell.h.weight@intel.com>
 ---
 v1:
-  - No change from RFC patch
+  - Adapted to enums and filename changes. Otherwise no changes.
 ---
- drivers/base/firmware_loader/fallback.c | 2 +-
- drivers/base/firmware_loader/firmware.h | 5 +++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ .../ABI/testing/sysfs-class-firmware          |  45 +++++++
+ .../driver-api/firmware/fw_upload.rst         |  19 ++-
+ drivers/base/firmware_loader/sysfs.c          |   9 ++
+ drivers/base/firmware_loader/sysfs_upload.c   | 121 ++++++++++++++++++
+ drivers/base/firmware_loader/sysfs_upload.h   |   5 +
+ 5 files changed, 198 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/firmware_loader/fallback.c b/drivers/base/firmware_loader/fallback.c
-index 4afb0e9312c0..d82e055a4297 100644
---- a/drivers/base/firmware_loader/fallback.c
-+++ b/drivers/base/firmware_loader/fallback.c
-@@ -250,7 +250,7 @@ static ssize_t firmware_loading_store(struct device *dev,
+diff --git a/Documentation/ABI/testing/sysfs-class-firmware b/Documentation/ABI/testing/sysfs-class-firmware
+index a2e518f0bf8a..5653cb2d6e23 100644
+--- a/Documentation/ABI/testing/sysfs-class-firmware
++++ b/Documentation/ABI/testing/sysfs-class-firmware
+@@ -10,6 +10,30 @@ Description:	The data sysfs file is used for firmware-fallback and for
+ 		signal the lower-level driver that the firmware data is
+ 		available.
  
- 	mutex_lock(&fw_lock);
- 	fw_priv = fw_sysfs->fw_priv;
--	if (fw_state_is_aborted(fw_priv))
-+	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
- 		goto out;
++What: 		/sys/class/firmware/.../cancel
++Date:		Mar 2022
++KernelVersion:	5.18
++Contact:	Russ Weight <russell.h.weight@intel.com>
++Description:	Write-only. For firmware uploads, write a "1" to this file to
++		request that the transfer of firmware data to the lower-level
++		device be canceled. This request will be rejected (EBUSY) if
++		the update cannot be canceled (e.g. a FLASH write is in
++		progress) or (ENODEV) if there is no firmware update in progress.
++
++What: 		/sys/class/firmware/.../error
++Date:		Mar 2022
++KernelVersion:	5.18
++Contact:	Russ Weight <russell.h.weight@intel.com>
++Description:	Read-only. Returns a string describing a failed firmware
++		upload. This string will be in the form of <STATUS>:<ERROR>,
++		where <STATUS> will be one of the status strings described
++		for the status sysfs file and <ERROR> will be one of the
++		following: "hw-error", "timeout", "user-abort", "device-busy",
++		"invalid-file-size", "read-write-error", "flash-wearout". The
++		error sysfs file is only meaningful when the current firmware
++		upload status is "idle". If this file is read while a firmware
++		transfer is in progress, then the read will fail with EBUSY.
++
+ What: 		/sys/class/firmware/.../loading
+ Date:		Mar 2022
+ KernelVersion:	5.18
+@@ -22,6 +46,27 @@ Description:	The loading sysfs file is used for both firmware-fallback and
+ 		uploads, the zero value also triggers the transfer of the
+ 		firmware data to the lower-level device driver.
  
- 	switch (loading) {
-diff --git a/drivers/base/firmware_loader/firmware.h b/drivers/base/firmware_loader/firmware.h
-index 2889f446ad41..58768d16f8df 100644
---- a/drivers/base/firmware_loader/firmware.h
-+++ b/drivers/base/firmware_loader/firmware.h
-@@ -149,6 +149,11 @@ static inline void fw_state_done(struct fw_priv *fw_priv)
- 	__fw_state_set(fw_priv, FW_STATUS_DONE);
- }
++What: 		/sys/class/firmware/.../remaining_size
++Date:		Mar 2022
++KernelVersion:	5.18
++Contact:	Russ Weight <russell.h.weight@intel.com>
++Description:	Read-only. For firmware upload, this file contains the size
++		of the firmware data that remains to be transferred to the
++		lower-level device driver. The size value is initialized to
++		the full size of the firmware image that was previously
++		written to the data sysfs file. This value is periodically
++		updated during the "transferring" phase of the firmware
++		upload.
++		Format: "%u".
++
++What: 		/sys/class/firmware/.../status
++Date:		Mar 2022
++KernelVersion:	5.18
++Contact:	Russ Weight <russell.h.weight@intel.com>
++Description:	Read-only. Returns a string describing the current status of
++		a firmware upload. The string will be one of the following:
++		idle, "receiving", "preparing", "transferring", "programming".
++
+ What: 		/sys/class/firmware/.../timeout
+ Date:		Mar 2022
+ KernelVersion:	5.18
+diff --git a/Documentation/driver-api/firmware/fw_upload.rst b/Documentation/driver-api/firmware/fw_upload.rst
+index 2aaac9c70e41..00c8e19d99b7 100644
+--- a/Documentation/driver-api/firmware/fw_upload.rst
++++ b/Documentation/driver-api/firmware/fw_upload.rst
+@@ -9,7 +9,8 @@ persistent sysfs nodes to enable users to initiate firmware updates for
+ that device.  It is the responsibility of the device driver and/or the
+ device itself to perform any validation on the data received. Firmware
+ upload uses the same *loading* and *data* sysfs files described in the
+-documentation for firmware fallback.
++documentation for firmware fallback. It also adds additional sysfs files
++to provide status on the transfer of the firmware image to the device.
  
-+static inline bool fw_state_is_done(struct fw_priv *fw_priv)
+ Register for firmware upload
+ ============================
+@@ -98,3 +99,19 @@ failure:
+ 
+ .. kernel-doc:: include/linux/firmware.h
+    :identifiers: fw_upload_err
++
++Sysfs Attributes
++================
++
++In addition to the *loading* and *data* sysfs files, there are additional
++sysfs files to monitor the status of the data transfer to the target
++device and to determine the final pass/fail status of the transfer.
++Depending on the device and the size of the firmware image, a firmware
++update could take milliseconds or minutes.
++
++The additional sysfs files are:
++
++* status - provides an indication of the progress of a firmware update
++* error - provides error information for a failed firmware update
++* remaining_size - tracks the data transfer portion of an update
++* cancel - echo 1 to this file to cancel the update
+diff --git a/drivers/base/firmware_loader/sysfs.c b/drivers/base/firmware_loader/sysfs.c
+index 4beb0685d90a..dbfb61e144be 100644
+--- a/drivers/base/firmware_loader/sysfs.c
++++ b/drivers/base/firmware_loader/sysfs.c
+@@ -381,6 +381,12 @@ static struct bin_attribute firmware_attr_data = {
+ 
+ static struct attribute *fw_dev_attrs[] = {
+ 	&dev_attr_loading.attr,
++#ifdef CONFIG_FW_UPLOAD
++	&dev_attr_cancel.attr,
++	&dev_attr_status.attr,
++	&dev_attr_error.attr,
++	&dev_attr_remaining_size.attr,
++#endif
+ 	NULL
+ };
+ 
+@@ -392,6 +398,9 @@ static struct bin_attribute *fw_dev_bin_attrs[] = {
+ static const struct attribute_group fw_dev_attr_group = {
+ 	.attrs = fw_dev_attrs,
+ 	.bin_attrs = fw_dev_bin_attrs,
++#ifdef CONFIG_FW_UPLOAD
++	.is_visible = fw_upload_is_visible,
++#endif
+ };
+ 
+ static const struct attribute_group *fw_dev_attr_groups[] = {
+diff --git a/drivers/base/firmware_loader/sysfs_upload.c b/drivers/base/firmware_loader/sysfs_upload.c
+index 4c24f50d57e0..0b308fff65a9 100644
+--- a/drivers/base/firmware_loader/sysfs_upload.c
++++ b/drivers/base/firmware_loader/sysfs_upload.c
+@@ -11,6 +11,127 @@
+  * Support for user-space to initiate a firmware upload to a device.
+  */
+ 
++static const char * const fw_upload_prog_str[] = {
++	[FW_UPLOAD_PROG_IDLE]	      = "idle",
++	[FW_UPLOAD_PROG_RECEIVING]    = "receiving",
++	[FW_UPLOAD_PROG_PREPARING]    = "preparing",
++	[FW_UPLOAD_PROG_TRANSFERRING] = "transferring",
++	[FW_UPLOAD_PROG_PROGRAMMING]  = "programming"
++};
++
++static const char * const fw_upload_err_str[] = {
++	[FW_UPLOAD_ERR_NONE]	     = "none",
++	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
++	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
++	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
++	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
++	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
++	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
++	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
++};
++
++static const char *fw_upload_progress(struct device *dev,
++				      enum fw_upload_prog prog)
 +{
-+	return __fw_state_check(fw_priv, FW_STATUS_DONE);
++	const char *status = "unknown-status";
++
++	if (prog < FW_UPLOAD_PROG_MAX)
++		status = fw_upload_prog_str[prog];
++	else
++		dev_err(dev, "Invalid status during secure update: %d\n", prog);
++
++	return status;
 +}
 +
- int assign_fw(struct firmware *fw, struct device *device);
++static const char *fw_upload_error(struct device *dev,
++				   enum fw_upload_err err_code)
++{
++	const char *error = "unknown-error";
++
++	if (err_code < FW_UPLOAD_ERR_MAX)
++		error = fw_upload_err_str[err_code];
++	else
++		dev_err(dev, "Invalid error code during secure update: %d\n",
++			err_code);
++
++	return error;
++}
++
++static ssize_t
++status_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
++
++	return sysfs_emit(buf, "%s\n", fw_upload_progress(dev, fwlp->progress));
++}
++DEVICE_ATTR_RO(status);
++
++static ssize_t
++error_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
++	int ret;
++
++	mutex_lock(&fwlp->lock);
++
++	if (fwlp->progress != FW_UPLOAD_PROG_IDLE)
++		ret = -EBUSY;
++	else if (!fwlp->err_code)
++		ret = 0;
++	else
++		ret = sysfs_emit(buf, "%s:%s\n",
++				 fw_upload_progress(dev, fwlp->err_progress),
++				 fw_upload_error(dev, fwlp->err_code));
++
++	mutex_unlock(&fwlp->lock);
++
++	return ret;
++}
++DEVICE_ATTR_RO(error);
++
++static ssize_t cancel_store(struct device *dev, struct device_attribute *attr,
++			    const char *buf, size_t count)
++{
++	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
++	int ret = count;
++	bool cancel;
++
++	if (kstrtobool(buf, &cancel) || !cancel)
++		return -EINVAL;
++
++	mutex_lock(&fwlp->lock);
++	if (fwlp->progress == FW_UPLOAD_PROG_IDLE)
++		ret = -ENODEV;
++
++	fwlp->ops->cancel(fwlp->fw_upload);
++	mutex_unlock(&fwlp->lock);
++
++	return ret;
++}
++DEVICE_ATTR_WO(cancel);
++
++static ssize_t remaining_size_show(struct device *dev,
++				   struct device_attribute *attr, char *buf)
++{
++	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
++
++	return sysfs_emit(buf, "%u\n", fwlp->remaining_size);
++}
++DEVICE_ATTR_RO(remaining_size);
++
++umode_t
++fw_upload_is_visible(struct kobject *kobj, struct attribute *attr, int n)
++{
++	static struct fw_sysfs *fw_sysfs;
++
++	fw_sysfs = to_fw_sysfs(kobj_to_dev(kobj));
++
++	if (fw_sysfs->fw_upload_priv || attr == &dev_attr_loading.attr)
++		return attr->mode;
++
++	return 0;
++}
++
+ static void fw_upload_update_progress(struct fw_upload_priv *fwlp,
+ 				      enum fw_upload_prog new_progress)
+ {
+diff --git a/drivers/base/firmware_loader/sysfs_upload.h b/drivers/base/firmware_loader/sysfs_upload.h
+index ca923265c62c..9afb1cfbc6f6 100644
+--- a/drivers/base/firmware_loader/sysfs_upload.h
++++ b/drivers/base/firmware_loader/sysfs_upload.h
+@@ -30,6 +30,11 @@ struct fw_upload_priv {
+ };
  
- #ifdef CONFIG_FW_LOADER
+ #ifdef CONFIG_FW_UPLOAD
++extern struct device_attribute dev_attr_status;
++extern struct device_attribute dev_attr_error;
++extern struct device_attribute dev_attr_cancel;
++extern struct device_attribute dev_attr_remaining_size;
++
+ int fw_upload_start(struct fw_sysfs *fw_sysfs);
+ umode_t fw_upload_is_visible(struct kobject *kobj, struct attribute *attr, int n);
+ #else
 -- 
 2.25.1
 
