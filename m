@@ -2,163 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF65C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC92C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235900AbiCHADb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 19:03:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
+        id S245628AbiCHAE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 19:04:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237541AbiCHAD2 (ORCPT
+        with ESMTP id S1343994AbiCHAEU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 19:03:28 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037162DDF
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:02:30 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id z15so15836559pfe.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 16:02:29 -0800 (PST)
+        Mon, 7 Mar 2022 19:04:20 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F4934B82
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:03:25 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso682899pjj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 16:03:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EuPyOGfEKvdmmkdx2+eXzCMxoHYA5c2y/gEEklhVQ8Y=;
-        b=w86scsa7q9Xnl0bLj+lNlCk+0DfSqXcgC1XjYdV9JlUD5r33NHVtD/k4Z3i68INFzb
-         3PsYjEj7tYILf5c0b0NFC22yaKAvf8VY5Mn0adjjgPE2VSVaktycyrLB7k0WqcRpBjL2
-         d4/rmVfelv7b6GNGFQ6MW40e/XSKfqdBGivBVAshyfXPioW6DxsdskGve3t6y4jaq8X7
-         LKc+Y1q79NjfAHag8OgcMDBTGxuT2vMUJtn77JbPERpSkhZty1lV1kD34KOYMBUWQKN0
-         yzW3tlrmLdcLAwID/vZOCie+5VIEqZ/4N1tPITIlAaHk4qKbpKAAga7Q8NDhjzb7IS2F
-         Hxgg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D9wbXIRTldTtmuQubha8O7jdPMIdPkNXtDtnMlsvwSo=;
+        b=D87M53alQtZEnb5Nxh9tl58QMmIVaYCGTYKkPrxRZrPG7KU8lZ6S7NFZEl9Y5UlqQ3
+         wfqcXLvzegMv2kSU1R73uRWogrDub/0B5FB3xfcj4XZl24WzcaJGozDjnQOrQSU0dOrI
+         XeE5XP3DU6bLdgmupoAm88xQDEkS/q41h1LGnJbHMM5x4rphyxpKec6Fj0PTuuEDB5qW
+         8LFuKEQ46MF66Ww926o4sZrhjDoCGFIzN1a4SqMy67RhBfIzIKRsggz7l1JAABjWV6+6
+         7i+ldoimjRVb0IE69i0V4Ijg9pD7Tec6ErcALewNunmmvEOSlnPwBUf4wzvS7Gdc1Wuk
+         wJCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EuPyOGfEKvdmmkdx2+eXzCMxoHYA5c2y/gEEklhVQ8Y=;
-        b=FyvIYW1BS9al+6j140ApRG2vGYpO5zDQipSxUUjDXW3b6TwghVn+0CdlUR/XBjqEGe
-         Xio4afT1N/5/jPYa1FIBRaovRnzmZi/mkmAyB04keoATFUGs9uW9FoDyeieFiS4E2so/
-         RnL2WcQkwpjDujAoRLOZWpTwiP/nxx6YFJa+//g6/2dos8CQMI+44lMvY1kEy4Bm2w/S
-         gFJVrVyzSH2nGEjU6HD60IcD/brCYdsgjXPXDUxUQ3g139ZHLHuh7INijOQ/LFV2kP4c
-         N3vWruAMRGpNJYDiz8Ev50FtDMIEHy2h7KWGqGMAYGGfVXqThJSavvhhaqlTyDjqsKlz
-         gVVQ==
-X-Gm-Message-State: AOAM530Po09lLV6RW4AvLvrygwEghUlMmMTi7WqSjalaQkHkX+vFMtC9
-        HjiDcCS3BXtJCsh/kEjmyIZQDQ==
-X-Google-Smtp-Source: ABdhPJxykFoZuKmjviuSn9DcWv3yRmnj5s2LUlovrzLZDhDLZZjG8LFtTII2ivb0MrPwguN6v7pB7w==
-X-Received: by 2002:a63:1760:0:b0:374:6621:9236 with SMTP id 32-20020a631760000000b0037466219236mr12019521pgx.7.1646697749418;
-        Mon, 07 Mar 2022 16:02:29 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id 23-20020a17090a0d5700b001bc3c650e01sm1383704pju.1.2022.03.07.16.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 16:02:29 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     davem@davemloft.net
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Subject: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-Date:   Mon,  7 Mar 2022 16:01:46 -0800
-Message-Id: <20220308000146.534935-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D9wbXIRTldTtmuQubha8O7jdPMIdPkNXtDtnMlsvwSo=;
+        b=KjJdQ1kjgnlj9egnYwuvXb4fOWhwZRrBixfYiEnrPizvOjwe9MszytU7+xtPR3Vw7j
+         /oIo31goc70JIUqliuFfFQmjbvvjTU8c9q0VI1TjBxlS2xY8OP5pobc2HukhhDmMjCKo
+         ECy/zbk1ehPcKLBYdAb3NaMAGk2o3bNjEsVdiK9G5/UmQx23piLYuvBdR4LxsHuZL0h1
+         RrvKr2yfpUgebzYyhECa/sSgw4TsEs0XwIoDhvtubQd/3ufbaGaKgWh80Gmot+l4SDLd
+         5eg14tTjl5vgCrf7v5nrwqbfgcSUHxXg5N7eb908OO1Wfoc/H9GoHHvMumFwFRC77RU3
+         jhyQ==
+X-Gm-Message-State: AOAM530apxzAhafYGOWY1MlbTshd+N/odcWsTVGI0qPYNxuZMUlKQtyM
+        4mCwbctPdCBPHBhhQEXL6vcWmh4J7vOM2mupbSE=
+X-Google-Smtp-Source: ABdhPJw/ms+120QdyjSh1B6KKPoO7l8dAlw76td2jm1Ksw2GuzOkn4+GvrlwOyuHDgFV+kszD03ayeW6jrc0Uqmn35E=
+X-Received: by 2002:a17:903:124a:b0:151:99fe:1a10 with SMTP id
+ u10-20020a170903124a00b0015199fe1a10mr14660065plh.87.1646697804764; Mon, 07
+ Mar 2022 16:03:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220303222014.517033-1-shy828301@gmail.com> <CADFyXm6W9CVkO4XPYep-tHg55c8m8NES783kcVYrdjSMbzYoDA@mail.gmail.com>
+ <CAHbLzkriyBy2HqjssurLSnhoyuUzpJRZjMPNx34MTgxeO0dddg@mail.gmail.com>
+ <13ad4ba1-2a88-9459-3995-70af36aba33e@redhat.com> <20220306180718.6d4e6233130b94fdad98df88@linux-foundation.org>
+ <84a6c9c1-d18f-6955-2666-0a2d7bce6094@redhat.com> <20220307154326.6494f7fca7def491a23e5df1@linux-foundation.org>
+In-Reply-To: <20220307154326.6494f7fca7def491a23e5df1@linux-foundation.org>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Mon, 7 Mar 2022 16:03:12 -0800
+Message-ID: <CAHbLzkqY69nFniK+ckQaeu117Q+OqZ2hvFEdVbZaW2C_zAzDbg@mail.gmail.com>
+Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting PMD
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+On Mon, Mar 7, 2022 at 3:43 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Mon, 7 Mar 2022 09:24:58 +0100 David Hildenbrand <david@redhat.com> wrote:
+>
+> > On 07.03.22 03:07, Andrew Morton wrote:
+> > > On Fri, 4 Mar 2022 19:50:08 +0100 David Hildenbrand <david@redhat.com> wrote:
+> > >
+> > >> @Andrew, the last mail I received was
+> > >>
+> > >> + mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+> > >> added to -mm tree
+> > >>
+> > >> The patch shows up in mmotm as
+> > >>
+> > >> #[merged]mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+> > >>
+> > >> ... which shouldn't be true.
+> > >
+> > > I guess I mislabelled the reason for dropping it.  Should have been to-be-updated,
+> > > due to https://lkml.kernel.org/r/CAHbLzkpbnQyHRckoRtbZoaLvANu92MY4kEsbKudaQ8MDUA3nVg@mail.gmail.com
+> > >
+> >
+> > Let me clarify.
+> >
+> > 1. I sent [1] (9 patches)
+> >
+> > 2. You queued the 9 patches
+> >
+> > E.g., in "mmotm 2022-02-15-20-22 uploaded"
+> >
+> > * mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+> > * mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+> > * mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+> > * mm-streamline-cow-logic-in-do_swap_page.patch
+> > * mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+> > * mm-khugepaged-remove-reuse_swap_page-usage.patch
+> > * mm-swapfile-remove-stale-reuse_swap_page.patch
+> > * mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+> > * mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+> >
+> > 3. The last patch in the series was dropped. What remains are 8 patches.
+> >
+> > E.g., in "mmotm 2022-02-24-22-38 uploaded"
+> >
+> > * mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+> > * mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+> > * mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+> > * mm-streamline-cow-logic-in-do_swap_page.patch
+> > * mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+> > * mm-khugepaged-remove-reuse_swap_page-usage.patch
+> > * mm-swapfile-remove-stale-reuse_swap_page.patch
+> > * mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+> >
+> > 4. Yang Shi sent his patch (the one we're replying to)
+> >
+> > 5. You picked his patch and dropped it again due to [2]
+> >
+> >
+> > I'm wondering why 3 happened and why
+> > https://www.ozlabs.org/~akpm/mmotm/series contains:
+> >
+> >
+> > mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+> > mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+> > mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+> > mm-streamline-cow-logic-in-do_swap_page.patch
+> > mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+> > mm-khugepaged-remove-reuse_swap_page-usage.patch
+> > mm-swapfile-remove-stale-reuse_swap_page.patch
+> > mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+> > ...
+> > #[merged]mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+>
+> OK, thanks.  I guess it was me seeing 100% rejects when merging onto
+> the folio changes then incorrectly deciding the patch was now in
+> linux-next via some other tree.
+>
+> I restored it and fixed things up.  Please check.
 
-The reproducer triggers it by sending an invalid message via sendmmsg() call,
-which triggers skb_over_panic, and crashes the kernel:
+Thanks, Andrew. I think we could clean it up a little bit further.
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
+>
+>
+> --- a/mm/huge_memory.c~mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd
+> +++ a/mm/huge_memory.c
+> @@ -2133,8 +2133,6 @@ void __split_huge_pmd(struct vm_area_str
+>  {
+>         spinlock_t *ptl;
+>         struct mmu_notifier_range range;
+> -       bool do_unlock_folio = false;
+> -       pmd_t _pmd;
+>
+>         mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
+>                                 address & HPAGE_PMD_MASK,
+> @@ -2153,42 +2151,14 @@ void __split_huge_pmd(struct vm_area_str
+>                         goto out;
+>         }
+>
+> -repeat:
+>         if (pmd_trans_huge(*pmd)) {
+> -               if (!folio) {
+> +               if (!folio)
+>                         folio = page_folio(pmd_page(*pmd));
 
-------------[ cut here ]------------
-kernel BUG at net/core/skbuff.c:113!
-PREEMPT SMP KASAN
-CPU: 1 PID: 1818 Comm: repro Not tainted 5.17.0-rc7-dirty #9
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
-RIP: 0010:skb_panic+0x173/0x175
-RSP: 0018:ffffc900015bf3b8 EFLAGS: 00010282
-RAX: 0000000000000090 RBX: ffff88810e848c80 RCX: 0000000000000000
-RDX: ffff88810fd84300 RSI: ffffffff814fa5ef RDI: fffff520002b7e69
-RBP: ffffc900015bf420 R08: 0000000000000090 R09: 0000000000000000
-R10: ffffffff814f55f4 R11: 203a666675626b73 R12: ffffffff855bff80
-R13: ffffffff84647fb4 R14: 0000000000010027 R15: ffffffff855bf420
-FS:  0000000000c8b3c0(0000) GS:ffff88811b100000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000040 CR3: 0000000106b68000 CR4: 0000000000150ea0
-Call Trace:
- <TASK>
- skb_put.cold+0x23/0x23
- __ip6_append_data.isra.0.cold+0x396/0xe3a
- ip6_append_data+0x1e5/0x320
- rawv6_sendmsg.cold+0x1618/0x2ba9
- inet_sendmsg+0x9e/0xe0
- sock_sendmsg+0xd7/0x130
- ____sys_sendmsg+0x381/0x8a0
- ___sys_sendmsg+0x100/0x170
- __sys_sendmmsg+0x26c/0x3b7
- __x64_sys_sendmmsg+0xb2/0xbd
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+We could remove the "if (pmd_trans_huge(*pmd))" section since folio is
+actually not used afterward at all.
 
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-This can be fixed by increasing the alloclen in case it is smaller than
-fraglen in __ip6_append_data().
+> -                       /*
+> -                        * An anonymous page must be locked, to ensure that a
+> -                        * concurrent reuse_swap_page() sees stable mapcount;
+> -                        * but reuse_swap_page() is not used on shmem or file,
+> -                        * and page lock must not be taken when zap_pmd_range()
+> -                        * calls __split_huge_pmd() while i_mmap_lock is held.
+> -                        */
+> -                       if (folio_test_anon(folio)) {
+> -                               if (unlikely(!folio_trylock(folio))) {
+> -                                       folio_get(folio);
+> -                                       _pmd = *pmd;
+> -                                       spin_unlock(ptl);
+> -                                       folio_lock(folio);
+> -                                       spin_lock(ptl);
+> -                                       if (unlikely(!pmd_same(*pmd, _pmd))) {
+> -                                               folio_unlock(folio);
+> -                                               folio_put(folio);
+> -                                               folio = NULL;
+> -                                               goto repeat;
+> -                                       }
+> -                                       folio_put(folio);
+> -                               }
+> -                               do_unlock_folio = true;
+> -                       }
+> -               }
+>         } else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
+>                 goto out;
+>         __split_huge_pmd_locked(vma, pmd, range.start, freeze);
 
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
+With the above if removed, this could be changed to:
 
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
- net/ipv6/ip6_output.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+if (pmd_trans_huge(*pmd) || pmd_devmap(*pmd) ||
+            is_pmd_migration_entry(*pmd))
+                __split_huge_pmd_locked(vma, pmd, range.start, freeze);
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4788f6b37053..622345af323e 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1629,6 +1629,13 @@ static int __ip6_append_data(struct sock *sk,
- 				err = -EINVAL;
- 				goto error;
- 			}
-+			if (unlikely(alloclen < fraglen)) {
-+				if (printk_ratelimit())
-+					pr_warn("%s: wrong alloclen: %d, fraglen: %d",
-+						__func__, alloclen, fraglen);
-+				alloclen = fraglen;
-+			}
-+
- 			if (transhdrlen) {
- 				skb = sock_alloc_send_skb(sk, alloclen,
- 						(flags & MSG_DONTWAIT), &err);
--- 
-2.35.1
+>  out:
+>         spin_unlock(ptl);
+> -       if (do_unlock_folio)
+> -               folio_unlock(folio);
+>         /*
+>          * No need to double call mmu_notifier->invalidate_range() callback.
+>          * They are 3 cases to consider inside __split_huge_pmd_locked():
+> _
+>
