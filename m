@@ -2,87 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B68FAC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B872CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348950AbiCHP67 (ORCPT
+        id S1348058AbiCHP7S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:58:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        Tue, 8 Mar 2022 10:59:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348075AbiCHP4K (ORCPT
+        with ESMTP id S1348959AbiCHP7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:10 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7194D266
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=cWrUD1KaL9aYwAdkiMBL/v8TI8q3NHQ2xjsiReq0bIM=; b=nl2gaTAEgkLcBC7k8+pPIudFkM
-        8ADeg7c/nGUOzU0U0E5Vvo0yOJR1gGnR7FsoBvWSdTPSZv518tj/2WyTQty6kBMZPi2BdCJx5htCt
-        IoSX63U0sfLQREe/IZLyl0enF/ajHXliRukKip+60ywuJEY9poI9/aDaQKfZ8RFIGaJVYMw/D8Nx+
-        vA4tSbTM0akSgtQcPyLdx5LoW8R3oRovN1oZ/PxKii1bYxJIg5ugw1drNua1st9dBXscIleFPhxjl
-        +gzLGeiDF9Db1wsvj1oW4f0WYfLmvRg1Gg2c85YcWAbITsT+BI8YXbZ2p4SyYt5CWUdAa6CIENqkZ
-        Y7dP5cOQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GIvH-R9; Tue, 08 Mar 2022 15:54:42 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 476D6302DC3;
-        Tue,  8 Mar 2022 16:54:40 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id A02C02B5649C3; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154319.054842742@infradead.org>
-User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:43 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 32/45] x86/ibt: Dont generate ENDBR in .discard.text
-References: <20220308153011.021123062@infradead.org>
+        Tue, 8 Mar 2022 10:59:01 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F99F36E1D;
+        Tue,  8 Mar 2022 07:58:04 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id e25-20020a0568301e5900b005b236d5d74fso4432442otj.0;
+        Tue, 08 Mar 2022 07:58:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vvKgn0sHuAllkwYzvRFG2BC617hGBzzXAeGk4mrg70E=;
+        b=G61uZlPuyejOW7T+11EayRugjx1w1CLbBDWhQ229Ng+7kH6xC73iT1VpxXwsPswKrm
+         BUJZr1YHDkI/sQz4/JyawVxm42ygHfH7e1BhNAbIPrjHBmvMvX/yB3WuDIWSb8vMgJtp
+         Jq1XF2Rt48ftXftNceQV0+QuOTgGCf+UsebsIEX93H3r34PaztKFoR0g2H0sxBXTFrqF
+         O2p/xx+TVOGZ5oGUlD6F2wsi6hXCYvSAF7Jl2jgPHcko16zU2C1XKjOlPf3gp/3PxnA5
+         QFcz5e27bcIHeURZILrgFRIfL/MmH5unYekp6LY/zT8jTfjqDcdx1xgyrHsGPe84MUOI
+         SSUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vvKgn0sHuAllkwYzvRFG2BC617hGBzzXAeGk4mrg70E=;
+        b=AA3/K7eCyrOYv90XaRMP96cceisCFMOwKt7I1PBLBS+zzYlg5D2gUt+aGqR5n3XeJX
+         CyRW3RVeL/Dwi6ZszxvUIKSGvQznoVH3I+q5JEtvpD+fOpJ2PdrwDncQz5nZj0akVwGb
+         8oiHJy8tt8FHRl0kMzJadBxn1X2E/+5fOsF7U9wAKOShLTOk9lZQuw8DF3AQXsn8lnzw
+         0fksnBYw7AmuyqnkxB2qsUACIR5qmlsTHOf/V+/VnujOkSWDUTOVPvEKbTme3DbP04Pd
+         Uw7qP4VRUTTn39da76G4E0vVS861SpviaCO3YWY4Flsmbqcx0SAeyb8OxkHo/LPkiJka
+         IeCw==
+X-Gm-Message-State: AOAM530Ar13JdUJnuz5uYkrMDkeD+RZUKWqAbqjTj0FXm5z5F0DLf24i
+        DjidO8KoGl8zCCFjQazYfikWYhT1ATVoshYMMZw=
+X-Google-Smtp-Source: ABdhPJyUocVQDe1TT+zkXqIvkSF3HasQjSkWt8UXbdo8kc+P8zJiKM7WAw/kWuca/PmBKC4HHA/oLkhRCyAr/37/i1s=
+X-Received: by 2002:a9d:4b95:0:b0:5b2:46d4:94aa with SMTP id
+ k21-20020a9d4b95000000b005b246d494aamr3241251otf.117.1646755083739; Tue, 08
+ Mar 2022 07:58:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220217142133.72205-1-cgzones@googlemail.com>
+ <20220217142133.72205-2-cgzones@googlemail.com> <CAHC9VhQPZ3_dXvM9eqwsxZ2c+2mcdvNNJbtUNs_-9Md5F3P8vA@mail.gmail.com>
+In-Reply-To: <CAHC9VhQPZ3_dXvM9eqwsxZ2c+2mcdvNNJbtUNs_-9Md5F3P8vA@mail.gmail.com>
+From:   =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Date:   Tue, 8 Mar 2022 16:57:52 +0100
+Message-ID: <CAJ2a_DfpYp_n8F7rg5yRAK9S8r0GcTQFHfB=d6cwRSHwMUjCyA@mail.gmail.com>
+Subject: Re: [PATCH 3/5] selinux: use consistent pointer types for boolean arrays
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     SElinux list <selinux@vger.kernel.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        James Morris <jamorris@linux.microsoft.com>,
+        Austin Kim <austin.kim@lge.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Having ENDBR in discarded sections can easily lead to relocations into
-discarded sections which the linkers aren't really fond of. Objtool
-also shouldn't generate them, but why tempt fate.
+On Fri, 18 Feb 2022 at 17:01, Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Thu, Feb 17, 2022 at 9:21 AM Christian G=C3=B6ttsche
+> <cgzones@googlemail.com> wrote:
+> >
+> > Use a consistent type of unsigned int* for boolean arrays, instead of
+> > using implicit casts to and from int*.
+> >
+> > Reported by sparse:
+> >
+> >     security/selinux/selinuxfs.c:1481:30: warning: incorrect type in as=
+signment (different signedness)
+> >     security/selinux/selinuxfs.c:1481:30:    expected unsigned int *
+> >     security/selinux/selinuxfs.c:1481:30:    got int *[addressable] val=
+ues
+> >     security/selinux/selinuxfs.c:1398:48: warning: incorrect type in ar=
+gument 3 (different signedness)
+> >     security/selinux/selinuxfs.c:1398:48:    expected int *values
+> >     security/selinux/selinuxfs.c:1398:48:    got unsigned int *bool_pen=
+ding_values
+> >
+> > Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> >
+> > ---
+> > A more invasive change would be to change all boolean arrays to bool*.
+>
+> I think that might be a worthwhile change, although that can happen at
+> a later date.
+>
+> A quick general comment: please try to stick to 80-char long lines.  I
+> realize Linus/checkpatch.pl has started to allow longer lines but I
+> would still like SELinux to try and keep to 80-chars or under.
+>
+> > diff --git a/security/selinux/ss/services.c b/security/selinux/ss/servi=
+ces.c
+> > index 6901dc07680d..7865926962ab 100644
+> > --- a/security/selinux/ss/services.c
+> > +++ b/security/selinux/ss/services.c
+> > @@ -3175,7 +3175,8 @@ int security_get_bool_value(struct selinux_state =
+*state,
+> >  static int security_preserve_bools(struct selinux_policy *oldpolicy,
+> >                                 struct selinux_policy *newpolicy)
+> >  {
+> > -       int rc, *bvalues =3D NULL;
+> > +       int rc;
+> > +       unsigned int *bvalues =3D NULL;
+>
+> Doesn't this cause a type mismatch (unsigned int vs int) when an entry
+> from bvalues[] is assigned to cond_bool_datum::state later in the
+> security_preserve_bools() function?
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/include/asm/setup.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Yes, but those variables *should* only hold the values 0 or 1.
+But probably it's better to re-spin for 5.19 with all arrays and
+cond_bool_datum::state converted to literal bool type.
 
---- a/arch/x86/include/asm/setup.h
-+++ b/arch/x86/include/asm/setup.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/linkage.h>
- #include <asm/page_types.h>
-+#include <asm/ibt.h>
- 
- #ifdef __i386__
- 
-@@ -119,7 +120,7 @@ void *extend_brk(size_t size, size_t ali
-  * executable.)
-  */
- #define RESERVE_BRK(name,sz)						\
--	static void __section(".discard.text") __used notrace		\
-+	static void __section(".discard.text") __noendbr __used notrace	\
- 	__brk_reservation_fn_##name##__(void) {				\
- 		asm volatile (						\
- 			".pushsection .brk_reservation,\"aw\",@nobits;" \
-
-
+>
+> --
+> paul-moore.com
