@@ -2,98 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B190C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbiCIBrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47134 "EHLO
+        id S231255AbiCIBs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:48:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbiCIBrt (ORCPT
+        with ESMTP id S231494AbiCIBsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:47:49 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A260847AD1;
-        Tue,  8 Mar 2022 17:46:51 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id a5so963833pfv.2;
-        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
-        b=nwj7tvDCQhT1tTSZYmeFh97v6ljyhYUeGt5xJaI5O+5JHeo06oneSZyrrLp9BGAYNI
-         pMlEUKTuDpYeL6nlBXoq5WGC1p86052RqBGBeaop9vmCRbk8j+OE7kmswBlOQcWUZYqC
-         ozkE/n0IsZrz/0oiZ1k+8RlL1lvSozFFqulT9DKNgIa3kEZU610qd8SVTBLtq01v3rmq
-         Ces/SsF7xuWX4HjoBhGvS8jbozk85pviU83o6Yw1emBgHCO6Kw0O3HDB//5i7xHSKBRF
-         vUQzWla11q3n6eixTOIm4NrDY5rPuED+sdh3H9ZqRREY9VP0fdsNZEEJtJH3avwR9DQA
-         XYeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
-        b=v0DdGmYv5HUPYgrQ987JVZi1+VnecA/G3OPbP8+uP9WcXUqv4e+a/cF+NaLNg7FoXu
-         HgkAlND6stJBLAM0fJ31vPpU0mV3A74G39Zu/Pzt9mM7tS/RD+EoMjgy3BYPta9KSmVy
-         OBH9nFNeFWPrU77mhop8SbvPgbnvfiWM1jwaHaQU6i2aM1Ir/ZlrZs9d/rzsiAzrxxsC
-         uNqkNuDD7llikinHJ+97sf/hcel0zK5wra+m/WS2v604aMWej+cDSCKeK0FUBQV/CilI
-         OQAzkT30M0jzu8BJbEB7btyLbccoxK1P4re03C3+0Yz0C6ZfaIn2W73F5ccgp8XsdqCs
-         mffw==
-X-Gm-Message-State: AOAM533SasUcdPKCjpC1idsAGoxqEi0E9ylJ46lj10meD4XRj6hpIuxS
-        FrChO2X6eftg9M2RyqnKQl+//7PABbk=
-X-Google-Smtp-Source: ABdhPJzjVo7e2qrmUbNkeL2htyp8gE3ptwnN+rocneGeMxNszSiqfQmZvPVecIgxWwjPCwx68Brb+g==
-X-Received: by 2002:a63:2bc1:0:b0:35e:c54b:3be0 with SMTP id r184-20020a632bc1000000b0035ec54b3be0mr16632074pgr.105.1646790411123;
-        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id o185-20020a6341c2000000b0036fb987b25fsm358271pga.38.2022.03.08.17.46.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 17:46:50 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:46:47 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Divya.Koppera@microchip.com, netdev@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220309014647.GB24366@hoboy.vegasvil.org>
-References: <20220304093418.31645-3-Divya.Koppera@microchip.com>
- <YiILJ3tXs9Sba42B@lunn.ch>
- <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
- <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
- <YifoltDp4/Fs+9op@lunn.ch>
+        Tue, 8 Mar 2022 20:48:17 -0500
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BB17007A
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:47:19 -0800 (PST)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220308232036euoutp02d43d1f223822d373a6dbcc97a6acc50e~aiyxYHIN80144801448euoutp02q
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:20:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220308232036euoutp02d43d1f223822d373a6dbcc97a6acc50e~aiyxYHIN80144801448euoutp02q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646781636;
+        bh=vVmFhsaYTxX5f8JcRbmKME++nxTa/28N5Hv45HFF8Gc=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=Vpt9INo/7LqtdZyFSMycROin8BvlMD2Tgx/6V3fP2WSUaoCQUdzxoGAeX6uNKoxX7
+         c7vM71MpCm8QeMkGPaeKT2djwMEgteibfOlMgGfSu+5JV5JsU1O87CmekKFQRcynmb
+         4/OQ6ZytsyfaH+RhzSNPFSVSa74yMuoWFh98P/fA=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220308232035eucas1p1bd5688cb1ea79ea3da6381095dad535c~aiywl1T0H0715607156eucas1p1u;
+        Tue,  8 Mar 2022 23:20:35 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 48.AB.09887.3C4E7226; Tue,  8
+        Mar 2022 23:20:35 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f~aiyv40p3A1207812078eucas1p2E;
+        Tue,  8 Mar 2022 23:20:34 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220308232034eusmtrp26c612f4cbdcee882e83035f44d280abb~aiyv4GO1l1125611256eusmtrp2w;
+        Tue,  8 Mar 2022 23:20:34 +0000 (GMT)
+X-AuditID: cbfec7f4-471ff7000000269f-33-6227e4c3b2e9
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id BB.8D.09522.2C4E7226; Tue,  8
+        Mar 2022 23:20:34 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220308232034eusmtip137b1a8c476e66cecff3f206a11e0398d~aiyvNnmbz0938109381eusmtip1E;
+        Tue,  8 Mar 2022 23:20:33 +0000 (GMT)
+Message-ID: <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
+Date:   Wed, 9 Mar 2022 00:20:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YifoltDp4/Fs+9op@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v3 2/3] sched/cpuacct: optimize away RCU read lock
+Content-Language: en-US
+To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        peterz@infradead.org, vincent.guittot@linaro.org,
+        bristot@redhat.com, zhaolei@cn.fujitsu.com, tj@kernel.org,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org
+Cc:     linux-kernel@vger.kernel.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20220220051426.5274-2-zhouchengming@bytedance.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Se1BMcRT2u3f37m1nNteKDpqYpYj08LxeLcOYHcZMnoMxstWV9MBuK2lQ
+        YmM9yk4mVh4xYyti203YPNY+lDFtJCZqkGJMWZWaVGK5rkf/fd93zvl95zvzI3GxmT+SjE1M
+        YhSJ8ngJIeSVPex1TrY1j48MOVcCdE3Tc4K+YlxGPzPnEXRlq52gaywXMLrimAWj+/QORB+y
+        d+N0vfYgj36Z3oXmC2U/Kq8SMtunNlzmfqDFZaaCiTJj0WFC1vDiDiFru/eckHUafcPJ9cK5
+        0Ux87E5GERy2SbjlfvoJfPvnwF3uRgOWhtL8NYgkgZoGOQf2aJCQFFMFCNLVpwmOdCGoatLz
+        ONKJoLi6CNMgj98Tr/o7EVfQI+iwXcM50vFrvrsMZ7tEVBjYe9x81oNHjQNdQQonD4FHp5t5
+        LB5GRcJby3EBi4dSi+GzzYBYjFPe8Kr5PMa+6UW9Q1DXase5whjoe23ks5igQkHj0hAs9qDm
+        w8FLJoLrGQ0ZN878XgioTA94mp4v4NZeBC3VmX8iDIWWitI/ug+4b3NuQGUgaHQWCzhyFMGz
+        /acQ1zUHGpx9BBsHpwLgujmYkxdAe5UF4y7pCXWuIdwSnqAty8U5WQSH1GKu2x90Fdf+2T54
+        UoNnI4luwF10A/LrBsTR/fe9gHhFyJtRKRNiGOWURCY5SClPUKoSY4KitiUY0a/v9fhHRdct
+        pG/pCLIijERWBCQu8RK9qR4XKRZFy1N2M4ptEQpVPKO0olEkT+Itioo1yMVUjDyJiWOY7Yzi
+        bxUjPUamYeZZ9pKIOL9ShfdKxvRV6yj55lXqEzfIejF5XtV1/sfKBulV89tJWOTNlPziBV8D
+        CkV1Jy1rDm+cszUcT7u9KNBRmPpu3eYbY0LUyUFHdo5YLC2pXrh2x/vhpqWZEYasYav2O3Mt
+        1tL23lCod6kfRS33b/fz9J1OvL4cUKufstU02jdXOYEpN4SF1trUvp5f7g2eifa9MRm+89UZ
+        OWMVLsfZxoxTLkvO1JbJSSq/tv7arFHSpuRdqRu0/c4s06Aj/M7AGWqTtOfTOW190ZKQeOal
+        w71Q8KHcR7U6m/8taS+xYUXE8T3Bdand2ZYlVYLe1tl+edLMcrgV3ePSF9w91o9LeMot8tCJ
+        uEIp/wnmFIzGzQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrDIsWRmVeSWpSXmKPExsVy+t/xu7qHnqgnGZz7pm5x6fFVNovVm3wt
+        Lu+aw2Zx4vURNotLBxYwWRzvPcBk8Wv5UUaLjiPfmC1uT2plsbjZ+IXRgcvj34k1bB6H37xn
+        9vh/cBKzx+YVWh6bVnWyedy5tofN4/2+q2wenzfJBXBE6dkU5ZeWpCpk5BeX2CpFG1oY6Rla
+        WugZmVjqGRqbx1oZmSrp29mkpOZklqUW6dsl6GXsb5zIXPBOp+L/ww1MDYwNal2MnBwSAiYS
+        t/58Zuxi5OIQEljKKLGnaxkbREJG4uS0BlYIW1jiz7UuNoii94wSjXOvgxXxCthJHPnxH6iI
+        g4NFQEVi1opKiLCgxMmZT1hAbFGBJImX2zaCzREWcJN4d3gDI4jNLCAucevJfCaQmSICjxgl
+        Lm9/ygSRUJD4dW8TWIOQQKlE94STYIPYBAwlut52ge3lFHCQaF28mQ2i3kyia2sX1FB5ieat
+        s5knMArNQnLHLCT7ZiFpmYWkZQEjyypGkdTS4tz03GJDveLE3OLSvHS95PzcTYzAaN127Ofm
+        HYzzXn3UO8TIxMF4iFGCg1lJhPf+eZUkId6UxMqq1KL8+KLSnNTiQ4ymwLCYyCwlmpwPTBd5
+        JfGGZgamhiZmlgamlmbGSuK8ngUdiUIC6YklqdmpqQWpRTB9TBycUg1Mq7cumrBL/dqeRwcS
+        D/Ty9/5h8/6//NqGmu7w8x4Vl+71dvcdlo+Xt9zKcFi8pix8odjMBt+M9bwP5F9+tDs5MdIv
+        N/LZ3w912Uc59MOtNzQU78oXn2neXp1ayDJ/lU/s1BW93+ZvcWt57Mz8p1psn833r3NsZfb5
+        n7PSqqg1NI5bYfJ58fX/ClFSjYuKNF+WKh5Y19a+My59kt0qywrPVM1LWVXXZifrNGTfudjx
+        eMW5S6+nFqqeO7THp+hXW39MnZ1Dior77XmvDzzzShCRqS15MCf2Kq/kyU+LQg7lvHGYrLh7
+        Arf3G/+VBU1V02YL/3RjTduU/Grplvnlp/d7Zd15ZL7e4F5L5SHRJWVvlFiKMxINtZiLihMB
+        /sH+F18DAAA=
+X-CMS-MailID: 20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f
+References: <20220220051426.5274-1-zhouchengming@bytedance.com>
+        <20220220051426.5274-2-zhouchengming@bytedance.com>
+        <CGME20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 12:36:54AM +0100, Andrew Lunn wrote:
+On 20.02.2022 06:14, Chengming Zhou wrote:
+> Since cpuacct_charge() is called from the scheduler update_curr(),
+> we must already have rq lock held, then the RCU read lock can
+> be optimized away.
+>
+> And do the same thing in it's wrapper cgroup_account_cputime(),
+> but we can't use lockdep_assert_rq_held() there, which defined
+> in kernel/sched/sched.h.
+>
+> Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-> I'm assuming the ptp protocol does not try to measure the cable delay,
-> since if it did, there would be no need to know the RJ45-PHY delay, it
-> would be part of that.
+This patch landed recently in linux-next as commit dc6e0818bc9a 
+("sched/cpuacct: Optimize away RCU read lock"). On my test systems I 
+found that it triggers a following warning in the early boot stage:
 
-The PTP does indeed measure the cable delay.  With a well tuned
-system, you can tell the copper cable length directly from the
-measured delay.
+Calibrating delay loop (skipped), value calculated using timer 
+frequency.. 48.00 BogoMIPS (lpj=240000)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
+CPU: Testing write buffer coherency: ok
+CPU0: Spectre v2: using BPIALL workaround
 
-The problem with uncorrected PHY time stamps is that they affect the
-boundary point between the node and the network.  A static error there
-will create a path asymmetry that can neither be measured nor
-corrected by the PTP, and a variable error degrades the time signal.
+=============================
+WARNING: suspicious RCU usage
+5.17.0-rc5-00050-gdc6e0818bc9a #11458 Not tainted
+-----------------------------
+./include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
 
 
-Thanks,
-Richard
+rcu_scheduler_active = 1, debug_locks = 1
+2 locks held by kthreadd/2:
+  #0: c1d7972c (&p->pi_lock){....}-{2:2}, at: task_rq_lock+0x30/0x118
+  #1: ef7b52d0 (&rq->__lock){-...}-{2:2}, at: 
+raw_spin_rq_lock_nested+0x24/0x34
+
+stack backtrace:
+CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.17.0-rc5-00050-gdc6e0818bc9a 
+#11458
+Hardware name: Samsung Exynos (Flattened Device Tree)
+  unwind_backtrace from show_stack+0x10/0x14
+  show_stack from dump_stack_lvl+0x58/0x70
+  dump_stack_lvl from update_curr+0x1bc/0x35c
+  update_curr from dequeue_task_fair+0xb0/0x8e8
+  dequeue_task_fair from __do_set_cpus_allowed+0x19c/0x258
+  __do_set_cpus_allowed from __set_cpus_allowed_ptr_locked+0x130/0x1d8
+  __set_cpus_allowed_ptr_locked from __set_cpus_allowed_ptr+0x48/0x64
+  __set_cpus_allowed_ptr from kthreadd+0x44/0x16c
+  kthreadd from ret_from_fork+0x14/0x2c
+Exception stack(0xc1cb9fb0 to 0xc1cb9ff8)
+9fa0:                                     00000000 00000000 00000000 
+00000000
+9fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+00000000
+9fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+CPU0: thread -1, cpu 0, socket 9, mpidr 80000900
+cblist_init_generic: Setting adjustable number of callback queues.
+cblist_init_generic: Setting shift to 1 and lim to 1.
+Running RCU-tasks wait API self tests
+Setting up static identity map for 0x40100000 - 0x40100060
+rcu: Hierarchical SRCU implementation.
+
+=============================
+WARNING: suspicious RCU usage
+5.17.0-rc5-00050-gdc6e0818bc9a #11458 Not tainted
+-----------------------------
+./include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 1, debug_locks = 1
+1 lock held by migration/0/13:
+  #0: ef7b52d0 (&rq->__lock){-...}-{2:2}, at: 
+raw_spin_rq_lock_nested+0x24/0x34
+
+stack backtrace:
+CPU: 0 PID: 13 Comm: migration/0 Not tainted 
+5.17.0-rc5-00050-gdc6e0818bc9a #11458
+Hardware name: Samsung Exynos (Flattened Device Tree)
+Stopper: 0x0 <- 0x0
+  unwind_backtrace from show_stack+0x10/0x14
+  show_stack from dump_stack_lvl+0x58/0x70
+  dump_stack_lvl from put_prev_task_stop+0x16c/0x25c
+  put_prev_task_stop from __schedule+0x698/0x964
+  __schedule from schedule+0x54/0xe0
+  schedule from smpboot_thread_fn+0x218/0x288
+  smpboot_thread_fn from kthread+0xf0/0x134
+  kthread from ret_from_fork+0x14/0x2c
+Exception stack(0xc1ccffb0 to 0xc1ccfff8)
+ffa0:                                     00000000 00000000 00000000 
+00000000
+ffc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+00000000
+ffe0: 00000000 00000000 00000000 00000000 00000013 00000000
+smp: Bringing up secondary CPUs ...
+CPU1: thread -1, cpu 1, socket 9, mpidr 80000901
+CPU1: Spectre v2: using BPIALL workaround
+smp: Brought up 1 node, 2 CPUs
+SMP: Total of 2 processors activated (96.00 BogoMIPS).
+
+The above log comes from ARM 32bit Samsung Exnyos4210 based Trats board.
+
+> ---
+>   include/linux/cgroup.h | 2 --
+>   kernel/sched/cpuacct.c | 4 +---
+>   2 files changed, 1 insertion(+), 5 deletions(-)
+>
+> diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+> index 75c151413fda..9a109c6ac0e0 100644
+> --- a/include/linux/cgroup.h
+> +++ b/include/linux/cgroup.h
+> @@ -791,11 +791,9 @@ static inline void cgroup_account_cputime(struct task_struct *task,
+>   
+>   	cpuacct_charge(task, delta_exec);
+>   
+> -	rcu_read_lock();
+>   	cgrp = task_dfl_cgroup(task);
+>   	if (cgroup_parent(cgrp))
+>   		__cgroup_account_cputime(cgrp, delta_exec);
+> -	rcu_read_unlock();
+>   }
+>   
+>   static inline void cgroup_account_cputime_field(struct task_struct *task,
+> diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
+> index 307800586ac8..f79f88456d72 100644
+> --- a/kernel/sched/cpuacct.c
+> +++ b/kernel/sched/cpuacct.c
+> @@ -337,12 +337,10 @@ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+>   	unsigned int cpu = task_cpu(tsk);
+>   	struct cpuacct *ca;
+>   
+> -	rcu_read_lock();
+> +	lockdep_assert_rq_held(cpu_rq(cpu));
+>   
+>   	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+>   		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
+> -
+> -	rcu_read_unlock();
+>   }
+>   
+>   /*
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
