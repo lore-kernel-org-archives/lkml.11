@@ -2,187 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB35FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235678AbiCHMj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
+        id S241830AbiCHMoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 07:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347122AbiCHMhy (ORCPT
+        with ESMTP id S236637AbiCHMoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:37:54 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3C348310
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:36:41 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KCZY243NkzdZwv;
-        Tue,  8 Mar 2022 20:35:18 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 20:36:39 +0800
-Subject: Re: [PATCH 4/4] mm/memory-failure.c: fix potential VM_BUG_ON_PAGE in
- split_huge_page_to_list
-To:     Yang Shi <shy828301@gmail.com>
-CC:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220228140245.24552-1-linmiaohe@huawei.com>
- <20220228140245.24552-5-linmiaohe@huawei.com>
- <20220304082804.GC3778609@hori.linux.bs1.fc.nec.co.jp>
- <2311bee4-cc11-93fc-6992-6c327a150e3d@huawei.com>
- <CAHbLzkrOfcJvv8Vy8jcKWc7QX=1Y9e=EW9+p78sp1xhac645-w@mail.gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <e7f1977e-2f6a-cffa-a75f-9665a908ca21@huawei.com>
-Date:   Tue, 8 Mar 2022 20:36:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 8 Mar 2022 07:44:19 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CE83A5FD
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:43:22 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KCZkC5HhLz9sSV;
+        Tue,  8 Mar 2022 13:43:15 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id vgeW9xfmRpr1; Tue,  8 Mar 2022 13:43:15 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KCZkC4WH7z9sSR;
+        Tue,  8 Mar 2022 13:43:15 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8BAE98B779;
+        Tue,  8 Mar 2022 13:43:15 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id Ay1nmVgEpnG8; Tue,  8 Mar 2022 13:43:15 +0100 (CET)
+Received: from [192.168.202.9] (unknown [192.168.202.9])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E8BBF8B763;
+        Tue,  8 Mar 2022 13:43:14 +0100 (CET)
+Message-ID: <227e1408-4be3-9793-c604-d26875d0a586@csgroup.eu>
+Date:   Tue, 8 Mar 2022 13:43:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAHbLzkrOfcJvv8Vy8jcKWc7QX=1Y9e=EW9+p78sp1xhac645-w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/1] powerpc/ps3: Remove a couple of unneeded semicolons
+Content-Language: fr-FR
+To:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Geoff Levand <geoff@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210508095150.2942-1-thunder.leizhen@huawei.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <20210508095150.2942-1-thunder.leizhen@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/8 3:53, Yang Shi wrote:
-> On Sun, Mar 6, 2022 at 11:07 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
->>
->> On 2022/3/4 16:28, HORIGUCHI NAOYA(堀口 直也) wrote:
->>> On Mon, Feb 28, 2022 at 10:02:45PM +0800, Miaohe Lin wrote:
->>>> The huge zero page could reach here and if we ever try to split it, the
->>>> VM_BUG_ON_PAGE will be triggered in split_huge_page_to_list(). Also the
->>>> non-lru compound movable pages could be taken for transhuge pages. Skip
->>>> these pages by checking PageLRU because huge zero page isn't lru page as
->>>> non-lru compound movable pages.
->>>
->>> It seems that memory_failure() also fails at get_any_page() with "hwpoison:
->>> unhandlable page" message.
->>>
->>>   [16478.203474] page:00000000b6acdbd1 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1810b4
->>>   [16478.206612] flags: 0x57ffffc0801000(reserved|hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
->>>   [16478.209411] raw: 0057ffffc0801000 fffff11bc6042d08 fffff11bc6042d08 0000000000000000
->>>   [16478.211921] raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
->>>   [16478.214473] page dumped because: hwpoison: unhandlable page
->>>   [16478.216386] Memory failure: 0x1810b4: recovery action for unknown page: Ignored
->>>
->>> We can't handle errors on huge (or normal) zero page, so the current
->>
->> Sorry for confusing commit log again. I should have a coffee before I make this patch.
->> Huge or normal zero page will fail at get_any_page because they're neither HWPoisonHandlable
->> nor PageHuge.
->>
->>> behavior seems to me more suitable than "unsplit thp".
->>>
->>> Or if you have some producer to reach the following path with huge zero
->>> page, could you share it?
->>>
->>
->> What I mean is that non-lru movable compound page can reach here unexpected because __PageMovable(page)
->> is handleable now. So get_any_page could succeed to grab the page refcnt. And since it's compound page,
->> it will go through the split_huge_page_to_list because PageTransHuge checks PageHead(page) which can also
->> be true for compound page. But this type of pages is unexpected for split_huge_page_to_list.
+
+
+Le 08/05/2021 à 11:51, Zhen Lei a écrit :
+> The semicolon immediately following '}' is unneeded.
 > 
-> Can we really handle non-LRU movable pages in memory failure
-> (uncorrectable errors)? Typically they are balloon, zsmalloc, etc.
-> Assuming we run into a base (4K) non-LRU movable page, we could reach
-> as far as identify_page_state(), it should not fall into any category
-> except me_unknown. So it seems we could just simply make it
-> unhandlable.
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-There is the comment from memory_failure:
-	/*
-	 * We ignore non-LRU pages for good reasons.
-	 * - PG_locked is only well defined for LRU pages and a few others
-	 * - to avoid races with __SetPageLocked()
-	 * - to avoid races with __SetPageSlab*() (and more non-atomic ops)
-	 * The check (unnecessarily) ignores LRU pages being isolated and
-	 * walked by the page reclaim code, however that's not a big loss.
-	 */
-
-So we could not handle non-LRU movable pages.
-
-What do you mean is something like below?
-
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 5444a8ef4867..d80dbe0f20b6 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1784,6 +1784,13 @@ int memory_failure(unsigned long pfn, int flags)
-                }
-        }
-
-+       if (__PageMovable(hpage)) {
-+               put_page(p);
-+               action_result(pfn, MF_MSG_MOVALBE_PAGE, MF_IGNORED);
-+               res = -EBUSY;
-+               goto unlock_mutex;
-+       }
-+
-        if (PageTransHuge(hpage)) {
-                /*
-                 * The flag must be set after the refcount is bumped
+A more recent version of your patch are available at 
+https://patchwork.ozlabs.org/project/linuxppc-dev/patch/01647102607ce9640c9f27786d976109a3c4ea7e.1629197153.git.jing.yangyang@zte.com.cn/
 
 
-i.e. Simply make non-LRU movable pages unhandlable ?
-
+> ---
+>   arch/powerpc/platforms/ps3/system-bus.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> But it should be handlable for soft-offline since it could be migrated.
-> 
-
-Yes, non-LRU movable pages can be simply migrated.
-
-Many thanks.
-
-> 
->> Does this make sense for you? Thanks Naoya.
->>
->>> Thanks,
->>> Naoya Horiguchi
->>>
->>>>
->>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>>> ---
->>>>  mm/memory-failure.c | 14 ++++++++++++++
->>>>  1 file changed, 14 insertions(+)
->>>>
->>>> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
->>>> index 23bfd809dc8c..ac6492e36978 100644
->>>> --- a/mm/memory-failure.c
->>>> +++ b/mm/memory-failure.c
->>>> @@ -1792,6 +1792,20 @@ int memory_failure(unsigned long pfn, int flags)
->>>>      }
->>>>
->>>>      if (PageTransHuge(hpage)) {
->>>> +            /*
->>>> +             * The non-lru compound movable pages could be taken for
->>>> +             * transhuge pages. Also huge zero page could reach here
->>>> +             * and if we ever try to split it, the VM_BUG_ON_PAGE will
->>>> +             * be triggered in split_huge_page_to_list(). Skip these
->>>> +             * pages by checking PageLRU because huge zero page isn't
->>>> +             * lru page as non-lru compound movable pages.
->>>> +             */
->>>> +            if (!PageLRU(hpage)) {
->>>> +                    put_page(p);
->>>> +                    action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
->>>> +                    res = -EBUSY;
->>>> +                    goto unlock_mutex;
->>>> +            }
->>>>              /*
->>>>               * The flag must be set after the refcount is bumped
->>>>               * otherwise it may race with THP split.
->>>> --
->>>> 2.23.0
->>
->>
-> .
-> 
-
+> diff --git a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps3/system-bus.c
+> index b431f41c6cb53ab..5c739267ddd2174 100644
+> --- a/arch/powerpc/platforms/ps3/system-bus.c
+> +++ b/arch/powerpc/platforms/ps3/system-bus.c
+> @@ -603,7 +603,7 @@ static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
+>   	default:
+>   		/* not happned */
+>   		BUG();
+> -	};
+> +	}
+>   	result = ps3_dma_map(dev->d_region, (unsigned long)ptr, size,
+>   			     &bus_addr, iopte_flag);
+>   
+> @@ -762,7 +762,7 @@ int ps3_system_bus_device_register(struct ps3_system_bus_device *dev)
+>   		break;
+>   	default:
+>   		BUG();
+> -	};
+> +	}
+>   
+>   	dev->core.of_node = NULL;
+>   	set_dev_node(&dev->core, 0);
