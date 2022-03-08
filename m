@@ -2,103 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347518AbiCHOit (ORCPT
+        id S1347448AbiCHOix (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:38:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
+        Tue, 8 Mar 2022 09:38:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347509AbiCHOio (ORCPT
+        with ESMTP id S1347516AbiCHOit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:38:44 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE55A2B187
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:37:45 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 906293F61B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 14:37:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646750264;
-        bh=GQhf5FMMDwlXkcpGtUZU5kpnoxqIM3H1XBt87rWPIas=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=ZJHj12rWGbVi6KEEt7guWjkujYjuPXxSd73w83pLTleiFf0s9n9M2TayIjc8hw0Du
-         Nq0Ta0HSA7ipNvyRKS6ytiOwt2spN8c5a5bLrq7ydyEuKTDkqyWe2xordGZmpe8YPs
-         sCw5seGE77J3dX8bT5JR1Fg9RUPAfF1XIAPueySy+K/uCKTggctZ9npLHnv5iAw0g+
-         uDxtHca1m9ypNJvgw0kLIdd1kWeIwH/l+B5cchcuXqxyFDTu9WDkkSg/G1uOgGoQxp
-         Xy5ZF2MIPgslEcd7pzDrn5oqaGuDUvyOmrLfzg+nvwdGm3+gRdlOnQ7wDxF5HUriv6
-         wEqo4yMPkKf+A==
-Received: by mail-ej1-f70.google.com with SMTP id ga31-20020a1709070c1f00b006cec400422fso8774586ejc.22
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 06:37:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GQhf5FMMDwlXkcpGtUZU5kpnoxqIM3H1XBt87rWPIas=;
-        b=thIfdcsJ5Mp2NOCxFWHeoqC3PRHcS4oiSeSX8a8CnFgmMbc2B8HwD9t5uYa8toeq4q
-         112fNz9y+OhKX/o3EPxM6HTssmRjqvz8U5CVkfyAezboniU5QZPbmaW4/CjHrUuEc4A+
-         e7ajg619699eW/SZEQU4Cg0FhNPeoOYCXjDA8f9/43l+4t8k2EW2RFfXmgjwDnNB4njO
-         teCRLucFlpGHwX2DtEigX/kkrwym44+8U9x7jZ5+ZbmO1CHxLL+BYwxvbUd7K+ahOLqg
-         QIsedLOTNXcPmoRshSkXafjKsI8uucNpivm231ctHR/pDYJYgdoGZn0xHLm/oFv7BGwB
-         XghA==
-X-Gm-Message-State: AOAM532CInShEv5Z15nuQjtuTOU1XhM6ZSoe9cf8e6Jl2l60Vf5ehC7E
-        xa6yNAkXtQ2oo90x/9cDUYhOZR4qMhwn4ppMrn4oene7nPK3uq3GrxJ0YHZZDlscnj7RjJqSRVh
-        Q0V75UA9b2YHgN2uBR6jmehUQQrWifZ2HIZXc74NzZg==
-X-Received: by 2002:a17:906:848f:b0:6cf:7234:8ae with SMTP id m15-20020a170906848f00b006cf723408aemr13893168ejx.620.1646750263863;
-        Tue, 08 Mar 2022 06:37:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHPs13dq7ClqBcdJtQ2TjHjlfNW1+0JBLXqLPlMbYx0Qdb5usODrxQXpim42hs00FIxKoO4A==
-X-Received: by 2002:a17:906:848f:b0:6cf:7234:8ae with SMTP id m15-20020a170906848f00b006cf723408aemr13893155ejx.620.1646750263680;
-        Tue, 08 Mar 2022 06:37:43 -0800 (PST)
-Received: from [192.168.0.143] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id a102-20020a509eef000000b0041614c8f79asm5773963edf.88.2022.03.08.06.37.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 06:37:42 -0800 (PST)
-Message-ID: <3fb46905-6946-7164-4229-82d5d7d345b4@canonical.com>
-Date:   Tue, 8 Mar 2022 15:37:41 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/4] dt-bindings: timer: exynos4210-mct: Add ARTPEC-8
- MCT
+        Tue, 8 Mar 2022 09:38:49 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130044.outbound.protection.outlook.com [40.107.13.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A467DED8;
+        Tue,  8 Mar 2022 06:37:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H9LkwuvVltMLAS6JtVicitWzUtHyJX9gLM5NkIBKnGqpmS9cgoQB6FRaZvaBoy1QVxRgkL3otO6SOQ0cwf9tft0BQt97czSdnfjh1nNW7QAR04P01PklojQbL6+eInr8gGy2dz3LiXfH+NlqL3FeP+ej3q/9D4YEFcplkF91tOPpLVRR6Ddk0SqrUTqtMmgzhh+xmbZo9xzBsHZ7napYZWzOIcmzSd/+ZakXyK/iByCMMIR1VNq3b8JVRED8VCu1sOIo0PMKhEbzST3/WuHTrx5oOp/ssJvN/sCHjqb7EaVXHYAbwICc18w2gyVB39iHx8aag3YrytmYIs3DonpROA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K6N7QV2Iy5S4oVXkugQ0gWNqn3buGD0PSB3m3l0TRsI=;
+ b=Ct3KhTVPoPnw2rL10jjwM0Jvz6b7yDNn7ZawN34ZdwbH7FUCRaopmjq6ganao6spBMMBJ5zpY1I/TS6ZgGoPIjERcXWmXnSitKyTZ8LOfNfGQ7c8JZPRTaDikhQJ7ssxHj/VEKj689GKBmziI8jMGFs8lT4+KF/EAIPxfpDgThO+FPV1mUCpJ2aqDwh5nP0FaVH/QVkFhJNoAf9jA7Jp6B1/X0QwIqA2hd9PjvlH5ZhjhWtlNbGXkkdDNvk27nU9OkLP/K88kYSXD/vzZMKtD6EwJm6w9N3P0T3vdfZ7wcPxmpFN25HRQWPbPbVmkxSUDri9uCOtUbXd7MZFhCUeZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K6N7QV2Iy5S4oVXkugQ0gWNqn3buGD0PSB3m3l0TRsI=;
+ b=nrn1G+TxXYylqrl2b2OqNLS3bgjPPiiJRhaGb+XxqODRdlRPHD796+Gfwe8JmEUc0iLRTh/NlGtSpP4ohcgFBXkeoCJ5ROmV+B5FZgN/5ssoF3qv9P4kkykx4pLplRJugEg6EH4mKAWePzPNSMzzGVKtvF9kEoCFP10rfXiGeIg=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DU2PR04MB8808.eurprd04.prod.outlook.com (2603:10a6:10:2e3::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
+ 2022 14:37:47 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
+ 14:37:47 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Hector Martin <marcan@marcan.st>,
+        Angela Czubak <acz@semihalf.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
+Subject: Re: [RFC v7 net-next 10/13] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Thread-Topic: [RFC v7 net-next 10/13] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Thread-Index: AQHYMcjTRgIrF6Xyik+JLHWvUw480qy1kJUA
+Date:   Tue, 8 Mar 2022 14:37:47 +0000
+Message-ID: <20220308143746.w5ccuk3mvzdzno2x@skbuf>
+References: <20220307021208.2406741-1-colin.foster@in-advantage.com>
+ <20220307021208.2406741-11-colin.foster@in-advantage.com>
+In-Reply-To: <20220307021208.2406741-11-colin.foster@in-advantage.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        tglx@linutronix.de, daniel.lezcano@linaro.org
-Cc:     kernel@axis.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        alim.akhtar@samsung.com, robh+dt@kernel.org
-References: <20220308142410.3193729-1-vincent.whitchurch@axis.com>
- <20220308142410.3193729-2-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220308142410.3193729-2-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0601c4b9-e8cd-4729-2299-08da011136f0
+x-ms-traffictypediagnostic: DU2PR04MB8808:EE_
+x-microsoft-antispam-prvs: <DU2PR04MB8808AEC7BC1C0D4EA2D582DEE0099@DU2PR04MB8808.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yWJDzc6Bj0e2QtnIU49/jvlhNw1/EqaLjxeoYIOklbRtUJlako4xBuAHIAF92VeYuUozTjjcZmF0rvsjO/UayfFj6wNxWfZLVxaErNcq7wqSQbjNbUct8Lsb4k6dqBF6kEA5zdvAKvy2eAaLelRWOtaXEndDkaCw07zNTGPPs+ZgNHaf/LQavXe0fDm6RGOxq2JfFH0dFz1cywis+ujhS0QiCZ9sboGpKrlPEKEC9pAgfvXbEIOsHNaAn/f9klCgErQfsfxaJbSWrBLGpfI0blCsn5OCvAjzK7zBaQoXgwBLDFA4XmJzawZk90TP47q5thuMTGzmT1ClUpux0Y9RG/E/KeMox23nxPsnCHFya76bDqkS27zVURW4NYrpuv7Hw/O/ArTkrpnjLTXAePVwAlj8btD2XmujR/0Z5WPFzSkLh5HmvKDlEdsa5dwciHfmBPJG1QhuO6vq18tHXTbx/upoQKP8TCvaTJdxN9KhwAiW0QrgO78LeC7H4PIVGW6tORsl90EadtuOIwqsPurts210TgvVdz+8d1E5i6LvToSU6P2TpEoBBu8Yanxkdth92lbcTNfIZhP+ywWtSqW1NtKedcezHt0edpnFQRylGNK+1l/Ptqn2wl59zl+VvIerun3+ho36D3uwMFgmdpZvoHgCsysHtky6ppfhlQcalNfCgorj8+MxveESoCaHpdUnDB9HKSv6XtBPjIKANNDKzw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(91956017)(2906002)(6506007)(6512007)(9686003)(66476007)(66446008)(64756008)(66556008)(76116006)(66946007)(6486002)(8676002)(4326008)(33716001)(508600001)(122000001)(71200400001)(38100700002)(86362001)(38070700005)(316002)(6916009)(54906003)(83380400001)(1076003)(186003)(44832011)(7416002)(5660300002)(26005)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OoxMPvJmXYhX7PmS06wCEt3wjcE+3M0NmYs4khVlKU2G5rhOPm28oShssNjz?=
+ =?us-ascii?Q?pnZl/bTNJ4/pZmXAX9daIEQVSNpbwTg3T8zbDK1oybi1jABNKvJ2NpejmceT?=
+ =?us-ascii?Q?GjHHSaFH74xCKeCALxhR2v2Koxgz+NEDcQr1HYovKOJdZ3Z2AA4Z+VYDqvpM?=
+ =?us-ascii?Q?yxqXzXgPzYy1ANQw7NycsMTJZAJyYDDklwO4DdHGJBr+8ES5XMLzM1twiA2n?=
+ =?us-ascii?Q?HIdcpzbVT1cTnyvkhKJekZUbAlh9Nuz/c+bEpZueLXKXxCuwd2VTFEP6N8YB?=
+ =?us-ascii?Q?1yUkYtDBbBKsBoyHRaltmWXT8rL5s/N36VK8YlaObdZG/B418G87lM4Utncg?=
+ =?us-ascii?Q?njYYupp8lOukeMXWYmCBODpIoZ+Moffd8+OjG3nwG/yr5tSGldXNgmjWrsQS?=
+ =?us-ascii?Q?K75L2ioqVLlVOy28hupT4tHqLo40QMlNTQG2i+Dnd0y1xKHx0+YBop3cORFp?=
+ =?us-ascii?Q?TWd9PDTezS4O9QFJon3JT6nYdc06umNLrqU3xltxfqPZafdKwhh6z/wAvvQK?=
+ =?us-ascii?Q?6ObqMv9HPJ+vHgB9OG/Vz6uD3XMXObcSSNvvvzlXPnplrmmVuKqP5k6FOPG0?=
+ =?us-ascii?Q?Z2zaELv1y3QdZUPU2HdcAst3zcPfRF7a/Z1Kq2KrvJDWlB1TMGXKHBLNc37c?=
+ =?us-ascii?Q?ozin9CVVqk2H8+JcYBTz+hwvxGhszhCmYFv4RWcnQ/Q1s4z+S2vz2MeoTQmZ?=
+ =?us-ascii?Q?Z8K0Y1ZIlmwjWpB8jp3j9YdVNe90gf1chfTkCE0SdBCE0x/E4AC/LQ4dEPSR?=
+ =?us-ascii?Q?M1/WyPOehb8IzAlwa9XFYDxL5DoxEd1+LnsBlraxivNUEp1tYuQnAyKnUxFt?=
+ =?us-ascii?Q?Q05saq9XlD9JV2qdJZvZsj2STHPWKtw0ithiMek5j444kOltOUBUMnxRLcTv?=
+ =?us-ascii?Q?uXZS1S6GSpSxkmWtAcWRUAdcUMuwvjQy1QrZ06ZiwDeB2YWgYpwt73lsY8os?=
+ =?us-ascii?Q?9adyL0vk2JKlfaSpw/7wISz0xizllomH7VuA+/ZKvaCIXpWwjyccZqWmRHkY?=
+ =?us-ascii?Q?LLmi+RTAkICTuT82GRMwHRnSM7GOZGHxjeo4ClCdbiUWYpk8P0ZI52NfQkXC?=
+ =?us-ascii?Q?2RX6h3yjZ4Hj2xZRNWVzR2YsRB9C7ExCc+sE7++GhtLKJcDFkiMEeo8ijSAj?=
+ =?us-ascii?Q?YqLDR4shhyJQLGW7iZOLbhBkJnA/j1QFNqHo/44X3a8zQ9ylV2RKPR7GQVOI?=
+ =?us-ascii?Q?sQaDHT9mbtS8vyuEgpN+zCSeeNUrZDtX++XgfUkB7t2p8YWPCb49nIehrYik?=
+ =?us-ascii?Q?/SgkF/V17V3INFQub8kfZI9Kj5ORc6TFKSRthRr62IDDhTtOqHmD0o5KqLTE?=
+ =?us-ascii?Q?Vsdlv7ZiPouAeImxZFwhSmPUlSESXYE98YemJLAi/YmpFBncfsU21UlShaj6?=
+ =?us-ascii?Q?WWyuNVaeUyD70utA5YsPuBWIKxVz0EW/8ryzo9Pn1HfDr3c8T1Mn4W7yUaSc?=
+ =?us-ascii?Q?xN0qzW58ubWJDBVNq9LGYfwX1Al9PwiPKd2g3QCryxzlZMmZyBBlMonRXyq1?=
+ =?us-ascii?Q?izbAlbEMNSg9qHrYsQBavNPAtxHlWtdIBL9YjmmfYm0ps7Co4dLRO2uKbqS8?=
+ =?us-ascii?Q?BWzXHvbwnc7/l1P4MTmbslYl6cssfFeh71IZePfzfzb2pXC2UIuNowOz8kBL?=
+ =?us-ascii?Q?cMJXDV00oG/nS7uJm4aFEqY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <87CFB6BD52C3E54BABAD961CA6C0D3EE@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0601c4b9-e8cd-4729-2299-08da011136f0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2022 14:37:47.3500
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ewe8pgSjU0iZBw/jrRI63ct3Vwe14ln3sByaxHZafQI3/c9h/kSpSZBicAJDutdgomliWOCc7Vp0+tpx1JJuGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8808
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/03/2022 15:24, Vincent Whitchurch wrote:
-> This SoC has an MCT with 4 global and 8 local timer interrupts, add a
-> specific compatible to match it as is done for the other platforms with
-> this hardware block.
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+On Sun, Mar 06, 2022 at 06:12:05PM -0800, Colin Foster wrote:
+> The VSC7512 is a networking chip that contains several peripherals. Many =
+of
+> these peripherals are currently supported by the VSC7513 and VSC7514 chip=
+s,
+> but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
+> controlled externally.
+>=20
+> Utilize the existing drivers by referencing the chip as an MFD. Add suppo=
+rt
+> for the two MDIO buses, the internal phys, pinctrl, serial GPIO, and HSIO=
+.
+>=20
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > ---
-> 
-> Notes:
->     v2: New.  Requires Krzysztof's "dt-bindings: timer: exynos4210-mct: describe
->         hardware and its interrupts".
-> 
+> +#define VSC7512_MIIM0_RES_START	0x7107009c
+> +#define VSC7512_MIIM0_RES_SIZE	0x24
+> +
+> +#define VSC7512_MIIM1_RES_START	0x710700c0
+> +#define VSC7512_MIIM1_RES_SIZE	0x24
+> +
+> +#define VSC7512_PHY_RES_START	0x710700f0
+> +#define VSC7512_PHY_RES_SIZE	0x4
+> +
+> +#define VSC7512_HSIO_RES_START	0x710d0000
+> +#define VSC7512_HSIO_RES_SIZE	0x10000
+> +
+> +#define VSC7512_GPIO_RES_START	0x71070034
+> +#define VSC7512_GPIO_RES_SIZE	0x6c
+> +
+> +#define VSC7512_SIO_RES_START	0x710700f8
+> +#define VSC7512_SIO_RES_SIZE	0x100
+> +
+> +static const struct resource vsc7512_gcb_resource =3D
+> +	DEFINE_RES_REG_NAMED(VSC7512_GCB_RES_START, VSC7512_GCB_RES_SIZE,
+> +			     "devcpu_gcb_chip_regs");
+> +static const struct resource vsc7512_miim0_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_MIIM0_RES_START, VSC7512_MIIM0_RES_SIZE,
+> +			     "gcb_miim0"),
+> +	DEFINE_RES_REG_NAMED(VSC7512_PHY_RES_START, VSC7512_PHY_RES_SIZE,
+> +			     "gcb_phy"),
+> +};
+> +
+> +static const struct resource vsc7512_miim1_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_MIIM1_RES_START, VSC7512_MIIM1_RES_SIZE,
+> +			     "gcb_miim1"),
+> +};
+> +
+> +static const struct resource vsc7512_hsio_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE,
+> +			     "hsio"),
+> +};
+> +
+> +static const struct resource vsc7512_pinctrl_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_GPIO_RES_START, VSC7512_GPIO_RES_SIZE,
+> +			     "gcb_gpio"),
+> +};
+> +
+> +static const struct resource vsc7512_sgpio_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_SIO_RES_START, VSC7512_SIO_RES_SIZE,
+> +			     "gcb_sio"),
+> +};
+> +
+> +static const struct mfd_cell vsc7512_devs[] =3D {
+> +	{
+> +		.name =3D "ocelot-pinctrl",
+> +		.of_compatible =3D "mscc,ocelot-pinctrl",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_pinctrl_resources),
+> +		.resources =3D vsc7512_pinctrl_resources,
+> +	}, {
+> +		.name =3D "ocelot-sgpio",
+> +		.of_compatible =3D "mscc,ocelot-sgpio",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_sgpio_resources),
+> +		.resources =3D vsc7512_sgpio_resources,
+> +	}, {
+> +		.name =3D "ocelot-miim0",
+> +		.of_compatible =3D "mscc,ocelot-miim",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_miim0_resources),
+> +		.resources =3D vsc7512_miim0_resources,
+> +	}, {
+> +		.name =3D "ocelot-miim1",
+> +		.of_compatible =3D "mscc,ocelot-miim",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_miim1_resources),
+> +		.resources =3D vsc7512_miim1_resources,
 
+I'm looking at mfd_match_of_node_to_dev() and I don't really understand
+how the first MDIO bus matches the first mfd_cell's resources, and the
+second MDIO bus the second mfd_cell? By order of definition?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-
-
-Best regards,
-Krzysztof
+> +	}, {
+> +		.name =3D "ocelot-serdes",
+> +		.of_compatible =3D "mscc,vsc7514-serdes",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_hsio_resources),
+> +		.resources =3D vsc7512_hsio_resources,
+> +	},
+> +};
+> +
+> +int ocelot_core_init(struct ocelot_core *core)
+> +{
+> +	struct device *dev =3D core->dev;
+> +	int ret;
+> +
+> +	dev_set_drvdata(dev, core);
+> +
+> +	core->gcb_regmap =3D ocelot_devm_regmap_init(core, dev,
+> +						   &vsc7512_gcb_resource);
+> +	if (IS_ERR(core->gcb_regmap))
+> +		return -ENOMEM;
+> +
+> +	ret =3D ocelot_reset(core);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to reset device: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * A chip reset will clear the SPI configuration, so it needs to be don=
+e
+> +	 * again before we can access any registers
+> +	 */
+> +	ret =3D ocelot_spi_initialize(core);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to initialize SPI interface: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs,
+> +				   ARRAY_SIZE(vsc7512_devs), NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to add sub-devices: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(ocelot_core_init);
+> --=20
+> 2.25.1
+>=
