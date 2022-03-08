@@ -2,104 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660ACC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348686AbiCHROm (ORCPT
+        id S1348689AbiCHRPb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:14:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        Tue, 8 Mar 2022 12:15:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348670AbiCHROj (ORCPT
+        with ESMTP id S1344409AbiCHRPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:14:39 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22F828996
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:13:38 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id s42so5263368pfg.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:13:38 -0800 (PST)
+        Tue, 8 Mar 2022 12:15:30 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D25B52E0B;
+        Tue,  8 Mar 2022 09:14:32 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id hw13so40576946ejc.9;
+        Tue, 08 Mar 2022 09:14:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yX/dqRRjbY7VPqIb5T+iQdlEaEwAOCFRzujlbgFA4Fs=;
-        b=ioFeXfXAO5oHOxqQT2Z34H4YMKf90sMolbArQpELVX7APj6xqRx78jAUXwiXQNDTvb
-         sTaUe+9lr1Fgx7jzvEfMeeqpMhVTgETLUhugLZjgWbmTpNdt9HNqrRK1WHXFgEQiw4LW
-         nRoIEpM70fjUP13UeSjA4n92nOt67IZRZWEnLvX3mKsDfua/BoTMIGv0Q+ztVATlU6H1
-         75lKHADKwCJgL8ohSF6WE0IdZhrwj864Sq6/Zs5qTqAptK+pBrc6K9CmJNLLjqbP4koG
-         KKqKpKeKrUvQjeTj7igMZg2SNqWaG7pZeo93JwAQDc1ItdEuGknnF0aNCcCnRYvyxbrj
-         +FVg==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fhW09ywHlIWvxHyjvBP0vXcd0+UN13egflttmd7VoRo=;
+        b=bn13C/AkGmAwG/nuqCyIJMC9NLYannba4eloFSYpDgTFhOlBD91oCIEEQSRBuyMYqv
+         E+lbcezmFzJWvZwWU09I68/NDGKBZnib62HTnmTZiTixWLNHKQUIVRz1hLWy/cwL1MlF
+         VF/2PJk4U9kAwglp5oXiv6vCyWV/b9nKaRNFK37k4NDjy7RzIUjPcdwXrMfs5t9s97W7
+         iWT7UsFxkf71UK1dd1h/t/S9kI8bSedbeThdMfxtshI1EHZK4+P/V5QEvkV7hqdQIfz8
+         xLxsTAMS5fXCgPLZWeSb3NC/seIl87u5uHqtMPdISP1kN3g6AZGxfCL8/z634OLUlEuY
+         UDhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yX/dqRRjbY7VPqIb5T+iQdlEaEwAOCFRzujlbgFA4Fs=;
-        b=1S+ShW3M0mhATlLUBI8sxD62Hv/TDzt+PxNpEIL2DJhuKjH/yco85IU6ZnfRAwkObU
-         S1+MftbKaoI1nAwcLnEuSibNi/ODcANo1TaaPrrnSdxzf2pzkR9FtttyQxERk52BFfrG
-         mX9crcbEtfIbHFQDa+5zqjC4hkgmMfm2BgGhuD70Oi8Fmr06Zk3HBvOK0D/ZQIRj08Up
-         /5iEvW0+I7XTg4mVWrgCmdMBihgGbj+gha0Sq3C/3LPCA9A1okXIzoD34m2meJM4pV27
-         XRTiDgqWxV1MLiXHR0T8aG+IgHgRJMDx/7JugPYi9iJmhdOcFU2qieQ/fEZJyFMZy72v
-         qH1g==
-X-Gm-Message-State: AOAM532MRYUa4bNlGpd1o6hxfowDezlTFKWh7mzeRA/CV0AOBTI2NYl1
-        vaJ40VoJZxrDTJlXEdCC/u49rA==
-X-Google-Smtp-Source: ABdhPJw6GQ7DePuKOwS9PpsUCiCf3+8HmEtbSA+wwc3EpIYHgbQ9BFe5V/L5cVV/sEQZ+czKLi68PA==
-X-Received: by 2002:a05:6a00:1591:b0:4f0:ef0b:dc24 with SMTP id u17-20020a056a00159100b004f0ef0bdc24mr19322358pfk.2.1646759618268;
-        Tue, 08 Mar 2022 09:13:38 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id mn3-20020a17090b188300b001bf3ac6c7e3sm3472044pjb.19.2022.03.08.09.13.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:13:37 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:13:33 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fhW09ywHlIWvxHyjvBP0vXcd0+UN13egflttmd7VoRo=;
+        b=dX1gGcsVl8ZXfXYU8f/PsXGD8ub/ZiKivsRxDLjrqIVrofQhVHVGeIw9YWd4yzZXEG
+         clknktqqSnRg9nEU45vIqm1nXjfCh1v3nYoi2wFuQ51OzCxkGYWnN+eeSWRVpL6kOfr2
+         /MU2lQxRewXzWw1Y/qYW/zEpnRWIE33BiewhNB+X/hwR91z+6b8f9XzEvvukagxdFKQl
+         vWzIZoTlYHfyOUl7T7Rj45/cPROGJV5r7GW/+M9d/CxuqyFqbJqFD5zcUGc3nIr6fGdh
+         Hd8/5BA/tbPFEZ+dwft54SHhqt3Mh/gnGrF2AbTQ5vMPGUxJYORn1RhbsLBKl9jhSsvQ
+         WQZA==
+X-Gm-Message-State: AOAM530OVMwSczjwDWVq+LR1KtPb22PdsQI+gKU0aYqDwjf68u0RHPGt
+        MBFmPkz87PR/GswemWQi0Q5bkozCXGc=
+X-Google-Smtp-Source: ABdhPJxs2MwwTvWAl37XplBVwMcLrAsdbW0FtadE3FoJJrD4CmNV8w7xVQikMEiltEwtobmZrmWL/g==
+X-Received: by 2002:a17:906:79c4:b0:6cf:5489:da57 with SMTP id m4-20020a17090679c400b006cf5489da57mr13681071ejo.48.1646759671359;
+        Tue, 08 Mar 2022 09:14:31 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id a22-20020a50ff16000000b00410d029ea5csm7844646edu.96.2022.03.08.09.14.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 09:14:30 -0800 (PST)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <d028d59f-2a33-2562-5709-fcc56c80f7fe@redhat.com>
+Date:   Tue, 8 Mar 2022 18:14:29 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 01/25] KVM: x86/mmu: avoid indirect call for get_cr3
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
 Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         dmatlack@google.com
-Subject: Re: [PATCH v2 06/25] KVM: nVMX/nSVM: do not monkey-patch
- inject_page_fault callback
-Message-ID: <YieOvca6qbCDgrMl@google.com>
 References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-7-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-7-pbonzini@redhat.com>
+ <20220221162243.683208-2-pbonzini@redhat.com> <YieBXzkOkB9SZpyp@google.com>
+ <2652c27e-ce8c-eb40-1979-9fe732aa9085@redhat.com>
+ <YieFKfjrgTTnYkL7@google.com>
+ <96ff1628-eeb2-4d12-f4eb-287dd8fc9948@redhat.com>
+ <YieJ9lkq7R87m1mJ@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YieJ9lkq7R87m1mJ@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> Currently, vendor code is patching the inject_page_fault and later, on
-> vmexit, expecting kvm_init_mmu to restore the inject_page_fault callback.
+On 3/8/22 17:53, Sean Christopherson wrote:
+>> static inline unsigned long kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu,
+>> 						  struct kvm_mmu *mmu)
+>> {
+>> 	if (unlikely(vcpu == &vcpu->arch.guest_mmu))
+> Well, not that certainly:-)
 > 
-> This is brittle, as exposed by the fact that SVM KVM_SET_NESTED_STATE
-> forgets to do it.  Instead, do the check at the time a page fault actually
-> has to be injected.  This does incur the cost of an extra retpoline
-> for nested vmexits when TDP is disabled, but is overall much cleaner.
-> While at it, add a comment that explains why the different behavior
-> is needed in this case.
+> 	if (mmu == &vcpu->arch.guest_mmu)
 > 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
+> But you're right, we need to be able to do kvm_read_cr3() for the actual nested_mmu.
+> 
 
-If I have NAK powers, NAK NAK NAK NAK NAK :-)
+Ok, I'll drop this patch for now since the end of the series actually 
+introduces the nested_ops already.  And then we can do it for both 
+get_guest_pgd and get_pdptr.
 
-Forcing a VM-Exit is a hack, e.g. it's the entire reason inject_emulated_exception()
-returns a bool.  Even worse, it's confusing and misleading due to being incomplete.
-
-The need hack for the hack is not unique to !tdp_enabled, the #DF can be triggered
-any time L0 is intercepting #PF.  Hello, allow_smaller_maxphyaddr.
-
-And while I think allow_smaller_maxphyaddr should be burned with fire, architecturally
-it's still incomplete.  Any exception that is injected by KVM needs to be subjected
-to nested interception checks, not just #PF.  E.g. a #GP while vectoring a different
-fault should also be routed to L1.  KVM (mostly) gets away with special casing #PF
-because that's the only common scenario where L1 wants to intercept _and fix_ a fault
-that can occur while vectoring an exception.  E.g. in the #GP => #DF case, odds are
-very good that L1 will inject a #DF too, but that doesn't make KVM's behavior correct.
-
-I have a series to handle this by performing the interception checks when an exception
-is queued, instead of when KVM injects the excepiton, and using a second kvm_queued_exception
-field to track exceptions that are queued for VM-Exit (so as not to lose the injected
-exception, which needs to be saved into vmc*12.  It's functional, though I haven't
-tested migration (requires minor shenanigans to perform interception checks for pending
-exceptions coming in from userspace).
+Paolo
