@@ -2,94 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B36FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347998AbiCHPvF (ORCPT
+        id S1348004AbiCHPvm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        Tue, 8 Mar 2022 10:51:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236656AbiCHPvD (ORCPT
+        with ESMTP id S236338AbiCHPvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:51:03 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E6C4F451;
-        Tue,  8 Mar 2022 07:50:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646754607; x=1678290607;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uoonVeIcIw0ZF7CyzIEfJW8mtwFWH3uBfX/PSuQYy6c=;
-  b=lENOGMPvY3FlhJOwKXaVnqVAm/w3qNBFPKLAEfUxqWFJ6l9XOvhodt57
-   euzxHcsSSZyDDQwYnBvcMCZHK9CFSQSA1iRlv4azMWJuCL/593sRfxEPf
-   NY8fAZYcpKvkCgIGcfY5QIp0MpTvbyOSCt8hdX+b9G8mKszr/yNK+Y91w
-   GAejkdgXkM5veV4azo5uAxXGJJdlgllNkb9HxMVbrwuWl5w1jbwNhmmQE
-   3jo6C1PDi3ljtfGnSjBGZ4YLhuCk/bamiel6g/ZZxCefwpUxHTGcvR+ea
-   UXn2maBFybdEwCD9Y62DchKy7JYnojjnQo+r3WhlEhuVShSTHQjcIm4Tf
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
-   d="scan'208";a="156124961"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 08:50:02 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Mar 2022 08:50:01 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 8 Mar 2022 08:50:01 -0700
-Date:   Tue, 8 Mar 2022 16:52:53 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-CC:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "Kavyasree Kotagiri" <kavyasree.kotagiri@microchip.com>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] clk: COMMON_CLK_LAN966X should depend on SOC_LAN966
-Message-ID: <20220308155253.aoedxrdke2l3homa@soft-dev3-1.localhost>
-References: <eb102eae05e5667b9bd342a0c387f7f262d24bda.1645716471.git.geert+renesas@glider.be>
+        Tue, 8 Mar 2022 10:51:40 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39574F45F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:50:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646754643; x=1678290643;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=f/6ZT/vJ36tJzr67cTU8/8lEsC/01oXeKhewZy2idao=;
+  b=bAgv4aAM03Zl0O12rhu/8aUYNl0pDnlzlDt4PYLmY8eRt8OrdTC/O4bI
+   ijIASNAvlO5QHqbEL+tbw5vHrd1gf3slLo0rN/fap2OMYCjV3LPX5S96Q
+   rRy+/TwLM1Ifkkbinj826Fi4OHQHPfaB/A1z/3e8tSYvmXjZmtauQs7gq
+   YdMn/6VDrJMo4v0VJ/NBvYM677uEDIoZ5gM04fX0m4cpkuBV8hwilVDth
+   GYUUgPsbMcQUSfKKgs41ylLV5BumUw91WRWTQSsV2CiJBPaC4/XePK7Bn
+   CQkGQKp7LBLDSsc9Dv51Y5Y+yOmJFxEQWqb/wD/KzUExVNZgxRrUetEx8
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="235326823"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="235326823"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:50:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="643694865"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 07:50:29 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRc6W-0001dI-9p; Tue, 08 Mar 2022 15:50:28 +0000
+Date:   Tue, 8 Mar 2022 23:49:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guo Ren <guoren@linux.alibaba.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>
+Subject: [ammarfaizi2-block:palmer/linux/riscv-compat 6/20]
+ arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'compat_statfs'
+Message-ID: <202203082334.6KUJa3iS-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <eb102eae05e5667b9bd342a0c387f7f262d24bda.1645716471.git.geert+renesas@glider.be>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 02/24/2022 16:29, Geert Uytterhoeven wrote:
-> 
-> The LAN966x Generic Clock Controller is only present on Microchip
-> LAN966x SoCs.  Hence add a dependency on SOC_LAN966, to prevent asking
-> the user about this driver when configuring a kernel without LAN966x SoC
-> support.
+tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-compat
+head:   ab7e33a6b819f009c3c9ccf69b2f44c1ad84a5a0
+commit: edacaabe96fd3b87ddd5e9972ba89718af564124 [6/20] asm-generic: compat: Cleanup duplicate definitions
+config: arm64-randconfig-r035-20220308 (https://download.01.org/0day-ci/archive/20220308/202203082334.6KUJa3iS-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/edacaabe96fd3b87ddd5e9972ba89718af564124
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-compat
+        git checkout edacaabe96fd3b87ddd5e9972ba89718af564124
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 prepare
 
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> Fixes: 54104ee023333e3b ("clk: lan966x: Add lan966x SoC clock driver")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/clk/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
-> index c390e26dadf471f5..1c82a3e1129d4342 100644
-> --- a/drivers/clk/Kconfig
-> +++ b/drivers/clk/Kconfig
-> @@ -232,6 +232,7 @@ config COMMON_CLK_GEMINI
-> 
->  config COMMON_CLK_LAN966X
->         bool "Generic Clock Controller driver for LAN966X SoC"
-> +       depends on SOC_LAN966 || COMPILE_TEST
->         help
->           This driver provides support for Generic Clock Controller(GCK) on
->           LAN966X SoC. GCK generates and supplies clock to various peripherals
-> --
-> 2.25.1
-> 
+All errors (new ones prefixed by >>):
 
--- 
-/Horatiu
+   In file included from arch/arm64/kernel/asm-offsets.c:10:
+   In file included from include/linux/arm_sdei.h:8:
+   In file included from include/acpi/ghes.h:5:
+   In file included from include/acpi/apei.h:9:
+   In file included from include/linux/acpi.h:13:
+   In file included from include/linux/irqdomain.h:35:
+   In file included from include/linux/of.h:17:
+   In file included from include/linux/kobject.h:20:
+   In file included from include/linux/sysfs.h:22:
+   In file included from include/linux/stat.h:6:
+   In file included from arch/arm64/include/asm/stat.h:13:
+>> arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'compat_statfs'
+   struct compat_statfs {
+          ^
+   include/asm-generic/compat.h:80:8: note: previous definition is here
+   struct compat_statfs {
+          ^
+   1 error generated.
+   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +/compat_statfs +69 arch/arm64/include/asm/compat.h
+
+3dd681d944f6d86 Will Deacon 2012-03-05  68  
+3dd681d944f6d86 Will Deacon 2012-03-05 @69  struct compat_statfs {
+3dd681d944f6d86 Will Deacon 2012-03-05  70  	int		f_type;
+3dd681d944f6d86 Will Deacon 2012-03-05  71  	int		f_bsize;
+3dd681d944f6d86 Will Deacon 2012-03-05  72  	int		f_blocks;
+3dd681d944f6d86 Will Deacon 2012-03-05  73  	int		f_bfree;
+3dd681d944f6d86 Will Deacon 2012-03-05  74  	int		f_bavail;
+3dd681d944f6d86 Will Deacon 2012-03-05  75  	int		f_files;
+3dd681d944f6d86 Will Deacon 2012-03-05  76  	int		f_ffree;
+3dd681d944f6d86 Will Deacon 2012-03-05  77  	compat_fsid_t	f_fsid;
+3dd681d944f6d86 Will Deacon 2012-03-05  78  	int		f_namelen;	/* SunOS ignores this field. */
+3dd681d944f6d86 Will Deacon 2012-03-05  79  	int		f_frsize;
+3dd681d944f6d86 Will Deacon 2012-03-05  80  	int		f_flags;
+3dd681d944f6d86 Will Deacon 2012-03-05  81  	int		f_spare[4];
+3dd681d944f6d86 Will Deacon 2012-03-05  82  };
+3dd681d944f6d86 Will Deacon 2012-03-05  83  
+
+:::::: The code at line 69 was first introduced by commit
+:::::: 3dd681d944f6d861f12ee03aff17a14342963330 arm64: 32-bit (compat) applications support
+
+:::::: TO: Will Deacon <will.deacon@arm.com>
+:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
