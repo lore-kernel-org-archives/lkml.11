@@ -2,139 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349732AbiCHSvT (ORCPT
+        id S1349760AbiCHSvY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
+        Tue, 8 Mar 2022 13:51:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236818AbiCHSvL (ORCPT
+        with ESMTP id S1349737AbiCHSvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:51:11 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD791532DF;
-        Tue,  8 Mar 2022 10:50:12 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id v28so26295389ljv.9;
-        Tue, 08 Mar 2022 10:50:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SneY3C6k+i+tAE4bYIFeBltj30CFVUtlAJP0X76PGMs=;
-        b=Oc+ybH2iM/E3szjxRpDlqRZ0RPJdg3vLArbdJ/1f4zhzT3NCMM+VC5A0zFBeemg1Uk
-         8qIaVi4b7hbjFK2qGGZeHmNnGFc/2LGQ0eOvfWyTle9Z+eRm85Nb7IAAQaiESHv7pSAY
-         LX0jLwEBJnYJb02I7hdQLtGaNPA8o1BCxnkBuBFVvvdlF6vnQbOwZN+yWxKKjcYoTKu8
-         q+PoQ2V+ieK5MX/LUeiNl3EM1ABm5TIsd9gKGMc0gI1s0wJTHEEd/F0jLp+37RFU9bnt
-         jHoxA9nTXQcQ06H5kaPIW/G73EMTe0NytBdTobh2+hUQl7qOMAEW1BnImdZXMEaYh2/T
-         Us5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SneY3C6k+i+tAE4bYIFeBltj30CFVUtlAJP0X76PGMs=;
-        b=ylOJc+MdSJV5eqDaH+zSo9gWurmZLYuIcTm0FFe4bN2osYoIHKhx1ewS7F0MwjqcNC
-         woQ9KW7PeSKnSXRmmRiY5E4U6jkR9y10R5YtA8K927CyJUMZsNiG3yx6BV3Xo42FNoBo
-         B8rxEc4hXR0A1JHtCcbYy5AUh8bqSdN4Pp1MjTodennB0eXplUfOfQdwrtpKea1/QzUk
-         0lLhCEgdvlfSFGx+PXzxW1r8NqRjLvxTjZn8Lo/sH/nMnV0cAVZaqvZMiTIFcq41KCcu
-         vB+r3a+p9id0qK3yLmKAMlNoqwwlViY+8AS7pvjADijCdCW2+HjrhuJa174GO/uJddFM
-         h8kQ==
-X-Gm-Message-State: AOAM530dbTky20w604u6L/RUEmLvDpctJhicN1Sym+C1QfaID+vkwOvZ
-        N96Fner1CLLbMuPG8Fw8UOk=
-X-Google-Smtp-Source: ABdhPJzejHvJpGQCNBwniqX1Z39Y4q5p6WkqwgCGxBRMBRGJAxa4N+frGPGB8cEIRvt4div2ZILMeg==
-X-Received: by 2002:a05:651c:11ca:b0:247:f32e:10ba with SMTP id z10-20020a05651c11ca00b00247f32e10bamr2552225ljo.208.1646765410593;
-        Tue, 08 Mar 2022 10:50:10 -0800 (PST)
-Received: from localhost.localdomain ([94.103.229.107])
-        by smtp.gmail.com with ESMTPSA id w10-20020ac2442a000000b0044835a52a08sm1066631lfl.163.2022.03.08.10.50.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 10:50:10 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     krzysztof.kozlowski@canonical.com, sameo@linux.intel.com,
-        thierry.escande@linux.intel.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
-Subject: [PATCH] NFC: port100: fix use-after-free in port100_send_complete
-Date:   Tue,  8 Mar 2022 21:50:07 +0300
-Message-Id: <20220308185007.6987-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Mar 2022 13:51:19 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94978532E5;
+        Tue,  8 Mar 2022 10:50:16 -0800 (PST)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCks9117hz67KPR;
+        Wed,  9 Mar 2022 02:49:49 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 19:50:14 +0100
+Received: from A2006125610.china.huawei.com (10.47.82.254) by
+ lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 18:50:06 +0000
+From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
+        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <kevin.tian@intel.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v9 3/9] hisi_acc_qm: Move VF PCI device IDs to common header
+Date:   Tue, 8 Mar 2022 18:48:56 +0000
+Message-ID: <20220308184902.2242-4-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
+References: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.47.82.254]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot reported UAF in port100_send_complete(). The root case is in
-missing usb_kill_urb() calls on error handling path of ->probe function.
+Move the PCI Device IDs of HiSilicon ACC VF devices to a common header
+and also use a uniform naming convention.
 
-port100_send_complete() accesses devm allocated memory which will be
-freed on probe failure. We should kill this urbs before returning an
-error from probe function to prevent reported use-after-free
+This will be useful when we introduce the vfio PCI HiSilicon ACC live
+migration driver in subsequent patches.
 
-Fail log:
-
-BUG: KASAN: use-after-free in port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
-Read of size 1 at addr ffff88801bb59540 by task ksoftirqd/2/26
-...
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
- __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
-
-...
-
-Allocated by task 1255:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
- alloc_dr drivers/base/devres.c:116 [inline]
- devm_kmalloc+0x96/0x1d0 drivers/base/devres.c:823
- devm_kzalloc include/linux/device.h:209 [inline]
- port100_probe+0x8a/0x1320 drivers/nfc/port100.c:1502
-
-Freed by task 1255:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0xff/0x140 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:236 [inline]
- __cache_free mm/slab.c:3437 [inline]
- kfree+0xf8/0x2b0 mm/slab.c:3794
- release_nodes+0x112/0x1a0 drivers/base/devres.c:501
- devres_release_all+0x114/0x190 drivers/base/devres.c:530
- really_probe+0x626/0xcc0 drivers/base/dd.c:670
-
-Reported-and-tested-by: syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
-Fixes: 0347a6ab300a ("NFC: port100: Commands mechanism implementation")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
+Acked-by: Longfang Liu <liulongfang@huawei.com>
+Acked-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/nfc/port100.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/crypto/hisilicon/hpre/hpre_main.c | 13 ++++++-------
+ drivers/crypto/hisilicon/sec2/sec_main.c  | 15 +++++++--------
+ drivers/crypto/hisilicon/zip/zip_main.c   | 11 +++++------
+ include/linux/pci_ids.h                   |  3 +++
+ 4 files changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
-index d7db1a0e6be1..00d8ea6dcb5d 100644
---- a/drivers/nfc/port100.c
-+++ b/drivers/nfc/port100.c
-@@ -1612,7 +1612,9 @@ static int port100_probe(struct usb_interface *interface,
- 	nfc_digital_free_device(dev->nfc_digital_dev);
+diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
+index ebfab3e14499..3589d8879b5e 100644
+--- a/drivers/crypto/hisilicon/hpre/hpre_main.c
++++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
+@@ -68,8 +68,7 @@
+ #define HPRE_REG_RD_INTVRL_US		10
+ #define HPRE_REG_RD_TMOUT_US		1000
+ #define HPRE_DBGFS_VAL_MAX_LEN		20
+-#define HPRE_PCI_DEVICE_ID		0xa258
+-#define HPRE_PCI_VF_DEVICE_ID		0xa259
++#define PCI_DEVICE_ID_HUAWEI_HPRE_PF	0xa258
+ #define HPRE_QM_USR_CFG_MASK		GENMASK(31, 1)
+ #define HPRE_QM_AXI_CFG_MASK		GENMASK(15, 0)
+ #define HPRE_QM_VFG_AX_MASK		GENMASK(7, 0)
+@@ -111,8 +110,8 @@
+ static const char hpre_name[] = "hisi_hpre";
+ static struct dentry *hpre_debugfs_root;
+ static const struct pci_device_id hpre_dev_ids[] = {
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, HPRE_PCI_DEVICE_ID) },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, HPRE_PCI_VF_DEVICE_ID) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_HPRE_PF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_HPRE_VF) },
+ 	{ 0, }
+ };
  
- error:
-+	usb_kill_urb(dev->in_urb);
- 	usb_free_urb(dev->in_urb);
-+	usb_kill_urb(dev->out_urb);
- 	usb_free_urb(dev->out_urb);
- 	usb_put_dev(dev->udev);
+@@ -242,7 +241,7 @@ MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
  
+ static int pf_q_num_set(const char *val, const struct kernel_param *kp)
+ {
+-	return q_num_set(val, kp, HPRE_PCI_DEVICE_ID);
++	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_HPRE_PF);
+ }
+ 
+ static const struct kernel_param_ops hpre_pf_q_num_ops = {
+@@ -921,7 +920,7 @@ static int hpre_debugfs_init(struct hisi_qm *qm)
+ 	qm->debug.sqe_mask_len = HPRE_SQE_MASK_LEN;
+ 	hisi_qm_debug_init(qm);
+ 
+-	if (qm->pdev->device == HPRE_PCI_DEVICE_ID) {
++	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_HPRE_PF) {
+ 		ret = hpre_ctrl_debug_init(qm);
+ 		if (ret)
+ 			goto failed_to_create;
+@@ -958,7 +957,7 @@ static int hpre_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+ 	qm->sqe_size = HPRE_SQE_SIZE;
+ 	qm->dev_name = hpre_name;
+ 
+-	qm->fun_type = (pdev->device == HPRE_PCI_DEVICE_ID) ?
++	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_HPRE_PF) ?
+ 			QM_HW_PF : QM_HW_VF;
+ 	if (qm->fun_type == QM_HW_PF) {
+ 		qm->qp_base = HPRE_PF_DEF_Q_BASE;
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 26d3ab1d308b..311a8747b5bf 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -20,8 +20,7 @@
+ 
+ #define SEC_VF_NUM			63
+ #define SEC_QUEUE_NUM_V1		4096
+-#define SEC_PF_PCI_DEVICE_ID		0xa255
+-#define SEC_VF_PCI_DEVICE_ID		0xa256
++#define PCI_DEVICE_ID_HUAWEI_SEC_PF	0xa255
+ 
+ #define SEC_BD_ERR_CHK_EN0		0xEFFFFFFF
+ #define SEC_BD_ERR_CHK_EN1		0x7ffff7fd
+@@ -225,7 +224,7 @@ static const struct debugfs_reg32 sec_dfx_regs[] = {
+ 
+ static int sec_pf_q_num_set(const char *val, const struct kernel_param *kp)
+ {
+-	return q_num_set(val, kp, SEC_PF_PCI_DEVICE_ID);
++	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_SEC_PF);
+ }
+ 
+ static const struct kernel_param_ops sec_pf_q_num_ops = {
+@@ -313,8 +312,8 @@ module_param_cb(uacce_mode, &sec_uacce_mode_ops, &uacce_mode, 0444);
+ MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
+ 
+ static const struct pci_device_id sec_dev_ids[] = {
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, SEC_PF_PCI_DEVICE_ID) },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, SEC_VF_PCI_DEVICE_ID) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_SEC_PF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_SEC_VF) },
+ 	{ 0, }
+ };
+ MODULE_DEVICE_TABLE(pci, sec_dev_ids);
+@@ -717,7 +716,7 @@ static int sec_core_debug_init(struct hisi_qm *qm)
+ 	regset->base = qm->io_base;
+ 	regset->dev = dev;
+ 
+-	if (qm->pdev->device == SEC_PF_PCI_DEVICE_ID)
++	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF)
+ 		debugfs_create_file("regs", 0444, tmp_d, regset, &sec_regs_fops);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(sec_dfx_labels); i++) {
+@@ -735,7 +734,7 @@ static int sec_debug_init(struct hisi_qm *qm)
+ 	struct sec_dev *sec = container_of(qm, struct sec_dev, qm);
+ 	int i;
+ 
+-	if (qm->pdev->device == SEC_PF_PCI_DEVICE_ID) {
++	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF) {
+ 		for (i = SEC_CLEAR_ENABLE; i < SEC_DEBUG_FILE_NUM; i++) {
+ 			spin_lock_init(&sec->debug.files[i].lock);
+ 			sec->debug.files[i].index = i;
+@@ -877,7 +876,7 @@ static int sec_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+ 	qm->sqe_size = SEC_SQE_SIZE;
+ 	qm->dev_name = sec_name;
+ 
+-	qm->fun_type = (pdev->device == SEC_PF_PCI_DEVICE_ID) ?
++	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF) ?
+ 			QM_HW_PF : QM_HW_VF;
+ 	if (qm->fun_type == QM_HW_PF) {
+ 		qm->qp_base = SEC_PF_DEF_Q_BASE;
+diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
+index 678f8b58ec42..66decfe07282 100644
+--- a/drivers/crypto/hisilicon/zip/zip_main.c
++++ b/drivers/crypto/hisilicon/zip/zip_main.c
+@@ -15,8 +15,7 @@
+ #include <linux/uacce.h>
+ #include "zip.h"
+ 
+-#define PCI_DEVICE_ID_ZIP_PF		0xa250
+-#define PCI_DEVICE_ID_ZIP_VF		0xa251
++#define PCI_DEVICE_ID_HUAWEI_ZIP_PF	0xa250
+ 
+ #define HZIP_QUEUE_NUM_V1		4096
+ 
+@@ -246,7 +245,7 @@ MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
+ 
+ static int pf_q_num_set(const char *val, const struct kernel_param *kp)
+ {
+-	return q_num_set(val, kp, PCI_DEVICE_ID_ZIP_PF);
++	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_ZIP_PF);
+ }
+ 
+ static const struct kernel_param_ops pf_q_num_ops = {
+@@ -268,8 +267,8 @@ module_param_cb(vfs_num, &vfs_num_ops, &vfs_num, 0444);
+ MODULE_PARM_DESC(vfs_num, "Number of VFs to enable(1-63), 0(default)");
+ 
+ static const struct pci_device_id hisi_zip_dev_ids[] = {
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_ZIP_PF) },
+-	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_ZIP_VF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_ZIP_PF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_ZIP_VF) },
+ 	{ 0, }
+ };
+ MODULE_DEVICE_TABLE(pci, hisi_zip_dev_ids);
+@@ -838,7 +837,7 @@ static int hisi_zip_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+ 	qm->sqe_size = HZIP_SQE_SIZE;
+ 	qm->dev_name = hisi_zip_name;
+ 
+-	qm->fun_type = (pdev->device == PCI_DEVICE_ID_ZIP_PF) ?
++	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_ZIP_PF) ?
+ 			QM_HW_PF : QM_HW_VF;
+ 	if (qm->fun_type == QM_HW_PF) {
+ 		qm->qp_base = HZIP_PF_DEF_Q_BASE;
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index aad54c666407..31dee2b65a62 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2529,6 +2529,9 @@
+ #define PCI_DEVICE_ID_KORENIX_JETCARDF3	0x17ff
+ 
+ #define PCI_VENDOR_ID_HUAWEI		0x19e5
++#define PCI_DEVICE_ID_HUAWEI_ZIP_VF	0xa251
++#define PCI_DEVICE_ID_HUAWEI_SEC_VF	0xa256
++#define PCI_DEVICE_ID_HUAWEI_HPRE_VF	0xa259
+ 
+ #define PCI_VENDOR_ID_NETRONOME		0x19ee
+ #define PCI_DEVICE_ID_NETRONOME_NFP4000	0x4000
 -- 
-2.35.1
+2.25.1
 
