@@ -2,246 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56241C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245490AbiCHFiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 00:38:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57724 "EHLO
+        id S245521AbiCHFqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 00:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245429AbiCHFiT (ORCPT
+        with ESMTP id S232397AbiCHFqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 00:38:19 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A213BA53
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:37:23 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id u3so35579880ybh.5
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 21:37:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rKcElPkVErIkA0FRVRebvYFiTDdWU+fRqLr3tn1gxSY=;
-        b=cX6lPwX9mMHV1MBA07XrS+btXSYVH9mlHa5mMczBv+K7XGuDqqSZHTdhDZYFCOtlwZ
-         9LCHB7MgqaGHNEoC+oLwSaQ5MFBmTYjgH7yG5FP5guLFzt0bg7aWwSfyHjwnd+ml8QqB
-         ayjk80CQ047OpShJqgA50vwTA0nMtHeruL5vpM0n9u4opIKATDKNgpEi9RLoLIfb0Jib
-         KgsQQP2wVMoe2z6vWiqrXwq6PeHqFc1VImovo2qOAbH6aAVE/mzbtU9LdB8jZ4DXC1lt
-         kysbJJEKk6GPrqGy+wNryIR2eNvnTRT5ZEPLisLP4sPm6csyQiEEHDZifVBpVX2rzMA5
-         SQkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rKcElPkVErIkA0FRVRebvYFiTDdWU+fRqLr3tn1gxSY=;
-        b=22F/iPm5MlGcp8pQJHhfaLG+CGn5qiy+U24alGKULBDhSwDy87OxWE6YWjeJYLbdAt
-         F+zW+IrpnvK5CISM+C3bT/oBIXcNXUkRWFs4vmYLwP+LYmYQAiQPBtPX48W5IItSecFo
-         mjpwd9O/w6Sd+NLPkgZwBZi0AKw3Z5ctDD7tl6aWalTXT9bYOhBjJGX854h3+Uvv1xO5
-         acnN93EyjVWHeSBIrpji0tuul66KeDSdsJbMErS/yGdEXan9phYKzVzmPNia7cC8BjKc
-         WCynrD/F81J6R2WdfQDMRVPP0jypDu8llmszSU/oJ5Puqhbx69YSCfcFZY9z4GEZVR84
-         UtZg==
-X-Gm-Message-State: AOAM531buSIrhzbcD14ZOTV4EokJG8xaVTwQ0ZXYO5JLy3dyujC4V2Y3
-        flQ/oSCV4rYdy1gTUbh4PjdPJSidliY15H7OlgrxMA==
-X-Google-Smtp-Source: ABdhPJydLO0dZEb/7C0x5NzZ+qV42tYJelOwsqOkANUZ2a9e0FiqlBYKWWgrKryjOkwP19cbRbjRYY5GEhQOuk9/crs=
-X-Received: by 2002:a25:778b:0:b0:628:919f:7088 with SMTP id
- s133-20020a25778b000000b00628919f7088mr11076462ybc.282.1646717842770; Mon, 07
- Mar 2022 21:37:22 -0800 (PST)
+        Tue, 8 Mar 2022 00:46:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE613BBD1;
+        Mon,  7 Mar 2022 21:45:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A73B61574;
+        Tue,  8 Mar 2022 05:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AF1C340EB;
+        Tue,  8 Mar 2022 05:45:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646718352;
+        bh=Y8xpjnCaZqjpKAi6LH7psa4XoBGA667VBgBc+PH2nLU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mx31lcmtoMKA2ZBo/RU8iqV+gJN1S6CXEHizj1ptrPAsEWcD+SctSZK3N7b9x3/xe
+         POuXp8Eo72XT3OIykVrom6BbZ/Zyi1xNzV/1520yN5alcXPInUABF3+4+ACw493ewC
+         FhvPmRDtFyVK33kDjnnZYz9kzl1apHU00BOLGcYPnqRAAJQODDFz20RzCOrUBLG3Ko
+         ja/APFTJXnAt5dXeh77V/T4/kymHSNvIf6mJ9DIrMF1cu497Qta9bBxA3ED945YaGt
+         Hy2K3PjUVGkxDXPvNdC9blAwRS/Wk1LtRxI/mI09nmGNt+JzECmMIr0KYoxllvS6hv
+         hJj8s8lfkj0dg==
+Date:   Mon, 7 Mar 2022 21:45:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        David Ahern <dsahern@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
 MIME-Version: 1.0
-References: <20220128131006.67712-1-michel@lespinasse.org> <20220223161141.GG4423@techsingularity.net>
-In-Reply-To: <20220223161141.GG4423@techsingularity.net>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Mon, 7 Mar 2022 21:37:11 -0800
-Message-ID: <CAJuCfpE10y78SNPQ+LRY5EonDFhOG=1XjZ9FUUDiyhfhjZ54NA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/35] Speculative page faults
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Michel Lespinasse <michel@lespinasse.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, kernel-team@fb.com,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Jerome Glisse <jglisse@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Rik van Riel <riel@surriel.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andy Lutomirski <luto@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 8:11 AM Mel Gorman <mgorman@techsingularity.net> wrote:
->
-> On Fri, Jan 28, 2022 at 05:09:31AM -0800, Michel Lespinasse wrote:
-> > This patchset is my take on speculative page faults (spf).
-> > It builds on ideas that have been previously proposed by Laurent Dufour,
-> > Peter Zijlstra and others before. While Laurent's previous proposal
-> > was rejected around the time of LSF/MM 2019, I am hoping we can revisit
-> > this now based on what I think is a simpler and more bisectable approach,
-> > much improved scaling numbers in the anonymous vma case, and the Android
-> > use case that has since emerged. I will expand on these points towards
-> > the end of this message.
-> >
-> > The patch series applies on top of linux v5.17-rc1;
-> > a git tree is also available:
-> > git fetch https://github.com/lespinasse/linux.git v5.17-rc1-spf-anon
-> >
-> > I would like these patches to be considered for inclusion into v5.18.
-> > Several android vendors are using Laurent Dufour's previous SPF work into
-> > their kernel tree in order to improve application startup performance,
-> > want to converge to an upstream accepted solution, and have reported good
-> > numbers with previous versions of this patchset. Also, there is a broader
-> > interest into reducing mmap lock dependencies in critical MM paths,
-> > and I think this patchset would be a good first step in that direction.
-> >
->
-> I think there is serious lack of performance data here. The only
-> performance point offered is the Android Application Startup case.
-> Unfortunately, that benefit may be specific to the Zygote process that
-> preloads classes that may be required and listens for new applications to
-> start. I suspect the benefit wouldn't apply to most Linux distributions
-> and even JVM-based workloads are not primarily constrained by the startup
-> cost. Improving application start up costs is not great justification
-> for this level of code complexity even though I recognise why it is a
-> key performance indicator for Android given that startup times affect
-> the user experience.
->
-> Laurent's original work was partially motivated by the performance of
-> a proprietary application. While I cannot replicate a full production
-> workload as that can only be done by the company, I could do a basic
-> evaluation commonly conducted on standalone systems. It was extremely
-> fault intensive with SPF success rates greater than 96% but almost no
-> change in actual performance. It's perfectly possible that the application
-> has changed since SPF was first proposed. The developers did spend a fair
-> amount of effort at making the application NUMA-aware and reusing memory
-> more aggressively to avoid faults. It's still very fault intensive but
-> does not appear to suffer due to parallel memory operations guessing from
-> the data.
->
-> On my own tests, the only preliminary test that was a clear winner
-> was will-it-scale using threads for the page-fault workloads and
-> page-fault-test for threads. To be far, the increases there are dramatic
-> with a high success rate of speculative faults.
->
-> pft timings
->                                  5.17.0-rc3             5.17.0-rc3
->                                     vanilla        mm-spfault-v2r1
-> Amean     elapsed-1        32.66 (   0.00%)       32.77 *  -0.36%*
-> Amean     elapsed-4         9.17 (   0.00%)        8.89 *   3.07%*
-> Amean     elapsed-7         5.53 (   0.00%)        5.26 *   4.95%*
-> Amean     elapsed-12        4.13 (   0.00%)        3.50 *  15.16%*
-> Amean     elapsed-21        3.93 (   0.00%)        2.79 *  29.03%*
-> Amean     elapsed-30        4.02 (   0.00%)        2.94 *  26.79%*
-> Amean     elapsed-48        4.37 (   0.00%)        2.83 *  35.24%*
-> Amean     elapsed-79        4.13 (   0.00%)        2.17 *  47.36%*
-> Amean     elapsed-80        4.12 (   0.00%)        2.13 *  48.22%*
->
-> Ops SPFault Attempt                        0.00  4734439786.00
-> Ops SPFault Abort                          0.00     9360014.00
-> Ops SPFault Success                        0.00          99.80
->
-> This is the ideal case for SPF but not very realistic. Interestingly,
-> ebizzy barely benefitted even though it's threaded because it's not
-> guaranteed to be address space modification intensive.
->
-> Hackbench took a performance hit between 0-5% depending on the exact
-> configuration and machine used. It is threaded and had high SPF abort rates
-> (up to 50%). It's not a great example but it shows at least one example
-> where SPF hurts more than it help and there may be other applications
-> that are harmed by having to retry faults.
->
-> The scope of SPF is narrow relative to the much older discussion of
-> breaking up mmap_sem. The only time SPF benefits is when faults are racing
-> against parallel memory address updates holding mmap_sem for write.
-> That requires a threaded application that is both intense in terms of
-> address space updates and fault intensive. That is much narrower than
-> threaded applications that are address space update intensive (e.g.
-> using mprotect to avoid accidentally leaking data, mapping data files
-> for IO etc). Have we examples of realistic applications that meet all the
-> criteria of "threaded", "address-space intensive" and "fault intensive"
-> that are common enough to justify the complexity?
->
-> Admittedly, I initially just threw this series at a collection of
-> workloads that simply stress the allocator because it stresses faults as
-> a side-effect but most of them did not match the criteria for "threaded
-> application that is both address space update intensive and fault
-> intensive". I'm struggling to think of good examples although redis
-> is a possibility. HPC workloads like NPB parallelised with OpenMP is a
-> possibility but I looked at some old results and while it does trap faults,
-> the vast majority are related to NUMA balancing.  The other ones I normally
-> consider for scaling purposes are process orientated and not threads.
->
-> On the patches themselves, I'm not sure the optimisation for ignoring SPF
-> is guaranteed to work as mm_users could be temporarily elevated although
-> probably not enough to matter. I also think patch 5 stands on its own and
-> could be sent separately. For the others, I didn't read them in sufficient
-> depth but noted that the level of similar logic between speculative
-> and non-speculative paths could be a maintenance headache to keep the
-> speculative and !speculative rules in sync. I didn't see obvious problems
-> as such but I still think the complexity is high for a corner case.
+On Tue, 8 Mar 2022 01:04:00 +0100 Ilya Maximets wrote:
+> > Thanks for the explanation, we can apply a revert if that'd help your
+> > CI / ongoing development but sounds like the fix really is in user
+> > space. Expecting netlink attribute lists not to grow is not fair.  
+> 
+> I don't think it was intentional, just a careless mistake.  Unfortunately,
+> all OVS binaries built during the last 5 years rely on that unwanted
+> expectation (re-build will also not help as they are using a copy of the
+> uAPI header and the clash will be there anyway).  If we want to keep them
+> working, kernel uAPI has to be carefully updated with current userspace-only
+> attributes before we add any new ones.  That is not great, but I don't see
+> any other option right now that doesn't require code changes in userspace.
+> 
+> I'd say that we need to revert the current patch and re-introduce it
+> later when the uAPI problem is sorted out.  This way we will avoid blocking
+> the net-next testing and will also avoid problems in case the uAPI changes
+> are not ready at the moment of the new kernel release.
+> 
+> What do you think?
 
-Hi Mel,
-Thank you for taking your time to analyze SPF effects on different
-workloads. Your feedback drove me to look into the reasons Android
-benefits from this patchset. What we know is that apps which benefit
-the most are the ones with high number of threads (~100) and when I
-strace'd one of these apps I can see that each thread mmaps several
-areas upon startup (Stack and Thread-local storage (TLS), thread
-signal stack, indirect ref table).
-So, I created a simple test that spawns a given number of threads,
-each thread mmapping and faulting-in a given number of vmas with a
-given number of pages in each one. Each thread records the time it
-takes to mmap the vmas and fault-in the pages and the test reports the
-total and the average times measured. You can find my test program
-here: https://github.com/surenbaghdasaryan/spf_test/blob/main/spf_test.c
+Let me add some people I associate with genetlink work in my head
+(fairly or not) to keep me fair here.
 
-I ran a number of tests on my Pixel 6 and SPF shows quite positive
-results even with a small number of vmas and pages. Couple examples:
+It's highly unacceptable for user space to straight up rewrite kernel
+uAPI types but if it already happened the only fix is something like:
 
-100 threads, 2 vmas, 10 pages (cmdline: spf_test 100 2 10)
-Baseline avg time: 1,889,398.01ns
-SPF avg time: 327,299.36ns
-Improvement: 83%
-
-100 threads, 10 vmas, 2 pages (cmdline: spf_test 100 10 2)
-Baseline avg time: 1,234,861.48ns
-SPF avg time: 800,392.82ns
-Improvement: 35%
-
-100 threads, 10 vmas, 10 pages (cmdline: spf_test 100 10 10)
-Baseline avg time: 12,199,939.04ns
-SPF avg time: 3,223,206.41ns
-Improvement: 74%
-
-100 threads, 30 vmas, 30 pages (cmdline: spf_test 100 30 30)
-Baseline avg time: 255,827,268.16ns
-SPF avg time: 41,538,348.47ns
-Improvement: 84%
-
-To minimize the noise, the test setup was to run with the same
-parameters for several hundred times and take the average between
-runs.
-I think this test represents an example of what you were describing as
-a "threaded application that is both address space update intensive
-and fault intensive" because mmaps modify the address space with
-page-faults happening in parallel. We can call it an artificial
-workload but it does not strike me as something very unusual. I can
-imagine other systems apart from Android which could spawn multiple
-threads with each thread mapping some memory area to work with and
-using that area immediately.
-Thanks,
-Suren.
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+index 9d1710f20505..ab6755621e02 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -351,11 +351,16 @@ enum ovs_key_attr {
+        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+        OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+-       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+ 
+ #ifdef __KERNEL__
+        OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+ #endif
++       /* User space decided to squat on types 30 and 31 */
++       OVS_KEY_ATTR_IPV6_EXTHDRS = 32, /* struct ovs_key_ipv6_exthdr */
++       /* WARNING: <scary warning to avoid the problem coming back> */
++
+        __OVS_KEY_ATTR_MAX
+ };
 
 
->
-> --
-> Mel Gorman
-> SUSE Labs
+right?
+
+> > Since ovs uses genetlink you should be able to dump the policy from 
+> > the kernel and at least validate that it doesn't overlap.  
+> 
+> That is interesting.  Indeed, this functionality can be used to detect
+> problems or to define userspace-only attributes in runtime based on the
+> kernel reply.  Thanks for the pointer!
