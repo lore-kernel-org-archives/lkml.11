@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7045C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349997AbiCHTg2 (ORCPT
+        id S1350010AbiCHTge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 14:36:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40780 "EHLO
+        Tue, 8 Mar 2022 14:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241173AbiCHTg0 (ORCPT
+        with ESMTP id S1349999AbiCHTgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 14:36:26 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0660953B67
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:35:30 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id e15so230915pfv.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 11:35:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+eK2C3ly8Cl2iFzzFyVvGZbN05MoLU2NqJPmvYWFw8U=;
-        b=DAMj+wWXR6cFkoP8arUXqWalFDnvVjRjnVrwZJP0laLI69rSm5u2H+ZFr9vE8o4IFC
-         lm0iNJj+YMCTBoHIYp4Fp54clJzuPgST5mHtkqSeoOk4NI3p7Y7zzEhT/DtCz2XBIVIp
-         AGB+sC8L1WqLwHAZgtGXRrV+7IjrCa2mnvwvm3P11I4C/ehEsew7urTCetp+LjEVc03N
-         JF1kKQgyebCBj/q4KiVQHB5Q3Z+6TZvhY3O/HC3Hbsqfm284FJ5AM01QOjxSpUSjKWG8
-         h3afhQQB5tE2mMqcIoyKPQ1FVrEMPnAlMemqD+rd6TU1YWwV8eimsRoJnrTohOR5x01z
-         TnyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+eK2C3ly8Cl2iFzzFyVvGZbN05MoLU2NqJPmvYWFw8U=;
-        b=umiePEUkm0dR83Yek0OTWKpFd1SRiA/Kmb5h5EA2O391vcDd9ZoqamV4G01ITwhsUJ
-         EuQuG9h3gU/RUFRc8wA+haOZRWQjUzIx6JjAxw+0OH5v+58cu/o5f/mT8JzQ/wTeKfyn
-         lxbogJ5q6a7lmaa9eS2iTXzSftY2yRC2WpgK/6rIMHHaKU7u640SVGod8p7Kjvvuyw0L
-         B96U3efrSPYmVNmxj0jIQNfzTLdWRiUjQJ5MeAYoYdHV+B1HoI3GbWqDz4wwyZKaxkOY
-         CtT+FwGqE9CFJaLp8cCmoJPQphRLeCLl87fP3wOsCVuA8Np0QI9XE3xIuNGctg6F1R1b
-         93uA==
-X-Gm-Message-State: AOAM532ah3sUlf7uCfHhBJcDUwpVmCODwNGZgaJcI2lyMBOqKLNAD/Fp
-        FVJ/kqSIFtw5zfluSZKCQOdmKA==
-X-Google-Smtp-Source: ABdhPJwD1h6m87kUVxmACAN/f4+T45T+fL+brdtEm1R/0gODZIN67V3yMFpW8GkRg54Ox+QX/JqaQw==
-X-Received: by 2002:aa7:9af0:0:b0:4f7:de1:2796 with SMTP id y16-20020aa79af0000000b004f70de12796mr9134788pfp.29.1646768129292;
-        Tue, 08 Mar 2022 11:35:29 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id x27-20020a056a00189b00b004f6ebda8fa5sm11876690pfh.175.2022.03.08.11.35.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 11:35:28 -0800 (PST)
-Date:   Tue, 8 Mar 2022 19:35:25 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-Subject: Re: [PATCH v2 19/25] KVM: x86/mmu: simplify and/or inline
- computation of shadow MMU roles
-Message-ID: <Yiev/V/KPd1IrLta@google.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-20-pbonzini@redhat.com>
+        Tue, 8 Mar 2022 14:36:32 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC7454688;
+        Tue,  8 Mar 2022 11:35:35 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:60392)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRfcL-006Rk2-Nb; Tue, 08 Mar 2022 12:35:33 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:33848 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRfcK-001fpg-Bz; Tue, 08 Mar 2022 12:35:33 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <liam.howlett@oracle.com>,
+        Jann Horn <jannh@google.com>, <linux-mm@kvack.org>
+References: <20220131153740.2396974-1-willy@infradead.org>
+        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+        <YfgKw5z2uswzMVRQ@casper.infradead.org>
+        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
+        <YfgPwPvopO1aqcVC@casper.infradead.org>
+        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Tue, 08 Mar 2022 13:35:03 -0600
+In-Reply-To: <87bkzroica.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Mon, 31 Jan 2022 12:44:53 -0600")
+Message-ID: <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-20-pbonzini@redhat.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1nRfcK-001fpg-Bz;;;mid=<87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18VHZi4qAUqp2lFjUGTMEwqPtkpQK8w5+o=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [GIT PULL] Fix fill_files_note
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> @@ -4822,18 +4798,23 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
->  {
->  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
->  	union kvm_mmu_paging_mode cpu_mode = kvm_calc_cpu_mode(vcpu, regs);
-> -	union kvm_mmu_page_role root_role =
-> -		kvm_calc_shadow_mmu_root_page_role(vcpu, cpu_mode);
-> +	union kvm_mmu_page_role root_role;
->  
-> -	shadow_mmu_init_context(vcpu, context, cpu_mode, root_role);
-> -}
-> +	root_role = cpu_mode.base;
-> +	root_role.level = max_t(u32, root_role.level, PT32E_ROOT_LEVEL);
 
-Heh, we have different definitions of "simpler".   Can we split the difference
-and do?
+Kees,
 
-	/* KVM uses PAE paging whenever the guest isn't using 64-bit paging. */
-	if (!____is_efer_lma(regs))
-		root_role.level = PT32E_ROOT_LEVEL;
+Please pull the coredump-vma-snapshot-fix branch from the git tree:
 
-> -static union kvm_mmu_page_role
-> -kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
-> -				   union kvm_mmu_paging_mode role)
-> -{
-> -	role.base.level = kvm_mmu_get_tdp_level(vcpu);
-> -	return role.base;
-> +	/*
-> +	 * KVM forces EFER.NX=1 when TDP is disabled, reflect it in the MMU role.
-> +	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
-> +	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
-> +	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
-> +	 * The iTLB multi-hit workaround can be toggled at any time, so assume
-> +	 * NX can be used by any non-nested shadow MMU to avoid having to reset
-> +	 * MMU contexts.
-> +	 */
-> +	root_role.efer_nx = true;
-> +
-> +	shadow_mmu_init_context(vcpu, context, cpu_mode, root_role);
->  }
->  
->  void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
-> @@ -4846,7 +4827,10 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
->  		.efer = efer,
->  	};
->  	union kvm_mmu_paging_mode cpu_mode = kvm_calc_cpu_mode(vcpu, &regs);
-> -	union kvm_mmu_page_role root_role = kvm_calc_shadow_npt_root_page_role(vcpu, cpu_mode);
-> +	union kvm_mmu_page_role root_role;
-> +
-> +	root_role = cpu_mode.base;
-> +	root_role.level = kvm_mmu_get_tdp_level(vcpu);
+  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
 
-Regarding the WARN_ON_ONCE(root_role.direct) discussed for a different patch, how
-about this for a WARN + comment?
+  HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
 
-	/* NPT requires CR0.PG=1, thus the MMU is guaranteed to be indirect. */
-	WARN_ON_ONCE(root_role.direct);
+Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
+which could cause trouble.
 
->  	shadow_mmu_init_context(vcpu, context, cpu_mode, root_role);
->  	kvm_mmu_new_pgd(vcpu, nested_cr3);
-> -- 
-> 2.31.1
-> 
-> 
+Refactor the code and clean it up so that the vma snapshot makes
+it to fill_files_note, and then use the vma snapshot in fill_files_note.
+
+Eric W. Biederman (5):
+      coredump: Move definition of struct coredump_params into coredump.h
+      coredump: Snapshot the vmas in do_coredump
+      coredump: Remove the WARN_ON in dump_vma_snapshot
+      coredump/elf: Pass coredump_params into fill_note_info
+      coredump: Use the vma snapshot in fill_files_note
+
+ fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
+ fs/binfmt_elf_fdpic.c    | 18 +++++--------
+ fs/binfmt_flat.c         |  1 +
+ fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
+ include/linux/binfmts.h  | 13 +---------
+ include/linux/coredump.h | 20 ++++++++++++---
+ 6 files changed, 93 insertions(+), 84 deletions(-)
+
+---
+
+Kees I realized I needed to rebase this on Jann Horn's commit
+84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
+libraries").  Unfortunately before I got that done I got distracted and
+these changes have been sitting in limbo for most of the development
+cycle.  Since you are running a tree that is including changes like this
+including Jann's can you please pull these changes into your tree.
+
+Thank you,
+Eric
