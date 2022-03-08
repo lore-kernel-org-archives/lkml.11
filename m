@@ -2,117 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D33BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346760AbiCHMS2 (ORCPT
+        id S1346762AbiCHMSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
+        Tue, 8 Mar 2022 07:18:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346785AbiCHMSF (ORCPT
+        with ESMTP id S235162AbiCHMSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:18:05 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D2E43EEC;
-        Tue,  8 Mar 2022 04:17:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646741829; x=1678277829;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=b6XNSvqFP88JTyW8tQlLM0QNG9urVY1LhIdyUhoyfvI=;
-  b=b/+eXqMwZYXh1eU7VmbEKEBEXxM6Ag7re75dqleF9JrfdugJnH3GLkuS
-   OHJnBQQ8vz6Fo6lF1vnHc9thsRXle1VIAbxX+xqcscCfu7eQkP6v0ifpG
-   5Q7m/0s4UN95IjhHqfHnF+mDG9y3olYCwb4S7WIrelcroGzQCTuACzUzd
-   y99lJoUpE3ruMC9+6FAM0zYIQphcs7ArFP9WMWNmMuz5lpJL+0uYkRH47
-   EVxyCrvzvS30DckL5kV+MwQXs9BbF8eBgPGzIqAZ8YjhnuKWfRmJ335vI
-   rHO6Zzewunj0BjzF1Mjg8p2zQ77SmV6EH5WoaoNR1MtNE/qXaiAYiWfEw
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254860049"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="254860049"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:17:08 -0800
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="553597256"
-Received: from lpessina-mobl.ger.corp.intel.com ([10.249.37.31])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:17:05 -0800
-Date:   Tue, 8 Mar 2022 14:16:56 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Lukas Wunner <lukas@wunner.de>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
-In-Reply-To: <YiZfdlw0A75cojCx@smile.fi.intel.com>
-Message-ID: <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de> <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com> <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
- <20220307191854.GA27748@wunner.de> <YiZfdlw0A75cojCx@smile.fi.intel.com>
+        Tue, 8 Mar 2022 07:18:47 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6692C24090;
+        Tue,  8 Mar 2022 04:17:50 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id m2so10927822pll.0;
+        Tue, 08 Mar 2022 04:17:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=dr9s0/aBCglOTnR8EG3bSxaTvIl2jybWyOsb5Ha4FcU=;
+        b=PSkaBDSc6grc6PHIEsor63W0fjW3myNhfSTd6Li5v2oYVoT9oAVdfi/xaBzdZGEDIE
+         j6RovrxKJjj7RZUvqqJIe8/CQ5PTFbFKU2H4FDXkplqhc1AWHsigaZHmdUk2h/1tyHyu
+         sWocJccy9EgKPU8zDWaST/iX1CCTGM0GRsaVMuq7+V7k5wvaF+ydROOeRyAm5x4LZdlA
+         uTFhr1hspElL8g1HiPOYFNEqG6g33Z3frdiHxA0ANBMf4G4RlYiWXLzGo63VxqT1Hp4B
+         AIbSwRAFFgfmmlRLoM2bU+3VxaCa7HC3kxCJr7SzZqf2wCwIWJcZtSiajLZJ/fEngN1D
+         jG4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=dr9s0/aBCglOTnR8EG3bSxaTvIl2jybWyOsb5Ha4FcU=;
+        b=PQGhJZJ2lL2Jx7hOWxAzBV4+3j1b59L+4IDp8qz7fdcUAZE2WfpmW0JpIkStuBLmi2
+         CZHqvabVqP0H6skI/E9IqbaPmOCwzHlEeJPtAPeH/pZcpQtJUkAzXMzP3MfsNTtV0i9k
+         WpPupgowSpBK/t3D7W539hFMDWjifrYxo/UDSlADqW/2z0yuvCV0U/U+uWfLx5G5UIzD
+         upGuH7WbXJn3QtYW64y17aQPz/Qp5QlfWMu79IGMZhDBZSVfv+miM7JmR6AArXGFbAyk
+         Bb5rYSxjhAJhch/WJhvOIp9IAu/bvf4smTnlC7Cxt5LZjsoxrL2SzlhTn34wmffK9PXd
+         y4Pw==
+X-Gm-Message-State: AOAM531Ys7lQH9vZ1WeSJtbja4rNHCirBTCxFySLhG1QchHdWeeGTJxp
+        D1UeSgyiOtYfwpKD2a1u0gJH86qDlcABlHwHBA==
+X-Google-Smtp-Source: ABdhPJzbtHPd5CWJbQ12WkPTeJNvlBn3yn3IeG8sbtzPWcqUyMaCCNndp6gtz+A61gNXzi9jFnYtioH8qh/Q45FXhJI=
+X-Received: by 2002:a17:90a:5407:b0:1bf:43ce:f11b with SMTP id
+ z7-20020a17090a540700b001bf43cef11bmr4291512pjh.31.1646741869517; Tue, 08 Mar
+ 2022 04:17:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-463480829-1646741577=:1613"
-Content-ID: <57315a41-d689-1245-85b2-783950081b7@linux.intel.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Tue, 8 Mar 2022 20:17:38 +0800
+Message-ID: <CAMhUBj=ty1=zk6oQY2c9N0u3jo9O7t-6oN6OJSoMXpkJBYv9KA@mail.gmail.com>
+Subject: [BUG] scsi: sym53c8xx_2: warning in ___free_dma_mem_cluster()
+To:     willy@infradead.org, jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-463480829-1646741577=:1613
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <43444a8-f88-5b0-5b8e-b22c72a4fc9@linux.intel.com>
+I found a bug when proing the sym53c8xx driver.
 
-On Mon, 7 Mar 2022, Andy Shevchenko wrote:
+When the initialization process fails on sym_find_frimware(), the
+driver frees the related resources, which cause a warning in kernel.
 
-> On Mon, Mar 07, 2022 at 08:18:54PM +0100, Lukas Wunner wrote:
-> > On Mon, Mar 07, 2022 at 11:19:59AM +0200, Ilpo Järvinen wrote:
-> > > On Mon, 7 Mar 2022, Andy Shevchenko wrote:
-> 
-> ...
-> 
-> > That's for DT platforms, but I suppose you've got ACPI.  Not sure
-> > how it's handled there, the ACPI 6.4 spec contains a "UART Serial Bus
-> > Connection Resource Descriptor" but nothing on RS-485, so I guess
-> > the only option is to use regular DT properties in a _DSD object?
-> 
-> Which make me think that this series needs an additional patch to
-> describe RS485 enumeration for ACPI case (somewhere in
-> Documentation/firmware-guide/acpi/enumeration.rst IIRC the filename).
-> 
-> ...
-> 
-> > > I initially had additional version check here while developing this
-> > > patch series but it seemed to not provide any added value due those
-> > > other factors that need to be considered.
-> > 
-> > Here's another idea:
-> > 
-> > Read TCR register on ->probe.  It's POR value is 0x6 if RS-485 is
-> > supported by the chip, else 0x0.  (Page 220 of the 4.01a spec says
-> > UCV register does not exist if additional features are not implemented
-> > and reading from this register address returns 0, I suppose the same
-> > applies to TCR if RS-485 is not implemented.)
-> > 
-> > Since the driver may change the polarity in the TCR register, be sure
-> > to write 0x6 to it on ->remove so that you can still correctly detect
-> > presence of the RS-485 feature after unbind/rebind of the driver.
-> 
-> What to do in the case when DE pin is muxed to RTS and locked in pin control
-> IP by firmware (no possibility to change the muxing in the OS)?
+The following log reveals it:
 
-The SoC also has a pin to select between RS485 and RS232. With a combo 
-transceiver, TCR-based heuristic just runs into the same problems as the 
-version-based one did.
+[    3.736968] WARNING: CPU: 6 PID: 1 at kernel/dma/mapping.c:528
+dma_free_attrs+0xf1/0x110
+[    3.737503] Modules linked in:
+[    3.737503] CPU: 6 PID: 1 Comm: swapper/0 Not tainted 5.16.0-rc1+ #31
+[    3.737503] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.737503] RIP: 0010:dma_free_attrs+0xf1/0x110
+[    3.737503] Call Trace:
+[    3.737503]  <TASK>
+[    3.737503]  ___free_dma_mem_cluster+0x18e/0x6a0
+[    3.737503]  __sym_mfree_dma+0x2ec/0x740
+[    3.737503]  sym_hcb_free+0x147/0x6e0
+[    3.737503]  sym_attach+0xec1/0x1380
+[    3.737503]  sym2_probe+0x852/0xab0
+[    3.737503]  ? sym_log_bus_error+0x140/0x140
+[    3.737503]  local_pci_probe+0x13f/0x210
+[    3.737503]  pci_device_probe+0x34c/0x6d0
+[    3.737503]  ? pci_uevent+0x470/0x470
+[    3.737503]  really_probe+0x24c/0x8d0
+[    3.737503]  __driver_probe_device+0x1b3/0x280
+[    3.737503]  driver_probe_device+0x50/0x380
+[    3.737503]  __driver_attach+0x416/0x580
+[    3.737503]  ? driver_attach+0x40/0x40
+[    3.737503]  bus_for_each_dev+0x10d/0x160
+[    3.737503]  bus_add_driver+0x2f7/0x520
+[    3.737503]  driver_register+0x2e9/0x3e0
+[    3.737503]  sym2_init+0x16a/0x1fa
+[    3.737503]  ? pqi_init+0x174/0x174
+[    3.737503]  do_one_initcall+0x10c/0x260
+[    3.737503]  ? pqi_init+0x174/0x174
+[    3.737503]  ? do_initcall_level+0x133/0x133
+[    3.737503]  ? parse_args+0x19e/0x940
+[    3.737503]  ? lock_is_held_type+0xe2/0x140
+[    3.737503]  do_initcall_level+0x103/0x133
+[    3.737503]  do_initcalls+0x46/0x76
+[    3.737503]  kernel_init_freeable+0x292/0x396
+[    3.737503]  ? rest_init+0x240/0x240
+[    3.737503]  kernel_init+0x14/0x1b0
+[    3.737503]  ? rest_init+0x240/0x240
+[    3.737503]  ret_from_fork+0x22/0x30
 
-
--- 
- i.
---8323329-463480829-1646741577=:1613--
+Regards,
+Zheyu Ma
