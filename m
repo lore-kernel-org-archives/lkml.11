@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC26C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA96C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348870AbiCHP6p (ORCPT
+        id S1348844AbiCHP6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
+        Tue, 8 Mar 2022 10:58:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348082AbiCHP4K (ORCPT
+        with ESMTP id S1348083AbiCHP4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:10 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D666E4F9E8
+        Tue, 8 Mar 2022 10:56:11 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFED74F9CB
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=PHEOjkllLYRJjX9o3wak1r/8ieTONFTuKYroBW4q6zg=; b=ASJtLIw5joSgxstxcZlX90Jkkf
-        ZvZBaAXEHa3yKeGw02uWYnl49dBWrMQ8o/ppeOndQdpey4rnuKSItNsw/FJhEk8SBGzRtzB9K2laB
-        3vTV4FA56D9g9blpyBpYFP/eaZb8cn9a7wnw7tKZUyyDvI7ZxLzkHIyGIGLU38zOIwVbsDPBJWVQv
-        FcR5THoOMt6N0bALKGF9xEqkp9vcH1hEDftvtKXkh/Zx1JoOuvlZTFvRf5601gaIsvOrCGk/et8cE
-        g42mDCMO6YEuDsiPTjo0Rkjzxtrsbtp1igdFl6AgUuerwKOfys7p/BYcVFr40BSRWMMCdk1rBH/IV
-        UzN6Q10A==;
+        bh=I7p5+DYH8U1arII34U/+6lMMFXCLX9VK6R9WBVZqDzA=; b=OB2o6YLr6Lh7U6FYK4e68bf4iE
+        nBHzU2aymuKporXzOEDeX2mISOkOzy2G4EKvdHY3H9YkgCWPHytH6j3DvJf8xeDYuH+V1amDydPqW
+        1or8arjvJgkh7pP7kHJxo4eK9+G4gkPmav7GSMgg9R8mi+m3QLWGzo0MyPuqtIIpnz8Wx6QP4IDXl
+        B/Bj6vhIMsidfyUlTIsymqnP8g4m/q7XMQ5nKT9p0BWq3lILYRQObRtAOLERGTQQMx8na4HbdHm0e
+        hheqaIeuEe9c8yHP5pC52wS6tlSj86AQ/meZntcKwYqgdJwZxV/jE5s6Kzz+jHr7kbq+MXDjjsed/
+        VF5S1k1w==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GUiT-Jt; Tue, 08 Mar 2022 15:54:42 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRcAd-00GIvW-GI; Tue, 08 Mar 2022 15:54:43 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 37D6930214E;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 56064302DE0;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 2DEEF2B56191E; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.227581603@infradead.org>
+        id 119102B5649EA; Tue,  8 Mar 2022 16:54:40 +0100 (CET)
+Message-ID: <20220308154319.822545231@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:29 +0100
+Date:   Tue, 08 Mar 2022 16:30:56 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 18/45] x86/ibt,ftrace: Search for __fentry__ location
+Subject: [PATCH v4 45/45] x86/alternative: Use .ibt_endbr_seal to seal indirect calls
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,187 +56,249 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently a lot of ftrace code assumes __fentry__ is at sym+0. However
-with Intel IBT enabled the first instruction of a function will most
-likely be ENDBR.
+Objtool's --ibt option generates .ibt_endbr_seal which lists
+superfluous ENDBR instructions. That is those instructions for which
+the function is never indirectly called.
 
-Change ftrace_location() to not only return the __fentry__ location
-when called for the __fentry__ location, but also when called for the
-sym+0 location.
+Overwrite these ENDBR instructions with a NOP4 such that these
+function can never be indirect called, reducing the number of viable
+ENDBR targets in the kernel.
 
-Then audit/update all callsites of this function to consistently use
-these new semantics.
-
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- arch/x86/kernel/kprobes/core.c |   11 +---------
- kernel/bpf/trampoline.c        |   20 +++----------------
- kernel/kprobes.c               |    8 +------
- kernel/trace/ftrace.c          |   43 +++++++++++++++++++++++++++++++++--------
- 4 files changed, 43 insertions(+), 39 deletions(-)
+ arch/um/kernel/um_arch.c           |    4 +++
+ arch/x86/Kconfig                   |    9 +++++++-
+ arch/x86/include/asm/alternative.h |    1 
+ arch/x86/include/asm/ibt.h         |   12 +++++++++++
+ arch/x86/kernel/alternative.c      |   39 +++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/module.c           |    8 ++++++-
+ scripts/Makefile.lib               |   11 ++++++++++
+ scripts/link-vmlinux.sh            |   10 +++++++--
+ 8 files changed, 90 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -193,17 +193,10 @@ static unsigned long
- __recover_probed_insn(kprobe_opcode_t *buf, unsigned long addr)
- {
- 	struct kprobe *kp;
--	unsigned long faddr;
-+	bool faddr;
- 
- 	kp = get_kprobe((void *)addr);
--	faddr = ftrace_location(addr);
--	/*
--	 * Addresses inside the ftrace location are refused by
--	 * arch_check_ftrace_location(). Something went terribly wrong
--	 * if such an address is checked here.
--	 */
--	if (WARN_ON(faddr && faddr != addr))
--		return 0UL;
-+	faddr = ftrace_location(addr) == addr;
- 	/*
- 	 * Use the current code if it is not modified by Kprobe
- 	 * and it cannot be modified by ftrace.
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -117,18 +117,6 @@ static void bpf_trampoline_module_put(st
- 	tr->mod = NULL;
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -424,6 +424,10 @@ void __init check_bugs(void)
+ 	os_check_bugs();
  }
  
--static int is_ftrace_location(void *ip)
--{
--	long addr;
--
--	addr = ftrace_location((long)ip);
--	if (!addr)
--		return 0;
--	if (WARN_ON_ONCE(addr != (long)ip))
--		return -EFAULT;
--	return 1;
--}
--
- static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
++void apply_ibt_endbr(s32 *start, s32 *end)
++{
++}
++
+ void apply_retpolines(s32 *start, s32 *end)
  {
- 	void *ip = tr->func.addr;
-@@ -160,12 +148,12 @@ static int modify_fentry(struct bpf_tram
- static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
- {
- 	void *ip = tr->func.addr;
-+	unsigned long faddr;
- 	int ret;
+ }
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1873,7 +1873,7 @@ config CC_HAS_IBT
+ config X86_KERNEL_IBT
+ 	prompt "Indirect Branch Tracking"
+ 	bool
+-	depends on X86_64 && CC_HAS_IBT
++	depends on X86_64 && CC_HAS_IBT && STACK_VALIDATION
+ 	help
+ 	  Build the kernel with support for Indirect Branch Tracking, a
+ 	  hardware support course-grain forward-edge Control Flow Integrity
+@@ -1881,6 +1881,13 @@ config X86_KERNEL_IBT
+ 	  an ENDBR instruction, as such, the compiler will instrument the
+ 	  code with them to make this happen.
  
--	ret = is_ftrace_location(ip);
--	if (ret < 0)
--		return ret;
--	tr->func.ftrace_managed = ret;
-+	faddr = ftrace_location((unsigned long)ip);
-+	if (faddr)
-+		tr->func.ftrace_managed = true;
++	  In addition to building the kernel with IBT, seal all functions that
++	  are not indirect call targets, avoiding them ever becomming one.
++
++	  This requires LTO like objtool runs and will slow down the build. It
++	  does significantly reduce the number of ENDBR instructions in the
++	  kernel image.
++
+ config X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	prompt "Memory Protection Keys"
+ 	def_bool y
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -76,6 +76,7 @@ extern int alternatives_patched;
+ extern void alternative_instructions(void);
+ extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
+ extern void apply_retpolines(s32 *start, s32 *end);
++extern void apply_ibt_endbr(s32 *start, s32 *end);
  
- 	if (bpf_trampoline_module_get(tr))
- 		return -ENOENT;
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1562,14 +1562,10 @@ static inline int warn_kprobe_rereg(stru
+ struct module;
  
- static int check_ftrace_location(struct kprobe *p)
- {
--	unsigned long ftrace_addr;
-+	unsigned long addr = (unsigned long)p->addr;
- 
--	ftrace_addr = ftrace_location((unsigned long)p->addr);
--	if (ftrace_addr) {
-+	if (ftrace_location(addr) == addr) {
- #ifdef CONFIG_KPROBES_ON_FTRACE
--		/* Given address is not on the instruction boundary */
--		if ((unsigned long)p->addr != ftrace_addr)
--			return -EILSEQ;
- 		p->flags |= KPROBE_FLAG_FTRACE;
- #else	/* !CONFIG_KPROBES_ON_FTRACE */
- 		return -EINVAL;
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1568,17 +1568,34 @@ unsigned long ftrace_location_range(unsi
+--- a/arch/x86/include/asm/ibt.h
++++ b/arch/x86/include/asm/ibt.h
+@@ -33,8 +33,20 @@ static inline __attribute_const__ u32 ge
+ 	return endbr;
  }
  
- /**
-- * ftrace_location - return true if the ip giving is a traced location
-+ * ftrace_location - return the ftrace location
-  * @ip: the instruction pointer to check
-  *
-- * Returns rec->ip if @ip given is a pointer to a ftrace location.
-- * That is, the instruction that is either a NOP or call to
-- * the function tracer. It checks the ftrace internal tables to
-- * determine if the address belongs or not.
-+ * If @ip matches the ftrace location, return @ip.
-+ * If @ip matches sym+0, return sym's ftrace location.
-+ * Otherwise, return 0.
-  */
- unsigned long ftrace_location(unsigned long ip)
++static inline __attribute_const__ u32 gen_endbr_poison(void)
++{
++	/*
++	 * 4 byte NOP that isn't NOP4 (in fact it is OSP NOP3), such that it
++	 * will be unique to (former) ENDBR sites.
++	 */
++	return 0x001f0f66; /* osp nopl (%rax) */
++}
++
+ static inline bool is_endbr(u32 val)
  {
--	return ftrace_location_range(ip, ip);
-+	struct dyn_ftrace *rec;
-+	unsigned long offset;
-+	unsigned long size;
++	if (val == gen_endbr_poison())
++		return true;
 +
-+	rec = lookup_rec(ip, ip);
-+	if (!rec) {
-+		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
-+			goto out;
+ 	val &= ~0x01000000U; /* ENDBR32 -> ENDBR64 */
+ 	return val == gen_endbr();
+ }
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -115,6 +115,7 @@ static void __init_or_module add_nops(vo
+ }
+ 
+ extern s32 __retpoline_sites[], __retpoline_sites_end[];
++extern s32 __ibt_endbr_seal[], __ibt_endbr_seal_end[];
+ extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+ extern s32 __smp_locks[], __smp_locks_end[];
+ void text_poke_early(void *addr, const void *opcode, size_t len);
+@@ -512,6 +513,42 @@ void __init_or_module noinline apply_ret
+ 
+ #endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
+ 
++#ifdef CONFIG_X86_KERNEL_IBT
 +
-+		/* map sym+0 to __fentry__ */
-+		if (!offset)
-+			rec = lookup_rec(ip, ip + size - 1);
++/*
++ * Generated by: objtool --ibt
++ */
++void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end)
++{
++	s32 *s;
++
++	for (s = start; s < end; s++) {
++		u32 endbr, poison = gen_endbr_poison();
++		void *addr = (void *)s + *s;
++
++		if (WARN_ON_ONCE(get_kernel_nofault(endbr, addr)))
++			continue;
++
++		if (WARN_ON_ONCE(!is_endbr(endbr)))
++			continue;
++
++		DPRINTK("ENDBR at: %pS (%px)", addr, addr);
++
++		/*
++		 * When we have IBT, the lack of ENDBR will trigger #CP
++		 */
++		DUMP_BYTES(((u8*)addr), 4, "%px: orig: ", addr);
++		DUMP_BYTES(((u8*)&poison), 4, "%px: repl: ", addr);
++		text_poke_early(addr, &poison, 4);
 +	}
++}
 +
-+	if (rec)
-+		return rec->ip;
++#else
 +
-+out:
-+	return 0;
- }
++void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end) { }
++
++#endif /* CONFIG_X86_KERNEL_IBT */
++
+ #ifdef CONFIG_SMP
+ static void alternatives_smp_lock(const s32 *start, const s32 *end,
+ 				  u8 *text, u8 *text_end)
+@@ -833,6 +870,8 @@ void __init alternative_instructions(voi
+ 	 */
+ 	apply_alternatives(__alt_instructions, __alt_instructions_end);
  
- /**
-@@ -4962,7 +4979,8 @@ ftrace_match_addr(struct ftrace_hash *ha
++	apply_ibt_endbr(__ibt_endbr_seal, __ibt_endbr_seal_end);
++
+ #ifdef CONFIG_SMP
+ 	/* Patch to UP if other cpus not imminent. */
+ 	if (!noreplace_smp && (num_present_cpus() == 1 || setup_max_cpus <= 1)) {
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -253,7 +253,7 @@ int module_finalize(const Elf_Ehdr *hdr,
  {
- 	struct ftrace_func_entry *entry;
+ 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+ 		*para = NULL, *orc = NULL, *orc_ip = NULL,
+-		*retpolines = NULL;
++		*retpolines = NULL, *ibt_endbr = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
  
--	if (!ftrace_location(ip))
-+	ip = ftrace_location(ip);
-+	if (!ip)
- 		return -EINVAL;
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+@@ -271,6 +271,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			orc_ip = s;
+ 		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
+ 			retpolines = s;
++		if (!strcmp(".ibt_endbr_seal", secstrings + s->sh_name))
++			ibt_endbr = s;
+ 	}
  
- 	if (remove) {
-@@ -5110,11 +5128,16 @@ int register_ftrace_direct(unsigned long
- 	struct ftrace_func_entry *entry;
- 	struct ftrace_hash *free_hash = NULL;
- 	struct dyn_ftrace *rec;
--	int ret = -EBUSY;
-+	int ret = -ENODEV;
+ 	/*
+@@ -290,6 +292,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *aseg = (void *)alt->sh_addr;
+ 		apply_alternatives(aseg, aseg + alt->sh_size);
+ 	}
++	if (ibt_endbr) {
++		void *iseg = (void *)ibt_endbr->sh_addr;
++		apply_ibt_endbr(iseg, iseg + ibt_endbr->sh_size);
++	}
+ 	if (locks && text) {
+ 		void *lseg = (void *)locks->sh_addr;
+ 		void *tseg = (void *)text->sh_addr;
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -544,6 +544,7 @@ objtool := $(objtree)/tools/objtool/objt
+ objtool_args =								\
+ 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+ 	$(if $(part-of-module), --module)				\
++	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)	                \
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+ 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+@@ -567,6 +568,16 @@ $(obj)/%.o: objtool-enabled :=
+ $(obj)/%.lto.o: objtool-enabled = y
+ $(obj)/%.lto.o: part-of-module := y
  
- 	mutex_lock(&direct_mutex);
- 
-+	ip = ftrace_location(ip);
-+	if (!ip)
-+		goto out_unlock;
++else ifdef CONFIG_X86_KERNEL_IBT
 +
- 	/* See if there's a direct function at @ip already */
-+	ret = -EBUSY;
- 	if (ftrace_find_rec_direct(ip))
- 		goto out_unlock;
- 
-@@ -5222,6 +5245,10 @@ int unregister_ftrace_direct(unsigned lo
- 
- 	mutex_lock(&direct_mutex);
- 
-+	ip = ftrace_location(ip);
-+	if (!ip)
-+		goto out_unlock;
++# Skip objtool on individual files
++$(obj)/%.o: objtool-enabled :=
 +
- 	entry = find_direct_entry(&ip, NULL);
- 	if (!entry)
- 		goto out_unlock;
++# instead run objtool on the module as a whole, right before
++# the final link pass with the linker script.
++%.ko: objtool-enabled = y
++%.ko: part-of-module := y
++
+ else
+ 
+ # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -108,7 +108,9 @@ objtool_link()
+ 	local objtoolcmd;
+ 	local objtoolopt;
+ 
+-	if is_enabled CONFIG_LTO_CLANG && is_enabled CONFIG_STACK_VALIDATION; then
++	if is_enabled CONFIG_STACK_VALIDATION && \
++	   ( is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ); then
++
+ 		# Don't perform vmlinux validation unless explicitly requested,
+ 		# but run objtool on vmlinux.o now that we have an object file.
+ 		if is_enabled CONFIG_UNWINDER_ORC; then
+@@ -117,6 +119,10 @@ objtool_link()
+ 
+ 		objtoolopt="${objtoolopt} --lto"
+ 
++		if is_enabled CONFIG_X86_KERNEL_IBT; then
++			objtoolopt="${objtoolopt} --ibt"
++		fi
++
+ 		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
+ 			objtoolopt="${objtoolopt} --mcount"
+ 		fi
+@@ -168,7 +174,7 @@ vmlinux_link()
+ 	# skip output file argument
+ 	shift
+ 
+-	if is_enabled CONFIG_LTO_CLANG; then
++	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
+ 		# Use vmlinux.o instead of performing the slow LTO link again.
+ 		objs=vmlinux.o
+ 		libs=
 
 
