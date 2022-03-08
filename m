@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 07:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD37C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 07:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344488AbiCHHHF (ORCPT
+        id S1344498AbiCHHJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 02:07:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58952 "EHLO
+        Tue, 8 Mar 2022 02:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbiCHHHE (ORCPT
+        with ESMTP id S232755AbiCHHJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 02:07:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD883D4B6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 23:06:07 -0800 (PST)
+        Tue, 8 Mar 2022 02:09:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5D037A92
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 23:08:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC16861610
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:06:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F96C340EB;
-        Tue,  8 Mar 2022 07:06:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBB64B8179E
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD64EC340EB;
+        Tue,  8 Mar 2022 07:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646723166;
-        bh=SsdHusTl3QI8L9Ly+y53eKxrZbMr6a0OkOwSEoD9JVQ=;
+        s=korg; t=1646723281;
+        bh=806RbM3GSl0lCzZ1Vh8RXqDEQY0njqRzw1M3TDJbdJA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Mqfig3KDabrKxjUQH4fbAy3ai5Rig5TC0dONyPe8WoLOMcDB9GjViUgDzd4pAyjeR
-         lSoX8erYqF9i8dU14DAhKvxxqHsU/RP90DcsochSvcJwiMpUpzQr4IS3er65NlUW7S
-         wiDizF0RwKMY6XOzFfeTtYw4o8bd/hZ66cAqktoI=
-Date:   Tue, 8 Mar 2022 08:06:01 +0100
+        b=jbWkLbJN5YaU+/wzIwi1t8uEr+9F0Ep/q+qp10uSiees/swR2uXzT1RVnhI5Q00Ud
+         H0ay5vpHFYZ8ixwlmVo32nvmbRPMZnECjiyXkS2m6Jn50/q8XPhkJX+IwjR6xqiltU
+         eHImxUp4yKsOHqFZ0CxpUhz2pii0e5HVGcm37hEQ=
+Date:   Tue, 8 Mar 2022 08:07:57 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Zev Weiss <zev@bewilderbeest.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>, openbmc@lists.ozlabs.org,
         linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>
 Subject: Re: [PATCH v2 2/2] misc: Add power-efuse driver
-Message-ID: <YicAWbGN74F6SSNs@kroah.com>
+Message-ID: <YicAzSara5Sr3LQ7@kroah.com>
 References: <20220308011811.10353-1-zev@bewilderbeest.net>
  <20220308011811.10353-3-zev@bewilderbeest.net>
 MIME-Version: 1.0
@@ -49,20 +49,55 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Mon, Mar 07, 2022 at 05:18:10PM -0800, Zev Weiss wrote:
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -7058,6 +7058,11 @@ S:	Orphan
->  W:	http://aeschi.ch.eu.org/efs/
->  F:	fs/efs/
->  
-> +POWER EFUSE DRIVER
-> +M:	Zev Weiss <zev@bewilderbeest.net>
-> +S:	Maintained
-> +F:	drivers/misc/power-efuse.c
+> +static DEVICE_ATTR(operstate, 0644, efuse_show_operstate, efuse_set_operstate);
+
+DEVICE_ATTR_RW()?
+
 > +
->  EHEA (IBM pSeries eHEA 10Gb ethernet adapter) DRIVER
->  M:	Douglas Miller <dougmill@linux.ibm.com>
->  L:	netdev@vger.kernel.org
+> +#define EFUSE_ERROR_ATTR(name, bit)							    \
+> +	static ssize_t efuse_show_##name(struct device *dev, struct device_attribute *attr, \
+> +					 char *buf)                                         \
+> +	{                                                                                   \
+> +		struct efuse *efuse = dev_get_drvdata(dev);                                 \
+> +		int status = efuse_update_error_flags(efuse);                               \
+> +		if (status)                                                                 \
+> +			return status;                                                      \
+> +		return sysfs_emit(buf, "%d\n", !!(efuse->error_flags.cache & bit));         \
+> +	}                                                                                   \
+> +	static DEVICE_ATTR(name, 0444, efuse_show_##name, NULL)
 
-Entries need to be in sorted order :(
+DEVICE_ATTR_RO()?
 
+> +EFUSE_ERROR_ATTR(under_voltage, REGULATOR_ERROR_UNDER_VOLTAGE);
+> +EFUSE_ERROR_ATTR(over_current, REGULATOR_ERROR_OVER_CURRENT);
+> +EFUSE_ERROR_ATTR(regulation_out, REGULATOR_ERROR_REGULATION_OUT);
+> +EFUSE_ERROR_ATTR(fail, REGULATOR_ERROR_FAIL);
+> +EFUSE_ERROR_ATTR(over_temp, REGULATOR_ERROR_OVER_TEMP);
+> +EFUSE_ERROR_ATTR(under_voltage_warn, REGULATOR_ERROR_UNDER_VOLTAGE_WARN);
+> +EFUSE_ERROR_ATTR(over_current_warn, REGULATOR_ERROR_OVER_CURRENT_WARN);
+> +EFUSE_ERROR_ATTR(over_voltage_warn, REGULATOR_ERROR_OVER_VOLTAGE_WARN);
+> +EFUSE_ERROR_ATTR(over_temp_warn, REGULATOR_ERROR_OVER_TEMP_WARN);
+> +
+> +static struct attribute *efuse_attrs[] = {
+> +	&dev_attr_operstate.attr,
+> +	&dev_attr_under_voltage.attr,
+> +	&dev_attr_over_current.attr,
+> +	&dev_attr_regulation_out.attr,
+> +	&dev_attr_fail.attr,
+> +	&dev_attr_over_temp.attr,
+> +	&dev_attr_under_voltage_warn.attr,
+> +	&dev_attr_over_current_warn.attr,
+> +	&dev_attr_over_voltage_warn.attr,
+> +	&dev_attr_over_temp_warn.attr,
+> +	NULL,
+> +};
+> +ATTRIBUTE_GROUPS(efuse);
+
+Shouldn't these all just be what all regulator drivers report?  Or power
+drivers?  I find it odd that this would be the first driver that would
+need to export these types of attributes.  Surely there's already a
+class for this?
+
+thanks,
+
+greg k-h
