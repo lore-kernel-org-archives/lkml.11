@@ -2,135 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2691FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235196AbiCHSwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:52:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        id S244390AbiCHSwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 13:52:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244213AbiCHSvr (ORCPT
+        with ESMTP id S1349794AbiCHSwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:51:47 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AFA53B5C;
-        Tue,  8 Mar 2022 10:50:50 -0800 (PST)
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCkrk42FVz67NyL;
-        Wed,  9 Mar 2022 02:49:26 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 19:50:48 +0100
-Received: from A2006125610.china.huawei.com (10.47.82.254) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 18:50:40 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <kevin.tian@intel.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [PATCH v9 6/9] hisi_acc_vfio_pci: Add helper to retrieve the struct pci_driver
-Date:   Tue, 8 Mar 2022 18:48:59 +0000
-Message-ID: <20220308184902.2242-7-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Mar 2022 13:52:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3FD5468B;
+        Tue,  8 Mar 2022 10:51:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6CD361616;
+        Tue,  8 Mar 2022 18:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D0CC340EF;
+        Tue,  8 Mar 2022 18:51:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646765471;
+        bh=RHG0KltsQ/iNz7I3cyFsYH9JfTC3E50D/WQVf4Xzs7M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jQiyN1VOJHW0v8HEfFNclw2S3i3D3T2hBDvEYao3oNf43Ga18/BQiE3y8/HKGQRYf
+         wzCF3+XyThN3IJDsnBpUPjq3CUnEYAXgfzLYv1d/3SfnRvpBreJYdw8JwQ5efCz+DC
+         NSE7Pn0YzMoI2XcPeckPp/CXQqj/8KILvtLQqU72w85t9LWmEy8jDuupKWIy+brJnz
+         cUNJ8SuDqHaZ6sM4YNH6ZISkCIt8vB+IL8iJByj607kjNDcxfMO3g/Cn62MSbXr+qO
+         nqeQwaia22xtVpSjU/A7Aoy3PUoO0KZozf2YSKx13k+dwsI7caYChioEW/tHd6Dr/a
+         x5dfFsMFlitgQ==
+Date:   Tue, 8 Mar 2022 20:50:30 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        keyrings@vger.kernel.org, James Morris <jmorris@namei.org>,
+        David Howells <dhowells@redhat.com>,
+        Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [GIT PULL] TPM DEVICE DRIVER updates for v5.18
+Message-ID: <YieldvygMyiqmZbT@iki.fi>
+References: <YidTCX0NOgDfHCp9@kernel.org>
+ <YiecF6W2XAcpC7dF@sol.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.82.254]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiecF6W2XAcpC7dF@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct pci_driver pointer is an input into the pci_iov_get_pf_drvdata().
-Introduce helpers to retrieve the ACC PF dev struct pci_driver pointers
-as we use this in ACC vfio migration driver.
+On Tue, Mar 08, 2022 at 10:10:31AM -0800, Eric Biggers wrote:
+> On Tue, Mar 08, 2022 at 02:58:49PM +0200, Jarkko Sakkinen wrote:
+> >       KEYS: asymmetric: enforce that sig algo matches key algo
+> 
+> It looks like you applied v1 of this patch
+> (https://lore.kernel.org/r/20220201003414.55380-2-ebiggers@kernel.org) rather
+> than v2 (https://lore.kernel.org/r/20220208052448.409152-2-ebiggers@kernel.org).
+> I think that v2 is necessary because some callers of
+> public_key_verify_signature() leave pkey_algo as NULL.
+> 
+> Sorry for not spotting that you applied v1 earlier.
+> 
+> - Eric
 
-Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
-Acked-by: Kai Ye <yekai13@huawei.com>
-Acked-by: Longfang Liu <liulongfang@huawei.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/crypto/hisilicon/hpre/hpre_main.c | 6 ++++++
- drivers/crypto/hisilicon/sec2/sec_main.c  | 6 ++++++
- drivers/crypto/hisilicon/zip/zip_main.c   | 6 ++++++
- include/linux/hisi_acc_qm.h               | 5 +++++
- 4 files changed, 23 insertions(+)
+I can do another pull request.
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
-index 3589d8879b5e..36ab30e9e654 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_main.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
-@@ -1190,6 +1190,12 @@ static struct pci_driver hpre_pci_driver = {
- 	.driver.pm		= &hpre_pm_ops,
- };
- 
-+struct pci_driver *hisi_hpre_get_pf_driver(void)
-+{
-+	return &hpre_pci_driver;
-+}
-+EXPORT_SYMBOL_GPL(hisi_hpre_get_pf_driver);
-+
- static void hpre_register_debugfs(void)
- {
- 	if (!debugfs_initialized())
-diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
-index 311a8747b5bf..421a405ca337 100644
---- a/drivers/crypto/hisilicon/sec2/sec_main.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_main.c
-@@ -1088,6 +1088,12 @@ static struct pci_driver sec_pci_driver = {
- 	.driver.pm = &sec_pm_ops,
- };
- 
-+struct pci_driver *hisi_sec_get_pf_driver(void)
-+{
-+	return &sec_pci_driver;
-+}
-+EXPORT_SYMBOL_GPL(hisi_sec_get_pf_driver);
-+
- static void sec_register_debugfs(void)
- {
- 	if (!debugfs_initialized())
-diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
-index 66decfe07282..4534e1e107d1 100644
---- a/drivers/crypto/hisilicon/zip/zip_main.c
-+++ b/drivers/crypto/hisilicon/zip/zip_main.c
-@@ -1012,6 +1012,12 @@ static struct pci_driver hisi_zip_pci_driver = {
- 	.driver.pm		= &hisi_zip_pm_ops,
- };
- 
-+struct pci_driver *hisi_zip_get_pf_driver(void)
-+{
-+	return &hisi_zip_pci_driver;
-+}
-+EXPORT_SYMBOL_GPL(hisi_zip_get_pf_driver);
-+
- static void hisi_zip_register_debugfs(void)
- {
- 	if (!debugfs_initialized())
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 6a6477c34666..00f2a4db8723 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -476,4 +476,9 @@ void hisi_qm_pm_init(struct hisi_qm *qm);
- int hisi_qm_get_dfx_access(struct hisi_qm *qm);
- void hisi_qm_put_dfx_access(struct hisi_qm *qm);
- void hisi_qm_regs_dump(struct seq_file *s, struct debugfs_regset32 *regset);
-+
-+/* Used by VFIO ACC live migration driver */
-+struct pci_driver *hisi_sec_get_pf_driver(void);
-+struct pci_driver *hisi_hpre_get_pf_driver(void);
-+struct pci_driver *hisi_zip_get_pf_driver(void);
- #endif
--- 
-2.25.1
+Linus, please ignore this first one.
 
+BR, Jarkko
