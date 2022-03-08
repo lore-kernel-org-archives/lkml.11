@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35002C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1784DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238477AbiCHIYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        id S243636AbiCHI2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 03:28:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233073AbiCHIYk (ORCPT
+        with ESMTP id S238415AbiCHI2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:24:40 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49F53EB92
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:23:44 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 93415D5;
-        Tue,  8 Mar 2022 00:23:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1646727824;
-        bh=nCIeA+pD7UIkhYfAGPyqv1fA/V0MCCLPp3PnFFH4JuE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P7/5TLXwWe+M9EPD48wklgkHZzEuUAzzU8pHSUXPUTwPljH/I2Jb+HIPgiAShEl/S
-         QHok6BwBnjEb0t8XNWoG7Y8fTyrX5JdHvWFSrZ0CnJ9YYmC5DBkwg/Y4rKfRN/8VgN
-         gGw9SE2mRFLF2JU6VlYa+IOMM3Wjs6weHhN2laI8=
-Date:   Tue, 8 Mar 2022 00:23:43 -0800
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v2 2/2] misc: Add power-efuse driver
-Message-ID: <YicSj3ZuetRkYxH1@hatter.bewilderbeest.net>
-References: <20220308011811.10353-1-zev@bewilderbeest.net>
- <20220308011811.10353-3-zev@bewilderbeest.net>
- <YicAzSara5Sr3LQ7@kroah.com>
+        Tue, 8 Mar 2022 03:28:33 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B455E635B;
+        Tue,  8 Mar 2022 00:27:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646728057; x=1678264057;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7uv8Q1w8wsO9w5Wl3dOSyGo5iztKnC91d7tEWyKbVmo=;
+  b=a5sFEHSLp0ksCXl/lD/UuGGLhCMtQX4ItOsg0IYf7OW9iJxm+wvQRYny
+   /oQlNYmMNaVryI1w6wTDIa+AHWGhnD7K4hlyJsAUQoXYfNZmLUWZM/oUH
+   GPKQ8nwwKLCRZJiJSjMCncsKxF/EmCnjS2vLftSZ1Eofdm2v+xR8SBCMz
+   0VCwdWWTSepfyWAGGN7OfAt8uEU+cog869gYKtMmpJHJuqpoNR2e2CfGD
+   r573A4ZcEY7SeEijYFDw+D4cMMlpXrVgQQ15vKPvcNG25G6yaG9a0chEr
+   OMr44BvxrxJAtyw1CN2aP5qOVkSigzTth8Eu03bMOIsQRc3STeBLcwEZz
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,163,1643698800"; 
+   d="scan'208";a="148433672"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 01:27:32 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 01:27:30 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 01:27:30 -0700
+Date:   Tue, 8 Mar 2022 09:30:23 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     <andriy.shevchenko@linux.intel.com>,
+        <colin.foster@in-advantage.com>, <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] pinctrl: ocelot: Fix the pincfg resource.
+Message-ID: <20220308083023.frr7qz2xga2tas5r@soft-dev3-1.localhost>
+References: <20220304144432.3397621-2-horatiu.vultur@microchip.com>
+ <20220307124501.3487932-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <YicAzSara5Sr3LQ7@kroah.com>
+In-Reply-To: <20220307124501.3487932-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 11:07:57PM PST, Greg Kroah-Hartman wrote:
->On Mon, Mar 07, 2022 at 05:18:10PM -0800, Zev Weiss wrote:
->> +static DEVICE_ATTR(operstate, 0644, efuse_show_operstate, efuse_set_operstate);
->
->DEVICE_ATTR_RW()?
->
+The 03/07/2022 13:45, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> > The pincfg resources are in the second memory resource. But the driver
+> > still tries to access the first memory resource to get the pincfg. This
+> > is wrong therefore fix to access the second memory resource.
+> >
+> > Reviewed-by: Colin Foster <colin.foster@in-advantage.com>
+> > Fixes: ad96111e658a95 ("pinctrl: ocelot: combine get resource and ioremap into single call")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> 
+> There is already this patch pending, which does exactly
+> the same:
+> https://lore.kernel.org/linux-gpio/20220216082020.981797-1-michael@walle.cc/
 
-Ack.
+Sorry, I have missed your patch.
+Should I resend this series where I will drop this patch? What is the
+correct approach?
 
->> +
->> +#define EFUSE_ERROR_ATTR(name, bit)							    \
->> +	static ssize_t efuse_show_##name(struct device *dev, struct device_attribute *attr, \
->> +					 char *buf)                                         \
->> +	{                                                                                   \
->> +		struct efuse *efuse = dev_get_drvdata(dev);                                 \
->> +		int status = efuse_update_error_flags(efuse);                               \
->> +		if (status)                                                                 \
->> +			return status;                                                      \
->> +		return sysfs_emit(buf, "%d\n", !!(efuse->error_flags.cache & bit));         \
->> +	}                                                                                   \
->> +	static DEVICE_ATTR(name, 0444, efuse_show_##name, NULL)
->
->DEVICE_ATTR_RO()?
->
+> 
+> FWIW, there is also this one:
+> https://lore.kernel.org/linux-gpio/20220216122727.1005041-1-michael@walle.cc/
+> 
+> -michael
 
-Ack.
-
->> +EFUSE_ERROR_ATTR(under_voltage, REGULATOR_ERROR_UNDER_VOLTAGE);
->> +EFUSE_ERROR_ATTR(over_current, REGULATOR_ERROR_OVER_CURRENT);
->> +EFUSE_ERROR_ATTR(regulation_out, REGULATOR_ERROR_REGULATION_OUT);
->> +EFUSE_ERROR_ATTR(fail, REGULATOR_ERROR_FAIL);
->> +EFUSE_ERROR_ATTR(over_temp, REGULATOR_ERROR_OVER_TEMP);
->> +EFUSE_ERROR_ATTR(under_voltage_warn, REGULATOR_ERROR_UNDER_VOLTAGE_WARN);
->> +EFUSE_ERROR_ATTR(over_current_warn, REGULATOR_ERROR_OVER_CURRENT_WARN);
->> +EFUSE_ERROR_ATTR(over_voltage_warn, REGULATOR_ERROR_OVER_VOLTAGE_WARN);
->> +EFUSE_ERROR_ATTR(over_temp_warn, REGULATOR_ERROR_OVER_TEMP_WARN);
->> +
->> +static struct attribute *efuse_attrs[] = {
->> +	&dev_attr_operstate.attr,
->> +	&dev_attr_under_voltage.attr,
->> +	&dev_attr_over_current.attr,
->> +	&dev_attr_regulation_out.attr,
->> +	&dev_attr_fail.attr,
->> +	&dev_attr_over_temp.attr,
->> +	&dev_attr_under_voltage_warn.attr,
->> +	&dev_attr_over_current_warn.attr,
->> +	&dev_attr_over_voltage_warn.attr,
->> +	&dev_attr_over_temp_warn.attr,
->> +	NULL,
->> +};
->> +ATTRIBUTE_GROUPS(efuse);
->
->Shouldn't these all just be what all regulator drivers report?  Or power
->drivers?  I find it odd that this would be the first driver that would
->need to export these types of attributes.  Surely there's already a
->class for this?
->
-
-The attributes available from the underlying regulator device don't 
-include the error flags, and while they do include its state 
-('operstate' here), it's a read-only attribute, and from previous 
-discussions with Mark I gathered that was unlikely to change (whereas it 
-being read-write is a critical part of this driver's functionality).
-
-Given his input on the first stab at this I took a while back, I've been 
-hoping to hear from Mark as to whether this looked more like something 
-he'd find palatable; perhaps he could chime in on this too?  (And/or on 
-the regulator API question in the cover letter.)
-
-
-Thanks,
-Zev
-
+-- 
+/Horatiu
