@@ -2,204 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D001C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDC4C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346641AbiCHMHh (ORCPT
+        id S1344967AbiCHMIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        Tue, 8 Mar 2022 07:08:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiCHMHf (ORCPT
+        with ESMTP id S1346731AbiCHMIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:07:35 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0494028E02;
-        Tue,  8 Mar 2022 04:06:38 -0800 (PST)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCYtx4Wm1z6801q;
-        Tue,  8 Mar 2022 20:05:45 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 13:06:10 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Mar
- 2022 12:06:08 +0000
-Date:   Tue, 8 Mar 2022 12:06:07 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Yicong Yang <yangyicong@huawei.com>
-CC:     Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
-        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH v5 3/8] hisi_ptt: Register PMU device for PTT trace
-Message-ID: <20220308120607.000064e6@Huawei.com>
-In-Reply-To: <d3b555c1-ed7e-f668-7d81-9cc2dbe6ffba@huawei.com>
-References: <20220308084930.5142-1-yangyicong@hisilicon.com>
-        <20220308084930.5142-4-yangyicong@hisilicon.com>
-        <20220308102157.00003725@Huawei.com>
-        <d3b555c1-ed7e-f668-7d81-9cc2dbe6ffba@huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml740-chm.china.huawei.com (10.201.108.190) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
+        Tue, 8 Mar 2022 07:08:10 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BF52DD7D
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:07:13 -0800 (PST)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220308120707epoutp01f3868ae01cd5ba20f69117e09f9364ec~aZmv-4iI-3064630646epoutp01k
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:07:07 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220308120707epoutp01f3868ae01cd5ba20f69117e09f9364ec~aZmv-4iI-3064630646epoutp01k
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646741227;
+        bh=TWgcRtZ9BCWDi9BjQnRMZAArKHgdfX2otVHNY9T5ztY=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=OHbSfDw4JynHwbrJdFo/ZKgZ+nJxStMQB8fANQC9Vuvj4xpcimLv9GWCf/k/6ETrf
+         /YXitmtEFDSTDtosp3NypKXJdf3sgUJ3cyLwYQ54BLkdpnamYYR8LxhatrySTFEJFB
+         km4FEtsuhjkJDpl+si2htzLkgcArhY37NpAC9zXw=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220308120706epcas5p22b0b343c0370c7521d05a9e9fbbf65bd~aZmvJVhCg2571125711epcas5p2N;
+        Tue,  8 Mar 2022 12:07:06 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.175]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4KCYwQ0hdfz4x9Pw; Tue,  8 Mar
+        2022 12:07:02 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        9D.D0.46822.41447226; Tue,  8 Mar 2022 20:55:00 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220308120701epcas5p3d3d2f5c01055e8c1721ae0ec6c2aa681~aZmqK9Rvi0868908689epcas5p3A;
+        Tue,  8 Mar 2022 12:07:01 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220308120701epsmtrp1aa0f27a4a0e205d9b8d2a2555c9cbcc6~aZmqGnD8e0604606046epsmtrp1P;
+        Tue,  8 Mar 2022 12:07:01 +0000 (GMT)
+X-AuditID: b6c32a4a-de5ff7000000b6e6-f0-622744145dd6
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E7.8B.29871.5E647226; Tue,  8 Mar 2022 21:07:01 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220308120659epsmtip1beef1923f221bcff768e793abd4ad142~aZmoFWCjX0869608696epsmtip1M;
+        Tue,  8 Mar 2022 12:06:59 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linus.walleij@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        broonie@kernel.org, andi@etezian.org, linux-spi@vger.kernel.org,
+        lee.jones@linaro.org, Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-fsd@tesla.com, Adithya K V <adithya.kv@samsung.com>
+Subject: [RESEND PATCH v3 1/2] spi: dt-bindings: samsung: Add fsd spi
+ compatible
+Date:   Tue,  8 Mar 2022 17:46:39 +0530
+Message-Id: <20220308121640.27344-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJKsWRmVeSWpSXmKPExsWy7bCmhq6Ii3qSwYVJChYHJrxitXgwbxub
+        xeIfz5kspj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
+        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
+        b5IL4IjKtslITUxJLVJIzUvOT8nMS7dV8g6Od443NTMw1DW0tDBXUshLzE21VXLxCdB1y8wB
+        ul1JoSwxpxQoFJBYXKykb2dTlF9akqqQkV9cYquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBk
+        ClSYkJ1x7sZJ5oJLnBVfzq9gbGD8w97FyMEhIWAicWFiWBcjF4eQwG5Giff/G1ggnE+MEqcP
+        tQAVcQI53xglvjxzB7FBGj5NbmeGKNrLKHFq3jZGCKeFSWLHmU5WkCo2AW2Ju9O3MIHYIgJu
+        EjcaO8BsZoH3TBLtTzNBbGGBIIkfS8+A1bMIqErsfNXLCGLzCthI3OzdxQaxTV5i9YYDYNsk
+        BP6ySzS8msACkXCReNF1jB3CFpZ4dXwLlC0l8bK/Deq3bImeXcYQ4RqJpfOOQbXaSxy4MocF
+        pIRZQFNi/S59iNP4JHp/P2GC6OSV6GgTgqhWlWh+dxWqU1piYnc3K4TtIbFn72ZGSPjESkz4
+        28M0gVFmFsLQBYyMqxglUwuKc9NTi00LjPJSy+Exk5yfu4kRnAa1vHYwPnzwQe8QIxMH4yFG
+        CQ5mJRHe++dVkoR4UxIrq1KL8uOLSnNSiw8xmgJDaSKzlGhyPjAR55XEG5pYGpiYmZmZWBqb
+        GSqJ855O35AoJJCeWJKanZpakFoE08fEwSnVwFT15EH7/yJfW8XzuQbbFJ7aXw1I/JqfqWSx
+        Vzvg1tRTS0UVWJxXFmX8O1+ev79HVY3nQ/XJ/Es2/NdZXBfMs5+2c+Ppo2+9OS3P/Ny5LHTa
+        odef80s6nF7w3I9e9jpua8q1GzrBE2vzTGqmC2v2rrw+7SWj2z8hjbB9DJtYgjapLEyaf/fr
+        Lb4y+8Jr+3jeL+PNv3TehGWP2+0tdvUODO8sajddP7VsaZLeYYbtnZuenN98JTFtv8I9lzzF
+        Yjtz1oK9K3d5F/xPynFfvWudnfOdyFs+lo07jzSxnDx0mP+wh3Ra1HwNKw7erT9XdPJwWr/V
+        S4qcemRXxMqLjzd9DXzpvNr4wu7lP7hi0z0aOHcpsRRnJBpqMRcVJwIATu1sOQwEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKLMWRmVeSWpSXmKPExsWy7bCSnO5TN/Ukg1uN4hYHJrxitXgwbxub
+        xeIfz5kspj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
+        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
+        b5IL4IjisklJzcksSy3St0vgyjh34yRzwSXOii/nVzA2MP5h72Lk5JAQMJH4NLmduYuRi0NI
+        YDejxKklx5ghEtIS1zdOgCoSllj57zk7RFETk8TKLatYQRJsAtoSd6dvYQKxRQQ8JNr+3QOb
+        xCzwl0li8Y79YEXCAgESJw+3gU1lEVCV2PmqlxHE5hWwkbjZu4sNYoO8xOoNB5gnMPIsYGRY
+        xSiZWlCcm55bbFhgmJdarlecmFtcmpeul5yfu4kRHLJamjsYt6/6oHeIkYmD8RCjBAezkgjv
+        /fMqSUK8KYmVValF+fFFpTmpxYcYpTlYlMR5L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwVcr2
+        7bKJ/b2e48GeN22h6TLs99/NP9204JG9yVOLRet9gr0m8qpcTwudwHdeo6HcLO4pm8RCxZz1
+        H0JOsjRyPdrtFyb3YUepZNXCtd2Xw7Z7R+71r6z3knCReJdVZMr37U6Kpq5B3tlf54on3rS8
+        cOacueq+eSahlcapqdeX9/7lblubXRbRsUtp6uEVrK8Clc9l8PyKc/imzmRSlxS7jl+iwuHQ
+        /16eDdMVJ1VcvNa+Xq/o8+TbU9Yc9Mr6Vx/8l3fpx/TkM823uZS/ffEo3yxxJXHy0XtOnELS
+        jm9Z730/L3GKxzHX99/Ee3+mLz8xJ3mt1UvONdcnsyQ/5V7v9tBSuiSIpzX7wvEJktYmSizF
+        GYmGWsxFxYkAILjsD8gCAAA=
+X-CMS-MailID: 20220308120701epcas5p3d3d2f5c01055e8c1721ae0ec6c2aa681
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
 X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220308120701epcas5p3d3d2f5c01055e8c1721ae0ec6c2aa681
+References: <CGME20220308120701epcas5p3d3d2f5c01055e8c1721ae0ec6c2aa681@epcas5p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 19:13:08 +0800
-Yicong Yang <yangyicong@huawei.com> wrote:
+Adds spi controller dt-binding compatible information for
+Tesla Full Self-Driving (FSD) SoC.
 
-> On 2022/3/8 18:21, Jonathan Cameron wrote:
-> > On Tue, 8 Mar 2022 16:49:25 +0800
-> > Yicong Yang <yangyicong@hisilicon.com> wrote:
-> >   
-> >> Register PMU device of PTT trace, then users can use trace through perf
-> >> command. The driver makes use of perf AUX trace and support following
-> >> events to configure the trace:
-> >>
-> >> - filter: select Root port or Endpoint to trace
-> >> - type: select the type of traced TLP headers
-> >> - direction: select the direction of traced TLP headers
-> >> - format: select the data format of the traced TLP headers
-> >>
-> >> This patch adds the PMU driver part of PTT trace. The perf command support
-> >> of PTT trace is added in the following patch.
-> >>
-> >> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>  
-> > 
-> > It seems to me that you ended up doing both suggestions for
-> > how to clean up the remove order when it was meant to be
-> > a question of picking one or the other.
-> > 
-> > Otherwise this looks good to me - so with that tidied up
-> >   
-> 
-> Hi Jonathan,
-> 
-> Thanks for the comments. I'd like to illustrate the reason why I decide to
-> manually unregister the PMU device.
-> 
-> The DMA buffers are devm allocated when necessary. They're only allocated
-> when user is going to use the PTT in the first time after the driver's probe,
-> so when driver removal the buffers are released prior to the PMU device's
-> unregistration. I think there's a race condition.
-> 
-> IIUC, The PMU device(as the user interface) should be unregistered first then
-> we're safe to free the DMA buffers. But unregister the PMU device by devm
-> cannot keep that order.
+Cc: linux-fsd@tesla.com
+Signed-off-by: Adithya K V <adithya.kv@samsung.com>
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Andi Shyti <andi@etezian.org>
+---
+ Documentation/devicetree/bindings/spi/samsung,spi.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Ok. Please add a comment in the remove() giving this reasoning.
+- Resend of FSD SPI support patches as the dependencies has landed in MFD
+  tree, hope this will go via MFD tree (as there are dependency between
+MFD, SPI and DT)
 
-Jonathan
+diff --git a/Documentation/devicetree/bindings/spi/samsung,spi.yaml b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
+index 61c77088e8ee..bf9a76d931d2 100644
+--- a/Documentation/devicetree/bindings/spi/samsung,spi.yaml
++++ b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
+@@ -21,6 +21,7 @@ properties:
+           - samsung,s3c6410-spi
+           - samsung,s5pv210-spi # for S5PV210 and S5PC110
+           - samsung,exynos5433-spi
++          - tesla,fsd-spi
+       - const: samsung,exynos7-spi
+         deprecated: true
+ 
 
-> 
-> Thanks,
-> Yicong
-> 
-> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >   
-> >> ---  
-> >   
-> >> +
-> >> +static int hisi_ptt_register_pmu(struct hisi_ptt *hisi_ptt)
-> >> +{
-> >> +	u16 core_id, sicl_id;
-> >> +	char *pmu_name;
-> >> +	u32 reg;
-> >> +
-> >> +	hisi_ptt->hisi_ptt_pmu = (struct pmu) {
-> >> +		.module		= THIS_MODULE,
-> >> +		.capabilities	= PERF_PMU_CAP_EXCLUSIVE | PERF_PMU_CAP_ITRACE,
-> >> +		.task_ctx_nr	= perf_sw_context,
-> >> +		.attr_groups	= hisi_ptt_pmu_groups,
-> >> +		.event_init	= hisi_ptt_pmu_event_init,
-> >> +		.setup_aux	= hisi_ptt_pmu_setup_aux,
-> >> +		.free_aux	= hisi_ptt_pmu_free_aux,
-> >> +		.start		= hisi_ptt_pmu_start,
-> >> +		.stop		= hisi_ptt_pmu_stop,
-> >> +		.add		= hisi_ptt_pmu_add,
-> >> +		.del		= hisi_ptt_pmu_del,
-> >> +	};
-> >> +
-> >> +	reg = readl(hisi_ptt->iobase + HISI_PTT_LOCATION);
-> >> +	core_id = FIELD_GET(HISI_PTT_CORE_ID, reg);
-> >> +	sicl_id = FIELD_GET(HISI_PTT_SICL_ID, reg);
-> >> +
-> >> +	pmu_name = devm_kasprintf(&hisi_ptt->pdev->dev, GFP_KERNEL, "hisi_ptt%u_%u",
-> >> +				  sicl_id, core_id);
-> >> +	if (!pmu_name)
-> >> +		return -ENOMEM;
-> >> +
-> >> +	return perf_pmu_register(&hisi_ptt->hisi_ptt_pmu, pmu_name, -1);  
-> > 
-> > As below, you can put back the devm cleanup that you had in v4 now you
-> > have modified how the filter cleanup is done to also be devm managed.
-> >   
-> >> +}
-> >> +
-> >>  /*
-> >>   * The DMA of PTT trace can only use direct mapping, due to some
-> >>   * hardware restriction. Check whether there is an IOMMU or the
-> >> @@ -303,15 +825,32 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
-> >>  
-> >>  	pci_set_master(pdev);
-> >>  
-> >> +	ret = hisi_ptt_register_irq(hisi_ptt);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >>  	ret = hisi_ptt_init_ctrls(hisi_ptt);
-> >>  	if (ret) {
-> >>  		pci_err(pdev, "failed to init controls, ret = %d.\n", ret);
-> >>  		return ret;
-> >>  	}
-> >>  
-> >> +	ret = hisi_ptt_register_pmu(hisi_ptt);
-> >> +	if (ret) {
-> >> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
-> >> +		return ret;
-> >> +	}
-> >> +
-> >>  	return 0;
-> >>  }
-> >>  
-> >> +void hisi_ptt_remove(struct pci_dev *pdev)
-> >> +{
-> >> +	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
-> >> +
-> >> +	perf_pmu_unregister(&hisi_ptt->hisi_ptt_pmu);  
-> > 
-> > Now you have the filter cleanup occurring using a devm_add_action_or_reset()
-> > there is no need to have a manual cleanup of this - you can
-> > use the approach of a devm_add_action_or_reset like you had in v4.
-> > 
-> > As it is the last call in the probe() order it will be the first one
-> > called in the device managed cleanup.
-> >   
-> >> +}
-> >> +  
-> > 
-> > 
-> > .
-> >   
+base-commit: 172e611b54e813c49a35b6b74bccaa99f27bf566
+-- 
+2.25.1
 
