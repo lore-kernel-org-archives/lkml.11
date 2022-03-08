@@ -2,82 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C84D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB52EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343876AbiCHKOb (ORCPT
+        id S1345641AbiCHKPi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:14:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        Tue, 8 Mar 2022 05:15:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238768AbiCHKOa (ORCPT
+        with ESMTP id S234202AbiCHKPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:14:30 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF201260F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:13:34 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KCWHw1gGmzbcCT;
-        Tue,  8 Mar 2022 18:08:44 +0800 (CST)
-Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
- (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Mar
- 2022 18:13:31 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <jk@ozlabs.org>, <arnd@arndb.de>, <mpe@ellerman.id.au>,
-        <benh@kernel.crashing.org>, <paulus@samba.org>,
-        <yuehaibing@huawei.com>, <christophe.leroy@csgroup.eu>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 -next] powerpc/spufs: Fix build warning when CONFIG_PROC_FS=n
-Date:   Tue, 8 Mar 2022 18:09:28 +0800
-Message-ID: <20220308100928.23540-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        Tue, 8 Mar 2022 05:15:35 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A319E3EA8B;
+        Tue,  8 Mar 2022 02:14:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646734477; x=1678270477;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hpi9pMWKnJ5oF5T0+PXi9Fqc8FlAAugNzaNHUKCMea0=;
+  b=CoaHFOET6u0MQV8BOZ8ftmZVddA/AWpUSVXjwGSPMfTBtMppNynKwm9C
+   Sq82oqoaLlAJXMZoCJV7OYD6O02uRdK2y7xgk3zntE34++GueRSvPnPIf
+   2N5DDKMo6NMQwKZ1Y/wj79ZGGI4OPR0/SoI1MID3nSwgWso1Gu53W3Bpg
+   8PMnu3a3YzvnQhIDH3yqDVB21W6axRgs0oeBMuzM1dFcwTsbT3oCqT9+N
+   E9w61wPcTVvoORU5z+wI+gOQtafXs8cWbhmNTYN5dBt6psXaiv0o5Przj
+   fC7kDHPPAoAQR0LyKYuUv3ms+d4rbRqkYaaregQwoRMysUtOF4frCIw5O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315363348"
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="315363348"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:14:37 -0800
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="595839404"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:14:34 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nRWqk-00DI7W-CK;
+        Tue, 08 Mar 2022 12:13:50 +0200
+Date:   Tue, 8 Mar 2022 12:13:50 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     shruthi.sanil@intel.com,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, Mark Gross <mgross@linux.intel.com>,
+        srikanth.thokala@intel.com,
+        "Raja Subramanian, Lakshmi Bai" 
+        <lakshmi.bai.raja.subramanian@intel.com>,
+        mallikarjunappa.sangannavar@intel.com
+Subject: Re: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel Keem
+ Bay SoC Timer
+Message-ID: <YicsXm9JboW2b+5f@smile.fi.intel.com>
+References: <20220222095654.9097-1-shruthi.sanil@intel.com>
+ <20220222095654.9097-2-shruthi.sanil@intel.com>
+ <YhVuJaf3AJ1c6TpT@robh.at.kernel.org>
+ <YhYa3tlTEcLct2xu@smile.fi.intel.com>
+ <CAL_JsqK_k49eKZ+Z+uw29GdY9KFVJL9o5xkzg=1=yF-oEt+JRg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqK_k49eKZ+Z+uw29GdY9KFVJL9o5xkzg=1=yF-oEt+JRg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/powerpc/platforms/cell/spufs/sched.c:1055:12: warning: ‘show_spu_loadavg’ defined but not used [-Wunused-function]
- static int show_spu_loadavg(struct seq_file *s, void *private)
-            ^~~~~~~~~~~~~~~~
+On Mon, Mar 07, 2022 at 04:33:23PM -0600, Rob Herring wrote:
+> On Wed, Feb 23, 2022 at 5:31 AM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > On Tue, Feb 22, 2022 at 05:13:41PM -0600, Rob Herring wrote:
+> > > On Tue, Feb 22, 2022 at 03:26:53PM +0530, shruthi.sanil@intel.com wrote:
+> > > > From: Shruthi Sanil <shruthi.sanil@intel.com>
+> > > >
+> > > > Add Device Tree bindings for the Timer IP, which can be used as
+> > > > clocksource and clockevent device in the Intel Keem Bay SoC.
+> >
+> > ...
+> >
+> > > > +    soc {
+> > > > +        #address-cells = <0x2>;
+> > > > +        #size-cells = <0x2>;
+> > > > +
+> > > > +        gpt@20331000 {
+> > > > +            compatible = "intel,keembay-gpt-creg", "simple-mfd";
+> > >
+> > > It looks like you are splitting things based on Linux implementation
+> > > details. Does this h/w block have different combinations of timers and
+> > > counters? If not, then you don't need the child nodes at all. There's
+> > > plenty of h/w blocks that get used as both a clocksource and clockevent.
+> > >
+> > > Maybe I already raised this, but assume I don't remember and this patch
+> > > needs to address any questions I already asked.
+> >
+> > I dunno if I mentioned that hardware seems to have 5 or so devices behind
+> > the block, so ideally it should be one device node that represents the global
+> > register spaces and several children nodes.
+> 
+> Is it 5 devices or 9 devices?
 
-Move it into #ifdef block to fix this, also remove unneeded semicolon.
+5 devices, one of which is a timer block out of 8 timers.
+You may count them as 12 altogether.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
-v2: use #ifdef instead of __maybe_unused
----
- arch/powerpc/platforms/cell/spufs/sched.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> > However, I am not familiar with the established practices in DT world, but
+> > above seems to me the right thing to do since it describes the hardware as
+> > is (without any linuxisms).
+> 
+> The Linuxism in these cases defining 1 node per driver because that's
+> what is convenient for automatic probing. That appears to be exactly
+> the case here. The red flag is nodes with a compatible and nothing
+> else. The next question is whether the sub-devices are blocks that
+> will be assembled in varying combinations and quantities. If not, then
+> not much point subdividing the h/w blocks.
 
-diff --git a/arch/powerpc/platforms/cell/spufs/sched.c b/arch/powerpc/platforms/cell/spufs/sched.c
-index d058f6233e66..99bd027a7f7c 100644
---- a/arch/powerpc/platforms/cell/spufs/sched.c
-+++ b/arch/powerpc/platforms/cell/spufs/sched.c
-@@ -1052,6 +1052,7 @@ void spuctx_switch_state(struct spu_context *ctx,
- 	}
- }
- 
-+#ifdef CONFIG_PROC_FS
- static int show_spu_loadavg(struct seq_file *s, void *private)
- {
- 	int a, b, c;
-@@ -1073,7 +1074,8 @@ static int show_spu_loadavg(struct seq_file *s, void *private)
- 		atomic_read(&nr_spu_contexts),
- 		idr_get_cursor(&task_active_pid_ns(current)->idr) - 1);
- 	return 0;
--};
-+}
-+#endif
- 
- int __init spu_sched_init(void)
- {
+AFAIU the hardware architecture the amount of timers is dependent on
+the IP synthesis configuration. On this platform it's 8, but it may be
+1 or 2, for example.
+
+> There's also many cases of having multiple 'identical' timers and
+> wanting to encode which timer gets assigned to clocksource vs.
+> clockevent. But those 'identical' timers aren't if you care about
+> which timer gets assigned where. I *think* that's not the case here
+> unless you are trying to pick the timer for the clockevent by not
+> defining the other timers.
+> 
+> Without having a complete picture of what's in 'gpt-creg', I can't
+> give better advice.
+
+I guess they need to share TRM, if possible, to show what this
+block is.
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
