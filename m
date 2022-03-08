@@ -2,127 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F78C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E20CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349644AbiCHS0y (ORCPT
+        id S1349664AbiCHS06 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
+        Tue, 8 Mar 2022 13:26:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349683AbiCHS0l (ORCPT
+        with ESMTP id S1349652AbiCHS0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:26:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 459905A5AE
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:25:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646763902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KZ+MOQYbd1Rp6Gp+T3LRIYK4uicgM63eg0ziCWnS/Qw=;
-        b=ejh4gbr1QqL9b5MjWEVwS0j8Vy3SD/5ftER6MWQt2eJArdo9F4zgF43zfloDAt3fB+Ue9z
-        orkOuDsb9BGXJ3df7J96Ry8VAD6HalST6Nn9dhDxbshkX8SM7RK8phem+oeYi/jxdbn0HX
-        Wjk69MmVJZDlrEAqZkn75ZDmpQY+d2U=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-301-brrmdQiQOcGiIdxRm5ItfA-1; Tue, 08 Mar 2022 13:25:01 -0500
-X-MC-Unique: brrmdQiQOcGiIdxRm5ItfA-1
-Received: by mail-ed1-f72.google.com with SMTP id b24-20020a50e798000000b0041631767675so5197026edn.23
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:25:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KZ+MOQYbd1Rp6Gp+T3LRIYK4uicgM63eg0ziCWnS/Qw=;
-        b=iVzIo5B/pcXdi14l1GTIbJ4hVyJNOifoQEU/PJCAzaoQ2ZdkVLmn+aRWOczRJ9s1N4
-         H4UismUpCg60O3+mVsvhmPJoUxsf0tZZY4xodoTCMddbjBb3SdPMsiroQUrhbEEmLcv0
-         LtPC6h0hTJdu2FW/t0t8gVz1twDYuzdB7w3bFMZyWCqmWxjmxTnKO4v33XJXqxAdCg2E
-         wuIe9gZj7ANegkP9aztAv+K/ycrtuLrfw+ckk4Hj35OBH2cgt39A4yAwQCKFrxBPg3OB
-         hrL7jf6fCc1oRODF6w7yfhasQ8TOvzFM9dBAR9xhF4ikp2zbqF4l/1iuyo8Yw6xQntsa
-         yAkg==
-X-Gm-Message-State: AOAM5325wJWrKQD/0HZdVNqtZgE1Xmrp7sqmwKB5PX1HUDR1tqE96V8l
-        Xb82EvBrKI4MsqDftg2m90mRd8LQ8Ce+LKLt6DamJNDS56AJCwKsOHXOW0x4Q4SsYJXOOhP6cgN
-        b3D7dkPEDL9mI7SHt7DXJkVow
-X-Received: by 2002:a17:907:72c3:b0:6ce:5256:1125 with SMTP id du3-20020a17090772c300b006ce52561125mr14895552ejc.697.1646763899848;
-        Tue, 08 Mar 2022 10:24:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwB9CUG4fE5I7TiF2MAdAzCHuxCgwLRBMpkZ1jZw+WDQfIRwTmu0Kmjod9AzZ734Y7mIgjMQQ==
-X-Received: by 2002:a17:907:72c3:b0:6ce:5256:1125 with SMTP id du3-20020a17090772c300b006ce52561125mr14895544ejc.697.1646763899602;
-        Tue, 08 Mar 2022 10:24:59 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id a9-20020a1709066d4900b006da888c3ef0sm6194177ejt.108.2022.03.08.10.24.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 10:24:59 -0800 (PST)
-Message-ID: <2e6c4c58-d4d2-69e2-f8ed-c93d9c13365b@redhat.com>
-Date:   Tue, 8 Mar 2022 19:24:57 +0100
+        Tue, 8 Mar 2022 13:26:45 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A99725C75;
+        Tue,  8 Mar 2022 10:25:39 -0800 (PST)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 45EF160008;
+        Tue,  8 Mar 2022 18:25:33 +0000 (UTC)
+Message-ID: <1eca594f-ec8c-b54a-92f3-e561fa049015@ovn.org>
+Date:   Tue, 8 Mar 2022 19:25:31 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 12/25] KVM: x86/mmu: cleanup computation of MMU roles
- for two-dimensional paging
+Cc:     i.maximets@ovn.org, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
 Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-13-pbonzini@redhat.com> <YiecYxd/YreGFWpB@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YiecYxd/YreGFWpB@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Roi Dayan <roid@nvidia.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+ <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+ <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+ <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+ <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+ <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+ <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+ <c9f43e92-8a32-cf0e-78d7-1ab36950021c@nvidia.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <c9f43e92-8a32-cf0e-78d7-1ab36950021c@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 19:11, Sean Christopherson wrote:
-> On Mon, Feb 21, 2022, Paolo Bonzini wrote:
->> Extended bits are unnecessary because page walking uses the CPU mode,
->> and EFER.NX/CR0.WP can be set to one unconditionally---matching the
->> format of shadow pages rather than the format of guest pages.
+On 3/8/22 15:39, Roi Dayan wrote:
 > 
-> But they don't match the format of shadow pages.  EPT has an equivalent to NX in
-> that KVM can always clear X, but KVM explicitly supports running with EPT and
-> EFER.NX=0 in the host (32-bit non-PAE kernels).
-
-In which case bit 2 of EPTs doesn't change meaning, does it?
-
-> CR0.WP equally confusing.  Yes, both EPT and NPT enforce write protection at all
-> times, but EPT has no concept of user vs. supervisor in the EPT tables themselves,
-> at least with respect to writes (thanks mode-based execution for the qualifier...).
-> NPT is even worse as the APM explicitly states:
 > 
->    The host hCR0.WP bit is ignored under nested paging.
+> On 2022-03-08 4:12 PM, Ilya Maximets wrote:
+>> On 3/8/22 09:21, Johannes Berg wrote:
+>>> On Mon, 2022-03-07 at 21:45 -0800, Jakub Kicinski wrote:
+>>>>
+>>>> Let me add some people I associate with genetlink work in my head
+>>>> (fairly or not) to keep me fair here.
+>>>
+>>> :)
+>>>
+>>>> It's highly unacceptable for user space to straight up rewrite kernel
+>>>> uAPI types
+>>>>
+>>>
+>>> Agree.
+>>
+>> I 100% agree with that and will work on the userspace part to make sure
+>> we're not adding anything to the kernel uAPI types.
+>>
+>> FWIW, the quick grep over usespace code shows similar problem with a few
+>> other types, but they are less severe, because they are provided as part
+>> of OVS actions and kernel doesn't send anything that wasn't previously
+>> set by userspace in that case.  There still might be a problem during the
+>> downgrade of the userspace while kernel configuration remains intact,
+>> but that is not a common scenario.  Will work on fixing that in userspace.
+>> No need to change the kernel uAPI for these, IMO.
+>>
 > 
-> Unless there's some hidden dependency I'm missing, I'd prefer we arbitrarily leave
-> them zero.
+> since its rc7 we end up with kernel and ovs broken with each other.
+> can we revert the kernel patches anyway and introduce them again later
+> when ovs userspace is also updated?
 
-Setting EFER.NX=0 might be okay for EPT/NPT, but I'd prefer to set it 
-respectively to 1 (X bit always present) and host EFER.NX (NX bit 
-present depending on host EFER).
+I don't think this patch is part of 5-17-rc7.  AFAICT, it's a candidate
+for 5.18, so we should still have a bit of time.  Am I missing something?
 
-For CR0.WP it should really be 1 in my opinion, because CR0.WP=0 implies 
-having a concept of user vs. supervisor access: CR0.WP=1 is the 
-"default", while CR0.WP=0 is "always allow *supervisor* writes".
-
->> even if only barely so, due to SMM and guest mode; for consistency,
->> pass it down to kvm_calc_tdp_mmu_root_page_role instead of querying
->> the vcpu with is_smm or is_guest_mode.
-> 
-> The changelog should call out this is a _significant_ change in behavior for KVM,
-> as it allows reusing shadow pages with different guest MMU "role bits".
-
-Good point!  It's safe and arguably clea{n,r}er, but it's still a pretty 
-large change.
-
-> E.g. if this lands after the changes to not unload MMUs on cr0/cr4
-> emulation, it will be quite the functional change.
-I expect this to land first, so that the part where we don't really 
-agree on the implementation comes last and benefits from a more 
-understandable core.
-
-Paolo
-
+Best regards, Ilya Maximets.
