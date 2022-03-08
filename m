@@ -2,170 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECBDC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E60C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345013AbiCHIjK (ORCPT
+        id S1345021AbiCHIkC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
+        Tue, 8 Mar 2022 03:40:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344998AbiCHIjJ (ORCPT
+        with ESMTP id S239885AbiCHIkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:39:09 -0500
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5371D302;
-        Tue,  8 Mar 2022 00:38:13 -0800 (PST)
-Received: by mail-qk1-f170.google.com with SMTP id q4so14197036qki.11;
-        Tue, 08 Mar 2022 00:38:13 -0800 (PST)
+        Tue, 8 Mar 2022 03:40:00 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE6621E2C
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:39:03 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id bg10so37545487ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 00:39:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZfDDN8hW2sYhsKMQgu6eSfyeIQoYU8/4m7KffutdgQY=;
+        b=jY+kO+Y5xP9W109N++3xWaqUysbX8hWBFEEerBic1ca1eCKatOa8A+Qbl6r389YVqC
+         H9qnhj+VWuwZieVOGcAegSe8wmbAFXM4X916ru6AmucznrWsZTOVQ0sUcENRCDWzyS5j
+         pALWhSrK9Yw6iIXxBQZQFpslO34hRq3xQMeauq8R5ihS/Is5KGiw2jW1P2Nvl4WBBdax
+         /6gmssHBzh3HdFklMfJBJ6owVSfwctPT8qwUDn/lGc4a/ss37Hc0p3l+d2LKAwFP+gAh
+         HhgQTN46hXg7ysAM5HQFzmNOxj3F1XfzH+8xkgH0ymOqsJRbV20XWnC40V/puRPO/vJ/
+         geqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EOwxd04/4/kj/T/nPio4Op2b4/YeB/0jSlIXRERfWek=;
-        b=LPvxndiY9l/5RkNBuH8/DoxmR9I6zM7geWY5o6arqTD34v/V5KDky2rPAhCjmE+dvP
-         dW56yazmC+BPHJpPNCp8Sz7hNPMi8ZLr6UocQ+JZG6G9r3QA0ipOFyPSaJMLyY+sQUy4
-         FdB4tcM8rnptwfG1eUbbaiPTCmg2U2BypC8cZ79XtADYwJJjU24D5I8aOZFEIIWi88Kv
-         TLjpXb+NAgfZYWvUQSb1tpDjb5iBUOlXFi7ih6MJFEYP+DurPORrI1hhFF5v+Pmnacw1
-         kGn+YER6ZyYYpQqo38VEsElqL+xkG3t5Cn3j41WPA8iXv79uXBtN1cj+tnMgCwrhCmC4
-         V8jA==
-X-Gm-Message-State: AOAM532m2ZV0lZMBW6aFgZDpTznrS688j7OTRm0htzNnDdxlFHjKARhP
-        3FW6kyLLvZlu1TTR699iBMQhyiE86D85/A==
-X-Google-Smtp-Source: ABdhPJyLmyzT9hM9zAtxOObKTPjX7TSXf3yXBppxCtaZbVg+yw9x/E9uTBnv4dqyaCVC3okUyFZr0w==
-X-Received: by 2002:a37:acb:0:b0:67b:15f9:55b8 with SMTP id 194-20020a370acb000000b0067b15f955b8mr6346717qkk.694.1646728691864;
-        Tue, 08 Mar 2022 00:38:11 -0800 (PST)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id k125-20020a378883000000b006491db6dbb1sm7568185qkd.84.2022.03.08.00.38.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 00:38:11 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id g1so36294662ybe.4;
-        Tue, 08 Mar 2022 00:38:11 -0800 (PST)
-X-Received: by 2002:a25:bc8f:0:b0:628:8649:5c4b with SMTP id
- e15-20020a25bc8f000000b0062886495c4bmr10892276ybk.207.1646728690920; Tue, 08
- Mar 2022 00:38:10 -0800 (PST)
+        bh=ZfDDN8hW2sYhsKMQgu6eSfyeIQoYU8/4m7KffutdgQY=;
+        b=rocCS02eUXEvAWcZF+mTNr6EoGqMee/M38w9JhT6M5A40aVazn9dvvjJLkOVoW8FFr
+         QJuWEQkVHPSl7k49yth1hIz4A2tIBJfqlYgmHubUr6IuLuFQ0yr3jzTAZh8ndc29ojJ8
+         wa8P/G6E3+Pujaqf+qdSpqOYw2rmrZOMWUx/ev3mY8Tcd4z4Ulha3CGPBjKWdjjI3TC0
+         9/lp9DlaLf0bpz+RNlekgwkFYroBYlr/lVIrHPQK0Fjh38SVGUNlC/YDS50o7QXo4Zfw
+         zwrUXpv/URq9V5aDP3b0zPlR8d8WgzH1M8DX7RiCElvE/U1x29mMx4SE+AmPnX3WUrCL
+         4x5g==
+X-Gm-Message-State: AOAM533nC880OimZr6m5xg7ryzwLdnJPuf/qsbkLGTIF3hNeA5lVE66F
+        Rvh3IrpHQWgZL/xG+30QIaguLwVVbaK1UUQ9lGObZg==
+X-Google-Smtp-Source: ABdhPJxIi2hf/1LE3nWvWq2cByr3eOy/v8RD3lX9vEvd2C5D64zUw8QRfGF9hng7XpeVo3tVwRTA+FNSX7ciiWtcrN0=
+X-Received: by 2002:a17:907:728b:b0:6da:97db:b66d with SMTP id
+ dt11-20020a170907728b00b006da97dbb66dmr12134797ejc.636.1646728742085; Tue, 08
+ Mar 2022 00:39:02 -0800 (PST)
 MIME-Version: 1.0
-References: <20220303224237.2497570-1-robh@kernel.org> <20220303224237.2497570-3-robh@kernel.org>
- <CAMuHMdUzu2PMN7ZerX=D0KsiqKZFDW5dVe3BY77wR=H-grrPVA@mail.gmail.com> <YiY6LNfEGhz1hSYg@robh.at.kernel.org>
-In-Reply-To: <YiY6LNfEGhz1hSYg@robh.at.kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Mar 2022 09:37:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVFexJ=NT4wX4v2s3K--znQCiahskbGtEci3xwgsyEQWA@mail.gmail.com>
-Message-ID: <CAMuHMdVFexJ=NT4wX4v2s3K--znQCiahskbGtEci3xwgsyEQWA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dt-bindings: kbuild: Use DTB files for validation
-To:     Rob Herring <robh@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+References: <20220304221517.30213-1-kris@embeddedTS.com> <CAMRc=MeHT4pX1ZRbOz0owDDec5rv+FE84rp464ugffbH5PuS5w@mail.gmail.com>
+ <1646682026.7444.2.camel@embeddedTS.com>
+In-Reply-To: <1646682026.7444.2.camel@embeddedTS.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 8 Mar 2022 09:38:50 +0100
+Message-ID: <CAMRc=MeObKcaS_73wVcR6LJbQO10XebKoWwURLspXuKgCETC3A@mail.gmail.com>
+Subject: Re: [PATCH] gpio: ts4900: Do not set DAT and OE together
+To:     Kris Bahnsen <kris@embeddedts.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kbuild <linux-kbuild@vger.kernel.org>
+        Mark Featherston <mark@embeddedts.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
-
-On Mon, Mar 7, 2022 at 6:00 PM Rob Herring <robh@kernel.org> wrote:
-> On Mon, Mar 07, 2022 at 01:20:29PM +0100, Geert Uytterhoeven wrote:
-> > On Thu, Mar 3, 2022 at 11:43 PM Rob Herring <robh@kernel.org> wrote:
-> > > Switch the DT validation to use DTB files directly instead of a DTS to
-> > > YAML conversion.
-> > >
-> > > The original motivation for supporting validation on DTB files was to
-> > > enable running validation on a running system (e.g. 'dt-validate
-> > > /sys/firmware/fdt') or other cases where the original source DTS is not
-> > > available.
-> > >
-> > > The YAML format was not without issues. Using DTBs with the schema type
-> > > information solves some of those problems. The YAML format relies on the
-> > > DTS source level information including bracketing of properties, size
-> > > directives, and phandle tags all of which are lost in a DTB file. While
-> > > standardizing the bracketing is a good thing, it does cause a lot of
-> > > extra warnings and churn to fix them.
-> > >
-> > > Another issue has been signed types are not validated correctly as sign
-> > > information is not propagated to YAML. Using the schema type information
-> > > allows for proper handling of signed types. YAML also can't represent
-> > > the full range of 64-bit integers as numbers are stored as floats by
-> > > most/all parsers.
-> > >
-> > > The DTB validation works by decoding property values using the type
-> > > information in the schemas themselves. The main corner case this does
-> > > not work for is matrix types where neither dimension is fixed. For
-> > > now, checking the dimensions in these cases are skipped.
-> > >
-> > > Signed-off-by: Rob Herring <robh@kernel.org>
-> >
-> > Thanks for your patch!
-> >
-> > While investigating why a newly added device node to DTS was not
-> > instantiated as a platform device, I discovered an issue with this
-> > patch: "make dtbs" no longer rebuilds DTB files that need a rebuild.
-> >
-> > How to reproduce:
-> >
-> >     $ git checkout next-20220307
-> >     # apply this series and its dependency:
-> >     # dt-bindings: kbuild: Support partial matches with DT_SCHEMA_FILES
-> >     # dt-bindings: kbuild: Pass DT_SCHEMA_FILES to dt-validate
-> >     # dt-bindings: kbuild: Use DTB files for validation
-> >     $ make ARCH=arm shmobile_defconfig
-> >     $ make ARCH=arm dtbs
-> >     $ touch arch/arm/boot/dts/r8a7791.dtsi
-> >     $ make ARCH=arm dtbs
-> >     # The above command does NOT cause:
-> >     # DTC     arch/arm/boot/dts/r8a7791-koelsch.dtb
-> >     # DTC     arch/arm/boot/dts/r8a7791-porter.dtb
-> >
-> > I don't see anything wrong with this patch at first sight, though.
+On Mon, Mar 7, 2022 at 8:40 PM Kris Bahnsen <kris@embeddedts.com> wrote:
 >
-> Was this a clean tree?
-
-The above was a clean tree.
-
-> I think I reproduced it, but then couldn't... But then after a 'make
-> clean', 'make dtbs' would error out. I think the issue in both cases was
-> processed-schema.json always a dependency when it should be conditional
-> on 'dtbs_check'. The patch below fixes that. Can you give it a try too.
-
-I first saw the issue in my normal work tree.
-However, I cannot reproduce it in that tree anymore :-(
-
-I can reproduce it in the clean tree after following the instructions
-above, and your patch fixes that, so
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -349,12 +349,12 @@ $(multi-dtb-y): FORCE
->         $(call if_changed,fdtoverlay)
->  $(call multi_depend, $(multi-dtb-y), .dtb, -dtbs)
+> On Mon, 2022-03-07 at 10:13 +0100, Bartosz Golaszewski wrote:
+> > On Fri, Mar 4, 2022 at 11:15 PM Kris Bahnsen <kris@embeddedts.com> wrote:
+> > >
+> > > From: Mark Featherston <mark@embeddedTS.com>
+> > >
+> > > This works around an issue with the hardware where both OE and
+> > > DAT are exposed in the same register. If both are updated
+> > > simultaneously, the harware makes no guarantees that OE or DAT
+> > > will actually change in any given order and may result in a
+> > > glitch of a few ns on a GPIO pin when changing direction and value
+> > > in a single write.
+> > >
+> > > Setting direction to input now only affects OE bit. Setting
+> > > direction to output updates DAT first, then OE.
+> > >
+> > > Signed-off-by: Mark Featherston <mark@embeddedTS.com>
+> > > Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+> > > ---
+> > >  drivers/gpio/gpio-ts4900.c | 25 ++++++++++++++++++++-----
+> > >  1 file changed, 20 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+> > > index d885032cf814..fbabfca030c0 100644
+> > > --- a/drivers/gpio/gpio-ts4900.c
+> > > +++ b/drivers/gpio/gpio-ts4900.c
+> > > @@ -1,7 +1,8 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > >  /*
+> > >   * Digital I/O driver for Technologic Systems I2C FPGA Core
+> > >   *
+> > > - * Copyright (C) 2015 Technologic Systems
+> > > + * Copyright (C) 2015-2018 Technologic Systems
+> > >   * Copyright (C) 2016 Savoir-Faire Linux
+> > >   *
+> > >   * This program is free software; you can redistribute it and/or
+> > > @@ -55,19 +56,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
+> > >  {
+> > >         struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
+> > >
+> > > -       /*
+> > > -        * This will clear the output enable bit, the other bits are
+> > > -        * dontcare when this is cleared
+> > > +       /* Only clear the OE bit here, requires a RMW. Prevents potential issue
+> > > +        * with OE and data getting to the physical pin at different times.
+> > >          */
+> > > -       return regmap_write(priv->regmap, offset, 0);
+> > > +       return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
+> > >  }
+> > >
+> > >  static int ts4900_gpio_direction_output(struct gpio_chip *chip,
+> > >                                         unsigned int offset, int value)
+> > >  {
+> > >         struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
+> > > +       unsigned int reg;
+> > >         int ret;
+> > >
+> > > +       /* If changing from an input to an output, we need to first set the
+> > > +        * proper data bit to what is requested and then set OE bit. This
+> > > +        * prevents a glitch that can occur on the IO line
+> > > +        */
+> > > +       regmap_read(priv->regmap, offset, &reg);
+> > > +       if (!(reg & TS4900_GPIO_OE)) {
+> > > +               if (value)
+> > > +                       reg = TS4900_GPIO_OUT;
+> > > +               else
+> > > +                       reg &= ~TS4900_GPIO_OUT;
+> > > +
+> > > +               regmap_write(priv->regmap, offset, reg);
+> > > +       }
+> > > +
+> > >         if (value)
+> > >                 ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
+> > >                                                          TS4900_GPIO_OUT);
+> > > --
+> > > 2.11.0
+> > >
+> >
+> > This looks like a fix, can you add a Fixes tag?
+> >
+> > Bart
+> >
 >
-> +ifneq ($(CHECK_DTBS)$(CHECK_DT_BINDING),)
->  DT_CHECKER ?= dt-validate
->  DT_CHECKER_FLAGS ?= $(if $(DT_SCHEMA_FILES),-l $(DT_SCHEMA_FILES),-m)
->  DT_BINDING_DIR := Documentation/devicetree/bindings
-> -DT_TMP_SCHEMA ?= $(objtree)/$(DT_BINDING_DIR)/processed-schema.json
-> +DT_TMP_SCHEMA := $(objtree)/$(DT_BINDING_DIR)/processed-schema.json
+> Please excuse my ignorance (and email client issues) I am still learning the
+> submission process. I'm not sure what kind of Fixes tag to add in this scenario.
 >
-> -ifneq ($(CHECK_DTBS)$(CHECK_DT_BINDING),)
->  quiet_cmd_dtb_check =  CHECK   $@
->        cmd_dtb_check =  $(DT_CHECKER) $(DT_CHECKER_FLAGS) -u $(srctree)/$(DT_BINDING_DIR) -p $(DT_TMP_SCHEMA) $@ || true
->  endif
+> This GPIO issue has existed since the driver's inception. It is a quirk of
+> hardware that has always existed on this platform. The driver was originally
+> implemented by Savoir-faire Linux. We discovered the issue and have had it
+> patched in our trees for years and wanted to push it upstream.
+>
+> There is no public discussion on it, it was found and patched. And, aside from
+> the first commit of this driver, there is no commit that introduced any issue.
+>
+> Can you please advise what kind of Fixes tag is appropriate in this situation?
+>
+> Additionally, if I do add a Fixes tag, would that warrant a v2 patch? Or would
+> it just need to be an email response that includes it?
+>
+> Kris
 
-Gr{oetje,eeting}s,
+Yeah, just send a v2 with "Fixes: <short commit hash> ("<commit
+title>")" referring to the original patch that added the driver.
 
-                        Geert
+We'll send it for stable.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Bart
