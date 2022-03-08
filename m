@@ -2,106 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346727AbiCHMO4 (ORCPT
+        id S1346709AbiCHMPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:14:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57502 "EHLO
+        Tue, 8 Mar 2022 07:15:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237459AbiCHMOy (ORCPT
+        with ESMTP id S1346723AbiCHMPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:14:54 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A4D369E9;
-        Tue,  8 Mar 2022 04:13:57 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id q17so24198608edd.4;
-        Tue, 08 Mar 2022 04:13:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ULast/mtgP3p8AMVarXOT+P6lpKHlA0007QiXUEdEFE=;
-        b=Wk6UyfUlZnL5SElRH1/AfODLHHDCAsfnpsm7tMMPXyzbSIFQQqmACnv95Du8iVRA7i
-         KOVWxH6W9Zflw31j0dQhp4/QeQFp9EoLI5aKRhINYRwWbz6ux2ikSN5+8H0dDRCsh7HE
-         PXQHUkG3omcQ8G1KroCdf1K0FM9jSSgcVP+JUGfxQ0q1Z+Pkh7vo9Y2UvM8VvOlOee1r
-         HUDtN2TxC2SMIhvUfo+0aJas5zWdQOGmwy0TrzVduKfEzr4MBJrKleNx9ES9fEjDCnFY
-         bbeLB7yp8yXEEjlq/9SJ9dvU8PWfw+FWnc+r7TeptTzRbPgLSMADmdPlBwsID7jFp3Nw
-         eSpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ULast/mtgP3p8AMVarXOT+P6lpKHlA0007QiXUEdEFE=;
-        b=7sfVtj79g/56Jl9SoMUP3sz9BC4atvXElIHcpYzcYccEu25RlI8PrglBqegGcC83N+
-         MjAMHIhLENEivY+d9LBxMgSkJwi4I4b3+7l50Bj98/xCk1S1GULq7dS34E+siS3QFH0t
-         hc1GeTJwnyTWaOHF4x8zSnAWNMWSplC5FLriH3OZp8ozS+11DKJqQO0xfnyJXBMNbaqd
-         y57pcxmKCTLQYecAy4LODsiSQJTfvUBo/5NvodB1PbdsuuYj7co2HxVsvrieHULjdAn4
-         orT6MKiAGPOnivf1R5UKPcOanDHAuKNUDIZhfl3AJNO5Ab/y7cirMEgj+fIp36HncPml
-         E/xA==
-X-Gm-Message-State: AOAM533zknjiL7YzC33lYv0uQltZaeTYMlM0e85jHVI23zeZ46t2wNAy
-        XBOjg+3I24h4R9bNxd62cd0=
-X-Google-Smtp-Source: ABdhPJys53qTU70vOv4UGAljmorZflfU+Rp0CDA2yjzlzyY9aerrFgS941NSU0EEibz7NS8WnkfGvQ==
-X-Received: by 2002:a05:6402:374:b0:415:e849:2935 with SMTP id s20-20020a056402037400b00415e8492935mr15560448edw.47.1646741636190;
-        Tue, 08 Mar 2022 04:13:56 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id qb30-20020a1709077e9e00b006d6f8c77695sm5705595ejc.101.2022.03.08.04.13.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 04:13:55 -0800 (PST)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <6e57aad6-1322-8a3d-6dfa-ff010a61a9a9@redhat.com>
-Date:   Tue, 8 Mar 2022 13:13:54 +0100
+        Tue, 8 Mar 2022 07:15:20 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B0043ED5
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:14:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646741664; x=1678277664;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Zt3xKn+Klw2lmd6ejBz+st0wYaOLEooTRBK1yYCq3bY=;
+  b=gVkxNw9hM5YS2sjpRm0LyetLamDdk2YTaosMZFKX+wXqmkMDXNPduHnu
+   mWLIN+oKKnl3K0gvz83a83vq8Lm9B4Dem0TO6Egf5H0jv1HWX6sEOOHx0
+   +7fRVieE4zNq4HorBdd9CcuoLXtl+V2p0ERN3IdSrO8mcVWTK/AkU8J0F
+   JQcxtRA1K6EsJqwc0VkHZBjOKpvDK0MEFbiDaFNkJxpqUyspt4LUJ2yJB
+   NHcv/HPRy4rYLFHulgw7udPJaFozaP3eb4tleaXL3piuptDbwnx38jaKS
+   EyyuSASN1/AkQCO+XzCjrUh72lNRaGizHWTogWdKkuRf6tmXDLQMPKIJQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="252240489"
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="252240489"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:14:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="513086205"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 08 Mar 2022 04:14:21 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRYjM-0001ML-J2; Tue, 08 Mar 2022 12:14:20 +0000
+Date:   Tue, 8 Mar 2022 20:13:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guo Ren <guoren@linux.alibaba.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [ammarfaizi2-block:palmer/linux/riscv-compat 13/20]
+ arch/riscv/kernel/process.c:102:35: error: use of undeclared identifier
+ 'SR_UXL'
+Message-ID: <202203082040.sCWBscgE-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] x86/kvm: Don't waste kvmclock memory if there is nopv
- parameter
-Content-Language: en-US
-To:     Wanpeng Li <kernellwp@gmail.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-References: <1646727529-11774-1-git-send-email-wanpengli@tencent.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <1646727529-11774-1-git-send-email-wanpengli@tencent.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 09:18, Wanpeng Li wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> When the "nopv" command line parameter is used, it should not waste
-> memory for kvmclock.
-> 
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> ---
->   arch/x86/kernel/kvmclock.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/kvmclock.c b/arch/x86/kernel/kvmclock.c
-> index c5caa73..16333ba 100644
-> --- a/arch/x86/kernel/kvmclock.c
-> +++ b/arch/x86/kernel/kvmclock.c
-> @@ -239,7 +239,7 @@ static void __init kvmclock_init_mem(void)
->   
->   static int __init kvm_setup_vsyscall_timeinfo(void)
->   {
-> -	if (!kvm_para_available() || !kvmclock)
-> +	if (!kvm_para_available() || !kvmclock || nopv)
->   		return 0;
->   
->   	kvmclock_init_mem();
+tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-compat
+head:   ab7e33a6b819f009c3c9ccf69b2f44c1ad84a5a0
+commit: d463ff83f0d26ce352a0969c86a9accf70d30977 [13/20] riscv: compat: process: Add UXL_32 support in start_thread
+config: riscv-randconfig-r005-20220308 (https://download.01.org/0day-ci/archive/20220308/202203082040.sCWBscgE-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/d463ff83f0d26ce352a0969c86a9accf70d30977
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-compat
+        git checkout d463ff83f0d26ce352a0969c86a9accf70d30977
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
 
-Perhaps instead !kvm_para_available() && nopv should clear the kvmclock 
-variable?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Paolo
+All errors (new ones prefixed by >>):
+
+   arch/riscv/kernel/process.c:101:6: error: implicit declaration of function 'is_compat_task' [-Werror,-Wimplicit-function-declaration]
+           if (is_compat_task())
+               ^
+>> arch/riscv/kernel/process.c:102:35: error: use of undeclared identifier 'SR_UXL'
+                   regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
+                                                   ^
+>> arch/riscv/kernel/process.c:102:45: error: use of undeclared identifier 'SR_UXL_32'
+                   regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
+                                                             ^
+   arch/riscv/kernel/process.c:104:35: error: use of undeclared identifier 'SR_UXL'
+                   regs->status = (regs->status & ~SR_UXL) | SR_UXL_64;
+                                                   ^
+>> arch/riscv/kernel/process.c:104:45: error: use of undeclared identifier 'SR_UXL_64'
+                   regs->status = (regs->status & ~SR_UXL) | SR_UXL_64;
+                                                             ^
+   5 errors generated.
+
+
+vim +/SR_UXL +102 arch/riscv/kernel/process.c
+
+    85	
+    86	void start_thread(struct pt_regs *regs, unsigned long pc,
+    87		unsigned long sp)
+    88	{
+    89		regs->status = SR_PIE;
+    90		if (has_fpu()) {
+    91			regs->status |= SR_FS_INITIAL;
+    92			/*
+    93			 * Restore the initial value to the FP register
+    94			 * before starting the user program.
+    95			 */
+    96			fstate_restore(current, regs);
+    97		}
+    98		regs->epc = pc;
+    99		regs->sp = sp;
+   100	
+   101		if (is_compat_task())
+ > 102			regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
+   103		else
+ > 104			regs->status = (regs->status & ~SR_UXL) | SR_UXL_64;
+   105	}
+   106	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
