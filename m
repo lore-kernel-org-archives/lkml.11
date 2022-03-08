@@ -2,105 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A122C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F237C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347524AbiCHOj3 (ORCPT
+        id S1347534AbiCHOja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
+        Tue, 8 Mar 2022 09:39:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235983AbiCHOjZ (ORCPT
+        with ESMTP id S1346573AbiCHOj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:39:25 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9797211158
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:38:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646750308; x=1678286308;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kU5nXQQ/VJjd9P3v7JAxsyllYaY353/cUzEHeD8xWNY=;
-  b=ZlCF+uBnHixmFUANdlft5yn//Xnmz9+C8gvCq3qWiLOXvxk2ROfrpR5F
-   WNrQDPJz1BJR6s+/zTlatcx3lpaeMTwjcOpRMD0Dq45O4QH/jxkdg0jCc
-   IEBjRMIBSOFaiDptv5HTHKm4YKjXEG//G64mvFbKp4XGCEFlm4PCXl7Ey
-   /YTt4I6Kujhwy7YkMGlL7PRBRSr4bFliIvUKYoLJxYlBQluRUN41O/O5A
-   l13xf52ps8iSBYR9Onr9xqkg1JGqgEVg7sYweIX7MZ9DawgYKSC071yoB
-   8MzX/StKDUGwiggwbLhKkjbpZ9qkjg1KKz5HoL8YznA9lf3xQBPe2gO9E
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="242135116"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="242135116"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 06:38:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="643673403"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 06:38:26 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRayn-0001Xi-Sr; Tue, 08 Mar 2022 14:38:25 +0000
-Date:   Tue, 8 Mar 2022 22:37:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
- function 'kasan_tag_mismatch'
-Message-ID: <202203082234.bp7VLzQE-lkp@intel.com>
+        Tue, 8 Mar 2022 09:39:27 -0500
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6658211158;
+        Tue,  8 Mar 2022 06:38:30 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1646750309;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cu543Xb/XXfrQcVvacyI7roQg9kJmuzMxmI4mHNkXNo=;
+        b=ehbXdGsW0UEt+vHTyogZgsIQolacUIWCxfEBgKxIktdP/+AjuwO1PAjEsTMLs27ffelgzi
+        +vddEvBcdkwX+kUpiehQTro+Wx7LHHErnvju8ziKRg8A4kHKfx8KL8hCIMbZp6bgbONv4f
+        v+OnvYJMkw5uzYudGLnBJzMFyQIrvK8=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     jgg@nvidia.com, selvin.xavier@broadcom.com, galpress@amazon.com,
+        sleybo@amazon.com, liangwenpeng@huawei.com, liweihang@huawei.com,
+        mustafa.ismail@intel.com, shiraz.saleem@intel.com,
+        leonro@nvidia.com, dennis.dalessandro@cornelisnetworks.com,
+        mike.marciniszyn@cornelisnetworks.com, zyjzyj2000@gmail.com
+Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH for-next 5/9] RDMA/irdma: get rid of create_user_ah
+Date:   Tue,  8 Mar 2022 22:38:13 +0800
+Message-Id: <20220308143813.3404513-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+There is no create_user_ah in ib_device_ops, remove it.
 
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ea4424be16887a37735d6550cfd0611528dbe5d9
-commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
-date:   10 months ago
-config: arm64-randconfig-r023-20220307 (https://download.01.org/0day-ci/archive/20220308/202203082234.bp7VLzQE-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash mm/kasan/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for function 'kasan_tag_mismatch' [-Wmissing-prototypes]
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-        ^
-   mm/kasan/sw_tags.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
-
-   210	
- > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/infiniband/hw/irdma/verbs.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/infiniband/hw/irdma/verbs.c b/drivers/infiniband/hw/irdma/verbs.c
+index e731768c2b2a..807fe643b55a 100644
+--- a/drivers/infiniband/hw/irdma/verbs.c
++++ b/drivers/infiniband/hw/irdma/verbs.c
+@@ -4265,7 +4265,6 @@ static enum rdma_link_layer irdma_get_link_layer(struct ib_device *ibdev,
+ static const struct ib_device_ops irdma_roce_dev_ops = {
+ 	.attach_mcast = irdma_attach_mcast,
+ 	.create_ah = irdma_create_ah,
+-	.create_user_ah = irdma_create_ah,
+ 	.destroy_ah = irdma_destroy_ah,
+ 	.detach_mcast = irdma_detach_mcast,
+ 	.get_link_layer = irdma_get_link_layer,
+-- 
+2.25.1
+
