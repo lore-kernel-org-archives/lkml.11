@@ -2,190 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1CAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345617AbiCHKHi (ORCPT
+        id S1345629AbiCHKHp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:07:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        Tue, 8 Mar 2022 05:07:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345611AbiCHKHh (ORCPT
+        with ESMTP id S236509AbiCHKHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:07:37 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5D640907;
-        Tue,  8 Mar 2022 02:06:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646734001; x=1678270001;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gQW1oAeon+57DU8wGcNd1CFDpjSEBBQeWTKSocyD9Ts=;
-  b=Sm6eyhpQJ4e0YrKm+FoPfTxdKWlI5cI4zIXP3d83QAWbN4lKOKs2wtoH
-   u1ALk4Pzk1wGTwGGb19nI3+UuZoSKkRktjZfraOx7WLYUwIIdgEf7yc0V
-   sZcbCDGUST4ur1g6Znln+R9JJcPigrOnvgCLHPMaRAgs/kothJD12SL4B
-   Ml0CW3F4nsUSh+3fFBjH99RxgPDEspPeF0BZ1/RCTE71tOdEh53fYkvgd
-   xz/VlzTgLLkSyw40mAF9VAxDqf129DOUJthMQEYNhZZPm1y59F9U9AwQa
-   h/PGnoAZv7AezD9cKfhVoY9BG/kGxogddutW5WutbliPW+dfkORjhVMf0
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254374481"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="254374481"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:06:34 -0800
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="553558552"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.46.193])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:06:30 -0800
-Message-ID: <01515ee6-b312-7f81-43f0-e72a0d290046@intel.com>
-Date:   Tue, 8 Mar 2022 12:06:26 +0200
+        Tue, 8 Mar 2022 05:07:43 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB36A424AA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:06:47 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nRWjt-0000Ie-Cn; Tue, 08 Mar 2022 11:06:45 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nRWjs-0004da-Iq; Tue, 08 Mar 2022 11:06:44 +0100
+Date:   Tue, 8 Mar 2022 11:06:44 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v2 1/1] net: dsa: microchip: ksz9477: implement
+ MTU configuration
+Message-ID: <20220308100644.GA5189@pengutronix.de>
+References: <20220223084055.2719969-1-o.rempel@pengutronix.de>
+ <20220223233833.mjknw5ko7hpxj3go@skbuf>
+ <20220224045936.GB4594@pengutronix.de>
+ <20220224093329.hssghouq7hmgxvwb@skbuf>
+ <20220224093827.GC4594@pengutronix.de>
+ <20220224094657.jzhvi67ryhuipor4@skbuf>
+ <20220225114740.GA27407@pengutronix.de>
+ <20220225115802.bvjd54cwwk6hjyfa@skbuf>
+ <20220225125430.GB27407@pengutronix.de>
+ <20220225163543.vnqlkltgmwf4vlmm@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH V4 6/7] mmc: sdhci: Set error state for mmc driver
-Content-Language: en-US
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        asutoshd@quicinc.com, ulf.hansson@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_vbadigan@quicinc.com, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Sayali Lokhande <sayalil@codeaurora.org>,
-        "Bao D . Nguyen" <nguyenb@codeaurora.org>
-References: <1646226227-32429-1-git-send-email-quic_c_sbhanu@quicinc.com>
- <1646226227-32429-7-git-send-email-quic_c_sbhanu@quicinc.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <1646226227-32429-7-git-send-email-quic_c_sbhanu@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220225163543.vnqlkltgmwf4vlmm@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:48:47 up 87 days, 18:34, 88 users,  load average: 0.25, 0.29,
+ 0.22
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2.3.2022 15.03, Shaik Sajida Bhanu wrote:
-> Set error state if any errors observed in eMMC and SD card driver level.
+On Fri, Feb 25, 2022 at 06:35:43PM +0200, Vladimir Oltean wrote:
+> On Fri, Feb 25, 2022 at 01:54:30PM +0100, Oleksij Rempel wrote:
+> > > No bridge, why create a bridge? And even if you do, why add lan5 to it?
+> > > The expectation is that standalone ports still remain functional when
+> > > other ports join a bridge.
+> > 
+> > No, lan5 is not added to the bridge, but stops functioning after creating
+> > br with lan1 or any other lanX
 > 
-> Signed-off-by: Liangliang Lu <luliang@codeaurora.org>
-> Signed-off-by: Sayali Lokhande <sayalil@codeaurora.org>
-> Signed-off-by: Bao D. Nguyen <nguyenb@codeaurora.org>
-> Signed-off-by: Ram Prakash Gupta <quic_rampraka@quicinc.com>
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> ---
->  drivers/mmc/host/sdhci.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
+> Please take time to investigate the problem and fix it.
+
+ack
+
+> > > I was saying:
+> > > 
+> > > ip link set lan1 up
+> > > ip link add link lan1 name lan1.5 type vlan id 5
+> > > ip addr add 172.17.0.2/24 dev lan1.5 && ip link set lan1.5 up
+> > > iperf3 -c 172.17.0.10
+> > 
+> > It works.
 > 
-> diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-> index 741fb06..4ba3797 100644
-> --- a/drivers/mmc/host/sdhci.c
-> +++ b/drivers/mmc/host/sdhci.c
-> @@ -224,6 +224,8 @@ void sdhci_reset(struct sdhci_host *host, u8 mask)
->  		if (timedout) {
->  			pr_err("%s: Reset 0x%x never completed.\n",
->  				mmc_hostname(host->mmc), (int)mask);
-> +			if (host->mmc && !host->mmc->err_state)
-> +				mmc_debugfs_err_stats_enable(host->mmc);
+> This is akin to saying that without any calls to ksz9477_change_mtu(),
+> just writing VLAN_ETH_FRAME_LEN + ETH_FCS_LEN into REG_SW_MTU__2 is
+> sufficient to get VLAN-tagged MTU-sized packets to pass through the CPU
+> port and the lan1 user port.
+> 
+> So my question is: is this necessary?
+> 
+> 	if (dsa_is_cpu_port(ds, port))
+> 		new_mtu += KSZ9477_INGRESS_TAG_LEN;
+> 
 
-I really do not understand why this cannot be another err_stats entry
-such as MMC_ERR_DRIVER and then as below?
+No.
 
-			sdhci_err_stats_inc(host, DRIVER);
+I did some extra tests with following results: REG_SW_MTU__2 should be
+configured to 1518 to pass 1514 frame. Independent if the frame is
+passed between external ports or external to CPU port. So, I assume,
+ETH_FRAME_LEN + ETH_FCS_LEN should be used instead of VLAN_ETH_FRAME_LEN
++ ETH_FCS_LEN. Correct?
 
-
->  			sdhci_dumpregs(host);
->  			return;
->  		}
-> @@ -1716,6 +1718,8 @@ static bool sdhci_send_command_retry(struct sdhci_host *host,
->  		if (!timeout--) {
->  			pr_err("%s: Controller never released inhibit bit(s).\n",
->  			       mmc_hostname(host->mmc));
-> +			if (host->mmc && !host->mmc->err_state)
-> +				mmc_debugfs_err_stats_enable(host->mmc);
->  			sdhci_dumpregs(host);
->  			cmd->error = -EIO;
->  			return false;
-> @@ -1965,6 +1969,8 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
->  		if (timedout) {
->  			pr_err("%s: Internal clock never stabilised.\n",
->  			       mmc_hostname(host->mmc));
-> +			if (host->mmc && !host->mmc->err_state)
-> +				mmc_debugfs_err_stats_enable(host->mmc);
->  			sdhci_dumpregs(host);
->  			return;
->  		}
-> @@ -1987,6 +1993,8 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
->  			if (timedout) {
->  				pr_err("%s: PLL clock never stabilised.\n",
->  				       mmc_hostname(host->mmc));
-> +				if (host->mmc && !host->mmc->err_state)
-> +					mmc_debugfs_err_stats_enable(host->mmc);
->  				sdhci_dumpregs(host);
->  				return;
->  			}
-> @@ -3162,6 +3170,8 @@ static void sdhci_timeout_timer(struct timer_list *t)
->  		mmc_debugfs_err_stats_inc(host->mmc, MMC_ERR_REQ_TIMEOUT);
->  		pr_err("%s: Timeout waiting for hardware cmd interrupt.\n",
->  		       mmc_hostname(host->mmc));
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  
->  		host->cmd->error = -ETIMEDOUT;
-> @@ -3185,6 +3195,8 @@ static void sdhci_timeout_data_timer(struct timer_list *t)
->  		mmc_debugfs_err_stats_inc(host->mmc, MMC_ERR_REQ_TIMEOUT);
->  		pr_err("%s: Timeout waiting for hardware interrupt.\n",
->  		       mmc_hostname(host->mmc));
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  
->  		if (host->data) {
-> @@ -3236,6 +3248,8 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *intmask_p)
->  			return;
->  		pr_err("%s: Got command interrupt 0x%08x even though no command operation was in progress.\n",
->  		       mmc_hostname(host->mmc), (unsigned)intmask);
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  		return;
->  	}
-> @@ -3289,6 +3303,8 @@ static void sdhci_adma_show_error(struct sdhci_host *host)
->  	void *desc = host->adma_table;
->  	dma_addr_t dma = host->adma_addr;
->  
-> +	if (host->mmc && !host->mmc->err_state)
-> +		mmc_debugfs_err_stats_enable(host->mmc);
->  	sdhci_dumpregs(host);
->  
->  	while (true) {
-> @@ -3378,6 +3394,8 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
->  
->  		pr_err("%s: Got data interrupt 0x%08x even though no data operation was in progress.\n",
->  		       mmc_hostname(host->mmc), (unsigned)intmask);
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  
->  		return;
-> @@ -3599,6 +3617,8 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
->  	if (unexpected) {
->  		pr_err("%s: Unexpected interrupt 0x%08x.\n",
->  			   mmc_hostname(host->mmc), unexpected);
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  	}
->  
-> @@ -3962,6 +3982,8 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
->  		sdhci_writel(host, intmask, SDHCI_INT_STATUS);
->  		pr_err("%s: CQE: Unexpected interrupt 0x%08x.\n",
->  		       mmc_hostname(host->mmc), intmask);
-> +		if (host->mmc && !host->mmc->err_state)
-> +			mmc_debugfs_err_stats_enable(host->mmc);
->  		sdhci_dumpregs(host);
->  	}
->  
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
