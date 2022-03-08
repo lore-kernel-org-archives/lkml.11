@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 538AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348119AbiCHP4g (ORCPT
+        id S1346988AbiCHP4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        Tue, 8 Mar 2022 10:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348034AbiCHP4D (ORCPT
+        with ESMTP id S1348039AbiCHP4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:03 -0500
+        Tue, 8 Mar 2022 10:56:04 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EEA4D27C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC504F9CC
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=41LwMtvOLrmCCpEeK45Bz2QrPFsLhIO0Z4y1ZqPj0RU=; b=olpLSymIbBNjd8SiQhAUktw6WC
-        m/IywXMBYh255eR7kW0f23QHj899a0yhhr/Lt0iEaNs5mVz8lDgv2+2T2d2J7jFulD3uBq7q50pjX
-        10l+TuFOnyJ/TL3f4Gi+9Q/dYeGoOEFOabQkioHUz1g1dYpgueOjkMoUOLIZ2KAfdRwF8chcM6bmf
-        OnXfF+s7aoUlTZIElSQw90QU4SglRSPdUjH+fIJR9ORK0WR/kpUnBQ205e4wQGZ3qaby7Cn3j2b/2
-        U0naVkymFbnySL1JrsYIrUm9qnsloFs9be1jjdCz055yxjEl3EnNTHfgzDTCCh5/rcx/jl2QZCDK1
-        gfCBr+Aw==;
+        bh=hvcNqnTBqo6RdHIikPXNPNIBJhdZ7cZ2HzGxmNBFcw0=; b=j2rgmsKBgdCA0iN6iSq+eirzhZ
+        cbDo6Bxbnmluvhn/WoVNP4w8CoeYB9kBFRpZaBEKlKjtqSieXJpXrlOrfnnnnAne+GC1+VnCk7rTV
+        aCCQtjHDzCrUzQi526fU/OJ4ISXN4nYVyHFVxzKVgFVHEqTIerJndA5z5fhjqKmBUuf2Hv8ZbXBZJ
+        YPGzqBnfFMwTObpsU9cWK2LoLnjFtJG7u/lomUonEP9ajvHVCuJiV8S+Y1q66NIQnht9w5Dv6+XIJ
+        wZXqvNHQxGpdHiQ/R7P35WctRCDUJbmF5Un9urXP9sIJtV8SKbkBRdqpkxr7gceZGdcQrnwww1kE1
+        5q8uBAXg==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GIvI-RW; Tue, 08 Mar 2022 15:54:42 +0000
+        id 1nRcAc-00GIuy-1L; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4484B302D58;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 20682300C24;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 788032B561935; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.759989383@infradead.org>
+        id D116B2B561903; Tue,  8 Mar 2022 16:54:38 +0100 (CET)
+Message-ID: <20220308154317.578968224@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:38 +0100
+Date:   Tue, 08 Mar 2022 16:30:18 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 27/45] x86/ibt: Disable IBT around firmware
+Subject: [PATCH v4 07/45] x86/ibt: Add ANNOTATE_NOENDBR
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,153 +56,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Assume firmware isn't IBT clean and disable it across calls.
+In order to have objtool warn about code references to !ENDBR
+instruction, we need an annotation to allow this for non-control-flow
+instances -- consider text range checks, text patching, or return
+trampolines etc.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/include/asm/efi.h   |    9 +++++++--
- arch/x86/include/asm/ibt.h   |    6 ++++++
- arch/x86/kernel/apm_32.c     |    7 +++++++
- arch/x86/kernel/cpu/common.c |   28 ++++++++++++++++++++++++++++
- 4 files changed, 48 insertions(+), 2 deletions(-)
+ include/linux/objtool.h       |   16 ++++++++++++++++
+ tools/include/linux/objtool.h |   16 ++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
---- a/arch/x86/include/asm/efi.h
-+++ b/arch/x86/include/asm/efi.h
-@@ -7,6 +7,7 @@
- #include <asm/tlb.h>
- #include <asm/nospec-branch.h>
- #include <asm/mmu_context.h>
-+#include <asm/ibt.h>
- #include <linux/build_bug.h>
- #include <linux/kernel.h>
- #include <linux/pgtable.h>
-@@ -120,8 +121,12 @@ extern asmlinkage u64 __efi_call(void *f
- 	efi_enter_mm();							\
- })
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
  
--#define arch_efi_call_virt(p, f, args...)				\
--	efi_call((void *)p->f, args)					\
-+#define arch_efi_call_virt(p, f, args...) ({				\
-+	u64 ret, ibt = ibt_save();					\
-+	ret = efi_call((void *)p->f, args);				\
-+	ibt_restore(ibt);						\
-+	ret;								\
-+})
- 
- #define arch_efi_call_virt_teardown()					\
- ({									\
---- a/arch/x86/include/asm/ibt.h
-+++ b/arch/x86/include/asm/ibt.h
-@@ -39,6 +39,9 @@ static inline bool is_endbr(u32 val)
- 	return val == gen_endbr();
- }
- 
-+extern __noendbr u64 ibt_save(void);
-+extern __noendbr void ibt_restore(u64 save);
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
 +
  #else /* __ASSEMBLY__ */
  
- #ifdef CONFIG_X86_64
-@@ -61,6 +64,9 @@ static inline bool is_endbr(u32 val)
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
  
- static inline bool is_endbr(u32 val) { return false; }
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
  
-+static inline u64 ibt_save(void) { return 0; }
-+static inline void ibt_restore(u64 save) { }
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
+ 
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
 +
  #else /* __ASSEMBLY__ */
  
- #define ENDBR
---- a/arch/x86/kernel/apm_32.c
-+++ b/arch/x86/kernel/apm_32.c
-@@ -232,6 +232,7 @@
- #include <asm/paravirt.h>
- #include <asm/reboot.h>
- #include <asm/nospec-branch.h>
-+#include <asm/ibt.h>
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
  
- #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
- extern int (*console_blank_hook)(int);
-@@ -598,6 +599,7 @@ static long __apm_bios_call(void *_call)
- 	struct desc_struct	save_desc_40;
- 	struct desc_struct	*gdt;
- 	struct apm_bios_call	*call = _call;
-+	u64			ibt;
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
  
- 	cpu = get_cpu();
- 	BUG_ON(cpu != 0);
-@@ -607,11 +609,13 @@ static long __apm_bios_call(void *_call)
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
  
- 	apm_irq_save(flags);
- 	firmware_restrict_branch_speculation_start();
-+	ibt = ibt_save();
- 	APM_DO_SAVE_SEGS;
- 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
- 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
- 			  &call->esi);
- 	APM_DO_RESTORE_SEGS;
-+	ibt_restore(ibt);
- 	firmware_restrict_branch_speculation_end();
- 	apm_irq_restore(flags);
- 	gdt[0x40 / 8] = save_desc_40;
-@@ -676,6 +680,7 @@ static long __apm_bios_call_simple(void
- 	struct desc_struct	save_desc_40;
- 	struct desc_struct	*gdt;
- 	struct apm_bios_call	*call = _call;
-+	u64			ibt;
- 
- 	cpu = get_cpu();
- 	BUG_ON(cpu != 0);
-@@ -685,10 +690,12 @@ static long __apm_bios_call_simple(void
- 
- 	apm_irq_save(flags);
- 	firmware_restrict_branch_speculation_start();
-+	ibt = ibt_save();
- 	APM_DO_SAVE_SEGS;
- 	error = apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
- 					 &call->eax);
- 	APM_DO_RESTORE_SEGS;
-+	ibt_restore(ibt);
- 	firmware_restrict_branch_speculation_end();
- 	apm_irq_restore(flags);
- 	gdt[0x40 / 8] = save_desc_40;
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -594,6 +594,34 @@ static __init int setup_disable_pku(char
- __setup("nopku", setup_disable_pku);
- #endif /* CONFIG_X86_64 */
- 
-+#ifdef CONFIG_X86_KERNEL_IBT
-+
-+__noendbr u64 ibt_save(void)
-+{
-+	u64 msr = 0;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
-+		rdmsrl(MSR_IA32_S_CET, msr);
-+		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
-+	}
-+
-+	return msr;
-+}
-+
-+__noendbr void ibt_restore(u64 save)
-+{
-+	u64 msr;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
-+		rdmsrl(MSR_IA32_S_CET, msr);
-+		msr &= ~CET_ENDBR_EN;
-+		msr |= (save & CET_ENDBR_EN);
-+		wrmsrl(MSR_IA32_S_CET, msr);
-+	}
-+}
-+
-+#endif
-+
- static __always_inline void setup_cet(struct cpuinfo_x86 *c)
- {
- 	u64 msr = CET_ENDBR_EN;
+ #endif /* CONFIG_STACK_VALIDATION */
 
 
