@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E797C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCED1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350230AbiCHUSO (ORCPT
+        id S1350196AbiCHUTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 15:18:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        Tue, 8 Mar 2022 15:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350234AbiCHUSH (ORCPT
+        with ESMTP id S237572AbiCHUTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 15:18:07 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5643D396A7
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:17:10 -0800 (PST)
+        Tue, 8 Mar 2022 15:19:11 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2760B2B1A7
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:18:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646770630; x=1678306630;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=/2f3buvdzZ489CYmd0UNhrqGKDYP6fbJVlqrizvPDSU=;
-  b=QeQLRn19iBlEwl6zVi4JrkFnsBIfenPZu6A5Dnpsh/5HSGrGCF6slGaD
-   17Bjo4tbLQGNFWuDQJLM3pcmOb1AtEeUAhqRwEQcmicwP88dkLDlM7vBd
-   0L5GYw/JsoL7MVMhPf/D/5CBgoOymeTRaTjDEuOQJiiZDBuOTOxoTXAip
-   8PsNSsNRgtRGnj7Dv2GgrQlnl0TiQiw/hl6Qb++Y5tGCcU/7OKiF63Tg9
-   LlAleNjqB57W7I/unGgGIfIddJnPP9mvAI//60J/nai4SxkCEL84ojdYz
-   zS1dNhQUtRsuk+ZrOrJjVBdUmw/Eg6eZiLML8+KkGS/BUsN+BMkhdG0f9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="315518997"
+  t=1646770694; x=1678306694;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Fr9KtYwaIEu5lScz/3OrBD/b+7KWL6yNTirM5K2SHMM=;
+  b=TnGkBDFGkf3YDPbdarZuhieRKjF9MZpye91Ail0dm2euM+7+gjFgSjWK
+   NICGVdexr/Ji4p2+ytDlSAj2orxToIKNbHf0aqSiu7/KniPTcjUs8Z9cG
+   9WIDh03aCZnYiP9H5h5iOnYhadnMxTQ/BENm6nCj13dXW6wt23UjeJxR5
+   L6k00lcoYVIXCGtoATQ82obgwotfssk5EaX0ImoD6ntlzUJuqC6EwepXL
+   CG5Jb/Lz4jkXHRXMG34TGjPbEZvKkPsDhJO2aKqU7UPB8zG/NzkdW5Tdl
+   ZAUf96QghU/ROQuxfOA/ioL4GcdG2IbduSTInb3l/2H8q5JDlUXg0HGa+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254993116"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="315518997"
+   d="scan'208";a="254993116"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 12:17:09 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 12:18:13 -0800
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="547391400"
+   d="scan'208";a="547391684"
 Received: from ntebyanx-mobl7.amr.corp.intel.com (HELO [10.212.224.65]) ([10.212.224.65])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 12:17:07 -0800
-Message-ID: <e39f4ae8-b75d-6b84-1971-d9e27199877e@intel.com>
-Date:   Tue, 8 Mar 2022 12:17:01 -0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 12:18:12 -0800
+Message-ID: <8ecd5a73-7c0b-e534-3c46-7f405794a1d1@intel.com>
+Date:   Tue, 8 Mar 2022 12:18:08 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
+Subject: Re: [PATCHv5 06/30] x86/traps: Refactor exc_general_protection()
 Content-Language: en-US
 To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -56,11 +57,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org
 References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
- <20220302142806.51844-5-kirill.shutemov@linux.intel.com>
+ <20220302142806.51844-7-kirill.shutemov@linux.intel.com>
 From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv5 04/30] x86/tdx: Extend the confidential computing API to
- support TDX guests
-In-Reply-To: <20220302142806.51844-5-kirill.shutemov@linux.intel.com>
+In-Reply-To: <20220302142806.51844-7-kirill.shutemov@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -68,89 +67,14 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 3/2/22 06:27, Kirill A. Shutemov wrote:
-...
-> Like AMD SME/SEV, TDX uses a bit in the page table entry to indicate
-> encryption status of the page, but the polarity of the mask is
-> opposite to AMD: if the bit is set the page is accessible to VMM.
-
-I'd much rather this be in a code comment next to the weird-looking code
-than in the changelog.
-
-> Details about which bit in the page table entry to be used to indicate
-> shared/private state can be determined by using the TDINFO TDCALL.
-
-s/can be/are/
-
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> ---
->  arch/x86/Kconfig     |  1 +
->  arch/x86/coco/core.c |  4 ++++
->  arch/x86/coco/tdx.c  | 38 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 43 insertions(+)
+> TDX brings a new exception -- Virtualization Exception (#VE). Handling
+> of #VE structurally very similar to handling #GP.
 > 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index c346d66b51fc..93e67842e369 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
->  	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
->  	depends on X86_64 && CPU_SUP_INTEL
->  	depends on X86_X2APIC
-> +	select ARCH_HAS_CC_PLATFORM
->  	help
->  	  Support running as a guest under Intel TDX.  Without this support,
->  	  the guest kernel can not boot or run under TDX.
-> diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-> index fc1365dd927e..9113baebbfd2 100644
-> --- a/arch/x86/coco/core.c
-> +++ b/arch/x86/coco/core.c
-> @@ -90,6 +90,8 @@ u64 cc_mkenc(u64 val)
->  	switch (vendor) {
->  	case CC_VENDOR_AMD:
->  		return val | cc_mask;
-> +	case CC_VENDOR_INTEL:
-> +		return val & ~cc_mask;
->  	default:
->  		return val;
->  	}
-> @@ -100,6 +102,8 @@ u64 cc_mkdec(u64 val)
->  	switch (vendor) {
->  	case CC_VENDOR_AMD:
->  		return val & ~cc_mask;
-> +	case CC_VENDOR_INTEL:
-> +		return val | cc_mask;
->  	default:
->  		return val;
->  	}
-> diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-> index 17365fd40ba2..912ef12e434e 100644
-> --- a/arch/x86/coco/tdx.c
-> +++ b/arch/x86/coco/tdx.c
-> @@ -5,8 +5,12 @@
->  #define pr_fmt(fmt)     "tdx: " fmt
->  
->  #include <linux/cpufeature.h>
-> +#include <asm/coco.h>
->  #include <asm/tdx.h>
->  
-> +/* TDX module Call Leaf IDs */
-> +#define TDX_GET_INFO			1
-> +
->  /*
->   * Wrapper for standard use of __tdx_hypercall with no output aside from
->   * return code.
-> @@ -25,8 +29,32 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
->  	return __tdx_hypercall(&args, 0);
->  }
->  
-> +static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-> +				   struct tdx_module_output *out)
-> +{
-> +	if (__tdx_module_call(fn, rcx, rdx, r8, r9, out))
-> +		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
-> +}
+> Extract two helpers from exc_general_protection() that can be reused for
+> handling #VE.
+> 
+> No functional changes.
+> 
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-I really think we need to document the panic()s that we add.  It might
-mean duplicating a wee bit of the text from the SEAMCALL/TDCALL
-assembly, but I think it's worth it so that folks don't think this is an
-over-eager panic().
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
