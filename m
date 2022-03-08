@@ -2,105 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75631C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D85C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347447AbiCHOZf (ORCPT
+        id S1345309AbiCHO0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:25:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51240 "EHLO
+        Tue, 8 Mar 2022 09:26:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347353AbiCHOZX (ORCPT
+        with ESMTP id S245179AbiCHO0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:25:23 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A236347AF5;
-        Tue,  8 Mar 2022 06:24:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646749467;
-  x=1678285467;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6KwAXn4jvSph/kkMgeY9egBCzjFV3kNndn+PTRpZ548=;
-  b=gKmdEYXwJY8KE9ZYdnBVVQtB70opXBFB+odyd2FHOGMCIoxFBwUyFEa1
-   XPgSZNVeLUtEGYmjhhBb625SYjZLOIx7otitfxn5691lBZzcoGl9+Z+0z
-   WpbM0YIphiocp0362ZP4M0yVQtjWzFFpWlqQuE6qDox+Fi32ylZMvfEtD
-   HvwH3vOuHoT9PfWHb5A7N68h7P7QlyRBeKtX7KerqdF3g/KoaBpGMiNk3
-   4/DMvuaBcbLJWGNA5OymjYGNy8iOG2+QUinBq3Qck+rPZ8Zj6BlPRvzaM
-   Vx+4vhyt3IqIqkOJBOFs3EVozN4Frnjgw7wQ/hV0Jto63X/YMpbTQQlEx
-   g==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <krzysztof.kozlowski@canonical.com>, <tglx@linutronix.de>,
-        <daniel.lezcano@linaro.org>
-CC:     <kernel@axis.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <alim.akhtar@samsung.com>, <robh+dt@kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [PATCH v2 2/4] dt-bindings: timer: exynos4210-mct: Support using only local timer
-Date:   Tue, 8 Mar 2022 15:24:08 +0100
-Message-ID: <20220308142410.3193729-3-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220308142410.3193729-1-vincent.whitchurch@axis.com>
-References: <20220308142410.3193729-1-vincent.whitchurch@axis.com>
+        Tue, 8 Mar 2022 09:26:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 462704B87D
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:25:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646749515;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kumltRP5xoYTs9zCrvASai08H9k31B5+7rHSh9VugPY=;
+        b=aN7D5xEulCZO4qN5dGw0dpoS6gsjmzUc/Uu5dRThH8THuJ03gvhVJ5t2oCX9AT1rFAzJbz
+        VIzI9nfc13VS5F1Wb6vXSMroz0Wc+YKQBzpw6p3UYNPuTKF6SehruKMB5Ows1Cn5j2p1U7
+        tTqCE2aO47szaAdMARSxBX4OKHTJHro=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-21-dhAVJKmAOSqQNrnUadIz_Q-1; Tue, 08 Mar 2022 09:25:14 -0500
+X-MC-Unique: dhAVJKmAOSqQNrnUadIz_Q-1
+Received: by mail-wm1-f72.google.com with SMTP id n62-20020a1ca441000000b0038124c99ebcso6504185wme.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 06:25:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=kumltRP5xoYTs9zCrvASai08H9k31B5+7rHSh9VugPY=;
+        b=r34MY34UFAySL9IZ3mzbd/JFWfJWbR5zgIjWiQS5zvp+N3aw7EM7n1lbRNYdbg/XwX
+         +0tzOFOBZy+8GTfR/6c1V8RXbknnxqcOjJjjUNVxfHhjFkUsOAjDzsu4cf06KLTRV3KA
+         x0I0fFodXMZmMMJxt3bHdIB3itBfaMqUTeOyKNiuxJ3rUapntHrE/USdcfwZPXSVZZKc
+         407zTBiLZGuON0yno8taFyZow5woNWQI3/2dKTBD1sfH2yldkDl/ztq9r6rL5r45V2xK
+         ma2QfSqBYrCM32KEuNC4uDYJBNxFyFQGakVA2Zrnz6z8udWtHZk7dP8JMVlIPa+R3SYQ
+         ojrA==
+X-Gm-Message-State: AOAM531sLgsnd+CRhiRlQiwzogDiUAvwAXjSWavvvtprCtXuEZrqDF7e
+        vVnbu2IV4+eAKDNR3kO2yWnXha+vbVHo5ljHwz8mOBF+uzTfOhQgaNpZk33FLkv/0HeAU2Hfx+T
+        u3AXRyMf9Sav30sG/j8XGAA9z
+X-Received: by 2002:a05:6000:154b:b0:1f0:6019:ea3a with SMTP id 11-20020a056000154b00b001f06019ea3amr12330570wry.395.1646749512989;
+        Tue, 08 Mar 2022 06:25:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxznZCLNljth4M8V08Um5+lfKLr3E/0Oh4tOhNEBRjr9ngJ4D3YE+L+JEPV/yWQExUVOsyeVQ==
+X-Received: by 2002:a05:6000:154b:b0:1f0:6019:ea3a with SMTP id 11-20020a056000154b00b001f06019ea3amr12330552wry.395.1646749512782;
+        Tue, 08 Mar 2022 06:25:12 -0800 (PST)
+Received: from ?IPV6:2003:cb:c708:b000:acda:b420:16aa:6b67? (p200300cbc708b000acdab42016aa6b67.dip0.t-ipconnect.de. [2003:cb:c708:b000:acda:b420:16aa:6b67])
+        by smtp.gmail.com with ESMTPSA id v14-20020adfd18e000000b0020373e5319asm244959wrc.103.2022.03.08.06.25.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 06:25:12 -0800 (PST)
+Message-ID: <d170ca91-4913-900c-1d2b-b8fc63076124@redhat.com>
+Date:   Tue, 8 Mar 2022 15:25:11 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] KVM: use vcalloc/__vcalloc for very large allocations
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, stable@vger.kernel.org
+References: <20220308105918.615575-1-pbonzini@redhat.com>
+ <20220308105918.615575-4-pbonzini@redhat.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220308105918.615575-4-pbonzini@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ARTPEC-8 SoC has a quad-core Cortex-A53 and a single-core Cortex-A5
-which share one MCT with one global and eight local timers.  The
-Cortex-A53 and Cortex-A5 do not have cache-coherency between them, and
-therefore run two separate kernels.
+On 08.03.22 11:59, Paolo Bonzini wrote:
+> Allocations whose size is related to the memslot size can be arbitrarily
+> large.  Do not use kvzalloc/kvcalloc, as those are limited to "not crazy"
+> sizes that fit in 32 bits.  Now that it is available, they can use either
+> vcalloc or __vcalloc, the latter if accounting is required.
+> 
+> Cc: stable@vger.kernel.org
+> Cc: kvm@vger.kernel.org
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 
-The Cortex-A53 boots first and starts the global FRC and also registers
-a clock events device using the global timer.  (This global timer clock
-events is usually replaced by arch timer clock events for each of the
-cores.)
+Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
 
-When the A5 boots, we should not use the global timer interrupts or
-write to the global timer registers.  This is because even if there are
-four global comparators, the control bits for all four are in the same
-registers, and we would need to synchronize between the cpus.  Instead,
-the global timer FRC (already started by the A53) should be used as the
-clock source, and one of the local timers which are not used by the A53
-can be used for clock events on the A5.
+?
 
-To support this usecase, add a property to the binding to specify the
-first local timer index to be used. If this parameter is non-zero, the
-global timer interrupts will also not be used.
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
 
-Notes:
-    v2: New.
-
- .../bindings/timer/samsung,exynos4210-mct.yaml           | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml b/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-index dce42f1f7574..46f466081836 100644
---- a/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-+++ b/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-@@ -47,6 +47,15 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  local-timer-index:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 0
-+    maximum: 15     # Last local timer index
-+    description: |
-+      If present, sets the first local timer index to use.  If this value is
-+      set to a non-default value, the global timer will not be used for
-+      interrupts.
-+
-   interrupts:
-     description: |
-       Interrupts should be put in specific order. This is, the local timer
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
