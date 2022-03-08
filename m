@@ -2,112 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5140C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 287C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349233AbiCHRoX (ORCPT
+        id S1349248AbiCHRp2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        Tue, 8 Mar 2022 12:45:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240785AbiCHRoS (ORCPT
+        with ESMTP id S1346747AbiCHRpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:44:18 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B6C3A72C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:43:21 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id j12so2721735ils.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:43:21 -0800 (PST)
+        Tue, 8 Mar 2022 12:45:25 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7C6532F4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:44:28 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id n7so9889011oif.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:44:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=022kZssKRxaMpugjGKU5wCX5ZoP2APDtJSWAVWLNIMQ=;
-        b=dA59ED+AFM+Fe2V8ZR21p+XklxvwaaUtpN1Ip52xrgzm4IEG+PdcjrBowbK5kKeixO
-         c5n7Oy0iLUzwSDyixgpat0HfsjPRCaT3v2KLKZagI76RrlLHzMWPUkixdhpEJ8nLswwf
-         2HcWB8SpNjZtMKXI296hWcEDZ4tUNHsrMOzsj4++AcudxjE587agyL0wzKbhKteJHQX1
-         UvSKc3cRgYJo5IO0ztlbd1Z4y/xVMgDgK9k90Rhm1tAFo9ObPUS7mm7+QR2hboxHLpvB
-         dsZVDckhrER6CTwzFUAOfZ7O/ziRRZ00VT0gZk7FxEujQuESJgyxx3/Ja46sb5vEPpEu
-         LE8Q==
+        bh=LWBHo8zyRbtdgwtvZ69Wg4Ge808fFLN2tC6X5Zn9ZkA=;
+        b=aDCxkrA6yFPydxBcxmDwIW0PjIDqrTBzHkAdiRd9zZtESMHM6/XNtBZ2HVZV1HjtZr
+         iu/5YMOzeJBcov436XH1FbQ6ShbJGMgIeiTEI8Hg6WPEAII6pCfcLL695yjiR2WoZSBe
+         PmK5cwoG3mPRN/vBYNW7DTw8YI/Xc0AGHfHA7wpaqcVQzeUNMxbkYViIjoyH8cliUXz0
+         IpIpyGWV6eN0YYbxtq2bmhmlbfsgterUKbHbYPPWCK9Ryl8+5/2Ss9JTibdIxOcT1hQy
+         jXZ3Om/LFm+g95bwfVQ8DhdPDr/3VwR/NY35q/FymjdgvjUtSWp11xARAQHlwrjP113c
+         OcLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=022kZssKRxaMpugjGKU5wCX5ZoP2APDtJSWAVWLNIMQ=;
-        b=N6r/yhNpIPzna/g/54qpjdFyTEcNoMANLjIfT0ZzU/9oK2VXeAn86H3iMv3hz1jjwt
-         viaB5OQ9bmdDt2p6VLcghiUnlb5ljqVvM11p0V9X82dZ192ur6VWKn1f10Q+cL9N+uGu
-         +CkOjXlj/r+v6nBKvz+bp7pMhGV0UqA5aza2pv8+EdRkh+cLW6qi1te/EQlt/su8wfTF
-         iwxIdWJBhCtrE3bM7b/5hrnQ5v0az3NzyHLkIkkFEIWEgRRKe0iEc9gI2o+DuoaSGC6p
-         yEXTwcbO1zYqDCm17k7/YT4QioVwUw/t3ymKLW12v2Hf8W3pmqX2AGWHcC87TPX6/aHy
-         +eYA==
-X-Gm-Message-State: AOAM533OY3+HLoa4TtgcDUW7AqoJl9xu7LMIgCu0TY5wtIl3P0YHasTU
-        uqh9yHpoiL341lJkKTEWg0k5cg==
-X-Google-Smtp-Source: ABdhPJzpifjGAbuu6xRUlnf5+5w0PowUD9oB5ib2xOZlLUbFVmQQfdultSBOPWNeGa1Cxn5pvTWrGQ==
-X-Received: by 2002:a92:c24a:0:b0:2c2:8100:11ec with SMTP id k10-20020a92c24a000000b002c2810011ecmr15889480ilo.69.1646761400849;
-        Tue, 08 Mar 2022 09:43:20 -0800 (PST)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id a18-20020a6b6c12000000b005ece5a4f2dfsm10029480ioh.54.2022.03.08.09.43.20
+        bh=LWBHo8zyRbtdgwtvZ69Wg4Ge808fFLN2tC6X5Zn9ZkA=;
+        b=4qSA6kVd46b92qVY56WgyEK2JrJqLLxHTr6t5cU08fXG1qGcY7QFqKiakg+9WUVCc3
+         a23soqUiITdChwuT5OmSAZcsmDMKp1PogpbT+OyUaRmNI2Lpkfa5h4HCpuuMXm1Cw3yj
+         NS0faQ6xqPRHv2Da3PM4Dm8GSgiChhlAgE1KVhXciCF3bDDAkvWsmtFvTW2MWampBypi
+         tk0FmZbGdIMPFtCfMW9nEaiDmrjSYsKh3k0cSleM2g2gF/zJnkFC6zjBlTDgmu6wcO/W
+         1AbZrqNphVzaEsNz8YY9GpqvNDG4oyjAUaqCDmtvhJF3kpzo0bmvQYA/RjrXevFCgwwr
+         yo9g==
+X-Gm-Message-State: AOAM531Zg/a7N767HiJl1JyYTYzfG7BdMWr5iE3h0lwNYWDp1MeyWvjp
+        nQoZdlo9SCJuXr7p+YxAwpq0mA==
+X-Google-Smtp-Source: ABdhPJwAg6e9dMfVsqqM7of4Q4JH4WF/O8PgvyZH6AwlM7Xy7iK9Wv14Io5Dt/gTtcDvPi7FPeA2Hg==
+X-Received: by 2002:a05:6808:10c8:b0:2d4:a070:d20b with SMTP id s8-20020a05680810c800b002d4a070d20bmr3370323ois.88.1646761467535;
+        Tue, 08 Mar 2022 09:44:27 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id r4-20020a9d5cc4000000b005af6f4ff5e2sm7982132oti.61.2022.03.08.09.44.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:43:20 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:43:16 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH] KVM: use kvcalloc for array allocations
-Message-ID: <YieVtBPtKOyatej+@google.com>
-References: <20220308163318.819164-1-pbonzini@redhat.com>
+        Tue, 08 Mar 2022 09:44:27 -0800 (PST)
+Date:   Tue, 8 Mar 2022 09:46:10 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@codeaurora.org,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v10 3/7] pinctrl: qcom: Update macro name to LPI specific
+Message-ID: <YieWYtK5gCCIaPA+@ripper>
+References: <1646737394-4740-1-git-send-email-quic_srivasam@quicinc.com>
+ <1646737394-4740-4-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220308163318.819164-1-pbonzini@redhat.com>
+In-Reply-To: <1646737394-4740-4-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:33:18AM -0500, Paolo Bonzini wrote:
-> Instead of using array_size, use a function that takes care of the
-> multiplication.  While at it, switch to kvcalloc since this allocation
-> should not be very large.
+On Tue 08 Mar 03:03 PST 2022, Srinivasa Rao Mandadapu wrote:
+
+> Update NO_SLEW macro to LPI_NO_SLEW macro as this driver lpi specific.
 > 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
 > ---
->  arch/x86/kvm/cpuid.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+>  drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index afcdd4e693e5..419eb8e14f79 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -1248,8 +1248,7 @@ int kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
->  	if (sanity_check_entries(entries, cpuid->nent, type))
->  		return -EINVAL;
+> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> index 2f19ab4..3c15f80 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+> @@ -40,7 +40,7 @@
+>  #define LPI_GPIO_KEEPER			0x2
+>  #define LPI_GPIO_PULL_UP		0x3
+>  #define LPI_GPIO_DS_TO_VAL(v)		(v / 2 - 1)
+> -#define NO_SLEW				-1
+> +#define LPI_NO_SLEW				-1
 >  
-> -	array.entries = vzalloc(array_size(sizeof(struct kvm_cpuid_entry2),
-> -					   cpuid->nent));
-> +	array.entries = kvcalloc(sizeof(struct kvm_cpuid_entry2), cpuid->nent, GFP_KERNEL);
-
-Even though this allocation is short-lived, should we use
-GFP_KERNEL_ACCOUNT instead?
-
-Otherwise:
-
-Reviewed-by: Oliver Upton <oupton@google.com>
-
-Thanks!
-
-
->  	if (!array.entries)
->  		return -ENOMEM;
+>  #define LPI_FUNCTION(fname)			                \
+>  	[LPI_MUX_##fname] = {		                \
+> @@ -193,14 +193,14 @@ static const struct lpi_pingroup sm8250_groups[] = {
+>  	LPI_PINGROUP(3, 8, swr_rx_clk, qua_mi2s_data, _, _),
+>  	LPI_PINGROUP(4, 10, swr_rx_data, qua_mi2s_data, _, _),
+>  	LPI_PINGROUP(5, 12, swr_tx_data, swr_rx_data, _, _),
+> -	LPI_PINGROUP(6, NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
+> -	LPI_PINGROUP(7, NO_SLEW, dmic1_data, i2s1_ws, _, _),
+> -	LPI_PINGROUP(8, NO_SLEW, dmic2_clk, i2s1_data, _, _),
+> -	LPI_PINGROUP(9, NO_SLEW, dmic2_data, i2s1_data, _, _),
+> +	LPI_PINGROUP(6, LPI_NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
+> +	LPI_PINGROUP(7, LPI_NO_SLEW, dmic1_data, i2s1_ws, _, _),
+> +	LPI_PINGROUP(8, LPI_NO_SLEW, dmic2_clk, i2s1_data, _, _),
+> +	LPI_PINGROUP(9, LPI_NO_SLEW, dmic2_data, i2s1_data, _, _),
+>  	LPI_PINGROUP(10, 16, i2s2_clk, wsa_swr_clk, _, _),
+>  	LPI_PINGROUP(11, 18, i2s2_ws, wsa_swr_data, _, _),
+> -	LPI_PINGROUP(12, NO_SLEW, dmic3_clk, i2s2_data, _, _),
+> -	LPI_PINGROUP(13, NO_SLEW, dmic3_data, i2s2_data, _, _),
+> +	LPI_PINGROUP(12, LPI_NO_SLEW, dmic3_clk, i2s2_data, _, _),
+> +	LPI_PINGROUP(13, LPI_NO_SLEW, dmic3_data, i2s2_data, _, _),
+>  };
 >  
-> @@ -1267,7 +1266,7 @@ int kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
->  		r = -EFAULT;
+>  static const struct lpi_function sm8250_functions[] = {
+> @@ -435,7 +435,7 @@ static int lpi_config_set(struct pinctrl_dev *pctldev, unsigned int group,
+>  			}
 >  
->  out_free:
-> -	vfree(array.entries);
-> +	kvfree(array.entries);
->  	return r;
->  }
+>  			slew_offset = g->slew_offset;
+> -			if (slew_offset == NO_SLEW)
+> +			if (slew_offset == LPI_NO_SLEW)
+>  				break;
 >  
+>  			mutex_lock(&pctrl->slew_access_lock);
 > -- 
-> 2.31.1
+> 2.7.4
 > 
