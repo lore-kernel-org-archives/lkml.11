@@ -2,125 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 813CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 816B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238663AbiCHQL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:11:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
+        id S1348226AbiCHQMA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:12:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348216AbiCHQLZ (ORCPT
+        with ESMTP id S232999AbiCHQL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:11:25 -0500
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933EC506FA;
-        Tue,  8 Mar 2022 08:10:28 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2dc242a79beso196646427b3.8;
-        Tue, 08 Mar 2022 08:10:28 -0800 (PST)
+        Tue, 8 Mar 2022 11:11:58 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A3550B04
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:11:02 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id 19so11198080wmy.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 08:11:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rKTCr+Og+sv9jUdP0DwOyofew83xNo3e9HNzBgkZFCU=;
-        b=CNP9MSLV8F9EMIaBfN+SPUUjOSXAQiMSDSRUNUsWzrtvpIaoxkqD0SK26zoDRBBJd6
-         mmlDvUyUGZhmsiIhpuZM5VyyRjRrho4NVqzbRYcazg6qqZyhYE3estKDevx9k2unZw88
-         NV0m61L3tbKNh1OLLWl1xxD0y00dD7IKXYaSrllS8cJ4mzeh+2mBskWD8f5PTEjPckDD
-         /1DdifV9Ep4hg/ovtHjrFTRtvDE4U86ymG9e+0oHIlaa0FuL/rlgbDfDOTddbv97LASz
-         mebZq6PwtoCnxrDo5exoxmSEDQfNeLVWnsdER+o360b9cHFbkNr040tEKs7LRu5K1ynb
-         HyJQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oR1I0j29FD7B60ybG21a3xvyI7Hv4VggErPMrErL0E0=;
+        b=EtnJXIsNFwmVdSvAfZyYisQ2B9NsK+NizivkiRQROrcDMSlbkKyKE8R2Cq0mQ0wDfC
+         G8KSNyWxz4AC431rn/c3ItQumYk+gODZDtVGht6izSdzp+Yb4Wy495QFImTB1Bs/XOV/
+         sfm5TnVEn5n0xIGq1c60XskQyW53uLtQecCs8LENwhJpJ/kBz73auyIe7sN/Gf4r8UWC
+         YYo3WtzaJt5A58txAorvFi1TC3EU9RfZOTn9kYsHlAWgA7bmuMC38UjwlWR3zjXUsds4
+         0nPG+gzxGyEe7jTWFAfc7nZSYHnBztEcpcssYVCR/cE/Aqp+OK0OfPPmb+Zs8T7JaAGL
+         D8ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rKTCr+Og+sv9jUdP0DwOyofew83xNo3e9HNzBgkZFCU=;
-        b=qt/JJsALBcs9BIbuw60ETbGckSJn21f2Hj51CYlEAINWfXx5u2t0SS3Sj0klFRvW4m
-         N0skaq57RDNB5aCfx4cnnNxfiB61QyAT3yzqCYWhW5SWiSnZkHl8zvhV05fZ9gCcwqwA
-         794wV0GjYuz3q4mwCVEAkZgK/cyLvBCFnLb/Nsrc7gynUuUf16/iOOp9pMtvTNbPrRdK
-         s6hdS9GPfM1c4n/Pto9aYamzKpVvo9QBo2Vhgu4uAf73b2jZrkFfl754OG82UF/smykk
-         LcSVJ/IdQLSwXhEFvWzZa2z5B2MnA0ES7ToiKGQJfJ7C2Ozen5oeC2xoJ00CDiULVs7D
-         M8Nw==
-X-Gm-Message-State: AOAM530cxnzUCKShOi1oVcqFXTXtCH5fwnLsqbVDccx6xCd2HzaDTzrW
-        CrXVOhilPLzjuXErGLMFOmMmKgc8gWT3DWRW2PI=
-X-Google-Smtp-Source: ABdhPJwrIeggD3PCTymggq9Gq/D99TWUJYcaJJQ0yB2mYPT+Y2wpKYg884AglLmVS1Qlq7w65ZAUrluNoskJc6rsnvk=
-X-Received: by 2002:a81:5789:0:b0:2d7:9ad:44d0 with SMTP id
- l131-20020a815789000000b002d709ad44d0mr12777631ywb.488.1646755827825; Tue, 08
- Mar 2022 08:10:27 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oR1I0j29FD7B60ybG21a3xvyI7Hv4VggErPMrErL0E0=;
+        b=t9WiZlNBEIuNveBw/JlUBaiBOm0tgsG5ebpNqwuMfhDwLw9Mr03TrmgqAGDNRLIAOa
+         sH5r/ABnC0wzKdw5uG1tvlAjvZCq8Uvi+FcXNnl+TiuUirekf+mP8nRG2qaM9z+sWdUE
+         M7L7eEegMJfLhOCdRy9eQiMcSLfU1UUE63T/ic7zqO36eYHTQBq3YRWDfbw6LdQYTZpa
+         06/QPjlLmX7j+UncoFWyvmznmefKcn/Lp8LKM/m9+fhcAtsVJ0P4eA3gq2Xj/DJuiw0u
+         tCpnz2QF6zO9A7i8z+ed8tzLTYgBRs2HCsm+Ww7d7sUu38unJkTAx2QlNy5wt/pAKADh
+         Ztow==
+X-Gm-Message-State: AOAM533AkcBsXiE5fTG0b+rjZqRE2NPEnre7TYdVWivU/QJLRthaMzD8
+        TgXjx/orALHy58/tPsljf3VyOw==
+X-Google-Smtp-Source: ABdhPJzAve1LVkuh6cQToviXcGeCSgvLcohwkWt1xoYUKo0PaVMt1yJXrSASyYYPQWyiU7Nur3M3sg==
+X-Received: by 2002:a1c:f315:0:b0:381:1f6d:6ca6 with SMTP id q21-20020a1cf315000000b003811f6d6ca6mr4211928wmq.25.1646755860806;
+        Tue, 08 Mar 2022 08:11:00 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id x14-20020adfffce000000b001f1dfee4867sm14817258wrs.99.2022.03.08.08.11.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 08:11:00 -0800 (PST)
+Date:   Tue, 8 Mar 2022 16:10:58 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] configs/debug: Restore DEBUG_INFO=y for overriding
+Message-ID: <20220308161058.zuuze2jvhbiq53xy@maple.lan>
+References: <20220308153524.8618-1-quic_qiancai@quicinc.com>
 MIME-Version: 1.0
-References: <20220307162207.188028559@linuxfoundation.org> <Yid4BNbLm3mStBi2@debian>
-In-Reply-To: <Yid4BNbLm3mStBi2@debian>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Tue, 8 Mar 2022 16:09:51 +0000
-Message-ID: <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308153524.8618-1-quic_qiancai@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 3:36 PM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi Greg,
->
-> On Mon, Mar 07, 2022 at 05:28:50PM +0100, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.15.27 release.
-> > There are 256 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
+On Tue, Mar 08, 2022 at 10:35:24AM -0500, Qian Cai wrote:
+> Previously, I failed to realize that Kees' patch [1] has not been merged
+> into the mainline yet, and dropped DEBUG_INFO=y too eagerly from the
+> mainline. As the results, "make debug.config" won't be able to flip
+> DEBUG_INFO=n from the existing .config. This should close the gaps of a
+> few weeks before Kees' patch is there, and work regardless of their
+> merging status anyway.
+> 
+> [1] https://lore.kernel.org/all/20220125075126.891825-1-keescook@chromium.org/
+> 
+> Reported-by: Daniel Thompson <daniel.thompson@linaro.org>
+> Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
 
-<snip>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 
->
-> Mips failures,
->
-> allmodconfig, gpr_defconfig and mtx1_defconfig fails with:
 
-And, here is the bisect log:
+Daniel.
 
-# bad: [7b9aacd770fa105a0a5f0be43bc72ce176d30331] Linux 5.15.27-rc2
-# good: [8993e6067f263765fd26edabf3e3012e3ec4d81e] Linux 5.15.26
-git bisect start 'HEAD' 'v5.15.26'
-# bad: [6d4f8e67749d97f83f377911e874ca116be71fbd] drm/amd/display: For
-vblank_disable_immediate, check PSR is really used
-git bisect bad 6d4f8e67749d97f83f377911e874ca116be71fbd
-# bad: [527ec9ffce51cb10a3172380aba30066ee2d056c] Input: ti_am335x_tsc
-- fix STEPCONFIG setup for Z2
-git bisect bad 527ec9ffce51cb10a3172380aba30066ee2d056c
-# good: [96039b910c5a933221faa9aeca4f2fb2fa4976a1] arm64: Mark
-start_backtrace() notrace and NOKPROBE_SYMBOL
-git bisect good 96039b910c5a933221faa9aeca4f2fb2fa4976a1
-# bad: [4778338032b338f80393b9dfab6832d02bddb819] MIPS: fix
-local_{add,sub}_return on MIPS64
-git bisect bad 4778338032b338f80393b9dfab6832d02bddb819
-# good: [ba52217d4edd5824427134cfdfa9c2ab4390d77f] drm/amdgpu: check
-vm ready by amdgpu_vm->evicting flag
-git bisect good ba52217d4edd5824427134cfdfa9c2ab4390d77f
-# good: [9eeb0cb7e2d675e3bbecc08302e3bafe21c61c52] NFSD: Fix
-zero-length NFSv3 WRITEs
-git bisect good 9eeb0cb7e2d675e3bbecc08302e3bafe21c61c52
-# good: [8e68b6e3bdce82f387619e7fb6e85e6be9820182]
-tools/resolve_btf_ids: Close ELF file on error
-git bisect good 8e68b6e3bdce82f387619e7fb6e85e6be9820182
-# good: [238d4d64ad4da4acefedd73094be0d1051897810] mtd: spi-nor: Fix
-mtd size for s3an flashes
-git bisect good 238d4d64ad4da4acefedd73094be0d1051897810
-# first bad commit: [4778338032b338f80393b9dfab6832d02bddb819] MIPS:
-fix local_{add,sub}_return on MIPS64
 
-Reverting 4778338032b3 ("MIPS: fix local_{add,sub}_return on MIPS64")
-has fixed all the 3 build failures.
-
--- 
-Regards
-Sudip
+> ---
+>  kernel/configs/debug.config | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/configs/debug.config b/kernel/configs/debug.config
+> index 07df6d93c4df..e8db8d938661 100644
+> --- a/kernel/configs/debug.config
+> +++ b/kernel/configs/debug.config
+> @@ -16,6 +16,7 @@ CONFIG_SYMBOLIC_ERRNAME=y
+>  #
+>  # Compile-time checks and compiler options
+>  #
+> +CONFIG_DEBUG_INFO=y
+>  CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+>  CONFIG_DEBUG_SECTION_MISMATCH=y
+>  CONFIG_FRAME_WARN=2048
+> -- 
+> 2.30.2
+> 
