@@ -2,138 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 287C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED480C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349248AbiCHRp2 (ORCPT
+        id S1348638AbiCHRqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:45:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
+        Tue, 8 Mar 2022 12:46:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346747AbiCHRpZ (ORCPT
+        with ESMTP id S232292AbiCHRq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:45:25 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7C6532F4
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:44:28 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id n7so9889011oif.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:44:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LWBHo8zyRbtdgwtvZ69Wg4Ge808fFLN2tC6X5Zn9ZkA=;
-        b=aDCxkrA6yFPydxBcxmDwIW0PjIDqrTBzHkAdiRd9zZtESMHM6/XNtBZ2HVZV1HjtZr
-         iu/5YMOzeJBcov436XH1FbQ6ShbJGMgIeiTEI8Hg6WPEAII6pCfcLL695yjiR2WoZSBe
-         PmK5cwoG3mPRN/vBYNW7DTw8YI/Xc0AGHfHA7wpaqcVQzeUNMxbkYViIjoyH8cliUXz0
-         IpIpyGWV6eN0YYbxtq2bmhmlbfsgterUKbHbYPPWCK9Ryl8+5/2Ss9JTibdIxOcT1hQy
-         jXZ3Om/LFm+g95bwfVQ8DhdPDr/3VwR/NY35q/FymjdgvjUtSWp11xARAQHlwrjP113c
-         OcLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LWBHo8zyRbtdgwtvZ69Wg4Ge808fFLN2tC6X5Zn9ZkA=;
-        b=4qSA6kVd46b92qVY56WgyEK2JrJqLLxHTr6t5cU08fXG1qGcY7QFqKiakg+9WUVCc3
-         a23soqUiITdChwuT5OmSAZcsmDMKp1PogpbT+OyUaRmNI2Lpkfa5h4HCpuuMXm1Cw3yj
-         NS0faQ6xqPRHv2Da3PM4Dm8GSgiChhlAgE1KVhXciCF3bDDAkvWsmtFvTW2MWampBypi
-         tk0FmZbGdIMPFtCfMW9nEaiDmrjSYsKh3k0cSleM2g2gF/zJnkFC6zjBlTDgmu6wcO/W
-         1AbZrqNphVzaEsNz8YY9GpqvNDG4oyjAUaqCDmtvhJF3kpzo0bmvQYA/RjrXevFCgwwr
-         yo9g==
-X-Gm-Message-State: AOAM531Zg/a7N767HiJl1JyYTYzfG7BdMWr5iE3h0lwNYWDp1MeyWvjp
-        nQoZdlo9SCJuXr7p+YxAwpq0mA==
-X-Google-Smtp-Source: ABdhPJwAg6e9dMfVsqqM7of4Q4JH4WF/O8PgvyZH6AwlM7Xy7iK9Wv14Io5Dt/gTtcDvPi7FPeA2Hg==
-X-Received: by 2002:a05:6808:10c8:b0:2d4:a070:d20b with SMTP id s8-20020a05680810c800b002d4a070d20bmr3370323ois.88.1646761467535;
-        Tue, 08 Mar 2022 09:44:27 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id r4-20020a9d5cc4000000b005af6f4ff5e2sm7982132oti.61.2022.03.08.09.44.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:44:27 -0800 (PST)
-Date:   Tue, 8 Mar 2022 09:46:10 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
-        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@codeaurora.org,
-        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
-        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, swboyd@chromium.org,
-        judyhsiao@chromium.org, Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v10 3/7] pinctrl: qcom: Update macro name to LPI specific
-Message-ID: <YieWYtK5gCCIaPA+@ripper>
-References: <1646737394-4740-1-git-send-email-quic_srivasam@quicinc.com>
- <1646737394-4740-4-git-send-email-quic_srivasam@quicinc.com>
+        Tue, 8 Mar 2022 12:46:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AB053E3A
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:45:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3375FB815E0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:45:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC4BC340F4;
+        Tue,  8 Mar 2022 17:45:28 +0000 (UTC)
+Date:   Tue, 8 Mar 2022 12:45:27 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Abel Vesa <abelvesa@linux.com>, Rabin Vincent <rabin@rab.in>,
+        Colin Cross <ccross@android.com>
+Subject: Re: ftrace bug
+Message-ID: <20220308124527.0ef9ca63@gandalf.local.home>
+In-Reply-To: <1dec8992-b924-7ea2-8e45-a6bbc10a6086@nokia.com>
+References: <9a86b2c9-1009-1683-442e-61c5a7dc8cf3@broadcom.com>
+        <20220307082450.641ed866@gandalf.local.home>
+        <62c01368-b67f-66af-2e31-d62f4df75b61@broadcom.com>
+        <20220308102007.6c6618e7@gandalf.local.home>
+        <1dec8992-b924-7ea2-8e45-a6bbc10a6086@nokia.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646737394-4740-4-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 08 Mar 03:03 PST 2022, Srinivasa Rao Mandadapu wrote:
+On Tue, 8 Mar 2022 17:02:53 +0100
+Alexander Sverdlin <alexander.sverdlin@nokia.com> wrote:
 
-> Update NO_SLEW macro to LPI_NO_SLEW macro as this driver lpi specific.
+> This problem is addressed by:
 > 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> commit 8113e622926ef6590771ede0f7f64821e1751b67
+> Author: Alex Sverdlin <alexander.sverdlin@nokia.com>
+> Date:   Mon Sep 27 14:02:45 2021 -0700
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Thanks Alex. I knew it was a good idea not to try to figure this out on my
+own ;-)
 
-Regards,
-Bjorn
-
-> ---
->  drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-> index 2f19ab4..3c15f80 100644
-> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-> @@ -40,7 +40,7 @@
->  #define LPI_GPIO_KEEPER			0x2
->  #define LPI_GPIO_PULL_UP		0x3
->  #define LPI_GPIO_DS_TO_VAL(v)		(v / 2 - 1)
-> -#define NO_SLEW				-1
-> +#define LPI_NO_SLEW				-1
->  
->  #define LPI_FUNCTION(fname)			                \
->  	[LPI_MUX_##fname] = {		                \
-> @@ -193,14 +193,14 @@ static const struct lpi_pingroup sm8250_groups[] = {
->  	LPI_PINGROUP(3, 8, swr_rx_clk, qua_mi2s_data, _, _),
->  	LPI_PINGROUP(4, 10, swr_rx_data, qua_mi2s_data, _, _),
->  	LPI_PINGROUP(5, 12, swr_tx_data, swr_rx_data, _, _),
-> -	LPI_PINGROUP(6, NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
-> -	LPI_PINGROUP(7, NO_SLEW, dmic1_data, i2s1_ws, _, _),
-> -	LPI_PINGROUP(8, NO_SLEW, dmic2_clk, i2s1_data, _, _),
-> -	LPI_PINGROUP(9, NO_SLEW, dmic2_data, i2s1_data, _, _),
-> +	LPI_PINGROUP(6, LPI_NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
-> +	LPI_PINGROUP(7, LPI_NO_SLEW, dmic1_data, i2s1_ws, _, _),
-> +	LPI_PINGROUP(8, LPI_NO_SLEW, dmic2_clk, i2s1_data, _, _),
-> +	LPI_PINGROUP(9, LPI_NO_SLEW, dmic2_data, i2s1_data, _, _),
->  	LPI_PINGROUP(10, 16, i2s2_clk, wsa_swr_clk, _, _),
->  	LPI_PINGROUP(11, 18, i2s2_ws, wsa_swr_data, _, _),
-> -	LPI_PINGROUP(12, NO_SLEW, dmic3_clk, i2s2_data, _, _),
-> -	LPI_PINGROUP(13, NO_SLEW, dmic3_data, i2s2_data, _, _),
-> +	LPI_PINGROUP(12, LPI_NO_SLEW, dmic3_clk, i2s2_data, _, _),
-> +	LPI_PINGROUP(13, LPI_NO_SLEW, dmic3_data, i2s2_data, _, _),
->  };
->  
->  static const struct lpi_function sm8250_functions[] = {
-> @@ -435,7 +435,7 @@ static int lpi_config_set(struct pinctrl_dev *pctldev, unsigned int group,
->  			}
->  
->  			slew_offset = g->slew_offset;
-> -			if (slew_offset == NO_SLEW)
-> +			if (slew_offset == LPI_NO_SLEW)
->  				break;
->  
->  			mutex_lock(&pctrl->slew_access_lock);
-> -- 
-> 2.7.4
-> 
+-- Steve
