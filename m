@@ -2,87 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5E6C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EE0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346743AbiCHMPj (ORCPT
+        id S1346750AbiCHMPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:15:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
+        Tue, 8 Mar 2022 07:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346732AbiCHMPi (ORCPT
+        with ESMTP id S1346732AbiCHMPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:15:38 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB76143ED3;
-        Tue,  8 Mar 2022 04:14:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646741681; x=1678277681;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Pj07O+oiBpvt9RG+DMy/vaA6wCldd0Kb1X9+1g+qKKk=;
-  b=nk46dBewC7OoH88g5BrYrpB7wkmfnWgJkccsipXV1jMZtgMjwt7dlscd
-   94FfGr8xOIDI1dC0HhAWg39V9w+G0k9e7caeeA3lBsezmdOSp/I/FfsCU
-   Alz0mC+Rda8l0KMlfEhzLsjp/yy67zB2M0E1h+DHDvNbswFKYak1bsz0f
-   NqJoNy/bRM//+pdiuHOVuxc+n5XXC9W4XTK2qUUl/Qe6sLzNwge/rqxeB
-   ORD8FbiQcQkoRxzTWB00oHTv6L3NExkZvHk9BAlSRPC/9sM+ahTF9GQ8q
-   A0i8uq7ZXfU1gow2lcFpL5Xa5HpS88f++9GMdGKPEs2Oonbyi99eyrKpK
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="317898528"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="317898528"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:14:41 -0800
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="537546642"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:14:38 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRYiw-00DLej-Di;
-        Tue, 08 Mar 2022 14:13:54 +0200
-Date:   Tue, 8 Mar 2022 14:13:54 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH v1 1/1] staging: fbtft: Consider type of init sequence
- values in fbtft_init_display()
-Message-ID: <YidIgkiv7B8g14RD@smile.fi.intel.com>
-References: <20220304193414.88006-1-andriy.shevchenko@linux.intel.com>
- <Yictcf0BCvveVT+V@smile.fi.intel.com>
- <Yic0CN+qSvDtSiEz@kroah.com>
+        Tue, 8 Mar 2022 07:15:50 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A46A43ED1;
+        Tue,  8 Mar 2022 04:14:54 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: aratiu)
+        with ESMTPSA id EC43A1F43C2C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646741693;
+        bh=5+4CFM6veuq5rDnjMnbblwZsgeeLINo0x7U43XEkG9c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=IuRYrUkUF0SCi0ER2nCHqEw02YkcL/vPTUhWSs79ZyitkMk0dynGcY39jBfxLIiaZ
+         hmf9tTBEZf1t1e6xosUT5h1Su28aKNtYQeAP2kKvAAfO5dHgAslutstLuwA3QIQNUN
+         zkRYUuUbl4pZTho63yPNAiMvo/5ikHBr/CvcBxefFVs2Jtj14kwJdWJwYO5WJxRZI/
+         r6eHwi2RPudIMXeXHSAaMlntMUlBToduBaM0nYcDWprzdmx+9zp5m4QFPSnBZTqiyn
+         uQvI+dkLx6F0gD6mHFxqn6mS0ilxypk2AS+BR1mtR2DAR1CtxcG1+bV5y+GHU3ltKx
+         25knDK62+s5UQ==
+From:   Adrian Ratiu <adrian.ratiu@collabora.com>
+To:     netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kernel@collabora.com,
+        linux-kernel@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Manoj Gupta <manojgupta@chromium.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH bpf v2] tools: fix unavoidable GCC call in Clang builds
+Date:   Tue,  8 Mar 2022 14:14:28 +0200
+Message-Id: <20220308121428.81735-1-adrian.ratiu@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yic0CN+qSvDtSiEz@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:46:32AM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Mar 08, 2022 at 12:18:25PM +0200, Andy Shevchenko wrote:
-> > +Cc: Helge
-> > 
-> > Maybe you can pick this up?
-> > 
-> > On Fri, Mar 04, 2022 at 09:34:14PM +0200, Andy Shevchenko wrote:
-> 
-> You sent this less than a week ago!  Please relax, staging driver
-> patches are way down my list of priorities at the moment.  Wait at least
-> 2 weeks before trying to get someone else to take patches for this
-> subsystem.
-> 
-> relax...
+In ChromeOS and Gentoo we catch any unwanted mixed Clang/LLVM
+and GCC/binutils usage via toolchain wrappers which fail builds.
+This has revealed that GCC is called unconditionally in Clang
+configured builds to populate GCC_TOOLCHAIN_DIR.
 
-Ah, okay. Sorry, I was browsing my long mailbox and haven't paid attention on
-the date I had sent this one on.
+Allow the user to override CLANG_CROSS_FLAGS to avoid the GCC
+call - in our case we set the var directly in the ebuild recipe.
 
+In theory Clang could be able to autodetect these settings so
+this logic could be removed entirely, but in practice as the
+commit cebdb7374577 ("tools: Help cross-building with clang")
+mentions, this does not always work, so giving distributions
+more control to specify their flags & sysroot is beneficial.
+
+Suggested-by: Manoj Gupta <manojgupta@chromium.com>
+Suggested-by: Nathan Chancellor <nathan@kernel.org>
+Acked-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+---
+Changes in v2:
+  * Replaced variable override GCC_TOOLCHAIN_DIR -> CLANG_CROSS_FLAGS
+---
+ tools/scripts/Makefile.include | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
+index 79d102304470..b9b1deacc4eb 100644
+--- a/tools/scripts/Makefile.include
++++ b/tools/scripts/Makefile.include
+@@ -89,6 +89,9 @@ ifeq ($(CC_NO_CLANG), 1)
+ EXTRA_WARNINGS += -Wstrict-aliasing=3
+ 
+ else ifneq ($(CROSS_COMPILE),)
++# allow userspace to override CLANG_CROSS_FLAGS to specify their own
++# sysroots and flags or to avoid the GCC call in pure Clang builds
++ifeq ($(CLANG_CROSS_FLAGS),)
+ CLANG_CROSS_FLAGS := --target=$(notdir $(CROSS_COMPILE:%-=%))
+ GCC_TOOLCHAIN_DIR := $(dir $(shell which $(CROSS_COMPILE)gcc 2>/dev/null))
+ ifneq ($(GCC_TOOLCHAIN_DIR),)
+@@ -96,6 +99,7 @@ CLANG_CROSS_FLAGS += --prefix=$(GCC_TOOLCHAIN_DIR)$(notdir $(CROSS_COMPILE))
+ CLANG_CROSS_FLAGS += --sysroot=$(shell $(CROSS_COMPILE)gcc -print-sysroot)
+ CLANG_CROSS_FLAGS += --gcc-toolchain=$(realpath $(GCC_TOOLCHAIN_DIR)/..)
+ endif # GCC_TOOLCHAIN_DIR
++endif # CLANG_CROSS_FLAGS
+ CFLAGS += $(CLANG_CROSS_FLAGS)
+ AFLAGS += $(CLANG_CROSS_FLAGS)
+ endif # CROSS_COMPILE
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
