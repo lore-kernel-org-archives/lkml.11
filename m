@@ -2,186 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 581FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD42C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349848AbiCHSwc (ORCPT
+        id S1348533AbiCHSx7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:52:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        Tue, 8 Mar 2022 13:53:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349796AbiCHSwT (ORCPT
+        with ESMTP id S1349981AbiCHSxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:52:19 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CAD53E35;
-        Tue,  8 Mar 2022 10:51:22 -0800 (PST)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCksD3Q1qz67NqQ;
-        Wed,  9 Mar 2022 02:49:52 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 19:51:20 +0100
-Received: from A2006125610.china.huawei.com (10.47.82.254) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 18:51:12 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <kevin.tian@intel.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [PATCH v9 9/9] hisi_acc_vfio_pci: Use its own PCI reset_done error handler
-Date:   Tue, 8 Mar 2022 18:49:02 +0000
-Message-ID: <20220308184902.2242-10-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Mar 2022 13:53:02 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AE653B4B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:51:55 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id d187so134658pfa.10
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:51:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=u1p9VkaRsYgNkd67QLKnk5cpxdtjrQ6aNDZQpYpVvsc=;
+        b=J6EVgz0NDd+InNzOsaYvbkrDycQ0vbgC6lYZ/WcONobGx5spk0HF3omZyHgOKcOCq5
+         PvfvU0Q0M7Iopk/HampRKl7NG30b2av5v5L30gavJr+ywffnT808t1ha+0cC1/3BlFg+
+         Szvg2sfY8OhLtAFT5s4nwh+8q8fvhb3iWU/yyuw0bkRyFXly+OgBWH+e24SFCk7lIc7I
+         ROcjBUUUEwtumbnrSZVwcYf1a+hXbVwK7JklUrhrGygZaCzh4FV40l8hUcEEl0y0bAPY
+         JmPRJPFlG4c5kwwgU4MeITcO3tYf8HUBIR0KnKvNcTvJMAEMpjsQBGMmEjO1uZ6URf+J
+         mFRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=u1p9VkaRsYgNkd67QLKnk5cpxdtjrQ6aNDZQpYpVvsc=;
+        b=rXdqvp+y3apGADhBXT5+HxFoPvxqFmQjjMhuDM/SVeTeO84+2au/ihFTpln8rRkJMS
+         QghXERNa9nypqNPaXeB4VeYvzHOHEP+wCecfbfQFzWvWiGMFSGPoq3LBZHJceXJRMQhn
+         UPLfF8rLqNFk2mLjUOiS97au6cMuXLeu234VhpmTUuxXNYQlz+HcJzKmeCD8B+7x+7So
+         QxxcNXK8ghhFCoRpOdaqPGYxfWK+qSwoEmOaWd3yoUk7Ofk0JYlGOSAs/G7zmI0sCMhx
+         MBfbvuaayczerxwpu3zpdwjCFBm/jyvkxp2jpRXSeUh3E2Xn90Ajo2TygTgw+JJpvV0k
+         NT+Q==
+X-Gm-Message-State: AOAM531xB6qmf1X8UdzwuABhLwcvy2CP/e6pYWfs1vcLnc4p5BhrvjPb
+        EYme4YDmJ6i5uQYzEQ323YQo+AJUawCn2nSP/dA=
+X-Google-Smtp-Source: ABdhPJyWA/G0duxVcYWid97/IpWsMXXt4Gr7CytCMkgaGBJnJlnILEkctcgtFteFPwsIAHz3v0r45tlOc8PDALRt54g=
+X-Received: by 2002:a05:6a00:b44:b0:4f7:1043:a72d with SMTP id
+ p4-20020a056a000b4400b004f71043a72dmr8919091pfo.23.1646765514526; Tue, 08 Mar
+ 2022 10:51:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.82.254]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220228140245.24552-1-linmiaohe@huawei.com> <20220228140245.24552-3-linmiaohe@huawei.com>
+ <20220304082714.GB3778609@hori.linux.bs1.fc.nec.co.jp> <227af111-9264-02fd-9e46-744d39ecfed0@huawei.com>
+ <CAHbLzkom__59_RCpJCZDA+ray-t5qAWatujXWha8BX2-x8GiMA@mail.gmail.com> <8a35d8d8-3078-89ad-4061-358a500c5d61@huawei.com>
+In-Reply-To: <8a35d8d8-3078-89ad-4061-358a500c5d61@huawei.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Tue, 8 Mar 2022 10:51:42 -0800
+Message-ID: <CAHbLzkqjoQgXZDUnuLkVABLbPx-=yfgZ-Akt26rgALyQP07dbA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] mm/memory-failure.c: fix wrong user reference report
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register private handler for pci_error_handlers.reset_done and update
-state accordingly.
+On Tue, Mar 8, 2022 at 5:11 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> On 2022/3/8 4:14, Yang Shi wrote:
+> > On Mon, Mar 7, 2022 at 3:26 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+> >>
+> >> On 2022/3/4 16:27, HORIGUCHI NAOYA(=E5=A0=80=E5=8F=A3 =E7=9B=B4=E4=B9=
+=9F) wrote:
+> >>> On Mon, Feb 28, 2022 at 10:02:43PM +0800, Miaohe Lin wrote:
+> >>>> The dirty swapcache page is still residing in the swap cache after i=
+t's
+> >>>> hwpoisoned. So there is always one extra refcount for swap cache.
+> >>>
+> >>> The diff seems fine at a glance, but let me have a few question to
+> >>> understand the issue more.
+> >>>
+> >>> - Is the behavior described above the effect of recent change on shme=
+m where
+> >>>   dirty pagecache is pinned on hwpoison (commit a76054266661 ("mm: sh=
+mem:
+> >>>   don't truncate page if memory failure happens"). Or the older kerne=
+ls
+> >>>   behave as the same?
+> >>>
+> >>> - Is the behavior true for normal anonymous pages (not shmem pages)?
+> >>>
+> >>
+> >> The behavior described above is aimed at swapcache not pagecache. So i=
+t should be
+> >> irrelevant with the recent change on shmem.
+> >>
+> >> What I try to fix here is that me_swapcache_dirty holds one extra pin =
+via SwapCache
+> >> regardless of the return value of delete_from_lru_cache. We should try=
+ to report more
+> >> accurate extra refcount for debugging purpose.
+> >
+> > I think you misunderstood the code. The delete_from_lru_cache()
+> > returning 0 means the page was on LRU and isolated from LRU
+> > successfully now. Returning -EIO means the page was not on LRU, so it
+> > should have at least an extra pin on it.
+> >
+> > So MF_DELAYED means there is no other pin other than hwpoison and
+> > swapcache which is expected, MF_FAILED means there might be extra
+> > pins.
+> >
+> > The has_extra_refcount() raised error then there is *unexpected* refcou=
+nt.
+>
+> Many thanks for your explanation. It seems you're right. If page is held =
+on
+> the lru_pvecs when we try to do delete_from_lru_cache, and after that it'=
+s
+> drained to the lru list( so its refcnt might be 2 now). Then we might hav=
+e
+> the following complain if extra_pins is always true:
+>         "Memory failure: ... still referenced by 0 users\n"
+>
+> But it seems the origin code can not report the correct reason too becaus=
+e
+> if we retry, page can be delete_from_lru_cache and we can succeed now.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Longfang Liu <liulongfang@huawei.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.c    | 57 ++++++++++++++++++-
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.h    |  4 +-
- 2 files changed, 57 insertions(+), 4 deletions(-)
+Retry is ok, but it seems overkilling to me IMHO.
 
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-index 51b814f4303b..767b5d47631a 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-@@ -626,6 +626,27 @@ static void hisi_acc_vf_disable_fds(struct hisi_acc_vf_core_device *hisi_acc_vde
- 	}
- }
- 
-+/*
-+ * This function is called in all state_mutex unlock cases to
-+ * handle a 'deferred_reset' if exists.
-+ */
-+static void
-+hisi_acc_vf_state_mutex_unlock(struct hisi_acc_vf_core_device *hisi_acc_vdev)
-+{
-+again:
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	if (hisi_acc_vdev->deferred_reset) {
-+		hisi_acc_vdev->deferred_reset = false;
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		hisi_acc_vdev->vf_qm_state = QM_NOT_READY;
-+		hisi_acc_vdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
-+		hisi_acc_vf_disable_fds(hisi_acc_vdev);
-+		goto again;
-+	}
-+	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+}
-+
- static void hisi_acc_vf_start_device(struct hisi_acc_vf_core_device *hisi_acc_vdev)
- {
- 	struct hisi_qm *vf_qm = &hisi_acc_vdev->vf_qm;
-@@ -922,7 +943,7 @@ hisi_acc_vfio_pci_set_device_state(struct vfio_device *vdev,
- 			break;
- 		}
- 	}
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return res;
- }
- 
-@@ -935,10 +956,35 @@ hisi_acc_vfio_pci_get_device_state(struct vfio_device *vdev,
- 
- 	mutex_lock(&hisi_acc_vdev->state_mutex);
- 	*curr_state = hisi_acc_vdev->mig_state;
--	mutex_unlock(&hisi_acc_vdev->state_mutex);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
- 	return 0;
- }
- 
-+static void hisi_acc_vf_pci_aer_reset_done(struct pci_dev *pdev)
-+{
-+	struct hisi_acc_vf_core_device *hisi_acc_vdev = dev_get_drvdata(&pdev->dev);
-+
-+	if (hisi_acc_vdev->core_device.vdev.migration_flags !=
-+				VFIO_MIGRATION_STOP_COPY)
-+		return;
-+
-+	/*
-+	 * As the higher VFIO layers are holding locks across reset and using
-+	 * those same locks with the mm_lock we need to prevent ABBA deadlock
-+	 * with the state_mutex and mm_lock.
-+	 * In case the state_mutex was taken already we defer the cleanup work
-+	 * to the unlock flow of the other running context.
-+	 */
-+	spin_lock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vdev->deferred_reset = true;
-+	if (!mutex_trylock(&hisi_acc_vdev->state_mutex)) {
-+		spin_unlock(&hisi_acc_vdev->reset_lock);
-+		return;
-+	}
-+	spin_unlock(&hisi_acc_vdev->reset_lock);
-+	hisi_acc_vf_state_mutex_unlock(hisi_acc_vdev);
-+}
-+
- static int hisi_acc_vf_qm_init(struct hisi_acc_vf_core_device *hisi_acc_vdev)
- {
- 	struct vfio_pci_core_device *vdev = &hisi_acc_vdev->core_device;
-@@ -1259,12 +1305,17 @@ static const struct pci_device_id hisi_acc_vfio_pci_table[] = {
- 
- MODULE_DEVICE_TABLE(pci, hisi_acc_vfio_pci_table);
- 
-+static const struct pci_error_handlers hisi_acc_vf_err_handlers = {
-+	.reset_done = hisi_acc_vf_pci_aer_reset_done,
-+	.error_detected = vfio_pci_core_aer_err_detected,
-+};
-+
- static struct pci_driver hisi_acc_vfio_pci_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = hisi_acc_vfio_pci_table,
- 	.probe = hisi_acc_vfio_pci_probe,
- 	.remove = hisi_acc_vfio_pci_remove,
--	.err_handler = &vfio_pci_core_err_handlers,
-+	.err_handler = &hisi_acc_vf_err_handlers,
- };
- 
- module_pci_driver(hisi_acc_vfio_pci_driver);
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-index 1c7d75408790..5494f4983bbe 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.h
-@@ -98,6 +98,7 @@ struct hisi_acc_vf_migration_file {
- 
- struct hisi_acc_vf_core_device {
- 	struct vfio_pci_core_device core_device;
-+	u8 deferred_reset:1;
- 	/* for migration state */
- 	struct mutex state_mutex;
- 	enum vfio_device_mig_state mig_state;
-@@ -107,7 +108,8 @@ struct hisi_acc_vf_core_device {
- 	struct hisi_qm vf_qm;
- 	u32 vf_qm_state;
- 	int vf_id;
--
-+	/* for reset handler */
-+	spinlock_t reset_lock;
- 	struct hisi_acc_vf_migration_file *resuming_migf;
- 	struct hisi_acc_vf_migration_file *saving_migf;
- };
--- 
-2.25.1
-
+>
+> Anyway, many thanks for pointing this out.
+>
+> >
+> >>
+> >>> I'm trying to test hwpoison hitting the dirty swapcache, but it seems=
+ that
+> >>> in my testing memory_faliure() fails with "hwpoison: unhandlable page=
+"
+> >>
+> >> Maybe memory_faliure is racing with page reclaim where page is isolate=
+d?
+> >>
+> >>> warning at get_any_page().  So I'm still not sure that me_pagecache_d=
+irty()
+> >>> fixes any visible problem.
+> >>
+> >> IIUC, me_pagecache_dirty can't do much except for the corresponding ad=
+dress_space supporting
+> >> error_remove_page which can truncate the dirty pagecache page. But thi=
+s may cause silent data
+> >> loss. It's better to keep the page stay in the pagecache until the fil=
+e is truncated, hole
+> >> punched or removed as commit a76054266661 pointed out.
+> >>
+> >> Thanks.
+> >>
+> >>>> Thanks,
+> >>> Naoya Horiguchi
+> >>>
+> >>>>
+> >>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> >>>> ---
+> >>>>  mm/memory-failure.c | 6 +-----
+> >>>>  1 file changed, 1 insertion(+), 5 deletions(-)
+> >>>>
+> >>>> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> >>>> index 0d7c58340a98..5f9503573263 100644
+> >>>> --- a/mm/memory-failure.c
+> >>>> +++ b/mm/memory-failure.c
+> >>>> @@ -984,7 +984,6 @@ static int me_pagecache_dirty(struct page_state =
+*ps, struct page *p)
+> >>>>  static int me_swapcache_dirty(struct page_state *ps, struct page *p=
+)
+> >>>>  {
+> >>>>      int ret;
+> >>>> -    bool extra_pins =3D false;
+> >>>>
+> >>>>      ClearPageDirty(p);
+> >>>>      /* Trigger EIO in shmem: */
+> >>>> @@ -993,10 +992,7 @@ static int me_swapcache_dirty(struct page_state=
+ *ps, struct page *p)
+> >>>>      ret =3D delete_from_lru_cache(p) ? MF_FAILED : MF_DELAYED;
+> >>>>      unlock_page(p);
+> >>>>
+> >>>> -    if (ret =3D=3D MF_DELAYED)
+> >>>> -            extra_pins =3D true;
+> >>>> -
+> >>>> -    if (has_extra_refcount(ps, p, extra_pins))
+> >>>> +    if (has_extra_refcount(ps, p, true))
+> >>>>              ret =3D MF_FAILED;
+> >>>>
+> >>>>      return ret;
+> >>>> --
+> >>>> 2.23.0
+> >>
+> >>
+> > .
+> >
+>
