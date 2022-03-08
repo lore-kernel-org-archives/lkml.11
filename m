@@ -2,126 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238506AbiCHPa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
+        id S243576AbiCHPbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiCHPa0 (ORCPT
+        with ESMTP id S231561AbiCHPbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:30:26 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DB447ACB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:29:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646753370; x=1678289370;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2JVtHS7y2JL1cMyAoxmO+1PK36rhjFiIT/0QpYRgKVQ=;
-  b=hR+lXZK6NvwrVDE0uTvflMuHjzC2skb4FbnsyNkTzJydseBT0cs0pLvg
-   UoJhhNRqXjkz1FgbKV0JxiILu1JeeF0OATptmeUjg9NY3pYNLmN+EGAQN
-   vn1jtlxT8yzTgowUDfvviT3ZrvoEqahuuTyQQA/LRlHT9rWh10CLLXcNv
-   eny36cqhw6xCPBuPk3GZTij+gURJZZ0gV4o9ZzP3KIjY/fFrGvMGvdFWg
-   pdjTWjt7P/4Wcau58xzYm8xbNfITfwbWvigqkPkAprSev+HaOLgF11Yql
-   HhQnPLboiWTxqkNaY3o97Ht21IIiPykXVt6KIiajLVS8FfSPIkOkUo78k
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="317939512"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="317939512"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:29:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="611031437"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Mar 2022 07:29:27 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRbmB-0001b3-8d; Tue, 08 Mar 2022 15:29:27 +0000
-Date:   Tue, 8 Mar 2022 23:29:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [ammarfaizi2-block:palmer/linux/riscv-compat 13/20]
- arch/riscv/kernel/process.c:102:49: error: 'SR_UXL' undeclared; did you mean
- 'SR_XS'?
-Message-ID: <202203082324.U2nq0lwC-lkp@intel.com>
+        Tue, 8 Mar 2022 10:31:53 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967124E395
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:30:57 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id b5so11602526ilj.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 07:30:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QL+ZtmXXGFLuTx2y9WXZomB2eATV+ikv3E06Gw8vFq0=;
+        b=I68j85a6/qjvW0V3IavZmXBtBc8pD6pwX7yGYgP70N3qfY/KekXPn14gqHuXHQi3iz
+         45y3wjsfeAJoSBGDTb3kxwyUuzILLoXo2eFo4z3nCSjYHUU1aBHr+B04M3kP/DctZcqU
+         FaE5+rdNtdNZSVsKxPIjL2TKvhOwT8EAqwk6x0LlVDTkAwSZt0rUy3ePzZmsgeFzrtgj
+         IcJ9yy+JXS0yPZEfdAsbdDcR8t9w2+5GyzVroPUq4B5oDrMBfwsfDFPB6QqHpu/tXFOv
+         cMBPSu+cM5zifvwDyOWdetr6U++L+xykJjh1Zou3iBXvPcrzyzw1BY2lrHkSovZ8zh++
+         GxXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QL+ZtmXXGFLuTx2y9WXZomB2eATV+ikv3E06Gw8vFq0=;
+        b=GB85ffSYopOdsVyjfYoYgfz8yEhqJ1Mupj4vjsMH15nE+TeiY4G/EEZHQ3OIDYhOyg
+         zDiycAp8lfCBuGFDqyQZJDEEa11VkntdhUvPqNIacgKmVIBFmJnIkrbA0U2bk5a2i+Fh
+         utAZK8hGlGV10k2TJUQ10+UzKyDLA+lGEpcPzkugLVs691OnXAnq0p4ra4/z5vSolOSG
+         ZPCdHtvhIx6XhJLWw/dnafLZUsNqcR6CBfSMHImCBKF7y8fAFNgjRlWV7oj3Gdllu+dG
+         YcFvyVqd8NEMrQzPxlod5OC8n/BSQmq8JxmamhWwDLg/tbODHpM0CIQ1tpu8Hirs0d9E
+         jEnA==
+X-Gm-Message-State: AOAM532yTnwoCC9bNMLzXfSEzmdj4zTQD0s0VrGCsHNS8QZomim39wMO
+        Sn6+ykrlZbEenHiy8ULY6w9m9nfd7PX0Z2QXgkc=
+X-Google-Smtp-Source: ABdhPJyPwmIL/pO50iF8syyeci1IJTewvmDOYzdRSzAtoKHRP6OQjBCrXGlvhWl93W16Be715WB6xOEjeRlrzUnkWU8=
+X-Received: by 2002:a05:6e02:20c3:b0:2c2:9e23:8263 with SMTP id
+ 3-20020a056e0220c300b002c29e238263mr16510481ilq.248.1646753456934; Tue, 08
+ Mar 2022 07:30:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1643047180.git.andreyknvl@google.com> <fbfd9939a4dc375923c9a5c6b9e7ab05c26b8c6b.1643047180.git.andreyknvl@google.com>
+ <your-ad-here.call-01646752633-ext-6250@work.hours>
+In-Reply-To: <your-ad-here.call-01646752633-ext-6250@work.hours>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 8 Mar 2022 16:30:46 +0100
+Message-ID: <CA+fCnZdCZ92BxnympNoRP8+3_gGDMZQgTeaUpga3ctuRq8zPYg@mail.gmail.com>
+Subject: Re: [PATCH v6 31/39] kasan, vmalloc: only tag normal vmalloc allocations
+To:     Vasily Gorbik <gor@linux.ibm.com>
+Cc:     andrey.konovalov@linux.dev,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Content-Type: multipart/mixed; boundary="000000000000d579e505d9b6aa3d"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-compat
-head:   ab7e33a6b819f009c3c9ccf69b2f44c1ad84a5a0
-commit: d463ff83f0d26ce352a0969c86a9accf70d30977 [13/20] riscv: compat: process: Add UXL_32 support in start_thread
-config: riscv-randconfig-r042-20220308 (https://download.01.org/0day-ci/archive/20220308/202203082324.U2nq0lwC-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/d463ff83f0d26ce352a0969c86a9accf70d30977
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-compat
-        git checkout d463ff83f0d26ce352a0969c86a9accf70d30977
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+--000000000000d579e505d9b6aa3d
+Content-Type: text/plain; charset="UTF-8"
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Tue, Mar 8, 2022 at 4:17 PM Vasily Gorbik <gor@linux.ibm.com> wrote:
+>
+> On Mon, Jan 24, 2022 at 07:05:05PM +0100, andrey.konovalov@linux.dev wrote:
+> > From: Andrey Konovalov <andreyknvl@google.com>
+> >
+> > The kernel can use to allocate executable memory. The only supported way
+> > to do that is via __vmalloc_node_range() with the executable bit set in
+> > the prot argument. (vmap() resets the bit via pgprot_nx()).
+> >
+> > Once tag-based KASAN modes start tagging vmalloc allocations, executing
+> > code from such allocations will lead to the PC register getting a tag,
+> > which is not tolerated by the kernel.
+> >
+> > Only tag the allocations for normal kernel pages.
+> >
+> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+>
+> This breaks s390 and produce huge amount of false positives.
+> I haven't been testing linux-next with KASAN for while, now tried it with
+> next-20220308 and bisected false positives to this commit.
+>
+> Any idea what is going wrong here?
 
-All errors (new ones prefixed by >>):
+Hi Vasily,
 
-   arch/riscv/kernel/process.c: In function 'start_thread':
-   arch/riscv/kernel/process.c:101:13: error: implicit declaration of function 'is_compat_task' [-Werror=implicit-function-declaration]
-     101 |         if (is_compat_task())
-         |             ^~~~~~~~~~~~~~
->> arch/riscv/kernel/process.c:102:49: error: 'SR_UXL' undeclared (first use in this function); did you mean 'SR_XS'?
-     102 |                 regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
-         |                                                 ^~~~~~
-         |                                                 SR_XS
-   arch/riscv/kernel/process.c:102:49: note: each undeclared identifier is reported only once for each function it appears in
->> arch/riscv/kernel/process.c:102:59: error: 'SR_UXL_32' undeclared (first use in this function)
-     102 |                 regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
-         |                                                           ^~~~~~~~~
->> arch/riscv/kernel/process.c:104:59: error: 'SR_UXL_64' undeclared (first use in this function)
-     104 |                 regs->status = (regs->status & ~SR_UXL) | SR_UXL_64;
-         |                                                           ^~~~~~~~~
-   cc1: some warnings being treated as errors
+Could you try the attached fix?
 
+Thanks!
 
-vim +102 arch/riscv/kernel/process.c
+--000000000000d579e505d9b6aa3d
+Content-Type: application/octet-stream; name="s390-kasan-vmalloc.fix"
+Content-Disposition: attachment; filename="s390-kasan-vmalloc.fix"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l0iafuk20>
+X-Attachment-Id: f_l0iafuk20
 
-    85	
-    86	void start_thread(struct pt_regs *regs, unsigned long pc,
-    87		unsigned long sp)
-    88	{
-    89		regs->status = SR_PIE;
-    90		if (has_fpu()) {
-    91			regs->status |= SR_FS_INITIAL;
-    92			/*
-    93			 * Restore the initial value to the FP register
-    94			 * before starting the user program.
-    95			 */
-    96			fstate_restore(current, regs);
-    97		}
-    98		regs->epc = pc;
-    99		regs->sp = sp;
-   100	
- > 101		if (is_compat_task())
- > 102			regs->status = (regs->status & ~SR_UXL) | SR_UXL_32;
-   103		else
- > 104			regs->status = (regs->status & ~SR_UXL) | SR_UXL_64;
-   105	}
-   106	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ZGlmZiAtLWdpdCBhL21tL2thc2FuL3NoYWRvdy5jIGIvbW0va2FzYW4vc2hhZG93LmMKaW5kZXgg
+NzI3MmUyNDhkYjg3Li42OTM5NTRmNzcxZWMgMTAwNjQ0Ci0tLSBhL21tL2thc2FuL3NoYWRvdy5j
+CisrKyBiL21tL2thc2FuL3NoYWRvdy5jCkBAIC00OTIsNyArNDkyLDggQEAgdm9pZCAqX19rYXNh
+bl91bnBvaXNvbl92bWFsbG9jKGNvbnN0IHZvaWQgKnN0YXJ0LCB1bnNpZ25lZCBsb25nIHNpemUs
+CiAJICogRG9uJ3QgdGFnIGV4ZWN1dGFibGUgbWVtb3J5LgogCSAqIFRoZSBrZXJuZWwgZG9lc24n
+dCB0b2xlcmF0ZSBoYXZpbmcgdGhlIFBDIHJlZ2lzdGVyIHRhZ2dlZC4KIAkgKi8KLQlpZiAoIShm
+bGFncyAmIEtBU0FOX1ZNQUxMT0NfUFJPVF9OT1JNQUwpKQorCWlmIChJU19FTkFCTEVEKENPTkZJ
+R19LQVNBTl9TV19UQUdTKSAmJgorCSAgICAhKGZsYWdzICYgS0FTQU5fVk1BTExPQ19QUk9UX05P
+Uk1BTCkpCiAJCXJldHVybiAodm9pZCAqKXN0YXJ0OwogCiAJc3RhcnQgPSBzZXRfdGFnKHN0YXJ0
+LCBrYXNhbl9yYW5kb21fdGFnKCkpOwo=
+--000000000000d579e505d9b6aa3d--
