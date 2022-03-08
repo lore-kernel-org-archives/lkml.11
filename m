@@ -2,115 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 504EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC70FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236634AbiCHSyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:54:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        id S1349816AbiCHSyI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 13:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349823AbiCHSwo (ORCPT
+        with ESMTP id S1349636AbiCHSyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:52:44 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 512B457B34;
-        Tue,  8 Mar 2022 10:51:41 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A4CB41516;
-        Tue,  8 Mar 2022 10:51:41 -0800 (PST)
-Received: from wubuntu (unknown [10.57.71.199])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65FF13FA45;
-        Tue,  8 Mar 2022 10:51:40 -0800 (PST)
-Date:   Tue, 8 Mar 2022 18:51:38 +0000
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-tip-commits@vger.kernel.org,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>, x86@kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [tip: sched/core] sched/tracing: Don't re-read p->state when
- emitting sched_switch event
-Message-ID: <20220308185138.ldxfqd242uxowymd@wubuntu>
-References: <20220120162520.570782-2-valentin.schneider@arm.com>
- <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
- <20220308180240.qivyjdn4e3te3urm@wubuntu>
- <YiecMTy8ckUdXTQO@kroah.com>
+        Tue, 8 Mar 2022 13:54:00 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDBA31360;
+        Tue,  8 Mar 2022 10:53:02 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id w4so23193446edc.7;
+        Tue, 08 Mar 2022 10:53:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mbj3xN0iDcD9/ITu0QYceYztDmj5HBmZeXlHsmQyrHw=;
+        b=B618Sz+Xe0Jlwlh7LCH+brDIS/apTr66CGVdpWmDijL1AfVKPArkwxSnfq3nIRELa6
+         TUXfrPY1cssYxeKbeY+Ip/mOslS0mP/E1k6W0H2j2Y91NMPfkDtML8bJWVY8DCo1TyKk
+         gTyIXNUYexF/C22ReOOhfIEDkTBOo8Fs8MLg5nnPeuPooL1PhgDOxoudzwiFWU5bUOo7
+         lmxV2L+z26Wi42uHoPFYo2khhsU9eEyzNz0hc7z+McfjGRvcR8cxNDpSgOy6CUuwPU75
+         pHcWFGSBqKOoOlM8Hg/NRfAPK7fnu9yWDoMzm+Yfdzk0jAf5WsyDy+XULVjTMg4K82m3
+         FBrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mbj3xN0iDcD9/ITu0QYceYztDmj5HBmZeXlHsmQyrHw=;
+        b=BxIsxdJ1VAnXp8kQ33gclTa8F0MOQuNib7p969KPbMqu9yRjv8Mora5Pus3HjUvsnh
+         WSvP24wInjbZXhVooZ7QbJWsMtArUUyAQpFPscSiCepsZAjryXaNlrQNyrmCemcVJUE9
+         hPJt3R68TAhCwukvmbM7MC9yWERfAL5KkpEemD2iosyYxP6dqrUbBwOtPxxYjVLPXdtx
+         y/NsqaVd6dgUVQNP4LK3aqoTfdY8gLkrdQU+KT8yIOYNx0KJTU+aF4G9AdTNgstCCZqP
+         313zUYMhGuMzsJAtmHTT7oonlOL8bm7eMPbrPbAE8uG3WBA0ZahoyL1ZMuCLiS0IrEEP
+         7PGA==
+X-Gm-Message-State: AOAM532nt3P8V75ASOz2M5XNPFLbYAIPH6F5R35UScJ+ydcjTuGnlE5n
+        zDibOVv+ElY0fVGZ0YKpfT99noxaoYJ4yAq5pwY=
+X-Google-Smtp-Source: ABdhPJwOJAgm8wr1+UkxQb7mNwouA+rAJXuJwzkhiCZQ1YADoQAKP9kdCqJXn9nLHZLfoyyEyfV4Hifbp+0BVDY0Ivc=
+X-Received: by 2002:a05:6402:1e8b:b0:3da:58e6:9a09 with SMTP id
+ f11-20020a0564021e8b00b003da58e69a09mr17146759edf.155.1646765581293; Tue, 08
+ Mar 2022 10:53:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YiecMTy8ckUdXTQO@kroah.com>
+References: <20220308184844.1121029-1-robdclark@gmail.com>
+In-Reply-To: <20220308184844.1121029-1-robdclark@gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 8 Mar 2022 15:52:49 -0300
+Message-ID: <CAOMZO5Dkr7PqvgYpNp1fBR7P91T-x1ke2pRN6A6GWFJ7zBQo7g@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/gpu: Fix crash on devices without devfreq support (v2)
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     DRI mailing list <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Sean Paul <sean@poorly.run>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <freedreno@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/08/22 19:10, Greg KH wrote:
-> On Tue, Mar 08, 2022 at 06:02:40PM +0000, Qais Yousef wrote:
-> > +CC stable
-> > 
-> > On 03/01/22 15:24, tip-bot2 for Valentin Schneider wrote:
-> > > The following commit has been merged into the sched/core branch of tip:
-> > > 
-> > > Commit-ID:     fa2c3254d7cfff5f7a916ab928a562d1165f17bb
-> > > Gitweb:        https://git.kernel.org/tip/fa2c3254d7cfff5f7a916ab928a562d1165f17bb
-> > > Author:        Valentin Schneider <valentin.schneider@arm.com>
-> > > AuthorDate:    Thu, 20 Jan 2022 16:25:19 
-> > > Committer:     Peter Zijlstra <peterz@infradead.org>
-> > > CommitterDate: Tue, 01 Mar 2022 16:18:39 +01:00
-> > > 
-> > > sched/tracing: Don't re-read p->state when emitting sched_switch event
-> > > 
-> > > As of commit
-> > > 
-> > >   c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
-> > > 
-> > > the following sequence becomes possible:
-> > > 
-> > > 		      p->__state = TASK_INTERRUPTIBLE;
-> > > 		      __schedule()
-> > > 			deactivate_task(p);
-> > >   ttwu()
-> > >     READ !p->on_rq
-> > >     p->__state=TASK_WAKING
-> > > 			trace_sched_switch()
-> > > 			  __trace_sched_switch_state()
-> > > 			    task_state_index()
-> > > 			      return 0;
-> > > 
-> > > TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
-> > > the trace event.
-> > > 
-> > > Prevent this by pushing the value read from __schedule() down the trace
-> > > event.
-> > > 
-> > > Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-> > > Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> > > Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
-> > 
-> > Any objection to picking this for stable? I'm interested in this one for some
-> > Android users but prefer if it can be taken by stable rather than backport it
-> > individually.
-> > 
-> > I think it makes sense to pick the next one in the series too.
-> 
-> What commit does this fix in Linus's tree?
+On Tue, Mar 8, 2022 at 3:48 PM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> Avoid going down devfreq paths on devices where devfreq is not
+> initialized.
+>
+> v2: Change has_devfreq() logic [Dmitry]
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Reported-by: Anders Roxell <anders.roxell@linaro.org>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 
-It should be this one: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
-
-Not sure about the 2nd patch, but I can try to figure it out.
-
-> Once it hits Linus's tree, let stable@vger.kernel.org know what the git
-> commit id is in Linus's tree.
-
-Sure. My bad if I rushed the request. I just wanted to know whether it's okay
-for this to go into stable. If no one shouts, I'll ping once it lands in
-Linus'.
-
-
-Thanks!
-
---
-Qais Yousef
+Does this need a Fixes tag?
