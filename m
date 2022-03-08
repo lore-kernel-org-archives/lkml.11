@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B09C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA946C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347111AbiCHNSq (ORCPT
+        id S1347128AbiCHNSx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:18:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
+        Tue, 8 Mar 2022 08:18:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234318AbiCHNSk (ORCPT
+        with ESMTP id S1347096AbiCHNSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 08:18:40 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A3465CC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:17:39 -0800 (PST)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DF0BC33
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:17:40 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id A43E61F44049
+        with ESMTPSA id DC4201F4404D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646745457;
-        bh=zcqcE7dIUc7tx7i1KnnMTJpX/TOVNA/MHpX4Pjw5exg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HKfueVRLzYyO7heYtKq0P/VcD/mvjVk9O+tlsnYuUALjo1FEabj4WwLBiVWL4Av90
-         uVcDFyMWpNldyoeq/D1suqnKq1P0WFuhcj4bj5KWotnShNHJdaomZzegK+sgxLzaGh
-         UPRHSrtVQqZMvjiaJ2+DHew1T80/308r6GFNpQpATODJcrO2YO63bZNR+t3o3YBD4c
-         m7uy3eScR6qnPupk0ewJL2RF8oj9M2lV0b5ZxjCdUfhs1RYJ8zSS6EnScZRIidZXTR
-         ASbl241baqqO2DnpZ4AHIJIvPbrifE/YXG8iUN/PnlBTF1gPVJ3Fi63Luk8a4YanB3
-         JOs7NFZaib1bA==
+        s=mail; t=1646745459;
+        bh=chUCxgrXxxLP18r48yk/BRUcyw0NU6neGfKRFCcPg+8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RAMZgwvbW2XOy+frKOBEYxArTnDRzdt+R64V2yCLaTLaZHgjKscL80dfb6PfZ6GmQ
+         I1jjo4BtX31ZIdTh5I3vczLk3m22XdmCthCfyL+yZbmZTwStts28WROgUqyQFirKnY
+         M4MfMXgijeV+Xkoq26vw+0vlamzK2YtClTpTxcL56L2dPGMtMC+vwGzo2aivkCpxXJ
+         CLI0pY1qlsnBxDl9n3gKc6QFhu7uU74u5yTzsGeZ2TSosc8l8ZLy1Zs1A9dUfEJFro
+         Aoq70epRHjQKs+sj1cIae/mXGOnkntpxxFiK0MzoY3eIPj5juYMMR1EkLOSUmd0lsv
+         kAamol1Tr3+Gw==
 From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
 To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
         Gurchetan Singh <gurchetansingh@chromium.org>,
@@ -41,59 +41,39 @@ Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Tomeu Vizoso <tomeu.vizoso@collabora.com>,
         virtualization@lists.linux-foundation.org,
         Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
-Date:   Tue,  8 Mar 2022 16:17:20 +0300
-Message-Id: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+Subject: [PATCH v1 2/5] drm/virtio: Check whether transferred 2D BO is shmem
+Date:   Tue,  8 Mar 2022 16:17:22 +0300
+Message-Id: <20220308131725.60607-3-dmitry.osipenko@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Transferred 2D BO always must be a shmem BO. Add check for that to prevent
+NULL dereference if userspace passes a VRAM BO.
 
-This patchset introduces memory shrinker for the VirtIO-GPU DRM driver.
-During OOM, the shrinker will release BOs that are marked as "not needed"
-by userspace using the new madvise IOCTL. The userspace in this case is
-the Mesa VirGL driver, it will mark the cached BOs as "not needed",
-allowing kernel driver to release memory of the cached shmem BOs on lowmem
-situations, preventing OOM kills.
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+---
+ drivers/gpu/drm/virtio/virtgpu_vq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This patchset includes couple fixes for problems I found while was working
-on the shrinker, it also includes prerequisite DMA API usage improvement
-needed by the shrinker.
-
-The Mesa and IGT patches will be kept on hold until this kernel series
-will be approved and applied.
-
-This patchset was tested using Qemu and crosvm, including both cases of
-IOMMU off/on.
-
-Mesa: https://gitlab.freedesktop.org/digetx/mesa/-/commits/virgl-madvise
-IGT:  https://gitlab.freedesktop.org/digetx/igt-gpu-tools/-/tree/virtio-madvise
-
-Dmitry Osipenko (5):
-  drm/virtio: Correct drm_gem_shmem_get_sg_table() error handling
-  drm/virtio: Check whether transferred 2D BO is shmem
-  drm/virtio: Unlock GEM reservations in error code path
-  drm/virtio: Improve DMA API usage for shmem BOs
-  drm/virtio: Add memory shrinker
-
- drivers/gpu/drm/virtio/Makefile               |   3 +-
- drivers/gpu/drm/virtio/virtgpu_drv.c          |  22 +++-
- drivers/gpu/drm/virtio/virtgpu_drv.h          |  31 ++++-
- drivers/gpu/drm/virtio/virtgpu_gem.c          |  84 ++++++++++++
- drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c | 124 ++++++++++++++++++
- drivers/gpu/drm/virtio/virtgpu_ioctl.c        |  37 ++++++
- drivers/gpu/drm/virtio/virtgpu_kms.c          |  17 ++-
- drivers/gpu/drm/virtio/virtgpu_object.c       |  63 +++------
- drivers/gpu/drm/virtio/virtgpu_plane.c        |  17 ++-
- drivers/gpu/drm/virtio/virtgpu_vq.c           |  30 +++--
- include/uapi/drm/virtgpu_drm.h                |  14 ++
- 11 files changed, 373 insertions(+), 69 deletions(-)
- create mode 100644 drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c
-
+diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/virtgpu_vq.c
+index 7c052efe8836..2edf31806b74 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_vq.c
++++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
+@@ -595,7 +595,7 @@ void virtio_gpu_cmd_transfer_to_host_2d(struct virtio_gpu_device *vgdev,
+ 	bool use_dma_api = !virtio_has_dma_quirk(vgdev->vdev);
+ 	struct virtio_gpu_object_shmem *shmem = to_virtio_gpu_shmem(bo);
+ 
+-	if (use_dma_api)
++	if (virtio_gpu_is_shmem(bo) && use_dma_api)
+ 		dma_sync_sgtable_for_device(vgdev->vdev->dev.parent,
+ 					    shmem->pages, DMA_TO_DEVICE);
+ 
 -- 
 2.35.1
 
