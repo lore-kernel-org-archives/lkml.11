@@ -2,495 +2,801 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F15AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349300AbiCHRvx (ORCPT
+        id S1349301AbiCHRyF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:51:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45220 "EHLO
+        Tue, 8 Mar 2022 12:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349295AbiCHRvs (ORCPT
+        with ESMTP id S239056AbiCHRyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:51:48 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6997055BE8;
-        Tue,  8 Mar 2022 09:50:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646761850; x=1678297850;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Uh3YN7I9AUqa09ofZe73TBAYVs2CSbKNDEvwF0hrzp4=;
-  b=jlG6gxQtuD1QctQiwE2JTdphumWAvCkl2YAnYUp9k+QM2HutpcyuZPk1
-   qOvHOGDfN+WKIt1idyGmTEEgbm53JUBKR85mVruJWEG5Kojv9g4s8nyON
-   S8vrhuElnLjl9gkXxIN0YHQLO2M5UN7n8g+pdhVO0N9WX8boaWVRDUyGI
-   JFlP9+InZKkvCjYOXWGzNCg2QNSaREvq4Dngy43+kmhd5ACUI3+ArPcHt
-   KWTINDvXtLU1yccFyIGtrtxxSLaIyb0shpqQ8vNmM+p00N+YMkijUpQ88
-   BCCyuoIWag3vYxtX0z6ngNYzvC5c8HsV2OUBqX8JLlAWA2bjBWpb7G27d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="252336377"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="252336377"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 09:49:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="611086631"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Mar 2022 09:49:17 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 09:49:16 -0800
-Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 09:49:16 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 8 Mar 2022 09:49:16 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Tue, 8 Mar 2022 09:49:16 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gI4e0tmC5t+9D6bn82WJY9O+El2LWDVbrn+W3zE2KDnQ+AMIUeMHSeIzLxKSxr03MDFGuPKCtLXA0S5zPiBJwWlIiPz50X1XRfJ1bYQSTLlKmLMSptajpiPlUxa8Cpuvxow6DGGzHOuJBPECsbx3F+clBl+akAZxL6fuhtwSG1o+/5mixw6ycUTpgCeQOt9WfpYVr3lTKAiNRptaujIzV7q+yhpLO+sjiQ2uOBM21ckHfo6HClTFoxOJ3K1UEyI7GOxZv8+4eR4mcd94wqs1PXbMwZGH3fSZZDGfJoakGjQg2LocqSHqucLcvK6Dckk3yozqm4wtMtGuXUl9KcBcLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3apn77hcf74RewaXLeRFoSAOKPIyFxF5zNXn0Ff013Q=;
- b=E9vsq2wA+/P0HPh1XRoRQx1nK/dJO3HwnkuRWRKF7zmOYx5+AqrqA7L8aVYoyyL+I+VPslQivgO26Ib3WerifY1eJtT7r8rhOhLGa9eqzu3h61TR3M5/J5U12bf/l685oGVf22hVMs4zkY4JB6dw6/U+BTBXBfjIguYe0eTfFc8WBUnMR7UzifpYhJSiFCkq+wBf68rcLopdefW0wlmhbDhFlfbmM6LTmxZWO3jezYeqUvoJm9lq2YQvj7TgwYGkN6ijx1HXEw+r1whQm4Cjy1kCHWDCfzzoR7uXnUfh9yj9sChXZOR1+hWFRS4boglB5W4EI4etWqyFsRheFXHZLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
- by BYAPR11MB3558.namprd11.prod.outlook.com (2603:10b6:a03:b3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Tue, 8 Mar
- 2022 17:49:07 +0000
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::55e4:9a32:8e6f:4774]) by BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::55e4:9a32:8e6f:4774%5]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
- 17:49:06 +0000
-Message-ID: <f99e5923-af8b-80bc-838a-6c6cb698d353@intel.com>
-Date:   Tue, 8 Mar 2022 09:49:01 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.6.1
-Subject: Re: [PATCH V2 06/32] x86/sgx: Support VMA permissions more relaxed
- than enclave permissions
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-CC:     <dave.hansen@linux.intel.com>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <luto@kernel.org>, <mingo@redhat.com>,
-        <linux-sgx@vger.kernel.org>, <x86@kernel.org>, <seanjc@google.com>,
-        <kai.huang@intel.com>, <cathy.zhang@intel.com>,
-        <cedric.xing@intel.com>, <haitao.huang@intel.com>,
-        <mark.shanahan@intel.com>, <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <0555a4b4a5e8879eb8f879ab3d9908302000f11c.1644274683.git.reinette.chatre@intel.com>
- <YiY8bD/QcmcHH8dz@iki.fi> <774e906c-53fc-279c-1fb7-0922557a9da5@intel.com>
- <YicQbzR1o1qZUGbw@iki.fi> <YiccplUukAJ5SeFn@iki.fi> <YiceFtul/VsViuUu@iki.fi>
- <e7e8dde9-b929-4a01-1e39-dbf3303fdd0c@intel.com> <YieLk2YIMD9i8djv@iki.fi>
-From:   Reinette Chatre <reinette.chatre@intel.com>
-In-Reply-To: <YieLk2YIMD9i8djv@iki.fi>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW3PR06CA0021.namprd06.prod.outlook.com
- (2603:10b6:303:2a::26) To BN0PR11MB5744.namprd11.prod.outlook.com
- (2603:10b6:408:166::16)
+        Tue, 8 Mar 2022 12:54:03 -0500
+X-Greylist: delayed 38783 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 09:53:05 PST
+Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.149.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDD424085
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:53:04 -0800 (PST)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 327611AFD4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:53:03 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id Re19nozyx22u3Re19naoBo; Tue, 08 Mar 2022 11:53:03 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Ix/jkr3K7cxxpWdk41c8XSTlc95k2HiwB0Mzjg4Lwgg=; b=op5iSJ6H072CQ9i424nosmaBWK
+        6CJEMr1J53wAcMxT0HtPTpykcHhNH+yIrpLw+9F/iCCQQ6REJS3SHfiKqnAPnogLFhv9GlcICRUE1
+        GpFKb/+1qyxCdE6cJ48nW1iAZY0nETv6vnFXuXLd8x1Kz6EaqGCpVkCB+i600qf9r1cPRl8KIBG9K
+        xqtERNZDWgAk+JjmWPPSO3YdAAhpDm13kMKbYilhxs9/CyjCOqMJbsGAD1gXKrzpItaLf1IWnfrMk
+        cosas2mu6X+bI8YGfC7C+FAUuo9pgwNwHBZED957jTkPimcihmObYeMzspwStz75+jC9DnbpDdSqd
+        IbQovOQg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38104)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRe18-000NFW-KD; Tue, 08 Mar 2022 17:53:02 +0000
+Message-ID: <f13f68eb-d208-9df2-80ea-6aedd686cbc1@roeck-us.net>
+Date:   Tue, 8 Mar 2022 09:52:21 -0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f390e406-970e-4ad3-1ade-08da012bf0fc
-X-MS-TrafficTypeDiagnostic: BYAPR11MB3558:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <BYAPR11MB3558B87F9CE2A9C54CF24118F8099@BYAPR11MB3558.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BF/nSDgvgsxrfz4/DQPw4vcpF3YdFvLhdRQdLJhAAu/12LheWsTYcrOh9GMAZLvv/D54vto0509wyRjML6VrdglM4CL2ztOhqVjZkl977gvJcx37PUsHfXUrZOYZZtOZrxnNannMJm7eEasUXHcP6xIGVfNg0SZjTlIr3TkUKeVEPjlJ4Eq3VSl9NfeUoF+mCUReUFE/f6leIO2hbqgzeyFjl4Gwa1DfykEVCmsYOcQIjB38F3R1vWsffKNBQLC6US9Hx1HNHr9M/X2VPb/NgGImHjz8Qwq3dq5KAtfk5EiMjgrV00wsREwe5R4AbP05cMCqEeVDoXibf8vQBCuh9wv47H6rS7KXU5mmqDR8V1p1BwC/Vq7o+9nZOsOmalC/RDQcNnhTMBmEIyujyt/jRjSter+uefzUTdWbvWGpM9VNdcI6ggJzFUb6Joom9ApIuWehJ5iptNAF3IsABqqEGUu4kqsLHpvHg0eCxL3i+Bh5golk43+q4RB4moUpZrDWLVsPeTF9ke0oFfHYcqLZhrP59n57tQhc+vLhZUe7Py0fMYTPoirdizvpYoJBYyxCqe6sfmVpOS7o2H+HjBaAy4BfJP2oz3rXkW0+nzrKXhs5BDKc1wZDOYv/d8DFDr535zqoW9gpO36H7sC/M0kua/eVqrMrpXz7LFrY8u61SCmYxW7q/97IOM8UTsWf/E+leHJQQBBVu++ZJXAkaZtnSkhE7V6Rq2aHVjl9ELJVd0A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66476007)(316002)(66946007)(8676002)(66556008)(7416002)(4326008)(36756003)(5660300002)(6916009)(2906002)(6506007)(31686004)(6486002)(508600001)(6666004)(6512007)(53546011)(83380400001)(86362001)(38100700002)(2616005)(26005)(30864003)(186003)(44832011)(82960400001)(31696002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UjllekpZQ29Mb05kemp0aUMyOGMvTHpwUHVLTThBekJ1YzVNWWVDeWhSTGFl?=
- =?utf-8?B?dUFZa2hVVm9MWFo3OHc1a0MrNTZIN0hmT1hKK3lMTGxtbnpGM2M3b01KNWxy?=
- =?utf-8?B?SXBOVGt0TzF2SjNhSFlhcU0rMVN4MzZqZlY5ZUZ3blJhMWhnVUs5MlZUQWM2?=
- =?utf-8?B?dHlPc0UzaEtsY1hPb0NvdE85WndJdEdSVGtFcXh0MzRuRjdzZUU2QzNNN0M3?=
- =?utf-8?B?MHJOV1EvSnB3WGd2b3BPbUREanlRWHJ1SVBDWllQK3ZPbTlhb3BhL3VRMS9H?=
- =?utf-8?B?VEpucWx3YTFWZXVTbGZQYVBqNDJuSG1WcVlBY3o5NFRMMkpmWlE4U0dCNndu?=
- =?utf-8?B?bnAzTVV6QVZsdmNGSElqUk95TFA1b2ovVmJWKzFhQmtTZHhueGlnRkZaZkVz?=
- =?utf-8?B?bFJhQ3Z6S1FWYnNjS0NJbndNcWdWcWlaZGhNcHVYUExBZk4vK1RLckxMUkJt?=
- =?utf-8?B?WFRLWlpENHFBYTR5OVo5MkhZbzR1ZkV3RHN6bUFEZHhhNktZbGYyd08xRUJu?=
- =?utf-8?B?cFpuU0xrR1NnZ3NkYVZONERraHpMb0dTZy82aGVURTdNYVRQZ0d6WkR4UUF2?=
- =?utf-8?B?dlo5WW8vb1pteVdmUGNHNFVJc0VSR09NSTBjeFpYUWdWSmVHS05EV2lkSi9q?=
- =?utf-8?B?c09pS3FGV2NJNitOZkpZYS9IVXpTSHBVR1cra3IzVG5iMjVDV1RSbkJwNW94?=
- =?utf-8?B?L2wrYnoxRmxKZHJJZGxoYTZwR20yZ2ZqSHVsUEt4Q2E1MU1oUG45NW5PdWhp?=
- =?utf-8?B?bWFuN3d5ckdkTTdYNkdPZ0tGbjNnV1RSUm9NQTArQW15VzRhbDRRcHFzWEFR?=
- =?utf-8?B?N1ZHUWptUFhkVUJHNloya0p1N1hFcnJkM2paT0tnOE9hVjVRWVlGbkZ2MVIv?=
- =?utf-8?B?RllmK1VNWkZCM0RjQUhYZnQ2aGdJZWpoaXlwajB5UHVmUVpySEtyV09IZlA5?=
- =?utf-8?B?bW5YTlp6YmJUTlpTcEhmUk9heWUwVHZ0WmZzQ0tLTmlsL1Mwelc5ZmJlY2Zt?=
- =?utf-8?B?QUFmcHEyc1lmWmduWUhMLzNhRFBjU1Z6a095ZnpPVDRxWlJwUDgvaW5CTFNk?=
- =?utf-8?B?bWpZY2tqeHFpczV5YnUyWUpGNEZUaWpwbjhoSjl5bUVmZ0V1aTh6aURFTTlT?=
- =?utf-8?B?TEhzUkNkb0o1enkwUlBnZVhiRlo4S2g0U3kwNE1wcDl3b1RZQjh1QVVEY1Fk?=
- =?utf-8?B?V0Nwc2VYaDM2MVl1OXA0dEdzUmdSNis5Y3h5MFB0U1dhZEJpTVlsWVM3N2xn?=
- =?utf-8?B?bjZZNUE3UWtOcnBPcnZRZWRrRTRmUjJUdE5hUUNUNWRDRVcvMnJML290VEFM?=
- =?utf-8?B?ODZORVFobkJtazk0dVRVeEtCaXh2T2JjcVFFRlcxelBrQ04yM095L25yUlJ1?=
- =?utf-8?B?RHVQS01rYXAyWnQwQXpVRDN4V2FWWk1TZExvdGNHd3JMT2ErakRzdHZZclIw?=
- =?utf-8?B?bzFXb2hWMVBlR3pEbDI3OEhVVjlETW5ndU45WDRJRXMxQ1VjT3dzTzhBdVZR?=
- =?utf-8?B?TWlJWm5PMWxCYnlNUm5DVXl0QTJYZ0h3eVZnQUt5cXoxSVdVVDdkZEJKOHc3?=
- =?utf-8?B?NndMQ1JyVmZDQnlFYUttMTB4SkFwYUNNRFRyWDBvTnBwUyt2dGVqK2pvcTUv?=
- =?utf-8?B?WStCVDNabFNyMUdGVlRJaSt2ZjBqWk5PUlV2R1QxNHBuZ3kzZ2c4SzRkMUdn?=
- =?utf-8?B?NWo1OXdVdERwMHVTRHdSNHY2eHNxdEtlYXh0S1IyMU1GYThMYUUzbC9Jcy9K?=
- =?utf-8?B?V0Y0R0E3NHN4UFNkTkhobE1qMG1VbWRzYXRFMlJGVGZrbHFnY21DRnRTaERO?=
- =?utf-8?B?QnVqcUoyZ29zc2dDSTRWK25HMWRZS1RJYmxDQytyblRxQkVSdDd5MDh3Rko1?=
- =?utf-8?B?ZmJ1cmI1Z2xvSDMxWnM4UlRzS29PaDc4Z1huamppMUsvUGJBV3FBd2V6aGNx?=
- =?utf-8?B?RDBQWWVnQzdGUnBnQUViaUllLzl3VjlYMEJ2R2dNUFlIdTAxYVZrRHZzbU9m?=
- =?utf-8?B?aVAwS1VkVVhlNTRRTVllaUVkc3UrNGI1bVRhT0l4YWNJbFZFYkxNR2R4NWJs?=
- =?utf-8?B?MDM5YzNUYXE4L0U4UGdKVVJOeXdTbVVHQk1ONWJZaHoyOXhRcXhaYU1EaThY?=
- =?utf-8?B?QXNJV0hOamtxaTR1cjhxaXV1bzFTVStqbVNjTFpIcjJudnhJNDMwYzltdEJv?=
- =?utf-8?B?cklFbjJDMDJpZThwdllWNHZOb0NocnltU3ZTZHg4L05yT3ZGeGl5dGY3Yitq?=
- =?utf-8?Q?S6erlRaDP67JGTKtR+kWqJT6hG6n6iB72FZ1WafoGU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f390e406-970e-4ad3-1ade-08da012bf0fc
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 17:49:06.7134
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W6dCSC+ei8S/TU+VrZzYh5o3nBX0paJOlYwcDhywAt2kM3R2HMccOsQdcxGlJhev1Cbxf4W+c5GbLwOb2brettAKClvxFFyX1xV2+uAg8Co=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3558
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Aleksa Savic <savicaleksa83@gmail.com>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220308105225.24178-1-savicaleksa83@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] hwmon: (aquacomputer_d5next) Add support for Aquacomputer
+ Octo
+In-Reply-To: <20220308105225.24178-1-savicaleksa83@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRe18-000NFW-KD
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38104
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 14
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
-
-On 3/8/2022 9:00 AM, Jarkko Sakkinen wrote:
-> On Tue, Mar 08, 2022 at 08:04:33AM -0800, Reinette Chatre wrote:
->> Hi Jarkko,
->>
->> On 3/8/2022 1:12 AM, Jarkko Sakkinen wrote:
->>> On Tue, Mar 08, 2022 at 11:06:46AM +0200, Jarkko Sakkinen wrote:
->>>> On Tue, Mar 08, 2022 at 10:14:42AM +0200, Jarkko Sakkinen wrote:
->>>>> On Mon, Mar 07, 2022 at 09:36:36AM -0800, Reinette Chatre wrote:
->>>>>> Hi Jarkko,
->>>>>>
->>>>>> On 3/7/2022 9:10 AM, Jarkko Sakkinen wrote:
->>>>>>> On Mon, Feb 07, 2022 at 04:45:28PM -0800, Reinette Chatre wrote:
->>>>>>>> === Summary ===
->>>>>>>>
->>>>>>>> An SGX VMA can only be created if its permissions are the same or
->>>>>>>> weaker than the Enclave Page Cache Map (EPCM) permissions. After VMA
->>>>>>>> creation this same rule is again enforced by the page fault handler:
->>>>>>>> faulted enclave pages are required to have equal or more relaxed
->>>>>>>> EPCM permissions than the VMA permissions.
->>>>>>>>
->>>>>>>> On SGX1 systems the additional enforcement in the page fault handler
->>>>>>>> is redundant and on SGX2 systems it incorrectly prevents access.
->>>>>>>> On SGX1 systems it is unnecessary to repeat the enforcement of the
->>>>>>>> permission rule. The rule used during original VMA creation will
->>>>>>>> ensure that any access attempt will use correct permissions.
->>>>>>>> With SGX2 the EPCM permissions of a page can change after VMA
->>>>>>>> creation resulting in the VMA permissions potentially being more
->>>>>>>> relaxed than the EPCM permissions and the page fault handler
->>>>>>>> incorrectly blocking valid access attempts.
->>>>>>>>
->>>>>>>> Enable the VMA's pages to remain accessible while ensuring that
->>>>>>>> the PTEs are installed to match the EPCM permissions but not be
->>>>>>>> more relaxed than the VMA permissions.
->>>>>>>>
->>>>>>>> === Full Changelog ===
->>>>>>>>
->>>>>>>> An SGX enclave is an area of memory where parts of an application
->>>>>>>> can reside. First an enclave is created and loaded (from
->>>>>>>> non-enclave memory) with the code and data of an application,
->>>>>>>> then user space can map (mmap()) the enclave memory to
->>>>>>>> be able to enter the enclave at its defined entry points for
->>>>>>>> execution within it.
->>>>>>>>
->>>>>>>> The hardware maintains a secure structure, the Enclave Page Cache Map
->>>>>>>> (EPCM), that tracks the contents of the enclave. Of interest here is
->>>>>>>> its tracking of the enclave page permissions. When a page is loaded
->>>>>>>> into the enclave its permissions are specified and recorded in the
->>>>>>>> EPCM. In parallel the kernel maintains permissions within the
->>>>>>>> page table entries (PTEs) and the rule is that PTE permissions
->>>>>>>> are not allowed to be more relaxed than the EPCM permissions.
->>>>>>>>
->>>>>>>> A new mapping (mmap()) of enclave memory can only succeed if the
->>>>>>>> mapping has the same or weaker permissions than the permissions that
->>>>>>>> were vetted during enclave creation. This is enforced by
->>>>>>>> sgx_encl_may_map() that is called on the mmap() as well as mprotect()
->>>>>>>> paths. This rule remains.
->>>>>>>>
->>>>>>>> One feature of SGX2 is to support the modification of EPCM permissions
->>>>>>>> after enclave initialization. Enclave pages may thus already be part
->>>>>>>> of a VMA at the time their EPCM permissions are changed resulting
->>>>>>>> in the VMA's permissions potentially being more relaxed than the EPCM
->>>>>>>> permissions.
->>>>>>>>
->>>>>>>> Allow permissions of existing VMAs to be more relaxed than EPCM
->>>>>>>> permissions in preparation for dynamic EPCM permission changes
->>>>>>>> made possible in SGX2.  New VMAs that attempt to have more relaxed
->>>>>>>> permissions than EPCM permissions continue to be unsupported.
->>>>>>>>
->>>>>>>> Reasons why permissions of existing VMAs are allowed to be more relaxed
->>>>>>>> than EPCM permissions instead of dynamically changing VMA permissions
->>>>>>>> when EPCM permissions change are:
->>>>>>>> 1) Changing VMA permissions involve splitting VMAs which is an
->>>>>>>>    operation that can fail. Additionally changing EPCM permissions of
->>>>>>>>    a range of pages could also fail on any of the pages involved.
->>>>>>>>    Handling these error cases causes problems. For example, if an
->>>>>>>>    EPCM permission change fails and the VMA has already been split
->>>>>>>>    then it is not possible to undo the VMA split nor possible to
->>>>>>>>    undo the EPCM permission changes that did succeed before the
->>>>>>>>    failure.
->>>>>>>> 2) The kernel has little insight into the user space where EPCM
->>>>>>>>    permissions are controlled from. For example, a RW page may
->>>>>>>>    be made RO just before it is made RX and splitting the VMAs
->>>>>>>>    while the VMAs may change soon is unnecessary.
->>>>>>>>
->>>>>>>> Remove the extra permission check called on a page fault
->>>>>>>> (vm_operations_struct->fault) or during debugging
->>>>>>>> (vm_operations_struct->access) when loading the enclave page from swap
->>>>>>>> that ensures that the VMA permissions are not more relaxed than the
->>>>>>>> EPCM permissions. Since a VMA could only exist if it passed the
->>>>>>>> original permission checks during mmap() and a VMA may indeed
->>>>>>>> have more relaxed permissions than the EPCM permissions this extra
->>>>>>>> permission check is no longer appropriate.
->>>>>>>>
->>>>>>>> With the permission check removed, ensure that PTEs do
->>>>>>>> not blindly inherit the VMA permissions but instead the permissions
->>>>>>>> that the VMA and EPCM agree on. PTEs for writable pages (from VMA
->>>>>>>> and enclave perspective) are installed with the writable bit set,
->>>>>>>> reducing the need for this additional flow to the permission mismatch
->>>>>>>> cases handled next.
->>>>>>>>
->>>>>>>> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
->>>>>>>> ---
->>>>>>>> Changes since V1:
->>>>>>>> - Reword commit message (Jarkko).
->>>>>>>> - Use "relax" instead of "exceed" when referring to permissions (Dave).
->>>>>>>> - Add snippet to Documentation/x86/sgx.rst that highlights the
->>>>>>>>   relationship between VMA, EPCM, and PTE permissions on SGX
->>>>>>>>   systems (Andy).
->>>>>>>>
->>>>>>>>  Documentation/x86/sgx.rst      | 10 +++++++++
->>>>>>>>  arch/x86/kernel/cpu/sgx/encl.c | 38 ++++++++++++++++++----------------
->>>>>>>>  2 files changed, 30 insertions(+), 18 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/Documentation/x86/sgx.rst b/Documentation/x86/sgx.rst
->>>>>>>> index 89ff924b1480..5659932728a5 100644
->>>>>>>> --- a/Documentation/x86/sgx.rst
->>>>>>>> +++ b/Documentation/x86/sgx.rst
->>>>>>>> @@ -99,6 +99,16 @@ The relationships between the different permission masks are:
->>>>>>>>  * PTEs are installed to match the EPCM permissions, but not be more
->>>>>>>>    relaxed than the VMA permissions.
->>>>>>>>  
->>>>>>>> +On systems supporting SGX2 EPCM permissions may change while the
->>>>>>>> +enclave page belongs to a VMA without impacting the VMA permissions.
->>>>>>>> +This means that a running VMA may appear to allow access to an enclave
->>>>>>>> +page that is not allowed by its EPCM permissions. For example, when an
->>>>>>>> +enclave page with RW EPCM permissions is mapped by a RW VMA but is
->>>>>>>> +subsequently changed to have read-only EPCM permissions. The kernel
->>>>>>>> +continues to maintain correct access to the enclave page through the
->>>>>>>> +PTE that will ensure that only access allowed by both the VMA
->>>>>>>> +and EPCM permissions are permitted.
->>>>>>>> +
->>>>>>>>  Application interface
->>>>>>>>  =====================
->>>>>>>>  
->>>>>>>> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
->>>>>>>> index 48afe96ae0f0..b6105d9e7c46 100644
->>>>>>>> --- a/arch/x86/kernel/cpu/sgx/encl.c
->>>>>>>> +++ b/arch/x86/kernel/cpu/sgx/encl.c
->>>>>>>> @@ -91,10 +91,8 @@ static struct sgx_epc_page *sgx_encl_eldu(struct sgx_encl_page *encl_page,
->>>>>>>>  }
->>>>>>>>  
->>>>>>>>  static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
->>>>>>>> -						unsigned long addr,
->>>>>>>> -						unsigned long vm_flags)
->>>>>>>> +						unsigned long addr)
->>>>>>>>  {
->>>>>>>> -	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
->>>>>>>>  	struct sgx_epc_page *epc_page;
->>>>>>>>  	struct sgx_encl_page *entry;
->>>>>>>>  
->>>>>>>> @@ -102,14 +100,6 @@ static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
->>>>>>>>  	if (!entry)
->>>>>>>>  		return ERR_PTR(-EFAULT);
->>>>>>>>  
->>>>>>>> -	/*
->>>>>>>> -	 * Verify that the faulted page has equal or higher build time
->>>>>>>> -	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
->>>>>>>> -	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
->>>>>>>> -	 */
->>>>>>>> -	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
->>>>>>>> -		return ERR_PTR(-EFAULT);
->>>>>>>> -
->>>>>>>>  	/* Entry successfully located. */
->>>>>>>>  	if (entry->epc_page) {
->>>>>>>>  		if (entry->desc & SGX_ENCL_PAGE_BEING_RECLAIMED)
->>>>>>>> @@ -138,7 +128,9 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
->>>>>>>>  {
->>>>>>>>  	unsigned long addr = (unsigned long)vmf->address;
->>>>>>>>  	struct vm_area_struct *vma = vmf->vma;
->>>>>>>> +	unsigned long page_prot_bits;
->>>>>>>>  	struct sgx_encl_page *entry;
->>>>>>>> +	unsigned long vm_prot_bits;
->>>>>>>>  	unsigned long phys_addr;
->>>>>>>>  	struct sgx_encl *encl;
->>>>>>>>  	vm_fault_t ret;
->>>>>>>> @@ -155,7 +147,7 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
->>>>>>>>  
->>>>>>>>  	mutex_lock(&encl->lock);
->>>>>>>>  
->>>>>>>> -	entry = sgx_encl_load_page(encl, addr, vma->vm_flags);
->>>>>>>> +	entry = sgx_encl_load_page(encl, addr);
->>>>>>>>  	if (IS_ERR(entry)) {
->>>>>>>>  		mutex_unlock(&encl->lock);
->>>>>>>   
->>>>>>>> @@ -167,7 +159,19 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
->>>>>>>>  
->>>>>>>>  	phys_addr = sgx_get_epc_phys_addr(entry->epc_page);
->>>>>>>>  
->>>>>>>> -	ret = vmf_insert_pfn(vma, addr, PFN_DOWN(phys_addr));
->>>>>>>> +	/*
->>>>>>>> +	 * Insert PTE to match the EPCM page permissions ensured to not
->>>>>>>> +	 * exceed the VMA permissions.
->>>>>>>> +	 */
->>>>>>>> +	vm_prot_bits = vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
->>>>>>>> +	page_prot_bits = entry->vm_max_prot_bits & vm_prot_bits;
->>>>>>>> +	/*
->>>>>>>> +	 * Add VM_SHARED so that PTE is made writable right away if VMA
->>>>>>>> +	 * and EPCM are writable (no COW in SGX).
->>>>>>>> +	 */
->>>>>>>> +	page_prot_bits |= (vma->vm_flags & VM_SHARED);
->>>>>>>> +	ret = vmf_insert_pfn_prot(vma, addr, PFN_DOWN(phys_addr),
->>>>>>>> +				  vm_get_page_prot(page_prot_bits));
->>>>>>>>  	if (ret != VM_FAULT_NOPAGE) {
->>>>>>>>  		mutex_unlock(&encl->lock);
->>>>>>>>  
->>>>>>>> @@ -295,15 +299,14 @@ static int sgx_encl_debug_write(struct sgx_encl *encl, struct sgx_encl_page *pag
->>>>>>>>   * Load an enclave page to EPC if required, and take encl->lock.
->>>>>>>>   */
->>>>>>>>  static struct sgx_encl_page *sgx_encl_reserve_page(struct sgx_encl *encl,
->>>>>>>> -						   unsigned long addr,
->>>>>>>> -						   unsigned long vm_flags)
->>>>>>>> +						   unsigned long addr)
->>>>>>>>  {
->>>>>>>>  	struct sgx_encl_page *entry;
->>>>>>>>  
->>>>>>>>  	for ( ; ; ) {
->>>>>>>>  		mutex_lock(&encl->lock);
->>>>>>>>  
->>>>>>>> -		entry = sgx_encl_load_page(encl, addr, vm_flags);
->>>>>>>> +		entry = sgx_encl_load_page(encl, addr);
->>>>>>>>  		if (PTR_ERR(entry) != -EBUSY)
->>>>>>>>  			break;
->>>>>>>>  
->>>>>>>> @@ -339,8 +342,7 @@ static int sgx_vma_access(struct vm_area_struct *vma, unsigned long addr,
->>>>>>>>  		return -EFAULT;
->>>>>>>>  
->>>>>>>>  	for (i = 0; i < len; i += cnt) {
->>>>>>>> -		entry = sgx_encl_reserve_page(encl, (addr + i) & PAGE_MASK,
->>>>>>>> -					      vma->vm_flags);
->>>>>>>> +		entry = sgx_encl_reserve_page(encl, (addr + i) & PAGE_MASK);
->>>>>>>>  		if (IS_ERR(entry)) {
->>>>>>>>  			ret = PTR_ERR(entry);
->>>>>>>>  			break;
->>>>>>>> -- 
->>>>>>>> 2.25.1
->>>>>>>>
->>>>>>>
->>>>>>> If you unconditionally set vm_max_prot_bits to RWX for dynamically created
->>>>>>> pags, you would not need to do this.
->>>>>>>
->>>>>>> These patches could be then safely dropped then:
->>>>>>>
->>>>>>> - [PATCH V2 06/32] x86/sgx: Support VMA permissions more relaxed than enclave permissions 
->>>>>>> - [PATCH V2 08/32] x86/sgx: x86/sgx: Add sgx_encl_page->vm_run_prot_bits for dynamic permission changes
->>>>>>> - [PATCH V2 15/32] x86/sgx: Support relaxing of enclave page permissions
->>>>>>>
->>>>>>> And that would also keep full ABI compatibility without exceptions to the
->>>>>>> existing mainline code.
->>>>>>>
->>>>>>
->>>>>> Dropping these changes do not just impact dynamically created pages. Dropping
->>>>>> these patches would result in EPCM page permission restriction being supported
->>>>>> for all pages, those added before enclave initialization as well as dynamically
->>>>>> added pages, but their PTEs will not be impacted.
->>>>>>
->>>>>> For example, if a RW enclave page is added via SGX_IOC_ENCLAVE_ADD_PAGES and
->>>>>> then later made read-only via SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS then Linux
->>>>>> would keep allowing and installing RW PTEs to this page.
->>>>>
->>>>> I think that would be perfectly fine, if someone wants to do that. There is
->>>>> no corrateral damage on doing that. Kernel does not get messed because of
->>>>> that. It's a use case that does not make sense in the first place, so it'd
->>>>> be stupid to build anything extensive around it to the kernel.
->>>>>
->>>>> Shooting yourself to the foot is something that kernel does and should not
->>>>> protect user space from unless there is a risk of messing the state of the
->>>>> kernel itself.
->>>>>
->>>>> Much worse is that we have e.g. completely artificial ioctl
->>>>> SGX_IOC_ENCLAVE_RELAX_PERMISSIONS to support this scheme, which could e.g.
->>>>> cause extra roundtrips for simple EMODPE.
->>>>>
->>>>> Also this means not having to include 06/32, which keeps 100% backwards
->>>>> compatibility in run-time behaviour to the mainline while not restricting
->>>>> at all dynamically created pages. And we get rid of complex book keeping
->>>>> of vm_run_prot_bits.
->>>>>
->>>>> And generally the whole model is then very easy to understand and explain.
->>>>> If I had to keep presentation of the current mess in the patch set in a
->>>>> conference, I can honestly say that I would be in serious trouble. It's
->>>>> not clean and clear security model, which is a risk by itself.
->>>>
->>>> I.e.
->>>>
->>>> 1. For EADD'd pages: stick what has been the invariant 1,5 years now. Do
->>>>    not change it by any means (e.g. 06/32).
->>>> 2. For EAUG'd pages: set vm_max_prot_bits RWX, which essentially means do
->>>>    what ever you want with PTE's and EPCM.
->>>>
->>>> It's a clear and understandable model that does nothing bad to the kernel,
->>>> and a run-time developer can surely find away to get things on going. For
->>>> user space, the most important thing is the clarity in kernel behaviour,
->>>> and this does deliver that clarity. It's not perfect but it does do the
->>>> job and anyone can get it.
->>>
->>> Also a quantitive argument for this is that by simplifying security model
->>> this way it is one ioctl less, which must be considered as +1. We do not
->>> want to add new ioctls unless it is something we absolutely cannnot live
->>> without. We absolutely can live without SGX_IOC_ENCLAVE_RELAX_PERMISSIONS.
->>>
->>
->> ok, with the implications understood and accepted I will proceed with a new
->> series that separates EPCM from PTEs and make RWX PTEs possible by default
->> for EAUG pages. This has broader impact than just removing
->> the three patches you list. "[PATCH 07/32] x86/sgx: Add pfn_mkwrite() handler
->> for present PTEs" is also no longer needed and there is no longer a need
->> to flush PTEs after restricting permissions. New changes also need to
->> be considered - at least the current documentation. I'll rework the series.
+On 3/8/22 02:52, Aleksa Savic wrote:
+> Extend aquacomputer_d5next driver to expose hardware temperature sensors
+> and fans of the Aquacomputer Octo fan controller, which communicates
+> through a proprietary USB HID protocol.
 > 
-> Yes, I really think it is a solid plan. Any possible LSM hooks would most
-> likely attach to build product, not the dynamic behaviour.
+> Four temperature sensors and eight PWM controllable fans are available.
+> Additionally, serial number, firmware version and power-on count are
+> exposed through debugfs.
 > 
-> As far as the page fault handler goes, Haitao is correct after the all
-> discussions that it makes sense. The purpose of MAP_POPULATE series is
-> not to replace it but instead complement it. Just wanted to clear this
-> up as I said otherwise earlier this week.
+> This driver has been tested on x86_64.
 > 
+> Signed-off-by: Aleksa Savic <savicaleksa83@gmail.com>
+> ---
+> Lindent works much better than VS Code, so there should be some
+> formatting fixes. Also, update Kbuild to reflect new features of
+> the driver.
 
-Understood. I will keep the implementation where EAUG is done in page fault
-handler. I do plan to pick up your patch "x86/sgx: Export sgx_encl_page_alloc()"
-since a consequence of the other changes is that this can now be shared.
+If you _really_ think you need to improve formatting, do that in a
+separate patch. FWIW, the formatting changes I noticed do not make
+checkpatch more or less happy and are therefore just completely
+unnecessary. Please refrain from doing that; I am quite overwhelmed
+with reviews, and I really don't have time to review (and get
+distracted by) unnecessary formatting changes.
 
-Reinette
+I partially reviewed this patch, but I gave up after getting stuck
+on the formatting. Please undo all formatting changes and resubmit.
+
+> ---
+>   Documentation/hwmon/aquacomputer_d5next.rst |   4 +
+>   drivers/hwmon/Kconfig                       |   7 +-
+>   drivers/hwmon/aquacomputer_d5next.c         | 402 +++++++++++++++++++-
+>   3 files changed, 396 insertions(+), 17 deletions(-)
+> 
+> diff --git a/Documentation/hwmon/aquacomputer_d5next.rst b/Documentation/hwmon/aquacomputer_d5next.rst
+> index 3373e27b707d..e69f718caf5b 100644
+> --- a/Documentation/hwmon/aquacomputer_d5next.rst
+> +++ b/Documentation/hwmon/aquacomputer_d5next.rst
+> @@ -7,6 +7,7 @@ Supported devices:
+>   
+>   * Aquacomputer D5 Next watercooling pump
+>   * Aquacomputer Farbwerk 360 RGB controller
+> +* Aquacomputer Octo fan controller
+>   
+>   Author: Aleksa Savic
+>   
+> @@ -28,6 +29,9 @@ seems to require sending it a complete configuration. That includes addressable
+>   RGB LEDs, for which there is no standard sysfs interface. Thus, that task is
+>   better suited for userspace tools.
+>   
+> +The Octo exposes four temperature sensors and eight PWM controllable fans, along
+> +with their speed (in RPM), power, voltage and current.
+> +
+>   The Farbwerk 360 exposes four temperature sensors. Depending on the device,
+>   not all sysfs and debugfs entries will be available.
+>   
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index d3986310ec21..0b6a84af1353 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -256,11 +256,12 @@ config SENSORS_AHT10
+>   	  will be called aht10.
+>   
+>   config SENSORS_AQUACOMPUTER_D5NEXT
+> -	tristate "Aquacomputer D5 Next watercooling pump"
+> +	tristate "Aquacomputer D5 Next, Octo and Farbwerk 360"
+>   	depends on USB_HID
+>   	help
+> -	  If you say yes here you get support for the Aquacomputer D5 Next
+> -	  watercooling pump sensors.
+> +	  If you say yes here you get support for sensors and fans of
+> +	  the Aquacomputer D5 Next watercooling pump, Octo fan
+> +	  controller and Farbwerk 360 RGB controller, where available.
+>   
+>   	  This driver can also be built as a module. If so, the module
+>   	  will be called aquacomputer_d5next.
+> diff --git a/drivers/hwmon/aquacomputer_d5next.c b/drivers/hwmon/aquacomputer_d5next.c
+> index 525809cf7c95..f45f8afc2b15 100644
+> --- a/drivers/hwmon/aquacomputer_d5next.c
+> +++ b/drivers/hwmon/aquacomputer_d5next.c
+> @@ -1,6 +1,6 @@
+>   // SPDX-License-Identifier: GPL-2.0+
+>   /*
+> - * hwmon driver for Aquacomputer devices (D5 Next, Farbwerk 360)
+> + * hwmon driver for Aquacomputer devices (D5 Next, Farbwerk 360, Octo)
+>    *
+>    * Aquacomputer devices send HID reports (with ID 0x01) every second to report
+>    * sensor values.
+> @@ -8,23 +8,27 @@
+>    * Copyright 2021 Aleksa Savic <savicaleksa83@gmail.com>
+>    */
+>   
+> +#include <linux/crc16.h>
+>   #include <linux/debugfs.h>
+>   #include <linux/hid.h>
+>   #include <linux/hwmon.h>
+>   #include <linux/jiffies.h>
+>   #include <linux/module.h>
+> +#include <linux/mutex.h>
+>   #include <linux/seq_file.h>
+>   #include <asm/unaligned.h>
+>   
+>   #define USB_VENDOR_ID_AQUACOMPUTER	0x0c70
+>   #define USB_PRODUCT_ID_D5NEXT		0xf00e
+>   #define USB_PRODUCT_ID_FARBWERK360	0xf010
+> +#define USB_PRODUCT_ID_OCTO		0xf011
+>   
+> -enum kinds { d5next, farbwerk360 };
+> +enum kinds { d5next, farbwerk360, octo };
+>   
+>   static const char *const aqc_device_names[] = {
+>   	[d5next] = "d5next",
+> -	[farbwerk360] = "farbwerk360"
+> +	[farbwerk360] = "farbwerk360",
+> +	[octo] = "octo"
+>   };
+>   
+>   #define DRIVER_NAME			"aquacomputer_d5next"
+> @@ -35,6 +39,18 @@ static const char *const aqc_device_names[] = {
+>   #define SERIAL_SECOND_PART		5
+>   #define FIRMWARE_VERSION		13
+>   
+> +#define CTRL_REPORT_ID			0x03
+> +
+> +/* The HID report that the official software always sends
+> + * after writing values, currently same for all devices
+> + */
+> +#define SECONDARY_CTRL_REPORT_ID	0x02
+> +#define SECONDARY_CTRL_REPORT_SIZE	0x0B
+> +
+> +static u8 secondary_ctrl_report[] = {
+> +	0x02, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x34, 0xC6
+> +};
+> +
+>   /* Register offsets for the D5 Next pump */
+>   #define D5NEXT_POWER_CYCLES		24
+>   
+> @@ -55,10 +71,34 @@ static const char *const aqc_device_names[] = {
+>   
+>   /* Register offsets for the Farbwerk 360 RGB controller */
+>   #define FARBWERK360_NUM_SENSORS		4
+> -#define FARBWERK360_SENSOR_START		0x32
+> +#define FARBWERK360_SENSOR_START	0x32
+>   #define FARBWERK360_SENSOR_SIZE		0x02
+>   #define FARBWERK360_SENSOR_DISCONNECTED	0x7FFF
+>   
+> +/* Register offsets for the Octo fan controller */
+> +#define OCTO_POWER_CYCLES		0x18
+> +#define OCTO_NUM_FANS			8
+> +#define OCTO_FAN_PERCENT_OFFSET		0x00
+> +#define OCTO_FAN_VOLTAGE_OFFSET		0x02
+> +#define OCTO_FAN_CURRENT_OFFSET		0x04
+> +#define OCTO_FAN_POWER_OFFSET		0x06
+> +#define OCTO_FAN_SPEED_OFFSET		0x08
+> +
+> +static u8 octo_sensor_fan_offsets[] = { 0x7D, 0x8A, 0x97, 0xA4, 0xB1, 0xBE, 0xCB, 0xD8 };
+> +
+> +#define OCTO_NUM_SENSORS		4
+> +#define OCTO_SENSOR_START		0x3D
+> +#define OCTO_SENSOR_SIZE		0x02
+> +#define OCTO_SENSOR_DISCONNECTED	0x7FFF
+> +
+> +#define OCTO_CTRL_REPORT_SIZE			0x65F
+> +#define OCTO_CTRL_REPORT_CHECKSUM_OFFSET	0x65D
+> +#define OCTO_CTRL_REPORT_CHECKSUM_START		0x01
+> +#define OCTO_CTRL_REPORT_CHECKSUM_LENGTH	0x65C
+> +
+> +/* Fan speed registers in Octo control report (from 0-100%) */
+> +static u16 octo_ctrl_fan_offsets[] = { 0x5B, 0xB0, 0x105, 0x15A, 0x1AF, 0x204, 0x259, 0x2AE };
+> +
+>   /* Labels for D5 Next */
+>   #define L_D5NEXT_COOLANT_TEMP		"Coolant temp"
+>   
+> @@ -83,7 +123,7 @@ static const char *const label_d5next_current[] = {
+>   	"Fan current"
+>   };
+>   
+> -/* Labels for Farbwerk 360 temperature sensors */
+> +/* Labels for Farbwerk 360 and Octo temperature sensors */
+>   static const char *const label_temp_sensors[] = {
+>   	"Sensor 1",
+>   	"Sensor 2",
+> @@ -91,30 +131,192 @@ static const char *const label_temp_sensors[] = {
+>   	"Sensor 4"
+>   };
+>   
+> +/* Labels for Octo */
+> +static const char *const label_fan_speed[] = {
+> +	"Fan 1 speed",
+> +	"Fan 2 speed",
+> +	"Fan 3 speed",
+> +	"Fan 4 speed",
+> +	"Fan 5 speed",
+> +	"Fan 6 speed",
+> +	"Fan 7 speed",
+> +	"Fan 8 speed"
+> +};
+> +
+> +static const char *const label_fan_power[] = {
+> +	"Fan 1 power",
+> +	"Fan 2 power",
+> +	"Fan 3 power",
+> +	"Fan 4 power",
+> +	"Fan 5 power",
+> +	"Fan 6 power",
+> +	"Fan 7 power",
+> +	"Fan 8 power"
+> +};
+> +
+> +static const char *const label_fan_voltage[] = {
+> +	"Fan 1 voltage",
+> +	"Fan 2 voltage",
+> +	"Fan 3 voltage",
+> +	"Fan 4 voltage",
+> +	"Fan 5 voltage",
+> +	"Fan 6 voltage",
+> +	"Fan 7 voltage",
+> +	"Fan 8 voltage"
+> +};
+> +
+> +static const char *const label_fan_current[] = {
+> +	"Fan 1 current",
+> +	"Fan 2 current",
+> +	"Fan 3 current",
+> +	"Fan 4 current",
+> +	"Fan 5 current",
+> +	"Fan 6 current",
+> +	"Fan 7 current",
+> +	"Fan 8 current"
+> +};
+> +
+>   struct aqc_data {
+>   	struct hid_device *hdev;
+>   	struct device *hwmon_dev;
+>   	struct dentry *debugfs;
+> +	struct mutex mutex; /* Used for locking access when reading and writing PWM values */
+>   	enum kinds kind;
+>   	const char *name;
+>   
+> +	int buffer_size;
+> +	u8 *buffer; /* Stores the control report */
+> +	int checksum_start; /* Where the checksummed region starts */
+> +	int checksum_length; /* And where it ends */
+> +	int checksum_offset; /* Position of checksum, usually at the very end */
+> +
+>   	/* General info, same across all devices */
+>   	u32 serial_number[2];
+>   	u16 firmware_version;
+>   
+> -	/* D5 Next specific - how many times the device was powered on */
+> +	/* How many times the device was powered on, if available */
+>   	u32 power_cycles;
+>   
+>   	/* Sensor values */
+>   	s32 temp_input[4];
+> -	u16 speed_input[2];
+> -	u32 power_input[2];
+> -	u16 voltage_input[3];
+> -	u16 current_input[2];
+> +	u16 speed_input[8];
+> +	u32 power_input[8];
+> +	u16 voltage_input[8];
+> +	u16 current_input[8];
+>   
+>   	unsigned long updated;
+>   };
+>   
+> +static int aqc_be_percent_to_pwm(u16 val)
+> +{
+> +	return DIV_ROUND_CLOSEST(ntohs(val) * 255, 100 * 100);
+> +}
+> +
+> +static u16 aqc_pwm_to_percent(u8 val)
+> +{
+> +	return DIV_ROUND_CLOSEST(val * 100 * 100, 255);
+> +}
+> +
+> +/* Expects the mutex to be locked */
+> +static int aqc_get_ctrl_data(struct aqc_data *priv)
+> +{
+> +	int ret;
+> +
+> +	memset(priv->buffer, 0x00, priv->buffer_size);
+> +	ret = hid_hw_raw_request(priv->hdev, CTRL_REPORT_ID, priv->buffer,
+> +				 priv->buffer_size, HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
+> +	if (ret < 0)
+> +		ret = -ENODATA;
+> +
+> +	return ret;
+> +}
+> +
+> +/* Expects the mutex to be locked */
+> +static int aqc_send_ctrl_data(struct aqc_data *priv)
+> +{
+> +	int ret;
+> +	u16 checksum = 0xffff;	/* Init value for CRC-16/USB */
+> +
+> +	checksum = crc16(checksum, priv->buffer + priv->checksum_start, priv->checksum_length);
+> +	checksum ^= 0xffff;	/* Xorout value for CRC-16/USB */
+
+Why not just the following ?
+
+	u16 checksum;
+
+	checksum = crc16(0xffff, priv->buffer + priv->checksum_start, priv->checksum_length);
+
+
+> +
+> +	/* Place the new checksum at the end of the report */
+> +	put_unaligned_be16(checksum, priv->buffer + priv->checksum_offset);
+> +
+> +	/* Send the patched up report back to the device - all other settings stay the same */
+> +	ret = hid_hw_raw_request(priv->hdev, CTRL_REPORT_ID, priv->buffer, priv->buffer_size,
+> +				 HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
+> +	if (ret < 0)
+> +		goto exit;
+> +
+> +	/* The official software sends this report after every change, so do it here as well */
+> +	ret =
+> +	    hid_hw_raw_request(priv->hdev, SECONDARY_CTRL_REPORT_ID, secondary_ctrl_report,
+> +			       SECONDARY_CTRL_REPORT_SIZE, HID_FEATURE_REPORT,
+> +			       HID_REQ_SET_REPORT);
+> +exit:
+> +	return ret;
+> +}
+> +
+> +/* Refreshes the control buffer and returns value at offset in big endian */
+> +static int aqc_get_ctrl_val(struct aqc_data *priv, int offset, void *val, size_t size)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&priv->mutex);
+> +
+> +	if (size < 1 || size > 4) {
+
+A runtime size check for a parameter of a static function, where the parameter
+is always a constant ? And, on top of that, check it inside a mutex ?
+That is completely unacceptable. Why pass the size anyway ? It is always 2.
+
+> +		ret = -EINVAL;
+> +		goto unlock_and_return;
+> +	}
+> +
+> +	ret = aqc_get_ctrl_data(priv);
+> +	if (ret < 0)
+> +		goto unlock_and_return;
+> +
+> +	memcpy(val, priv->buffer + offset, size);
+> +
+> +unlock_and_return:
+> +	mutex_unlock(&priv->mutex);
+> +	return ret;
+> +}
+> +
+> +static int aqc_set_ctrl_val(struct aqc_data *priv, int offset, long val, size_t size)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&priv->mutex);
+> +
+> +	if (size < 1 || size > 4) {
+> +		ret = -EINVAL;
+> +		goto unlock_and_return;
+> +	}
+> +
+> +	ret = aqc_get_ctrl_data(priv);
+> +	if (ret < 0)
+> +		goto unlock_and_return;
+> +
+> +	switch (size) {
+> +	case 4:
+> +		put_unaligned_be32(val, priv->buffer + offset);
+> +		break;
+> +	case 2:
+> +		put_unaligned_be16((u16)val, priv->buffer + offset);
+> +		break;
+> +	case 1:
+> +		priv->buffer[offset] = val;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	ret = aqc_send_ctrl_data(priv);
+> +
+> +unlock_and_return:
+> +	mutex_unlock(&priv->mutex);
+> +	return ret;
+> +}
+> +
+>   static umode_t aqc_is_visible(const void *data, enum hwmon_sensor_types type, u32 attr,
+>   			      int channel)
+>   {
+> @@ -128,17 +330,47 @@ static umode_t aqc_is_visible(const void *data, enum hwmon_sensor_types type, u3
+>   				return 0444;
+>   			break;
+>   		case farbwerk360:
+> +		case octo:
+>   			return 0444;
+>   		default:
+>   			break;
+>   		}
+>   		break;
+> +	case hwmon_pwm:
+> +		switch (priv->kind) {
+> +		case octo:
+> +			switch (attr) {
+> +			case hwmon_pwm_input:
+> +				return 0644;
+> +			default:
+> +				break;
+> +			}
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +		break;
+>   	case hwmon_fan:
+>   	case hwmon_power:
+> -	case hwmon_in:
+>   	case hwmon_curr:
+>   		switch (priv->kind) {
+>   		case d5next:
+> +			if (channel < 2)
+> +				return 0444;
+> +			break;
+> +		case octo:
+> +			return 0444;
+> +		default:
+> +			break;
+> +		}
+> +		break;
+> +	case hwmon_in:
+> +		switch (priv->kind) {
+> +		case d5next:
+> +			if (channel < 3)
+> +				return 0444;
+> +			break;
+> +		case octo:
+>   			return 0444;
+>   		default:
+>   			break;
+> @@ -154,6 +386,7 @@ static umode_t aqc_is_visible(const void *data, enum hwmon_sensor_types type, u3
+>   static int aqc_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
+>   		    int channel, long *val)
+>   {
+> +	int ret;
+>   	struct aqc_data *priv = dev_get_drvdata(dev);
+>   
+>   	if (time_after(jiffies, priv->updated + STATUS_UPDATE_INTERVAL))
+> @@ -172,6 +405,19 @@ static int aqc_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
+>   	case hwmon_power:
+>   		*val = priv->power_input[channel];
+>   		break;
+> +	case hwmon_pwm:
+> +		switch (priv->kind) {
+> +		case octo:
+> +			ret = aqc_get_ctrl_val(priv, octo_ctrl_fan_offsets[channel], val, 2);
+
+'val' is a pointer to long, aqc_get_ctrl_val() writes a two-byte u16 in big endian form into it,
+
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			*val = aqc_be_percent_to_pwm(*val);
+
+... and then aqc_be_percent_to_pwm converts the result to an int, converting it from
+two-byte network byte order to int. Uuh... no. That just happens to work on a little
+endian system, but that is just accidentally so. Convert in aqc_get_ctrl_val(), and
+don't use the pointer to the return data (which is a pointer to a long) as interim
+storage. Since the returned value is an unsigned short, and always so, you might as
+well use the function return value for both the returned value and the error
+instead of returning a value in a pointer.
+
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +		break;
+>   	case hwmon_in:
+>   		*val = priv->voltage_input[channel];
+>   		break;
+> @@ -197,6 +443,7 @@ static int aqc_read_string(struct device *dev, enum hwmon_sensor_types type, u32
+>   			*str = L_D5NEXT_COOLANT_TEMP;
+>   			break;
+>   		case farbwerk360:
+> +		case octo:
+>   			*str = label_temp_sensors[channel];
+>   			break;
+>   		default:
+> @@ -208,6 +455,9 @@ static int aqc_read_string(struct device *dev, enum hwmon_sensor_types type, u32
+>   		case d5next:
+>   			*str = label_d5next_speeds[channel];
+>   			break;
+> +		case octo:
+> +			*str = label_fan_speed[channel];
+> +			break;
+
+It might be time to store the pointers to the labels in priv.
+
+>   		default:
+>   			break;
+>   		}
+> @@ -217,6 +467,9 @@ static int aqc_read_string(struct device *dev, enum hwmon_sensor_types type, u32
+>   		case d5next:
+>   			*str = label_d5next_power[channel];
+>   			break;
+> +		case octo:
+> +			*str = label_fan_power[channel];
+> +			break;
+>   		default:
+>   			break;
+>   		}
+> @@ -226,6 +479,9 @@ static int aqc_read_string(struct device *dev, enum hwmon_sensor_types type, u32
+>   		case d5next:
+>   			*str = label_d5next_voltages[channel];
+>   			break;
+> +		case octo:
+> +			*str = label_fan_voltage[channel];
+> +			break;
+>   		default:
+>   			break;
+>   		}
+> @@ -235,6 +491,41 @@ static int aqc_read_string(struct device *dev, enum hwmon_sensor_types type, u32
+>   		case d5next:
+>   			*str = label_d5next_current[channel];
+>   			break;
+> +		case octo:
+> +			*str = label_fan_current[channel];
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int aqc_write(struct device *dev, enum hwmon_sensor_types type, u32 attr,
+> +		     int channel, long val)
+> +{
+> +	int ret;
+> +	struct aqc_data *priv = dev_get_drvdata(dev);
+> +
+> +	switch (type) {
+> +	case hwmon_pwm:
+> +		switch (attr) {
+> +		case hwmon_pwm_input:
+> +			switch (priv->kind) {
+> +			case octo:
+> +				ret =
+> +				    aqc_set_ctrl_val(priv, octo_ctrl_fan_offsets[channel],
+
+Drop that first continuation line; we can go up to 100 columns now.
+
+Also, the parameter to aqc_pwm_to_percent() needs to be range checked
+to avoid overflows.
+
+> +						     aqc_pwm_to_percent(val), 2);
+> +				if (ret < 0)
+> +					return ret;
+> +				break;
+> +			default:
+> +				break;
+> +			}
+>   		default:
+>   			break;
+>   		}
+> @@ -250,6 +541,7 @@ static const struct hwmon_ops aqc_hwmon_ops = {
+>   	.is_visible = aqc_is_visible,
+>   	.read = aqc_read,
+>   	.read_string = aqc_read_string,
+> +	.write = aqc_write
+>   };
+>   
+>   static const struct hwmon_channel_info *aqc_info[] = {
+> @@ -259,16 +551,48 @@ static const struct hwmon_channel_info *aqc_info[] = {
+>   			   HWMON_T_INPUT | HWMON_T_LABEL,
+>   			   HWMON_T_INPUT | HWMON_T_LABEL),
+>   	HWMON_CHANNEL_INFO(fan,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+> +			   HWMON_F_INPUT | HWMON_F_LABEL,
+>   			   HWMON_F_INPUT | HWMON_F_LABEL,
+>   			   HWMON_F_INPUT | HWMON_F_LABEL),
+>   	HWMON_CHANNEL_INFO(power,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+> +			   HWMON_P_INPUT | HWMON_P_LABEL,
+>   			   HWMON_P_INPUT | HWMON_P_LABEL,
+>   			   HWMON_P_INPUT | HWMON_P_LABEL),
+> +	HWMON_CHANNEL_INFO(pwm,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT,
+> +			   HWMON_PWM_INPUT),
+>   	HWMON_CHANNEL_INFO(in,
+> +			   HWMON_I_INPUT | HWMON_I_LABEL,
+> +			   HWMON_I_INPUT | HWMON_I_LABEL,
+> +			   HWMON_I_INPUT | HWMON_I_LABEL,
+> +			   HWMON_I_INPUT | HWMON_I_LABEL,
+> +			   HWMON_I_INPUT | HWMON_I_LABEL,
+>   			   HWMON_I_INPUT | HWMON_I_LABEL,
+>   			   HWMON_I_INPUT | HWMON_I_LABEL,
+>   			   HWMON_I_INPUT | HWMON_I_LABEL),
+>   	HWMON_CHANNEL_INFO(curr,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+> +			   HWMON_C_INPUT | HWMON_C_LABEL,
+>   			   HWMON_C_INPUT | HWMON_C_LABEL,
+>   			   HWMON_C_INPUT | HWMON_C_LABEL),
+>   	NULL
+> @@ -326,6 +650,35 @@ static int aqc_raw_event(struct hid_device *hdev, struct hid_report *report, u8
+>   				priv->temp_input[i] = sensor_value * 10;
+>   		}
+>   		break;
+> +	case octo:
+> +		priv->power_cycles = get_unaligned_be32(data + OCTO_POWER_CYCLES);
+> +
+> +		/* Fan speed and related readings */
+> +		for (i = 0; i < OCTO_NUM_FANS; i++) {
+> +			priv->speed_input[i] =
+> +			    get_unaligned_be16(data + octo_sensor_fan_offsets[i] +
+> +					       OCTO_FAN_SPEED_OFFSET);
+> +			priv->power_input[i] =
+> +			    get_unaligned_be16(data + octo_sensor_fan_offsets[i] +
+> +					       OCTO_FAN_POWER_OFFSET) * 10000;
+> +			priv->voltage_input[i] =
+> +			    get_unaligned_be16(data + octo_sensor_fan_offsets[i] +
+> +					       OCTO_FAN_VOLTAGE_OFFSET) * 10;
+> +			priv->current_input[i] =
+> +			    get_unaligned_be16(data + octo_sensor_fan_offsets[i] +
+> +					       OCTO_FAN_CURRENT_OFFSET);
+> +		}
+> +
+> +		/* Temperature sensor readings */
+> +		for (i = 0; i < OCTO_NUM_SENSORS; i++) {
+> +			sensor_value = get_unaligned_be16(data + OCTO_SENSOR_START +
+> +							  i * OCTO_SENSOR_SIZE);
+> +			if (sensor_value == OCTO_SENSOR_DISCONNECTED)
+> +				priv->temp_input[i] = -ENODATA;
+> +			else
+> +				priv->temp_input[i] = sensor_value * 10;
+> +		}
+> +		break;
+>   	default:
+>   		break;
+>   	}
+> @@ -376,10 +729,17 @@ static void aqc_debugfs_init(struct aqc_data *priv)
+>   
+>   	priv->debugfs = debugfs_create_dir(name, NULL);
+>   	debugfs_create_file("serial_number", 0444, priv->debugfs, priv, &serial_number_fops);
+> -	debugfs_create_file("firmware_version", 0444, priv->debugfs, priv, &firmware_version_fops);
+> +	debugfs_create_file("firmware_version", 0444, priv->debugfs, priv,
+> +			    &firmware_version_fops);
+
+Sigh :-(. Please refrain from such cosmetic changes. You are just making my life harder.
+
+>   
+> -	if (priv->kind == d5next)
+> -		debugfs_create_file("power_cycles", 0444, priv->debugfs, priv, &power_cycles_fops);
+> +	switch (priv->kind) {
+> +	case d5next:
+> +	case octo:
+> +		debugfs_create_file("power_cycles", 0444, priv->debugfs, priv,
+> +				    &power_cycles_fops);
+> +	default:
+> +		break;
+> +	}
+>   }
+>   
+>   #else
+> @@ -423,12 +783,25 @@ static int aqc_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>   	case USB_PRODUCT_ID_FARBWERK360:
+>   		priv->kind = farbwerk360;
+>   		break;
+> +	case USB_PRODUCT_ID_OCTO:
+> +		priv->kind = octo;
+> +		priv->buffer_size = OCTO_CTRL_REPORT_SIZE;
+> +		priv->checksum_start = OCTO_CTRL_REPORT_CHECKSUM_START;
+> +		priv->checksum_length = OCTO_CTRL_REPORT_CHECKSUM_LENGTH;
+> +		priv->checksum_offset = OCTO_CTRL_REPORT_CHECKSUM_OFFSET;
+> +		break;
+>   	default:
+>   		break;
+>   	}
+>   
+>   	priv->name = aqc_device_names[priv->kind];
+>   
+> +	priv->buffer = devm_kzalloc(&hdev->dev, priv->buffer_size, GFP_KERNEL);
+> +	if (!priv->buffer)
+> +		return -ENOMEM;
+> +
+> +	mutex_init(&priv->mutex);
+> +
+>   	priv->hwmon_dev = hwmon_device_register_with_info(&hdev->dev, priv->name, priv,
+>   							  &aqc_chip_info, NULL);
+>   
+> @@ -462,6 +835,7 @@ static void aqc_remove(struct hid_device *hdev)
+>   static const struct hid_device_id aqc_table[] = {
+>   	{ HID_USB_DEVICE(USB_VENDOR_ID_AQUACOMPUTER, USB_PRODUCT_ID_D5NEXT) },
+>   	{ HID_USB_DEVICE(USB_VENDOR_ID_AQUACOMPUTER, USB_PRODUCT_ID_FARBWERK360) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_AQUACOMPUTER, USB_PRODUCT_ID_OCTO) },
+>   	{ }
+>   };
+>   
 
