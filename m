@@ -2,321 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349721AbiCHSu4 (ORCPT
+        id S1349717AbiCHSvM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:50:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        Tue, 8 Mar 2022 13:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344245AbiCHSut (ORCPT
+        with ESMTP id S1349726AbiCHSvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:50:49 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E15532DF;
-        Tue,  8 Mar 2022 10:49:51 -0800 (PST)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCkqb5TBFz67NyL;
-        Wed,  9 Mar 2022 02:48:27 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Tue, 8 Mar 2022 19:49:49 +0100
-Received: from A2006125610.china.huawei.com (10.47.82.254) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 18:49:41 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <kevin.tian@intel.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [PATCH v9 2/9] crypto: hisilicon/qm: Move few definitions to common header
-Date:   Tue, 8 Mar 2022 18:48:55 +0000
-Message-ID: <20220308184902.2242-3-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
+        Tue, 8 Mar 2022 13:51:09 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAA753E34
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:50:08 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id bn33so26312208ljb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:50:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PtUIO+KlIHnuwZcxB8rQEEiVqAu06QZDgLrU97vhKCg=;
+        b=cgcY5LKW2TzJAfELjjvu0YRJX0cVXNV6yOUNqzYRkaYtWQEF1q1FXcSpdlHjJbunMR
+         0IbdURZXDS7gbD0Dqozrcw4EE0wCiRe7NhG/aY7qMDiLpEncbBRE3msFVv86nACqBYIf
+         Xv2BbgPMeS5GkaXhGA6UU/fXBTXoXyHyEm648=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PtUIO+KlIHnuwZcxB8rQEEiVqAu06QZDgLrU97vhKCg=;
+        b=N1DwgSWY3ryqcnV1Z5r+o90IGVlEcT2F7CPmQV+eiIDUIIGoIdLF3XMsQA/++P27p3
+         V4xpPvz1PC0tWY5BEX9Jd9J8Gm0FjcDaui2lO6ZQf7gG4IjC0old+XzCo6Tj7RrvQ+B+
+         fX7Qz/5yg2ajCdE+uUamAjfzcTS38tmutNvBtWlchq4G/2bCQPWPJhIjB1Q9gEu7Quml
+         iY6fIfkDbrRa8ufGdkjlKSvrTO7DxGRaRd0X4exuc5NjvVwemblr+yfxRgsgoxPVdnJt
+         2HLqRmnJrt89y/1XN9n9CZcLUY2aSWCA2SS/hLPV589Y9uC6ZJK01KTC8TdmHBb6NbZc
+         IejQ==
+X-Gm-Message-State: AOAM533cINj8Y2xLohNJQYwgylMmY6iH5zpSN+4yM/XNb7W1JO40ySSM
+        /caF85znJ73fggwVJowED6PryRFiV0cfFsVPEr0=
+X-Google-Smtp-Source: ABdhPJzTRefa/pMi7DNSgpx6ip+iRiCNPvzvH0Re1IW3LG1gMYmt7aT/QUE0sogJgx3i4H03HRZs6w==
+X-Received: by 2002:a2e:a586:0:b0:247:e785:49cd with SMTP id m6-20020a2ea586000000b00247e78549cdmr6522247ljp.503.1646765406111;
+        Tue, 08 Mar 2022 10:50:06 -0800 (PST)
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
+        by smtp.gmail.com with ESMTPSA id y16-20020a2e9d50000000b00247b105c11dsm4015282ljj.34.2022.03.08.10.50.05
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 10:50:05 -0800 (PST)
+Received: by mail-lj1-f178.google.com with SMTP id v28so26295111ljv.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:50:05 -0800 (PST)
+X-Received: by 2002:a2e:924d:0:b0:246:370c:5618 with SMTP id
+ v13-20020a2e924d000000b00246370c5618mr11487227ljg.358.1646764958731; Tue, 08
+ Mar 2022 10:42:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.82.254]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20220308141437.144919-1-david@redhat.com> <20220308141437.144919-6-david@redhat.com>
+ <D7AB3A84-3FFB-4E8D-9E68-BF721CC4C6FC@vmware.com> <CAHk-=wiYw9hb-EtjcQ2WDSh4TMCWjJmYitfAn=0y_gguhDtf8Q@mail.gmail.com>
+ <0FFA6BBC-766F-4ABC-821A-062632632475@vmware.com>
+In-Reply-To: <0FFA6BBC-766F-4ABC-821A-062632632475@vmware.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 8 Mar 2022 10:42:22 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whBkpWpQpzyVxoVbaYBC06eHGMt=7x=fKe6Uae5O0jjcA@mail.gmail.com>
+Message-ID: <CAHk-=whBkpWpQpzyVxoVbaYBC06eHGMt=7x=fKe6Uae5O0jjcA@mail.gmail.com>
+Subject: Re: [PATCH v1 05/15] mm/rmap: convert RMAP flags to a proper distinct
+ rmap_t type
+To:     Nadav Amit <namit@vmware.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Longfang Liu <liulongfang@huawei.com>
+On Tue, Mar 8, 2022 at 10:24 AM Nadav Amit <namit@vmware.com> wrote:
+>
+> I see your point regarding passing an arg. The or=E2=80=99ing of bitfield=
+s
+> can easily be resolved, unless I am missing something, with a union
+> that holds the aggregate value and an anonymous struct that holds
+> the individual flags.
 
-Move Doorbell and Mailbox definitions to common header file.
-Also export QM mailbox functions.
+I think that falls under the same heading as passing them as
+arguments: it's certainly doable, but it requires special work that is
+hidden by helper macros/functions/types.
 
-This will be useful when we introduce VFIO PCI HiSilicon ACC live
-migration driver.
+I mean, even the "pass as arguments" can certainly work. It's not
+impossible to hide the odd syntax behind a macro, particularly if you
+only ever have a couple of specific cases. So  you can do
 
-Signed-off-by: Longfang Liu <liulongfang@huawei.com>
-Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 58 +++++++++++------------------------
- include/linux/hisi_acc_qm.h   | 38 +++++++++++++++++++++++
- 2 files changed, 56 insertions(+), 40 deletions(-)
+  typedef struct rmap_flags {
+      unsigned int exclusive:1,
+          compound:1;
+  } rmap_t;
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index ed23e1d3fa27..c88e013371af 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -33,23 +33,6 @@
- #define QM_ABNORMAL_EVENT_IRQ_VECTOR	3
- 
- /* mailbox */
--#define QM_MB_CMD_SQC			0x0
--#define QM_MB_CMD_CQC			0x1
--#define QM_MB_CMD_EQC			0x2
--#define QM_MB_CMD_AEQC			0x3
--#define QM_MB_CMD_SQC_BT		0x4
--#define QM_MB_CMD_CQC_BT		0x5
--#define QM_MB_CMD_SQC_VFT_V2		0x6
--#define QM_MB_CMD_STOP_QP		0x8
--#define QM_MB_CMD_SRC			0xc
--#define QM_MB_CMD_DST			0xd
--
--#define QM_MB_CMD_SEND_BASE		0x300
--#define QM_MB_EVENT_SHIFT		8
--#define QM_MB_BUSY_SHIFT		13
--#define QM_MB_OP_SHIFT			14
--#define QM_MB_CMD_DATA_ADDR_L		0x304
--#define QM_MB_CMD_DATA_ADDR_H		0x308
- #define QM_MB_PING_ALL_VFS		0xffff
- #define QM_MB_CMD_DATA_SHIFT		32
- #define QM_MB_CMD_DATA_MASK		GENMASK(31, 0)
-@@ -103,19 +86,12 @@
- #define QM_DB_CMD_SHIFT_V1		16
- #define QM_DB_INDEX_SHIFT_V1		32
- #define QM_DB_PRIORITY_SHIFT_V1		48
--#define QM_DOORBELL_SQ_CQ_BASE_V2	0x1000
--#define QM_DOORBELL_EQ_AEQ_BASE_V2	0x2000
- #define QM_QUE_ISO_CFG_V		0x0030
- #define QM_PAGE_SIZE			0x0034
- #define QM_QUE_ISO_EN			0x100154
- #define QM_CAPBILITY			0x100158
- #define QM_QP_NUN_MASK			GENMASK(10, 0)
- #define QM_QP_DB_INTERVAL		0x10000
--#define QM_QP_MAX_NUM_SHIFT		11
--#define QM_DB_CMD_SHIFT_V2		12
--#define QM_DB_RAND_SHIFT_V2		16
--#define QM_DB_INDEX_SHIFT_V2		32
--#define QM_DB_PRIORITY_SHIFT_V2		48
- 
- #define QM_MEM_START_INIT		0x100040
- #define QM_MEM_INIT_DONE		0x100044
-@@ -693,7 +669,7 @@ static void qm_mb_pre_init(struct qm_mailbox *mailbox, u8 cmd,
- }
- 
- /* return 0 mailbox ready, -ETIMEDOUT hardware timeout */
--static int qm_wait_mb_ready(struct hisi_qm *qm)
-+int hisi_qm_wait_mb_ready(struct hisi_qm *qm)
- {
- 	u32 val;
- 
-@@ -701,6 +677,7 @@ static int qm_wait_mb_ready(struct hisi_qm *qm)
- 					  val, !((val >> QM_MB_BUSY_SHIFT) &
- 					  0x1), POLL_PERIOD, POLL_TIMEOUT);
- }
-+EXPORT_SYMBOL_GPL(hisi_qm_wait_mb_ready);
- 
- /* 128 bit should be written to hardware at one time to trigger a mailbox */
- static void qm_mb_write(struct hisi_qm *qm, const void *src)
-@@ -726,14 +703,14 @@ static void qm_mb_write(struct hisi_qm *qm, const void *src)
- 
- static int qm_mb_nolock(struct hisi_qm *qm, struct qm_mailbox *mailbox)
- {
--	if (unlikely(qm_wait_mb_ready(qm))) {
-+	if (unlikely(hisi_qm_wait_mb_ready(qm))) {
- 		dev_err(&qm->pdev->dev, "QM mailbox is busy to start!\n");
- 		goto mb_busy;
- 	}
- 
- 	qm_mb_write(qm, mailbox);
- 
--	if (unlikely(qm_wait_mb_ready(qm))) {
-+	if (unlikely(hisi_qm_wait_mb_ready(qm))) {
- 		dev_err(&qm->pdev->dev, "QM mailbox operation timeout!\n");
- 		goto mb_busy;
- 	}
-@@ -745,8 +722,8 @@ static int qm_mb_nolock(struct hisi_qm *qm, struct qm_mailbox *mailbox)
- 	return -EBUSY;
- }
- 
--static int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
--		 bool op)
-+int hisi_qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
-+	       bool op)
- {
- 	struct qm_mailbox mailbox;
- 	int ret;
-@@ -762,6 +739,7 @@ static int qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(hisi_qm_mb);
- 
- static void qm_db_v1(struct hisi_qm *qm, u16 qn, u8 cmd, u16 index, u8 priority)
- {
-@@ -1351,7 +1329,7 @@ static int qm_get_vft_v2(struct hisi_qm *qm, u32 *base, u32 *number)
- 	u64 sqc_vft;
- 	int ret;
- 
--	ret = qm_mb(qm, QM_MB_CMD_SQC_VFT_V2, 0, 0, 1);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_SQC_VFT_V2, 0, 0, 1);
- 	if (ret)
- 		return ret;
- 
-@@ -1725,12 +1703,12 @@ static int dump_show(struct hisi_qm *qm, void *info,
- 
- static int qm_dump_sqc_raw(struct hisi_qm *qm, dma_addr_t dma_addr, u16 qp_id)
- {
--	return qm_mb(qm, QM_MB_CMD_SQC, dma_addr, qp_id, 1);
-+	return hisi_qm_mb(qm, QM_MB_CMD_SQC, dma_addr, qp_id, 1);
- }
- 
- static int qm_dump_cqc_raw(struct hisi_qm *qm, dma_addr_t dma_addr, u16 qp_id)
- {
--	return qm_mb(qm, QM_MB_CMD_CQC, dma_addr, qp_id, 1);
-+	return hisi_qm_mb(qm, QM_MB_CMD_CQC, dma_addr, qp_id, 1);
- }
- 
- static int qm_sqc_dump(struct hisi_qm *qm, const char *s)
-@@ -1842,7 +1820,7 @@ static int qm_eqc_aeqc_dump(struct hisi_qm *qm, char *s, size_t size,
- 	if (IS_ERR(xeqc))
- 		return PTR_ERR(xeqc);
- 
--	ret = qm_mb(qm, cmd, xeqc_dma, 0, 1);
-+	ret = hisi_qm_mb(qm, cmd, xeqc_dma, 0, 1);
- 	if (ret)
- 		goto err_free_ctx;
- 
-@@ -2495,7 +2473,7 @@ static int qm_ping_pf(struct hisi_qm *qm, u64 cmd)
- 
- static int qm_stop_qp(struct hisi_qp *qp)
- {
--	return qm_mb(qp->qm, QM_MB_CMD_STOP_QP, 0, qp->qp_id, 0);
-+	return hisi_qm_mb(qp->qm, QM_MB_CMD_STOP_QP, 0, qp->qp_id, 0);
- }
- 
- static int qm_set_msi(struct hisi_qm *qm, bool set)
-@@ -2763,7 +2741,7 @@ static int qm_sq_ctx_cfg(struct hisi_qp *qp, int qp_id, u32 pasid)
- 		return -ENOMEM;
- 	}
- 
--	ret = qm_mb(qm, QM_MB_CMD_SQC, sqc_dma, qp_id, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_SQC, sqc_dma, qp_id, 0);
- 	dma_unmap_single(dev, sqc_dma, sizeof(struct qm_sqc), DMA_TO_DEVICE);
- 	kfree(sqc);
- 
-@@ -2804,7 +2782,7 @@ static int qm_cq_ctx_cfg(struct hisi_qp *qp, int qp_id, u32 pasid)
- 		return -ENOMEM;
- 	}
- 
--	ret = qm_mb(qm, QM_MB_CMD_CQC, cqc_dma, qp_id, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_CQC, cqc_dma, qp_id, 0);
- 	dma_unmap_single(dev, cqc_dma, sizeof(struct qm_cqc), DMA_TO_DEVICE);
- 	kfree(cqc);
- 
-@@ -3655,7 +3633,7 @@ static int qm_eq_ctx_cfg(struct hisi_qm *qm)
- 		return -ENOMEM;
- 	}
- 
--	ret = qm_mb(qm, QM_MB_CMD_EQC, eqc_dma, 0, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_EQC, eqc_dma, 0, 0);
- 	dma_unmap_single(dev, eqc_dma, sizeof(struct qm_eqc), DMA_TO_DEVICE);
- 	kfree(eqc);
- 
-@@ -3684,7 +3662,7 @@ static int qm_aeq_ctx_cfg(struct hisi_qm *qm)
- 		return -ENOMEM;
- 	}
- 
--	ret = qm_mb(qm, QM_MB_CMD_AEQC, aeqc_dma, 0, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_AEQC, aeqc_dma, 0, 0);
- 	dma_unmap_single(dev, aeqc_dma, sizeof(struct qm_aeqc), DMA_TO_DEVICE);
- 	kfree(aeqc);
- 
-@@ -3723,11 +3701,11 @@ static int __hisi_qm_start(struct hisi_qm *qm)
- 	if (ret)
- 		return ret;
- 
--	ret = qm_mb(qm, QM_MB_CMD_SQC_BT, qm->sqc_dma, 0, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_SQC_BT, qm->sqc_dma, 0, 0);
- 	if (ret)
- 		return ret;
- 
--	ret = qm_mb(qm, QM_MB_CMD_CQC_BT, qm->cqc_dma, 0, 0);
-+	ret = hisi_qm_mb(qm, QM_MB_CMD_CQC_BT, qm->cqc_dma, 0, 0);
- 	if (ret)
- 		return ret;
- 
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 3068093229a5..6a6477c34666 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -34,6 +34,40 @@
- #define QM_WUSER_M_CFG_ENABLE		0x1000a8
- #define WUSER_M_CFG_ENABLE		0xffffffff
- 
-+/* mailbox */
-+#define QM_MB_CMD_SQC                   0x0
-+#define QM_MB_CMD_CQC                   0x1
-+#define QM_MB_CMD_EQC                   0x2
-+#define QM_MB_CMD_AEQC                  0x3
-+#define QM_MB_CMD_SQC_BT                0x4
-+#define QM_MB_CMD_CQC_BT                0x5
-+#define QM_MB_CMD_SQC_VFT_V2            0x6
-+#define QM_MB_CMD_STOP_QP               0x8
-+#define QM_MB_CMD_SRC                   0xc
-+#define QM_MB_CMD_DST                   0xd
-+
-+#define QM_MB_CMD_SEND_BASE		0x300
-+#define QM_MB_EVENT_SHIFT               8
-+#define QM_MB_BUSY_SHIFT		13
-+#define QM_MB_OP_SHIFT			14
-+#define QM_MB_CMD_DATA_ADDR_L		0x304
-+#define QM_MB_CMD_DATA_ADDR_H		0x308
-+#define QM_MB_MAX_WAIT_CNT		6000
-+
-+/* doorbell */
-+#define QM_DOORBELL_CMD_SQ              0
-+#define QM_DOORBELL_CMD_CQ              1
-+#define QM_DOORBELL_CMD_EQ              2
-+#define QM_DOORBELL_CMD_AEQ             3
-+
-+#define QM_DOORBELL_SQ_CQ_BASE_V2	0x1000
-+#define QM_DOORBELL_EQ_AEQ_BASE_V2	0x2000
-+#define QM_QP_MAX_NUM_SHIFT             11
-+#define QM_DB_CMD_SHIFT_V2		12
-+#define QM_DB_RAND_SHIFT_V2		16
-+#define QM_DB_INDEX_SHIFT_V2		32
-+#define QM_DB_PRIORITY_SHIFT_V2		48
-+
- /* qm cache */
- #define QM_CACHE_CTL			0x100050
- #define SQC_CACHE_ENABLE		BIT(0)
-@@ -414,6 +448,10 @@ pci_ers_result_t hisi_qm_dev_slot_reset(struct pci_dev *pdev);
- void hisi_qm_reset_prepare(struct pci_dev *pdev);
- void hisi_qm_reset_done(struct pci_dev *pdev);
- 
-+int hisi_qm_wait_mb_ready(struct hisi_qm *qm);
-+int hisi_qm_mb(struct hisi_qm *qm, u8 cmd, dma_addr_t dma_addr, u16 queue,
-+	       bool op);
-+
- struct hisi_acc_sgl_pool;
- struct hisi_acc_hw_sgl *hisi_acc_sg_buf_map_to_hw_sgl(struct device *dev,
- 	struct scatterlist *sgl, struct hisi_acc_sgl_pool *pool,
--- 
-2.25.1
+   #define RMAP_EXCLUSIVE (rmap_t) { .exclusive =3D 1 }
+   #define RMAP_COMPOUND (rmap_t) { .compound =3D 1 }
 
+and now you can use RMAP_EXCLUSIVE when you pass it as an argument,
+and in the functions themselves you can use
+
+      if (flags.exclusive) {...
+
+which is certainly not unreadable. But it does mean that you basically
+have one syntax for testing "is this exclusive" and another for
+passing that value in.
+
+And you can't do RMAP_EXCLUSIVE | RMAP_COMPOUND to say "I want to pass
+in both exclusive and compound", but you *can* do
+
+      flags.exclusive =3D 1;
+
+to set the exclusive bit. Again - that is certainly not unreadable on
+its own, but it's an example of how inconsistent and inconvenient the
+interface gets once you do anything outside of some very specific
+cases.
+
+And yes, you can solve these cases by simply always limiting yourself
+to specific syntax (in particular, just make the rule be that you can
+never create values out of thin air, you always have a variable that
+gets set.
+
+The bitfield thing does have the advantage that it ends up having very
+strict type checking.
+
+But in general, I'd say that the disadvantages are huge enough that
+you should never use a bitfield "on its own". Once it's part of a
+structure that you have to pass around and initialize as a structure
+*anyway*, then most of the problems go away.
+
+So bitfields as part of structures are fine - and we obviously use
+them extensively in that form. Even then they can have problems if
+there are any kinds of atomicity issues (ie think "page flags" or
+anything like that) but that's obviously a different thing, and using
+a union to get both ways to access things isn't out of the question.
+
+Of course, if you use unions to get "both as a bitfield and as a
+value" things working, you suddenly have "bit order issues", so that
+can be really problematic too. Bit endianness doesn't even have to
+follow byte endianness.
+
+End result: bitfields are actually often more complex than you think they a=
+re.
+
+                  Linus
