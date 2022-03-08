@@ -2,121 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D882AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1337C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243603AbiCHF0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 00:26:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
+        id S237226AbiCHF2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 00:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237923AbiCHF0T (ORCPT
+        with ESMTP id S237923AbiCHF2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 00:26:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC7A3B56E
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:25:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDEDF61578
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2072FC340EB;
-        Tue,  8 Mar 2022 05:25:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646717122;
-        bh=KXzmZyEZ7u0umWi8Wmg3jgarR7t2v/kSfkqx99RMKdI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FsfiOkbQenTIwm/kRsex+SaJWDpa0M8Feo4v2jegV82BN3EY1FYyXXx2bze8656cE
-         OQwuR3fybLuA8nx5TfxF6ZNofhV9WSMMjHi7jBiBXSpSywjM/Nh7n+HPQOebm+olt9
-         JEMCjfCYrgzPuDMVfpHG5GrzODzPCmDVeSLdOs/mCZPhnUC/heLZ6lNZh26Lz8TNjZ
-         Q+GBJZ019Oqf9lzwidQ9N7H6NQZaKLe+rfWuWEB+ipEJy6NCDIBEVZXd73klH6g7qZ
-         q1OSf0flPtR+yquptlzP+FO6roORBlokRkjUICkpgFYIVDt81S+6St9fxBxYTqaEn1
-         GikOeoW+3uwLA==
-Date:   Mon, 7 Mar 2022 21:25:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "dust.li" <dust.li@linux.alibaba.com>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [saeed:net-next 154/185] net/smc/smc_sysctl.h:23:16: warning:
- no previous prototype for 'smc_sysctl_net_init'
-Message-ID: <20220307212520.176fce24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220308051655.GF35207@linux.alibaba.com>
-References: <202203081012.KgONXWsS-lkp@intel.com>
-        <20220308051655.GF35207@linux.alibaba.com>
+        Tue, 8 Mar 2022 00:28:01 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD6A3B57A
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:27:05 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id z4so15460653pgh.12
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 21:27:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oPr7jbEQjZcFbPcnfK3KFYS7eLKVUp4KxioDBpQLsHE=;
+        b=KFudWe1Vy5F9opv/soKhgh7FbpSJlX8UMUatuMgFRoPStXK8BeJYII3IzceeF4CUsE
+         tbZtmjAemFX5zvbE6wUAsuHZbZjxHyMXZWeEZcotbpQPuVRvG0M7k6VpuXKY6pkei48H
+         zXfV9NCW2jKEE17DZ9Ra4LgaKKzI3Af1gO2wcA7ElXQGZWb4NCyLsLzkpbYM8UT9vsEO
+         pUu9p56Gp1SA3gnsGePgMqiQbP60EhVUK9DOvNBmk8vIgN7nMuOBxQ+IB8iUaUiYu2Qb
+         2Pna2NPt9syIKgvHRHKvIJRPlI6Fu620/j9bCtoglu3IB7vYM/lS7I1CEm9Rb4f9/4gY
+         lvcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oPr7jbEQjZcFbPcnfK3KFYS7eLKVUp4KxioDBpQLsHE=;
+        b=G8/ZQFPsHTNpKOtvdyOeUXFn9369UpcRjgDpg7QHJ8ilD3HJ02tW42+pqdom2if0p2
+         fP5BbJ9A6JAEfQEu2BDJKO5J10iTEagO4aGIe8tuajB0sHndzWNQL9rz44iUoTrLsLho
+         BrT74mRBLuUMJd9KApuWLxqn4hsSPJ+r+DkqmhGtvYDoVs3ey0ZoDlGAOuw50+p9x4C8
+         X1K8GGl78itl61ffchrDsLY5vYi8lNqAJ1iFAq0bWcb4wiscb6hsp1SZRzh17C1dgYXj
+         C1XDHSrb4YXCCK55+8XanJga+1EEN871gTm9AFu1MLGMPMW3pGSAgIf9bWu5cepBrsg6
+         6IUw==
+X-Gm-Message-State: AOAM532UCVPH/L3onbMVXBbyf82IzesimKHhXevtUOBfe+O/DFXcfA59
+        M8hfpeFLSWh+AdwHE/ushNcmqQ==
+X-Google-Smtp-Source: ABdhPJyH9JQVBjUGI9YE7QPYpbcBryWFyGEZ7zSUSAdXkhoivPgJwH+prK8BW8Uov0OvBfEDSxptFQ==
+X-Received: by 2002:a63:d018:0:b0:374:a3c1:dfed with SMTP id z24-20020a63d018000000b00374a3c1dfedmr12888737pgf.155.1646717224619;
+        Mon, 07 Mar 2022 21:27:04 -0800 (PST)
+Received: from google.com (223.103.125.34.bc.googleusercontent.com. [34.125.103.223])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm18580376pfl.135.2022.03.07.21.27.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 21:27:04 -0800 (PST)
+Date:   Tue, 8 Mar 2022 05:26:59 +0000
+From:   Chun-Tse Shao <ctshao@google.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        keyrings@vger.kernel.org, DTML <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4] config: Allow kernel installation packaging to
+ override pkg-config
+Message-ID: <YibpI1MkqVUvEl9h@google.com>
+References: <20220306223016.2239094-1-ctshao@google.com>
+ <CAKwvOdnmtRYnSx3VvG=PEnzpzWa8f=0bn1xDymjER5EShS2tmw@mail.gmail.com>
+ <YiaMJCHOOuujHwiK@google.com>
+ <CAK7LNAS-=Fne6fyiqzQ6DwNLOdF-HAY9Libn10uyV9GmQQMUKQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK7LNAS-=Fne6fyiqzQ6DwNLOdF-HAY9Libn10uyV9GmQQMUKQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 13:16:55 +0800 dust.li wrote:
-> >vim +/smc_sysctl_net_init +23 net/smc/smc_sysctl.h
+On Tue, Mar 08, 2022 at 01:01:45PM +0900, Masahiro Yamada wrote:
+> On Tue, Mar 8, 2022 at 7:50 AM Chun-Tse Shao <ctshao@google.com> wrote:
 > >
-> >    22	  
-> >  > 23	int __net_init smc_sysctl_net_init(struct net *net)  
-> >    24	{
-> >    25		net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
-> >    26		return 0;
-> >    27	}
-> >    28	  
-> >  > 29	void __net_exit smc_sysctl_net_exit(struct net *net) { }  
-> >    30	  
-> 
-> Hi Jakub:
-> 
-> Sorry to bother again on this !
-> Looks like we still need to add 'static inline' or add an extra
-> declaration for these 2 functions if we want to get rid of these warnings.
-> What do you think ?
+> > On Mon, Mar 07, 2022 at 10:17:17AM -0800, Nick Desaulniers wrote:
+> > > On Sun, Mar 6, 2022 at 2:39 PM Chun-Tse Shao <ctshao@google.com> wrote:
+> > > >
+> > > > Add HOSTPKG_CONFIG to allow tooling that builds the kernel to override
+> > > > what pkg-config and parameters are used.
+> > >
+> > > Sorry, kind a late thought here for v4, but we don't seem to prefix
+> > > many other host side tools with HOST_, i.e. LEX, YACC, AWK, PERL,
+> > > PYTHON3, etc.  Maybe just having the variable identifier be simply
+> > > PKGCONFIG rather than HOSTPKG_CONFIG then put it at the end of the
+> > > list in the top level Makefile after ZSTD (i.e. the list of host
+> > > tools)?  There's HOST_ prefixes when there's more than one tool
+> > > involved (i.e. host compiler vs target compiler), but I suspect
+> > > there's no such distinction for the existing uses of pkg-config?
+> > >
+> > Thanks for your suggestion, Nick! Yes I think it makes sense with PKGCONFIG
+> > instead of HOSTPKG_CONFIG since there is only one tool involved. I will
+> > work on it and submit a new patch.
+> >
+>
+> Please hold on.
+>
+> I was also wondering what to do with the "HOST" prefix.
+>
+> Libraries are usually arch-dependent.
+> (in other words, pkg-config should return different library paths
+> for $(CC) and $(HOSTCC) )
+>
+> You already understood this, so you added "HOST" prefix.
+>
+>
+> Please let me take time for further discussion.
+> I will come back to this when I get some time.
+>
+>
+> In the meantime,
+>   a8a5cd8b472ca20e5b8fa649c43b3756867322f8
+> as reference info if you have not seen it.
+>
+>
+> How many distros support something like
+> "aarch64-linux-gnu-pkg-config"  ?
+>
+> Ubuntu 18.04 and 20.04 seem to support it.
+> I do not know for others.
+>
+>
+>
+>
+>
+> --
+> Best Regards
+>
+> Masahiro Yamada
 
-Sorry my comment was pretty unclear an unnecessary.
+Thanks Masahiro! Will wait for your suggestion.
 
-I meant that you don't need the __net_init annotation, it still 
-needs to be a static inline. So this is what I meant:
-
-diff --git a/net/smc/smc_sysctl.h b/net/smc/smc_sysctl.h
-index 1d554300604d..0becc11bd2f4 100644
---- a/net/smc/smc_sysctl.h
-+++ b/net/smc/smc_sysctl.h
-@@ -20,13 +20,13 @@ void __net_exit smc_sysctl_net_exit(struct net *net);
- 
- #else
- 
--int __net_init smc_sysctl_net_init(struct net *net)
-+static inline int smc_sysctl_net_init(struct net *net)
- {
-        net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
-        return 0;
- }
- 
--void __net_exit smc_sysctl_net_exit(struct net *net) { }
-+static inline void smc_sysctl_net_exit(struct net *net) { }
- 
- #endif /* CONFIG_SYSCTL */
-
-
-
-But really it does not matter if the __net_init / exit is there, 
-so this works too:
-
-diff --git a/net/smc/smc_sysctl.h b/net/smc/smc_sysctl.h
-index 1d554300604d..6979e7173669 100644
---- a/net/smc/smc_sysctl.h
-+++ b/net/smc/smc_sysctl.h
-@@ -20,13 +20,13 @@ void __net_exit smc_sysctl_net_exit(struct net *net);
- 
- #else
- 
--int __net_init smc_sysctl_net_init(struct net *net)
-+static inline int __net_init smc_sysctl_net_init(struct net *net)
- {
-        net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
-        return 0;
- }
- 
--void __net_exit smc_sysctl_net_exit(struct net *net) { }
-+static inline void __net_exit smc_sysctl_net_exit(struct net *net) { }
- 
- #endif /* CONFIG_SYSCTL */
- 
+-CT
