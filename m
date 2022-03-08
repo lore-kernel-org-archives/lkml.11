@@ -2,122 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 506BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 20:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350347AbiCHUvi (ORCPT
+        id S1350342AbiCHUvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 15:51:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        Tue, 8 Mar 2022 15:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243954AbiCHUvT (ORCPT
+        with ESMTP id S1350324AbiCHUvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 15:51:19 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F216133883
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:50:11 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id u10so28802495wra.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 12:50:11 -0800 (PST)
+        Tue, 8 Mar 2022 15:51:22 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C416329BD
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:50:25 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id h16-20020a4a6f10000000b00320507b9ccfso436659ooc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 12:50:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VVamIeahV8l6/c1hyhhpxgfx+OG8gkG+rm525YIuvz0=;
-        b=FPhmT64PsgT9wEUvw9reJ1VNjnbBYXzxz89rDSMxHj2pErqkE+vZ5sLTVpe+Y0dC2A
-         EDUC9kCJ4iirUpVLewKhc67YodUQY6ISeX49DeGg+2zOTKN6S2+0lH5MdVeTHSWwn5x/
-         ZvrwBWj121Y+mKNfHRoqLBeuE27YFyiCF5+vJ3MvGwT92k4dcWhs5NGVoKy5DYHvce/j
-         59ywsaaN7HIaCI4gbMvp72/Gc9WYWbC7toBET/d1J/AYVn6YsYe/vU1aMY31vAkxWJH9
-         8xJWWvJWpJUW8X6iqXsqxzfpMqqqdXWV5qdGBPGH8GgydqC89m4nmonMxDoEqsdVH6Yj
-         FQvA==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=07/Mk2mSRPnnpQpgFzSH5cZEiz+q3LLuujHq7n3nu5A=;
+        b=KHbJzGEeeMAyb2CIStCFirQlLtkUTpRvwtLMjNY9sVufVdQCQF6918bcz6/WQMgpfr
+         ZDQZk/n+ABZlIyEy/c+G7FEOCMiUEjc6k4lXSLuWflbJjmoXWVylGC6b/h7/1aaAyL59
+         gEU43+hkxXFgMCfkl3XxCylMwB/dxXs0k08C8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=VVamIeahV8l6/c1hyhhpxgfx+OG8gkG+rm525YIuvz0=;
-        b=lO7oXiNovDPnOYJ8joUSNnAjuQdVzg5XUsWo1n2v/KgNtyGjhc7FPBz7vjPTVaTXCK
-         93ubmcbEeWOU+AdQlxRYwh+TO6zoLs5YWng3kgQmSCKnWzBPJEoI6+09gr1dJZEvvngp
-         BEnmORYzvjdkpffUNDkUDQwAY6wZtFOhOOULtj5ZQtGs+pnjOtm0Q1mUL1/A/20hQXZ1
-         xbuceEeFxENs9fwV8Ctc1/yxE/3Hhcm72m26VVZClsuTdLQ3/am2mCZA4c8IMFsIncF4
-         3iTVN6DBExtXaMZ1VnbL5P84neRTxqwsd3NjwyCTkDa7VaNs2XL+bs9kFartGrumgJuX
-         ENCg==
-X-Gm-Message-State: AOAM530hzoyEtJld9B5fEqrdm0Q4mF4ym7/j5O9qKIjcjGkEmOT+p8JE
-        QVG3i1KcCNrifpnfdV5xUdCO8w==
-X-Google-Smtp-Source: ABdhPJyc0DjjNk0UnsK59psw4hHmQCTr0W+xIIc2VbXZ+sHbsFh0hrk8Z3A8GkXu5hVknJGx971TRw==
-X-Received: by 2002:adf:d1a8:0:b0:1f0:59c5:5e18 with SMTP id w8-20020adfd1a8000000b001f059c55e18mr13807188wrc.585.1646772610571;
-        Tue, 08 Mar 2022 12:50:10 -0800 (PST)
-Received: from linaro.org ([2a00:23c5:6809:2201:546d:7d59:1703:bf96])
-        by smtp.gmail.com with ESMTPSA id p26-20020a1c741a000000b00389ab9a53c8sm3245758wmc.36.2022.03.08.12.50.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 12:50:10 -0800 (PST)
-From:   Mike Leach <mike.leach@linaro.org>
-To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     mathieu.poirier@linaro.org, peterz@infradead.org, mingo@redhat.com,
-        acme@kernel.org, linux-perf-users@vger.kernel.org,
-        leo.yan@linaro.org, Mike Leach <mike.leach@linaro.org>
-Subject: [PATCH 07/10] perf: cs-etm: Update event to read trace ID from sysfs
-Date:   Tue,  8 Mar 2022 20:49:57 +0000
-Message-Id: <20220308205000.27646-8-mike.leach@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220308205000.27646-1-mike.leach@linaro.org>
-References: <20220308205000.27646-1-mike.leach@linaro.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=07/Mk2mSRPnnpQpgFzSH5cZEiz+q3LLuujHq7n3nu5A=;
+        b=HoU9aw4I0LrMgV8YoBBw8fWr/sxBo9SB6EYkQxRhf4P3YjIvWfZyakp7h/oumg7se8
+         RHD/VKMuQYezrK5uRKOD9NKtETUHg7A65iTjgZl6qQrHSqRVc0ZTTbRvengEovhMcM5a
+         dLzZgAfna0W0FAWd14LNP5PKVLvLmAxMw+WvhS3LzNFjEIIlwRy3U1cTEw7VxvXkjUAZ
+         RdvNbi1ZnJDXFjH/RxkdtsktHiQeV+lRTsrT7kDVO2qI342KpqxU+VTLHtKCsdm68CTm
+         tLIfgiMc4y77DeXPnlBwiVMg0SZmIh35hK0h6GnSMSziuuRFq1pILtI74R7KlTKGJ+xD
+         lWvQ==
+X-Gm-Message-State: AOAM531nVVqXOpcif7PTtf1/Ei/XJlPg77C2jNMwxH5dg45ngIi3p7B/
+        hhd2PT/FuMjw5/ZceuY/THtR6VkovMvEsftfYs1skg==
+X-Google-Smtp-Source: ABdhPJyeIEGjp4wu4+prvM/5vJWOJEne6k+CfpxSdR/ZQubTtI2Y3uQWBjtlKPhKELQekWuo0tfl0JwswwbhoEpsuwU=
+X-Received: by 2002:a05:6870:d250:b0:da:b3f:3211 with SMTP id
+ h16-20020a056870d25000b000da0b3f3211mr3521199oac.193.1646772624706; Tue, 08
+ Mar 2022 12:50:24 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 8 Mar 2022 12:50:24 -0800
+MIME-Version: 1.0
+In-Reply-To: <7e3d1ff3-f1a0-3a4d-a056-e3dce1a9a28d@quicinc.com>
+References: <1645182064-15843-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1645182064-15843-6-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n509bg6RzieOtYuUvicU14D7bmgH-u02F1TB+hBZ+xH4CA@mail.gmail.com>
+ <42570508-ed62-af26-220e-c776418a722e@quicinc.com> <CAE-0n50J=4qrkR9ycEGxbKVHwm9Om8S2YSJR_Y71_iErR-wAHw@mail.gmail.com>
+ <7e3d1ff3-f1a0-3a4d-a056-e3dce1a9a28d@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 8 Mar 2022 12:50:24 -0800
+Message-ID: <CAE-0n50iuZY0ju+-ZYG16ab0GVTTn7Z8p3BdZJPTKZ-CSoa-TA@mail.gmail.com>
+Subject: Re: [PATCH V7 5/5] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya Kakitapalli <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read the current trace ID values associated with a CPU
-from sysfs.
+Quoting Satya Priya Kakitapalli (Temp) (2022-03-07 06:49:31)
+>
+> On 3/1/2022 2:06 AM, Stephen Boyd wrote:
+> > Quoting Satya Priya Kakitapalli (Temp) (2022-02-28 06:25:06)
+> >> On 2/19/2022 7:31 AM, Stephen Boyd wrote:
+> >>> Quoting Satya Priya (2022-02-18 03:01:03)
+> >>>> +               pins =3D "gpio4";
+> >>>> +               function =3D "normal";
+> >>>> +               bias-disable;
+> >>>> +               output-high;
+> >>> Is this a reset signal? Should the driver be deasserting the reset wh=
+en
+> >>> it is ready? That could be the same time the gpio is acquired.
+> >>
+> >> I didn't get your question exactly.. hope this answers your query
+> >>
+> >> The pm8008 chip needs this gpio to be toggled , in order to come out o=
+f
+> >> reset and start any transactions..
+> >>
+> >> Please let me know if you have more queries
+> > Yes that answers it for me. Thanks.
+> >
+> > This is a reset gpio and should be a DT property like
+> >
+> >       reset-gpios =3D <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>
+> >
+> > in the pm8008 node. When the driver probes it should get the gpio and
+> > do any toggling to take it out of reset. It shouldn't be done through
+> > pinconf settings.
+>
+>
+> Okay, IIUC,=C2=A0 I have to remove the output-high here and add reset-gpi=
+os
+> in pm8008 DT node. And then add below code in pm8008 mfd driver probe
+>
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 chip->reset_gpio =3D devm_gpiod_get(chip->dev, "reset",
+> GPIOD_OUT_HIGH);
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 if (IS_ERR(chip->reset_gpio)) {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_err(chip->=
+dev, "failed to acquire reset
+> gpio\n");
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR=
+(chip->reset_gpio);
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 }
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 gpiod_set_value(chip->reset_gpio, 1);
+>
+> This is working for me, Please let me know if I'm=C2=A0 missing something=
+.
+>
 
-Previously used the static association algorithm that is no longer
-used as it did not scale and was broken for larger core counts.
-
-Signed-off-by: Mike Leach <mike.leach@linaro.org>
----
- tools/perf/arch/arm/util/cs-etm.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/tools/perf/arch/arm/util/cs-etm.c b/tools/perf/arch/arm/util/cs-etm.c
-index 2e8b2c4365a0..f48087d07bcb 100644
---- a/tools/perf/arch/arm/util/cs-etm.c
-+++ b/tools/perf/arch/arm/util/cs-etm.c
-@@ -43,11 +43,13 @@ struct cs_etm_recording {
- };
- 
- static const char *metadata_etmv3_ro[CS_ETM_PRIV_MAX] = {
-+	[CS_ETM_ETMTRACEIDR]	= "traceid",
- 	[CS_ETM_ETMCCER]	= "mgmt/etmccer",
- 	[CS_ETM_ETMIDR]		= "mgmt/etmidr",
- };
- 
- static const char * const metadata_etmv4_ro[] = {
-+	[CS_ETMV4_TRCTRACEIDR]		= "mgmt/trctraceid",
- 	[CS_ETMV4_TRCIDR0]		= "trcidr/trcidr0",
- 	[CS_ETMV4_TRCIDR1]		= "trcidr/trcidr1",
- 	[CS_ETMV4_TRCIDR2]		= "trcidr/trcidr2",
-@@ -629,8 +631,9 @@ static void cs_etm_save_etmv4_header(__u64 data[], struct auxtrace_record *itr,
- 
- 	/* Get trace configuration register */
- 	data[CS_ETMV4_TRCCONFIGR] = cs_etmv4_get_config(itr);
--	/* Get traceID from the framework */
--	data[CS_ETMV4_TRCTRACEIDR] = coresight_get_trace_id(cpu);
-+	/* Get traceID from the sysfs */
-+	data[CS_ETMV4_TRCTRACEIDR] = cs_etm_get_ro(cs_etm_pmu, cpu,
-+						   metadata_etmv4_ro[CS_ETMV4_TRCTRACEIDR]);
- 	/* Get read-only information from sysFS */
- 	data[CS_ETMV4_TRCIDR0] = cs_etm_get_ro(cs_etm_pmu, cpu,
- 					       metadata_etmv4_ro[CS_ETMV4_TRCIDR0]);
-@@ -677,9 +680,10 @@ static void cs_etm_get_metadata(int cpu, u32 *offset,
- 		magic = __perf_cs_etmv3_magic;
- 		/* Get configuration register */
- 		info->priv[*offset + CS_ETM_ETMCR] = cs_etm_get_config(itr);
--		/* Get traceID from the framework */
-+		/* Get traceID from sysfs */
- 		info->priv[*offset + CS_ETM_ETMTRACEIDR] =
--						coresight_get_trace_id(cpu);
-+			cs_etm_get_ro(cs_etm_pmu, cpu,
-+				      metadata_etmv3_ro[CS_ETM_ETMTRACEIDR]);
- 		/* Get read-only information from sysFS */
- 		info->priv[*offset + CS_ETM_ETMCCER] =
- 			cs_etm_get_ro(cs_etm_pmu, cpu,
--- 
-2.17.1
-
+Yep looks good to me.
