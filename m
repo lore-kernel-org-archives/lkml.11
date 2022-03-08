@@ -2,109 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB939C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241403AbiCHK33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:29:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
+        id S1345861AbiCHK3g (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 05:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345845AbiCHK3Y (ORCPT
+        with ESMTP id S1345848AbiCHK3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:29:24 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64C93C489;
-        Tue,  8 Mar 2022 02:28:27 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 703C1210F6;
-        Tue,  8 Mar 2022 10:28:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646735306; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UGiJgSe0T0oOiHnAKgTMCIENUpUOw+B4X6790ZHiR4c=;
-        b=Q52Uy1TH2pLPefAJDAAWytaJOWwzLthr/Z4rDxlR6aAXBNaOg/c4kj4VfwE6KwBAWe2oU4
-        mra52iIeVV2wH6sXJVVCZncr6Su0QomG7ygU2Xg0j3H3J/zpIJweGWYRWkAO5Y9vMApdsc
-        zG+VxPgzMJutQ0YgkQKJMx3KA51GzU4=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 538B7A3B87;
-        Tue,  8 Mar 2022 10:28:25 +0000 (UTC)
-Date:   Tue, 8 Mar 2022 11:28:24 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>, jpoimboe@redhat.com,
-        jikos@kernel.org, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com
-Subject: Re: [External] Re: [PATCH] livepatch: Only block the removal of
- KLP_UNPATCHED forced transition patch
-Message-ID: <YicvyEbFzZIAut+4@alley>
-References: <20220301140840.29345-1-zhouchengming@bytedance.com>
- <alpine.LSU.2.21.2203021052470.5895@pobox.suse.cz>
- <fe2b9225-44c3-2041-f8a3-6f17f9d1be40@bytedance.com>
- <alpine.LSU.2.21.2203030847430.704@pobox.suse.cz>
- <1929669c-7674-035b-8cf1-5b5007ecccec@bytedance.com>
- <c1ab3333-7fea-d2d5-272d-850f4c7afb74@redhat.com>
- <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
+        Tue, 8 Mar 2022 05:29:34 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5164942A06;
+        Tue,  8 Mar 2022 02:28:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646735319; x=1678271319;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ArbjmZUZ0l6WdorlwWCLAqiEYpli5Fr0XItnFGrqD60=;
+  b=Fn2/+MLWew5DZi2vOtQ6xWqm94QRsmWLK8PJENWu3SuGSNk+Lm7Nlk/E
+   Th2T+HJH+s8O0JkGKfdsris/m5QlIIEgQ+JgMme88x0Bnp7Qcg2MGj4P3
+   lzXvoXSLnlT5+lyRa6YdTo/dvL35Q/jRO3J2JKdeU7u65kJfCtGKPS0af
+   prdL+PkinHd/IEhzxdyRSdajZt4oh+gL4blr6QcMDN085AFuZJclCiKQ/
+   /uPPZlySaAuszFkgYfMABw0RjA7apfPOOLDEpmWtJJlJZ9thRvygeQE7j
+   gnKmXXjj+0zJNhFzDclRB2vmBHTO9HrUxKP9dexjvS/sGJ7mYpIYe1NYr
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,164,1643698800"; 
+   d="scan'208";a="155629249"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 03:28:38 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 03:28:09 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 8 Mar 2022 03:28:07 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: lan966x: Add spinlock for frame transmission from CPU.
+Date:   Tue, 8 Mar 2022 11:29:04 +0100
+Message-ID: <20220308102904.3978779-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <306a5d51-25e5-b7ce-cbdd-ca7e2f3a3ad5@bytedance.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-03-04 23:14:15, Chengming Zhou wrote:
-> On 2022/3/3 11:43 下午, Joe Lawrence wrote:
-> > On 3/3/22 5:33 AM, Chengming Zhou wrote:
-> >> On 2022/3/3 3:51 下午, Miroslav Benes wrote:
-> >> Apart from this reason, another reason we may use "force" transition
-> >> is that we want to speed up the transition process of some patches
-> >> when load them, and we can make sure these patches are safe to do so.
-> >> (just like a consistency model check disable option when load a patch)
-> >>
-> > Interesting use case.  Can you share any example livepatches where the
-> > transition time was exceptionally long and that lead to requiring this
-> > patch?
-> 
-> Sorry, I haven't easy reproducible testcase on hand, maybe I could try to
-> make one to simulate the production environment later.
+The registers used to inject a frame to one of the ports is shared
+between all the net devices. Therefore, there can be race conditions for
+accessing the registers when two processes send frames at the same time
+on different ports.
 
-An artificial test case is not much useful. We would like to know if you
-met the problem in the real life. It would be great to know more
-details if it really happened.
+To fix this, add a spinlock around the function
+'lan966x_port_ifh_xmit()'.
 
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 9 ++++++++-
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.h | 2 ++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-> > From a kpatch developer's perspective, it would be interesting to read
-> > how you go about ensuring forced livepatch safety.  We don't generally
-> > build forced livepatches, so I'm curious how the dev/review process goes.
-> 
-> We also use kpatch-build for some patches too, but for some other patches,
-> which need to add new members to some struct type, or fix some kernel function
-> bugs, we may need to rewrite the source patch to make a livepatch module.
-> 
-> There are some types that don't need per-task consistency or even can replace
-> the old functions when tasks stack in the old functions. We may want to use
-> "force" transition in case load process timeout.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 750f2cc2f695..81c01665d01e 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -318,6 +318,7 @@ static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
+ static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct lan966x_port *port = netdev_priv(dev);
++	struct lan966x *lan966x = port->lan966x;
+ 	__be32 ifh[IFH_LEN];
+ 	int err;
+ 
+@@ -338,7 +339,11 @@ static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		lan966x_ifh_set_timestamp(ifh, LAN966X_SKB_CB(skb)->ts_id);
+ 	}
+ 
+-	return lan966x_port_ifh_xmit(skb, ifh, dev);
++	spin_lock(&lan966x->tx_lock);
++	err = lan966x_port_ifh_xmit(skb, ifh, dev);
++	spin_unlock(&lan966x->tx_lock);
++
++	return err;
+ }
+ 
+ static int lan966x_port_change_mtu(struct net_device *dev, int new_mtu)
+@@ -885,6 +890,8 @@ static void lan966x_init(struct lan966x *lan966x)
+ 	lan_rmw(ANA_ANAINTR_INTR_ENA_SET(1),
+ 		ANA_ANAINTR_INTR_ENA,
+ 		lan966x, ANA_ANAINTR);
++
++	spin_lock_init(&lan966x->tx_lock);
+ }
+ 
+ static int lan966x_ram_init(struct lan966x *lan966x)
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index 058e43531818..ae282da1da74 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -108,6 +108,8 @@ struct lan966x {
+ 
+ 	u8 base_mac[ETH_ALEN];
+ 
++	spinlock_t tx_lock; /* lock for frame transmition */
++
+ 	struct net_device *bridge;
+ 	u16 bridge_mask;
+ 	u16 bridge_fwd_mask;
+-- 
+2.33.0
 
-What is the motivation for the timeout, please?
-
-The "force" functionality was introduced as a last resort solution.
-It might be useful when the transition gets blocked and another
-transition is needed.
-
-"force" should be used carefully. Users should be sure that it is
-really safe in the current state.
-
-Note that forced transition does not magically makes the system
-patched. If a process is sleeping on a non-patched function then
-it will continue running the old code until it returns
-the non-patched function.
-
-Best Regards,
-Petr
