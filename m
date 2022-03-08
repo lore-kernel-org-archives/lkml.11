@@ -2,65 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 508A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240251AbiCHPzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:55:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        id S1348045AbiCHP4E (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347991AbiCHPzl (ORCPT
+        with ESMTP id S236871AbiCHP4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:55:41 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687A9457A1;
-        Tue,  8 Mar 2022 07:54:43 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C492524000F;
-        Tue,  8 Mar 2022 15:54:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646754881;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mkzCxRFWy2RXKvSt8FmblLtVxf0XOpI9XeLlJAsGoq4=;
-        b=iNmKWFkri2qDn31ceQ34o+J2bcPtXtG5if5uxGvovGkh5qzfRWmmwdHO7P6kyRIQmLkOFv
-        zcf/q3UAiELNzSEvurmY9S7/RKmE+W3gPli4wYJq3l8zIxqkzsjRhqz54UvjKlW84depvi
-        irHDQ0y7V+S/iZvdrlKFXeq1Yorgr6s/THGGUbWptNWFDsDo/oYRnPL2kMePcgVXazquOW
-        ojUdCV60kMEZfIz/CShXO0seatfO4QxB/2WySmKUnpCbn/drf0s+U7NMLq+47hmDgFX2cT
-        cQYl298TB/HQZJPbHriY8vKr/q1L/vz2pNT7LOmzbXuaV3oO265rwWBoBPbh5A==
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        Sergiu Moga <sergiu.moga@microchip.com>,
-        nicolas.ferre@microchip.com, a.zummo@towertech.it,
-        claudiu.beznea@microchip.com
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH v4 4/4] dt-bindings: rtc: at91: Add SAMA7G5 compatible strings list
-Date:   Tue,  8 Mar 2022 16:54:38 +0100
-Message-Id: <164675486933.53531.3497287837886155272.b4-ty@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304161159.147784-5-sergiu.moga@microchip.com>
-References: <20220304161159.147784-1-sergiu.moga@microchip.com> <20220304161159.147784-5-sergiu.moga@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Mar 2022 10:56:01 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8B04F467
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=XWrF28aaFKCDnGiE12KhdjNWuydBXYTc5nR0UxD7m88=; b=n1YdvNtiJInXy4TFjDesaIWtUo
+        1jiWmXWSSwb265QBu+FrDeFhMS6wJmpInEJHEv4EdTNjz2Q/rAhS4Bv9n41upKfjfaISX68oVrPzS
+        YxePyBV9+cKj3CzxvWZj7ght69Y2x7GZqdCqrSE0Nv25/cDlWf1CRDSWzqNT942f5tdK9stlOOpEn
+        zYVsxhLbGuRfLXWDok3zvy+5NXpu0SmBJ8pATWrW6ppX3U8a46eNgmCMTs22lkHnZkVSIHPESkGHn
+        VR61IW3F9l72clVzPU3eT2QIL0VArgwHfRleGbXpAivuiL7B58i1tJ2Rk8FTETLRg+kHNEFMhPl2P
+        ILxtFb+g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRcAb-00GIuo-G0; Tue, 08 Mar 2022 15:54:41 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D9E8230074A;
+        Tue,  8 Mar 2022 16:54:38 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id B419A2B55FFAC; Tue,  8 Mar 2022 16:54:38 +0100 (CET)
+Message-ID: <20220308153011.021123062@infradead.org>
+User-Agent: quilt/0.66
+Date:   Tue, 08 Mar 2022 16:30:11 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: [PATCH v4 00/45] x86: Kernel IBT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 18:11:59 +0200, Sergiu Moga wrote:
-> Add compatible strings list for SAMA7G5.
-> 
-> 
+Hopefully last posting...
 
-Applied, thanks!
+Since last time:
 
-[4/4] dt-bindings: rtc: at91: Add SAMA7G5 compatible strings list
-      commit: 64a6497017843fc23d4c18542bdd4cfcca7878c9
+ - updated the ftrace_location() patch (naveen, rostedt)
+ - added a few comments and clarifications (bpetkov)
+ - disable jump-tables (joao)
+ - verified clang-14-rc2 works
+ - fixed a whole bunch of objtool unreachable insn issue
+ - picked up a few more tags
 
-Best regards,
--- 
-Alexandre Belloni <alexandre.belloni@bootlin.com>
+Patches go on top of tip/master + arm64/for-next/linkage. Also available here:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
+
+Enjoy!
+
+
