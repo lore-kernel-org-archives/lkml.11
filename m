@@ -2,280 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 05:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344407AbiCHFsh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 00:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S235478AbiCHFvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 00:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343696AbiCHFsa (ORCPT
+        with ESMTP id S229719AbiCHFu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 00:48:30 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E558C3C714;
-        Mon,  7 Mar 2022 21:47:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646718443; x=1678254443;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=e4zKevnerCv3swR38QOP36pCi6FNMKl3EHNwss6IlEU=;
-  b=gdrB9VixLNX2Jy8i+UZa0lYACHPx3bclNmNRIlh+cljcpfcQrViUMxok
-   HfUGblqzsIptcqr/1UpfOyrNwf2LounkvG+j4kgHVCq+99kTOEc9HIfUn
-   SXJIcQ4uHqBrT2N3cgMj2sOXUXoI+EGUJdZtx+Hm0FX8Qj5Nvxly3rsV4
-   Lu2EKq/O+QUzohCUmhcYA9OYZbpHEvmFFsbuuL1zuBHOcPLJAgEj0QKns
-   R1XDcPs/KdrSECzqmroPKShr/l75f1o+a8gIwKofEteWIpN8oSimuEazP
-   j/Q/cYQ5xrXzCN9EyoeC2nDb7FvqCZ/NL5SLz4ejwgoIwwXezgwkgdCRH
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315314650"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="315314650"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 21:47:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="537430375"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 21:47:16 -0800
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v8 11/11] iommu: Remove iommu group changes notifier
-Date:   Tue,  8 Mar 2022 13:44:21 +0800
-Message-Id: <20220308054421.847385-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220308054421.847385-1-baolu.lu@linux.intel.com>
-References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+        Tue, 8 Mar 2022 00:50:59 -0500
+Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0378CB90
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1646718603; x=1678254603;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kehcbcYbbqv4Mc+VIdRnbHIfrlNDGyKgvl//coScXjs=;
+  b=Km7V0REy0hjacRNOEV5T/S76+369dNE4AD4Mqfj2ZJJ5qQ0BZ0aPcHph
+   iSmgs/0jKpzcFoG5oanP7TIckPj5KWK5AwZRAh4la2ABCjeMHVXTjuncf
+   JNmsge/aU4xYqgwPXUjRDNK2yD+KEF8eBGFw71MnXm88gRirJ82iybV6H
+   z26REIIxOnf8Ydf9AnOrLC/0K2ZSj5hArt2cWC2fc+n+s1roFUvPYFq0x
+   oZh8drSboMTCD7s5XGFTdXL8CrqknqTWtxugtuGOg1d8OWMRiwdDLiIt0
+   0WGJjVNhFXaN/39TAjn05f3cAUDDh2F5A3ij18RcdSxSpbjjRd/2u8k9K
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,163,1643644800"; 
+   d="scan'208";a="306680743"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 08 Mar 2022 13:50:03 +0800
+IronPort-SDR: tsvnFvF/FpmL7jfptSTMB9dVj1ITCVFbDKRrowivSZq4vXd+vrerQG3dnDuCjJm05SPqVQ3S+j
+ FZaFYb0EkMTuKqL2hY12AXdMs+KJR/Z0hAb9z1BgzqD769b8DNwrUTlftLnuVtzPcD4bdwEixM
+ ue/EqxwrDToJo0r85pOp0H73s9U9lN2RDo2EAKzsaaeSBTngs2J0FzCM4WOjGhkzo+KGUd1941
+ xCT0Wqyhw7os+6RmXmh6oVyIYjPD1fPDYiAtl18LPmRqnV47knKciEA9eyXLuhd2aLKMBg8Jw/
+ iBh/rU7gbMRnGzLC+LJ+b0UL
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 21:22:21 -0800
+IronPort-SDR: hToE45ZdNnoVMh6fD6ry+ER5KJm/CjApaYpWp9ADSDONOKFk4RSqS9BlmykLgs9cfww3I7u6YH
+ I1RnrlQHDuGwbdxuJfiz0S1Y6bIUD4cdgNaytshItvBZmslzfGhO9dH98wzs61+87sW0M28Lh9
+ ofakYR2vZPp/QL78XFTIxGDSCXHQyAjxFN/qT4k0HC84VO9hv5PQQ9eIfamEYvem/RXFVrA0t9
+ W6BTYzbqtRp51IyeUpMYN7F7FrhQtxne6Lah+1T4Nsku/BHOXT3a53YLwzw8ip6zUUXJ00uUVA
+ MNQ=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 21:50:04 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KCPYR03Fdz1Rwrw
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 21:50:03 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1646718602; x=1649310603; bh=kehcbcYbbqv4Mc+VIdRnbHIfrlNDGyKgvl/
+        /coScXjs=; b=rBhI807HrS0lsFT1vp+rI7Ew6Fe9e8b2rcQCQh7DVRcJolyb9Yn
+        rOPiln17mq26XRvzn4K9c1vK9sYWARPe8xydxFa1aYK9mueJinmFmsviCnRC7X9x
+        18zKR1ohAU5NAea7SpolnwdELy8s+27RqnvQZL4Uf6L7JJ3UtDxza/Ew548ZKjl9
+        eG6K0RY33l4WrkGMzXtIAEExXMK/8VfAg/tr4Bdi5CVd5Mq9r3sFmC8vduieeLUS
+        2pWIVfyPQHDOY6EW5UUl52g/NOghXoceM7RvCEwXXGu2ndxuUQGdtHSsVWr3jx/n
+        6VxWKMfJq1RahITkH6dyIgaZQyXH34KEolw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id hQjHU4qPbLLo for <linux-kernel@vger.kernel.org>;
+        Mon,  7 Mar 2022 21:50:02 -0800 (PST)
+Received: from [10.225.163.91] (unknown [10.225.163.91])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KCPYP1rJwz1Rvlx;
+        Mon,  7 Mar 2022 21:50:01 -0800 (PST)
+Message-ID: <1a6aa747-1609-467a-ac23-953387dc1a4e@opensource.wdc.com>
+Date:   Tue, 8 Mar 2022 14:49:59 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ata: Use platform_get_irq() to get the interrupt
+Content-Language: en-US
+To:     cgel.zte@gmail.com, s.shtylyov@omp.ru
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220308025940.2077329-1-chi.minghao@zte.com.cn>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220308025940.2077329-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iommu group changes notifer is not referenced in the tree. Remove it
-to avoid dead code.
+On 3/8/22 11:59, cgel.zte@gmail.com wrote:
+> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> 
+> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> allocation of IRQ resources in DT core code, this causes an issue
+> when using hierarchical interrupt domains using "interrupts" property
+> in the node as this bypassed the hierarchical setup and messed up the
+> irq chaining.
+> 
+> In preparation for removal of static setup of IRQ resource from DT core
+> code use platform_get_irq().
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> ---
+>  drivers/ata/pata_pxa.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/ata/pata_pxa.c b/drivers/ata/pata_pxa.c
+> index 41430f79663c..6394ab4cbc1b 100644
+> --- a/drivers/ata/pata_pxa.c
+> +++ b/drivers/ata/pata_pxa.c
+> @@ -164,10 +164,10 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	struct resource *cmd_res;
+>  	struct resource *ctl_res;
+>  	struct resource *dma_res;
+> -	struct resource *irq_res;
+>  	struct pata_pxa_pdata *pdata = dev_get_platdata(&pdev->dev);
+>  	struct dma_slave_config	config;
+>  	int ret = 0;
+> +	int irq;
+>  
+>  	/*
+>  	 * Resource validation, three resources are needed:
+> @@ -205,8 +205,8 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	/*
+>  	 * IRQ pin
+>  	 */
+> -	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -	if (unlikely(irq_res == NULL))
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (unlikely(irq < 0))
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- include/linux/iommu.h | 23 -------------
- drivers/iommu/iommu.c | 75 -------------------------------------------
- 2 files changed, 98 deletions(-)
+This is not the hot path, so let's simplify: drop the unlikely() from
+this if.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 77972ef978b5..6ef2df258673 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -407,13 +407,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--#define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
--#define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
--#define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
--#define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
--#define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
--#define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
--
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
-@@ -478,10 +471,6 @@ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- extern struct iommu_group *iommu_group_get(struct device *dev);
- extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
- extern void iommu_group_put(struct iommu_group *group);
--extern int iommu_group_register_notifier(struct iommu_group *group,
--					 struct notifier_block *nb);
--extern int iommu_group_unregister_notifier(struct iommu_group *group,
--					   struct notifier_block *nb);
- extern int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
- 					void *data);
-@@ -878,18 +867,6 @@ static inline void iommu_group_put(struct iommu_group *group)
- {
- }
- 
--static inline int iommu_group_register_notifier(struct iommu_group *group,
--						struct notifier_block *nb)
--{
--	return -ENODEV;
--}
--
--static inline int iommu_group_unregister_notifier(struct iommu_group *group,
--						  struct notifier_block *nb)
--{
--	return 0;
--}
--
- static inline
- int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index eba8e8ccf19d..0c42ece25854 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -18,7 +18,6 @@
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
--#include <linux/notifier.h>
- #include <linux/err.h>
- #include <linux/pci.h>
- #include <linux/bitops.h>
-@@ -40,7 +39,6 @@ struct iommu_group {
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
- 	struct mutex mutex;
--	struct blocking_notifier_head notifier;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
- 	char *name;
-@@ -632,7 +630,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
- 
- 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -905,10 +902,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	if (ret)
- 		goto err_put_group;
- 
--	/* Notify any listeners about change to group. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
--
- 	trace_add_device_to_group(group->id, dev);
- 
- 	dev_info(dev, "Adding to iommu group %d\n", group->id);
-@@ -950,10 +943,6 @@ void iommu_group_remove_device(struct device *dev)
- 
- 	dev_info(dev, "Removing from iommu group %d\n", group->id);
- 
--	/* Pre-notify listeners that a device is being removed. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
--
- 	mutex_lock(&group->mutex);
- 	list_for_each_entry(tmp_device, &group->devices, list) {
- 		if (tmp_device->dev == dev) {
-@@ -1075,36 +1064,6 @@ void iommu_group_put(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_put);
- 
--/**
-- * iommu_group_register_notifier - Register a notifier for group changes
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * This function allows iommu group users to track changes in a group.
-- * See include/linux/iommu.h for actions sent via this notifier.  Caller
-- * should hold a reference to the group throughout notifier registration.
-- */
--int iommu_group_register_notifier(struct iommu_group *group,
--				  struct notifier_block *nb)
--{
--	return blocking_notifier_chain_register(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_register_notifier);
--
--/**
-- * iommu_group_unregister_notifier - Unregister a notifier
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * Unregister a previously registered group notifier block.
-- */
--int iommu_group_unregister_notifier(struct iommu_group *group,
--				    struct notifier_block *nb)
--{
--	return blocking_notifier_chain_unregister(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
--
- /**
-  * iommu_register_device_fault_handler() - Register a device fault handler
-  * @dev: the device
-@@ -1650,14 +1609,8 @@ static int remove_iommu_group(struct device *dev, void *data)
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
--	unsigned long group_action = 0;
- 	struct device *dev = data;
--	struct iommu_group *group;
- 
--	/*
--	 * ADD/DEL call into iommu driver ops if provided, which may
--	 * result in ADD/DEL notifiers to group->notifier
--	 */
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
- 		int ret;
- 
-@@ -1668,34 +1621,6 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 		return NOTIFY_OK;
- 	}
- 
--	/*
--	 * Remaining BUS_NOTIFYs get filtered and republished to the
--	 * group, if anyone is listening
--	 */
--	group = iommu_group_get(dev);
--	if (!group)
--		return 0;
--
--	switch (action) {
--	case BUS_NOTIFY_BIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
--		break;
--	case BUS_NOTIFY_BOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
--		break;
--	}
--
--	if (group_action)
--		blocking_notifier_call_chain(&group->notifier,
--					     group_action, dev);
--
--	iommu_group_put(group);
- 	return 0;
- }
- 
+>  		return -EINVAL;
+>  
+>  	/*
+> @@ -287,7 +287,7 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	/*
+>  	 * Activate the ATA host
+>  	 */
+> -	ret = ata_host_activate(host, irq_res->start, ata_sff_interrupt,
+> +	ret = ata_host_activate(host, irq, ata_sff_interrupt,
+>  				pdata->irq_flags, &pxa_ata_sht);
+>  	if (ret)
+>  		dma_release_channel(data->dma_chan);
+
+
 -- 
-2.25.1
-
+Damien Le Moal
+Western Digital Research
