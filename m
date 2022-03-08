@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C4AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D25C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348936AbiCHP64 (ORCPT
+        id S1348920AbiCHP6x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:58:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        Tue, 8 Mar 2022 10:58:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348077AbiCHP4K (ORCPT
+        with ESMTP id S1348071AbiCHP4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:10 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE9C4F9C9
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B60F4F9C3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=YDQooxdYXRcnE0wqAT4rEJebfau7S7yVuN7rl92ZXso=; b=cnNHnSN0N+Sus0X9HqSJ1gurXb
-        N2B1nQR0N/wCQ76FicWtgKAPjYxSLxb9xH5TZP92MhMPjTsg7cV6lHaeXiu8f7qy9qhhLjiUyuL6D
-        Ag+onGqNf9Lq+i6LjD5uxdnc8ukTtNsat2LVLvm5Gpm/e7DC+JA1SBjCeu5vatquzqzOqUg4mpTRC
-        nAlutuxXPqYXrHB22+7LQ1uJatPs5OeGL8Sx9Hlh1Iw9A88UFL57uzxCNw7VO+ssaBpgO9b4ERn7a
-        ixXjiueBjJ//Xq9leMQRtkSXMWcJmpGL4r2W7gBhS9VqK1Q80GL776oEQ7N/T+xeYMDve7BfqblEJ
-        8E9LXXHw==;
+        bh=ghZq/fRkvyuABkJueyMa0lboE5tllYhuGIiBxq7FbqI=; b=kKPTVTyZTsLu3fR0dpYKerDGrn
+        GJoV9/OHn4Wg3KwK4LbsmvTz4ldr6vXYvfTDc+c8ZeQRzoCbQx3HEsXxJi8DZdffyI79H24vd1DXL
+        sBmwrzj+XLUccjPmqeF0XfjwFhrRQYoEDV1n+58+32SrA7V9bWGPM4N14beJQqsguhAzDLUC+Gs7o
+        QcgWhqdQsoT0OQ0Wfksmt5/Cf1sRY+22LnDrBMXmj90EN6u8rT4XssU3O2Vv88P4iZwd3z01X92oV
+        YYy5Y99wGtoBSJeHXQX5A+RQvJbY+VriJAvWpxLpidZmvua7DhQ40z28cfljYrGi2JXtVmMwmGBQx
+        GiDXY34A==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAd-00GIvX-Gu; Tue, 08 Mar 2022 15:54:43 +0000
+        id 1nRcAc-00GIvG-Qk; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 55AA3302DDF;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 447A5302D52;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id F05282B5649E0; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154319.645963517@infradead.org>
+        id 87E302B561939; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.877758523@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:53 +0100
+Date:   Tue, 08 Mar 2022 16:30:40 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 42/45] objtool: Add IBT/ENDBR decoding
+Subject: [PATCH v4 29/45] x86/ibt: Annotate text references
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,113 +56,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel IBT requires the target of any indirect CALL or JMP instruction
-to be the ENDBR instruction; optionally it allows those two
-instructions to have a NOTRACK prefix in order to avoid this
-requirement.
-
-The kernel will not enable the use of NOTRACK, as such any occurence
-of it in compiler generated code should be flagged.
-
-Teach objtool to Decode ENDBR instructions and WARN about NOTRACK
-prefixes.
+Annotate away some of the generic code references. This is things
+where we take the address of a symbol for exception handling or return
+addresses (eg. context switch).
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- tools/objtool/arch/x86/decode.c      |   34 +++++++++++++++++++++++++++++-----
- tools/objtool/include/objtool/arch.h |    1 +
- 2 files changed, 30 insertions(+), 5 deletions(-)
+ arch/x86/entry/entry_64.S            |    6 ++++++
+ arch/x86/entry/entry_64_compat.S     |    1 +
+ arch/x86/kernel/alternative.c        |   10 ++++++++--
+ arch/x86/kernel/head_64.S            |    4 ++++
+ arch/x86/kernel/kprobes/core.c       |    1 +
+ arch/x86/kernel/relocate_kernel_64.S |    2 ++
+ arch/x86/lib/error-inject.c          |    2 ++
+ arch/x86/lib/retpoline.S             |    1 +
+ 8 files changed, 25 insertions(+), 2 deletions(-)
 
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -103,6 +103,18 @@ unsigned long arch_jump_destination(stru
- #define rm_is_mem(reg)	(mod_is_mem() && !is_RIP() && rm_is(reg))
- #define rm_is_reg(reg)	(mod_is_reg() && modrm_rm == (reg))
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -277,6 +277,7 @@ SYM_FUNC_END(__switch_to_asm)
+ .pushsection .text, "ax"
+ SYM_CODE_START(ret_from_fork)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR // copy_thread
+ 	movq	%rax, %rdi
+ 	call	schedule_tail			/* rdi: 'prev' task parameter */
  
-+static bool has_notrack_prefix(struct insn *insn)
-+{
-+	int i;
+@@ -569,6 +570,7 @@ SYM_CODE_END(\asmsym)
+ 	.align 16
+ 	.globl __irqentry_text_end
+ __irqentry_text_end:
++	ANNOTATE_NOENDBR
+ 
+ SYM_CODE_START_LOCAL(common_interrupt_return)
+ SYM_INNER_LABEL(swapgs_restore_regs_and_return_to_usermode, SYM_L_GLOBAL)
+@@ -650,6 +652,7 @@ SYM_INNER_LABEL(early_xen_iret_patch, SY
+ #endif
+ 
+ SYM_INNER_LABEL(native_irq_return_iret, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR // exc_double_fault
+ 	/*
+ 	 * This may fault.  Non-paranoid faults on return to userspace are
+ 	 * handled by fixup_bad_iret.  These include #SS, #GP, and #NP.
+@@ -744,6 +747,7 @@ SYM_FUNC_START(asm_load_gs_index)
+ 	FRAME_BEGIN
+ 	swapgs
+ .Lgs_change:
++	ANNOTATE_NOENDBR // error_entry
+ 	movl	%edi, %gs
+ 2:	ALTERNATIVE "", "mfence", X86_BUG_SWAPGS_FENCE
+ 	swapgs
+@@ -1322,6 +1326,7 @@ SYM_CODE_START(asm_exc_nmi)
+ #endif
+ 
+ repeat_nmi:
++	ANNOTATE_NOENDBR // this code
+ 	/*
+ 	 * If there was a nested NMI, the first NMI's iret will return
+ 	 * here. But NMIs are still enabled and we can take another
+@@ -1350,6 +1355,7 @@ SYM_CODE_START(asm_exc_nmi)
+ 	.endr
+ 	subq	$(5*8), %rsp
+ end_repeat_nmi:
++	ANNOTATE_NOENDBR // this code
+ 
+ 	/*
+ 	 * Everything below this point can be preempted by a nested NMI.
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -148,6 +148,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
+ 	popfq
+ 	jmp	.Lsysenter_flags_fixed
+ SYM_INNER_LABEL(__end_entry_SYSENTER_compat, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR // is_sysenter_singlestep
+ SYM_CODE_END(entry_SYSENTER_compat)
+ 
+ /*
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -713,6 +713,7 @@ asm (
+ "	.pushsection	.init.text, \"ax\", @progbits\n"
+ "	.type		int3_magic, @function\n"
+ "int3_magic:\n"
++	ANNOTATE_NOENDBR
+ "	movl	$1, (%" _ASM_ARG1 ")\n"
+ 	ASM_RET
+ "	.size		int3_magic, .-int3_magic\n"
+@@ -724,16 +725,19 @@ extern void int3_selftest_ip(void); /* d
+ static int __init
+ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
+ {
++	unsigned long selftest = (unsigned long)&int3_selftest_ip;
+ 	struct die_args *args = data;
+ 	struct pt_regs *regs = args->regs;
+ 
++	OPTIMIZER_HIDE_VAR(selftest);
 +
-+	for (i = 0; i < insn->prefixes.nbytes; i++) {
-+		if (insn->prefixes.bytes[i] == 0x3e)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- int arch_decode_instruction(struct objtool_file *file, const struct section *sec,
- 			    unsigned long offset, unsigned int maxlen,
- 			    unsigned int *len, enum insn_type *type,
-@@ -112,7 +124,7 @@ int arch_decode_instruction(struct objto
- 	const struct elf *elf = file->elf;
- 	struct insn insn;
- 	int x86_64, ret;
--	unsigned char op1, op2, op3,
-+	unsigned char op1, op2, op3, prefix,
- 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
- 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
- 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-@@ -137,6 +149,8 @@ int arch_decode_instruction(struct objto
- 	if (insn.vex_prefix.nbytes)
- 		return 0;
+ 	if (!regs || user_mode(regs))
+ 		return NOTIFY_DONE;
  
-+	prefix = insn.prefixes.bytes[0];
-+
- 	op1 = insn.opcode.bytes[0];
- 	op2 = insn.opcode.bytes[1];
- 	op3 = insn.opcode.bytes[2];
-@@ -492,6 +506,12 @@ int arch_decode_instruction(struct objto
- 			/* nopl/nopw */
- 			*type = INSN_NOP;
+ 	if (val != DIE_INT3)
+ 		return NOTIFY_DONE;
  
-+		} else if (op2 == 0x1e) {
-+
-+			if (prefix == 0xf3 && (modrm == 0xfa || modrm == 0xfb))
-+				*type = INSN_ENDBR;
-+
-+
- 		} else if (op2 == 0x38 && op3 == 0xf8) {
- 			if (insn.prefixes.nbytes == 1 &&
- 			    insn.prefixes.bytes[0] == 0xf2) {
-@@ -636,20 +656,24 @@ int arch_decode_instruction(struct objto
- 		break;
+-	if (regs->ip - INT3_INSN_SIZE != (unsigned long)&int3_selftest_ip)
++	if (regs->ip - INT3_INSN_SIZE != selftest)
+ 		return NOTIFY_DONE;
  
- 	case 0xff:
--		if (modrm_reg == 2 || modrm_reg == 3)
-+		if (modrm_reg == 2 || modrm_reg == 3) {
+ 	int3_emulate_call(regs, (unsigned long)&int3_magic);
+@@ -757,7 +761,9 @@ static void __init int3_selftest(void)
+ 	 * then trigger the INT3, padded with NOPs to match a CALL instruction
+ 	 * length.
+ 	 */
+-	asm volatile ("int3_selftest_ip: int3; nop; nop; nop; nop\n\t"
++	asm volatile ("int3_selftest_ip:\n\t"
++		      ANNOTATE_NOENDBR
++		      "    int3; nop; nop; nop; nop\n\t"
+ 		      : ASM_CALL_CONSTRAINT
+ 		      : __ASM_SEL_RAW(a, D) (&val)
+ 		      : "memory");
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -99,6 +99,7 @@ SYM_CODE_END(startup_64)
  
- 			*type = INSN_CALL_DYNAMIC;
-+			if (has_notrack_prefix(&insn))
-+				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
+ SYM_CODE_START(secondary_startup_64)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	/*
+ 	 * At this point the CPU runs in 64bit mode CS.L = 1 CS.D = 0,
+ 	 * and someone has loaded a mapped page table.
+@@ -127,6 +128,7 @@ SYM_CODE_START(secondary_startup_64)
+ 	 */
+ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
  
--		else if (modrm_reg == 4)
-+		} else if (modrm_reg == 4) {
+ 	/*
+ 	 * Retrieve the modifier (SME encryption mask if SME is active) to be
+@@ -192,6 +194,7 @@ SYM_INNER_LABEL(secondary_startup_64_no_
+ 	jmp	*%rax
+ 1:
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR // above
  
- 			*type = INSN_JUMP_DYNAMIC;
-+			if (has_notrack_prefix(&insn))
-+				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
+ 	/*
+ 	 * We must switch to a new descriptor in kernel space for the GDT
+@@ -299,6 +302,7 @@ SYM_INNER_LABEL(secondary_startup_64_no_
+ 	pushq	%rax		# target address in negative space
+ 	lretq
+ .Lafter_lret:
++	ANNOTATE_NOENDBR
+ SYM_CODE_END(secondary_startup_64)
  
--		else if (modrm_reg == 5)
-+		} else if (modrm_reg == 5) {
+ #include "verify_cpu.S"
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -1033,6 +1033,7 @@ asm(
+ 	".type __kretprobe_trampoline, @function\n"
+ 	"__kretprobe_trampoline:\n"
+ #ifdef CONFIG_X86_64
++	ANNOTATE_NOENDBR
+ 	/* Push a fake return address to tell the unwinder it's a kretprobe. */
+ 	"	pushq $__kretprobe_trampoline\n"
+ 	UNWIND_HINT_FUNC
+--- a/arch/x86/kernel/relocate_kernel_64.S
++++ b/arch/x86/kernel/relocate_kernel_64.S
+@@ -42,6 +42,7 @@
+ 	.code64
+ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	/*
+ 	 * %rdi indirection_page
+ 	 * %rsi page_list
+@@ -223,6 +224,7 @@ SYM_CODE_END(identity_mapped)
  
- 			/* jmpf */
- 			*type = INSN_CONTEXT_SWITCH;
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR // RET target, above
+ 	movq	RSP(%r8), %rsp
+ 	movq	CR4(%r8), %rax
+ 	movq	%rax, %cr4
+--- a/arch/x86/lib/error-inject.c
++++ b/arch/x86/lib/error-inject.c
+@@ -3,6 +3,7 @@
+ #include <linux/linkage.h>
+ #include <linux/error-injection.h>
+ #include <linux/kprobes.h>
++#include <linux/objtool.h>
  
--		else if (modrm_reg == 6) {
-+		} else if (modrm_reg == 6) {
+ asmlinkage void just_return_func(void);
  
- 			/* push from mem */
- 			ADD_OP(op) {
---- a/tools/objtool/include/objtool/arch.h
-+++ b/tools/objtool/include/objtool/arch.h
-@@ -27,6 +27,7 @@ enum insn_type {
- 	INSN_STD,
- 	INSN_CLD,
- 	INSN_TRAP,
-+	INSN_ENDBR,
- 	INSN_OTHER,
- };
+@@ -11,6 +12,7 @@ asm(
+ 	".type just_return_func, @function\n"
+ 	".globl just_return_func\n"
+ 	"just_return_func:\n"
++		ANNOTATE_NOENDBR
+ 		ASM_RET
+ 	".size just_return_func, .-just_return_func\n"
+ );
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -55,6 +55,7 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
  
+ 	.align RETPOLINE_THUNK_SIZE
+ SYM_CODE_START(__x86_indirect_thunk_array)
++	ANNOTATE_NOENDBR // apply_retpolines
+ 
+ #define GEN(reg) THUNK reg
+ #include <asm/GEN-for-each-reg.h>
 
 
