@@ -2,134 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC828C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1619C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346034AbiCHKyv (ORCPT
+        id S1346043AbiCHK5I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        Tue, 8 Mar 2022 05:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346017AbiCHKyu (ORCPT
+        with ESMTP id S1346001AbiCHK5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:54:50 -0500
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC1041303;
-        Tue,  8 Mar 2022 02:53:53 -0800 (PST)
-Received: by mail-qk1-f182.google.com with SMTP id q194so720807qke.5;
-        Tue, 08 Mar 2022 02:53:53 -0800 (PST)
+        Tue, 8 Mar 2022 05:57:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C35D743481
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:56:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646736965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=THPXJELvuxW6inJpizACi6yZwtZMXDw05fIwiYKfyWA=;
+        b=Ko8NV+S4CO7aduC2quBBQDQsjeWl7ngx37yYPL90QHWZnmGvmqrvoWA7sdFcVnubrW+9qs
+        FV3wOOeE1NxjgJnM5tgDjEy0qeu613qPHCAhT4/Hhgkz0DxiOrmCpOOEDsWA9PuHziUXwt
+        +nPAfplVxiDHpi/8Hncoo7spcFvWtLg=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-451-cwCvpGuYM-OcZoL6SLBKKw-1; Tue, 08 Mar 2022 05:56:04 -0500
+X-MC-Unique: cwCvpGuYM-OcZoL6SLBKKw-1
+Received: by mail-ej1-f72.google.com with SMTP id qf24-20020a1709077f1800b006ce8c140d3dso8495264ejc.18
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 02:56:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y3UjhnfNllI0p7H4Pz4n1OpkqRIkGKtHIsAtcWmQ56k=;
-        b=wVHo5IQ5bciRSAK0P1M09x6mXHwaDOhfHfSGVE7HnYRYSs8WMMSRJAevSGGA8CmSdj
-         O7v/i1pSIl5ROilAe8XMd51r6D7irrPDX8HlU9jdfuFjlsL9zdNoBqtAvZBTG8NFXiPl
-         ozZosREixJ7X703acFawjiuztlP2BOSKtwyGoaDzVKY9ROCTtuj6XPFgrcrW/p9vAcHu
-         vsN3NpOgLQVnQ1c8KPWkpv6dIWM1mdN8PZzttfhhCh2T7CkC1Q80HORK3ip4QDkchMVL
-         qPlk7p7DAXv8WyithiJvif5fDegJEGbp+1JzAcNtLe6njEjFRSJXJlOM74J6B5xO0mi0
-         GhUA==
-X-Gm-Message-State: AOAM530Psmd0RiXDuKZA+f6oz6WnsmVADtWrZYpASFRWNKdFzCLR1f85
-        v4/Dd0CDgEPyFjZuxsxtNa9XKyiicv57xA==
-X-Google-Smtp-Source: ABdhPJyaD6taEO+1bVn3Egmp6kNMQdMy0Ml9Ar+8QirDSJHZvhJ4Kp4/462N9EEFattiblNPh5ZoTQ==
-X-Received: by 2002:a05:620a:2589:b0:67b:d0c:71bc with SMTP id x9-20020a05620a258900b0067b0d0c71bcmr8343413qko.570.1646736832493;
-        Tue, 08 Mar 2022 02:53:52 -0800 (PST)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id z3-20020ac87f83000000b002deae661c08sm10069704qtj.33.2022.03.08.02.53.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 02:53:51 -0800 (PST)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2dbc48104beso196634157b3.5;
-        Tue, 08 Mar 2022 02:53:51 -0800 (PST)
-X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
- v133-20020a81618b000000b002dbd9528a39mr12190538ywb.132.1646736830798; Tue, 08
- Mar 2022 02:53:50 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=THPXJELvuxW6inJpizACi6yZwtZMXDw05fIwiYKfyWA=;
+        b=11bv76RS/obEqSfQp+E9Vd3JvOLLbPt6kQBWxeBFJAAy4J7ZxvHDaWKkwTtXBYkDku
+         2FkzDMs3PegJLwuhBRRtRgXg7owekq5bTPMiEMzDKp+3Z4ue+do9oJI3WC3MlGjCW7Lw
+         nMR7/yNq68Hl374GkkIUkszkdxlm+lF0ZTsUG5hPWL5aXvgIsnKJhkZtu3UhaiSdhBWS
+         Bej2siOjxr9pMXJMG5Q89Wjgz3MHP0BMO6VqcdfPxGNLmk6JJMbdygt58Y0Zbxda1C7J
+         FVu+XThu1VFIqYEiJs4HvWNJyp+IHCBHLtjWpsU+yzHGVcGe9TtWqSFspF/WXsLsL5l5
+         H3TQ==
+X-Gm-Message-State: AOAM5334xJ/WWKy/eAidu7zxSplpWQmLSXba6iNiKctVTjxtOgG25UZT
+        XIRk/yv/dj8AWpVpqJXlvCOg6IRWwiYlfK4Bhmz56ezYcXsk91tZTtaLqMpGW3CYUxSDxJZdZTz
+        vYdAv34kCDXeW3aR53q8FwpkA
+X-Received: by 2002:a17:907:6096:b0:6da:68d2:327f with SMTP id ht22-20020a170907609600b006da68d2327fmr12817787ejc.761.1646736962912;
+        Tue, 08 Mar 2022 02:56:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyKGG3Z63udeaeH1lPhQJidMdNIksYDzx/dSa/Eol2gRlzn6bu5TRgyUjAEl+sdkcHMtg9aTg==
+X-Received: by 2002:a17:907:6096:b0:6da:68d2:327f with SMTP id ht22-20020a170907609600b006da68d2327fmr12817773ejc.761.1646736962624;
+        Tue, 08 Mar 2022 02:56:02 -0800 (PST)
+Received: from redhat.com ([2.55.138.228])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170906b10500b006ce6fa4f510sm5668769ejy.165.2022.03.08.02.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 02:56:02 -0800 (PST)
+Date:   Tue, 8 Mar 2022 05:55:58 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220308055003-mutt-send-email-mst@kernel.org>
+References: <20220307191757.3177139-1-lee.jones@linaro.org>
+ <YiZeB7l49KC2Y5Gz@kroah.com>
+ <YicPXnNFHpoJHcUN@google.com>
+ <Yicalf1I6oBytbse@kroah.com>
+ <Yicer3yGg5rrdSIs@google.com>
+ <YicolvcbY9VT6AKc@kroah.com>
 MIME-Version: 1.0
-References: <20220124121009.108649-1-alistair@alistair23.me> <20220124121009.108649-3-alistair@alistair23.me>
-In-Reply-To: <20220124121009.108649-3-alistair@alistair23.me>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Mar 2022 11:53:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVNgVQzjrdybbnfCEr+G5Q4ztjRCC29RF9HwGnhKkPn3Q@mail.gmail.com>
-Message-ID: <CAMuHMdVNgVQzjrdybbnfCEr+G5Q4ztjRCC29RF9HwGnhKkPn3Q@mail.gmail.com>
-Subject: Re: [PATCH v18 2/8] mfd: simple-mfd-i2c: Add a Kconfig name
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, NXP Linux Team <linux-imx@nxp.com>,
-        Zhang Rui <rui.zhang@intel.com>, alistair23@gmail.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YicolvcbY9VT6AKc@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alistair,
+On Tue, Mar 08, 2022 at 10:57:42AM +0100, Greg KH wrote:
+> On Tue, Mar 08, 2022 at 09:15:27AM +0000, Lee Jones wrote:
+> > On Tue, 08 Mar 2022, Greg KH wrote:
+> > 
+> > > On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
+> > > > On Mon, 07 Mar 2022, Greg KH wrote:
+> > > > 
+> > > > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
+> > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
+> > > > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > > > 
+> > > > > > Also WARN() as a precautionary measure.  The purpose of this is to
+> > > > > > capture possible future race conditions which may pop up over time.
+> > > > > > 
+> > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > > > 
+> > > > > > Cc: <stable@vger.kernel.org>
+> > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > ---
+> > > > > >  drivers/vhost/vhost.c | 10 ++++++++++
+> > > > > >  1 file changed, 10 insertions(+)
+> > > > > > 
+> > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > > > index 59edb5a1ffe28..ef7e371e3e649 100644
+> > > > > > --- a/drivers/vhost/vhost.c
+> > > > > > +++ b/drivers/vhost/vhost.c
+> > > > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > >  	int i;
+> > > > > >  
+> > > > > >  	for (i = 0; i < dev->nvqs; ++i) {
+> > > > > > +		/* No workers should run here by design. However, races have
+> > > > > > +		 * previously occurred where drivers have been unable to flush
+> > > > > > +		 * all work properly prior to clean-up.  Without a successful
+> > > > > > +		 * flush the guest will malfunction, but avoiding host memory
+> > > > > > +		 * corruption in those cases does seem preferable.
+> > > > > > +		 */
+> > > > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > > > > 
+> > > > > So you are trading one syzbot triggered issue for another one in the
+> > > > > future?  :)
+> > > > > 
+> > > > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
+> > > > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
+> > > > > you want that to happen?
+> > > > 
+> > > > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
+> > > 
+> > > Has it changed?  Last I looked, it did trigger on WARN_* calls, which
+> > > has resulted in a huge number of kernel fixes because of that.
+> > 
+> > Everything is customisable in syzkaller, so maybe there are specific
+> > builds which panic_on_warn enabled, but none that I'm involved with
+> > do.
+> 
+> Many systems run with panic-on-warn (i.e. the cloud), as they want to
+> drop a box and restart it if anything goes wrong.
+> 
+> That's why syzbot reports on WARN_* calls.  They should never be
+> reachable by userspace actions.
+> 
+> > Here follows a topical example.  The report above in the Link: tag
+> > comes with a crashlog [0].  In there you can see the WARN() at the
+> > bottom of vhost_dev_cleanup() trigger many times due to a populated
+> > (non-flushed) worker list, before finally tripping the BUG() which
+> > triggers the report:
+> > 
+> > [0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
+> 
+> Ok, so both happens here.  But don't add a warning for something that
+> can't happen.  Just handle it and move on.  It looks like you are
+> handling it in this code, so please drop the WARN_ON().
+> 
+> thanks,
+> 
+> greg k-h
 
-Thanks for your patch, which is now commit bae5a4acef67db88
-("mfd: simple-mfd-i2c: Add a Kconfig name") in mfd/for-mfd-next.
+Hmm. Well this will mean if we ever reintroduce the bug then
+syzkaller will not catch it for us :( And the bug is there,
+it just results in a hard to reproduce error for userspace.
 
-On Mon, Jan 24, 2022 at 1:24 PM Alistair Francis <alistair@alistair23.me> wrote:
-> Add a Kconfig name to the "Simple Multi-Functional Device support (I2C)"
-> device so that it can be enabled via menuconfig.
+Not sure what to do here. Export panic_on_warn flag to modules
+and check it here?
 
-Which still does not explain why this would be needed...
 
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+-- 
+MST
 
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -1188,7 +1188,7 @@ config MFD_SI476X_CORE
->           module will be called si476x-core.
->
->  config MFD_SIMPLE_MFD_I2C
-> -       tristate
-> +       tristate "Simple Multi-Functional Device support (I2C)"
->         depends on I2C
->         select MFD_CORE
->         select REGMAP_I2C
-
-The help text states:
-
-| This driver creates a single register map with the intention for it
-| to be shared by all sub-devices.
-
-Yes, that's what MFD does?
-
-| Once the register map has been successfully initialised, any
-| sub-devices represented by child nodes in Device Tree will be
-| subsequently registered.
-
-OK...?
-
-Still, no clue about what this driver really does, and why and when
-it would be needed.
-
-There is one driver symbol that selects MFD_SIMPLE_MFD_I2C.
-There are no driver symbols that depend on this symbol.
-
-If you have a driver in the pipeline that can make use of this,
-can't it just select MFD_SIMPLE_MFD_I2C, so the symbol itself can
-stay invisible?
-
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
