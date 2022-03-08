@@ -2,136 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345401AbiCHJmo (ORCPT
+        id S1345407AbiCHJpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:42:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41890 "EHLO
+        Tue, 8 Mar 2022 04:45:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237159AbiCHJmn (ORCPT
+        with ESMTP id S237159AbiCHJpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:42:43 -0500
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2109.outbound.protection.outlook.com [40.107.215.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236CB31511;
-        Tue,  8 Mar 2022 01:41:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VJQJopKIiUCz6KQd35ggrULxUwY0pbbIjeAwNvx5z1gP+/DHfbcKE0Eg88OWtZv9tP1zlrOoTxM5adhvIS0M2SPNcht2CHa2AxsEkLVsBapfQ1SS/S3KD0EBCk2rV/0296j4EvTE5AogQ4QSlmvQP4bZJB4+D0RF/mP09MBktHdJw8tM1fC5Huh4eiBZn8c24hpofHG9hKinx0G237kKgXuwjVFBbpYM2xGjPH93KHDS3B8hzgUgBaqbF42lYpQk11NqGFxmFRQMGYl8AFt//EAt7oz3ZcIdIeQ8f/0BNkY4LYQiAnawcDIJT6IR7WFbCEjU7BaGfqGK2jscIYdPVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yROS83S5OQ5l1CEeh3TqW/pmrTnPa/mZFQ+IT5hYC3M=;
- b=ocnC6V8pDD9KRjmrXeNWnUHRw5UlTkegvbH9yg6K9WrJIY9BXi7BWvIUAi/EQxc9AAYq+bNt57yi9sKHbJiJkAIspSHS/p0tPe2d6UieEZEuksSsWPfK+vMr3Ybsqj80uMjtgouz3QjWguvKzVTONs7vjC738I+BQgn9HRVJ8sK7VXcUlZ/wcyTXkJyt7Q7KCI9dZnMLEdHLObaa/GToo6yG+WDzr5ssFGt8oDrk92D18rl1FFJ0eBcty4upfuXKXEuTyWHa2Qy0cUukeLG1qSVA7tdkO90vL+eK2tWclmxKPeZBey9G8Z5/iHm6ZGFcq87z4m8YcRL+B/dwYI1KQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yROS83S5OQ5l1CEeh3TqW/pmrTnPa/mZFQ+IT5hYC3M=;
- b=N/I8mETrysdggG7HBawfo5mO0MX5lacfaECOeKYAlCOczZD7UGMDMOkJ+4NCB6ntj+pS2+Z12wpFO515Cz/t7taA0gZWS+Ute/63lSG1q9pjvtEpDRV1GQUWihkrgGZF1IVmBfZvgpGVhRZam4AlcuqU9EMk1MEnSNNqQ7LVWSg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by SG2PR06MB4956.apcprd06.prod.outlook.com (2603:1096:4:17f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 09:41:44 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::30ce:609e:c8e8:8a06]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::30ce:609e:c8e8:8a06%4]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
- 09:41:43 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     "Daniel W. S. Almeida" <dwlsalmeida@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com, Yihao Han <hanyihao@vivo.com>
-Subject: [PATCH] media: vidtv: use vfree() for memory allocated with vzalloc()
-Date:   Tue,  8 Mar 2022 01:41:32 -0800
-Message-Id: <20220308094132.2736-1-hanyihao@vivo.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR06CA0003.apcprd06.prod.outlook.com
- (2603:1096:202:2e::15) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+        Tue, 8 Mar 2022 04:45:36 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4143A27FE7;
+        Tue,  8 Mar 2022 01:44:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646732680; x=1678268680;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AZmaKapkMakeK7sNyeCCno/sGLsAq5h6+En+/piE3b8=;
+  b=ScPTqWTGETE113Ftm9Gugu5RIyI4dIeSxyoywhwhjJq8dr4C4rPKIK6c
+   Pc/W8PmG0yB5fQj97eS8Ev+ckUo+FoJvEQXaCJNntOLqFXgJgJQl3o3BW
+   ifgCX2eZjIoZsSidxT3GtczcMUkthFvOBOzoeBKOwrMwmpheVsXW2M+0t
+   53yl12Ltr2/Nf1sxvVp54K31FWpPIchdLxYlTtRI4+TM+OYNsc8yRkT2g
+   dG8Civ5S5nLpyQjLQ3hwAyyLJVUxfA03GHhbpqtLy4T2Q3AXg8j6G59FW
+   ruVXUoP1K3FNRHX1zUBcAiIPYfpzYJ88bdSMS9nBkghEPoYcsNZfhp/8o
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="242080213"
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="242080213"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 01:44:39 -0800
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="553552146"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.46.193])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 01:44:35 -0800
+Message-ID: <c33540bc-0466-5a28-c85d-bfc8934b8c15@intel.com>
+Date:   Tue, 8 Mar 2022 11:44:30 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8b6a438d-2bdd-475e-b681-08da00e7daf3
-X-MS-TrafficTypeDiagnostic: SG2PR06MB4956:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB49561942E912A49EC8220248A2099@SG2PR06MB4956.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ErtaRfbRT/k7xeR9xwb5zsETfl9DJJJxYIF4EVkMBn2AyNoY2ugNzHJqqrZhBYf9Z8fo+bjoAxNAkka/awWiJIzvHe9zmvVO0Zxj95MOsObP5K6VVwnDYELQuO3HIbI8qZQjHjGlaoFYmhl5O/Ws7R2dLmyxa+hxhb1rO2U4bf3/U97VGr4l/3KV5AQ9wemalEz0NXS3qJliEWHh9/X5KscrAPm6O94uAsGhLC8DCfx3BOi2Zz8zTccTGyPzT+vzx2Vi296Gnim0gzD1O+j6iSm0uUM+AfwpQLwhcOKZls1BSFRE67fwxzovX9Cwu6lRdHOD3pIuS99tGgUXuXHGK5rgSXoAF93oeoiRBdlqN91mw+zyoCUDyxsDnmRvZ5fGJFfLFa5ylvt6blLg5eJLcVZcRmcWnf76Z8RuCeP/rtIgL59Nou1kWa5ip6MppmVDc5ENzB+nUolfyZ1JiEQ9AEc1O6Xs1uRPvDFjLnU6NiB/piKrCG35+XQazrhrcvKGM6owQ4MyXXjJG4mtiWJBXoVBj7dlsuhj4ivCiu9tteV5w/xjpjcUwh/oxPHFmxQ9c3gFizje5B/N6m9b7b3wBe5QgLNPPsxc2+MuhKPWC8NI41xkVlog3Fi8DyfHciNKRiUVu5jqAUzvL5Dlo8dlULDbAU/3f4PoMrD+mjherN5bSvQDS/OgEFtGR0kUGeGwPJzKI1Xf6J/wSvPnEKI6jw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(8936002)(66946007)(8676002)(4326008)(66476007)(66556008)(83380400001)(86362001)(5660300002)(38100700002)(110136005)(38350700002)(6512007)(6486002)(316002)(508600001)(1076003)(186003)(107886003)(26005)(6506007)(52116002)(4744005)(2616005)(2906002)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+vYTDWCB+8XG1QSHAFki4ek6AGbTEMXpoiDrhxbelDvqx1HbLbMe/c+/bI3T?=
- =?us-ascii?Q?D9paIjySgOE1i7HaGOl6g/lGByA5OFqQ+05l+r89m9uV3pIvvm1xeaO+YoEt?=
- =?us-ascii?Q?9hwC/teYPISC9r1vAUAtQ03U/h+wb27c2MKfEA9tTPBJigvuC7rF5a+NhXqu?=
- =?us-ascii?Q?bOH7tY5/f/kQe1Xw7aQ8GrqLnVgnofglsgUIdxX2ZEUxVuOEGYHUNQlUJMUa?=
- =?us-ascii?Q?P/0nTbCdbnkaBxfDM6Ju/bKqunNri8qSsRJ+lfd8a0ok9OHXb7kjy2FlPPx1?=
- =?us-ascii?Q?qFzpemQWXkxr/LTmLvCwerqyXRiOHCdv7x5KVJAHxaA+9q2Qv8heHubtU5wJ?=
- =?us-ascii?Q?HKghAiKqwMZo5kkcsLEf2Q3/jys/0OtSPsK0RqKVgm08j3SH9C/O+L68k0VS?=
- =?us-ascii?Q?K6QBriFWzOdBalZGJKIYdtnpka07b+7KcFW+ydqMURkWMXAtNk+7ENiXc6wy?=
- =?us-ascii?Q?WNMfYiM2ttBHDAeD5V2G/SVwLmO8U1FOI7qe1oiOzZzJInN18IMI5O3QyyEM?=
- =?us-ascii?Q?vlHEnZNOnJ3ImDkZzt/PkFVaQbPbZPFYHXSGkTb1nxxx3ujtr48rreBh1nvh?=
- =?us-ascii?Q?bz3Sk0r5tru4HFWO0qvZ7XQjojWq48Nl+bJibIPi5cQWCvwxmtvTHruHylu5?=
- =?us-ascii?Q?o7zWJnyoT0xCMnxtjI7EHntoQz1rWCpQ1IweM9D3LnDtukxQM6FDGQEJmTrE?=
- =?us-ascii?Q?exXCIizDq1qsyDKlI8GUuwh0Hh39VBCHdxtiirQ2o3M2uxlje6Awg+ThuPC7?=
- =?us-ascii?Q?SMof2xW6aLH5SZtJoJ2hALF93OayT0am8mAiBrkdxv96dKf/6/a1pbH3QcrG?=
- =?us-ascii?Q?WeNs3yC4EBIu4NxDx3D/I+heSiewxBaAX4QSpx4FQYfUH7LdyOB+MBtzkNt5?=
- =?us-ascii?Q?jTzDu1Em4dsP0buNhMVkbuq/dE1+fo9FcXS2+GfgDktzRTi4GSArph6rvaFE?=
- =?us-ascii?Q?DZrZ32hVQN8wmhCqM3feRJRzBXjgzs5NkH9YZ5gMGFrjHf7K69l3S7h0ALei?=
- =?us-ascii?Q?mKqrfSv4Jde5+a0Yld5E/FlCxDKrycLsFFEerkltA1e5lF5ekcKkMMeGpzZx?=
- =?us-ascii?Q?OcvatEJxagqYnLi/qM0RiFDXQqqVW280LZS4t3Es9PZLboR+7cVNTh41ftsg?=
- =?us-ascii?Q?MFezv1KiLTtVINQlOTpRApold6n2B+vNF8CR3gjPdM3nSZSyqt3kC+afAJX3?=
- =?us-ascii?Q?eMqeRFpIi3H5LNwE3bB2Qb4+PNjhTfEfSvsumWr4fv8MleIJxo6dL2rAM8OK?=
- =?us-ascii?Q?opNfchQpDP85rnxRDL9Q14INpcmK+98SmCYxv+B76U1EJVet2I6gk6Za6Bfe?=
- =?us-ascii?Q?fm5zfbfrJ18RuVn2sKBj43l7IAwuPFiucqQaqsoxqFT6zVWuBCY+nbTTRnkj?=
- =?us-ascii?Q?zTKWk4FrJtqaRIv1wvUGav2JooBtocuEkeNGLlMXu+1yqJpcn6kl6eVoWypC?=
- =?us-ascii?Q?DVKzSGJGCejjhNEboro8zhakTmoKQxxVqfKAZkB0cFPpM7C8JXOK/53aeJBz?=
- =?us-ascii?Q?qYu216daMI8IDj6EVuWOWnuFWtxKPf2jeg+vFbjDElFTpxys8Vwx+s+5Fl3l?=
- =?us-ascii?Q?UsHNEbPybC494IW7Gh0J/OQnu1wmw6pS818bvBwlg+vsljfeOKdsUxwabWmV?=
- =?us-ascii?Q?W5hmSVaigxcyuLKJCtRbSz4=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b6a438d-2bdd-475e-b681-08da00e7daf3
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:41:43.8759
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F4s4yxXujTfIoBBhkU4yDkeUFNF8mGrZAw0w9WOUXakySGeAkrUe2Tuzzo2uYVaVE4SsQhHZgplDUHkIdFN0mQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB4956
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH V4 1/7] mmc: core: Capture eMMC and SD card errors
+Content-Language: en-US
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        quic_riteshh@quicinc.com, asutoshd@quicinc.com,
+        ulf.hansson@linaro.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_vbadigan@quicinc.com, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+References: <1646226227-32429-1-git-send-email-quic_c_sbhanu@quicinc.com>
+ <1646226227-32429-2-git-send-email-quic_c_sbhanu@quicinc.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <1646226227-32429-2-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is allocated with vzalloc(), the corresponding release function
-should not be kfree(), use vfree() instead.
+On 2.3.2022 15.03, Shaik Sajida Bhanu wrote:
+> Add changes to capture eMMC and SD card errors.
+> This is useful for debug and testing.
+> 
+> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+> Signed-off-by: Ram Prakash Gupta <quic_rampraka@quicinc.com>
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> ---
+>  drivers/mmc/core/core.c  |  6 ++++++
+>  include/linux/mmc/host.h | 23 +++++++++++++++++++++++
+>  2 files changed, 29 insertions(+)
+> 
+> diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
+> index 368f104..f3679ed 100644
+> --- a/drivers/mmc/core/core.c
+> +++ b/drivers/mmc/core/core.c
+> @@ -2242,6 +2242,12 @@ void mmc_rescan(struct work_struct *work)
+>  		if (freqs[i] <= host->f_min)
+>  			break;
+>  	}
+> +
+> +	/*
+> +	 * Ignore the command timeout errors observed during
+> +	 * the card init as those are excepted.
+> +	 */
+> +	host->err_stats[MMC_ERR_CMD_TIMEOUT] = 0;
+>  	mmc_release_host(host);
+>  
+>   out:
+> diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+> index 7afb57c..3b7f1e5 100644
+> --- a/include/linux/mmc/host.h
+> +++ b/include/linux/mmc/host.h
+> @@ -93,6 +93,23 @@ struct mmc_clk_phase_map {
+>  
+>  struct mmc_host;
+>  
+> +enum mmc_err_stat {
+> +	MMC_ERR_CMD_TIMEOUT,
+> +	MMC_ERR_CMD_CRC,
+> +	MMC_ERR_DAT_TIMEOUT,
+> +	MMC_ERR_DAT_CRC,
+> +	MMC_ERR_AUTO_CMD,
+> +	MMC_ERR_ADMA,
+> +	MMC_ERR_TUNING,
+> +	MMC_ERR_CMDQ_RED,
+> +	MMC_ERR_CMDQ_GCE,
+> +	MMC_ERR_CMDQ_ICCE,
+> +	MMC_ERR_REQ_TIMEOUT,
+> +	MMC_ERR_CMDQ_REQ_TIMEOUT,
+> +	MMC_ERR_ICE_CFG,
+> +	MMC_ERR_MAX,
+> +};
+> +
+>  struct mmc_host_ops {
+>  	/*
+>  	 * It is optional for the host to implement pre_req and post_req in
+> @@ -500,6 +517,7 @@ struct mmc_host {
+>  
+>  	/* Host Software Queue support */
+>  	bool			hsq_enabled;
+> +	u32                     err_stats[MMC_ERR_MAX];
 
-Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
+This makes it look like err_stats has something to do with Host Software Queue.
+Perhaps move it to be with debugfs_root. Also use tabs not spaces
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
----
- drivers/media/test-drivers/vidtv/vidtv_s302m.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	struct dentry		*debugfs_root;
+	u32			err_stats[MMC_ERR_MAX];
 
-diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-index 4676083cee3b..9da18eac04b5 100644
---- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-+++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-@@ -501,7 +501,7 @@ struct vidtv_encoder
- 	return e;
- 
- out_kfree_buf:
--	kfree(e->encoder_buf);
-+	vfree(e->encoder_buf);
- 
- out_kfree_e:
- 	kfree(e->name);
--- 
-2.17.1
+>  
+>  	unsigned long		private[] ____cacheline_aligned;
+>  };
+> @@ -635,6 +653,11 @@ static inline enum dma_data_direction mmc_get_dma_dir(struct mmc_data *data)
+>  	return data->flags & MMC_DATA_WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
+>  }
+>  
+> +static inline void mmc_debugfs_err_stats_inc(struct mmc_host *host,
+> +		enum mmc_err_stat stat) {
+> +	host->err_stats[stat] += 1;
+> +}
+> +
+>  int mmc_send_tuning(struct mmc_host *host, u32 opcode, int *cmd_error);
+>  int mmc_send_abort_tuning(struct mmc_host *host, u32 opcode);
+>  int mmc_get_ext_csd(struct mmc_card *card, u8 **new_ext_csd);
 
