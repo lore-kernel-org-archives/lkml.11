@@ -2,161 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244694AbiCHJup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:50:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
+        id S242870AbiCHJvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 04:51:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345484AbiCHJug (ORCPT
+        with ESMTP id S234796AbiCHJvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:50:36 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50B7344E5;
-        Tue,  8 Mar 2022 01:49:39 -0800 (PST)
+        Tue, 8 Mar 2022 04:51:16 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583553FBC5
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 01:50:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646732979; x=1678268979;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=qS7NRU3y0mPGTQHX2B4ljPRVEixQqYfSMWZPORyjxOw=;
-  b=QsSCtZBlutyNoJuZAGP1SOYlnOZmJZ8j3XYRMVTHq/5+NeVh+YaYsZDA
-   HMKnvZtkBepxZ/aAEfkuBRB9lXf3BpEa2Jq9Q5455LmwFcmRPoYsnMfjK
-   w6cy9yIOhKSOqMyRBxdNvwNMiosDsiAkCL4SbIqx27SGorq6VATUm6oY5
-   fqvqoBb1kZgz9CKxR2QxJOkiFLbl257Ux/uggTKQCtVFw9Q4C8iit1BTb
-   AgXBsH3u7xKefJjLXfy/DV+ptOHGxLRDoTK1IamVbpN+y0h6Dh1W27j2L
-   IpbVnLVSdgtH3biXJNHhgfqhrRfFhpidvkMhBmiHbuzjUitxwQ8Qp4Ptl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="234597253"
+  t=1646733020; x=1678269020;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=47Y/uMIK+UT5vxYHGMt1dhGHgAiN21Uf7HdKP+JT3f0=;
+  b=LueaPHBQe4HOQMdA0y3oggf2/r6ooH0/TzpYk64l4NO8e05b+Zj40tUL
+   Ns6H4F0URWaaHheckeA0y8EBvmLuRzHKS7/5RkQ7sjnv2fb/2ZU9GCnH8
+   xsuS5KrQgUDfH4Q+jdouaiouQ+cRrD7GB+ug73kS5TiFPbO+GUxmoNbwS
+   dr2YFN0/nS45DJFUTGNx592s8CTByGxxsHT/SbOVcyyxE2UbUiYc2wriz
+   FQsWb3LsrK59fNGogPuVhjbeV1oAeqtIQBBRC+LAIxuP/r29Ee4IZQB1t
+   G2scHtQ3Atar+6QJdZaFQvrWfHfJCZPPfiUqtdpApT7tznHjYOofTjBas
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="235252205"
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="234597253"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 01:49:39 -0800
+   d="scan'208";a="235252205"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 01:50:20 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="553553451"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.46.193])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 01:49:35 -0800
-Message-ID: <29a1a50c-bb65-25a4-b09e-7a869490231e@intel.com>
-Date:   Tue, 8 Mar 2022 11:49:30 +0200
+   d="scan'208";a="577939045"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 08 Mar 2022 01:50:18 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRWTx-0001Dt-PX; Tue, 08 Mar 2022 09:50:17 +0000
+Date:   Tue, 8 Mar 2022 17:50:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [amir73il:sb_iostats 5/12] include/linux/percpu_counter.h:122:31:
+ error: incompatible types when assigning to type 'struct percpu_counter'
+ from type 's64' {aka 'long long int'}
+Message-ID: <202203081741.vFnZtCst-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH V4 3/7] mmc: debugfs: Add debug fs entry for mmc driver
-Content-Language: en-US
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        asutoshd@quicinc.com, ulf.hansson@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_vbadigan@quicinc.com, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-References: <1646226227-32429-1-git-send-email-quic_c_sbhanu@quicinc.com>
- <1646226227-32429-4-git-send-email-quic_c_sbhanu@quicinc.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <1646226227-32429-4-git-send-email-quic_c_sbhanu@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2.3.2022 15.03, Shaik Sajida Bhanu wrote:
-> Add debug fs entry to query eMMC and SD card errors statistics
-> 
-> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> ---
->  drivers/mmc/core/debugfs.c | 60 ++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 60 insertions(+)
-> 
-> diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
-> index 3fdbc80..db0988c 100644
-> --- a/drivers/mmc/core/debugfs.c
-> +++ b/drivers/mmc/core/debugfs.c
-> @@ -223,6 +223,63 @@ static int mmc_clock_opt_set(void *data, u64 val)
->  DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
->  	"%llu\n");
->  
-> +static int mmc_err_stats_show(struct seq_file *file, void *data)
-> +{
-> +	struct mmc_host *host = (struct mmc_host *)file->private;
-> +	const char *desc[MMC_ERR_MAX] = {
-> +		[MMC_ERR_CMD_TIMEOUT] = "Command Timeout Occurred",
-> +		[MMC_ERR_CMD_CRC] = "Command CRC Errors Occurred",
-> +		[MMC_ERR_DAT_TIMEOUT] = "Data Timeout Occurred",
-> +		[MMC_ERR_DAT_CRC] = "Data CRC Errors Occurred",
-> +		[MMC_ERR_AUTO_CMD] = "Auto-Cmd Error Occurred",
-> +		[MMC_ERR_ADMA] = "ADMA Error Occurred",
-> +		[MMC_ERR_TUNING] = "Tuning Error Occurred",
-> +		[MMC_ERR_CMDQ_RED] = "CMDQ RED Errors",
-> +		[MMC_ERR_CMDQ_GCE] = "CMDQ GCE Errors",
-> +		[MMC_ERR_CMDQ_ICCE] = "CMDQ ICCE Errors",
-> +		[MMC_ERR_REQ_TIMEOUT] = "Request Timedout",
-> +		[MMC_ERR_CMDQ_REQ_TIMEOUT] = "CMDQ Request Timedout",
-> +		[MMC_ERR_ICE_CFG] = "ICE Config Errors",
-> +	};
-> +	int i;
-> +
-> +	if (!host)
-> +		return -EINVAL;
+tree:   https://github.com/amir73il/linux sb_iostats
+head:   e0cfb03c7706e5f555c4c7568d5575b0c12ce1c0
+commit: f459e7283ed5d3be5fe79aa7a49e45333dac08d0 [5/12] lib/percpu_counter: add helpers for arrays of counters
+config: arm-randconfig-r015-20220307 (https://download.01.org/0day-ci/archive/20220308/202203081741.vFnZtCst-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/amir73il/linux/commit/f459e7283ed5d3be5fe79aa7a49e45333dac08d0
+        git remote add amir73il https://github.com/amir73il/linux
+        git fetch --no-tags amir73il sb_iostats
+        git checkout f459e7283ed5d3be5fe79aa7a49e45333dac08d0
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm prepare
 
-Do not need to check host here
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> +
-> +	for (i = 0; i < MMC_ERR_MAX; i++) {
-> +		if (desc[i])
-> +			seq_printf(file, "# %s:\t %d\n",
-> +					desc[i], host->err_stats[i]);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mmc_err_stats_open(struct inode *inode, struct file *file)
-> +{
-> +	return single_open(file, mmc_err_stats_show, inode->i_private);
-> +}
-> +
-> +static ssize_t mmc_err_stats_write(struct file *filp, const char __user *ubuf,
-> +				   size_t cnt, loff_t *ppos)
-> +{
-> +	struct mmc_host *host = filp->f_mapping->host->i_private;
-> +
-> +	if (!host)
-> +		return -EINVAL;
+All errors (new ones prefixed by >>):
 
-Do not need to check host here
+   In file included from include/linux/sched/user.h:7,
+                    from include/linux/cred.h:17,
+                    from include/linux/sched/signal.h:10,
+                    from include/linux/rcuwait.h:6,
+                    from include/linux/percpu-rwsem.h:7,
+                    from include/linux/fs.h:33,
+                    from include/linux/huge_mm.h:8,
+                    from include/linux/mm.h:697,
+                    from arch/arm/kernel/asm-offsets.c:12:
+   include/linux/percpu_counter.h: In function 'percpu_counters_init':
+>> include/linux/percpu_counter.h:122:31: error: incompatible types when assigning to type 'struct percpu_counter' from type 's64' {aka 'long long int'}
+     122 |                 counters[i] = amount;
+         |                               ^~~~~~
+   make[2]: *** [scripts/Makefile.build:121: arch/arm/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-> +
-> +	pr_debug("%s: Resetting MMC error statistics\n", __func__);
-> +	memset(host->err_stats, 0, sizeof(host->err_stats));
-> +
-> +	return cnt;
-> +}
-> +
-> +static const struct file_operations mmc_err_stats_fops = {
-> +	.open	= mmc_err_stats_open,
-> +	.read	= seq_read,
-> +	.write	= mmc_err_stats_write,
-> +};
-> +
->  void mmc_add_host_debugfs(struct mmc_host *host)
->  {
->  	struct dentry *root;
-> @@ -236,6 +293,9 @@ void mmc_add_host_debugfs(struct mmc_host *host)
->  	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
->  				   &mmc_clock_fops);
->  
-> +	debugfs_create_file("err_stats", 0600, root, host,
-> +		&mmc_err_stats_fops);
-> +
->  #ifdef CONFIG_FAIL_MMC_REQUEST
->  	if (fail_request)
->  		setup_fault_attr(&fail_default_attr, fail_request);
 
+vim +122 include/linux/percpu_counter.h
+
+   115	
+   116	static inline int percpu_counters_init(struct percpu_counter counters[],
+   117					       int num, s64 amount, gfp_t gfp)
+   118	{
+   119		int i;
+   120	
+   121		for (i = 0; i < num; i++)
+ > 122			counters[i] = amount;
+   123		return 0;
+   124	}
+   125	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
