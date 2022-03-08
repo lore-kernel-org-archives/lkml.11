@@ -2,97 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EE0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F657C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346750AbiCHMPw (ORCPT
+        id S1346740AbiCHMSY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:15:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        Tue, 8 Mar 2022 07:18:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346732AbiCHMPu (ORCPT
+        with ESMTP id S1346780AbiCHMSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:15:50 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A46A43ED1;
-        Tue,  8 Mar 2022 04:14:54 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: aratiu)
-        with ESMTPSA id EC43A1F43C2C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646741693;
-        bh=5+4CFM6veuq5rDnjMnbblwZsgeeLINo0x7U43XEkG9c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IuRYrUkUF0SCi0ER2nCHqEw02YkcL/vPTUhWSs79ZyitkMk0dynGcY39jBfxLIiaZ
-         hmf9tTBEZf1t1e6xosUT5h1Su28aKNtYQeAP2kKvAAfO5dHgAslutstLuwA3QIQNUN
-         zkRYUuUbl4pZTho63yPNAiMvo/5ikHBr/CvcBxefFVs2Jtj14kwJdWJwYO5WJxRZI/
-         r6eHwi2RPudIMXeXHSAaMlntMUlBToduBaM0nYcDWprzdmx+9zp5m4QFPSnBZTqiyn
-         uQvI+dkLx6F0gD6mHFxqn6mS0ilxypk2AS+BR1mtR2DAR1CtxcG1+bV5y+GHU3ltKx
-         25knDK62+s5UQ==
-From:   Adrian Ratiu <adrian.ratiu@collabora.com>
-To:     netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kernel@collabora.com,
-        linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Manoj Gupta <manojgupta@chromium.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH bpf v2] tools: fix unavoidable GCC call in Clang builds
-Date:   Tue,  8 Mar 2022 14:14:28 +0200
-Message-Id: <20220308121428.81735-1-adrian.ratiu@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 8 Mar 2022 07:18:03 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A711E43EEC;
+        Tue,  8 Mar 2022 04:17:06 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id qa43so38708312ejc.12;
+        Tue, 08 Mar 2022 04:17:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OFA2/eM8lwGnQdw8L8HYozWRTs8bN4HRmWhwr7+OpfQ=;
+        b=dZxiz91cR9d8+CC4dJkv0i2jFfJ9CP0b3NlEsXD6TPHMGYacNdhru2mSELTl8O+6T+
+         FkPBsspyt6yrQV1UNk0fLDyvuyTBbsyYl6/T/V6x+ZilvnI0NzYTKb6PgY7cnu5zGc3W
+         z8u6cgybLElr2aEZQqTCU+yd3hjzgyX32dfmIm7l1uFqFRVNXPWDahWbmtxQMKSxUF6t
+         mDip2hxkD1fj4trIskXiu0dLQGix1y5LAmHMsfX0r/TW2pyZZX5NoWOICWOAFwOo7IeO
+         jpGsIE8IKRoh4awk7E5UsjXtaPmC6jPN5sC8oetFJ5PMyH0bpwZVfBbDUpiUazI2kL/w
+         rFpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OFA2/eM8lwGnQdw8L8HYozWRTs8bN4HRmWhwr7+OpfQ=;
+        b=r0OKZEy++X04LXgPuvGLZAV+xqgFCxlzL6HlMYMJf6JxxF04BeYhNVTU8XzJHIO8nk
+         aZgZUXbLfjkjWXfxH8IlCdmW8F8TnOqVjczIF+iVuePU9vbwwSF244Ehvr/8uEROWI/L
+         P+Cd8Nsi/7iE8uXREHzZFilsz4L3KlOesSuHvQhesdBNtpx7VQMZNMwdMTfYdQicBXBz
+         EUO+8pqg1gLmbpI0OA1F7lwBkgmKDdyQ4tSZwzq0S2WmActedAslT1sAlmVkAOe0LTUz
+         3C0PbKqfPbYDP/HCR9xoMprgKFlwBbdR3Bgj8eIRx2J7NOMLyNmL5ySKWRzTneFvIZOc
+         AYJg==
+X-Gm-Message-State: AOAM533xcSInz+ARxj+U1EvNpk0EEFQc8bJvKhJSrgEVCyMbHaV0G2kT
+        Bo/trlK3AEy8vNwwSdMvW1/W9qLbtgY=
+X-Google-Smtp-Source: ABdhPJwE9PU5xJ81uImIisWcDcAXQ3ECFtBqwX9p5ItDnR0zlR5H81k8PeGbgOyJEUFk90ZFZol5QQ==
+X-Received: by 2002:a17:907:97cc:b0:6da:a8fb:d1db with SMTP id js12-20020a17090797cc00b006daa8fbd1dbmr13315004ejc.267.1646741825187;
+        Tue, 08 Mar 2022 04:17:05 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id r19-20020a17090638d300b006d6e4fc047bsm5886872ejd.11.2022.03.08.04.17.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 04:17:04 -0800 (PST)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <800a68f8-fbe0-5980-4290-bdc0ed4d05bd@redhat.com>
+Date:   Tue, 8 Mar 2022 13:17:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 01/12] mm/shmem: Introduce F_SEAL_INACCESSIBLE
+Content-Language: en-US
+To:     Chao Peng <chao.p.peng@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>
+Cc:     Steven Price <steven.price@arm.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        qemu-devel@nongnu.org, Linux API <linux-api@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-2-chao.p.peng@linux.intel.com>
+ <619547ad-de96-1be9-036b-a7b4e99b09a6@kernel.org>
+ <20220217130631.GB32679@chaop.bj.intel.com>
+ <2ca78dcb-61d9-4c9d-baa9-955b6f4298bb@www.fastmail.com>
+ <20220223114935.GA53733@chaop.bj.intel.com>
+ <71a06402-6743-bfd2-bbd4-997f8e256554@arm.com>
+ <7cc65bbd-e323-eabb-c576-b5656a3355ac@kernel.org>
+ <20220307132602.GA58690@chaop.bj.intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220307132602.GA58690@chaop.bj.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ChromeOS and Gentoo we catch any unwanted mixed Clang/LLVM
-and GCC/binutils usage via toolchain wrappers which fail builds.
-This has revealed that GCC is called unconditionally in Clang
-configured builds to populate GCC_TOOLCHAIN_DIR.
+On 3/7/22 14:26, Chao Peng wrote:
+>> In pseudo-Rust, this is the difference between:
+>>
+>> fn convert_to_private(in: &mut Memfd)
+>>
+>> and
+>>
+>> fn convert_to_private(in: Memfd) -> PrivateMemoryFd
+>>
+>> This doesn't map particularly nicely to the kernel, though.
+> I understand this Rust semantics and the difficulty to handle races.
+> Probably we should not expose F_SEAL_INACCESSIBLE to userspace, instead
+> we can use a new in-kernel flag to indicate the same thing. That flag
+> should be set only when the memfd is created with MFD_INACCESSIBLE.
 
-Allow the user to override CLANG_CROSS_FLAGS to avoid the GCC
-call - in our case we set the var directly in the ebuild recipe.
+Yes, I like this.
 
-In theory Clang could be able to autodetect these settings so
-this logic could be removed entirely, but in practice as the
-commit cebdb7374577 ("tools: Help cross-building with clang")
-mentions, this does not always work, so giving distributions
-more control to specify their flags & sysroot is beneficial.
-
-Suggested-by: Manoj Gupta <manojgupta@chromium.com>
-Suggested-by: Nathan Chancellor <nathan@kernel.org>
-Acked-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
----
-Changes in v2:
-  * Replaced variable override GCC_TOOLCHAIN_DIR -> CLANG_CROSS_FLAGS
----
- tools/scripts/Makefile.include | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
-index 79d102304470..b9b1deacc4eb 100644
---- a/tools/scripts/Makefile.include
-+++ b/tools/scripts/Makefile.include
-@@ -89,6 +89,9 @@ ifeq ($(CC_NO_CLANG), 1)
- EXTRA_WARNINGS += -Wstrict-aliasing=3
- 
- else ifneq ($(CROSS_COMPILE),)
-+# allow userspace to override CLANG_CROSS_FLAGS to specify their own
-+# sysroots and flags or to avoid the GCC call in pure Clang builds
-+ifeq ($(CLANG_CROSS_FLAGS),)
- CLANG_CROSS_FLAGS := --target=$(notdir $(CROSS_COMPILE:%-=%))
- GCC_TOOLCHAIN_DIR := $(dir $(shell which $(CROSS_COMPILE)gcc 2>/dev/null))
- ifneq ($(GCC_TOOLCHAIN_DIR),)
-@@ -96,6 +99,7 @@ CLANG_CROSS_FLAGS += --prefix=$(GCC_TOOLCHAIN_DIR)$(notdir $(CROSS_COMPILE))
- CLANG_CROSS_FLAGS += --sysroot=$(shell $(CROSS_COMPILE)gcc -print-sysroot)
- CLANG_CROSS_FLAGS += --gcc-toolchain=$(realpath $(GCC_TOOLCHAIN_DIR)/..)
- endif # GCC_TOOLCHAIN_DIR
-+endif # CLANG_CROSS_FLAGS
- CFLAGS += $(CLANG_CROSS_FLAGS)
- AFLAGS += $(CLANG_CROSS_FLAGS)
- endif # CROSS_COMPILE
--- 
-2.35.1
+Paolo
 
