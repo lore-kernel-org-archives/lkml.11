@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A161C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0527AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344710AbiCHRVl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
+        id S236596AbiCHRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 12:21:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244472AbiCHRUb (ORCPT
+        with ESMTP id S1347264AbiCHRUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:20:31 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD2053B4F;
-        Tue,  8 Mar 2022 09:19:21 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id q17so25425577edd.4;
-        Tue, 08 Mar 2022 09:19:21 -0800 (PST)
+        Tue, 8 Mar 2022 12:20:34 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038E554181;
+        Tue,  8 Mar 2022 09:19:26 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id gb39so40699793ejc.1;
+        Tue, 08 Mar 2022 09:19:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1x89pBzvXuUZrfPfd2vnoyMWt4N2rOHe1CTdgdRQIBk=;
-        b=CqwLW0HzXtny0uR8QmiWKYWH71xfwPXsvjGDJmOI+H1S7fXG94E92RbG0/RSjBLbZz
-         wOzQzVMuExNIn+ntof9qnJuIqQVc0ryKecRsCwRdoxQ490atw7nk+JduUsu9oL/QNoXU
-         ao17nfTKYxINgLtLy3sBmWClKm16Rw8oFNX35B275n6sPCHCOfkxnxaGgvLhTN9mJqhv
-         TptbxEX1Aci/BDeFs0wKxuMZ//RPiWMLG9v1L1SLK8TtfW06A9SAjj1Kds2WqxtjOuzh
-         lDO4OKALloSiywOC4aGb8wKE8OZhweohCvfYMkENj7MsEBPmUMQ7Zl1XZ3z4VqxPuNjZ
-         YO8w==
+        bh=hQwhyeIJaS4gMMq4l8hfR9wNOecju8wIT5izOR26pg0=;
+        b=BWdxPDq2ZGBk8E3khwO51OqDkZJNaD6HU3ZxJ5Qp4fAvWOdBGGpbwdk2CV+xsBdNnF
+         Ugwrz4wTDHSN0yyyTHPDU8/vaZiAqIR+Ul89aVxUH0Zjq8OVsVOApy+ozsZ6qANKW/dl
+         Gzw1Bv2FzODw0eQNRuST41XG2QbkzHga0EFWjhOhiIjVbHEM+Xr9WbH/anVxY4qvb/w5
+         UsNjZ5qTyyhg/TxxezbZhKzv+QarI/2PJz6mAH9fGi4ZCQ0SBsPNmGICRDSkNpZDcIBz
+         j+UNQB91oDJurEXFz+Ex6uTynCvWPTUlfWjqTDg9PzVHD00fcIuqmzasc2hlMUIBGXIp
+         48Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1x89pBzvXuUZrfPfd2vnoyMWt4N2rOHe1CTdgdRQIBk=;
-        b=a1vBU5jlLd4x7Ojhs6gEtZ8EbZnOHNPI+CiHCIEwU7kenRT2DJW8czHsSMc06YgMXS
-         mL0M7HSFXPanZV4dVDcIprF82f205UiCOY4p0VDKzAuRH2B1ezIfQHRWFqXCXdSjDArQ
-         6lnTgH85TrYIWmZXgam+xtEE9NSBzRFWhWEc/ooFAsnU+32IxWpMPDQLdrkdKLpMXsdf
-         1QbOQK0TBe1tILaqzvXzjeHREgl0jOhenN6cz5bnpBx4ftJ59AqxgnZV7w18/xtak/b0
-         H2mD1z1mc6oIg4BwmVcCMeUk2WCA0NA8RSUfr2vcbLTUkZt/nf24fb2bEotVADnHe0vG
-         UyQQ==
-X-Gm-Message-State: AOAM530fYTOKnQct9qtBMKD033EO+bpBpLjujuLP4wtkRFr5oyqYocUq
-        IiXursBj7xeTV0C1Te6KoZI=
-X-Google-Smtp-Source: ABdhPJyYzbEjTcRWHRiyOXyo23qWETd0x7XVuzNY6tVPkyg+apzypsfIydk+P8ggPUYFphVZTJ0sWA==
-X-Received: by 2002:aa7:c946:0:b0:416:226f:f8a6 with SMTP id h6-20020aa7c946000000b00416226ff8a6mr8118515edt.360.1646759960161;
-        Tue, 08 Mar 2022 09:19:20 -0800 (PST)
+        bh=hQwhyeIJaS4gMMq4l8hfR9wNOecju8wIT5izOR26pg0=;
+        b=LvMUpZuU7sVBAE3n6AcoErPMDDajeZDAfJZauasOmWbnGhcOh/mY66xOlgP9FZ8Mlg
+         t1nbVBGg9X8BT3mKFpEPXlEqfQoyNNTbwVg5aD1bcMChQKOyuP83XiKCNk2tpl+247Sl
+         Hpv/h5vCy1ze4uuJvTPiS8AD+z66RC9cdV8xlZbzaaafnD8LJP5vcIWeABAlFG2vuTI+
+         KFCObThaa6FClVMWQXVTvpEZf2R+CaI0deFM+YqLQLmgyfLDtf769jd/+rLvtfSBp0i4
+         t6wpdOmHZJ9TbNDJD5kmucD4yENe34EHm65CDPByO83Ws3YZcqn1AU9QBGrHwFP7HFW8
+         HADw==
+X-Gm-Message-State: AOAM532mBX9Xy6z1rTFiX1lVz0OinerrztDVajaqdYlDz+J0XyFPL1zW
+        S+OYhRvH229h+lG0Plk4rRM=
+X-Google-Smtp-Source: ABdhPJwRoyguc37yxeKFidsAA1N5VJnbQ14wYHVgwTkFcutCYNMVZVL1aLsRJOpQLSCZ0bA2rg2U/g==
+X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr13580383ejc.213.1646759964460;
+        Tue, 08 Mar 2022 09:19:24 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id rv11-20020a17090710cb00b006d5c0cd5e0dsm6085044ejb.82.2022.03.08.09.19.18
+        by smtp.googlemail.com with ESMTPSA id rv11-20020a17090710cb00b006d5c0cd5e0dsm6085044ejb.82.2022.03.08.09.19.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:19:19 -0800 (PST)
+        Tue, 08 Mar 2022 09:19:24 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -75,9 +74,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH v2 12/26] usb: gadget: udc: net2280: remove usage of list iterator past the loop body
-Date:   Tue,  8 Mar 2022 18:18:04 +0100
-Message-Id: <20220308171818.384491-13-jakobkoschel@gmail.com>
+Subject: [PATCH v2 15/26] usb: gadget: udc-xilinx: remove usage of list iterator past the loop body
+Date:   Tue,  8 Mar 2022 18:18:07 +0100
+Message-Id: <20220308171818.384491-16-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308171818.384491-1-jakobkoschel@gmail.com>
 References: <20220308171818.384491-1-jakobkoschel@gmail.com>
@@ -98,41 +97,39 @@ loop, use a dedicated pointer to point to the found request object [1].
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/udc/net2280.c | 13 ++++++++-----
+ drivers/usb/gadget/udc/udc-xilinx.c | 13 ++++++++-----
  1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/net2280.c b/drivers/usb/gadget/udc/net2280.c
-index 16e7d2db6411..051d024b369e 100644
---- a/drivers/usb/gadget/udc/net2280.c
-+++ b/drivers/usb/gadget/udc/net2280.c
-@@ -1240,7 +1240,8 @@ static void nuke(struct net2280_ep *ep)
- static int net2280_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+diff --git a/drivers/usb/gadget/udc/udc-xilinx.c b/drivers/usb/gadget/udc/udc-xilinx.c
+index 2907fad04e2c..428c755cf2e1 100644
+--- a/drivers/usb/gadget/udc/udc-xilinx.c
++++ b/drivers/usb/gadget/udc/udc-xilinx.c
+@@ -1136,17 +1136,20 @@ static int xudc_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
+ static int xudc_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
  {
- 	struct net2280_ep	*ep;
--	struct net2280_request	*req;
-+	struct net2280_request	*req = NULL;
-+	struct net2280_request	*iter;
- 	unsigned long		flags;
- 	u32			dmactl;
- 	int			stopped;
-@@ -1266,11 +1267,13 @@ static int net2280_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	}
+ 	struct xusb_ep *ep	= to_xusb_ep(_ep);
+-	struct xusb_req *req	= to_xusb_req(_req);
++	struct xusb_req *req	= NULL;
++	struct xusb_req *iter;
+ 	struct xusb_udc *udc	= ep->udc;
+ 	unsigned long flags;
  
- 	/* make sure it's still queued on this endpoint */
+ 	spin_lock_irqsave(&udc->lock, flags);
+ 	/* Make sure it's actually queued on this endpoint */
 -	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
+-		if (&req->usb_req == _req)
 -			break;
 +	list_for_each_entry(iter, &ep->queue, queue) {
-+		if (&iter->req != _req)
++		if (&iter->usb_req != _req)
 +			continue;
 +		req = iter;
 +		break;
  	}
--	if (&req->req != _req) {
+-	if (&req->usb_req != _req) {
 +	if (!req) {
- 		ep->stopped = stopped;
- 		spin_unlock_irqrestore(&ep->dev->lock, flags);
- 		ep_dbg(ep->dev, "%s: Request mismatch\n", __func__);
+ 		spin_unlock_irqrestore(&udc->lock, flags);
+ 		return -EINVAL;
+ 	}
 -- 
 2.25.1
 
