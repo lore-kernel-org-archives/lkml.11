@@ -2,134 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31494C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245155AbiCHQEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:04:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S1346331AbiCHQFm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:05:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233290AbiCHQEC (ORCPT
+        with ESMTP id S245280AbiCHQFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:04:02 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50925496A2;
-        Tue,  8 Mar 2022 08:03:06 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0CAC139F;
-        Tue,  8 Mar 2022 08:03:05 -0800 (PST)
-Received: from [192.168.1.10] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D7BB13FA45;
-        Tue,  8 Mar 2022 08:03:02 -0800 (PST)
-Message-ID: <e91bcc83-37c8-dcca-e088-8b3fcd737b2c@arm.com>
-Date:   Tue, 8 Mar 2022 17:03:07 +0100
+        Tue, 8 Mar 2022 11:05:37 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BE648E56
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:04:40 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id e15so16117696pfv.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 08:04:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6IjtX8KQzXo9XiXFL0STmflDppjUzaJS4b0YZTK1fA8=;
+        b=aLz2eKAcl+5/LVmy2/3j8bQJhp24Zv38cpqA+YG4Hpj6XfiVsqV+maSMMF+58kp37Q
+         7BtzqUL64mIeK8dVRfsdGjcN1ftgXGzRUM/T4xN9N0ABDcFxYvSFVVT5S2RvDanWQsi4
+         Kr2Ra8U8G9qyudOxJlZhynvQC8as9hOWBCYdImIKsx47RyFco4Pc7QMcxf7lUwNgYeCX
+         XQPYp3cbF3zCbjUyVKUTarEaqskhN/zf6l++JWHqlkiXQi9iDPkQ7E8y5gWSeLX9iUKh
+         1hfb9PTheYZ/wfTS4N4XpjqOUsbD78yQwyVBjA2DFSjxCWwCqxUWNQuebA218O5EoiSA
+         +vPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6IjtX8KQzXo9XiXFL0STmflDppjUzaJS4b0YZTK1fA8=;
+        b=y7T+HVmd14Cea/iPWso1/4txd0NB4+TbZpcCjkgSigY30gQG2/Y3PfITdxkZpPGgt/
+         w9gh7xuvBPz8YOZApCM+QTXzoCq1x1Ztzz3Zt9c2uyfPKd7mg9k31tJ4dJAq83CAhj+d
+         95qcY249cP6soU+jzJuSCcLnHQU+mBHRpVDn37eLWHR7h7IJCy2fN0ZUdjf6XaZz59qf
+         Zlebk7nLPne7+Q9YigTlzMfAxYRA2iUl0LAR1uKnKbj9Sg8xad0RUtvryXARu+mekozM
+         4U50dHnJJwcYdnyzqy5Y1Wv00c2yIEYlWJLs7kwODBsRZkrAB9bqxqdh+9m7GTUFWEE+
+         sJQQ==
+X-Gm-Message-State: AOAM530H9Cm81jHiRc05TiaJEq6MlhKAPvZrcuECPcTSxWLe9OxynKs7
+        265e5uW5sFmJt3YuKz8xDbkQAw==
+X-Google-Smtp-Source: ABdhPJzpzhqNW7g2gl8JP8xuodqL+mDOBGd5aeAVDP2IKP53nvr5g2HACaKL3nAlzIjMhHqHwQvq7g==
+X-Received: by 2002:a62:ee08:0:b0:4f6:b522:ca with SMTP id e8-20020a62ee08000000b004f6b52200camr18994300pfi.48.1646755479988;
+        Tue, 08 Mar 2022 08:04:39 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o66-20020a17090a0a4800b001bf388fc96esm3357804pjo.21.2022.03.08.08.04.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 08:04:39 -0800 (PST)
+Date:   Tue, 8 Mar 2022 16:04:35 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Hao Peng <flyingpenghao@gmail.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kvm: x86: Improve virtual machine startup performance
+Message-ID: <Yid+ky+1sPJpyelQ@google.com>
+References: <20220301063756.16817-1-flyingpeng@tencent.com>
+ <Yh5d7XBD9D4FhEe3@google.com>
+ <CAPm50a+p2pSjExDwPmGpZ_aTuxs=x6RZ4-AAD19RDQx2o-=NCw@mail.gmail.com>
+ <YiAZ3wTICeLTVnJz@google.com>
+ <CAPm50aLJ51mm9JVpTMQCkNENX_9-Do5UeH5zxu-5byOcOFsJBg@mail.gmail.com>
+ <Yia5hsoq2ZZJM8gx@google.com>
+ <5cb1e32e-c880-fa48-aa25-7660d8ad0cdd@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: Re: [PATCH v3] topology: make core_mask include at least
- cluster_siblings
-To:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Will Deacon <will@kernel.org>
-Cc:     Darren Hart <darren@os.amperecomputing.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Arm <linux-arm-kernel@lists.infradead.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Catalin Marinas <Catalin.Marinas@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Valentin Schneider <Valentin.Schneider@arm.com>,
-        "D . Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        stable@vger.kernel.org
-References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
- <20220308103012.GA31267@willie-the-truck>
- <CAKfTPtDe+i0fwV10m2sX2xkJGBrO8B+RQogDDij8ioJAT5+wAw@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CAKfTPtDe+i0fwV10m2sX2xkJGBrO8B+RQogDDij8ioJAT5+wAw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5cb1e32e-c880-fa48-aa25-7660d8ad0cdd@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/03/2022 12:04, Vincent Guittot wrote:
-> On Tue, 8 Mar 2022 at 11:30, Will Deacon <will@kernel.org> wrote:
-
-[...]
-
->>> ---
->>> v1: Drop MC level if coregroup weight == 1
->>> v2: New sd topo in arch/arm64/kernel/smp.c
->>> v3: No new topo, extend core_mask to cluster_siblings
->>>
->>>  drivers/base/arch_topology.c | 8 ++++++++
->>>  1 file changed, 8 insertions(+)
->>>
->>> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
->>> index 976154140f0b..a96f45db928b 100644
->>> --- a/drivers/base/arch_topology.c
->>> +++ b/drivers/base/arch_topology.c
->>> @@ -628,6 +628,14 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
->>>                       core_mask = &cpu_topology[cpu].llc_sibling;
->>>       }
->>>
->>> +     /*
->>> +      * For systems with no shared cpu-side LLC but with clusters defined,
->>> +      * extend core_mask to cluster_siblings. The sched domain builder will
->>> +      * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
-
-IMHO, if core_mask weight is 1, MC will be removed/degenerated anyway.
-
-This is what I get on my Ampere Altra (I guess I don't have the ACPI
-changes which would let to a CLS sched domain):
-
-# cat /sys/kernel/debug/sched/domains/cpu0/domain*/name
-DIE
-NUMA
-root@oss-altra01:~# zcat /proc/config.gz | grep SCHED_CLUSTER
-CONFIG_SCHED_CLUSTER=y
-
->>> +      */
->>> +     if (cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
->>> +             core_mask = &cpu_topology[cpu].cluster_sibling;
->>> +
->>
->> Sudeep, Vincent, are you happy with this now?
+On Tue, Mar 08, 2022, Paolo Bonzini wrote:
+> On 3/8/22 03:03, Sean Christopherson wrote:
+> > On Thu, Mar 03, 2022, Hao Peng wrote:
+> > > On Thu, Mar 3, 2022 at 9:29 AM Sean Christopherson <seanjc@google.com> wrote:
+> > > > 
+> > > > On Wed, Mar 02, 2022, Hao Peng wrote:
+> > > > > Thanks for pointing this out. However, other than shadow_root_level,
+> > > > > other fields of context will not
+> > > > > change during the entire operation, such as
+> > > > > page_fault/sync_page/direct_map and so on under
+> > > > > the condition of tdp_mmu.
+> > > > > Is this patch still viable after careful confirmation of the fields
+> > > > > that won't be modified?
+> > > > 
+> > > > No, passing around the "init" flag is a hack.
+> > > > 
+> > > > But, we can achieve what you want simply by initializing the constant data once
+> > > > per vCPU.  There's a _lot_ of state that is constant for a given MMU now that KVM
+> > > > uses separate MMUs for L1 vs. L2 when TDP is enabled.  I should get patches posted
+> > > > tomorrow, just need to test (famous last words).
+> > 
+> > Famous last words indeed.  Long story short, the patches were mostly easy, but I
+> > wandered deep into a rabbit hole when trying to make ->inject_page_fault() constant
+> > per MMU.  I'll get something posted this week, though exactly what that something is
+> > remains to be seen :-)
 > 
-> I would not say that I'm happy because this solution skews the core
-> cpu mask in order to abuse the scheduler so that it will remove a
-> wrong but useless level when it will build its domains.
-> But this works so as long as the maintainer are happy, I'm fine
+> This is exactly what I have posted a few weeks ago:
+> 
+> https://patchew.org/linux/20220221162243.683208-1-pbonzini@redhat.com/
 
-I do not have any better idea than this tweak here either in case the
-platform can't provide a cleaner setup.
+Heh, guess who's woefully behind on reviews...  I'll respond to those threads.
+Thanks for the heads up!
 
-Maybe the following is easier to read but then we use
-'&cpu_topology[cpu].llc_sibling' in cpu_coregroup_mask() already ...
-
-@@ -617,6 +617,7 @@ EXPORT_SYMBOL_GPL(cpu_topology);
- const struct cpumask *cpu_coregroup_mask(int cpu)
- {
-        const cpumask_t *core_mask = cpumask_of_node(cpu_to_node(cpu));
-+       const cpumask_t *cluster_mask = cpu_clustergroup_mask(cpu);
-
-        /* Find the smaller of NUMA, core or LLC siblings */
-        if (cpumask_subset(&cpu_topology[cpu].core_sibling, core_mask)) {
-@@ -628,6 +629,9 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
-                        core_mask = &cpu_topology[cpu].llc_sibling;
-        }
-
-+       if (cpumask_subset(core_mask, cluster_mask))
-+               core_mask = cluster_mask;
-+
-        return core_mask;
- }
-
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-
-
-
-
+> See in particular
+> 
+>   KVM: nVMX/nSVM: do not monkey-patch inject_page_fault callback
+>   KVM: x86/mmu: initialize constant-value fields just once
