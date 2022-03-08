@@ -2,139 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346480AbiCHLmS (ORCPT
+        id S1346497AbiCHLnA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:42:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
+        Tue, 8 Mar 2022 06:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244316AbiCHLmM (ORCPT
+        with ESMTP id S1346531AbiCHLmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:42:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155DA2B26C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:41:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ABFB6165D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99303C340EC;
-        Tue,  8 Mar 2022 11:41:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646739675;
-        bh=uKGHRsS6f4Vb/tJAsnQfY45oh45Hl76Pwo5kCPm0g0I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sSfLxB9LUY8iim7VUZhqNh/3x/4rDPfWnJByW2l5yiArSCdnbWDRVoVV6jtj6DpKC
-         doTjGLSLzxkxirFla57QGSYaUYwYHdj4jZh4kkmSxYveb7ZT6hez1R2il7Y9nb880D
-         NyUD7aMpqK83Pb5YfLk1H/ExVy5DfocyMAFP/zQz2u78Ssx32hJfzlcNbQUx8jB6HM
-         CeOKevpj2eJQn+hGiVYx/LLRHdvQ70XxD0ioCfxRdMxIpfeRudFG0riQ003NYPXaaU
-         X+hcwcXUZ0q6haBh+Ooa3hdxb+Jlfu7S9fQivzfAcPohznWC1w7y/hDry7/xKbnbbH
-         O213mOOVQchmg==
-Received: by pali.im (Postfix)
-        id B28E67D5; Tue,  8 Mar 2022 12:41:11 +0100 (CET)
-Date:   Tue, 8 Mar 2022 12:41:11 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: dts: marvell: armada-37xx: Remap IO space to
- bus address 0x0
-Message-ID: <20220308114111.lxqika2l4scw2pk5@pali>
-References: <20220218212526.16021-1-pali@kernel.org>
- <20220304163027.29357-1-pali@kernel.org>
+        Tue, 8 Mar 2022 06:42:54 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74BA2BB0D
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:41:57 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KCYKs57bQzdZMk;
+        Tue,  8 Mar 2022 19:40:33 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 19:41:54 +0800
+Subject: Re: [PATCH 01/16] mm/migration: remove unneeded local variable
+ mapping_locked
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
+        <minchan@kernel.org>, <apopple@nvidia.com>, <o451686892@gmail.com>,
+        <almasrymina@google.com>, <jhubbard@nvidia.com>,
+        <rcampbell@nvidia.com>, <peterx@redhat.com>,
+        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+ <20220304093409.25829-2-linmiaohe@huawei.com>
+ <87bkyi7c8f.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <8683f5cb-ccd3-ce92-77e0-e0117f405e79@huawei.com>
+Date:   Tue, 8 Mar 2022 19:41:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220304163027.29357-1-pali@kernel.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <87bkyi7c8f.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello! Could you review this change?
+On 2022/3/7 10:00, Huang, Ying wrote:
+> Miaohe Lin <linmiaohe@huawei.com> writes:
+> 
+>> When mapping_locked is true, TTU_RMAP_LOCKED is always set to ttu. We can
+>> check ttu instead so mapping_locked can be removed. And ttu is either 0
+>> or TTU_RMAP_LOCKED now. Change '|=' to '=' to reflect this.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/migrate.c | 6 ++----
+>>  1 file changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/mm/migrate.c b/mm/migrate.c
+>> index 42e3a944f35c..50bc62d85eaf 100644
+>> --- a/mm/migrate.c
+>> +++ b/mm/migrate.c
+>> @@ -1230,7 +1230,6 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
+>>  		goto put_anon;
+>>  
+>>  	if (page_mapped(hpage)) {
+>> -		bool mapping_locked = false;
+>>  		enum ttu_flags ttu = 0;
+>>  
+>>  		if (!PageAnon(hpage)) {
+>> @@ -1244,14 +1243,13 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
+>>  			if (unlikely(!mapping))
+>>  				goto unlock_put_anon;
+>>  
+>> -			mapping_locked = true;
+>> -			ttu |= TTU_RMAP_LOCKED;
+>> +			ttu = TTU_RMAP_LOCKED;
+>>  		}
+>>  
+>>  		try_to_migrate(src, ttu);
+>>  		page_was_mapped = 1;
+>>  
+>> -		if (mapping_locked)
+>> +		if (ttu & TTU_RMAP_LOCKED)
+>>  			i_mmap_unlock_write(mapping);
+>>  	}
+> 
+> I think this is a code style issue.  The original code looks more
+> readable for me.
+> 
 
-On Friday 04 March 2022 17:30:27 Pali Rohár wrote:
-> Legacy and old PCI I/O based cards do not support 32-bit I/O addressing.
+I think "ttu |= TTU_RMAP_LOCKED;" is the product of the code changing.
+And (ttu & TTU_RMAP_LOCKED) can do the right thing as mapping_locked
+while removing the page_was_mapped. But if you insist on this, I will
+drop this patch.
+
+Thanks.
+
+> Best Regards,
+> Huang, Ying
 > 
-> Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
-> 'ranges' DT property") kernel can set different PCIe address on CPU and
-> different on the bus for the one A37xx address mapping without any firmware
-> support in case the bus address does not conflict with other A37xx mapping.
+> .
 > 
-> So remap I/O space to the bus address 0x0 to enable support for old legacy
-> I/O port based cards which have hardcoded I/O ports in low address space.
-> 
-> Note that DDR on A37xx is mapped to bus address 0x0. And mapping of I/O
-> space can be set to address 0x0 too because MEM space and I/O space are
-> separate and so do not conflict.
-> 
-> Remapping IO space on Turris Mox to different address is not possible to
-> due bootloader bug.
-> 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> Reported-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 76f6386b25cc ("arm64: dts: marvell: Add Aardvark PCIe support for Armada 3700")
-> Cc: stable@vger.kernel.org # 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
-> Cc: stable@vger.kernel.org # 514ef1e62d65 ("arm64: dts: marvell: armada-37xx: Extend PCIe MEM space")
-> Cc: stable@vger.kernel.org # ???????????? ("arm64: dts: marvell: armada-37xx: Increase PCIe IO size from 64 KiB to 1 MiB")
-> 
-> ---
-> Changes in v2:
-> * Do not remap IO space on Turris Mox
-> ---
->  arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 7 ++++++-
->  arch/arm64/boot/dts/marvell/armada-37xx.dtsi           | 2 +-
->  2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> index 6581092c2c90..2838e3f65ada 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> +++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> @@ -150,17 +150,22 @@
->  	slot-power-limit = <10000>;
->  	/*
->  	 * U-Boot port for Turris Mox has a bug which always expects that "ranges" DT property
->  	 * contains exactly 2 ranges with 3 (child) address cells, 2 (parent) address cells and
-> -	 * 2 size cells and also expects that the second range starts at 16 MB offset. If these
-> +	 * 2 size cells and also expects that the second range starts at 16 MB offset. Also it
-> +	 * expects that first range uses same address for PCI (child) and CPU (parent) cells (so
-> +	 * no remapping) and that this address is the lowest from all specified ranges. If these
->  	 * conditions are not met then U-Boot crashes during loading kernel DTB file. PCIe address
->  	 * space is 128 MB long, so the best split between MEM and IO is to use fixed 16 MB window
->  	 * for IO and the rest 112 MB (64+32+16) for MEM. Controller supports 32-bit IO mapping.
->  	 * This bug is not present in U-Boot ports for other Armada 3700 devices and is fixed in
->  	 * U-Boot version 2021.07. See relevant U-Boot commits (the last one contains fix):
->  	 * https://source.denx.de/u-boot/u-boot/-/commit/cb2ddb291ee6fcbddd6d8f4ff49089dfe580f5d7
->  	 * https://source.denx.de/u-boot/u-boot/-/commit/c64ac3b3185aeb3846297ad7391fc6df8ecd73bf
->  	 * https://source.denx.de/u-boot/u-boot/-/commit/4a82fca8e330157081fc132a591ebd99ba02ee33
-> +	 * Bug related to requirement of same child and parent addresses for first range is fixed
-> +	 * in U-Boot version 2022.04 by following commit:
-> +	 * https://source.denx.de/u-boot/u-boot/-/commit/1fd54253bca7d43d046bba4853fe5fafd034bc17
->  	 */
->  	#address-cells = <3>;
->  	#size-cells = <2>;
->  	ranges = <0x81000000 0 0xe8000000   0 0xe8000000   0 0x01000000   /* Port 0 IO */
-> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> index 549c3f7c5b27..a099b7787429 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> @@ -514,9 +514,9 @@
->  			 * IO at the end and the remaining seven windows
->  			 * (totaling 127 MiB) for MEM.
->  			 */
->  			ranges = <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   /* Port 0 MEM */
-> -				  0x81000000 0 0xeff00000   0 0xeff00000   0 0x00100000>; /* Port 0 IO*/
-> +				  0x81000000 0 0x00000000   0 0xeff00000   0 0x00100000>; /* Port 0 IO */
->  			interrupt-map-mask = <0 0 0 7>;
->  			interrupt-map = <0 0 0 1 &pcie_intc 0>,
->  					<0 0 0 2 &pcie_intc 1>,
->  					<0 0 0 3 &pcie_intc 2>,
-> -- 
-> 2.20.1
-> 
+
