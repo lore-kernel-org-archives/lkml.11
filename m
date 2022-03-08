@@ -2,168 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA9CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349717AbiCHSvM (ORCPT
+        id S1349732AbiCHSvT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
+        Tue, 8 Mar 2022 13:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349726AbiCHSvJ (ORCPT
+        with ESMTP id S236818AbiCHSvL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:51:09 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAA753E34
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 10:50:08 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id bn33so26312208ljb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:50:08 -0800 (PST)
+        Tue, 8 Mar 2022 13:51:11 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD791532DF;
+        Tue,  8 Mar 2022 10:50:12 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id v28so26295389ljv.9;
+        Tue, 08 Mar 2022 10:50:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PtUIO+KlIHnuwZcxB8rQEEiVqAu06QZDgLrU97vhKCg=;
-        b=cgcY5LKW2TzJAfELjjvu0YRJX0cVXNV6yOUNqzYRkaYtWQEF1q1FXcSpdlHjJbunMR
-         0IbdURZXDS7gbD0Dqozrcw4EE0wCiRe7NhG/aY7qMDiLpEncbBRE3msFVv86nACqBYIf
-         Xv2BbgPMeS5GkaXhGA6UU/fXBTXoXyHyEm648=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SneY3C6k+i+tAE4bYIFeBltj30CFVUtlAJP0X76PGMs=;
+        b=Oc+ybH2iM/E3szjxRpDlqRZ0RPJdg3vLArbdJ/1f4zhzT3NCMM+VC5A0zFBeemg1Uk
+         8qIaVi4b7hbjFK2qGGZeHmNnGFc/2LGQ0eOvfWyTle9Z+eRm85Nb7IAAQaiESHv7pSAY
+         LX0jLwEBJnYJb02I7hdQLtGaNPA8o1BCxnkBuBFVvvdlF6vnQbOwZN+yWxKKjcYoTKu8
+         q+PoQ2V+ieK5MX/LUeiNl3EM1ABm5TIsd9gKGMc0gI1s0wJTHEEd/F0jLp+37RFU9bnt
+         jHoxA9nTXQcQ06H5kaPIW/G73EMTe0NytBdTobh2+hUQl7qOMAEW1BnImdZXMEaYh2/T
+         Us5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PtUIO+KlIHnuwZcxB8rQEEiVqAu06QZDgLrU97vhKCg=;
-        b=N1DwgSWY3ryqcnV1Z5r+o90IGVlEcT2F7CPmQV+eiIDUIIGoIdLF3XMsQA/++P27p3
-         V4xpPvz1PC0tWY5BEX9Jd9J8Gm0FjcDaui2lO6ZQf7gG4IjC0old+XzCo6Tj7RrvQ+B+
-         fX7Qz/5yg2ajCdE+uUamAjfzcTS38tmutNvBtWlchq4G/2bCQPWPJhIjB1Q9gEu7Quml
-         iY6fIfkDbrRa8ufGdkjlKSvrTO7DxGRaRd0X4exuc5NjvVwemblr+yfxRgsgoxPVdnJt
-         2HLqRmnJrt89y/1XN9n9CZcLUY2aSWCA2SS/hLPV589Y9uC6ZJK01KTC8TdmHBb6NbZc
-         IejQ==
-X-Gm-Message-State: AOAM533cINj8Y2xLohNJQYwgylMmY6iH5zpSN+4yM/XNb7W1JO40ySSM
-        /caF85znJ73fggwVJowED6PryRFiV0cfFsVPEr0=
-X-Google-Smtp-Source: ABdhPJzTRefa/pMi7DNSgpx6ip+iRiCNPvzvH0Re1IW3LG1gMYmt7aT/QUE0sogJgx3i4H03HRZs6w==
-X-Received: by 2002:a2e:a586:0:b0:247:e785:49cd with SMTP id m6-20020a2ea586000000b00247e78549cdmr6522247ljp.503.1646765406111;
-        Tue, 08 Mar 2022 10:50:06 -0800 (PST)
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com. [209.85.208.178])
-        by smtp.gmail.com with ESMTPSA id y16-20020a2e9d50000000b00247b105c11dsm4015282ljj.34.2022.03.08.10.50.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 10:50:05 -0800 (PST)
-Received: by mail-lj1-f178.google.com with SMTP id v28so26295111ljv.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 10:50:05 -0800 (PST)
-X-Received: by 2002:a2e:924d:0:b0:246:370c:5618 with SMTP id
- v13-20020a2e924d000000b00246370c5618mr11487227ljg.358.1646764958731; Tue, 08
- Mar 2022 10:42:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SneY3C6k+i+tAE4bYIFeBltj30CFVUtlAJP0X76PGMs=;
+        b=ylOJc+MdSJV5eqDaH+zSo9gWurmZLYuIcTm0FFe4bN2osYoIHKhx1ewS7F0MwjqcNC
+         woQ9KW7PeSKnSXRmmRiY5E4U6jkR9y10R5YtA8K927CyJUMZsNiG3yx6BV3Xo42FNoBo
+         B8rxEc4hXR0A1JHtCcbYy5AUh8bqSdN4Pp1MjTodennB0eXplUfOfQdwrtpKea1/QzUk
+         0lLhCEgdvlfSFGx+PXzxW1r8NqRjLvxTjZn8Lo/sH/nMnV0cAVZaqvZMiTIFcq41KCcu
+         vB+r3a+p9id0qK3yLmKAMlNoqwwlViY+8AS7pvjADijCdCW2+HjrhuJa174GO/uJddFM
+         h8kQ==
+X-Gm-Message-State: AOAM530dbTky20w604u6L/RUEmLvDpctJhicN1Sym+C1QfaID+vkwOvZ
+        N96Fner1CLLbMuPG8Fw8UOk=
+X-Google-Smtp-Source: ABdhPJzejHvJpGQCNBwniqX1Z39Y4q5p6WkqwgCGxBRMBRGJAxa4N+frGPGB8cEIRvt4div2ZILMeg==
+X-Received: by 2002:a05:651c:11ca:b0:247:f32e:10ba with SMTP id z10-20020a05651c11ca00b00247f32e10bamr2552225ljo.208.1646765410593;
+        Tue, 08 Mar 2022 10:50:10 -0800 (PST)
+Received: from localhost.localdomain ([94.103.229.107])
+        by smtp.gmail.com with ESMTPSA id w10-20020ac2442a000000b0044835a52a08sm1066631lfl.163.2022.03.08.10.50.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 10:50:10 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     krzysztof.kozlowski@canonical.com, sameo@linux.intel.com,
+        thierry.escande@linux.intel.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+Subject: [PATCH] NFC: port100: fix use-after-free in port100_send_complete
+Date:   Tue,  8 Mar 2022 21:50:07 +0300
+Message-Id: <20220308185007.6987-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220308141437.144919-1-david@redhat.com> <20220308141437.144919-6-david@redhat.com>
- <D7AB3A84-3FFB-4E8D-9E68-BF721CC4C6FC@vmware.com> <CAHk-=wiYw9hb-EtjcQ2WDSh4TMCWjJmYitfAn=0y_gguhDtf8Q@mail.gmail.com>
- <0FFA6BBC-766F-4ABC-821A-062632632475@vmware.com>
-In-Reply-To: <0FFA6BBC-766F-4ABC-821A-062632632475@vmware.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 8 Mar 2022 10:42:22 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whBkpWpQpzyVxoVbaYBC06eHGMt=7x=fKe6Uae5O0jjcA@mail.gmail.com>
-Message-ID: <CAHk-=whBkpWpQpzyVxoVbaYBC06eHGMt=7x=fKe6Uae5O0jjcA@mail.gmail.com>
-Subject: Re: [PATCH v1 05/15] mm/rmap: convert RMAP flags to a proper distinct
- rmap_t type
-To:     Nadav Amit <namit@vmware.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 10:24 AM Nadav Amit <namit@vmware.com> wrote:
->
-> I see your point regarding passing an arg. The or=E2=80=99ing of bitfield=
-s
-> can easily be resolved, unless I am missing something, with a union
-> that holds the aggregate value and an anonymous struct that holds
-> the individual flags.
+Syzbot reported UAF in port100_send_complete(). The root case is in
+missing usb_kill_urb() calls on error handling path of ->probe function.
 
-I think that falls under the same heading as passing them as
-arguments: it's certainly doable, but it requires special work that is
-hidden by helper macros/functions/types.
+port100_send_complete() accesses devm allocated memory which will be
+freed on probe failure. We should kill this urbs before returning an
+error from probe function to prevent reported use-after-free
 
-I mean, even the "pass as arguments" can certainly work. It's not
-impossible to hide the odd syntax behind a macro, particularly if you
-only ever have a couple of specific cases. So  you can do
+Fail log:
 
-  typedef struct rmap_flags {
-      unsigned int exclusive:1,
-          compound:1;
-  } rmap_t;
+BUG: KASAN: use-after-free in port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+Read of size 1 at addr ffff88801bb59540 by task ksoftirqd/2/26
+...
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+ __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
 
-   #define RMAP_EXCLUSIVE (rmap_t) { .exclusive =3D 1 }
-   #define RMAP_COMPOUND (rmap_t) { .compound =3D 1 }
+...
 
-and now you can use RMAP_EXCLUSIVE when you pass it as an argument,
-and in the functions themselves you can use
+Allocated by task 1255:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
+ alloc_dr drivers/base/devres.c:116 [inline]
+ devm_kmalloc+0x96/0x1d0 drivers/base/devres.c:823
+ devm_kzalloc include/linux/device.h:209 [inline]
+ port100_probe+0x8a/0x1320 drivers/nfc/port100.c:1502
 
-      if (flags.exclusive) {...
+Freed by task 1255:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0xff/0x140 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:236 [inline]
+ __cache_free mm/slab.c:3437 [inline]
+ kfree+0xf8/0x2b0 mm/slab.c:3794
+ release_nodes+0x112/0x1a0 drivers/base/devres.c:501
+ devres_release_all+0x114/0x190 drivers/base/devres.c:530
+ really_probe+0x626/0xcc0 drivers/base/dd.c:670
 
-which is certainly not unreadable. But it does mean that you basically
-have one syntax for testing "is this exclusive" and another for
-passing that value in.
+Reported-and-tested-by: syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+Fixes: 0347a6ab300a ("NFC: port100: Commands mechanism implementation")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/nfc/port100.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-And you can't do RMAP_EXCLUSIVE | RMAP_COMPOUND to say "I want to pass
-in both exclusive and compound", but you *can* do
+diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
+index d7db1a0e6be1..00d8ea6dcb5d 100644
+--- a/drivers/nfc/port100.c
++++ b/drivers/nfc/port100.c
+@@ -1612,7 +1612,9 @@ static int port100_probe(struct usb_interface *interface,
+ 	nfc_digital_free_device(dev->nfc_digital_dev);
+ 
+ error:
++	usb_kill_urb(dev->in_urb);
+ 	usb_free_urb(dev->in_urb);
++	usb_kill_urb(dev->out_urb);
+ 	usb_free_urb(dev->out_urb);
+ 	usb_put_dev(dev->udev);
+ 
+-- 
+2.35.1
 
-      flags.exclusive =3D 1;
-
-to set the exclusive bit. Again - that is certainly not unreadable on
-its own, but it's an example of how inconsistent and inconvenient the
-interface gets once you do anything outside of some very specific
-cases.
-
-And yes, you can solve these cases by simply always limiting yourself
-to specific syntax (in particular, just make the rule be that you can
-never create values out of thin air, you always have a variable that
-gets set.
-
-The bitfield thing does have the advantage that it ends up having very
-strict type checking.
-
-But in general, I'd say that the disadvantages are huge enough that
-you should never use a bitfield "on its own". Once it's part of a
-structure that you have to pass around and initialize as a structure
-*anyway*, then most of the problems go away.
-
-So bitfields as part of structures are fine - and we obviously use
-them extensively in that form. Even then they can have problems if
-there are any kinds of atomicity issues (ie think "page flags" or
-anything like that) but that's obviously a different thing, and using
-a union to get both ways to access things isn't out of the question.
-
-Of course, if you use unions to get "both as a bitfield and as a
-value" things working, you suddenly have "bit order issues", so that
-can be really problematic too. Bit endianness doesn't even have to
-follow byte endianness.
-
-End result: bitfields are actually often more complex than you think they a=
-re.
-
-                  Linus
