@@ -2,85 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0689FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A60C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345951AbiCHKpy (ORCPT
+        id S1345954AbiCHKqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:45:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        Tue, 8 Mar 2022 05:46:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345935AbiCHKpw (ORCPT
+        with ESMTP id S1345929AbiCHKqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:45:52 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521A641330
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:44:56 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id i66so10849454wma.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 02:44:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sHxA9Ld6Wu8Hd+SfF7WzN4p3d70QNOTgHg1o9QMZk54=;
-        b=bo0A1UtjPuz9iqMy5rGLOoKWqhM9zUra4nPcNHqTCC5H/pqmbWlYdKOXMJ9vE1ah77
-         sQYwMAzxt9eJhGqspS72toUh/fLgCEsyXxTfH3wmsjnxSYaix9wHzmhIbzaOx4hDx7hb
-         mXEdSdYvEACUutTBo3UCOsP0kgd7irD64tx/oaaW4l3IPcmzdqHai5l4b34nQBvd29vl
-         eVeNvhcm7GDC2bYqcQjnAegW24vZ81t4EeaZJPifvDShnYH/RVTDQTImzE0Cn/510x7x
-         aEcHgekGBna8z2v0K+B8n6G5uT2oKXwMIMdQMYqfHP20h2/r9Zz5C7jK1ZfBfGqGKN6p
-         PV3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sHxA9Ld6Wu8Hd+SfF7WzN4p3d70QNOTgHg1o9QMZk54=;
-        b=hY+BgFb7B8vrHZQp9shIVrQd7K2Zyl1jkmcbOBa6xXO9quP1oLhpB0n3U0gX/Jp6fi
-         TxtEFBnMmhBjz9Xs991jDBQFbsPzgLWlRUh+fFovF4AicKP9l8JfZ8mhuJc2MAz7HLNq
-         Jy+pdkk3ZVrgrjbUT2wznHCiGBgbOoA92H4sDW+abzhgsA7UnPEfvDLAercl0Lb03+0x
-         Pg1dnFJ0Ribm0rmhLNrc2Dx3zSckA11UUPgcMH0xKYy2oh3eQwjD8kJ8prN1ts6OGEpj
-         cxXZryl9MwULoLbwcnGqkpfQempWyo3LOj10p+k+faksReGEKPJOpMcBRvS/WsO5uDGb
-         1B0g==
-X-Gm-Message-State: AOAM5316TICZUQIMxl/ySBUm/x7VfCXA+Ph+TRxAEfJKSXlXFzlVRSPi
-        2E+eRLecdazthvqVFSQrBlrGLpxBFIggC4ca
-X-Google-Smtp-Source: ABdhPJwof7f+BbquaM3QrH+C6BkplJ0XCOiqzDXkMUoAGwSdShrOqVMOf6WU+qu/h3z5GfDH8ZsFgQ==
-X-Received: by 2002:a7b:ce95:0:b0:386:bc81:c912 with SMTP id q21-20020a7bce95000000b00386bc81c912mr3004398wmj.4.1646736294834;
-        Tue, 08 Mar 2022 02:44:54 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id i15-20020a05600011cf00b001edc2966dd4sm13298020wrx.47.2022.03.08.02.44.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 02:44:54 -0800 (PST)
-Date:   Tue, 8 Mar 2022 10:44:52 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH] backlight: backlight: Slighly simplify
- devm_of_find_backlight()
-Message-ID: <20220308104452.55arvejyjix3t4zb@maple.lan>
-References: <f998a4291d865273afa0d1f85764a9ac7fbc1b64.1644738084.git.christophe.jaillet@wanadoo.fr>
+        Tue, 8 Mar 2022 05:46:33 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5213941330;
+        Tue,  8 Mar 2022 02:45:37 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 161C01FB;
+        Tue,  8 Mar 2022 02:45:37 -0800 (PST)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DBB5C3FA45;
+        Tue,  8 Mar 2022 02:45:34 -0800 (PST)
+Date:   Tue, 8 Mar 2022 10:45:32 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        LKML <linux-kernel@vger.kernel.org>, Dietmar.Eggemann@arm.com,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] topology: make core_mask include at least
+ cluster_siblings
+Message-ID: <YiczzB92EcShyvLh@bogus>
+References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
+ <20220308103012.GA31267@willie-the-truck>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f998a4291d865273afa0d1f85764a9ac7fbc1b64.1644738084.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220308103012.GA31267@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 08:41:39AM +0100, Christophe JAILLET wrote:
-> Use devm_add_action_or_reset() instead of devm_add_action()+hand writing
-> what is done in the release function, should an error occur.
+On Tue, Mar 08, 2022 at 10:30:12AM +0000, Will Deacon wrote:
+> On Fri, Mar 04, 2022 at 09:01:36AM -0800, Darren Hart wrote:
+> > Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
+> > Control Unit, but have no shared CPU-side last level cache.
+> > 
+> > cpu_coregroup_mask() will return a cpumask with weight 1, while
+> > cpu_clustergroup_mask() will return a cpumask with weight 2.
+> > 
+> > As a result, build_sched_domain() will BUG() once per CPU with:
+> > 
+> > BUG: arch topology borken
+> > the CLS domain not a subset of the MC domain
+> > 
+> > The MC level cpumask is then extended to that of the CLS child, and is
+> > later removed entirely as redundant. This sched domain topology is an
+> > improvement over previous topologies, or those built without
+> > SCHED_CLUSTER, particularly for certain latency sensitive workloads.
+> > With the current scheduler model and heuristics, this is a desirable
+> > default topology for Ampere Altra and Altra Max system.
+> > 
+> > Rather than create a custom sched domains topology structure and
+> > introduce new logic in arch/arm64 to detect these systems, update the
+> > core_mask so coregroup is never a subset of clustergroup, extending it
+> > to cluster_siblings if necessary.
+> > 
+> > This has the added benefit over a custom topology of working for both
+> > symmetric and asymmetric topologies. It does not address systems where
+> > the cluster topology is above a populated mc topology, but these are not
+> > considered today and can be addressed separately if and when they
+> > appear.
+> > 
+> > The final sched domain topology for a 2 socket Ampere Altra system is
+> > unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+> > 
+> > For CPU0:
+> > 
+> > CONFIG_SCHED_CLUSTER=y
+> > CLS  [0-1]
+> > DIE  [0-79]
+> > NUMA [0-159]
+> > 
+> > CONFIG_SCHED_CLUSTER is not set
+> > DIE  [0-79]
+> > NUMA [0-159]
+> > 
+> > Cc: Sudeep Holla <sudeep.holla@arm.com>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> > Cc: Barry Song <song.bao.hua@hisilicon.com>
+> > Cc: Valentin Schneider <valentin.schneider@arm.com>
+> > Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+> > Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> > Cc: <stable@vger.kernel.org> # 5.16.x
+> > Suggested-by: Barry Song <song.bao.hua@hisilicon.com>
+> > Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+> > ---
+> > v1: Drop MC level if coregroup weight == 1
+> > v2: New sd topo in arch/arm64/kernel/smp.c
+> > v3: No new topo, extend core_mask to cluster_siblings
+> > 
+> >  drivers/base/arch_topology.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> > index 976154140f0b..a96f45db928b 100644
+> > --- a/drivers/base/arch_topology.c
+> > +++ b/drivers/base/arch_topology.c
+> > @@ -628,6 +628,14 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
+> >  			core_mask = &cpu_topology[cpu].llc_sibling;
+> >  	}
+> >  
+> > +	/*
+> > +	 * For systems with no shared cpu-side LLC but with clusters defined,
+> > +	 * extend core_mask to cluster_siblings. The sched domain builder will
+> > +	 * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
+> > +	 */
+> > +	if (cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
+> > +		core_mask = &cpu_topology[cpu].cluster_sibling;
+> > +
 > 
-> This is more straightforward and saves a few lines of code.
+> Sudeep, Vincent, are you happy with this now?
 > 
-> While at it, remove a useless test in devm_backlight_release(). 'data' is
-> known to be not NULL when this function is called.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+It looks good to me. Since I don't have much knowledge on scheduler, I asked
+Dietmar to have a look as well just in case if I am missing any other impact.
+For now,
 
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
 
-Daniel.
+--
+Regards,
+Sudeep
