@@ -2,109 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346629AbiCHLol (ORCPT
+        id S1346716AbiCHLoz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:44:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37884 "EHLO
+        Tue, 8 Mar 2022 06:44:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346686AbiCHLoI (ORCPT
+        with ESMTP id S1346645AbiCHLoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:44:08 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F0636F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:43:06 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id c11so3819493pgu.11
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 03:43:06 -0800 (PST)
+        Tue, 8 Mar 2022 06:44:22 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E282B13E97;
+        Tue,  8 Mar 2022 03:43:15 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id l1-20020a05600c4f0100b00389645443d2so1301102wmq.2;
+        Tue, 08 Mar 2022 03:43:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TVm1wzeU0y3JZ7p5wnCxhldPZJzxYO3AZTbbV3y/P8c=;
-        b=ZBYHDJThFStU0rnWXfOROGQPKtGJeftM5/haZPk61cjnmK0NY2ff0+YovK1r93UWff
-         nBW833vQD2RsHWbqNHCMMH/AR77E5Lz1jfEMB8E4OykBIZbzj4eME/lV7KBnbCGJmB3o
-         0ep1QuphjEuW4XuET2NnIioVZAUeoCb+619lNATjkhEk1N0C+T2LLYxFI7ZalNPf4m5Q
-         IJLZAlX4exdqdRPhg0aVFWjVTuRpUlW+IBu8+WTxuxePp/VozSMNG1oK1jX4ep9ffVI9
-         Eq5T+FXzZAHxLhAiG45Kf6F3Z0/1rdRqP3SAMRf2mgRNWz+tDISTm4WhCPfv6ew8QUTz
-         30og==
+        h=from:to:cc:subject:date:message-id;
+        bh=BD9aL/dk972NeBQAccfFJoKozgGlibcPRxYjlFBN04k=;
+        b=HKZd76acvxhuP1BW/RDw2oDbrADj7nvmM0wYNYDB9G0smXzeJyRazrshA1yYwkV0Io
+         jPRxoZHjqxwNrFCPAhOs87KulQ168F2ZIJA0dL0sDnelfLoaryk3z7sTS7+YsqQU77Aj
+         RrYMwXqAaQ0bgXsewEEmdgdnW1oGu6SFAVfbLViM4ZT+exZGNVslMW+zPMmjv2Q2rnXr
+         IZggZAqSVMT2pQSJja8yxysD17kcg9XkJwV03PCpHN8O0ICv8z/xpxlK9/qG2Jg/kqf5
+         yTPUZzMSfAewV+2GHkRYkqYyI5WnWSX86TeX80dVyDwy0d1Svc9BAN66Z4xh5ccw8RM1
+         RwnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TVm1wzeU0y3JZ7p5wnCxhldPZJzxYO3AZTbbV3y/P8c=;
-        b=IwKndD8qeV1c7CEXWZH+QhxQcUvv7P2PWKfch8nfFnMt5rTqNmSDkhKkKaPxh9rsmq
-         YBBO1oNoA1r2ktw0IVPn5YfaAsG5WJB1BtYsPk535v2QZiYHomvJYXIpAiVBr86fYbRP
-         TYHh5snlFq4SmYYFYjqP0EXMXwLbMJvT5ofLhnk/xH8ZEQCDG+EgA/BoyhJswXaF8J3W
-         8VVfdCp+z0kOMoxFZfU6ZMzbB4oEz+fynf2mwUhbisKF7SztB0Vi8G8QZxmv7kIbQTR9
-         CQV8/YO85lwpGB/1NrUHnVHwIvMqqLznOtp+0PEJtOoXAza5aDq4z6F4l/+kPv6vuwBk
-         mpOA==
-X-Gm-Message-State: AOAM531xM8ILEsDlVG3I0ISgRNCFsOzXeAV4MyARohTvGRXq1bsU1gFn
-        +OixqR5Vc4DtidQmlXYGldE=
-X-Google-Smtp-Source: ABdhPJyW3GhA94fMa4pOEEGPq4uBk6v8GzY3MUV4sfCOd9eI1msJ0Vi83xfnoaqt6lifAHrKbS/ECg==
-X-Received: by 2002:a63:ec11:0:b0:378:5331:7f18 with SMTP id j17-20020a63ec11000000b0037853317f18mr13695809pgh.577.1646739785937;
-        Tue, 08 Mar 2022 03:43:05 -0800 (PST)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id i2-20020a17090ac40200b001bd0e552d27sm2578285pjt.11.2022.03.08.03.43.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BD9aL/dk972NeBQAccfFJoKozgGlibcPRxYjlFBN04k=;
+        b=BdbacgkmaGF2vO7VogZGveKGnEffK4IYaQujqOe5BG58pOHQ4gNrSJJWirNr8fP7Zt
+         3hO5uMQLec5jp6Mw2nipI4ZhZobDJ/oJ2yug7zEJ2Y/JZOHqyOXWOPpUL3O6ilfxjeLc
+         D1K3BBxGLYsNXeMQJ4JLYDLEz0t6uD1ZgJXJ7vDBJU1NARfFX9Z1UevzOMb2d4uD70RQ
+         WJpQfkZA1wbr4P88FpYZospcxPnmoRWTqO9DZ4IC8FrGjpLjhRSBf/PhIzBhgbeygHYW
+         2FNDfLxUmQZ5TXmKe0pA01friRXDWO0AE6InOA1PX1lGulWiXSJtIkNCbhUoYk6mZR2V
+         1S3g==
+X-Gm-Message-State: AOAM533L/ATY3KREn3brt7yAOIFAKzXu2Krw0zhGEfKChxK4miDx9Y8r
+        /+3eGDhswNG1fK8KDarVw98=
+X-Google-Smtp-Source: ABdhPJxHS9QZHXHiJbg8LL9woOu+Y9wLufJJ6DmZ5EISoQGuEpYGXYx9AX/nNTbePJ25NMWVKuvkpQ==
+X-Received: by 2002:a1c:4489:0:b0:389:8b0f:9a67 with SMTP id r131-20020a1c4489000000b003898b0f9a67mr3202144wma.40.1646739794391;
+        Tue, 08 Mar 2022 03:43:14 -0800 (PST)
+Received: from felia.fritz.box (200116b82626c9000cc91df728b27ead.dip.versatel-1u1.de. [2001:16b8:2626:c900:cc9:1df7:28b2:7ead])
+        by smtp.gmail.com with ESMTPSA id p11-20020adf9d8b000000b001f063deef80sm11773169wre.86.2022.03.08.03.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 03:43:05 -0800 (PST)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org, 42.hyeyoo@gmail.com
-Subject: [RFC PATCH v1 15/15] mm/sl[au]b: check if large object is valid in __ksize()
-Date:   Tue,  8 Mar 2022 11:41:42 +0000
-Message-Id: <20220308114142.1744229-16-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
-References: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 08 Mar 2022 03:43:14 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Bin Liu <bin.liu@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH RFC] MAINTAINERS: drop unreachable contact for MEDIATEK JPEG DRIVER
+Date:   Tue,  8 Mar 2022 12:43:00 +0100
+Message-Id: <20220308114300.12502-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__ksize() returns size of objects allocated from slab allocator.
-When invalid object is passed to __ksize(), returning zero
-prevents further memory corruption and makes caller be able to
-check if there is an error.
+After sending a patch to Rick Chang, the mediatek mail server responded:
 
-If address of large object is not beginning of folio or size of
-the folio is too small, it must be invalid. Return zero in such cases.
+  ** Message not delivered **
 
-Suggested-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+  Your message couldn't be delivered to rick.chang@mediatek.com because
+  the remote server is misconfigured. See technical details below for more
+  information.
+
+  The response from the remote server was:
+  550 Relaying mail to rick.chang@mediatek.com is not allowed
+
+So, drop Rick Chang from the MEDIATEK JPEG DRIVER section.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- mm/slab_common.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 07ed382ed5a9..acb1d27fc9e3 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -986,8 +986,12 @@ size_t __ksize(const void *object)
+If Rick Chang is gone, pick this patch.
+
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8c7e40e1215e..02a75dd04187 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12334,7 +12334,6 @@ F:	drivers/iommu/mtk_iommu*
+ F:	include/dt-bindings/memory/mt*-port.h
  
- 	folio = virt_to_folio(object);
- 
--	if (unlikely(!folio_test_slab(folio)))
-+	if (unlikely(!folio_test_slab(folio))) {
-+		if (object != folio_address(folio) ||
-+				folio_size(folio) <= KMALLOC_MAX_CACHE_SIZE)
-+			return 0;
- 		return folio_size(folio);
-+	}
- 
- 	return slab_ksize(folio_slab(folio)->slab_cache);
- }
+ MEDIATEK JPEG DRIVER
+-M:	Rick Chang <rick.chang@mediatek.com>
+ M:	Bin Liu <bin.liu@mediatek.com>
+ S:	Supported
+ F:	Documentation/devicetree/bindings/media/mediatek-jpeg-*.yaml
 -- 
-2.33.1
+2.17.1
 
