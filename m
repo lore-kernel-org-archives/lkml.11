@@ -2,297 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:11:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E4D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346370AbiCHLL5 (ORCPT
+        id S1346396AbiCHLMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
+        Tue, 8 Mar 2022 06:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346350AbiCHLLx (ORCPT
+        with ESMTP id S1346336AbiCHLLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:11:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5124946164;
-        Tue,  8 Mar 2022 03:10:54 -0800 (PST)
+        Tue, 8 Mar 2022 06:11:55 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC79C46152;
+        Tue,  8 Mar 2022 03:10:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD74461610;
-        Tue,  8 Mar 2022 11:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC7DC340EB;
-        Tue,  8 Mar 2022 11:10:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 05BA1CE1389;
+        Tue,  8 Mar 2022 11:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8DB9C340EC;
+        Tue,  8 Mar 2022 11:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646737853;
-        bh=33xTofm5tNJfVFvrdxFoHym3nFCdtF5+sqI7opLuv3M=;
+        bh=WFgarrj7YVpHc+BKJTPJxYeEYbi76FtZ0eeCRFRqG1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJdiVrA7Mqe36ZRoZERoqd3h/NxYvFBaLx0b53hKobKFtji4ZErxhGe7KjBwF5IMt
-         PtOV2KwTZZpSQS6unB/5KOX/LU7xm+bbm5sobVEDhspTHtej4TEcZ3Hq9ke0dXjQ5T
-         eKHxBEIpjX+iVziufdWai8rxjRfl7sOvl7JGraadQvsCjQTIfL4LkZtj7e/5T5ruDW
-         5HjCHAUWjIgChjNZAwFrkj3akmrsu/ioOBCAfMP3B7o0K6tIXwhwuwx8r6XTFfmJxy
-         1NAJcuUA702XU6rctbfoL5vMC4C8LHO24hV5DVKNFA0kDEm2Gl8EmTK9m8eqYcwl38
-         Nf1KefEMSjSSg==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v10 12/12] fprobe: Add a selftest for fprobe
-Date:   Tue,  8 Mar 2022 20:10:48 +0900
-Message-Id: <164673784786.1984170.244480726272055433.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-User-Agent: StGit/0.19
+        b=oxjmeSyvoQwzOY1Cm834gXsI/z3vB2GRWDWv4fICOaZRvtKV1YcIlNe1emEzAdkhS
+         E649NWxLq3ZqXaiRBSUunEUzFZNlIPck6S2ntQlYQUoslsZnbpfztS6SrQPgtu8VfY
+         YrRJZGd6V/leH8pTIaRSCJ+3G7xN+KtL1ciD4VUVHBFP8ZU8J8jvxfw5X0IZyuiSaD
+         gfj6bp2Y2HvnlPF4SuY0TmAxY3gsn/Ep09VWfy/BsOBV1ETJoXB/P3CyMJaym+HDSQ
+         4KTARfatOkIOiUQFeWszFgi79eFpVOaVyKRKaAsctGU01O0iqqbhs31hhHfLrxAOoR
+         0Wm6FffB1QTRQ==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-sgx@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH RFC v2 1/3] mm: Add f_op->populate() for populating memory outside of core mm
+Date:   Tue,  8 Mar 2022 13:10:01 +0200
+Message-Id: <20220308111003.257351-2-jarkko@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220308111003.257351-1-jarkko@kernel.org>
+References: <20220308111003.257351-1-jarkko@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a KUnit based selftest for fprobe interface.
+SGX memory is managed outside the core mm.  It doesn't have a 'struct
+page' and get_user_pages() doesn't work on it.  Its VMAs are marked with
+VM_IO.  So, none of the existing methods for avoiding page faults work
+on SGX memory.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v9:
-  - Rename fprobe_target* to fprobe_selftest_target*.
-  - Find the correct expected ip by ftrace_location_range().
-  - Since the ftrace_location_range() is not exposed to module, make
-    this test only for embedded.
-  - Add entry only test.
-  - Reset the fprobe structure before reuse it.
----
- lib/Kconfig.debug |   12 ++++
- lib/Makefile      |    2 +
- lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 188 insertions(+)
- create mode 100644 lib/test_fprobe.c
+Add f_op->populate() to overcome this issue:
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 14b89aa37c5c..ffc469a12afc 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
+int (*populate)(struct file *, unsigned long start, unsigned long end);
+
+Then in populate_vma_page_range(), allow it to be used in the place of
+get_user_pages() for memory that falls outside of its scope.
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+---
+v4:
+* Reimplement based on Dave's suggestion:
+  https://lore.kernel.org/linux-sgx/c3083144-bfc1-3260-164c-e59b2d110df8@intel.com/
+* Copy the text from the suggestion as part of the commit message (and
+  cover letter).
+v3:
+-       if (!ret && do_populate && file->f_op->populate)
++       if (!ret && do_populate && file->f_op->populate &&
++           !!(vma->vm_flags & (VM_IO | VM_PFNMAP)))
+(reported by Matthew Wilcox)
+v2:
+-       if (!ret && do_populate)
++       if (!ret && do_populate && file->f_op->populate)
+(reported by Jan Harkes)
+ include/linux/fs.h | 1 +
+ mm/gup.c           | 9 +++++----
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index e2d892b201b0..54151af88ee0 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1993,6 +1993,7 @@ struct file_operations {
+ 	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
+ 	long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
+ 	int (*mmap) (struct file *, struct vm_area_struct *);
++	int (*populate)(struct file *, unsigned long start, unsigned long end);
+ 	unsigned long mmap_supported_flags;
+ 	int (*open) (struct inode *, struct file *);
+ 	int (*flush) (struct file *, fl_owner_t id);
+diff --git a/mm/gup.c b/mm/gup.c
+index a9d4d724aef7..66736a188a9c 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1519,8 +1519,11 @@ long populate_vma_page_range(struct vm_area_struct *vma,
+ 	 * We made sure addr is within a VMA, so the following will
+ 	 * not result in a stack expansion that recurses back here.
+ 	 */
+-	return __get_user_pages(mm, start, nr_pages, gup_flags,
+-				NULL, NULL, locked);
++	if ((vma->vm_flags & (VM_IO | VM_PFNMAP)) && vma->vm_file->f_op->populate)
++		return vma->vm_file->f_op->populate(vma->vm_file, start, end);
++	else
++		return __get_user_pages(mm, start, nr_pages, gup_flags,
++					NULL, NULL, locked);
+ }
  
- 	  Say N if you are unsure.
- 
-+config FPROBE_SANITY_TEST
-+	bool "Self test for fprobe"
-+	depends on DEBUG_KERNEL
-+	depends on FPROBE
-+	depends on KUNIT
-+	help
-+	  This option will enable testing the fprobe when the system boot.
-+	  A series of tests are made to verify that the fprobe is functioning
-+	  properly.
-+
-+	  Say N if you are unsure.
-+
- config BACKTRACE_SELF_TEST
- 	tristate "Self test for the backtrace code"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index 300f569c626b..154008764b16 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
- obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-+CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-+obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-new file mode 100644
-index 000000000000..ed70637a2ffa
---- /dev/null
-+++ b/lib/test_fprobe.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * test_fprobe.c - simple sanity test for fprobe
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/fprobe.h>
-+#include <linux/random.h>
-+#include <kunit/test.h>
-+
-+#define div_factor 3
-+
-+static struct kunit *current_test;
-+
-+static u32 rand1, entry_val, exit_val;
-+
-+/* Use indirect calls to avoid inlining the target functions */
-+static u32 (*target)(u32 value);
-+static u32 (*target2)(u32 value);
-+static unsigned long target_ip;
-+static unsigned long target2_ip;
-+
-+static noinline u32 fprobe_selftest_target(u32 value)
-+{
-+	return (value / div_factor);
-+}
-+
-+static noinline u32 fprobe_selftest_target2(u32 value)
-+{
-+	return (value / div_factor) + 1;
-+}
-+
-+static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-+	if (ip != target_ip)
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+	entry_val = (rand1 / div_factor);
-+}
-+
-+static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long ret = regs_return_value(regs);
-+
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	if (ip != target_ip) {
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-+	} else
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-+	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-+	exit_val = entry_val + div_factor;
-+}
-+
-+/* Test entry only (no rethook) */
-+static void test_fprobe_entry(struct kunit *test)
-+{
-+	struct fprobe fp_entry = {
-+		.entry_handler = fp_entry_handler,
-+	};
-+
-+	current_test = test;
-+
-+	/* Before register, unregister should be failed. */
-+	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-+}
-+
-+static void test_fprobe(struct kunit *test)
-+{
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static void test_fprobe_syms(struct kunit *test)
-+{
-+	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static unsigned long get_ftrace_location(void *func)
-+{
-+	unsigned long size, addr = (unsigned long)func;
-+
-+	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-+		return 0;
-+
-+	return ftrace_location_range(addr, addr + size - 1);
-+}
-+
-+static int fprobe_test_init(struct kunit *test)
-+{
-+	do {
-+		rand1 = prandom_u32();
-+	} while (rand1 <= div_factor);
-+
-+	target = fprobe_selftest_target;
-+	target2 = fprobe_selftest_target2;
-+	target_ip = get_ftrace_location(target);
-+	target2_ip = get_ftrace_location(target2);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case fprobe_testcases[] = {
-+	KUNIT_CASE(test_fprobe_entry),
-+	KUNIT_CASE(test_fprobe),
-+	KUNIT_CASE(test_fprobe_syms),
-+	{}
-+};
-+
-+static struct kunit_suite fprobe_test_suite = {
-+	.name = "fprobe_test",
-+	.init = fprobe_test_init,
-+	.test_cases = fprobe_testcases,
-+};
-+
-+kunit_test_suites(&fprobe_test_suite);
-+
-+MODULE_LICENSE("GPL");
+ /*
+@@ -1619,8 +1622,6 @@ int __mm_populate(unsigned long start, unsigned long len, int ignore_errors)
+ 		 * range with the first VMA. Also, skip undesirable VMA types.
+ 		 */
+ 		nend = min(end, vma->vm_end);
+-		if (vma->vm_flags & (VM_IO | VM_PFNMAP))
+-			continue;
+ 		if (nstart < vma->vm_start)
+ 			nstart = vma->vm_start;
+ 		/*
+-- 
+2.35.1
 
