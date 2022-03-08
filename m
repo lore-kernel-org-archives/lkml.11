@@ -2,267 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D25C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BEFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348920AbiCHP6x (ORCPT
+        id S1348121AbiCHP75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:58:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
+        Tue, 8 Mar 2022 10:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348071AbiCHP4K (ORCPT
+        with ESMTP id S1348740AbiCHP6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:10 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B60F4F9C3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=ghZq/fRkvyuABkJueyMa0lboE5tllYhuGIiBxq7FbqI=; b=kKPTVTyZTsLu3fR0dpYKerDGrn
-        GJoV9/OHn4Wg3KwK4LbsmvTz4ldr6vXYvfTDc+c8ZeQRzoCbQx3HEsXxJi8DZdffyI79H24vd1DXL
-        sBmwrzj+XLUccjPmqeF0XfjwFhrRQYoEDV1n+58+32SrA7V9bWGPM4N14beJQqsguhAzDLUC+Gs7o
-        QcgWhqdQsoT0OQ0Wfksmt5/Cf1sRY+22LnDrBMXmj90EN6u8rT4XssU3O2Vv88P4iZwd3z01X92oV
-        YYy5Y99wGtoBSJeHXQX5A+RQvJbY+VriJAvWpxLpidZmvua7DhQ40z28cfljYrGi2JXtVmMwmGBQx
-        GiDXY34A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GIvG-Qk; Tue, 08 Mar 2022 15:54:42 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 447A5302D52;
-        Tue,  8 Mar 2022 16:54:40 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 87E302B561939; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.877758523@infradead.org>
-User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:40 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 29/45] x86/ibt: Annotate text references
-References: <20220308153011.021123062@infradead.org>
+        Tue, 8 Mar 2022 10:58:30 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DDE50455
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:57:12 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id z30so25833938ybi.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 07:57:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ivli1yNVzu/BVQSOyUimOD2b+2+dda9CCsU8uGTbCP0=;
+        b=p2+11DZVCYoklN8jXeZDOZDTzL2R4ogOloB6z+XmLWAjmm/2RoT2clIoFp5OCU4Zee
+         IjK5hIxKDmYG6Dp7KvfWlYi070k9IKnbgXjc9mwswDkhQW/8TdlrWozMZtqeEyV8JYg0
+         xABORydvDRXWd6xLMTAlI8JY0TBDAIVqAYBvMwOLrEmaEIr0OEH1RLrsjboQxYRYDE+F
+         4Mncch8obm8tcpqzgFF5Xg9+5EwvtAsdoJwDJ0l//Yg/3Nan2cwnhuz4BZxqKulMT/Wv
+         PuRk52VaragZ0JSXD1FOXsHtR3AMLmnq2eDturyzipCPSfRKCcQD9QHr20NT+0Yc/vDT
+         lh5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ivli1yNVzu/BVQSOyUimOD2b+2+dda9CCsU8uGTbCP0=;
+        b=bjpK4RNlUMnqT/pmRQKb46CAsUnXOjiVdElmBMTucaKFfdz5xFDtUNdAKiY4SMUmlo
+         yieNaChHzwK/JDuXVisVMEwmMeopiVEyQ5Vb+IOrylRvjZdmK4vpeu+YcPIXXcJo448S
+         SSwk2GLymifI/Vl+7fhoxnHFK82BmtXCz9N08RODWVhIkOUFz+u1N6rD5u9nICgm8u8R
+         lG/qYICbmFlnIVnqD7qnpZ0HItWi/cqEy1Y4WeKz9dHsPggtOBHKHhBXUl7KKUkAANl4
+         UQxHLfXRruHmDOQGYIppCGvcIqTeFKv4Tf6H6LWtycYzw+iIzEKC1BGQwNW/zHAToECf
+         ewAQ==
+X-Gm-Message-State: AOAM533a9kt3MCheDrt1SsZYI/zTlKpYjMcX0bFnpfTZVJ0L7+Y4rgpy
+        zenEDOP8SkIOYpKvxBy0w25YUx30JfsvIOaHZJTbLA==
+X-Google-Smtp-Source: ABdhPJx/rcTLADrrZkKd1h2AAzSOPSiR8P/0H3/GDYIp9prodoFVvS4LRsIiR8GdqldgX0UsTGU5Tek4hH3cKRkUS8M=
+X-Received: by 2002:a25:338b:0:b0:610:a221:af23 with SMTP id
+ z133-20020a25338b000000b00610a221af23mr12964910ybz.474.1646755031807; Tue, 08
+ Mar 2022 07:57:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220307091634.434478485@linuxfoundation.org>
+In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 8 Mar 2022 21:27:00 +0530
+Message-ID: <CA+G9fYs3GP9oMpadARzT6b8iFj69Qs0wT5XbFzbd7wK=_dXe+Q@mail.gmail.com>
+Subject: Re: [PATCH 4.9 00/32] 4.9.305-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Annotate away some of the generic code references. This is things
-where we take the address of a symbol for exception handling or return
-addresses (eg. context switch).
+On Mon, 7 Mar 2022 at 14:50, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.9.305 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.9.305-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.9.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/entry/entry_64.S            |    6 ++++++
- arch/x86/entry/entry_64_compat.S     |    1 +
- arch/x86/kernel/alternative.c        |   10 ++++++++--
- arch/x86/kernel/head_64.S            |    4 ++++
- arch/x86/kernel/kprobes/core.c       |    1 +
- arch/x86/kernel/relocate_kernel_64.S |    2 ++
- arch/x86/lib/error-inject.c          |    2 ++
- arch/x86/lib/retpoline.S             |    1 +
- 8 files changed, 25 insertions(+), 2 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -277,6 +277,7 @@ SYM_FUNC_END(__switch_to_asm)
- .pushsection .text, "ax"
- SYM_CODE_START(ret_from_fork)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR // copy_thread
- 	movq	%rax, %rdi
- 	call	schedule_tail			/* rdi: 'prev' task parameter */
- 
-@@ -569,6 +570,7 @@ SYM_CODE_END(\asmsym)
- 	.align 16
- 	.globl __irqentry_text_end
- __irqentry_text_end:
-+	ANNOTATE_NOENDBR
- 
- SYM_CODE_START_LOCAL(common_interrupt_return)
- SYM_INNER_LABEL(swapgs_restore_regs_and_return_to_usermode, SYM_L_GLOBAL)
-@@ -650,6 +652,7 @@ SYM_INNER_LABEL(early_xen_iret_patch, SY
- #endif
- 
- SYM_INNER_LABEL(native_irq_return_iret, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR // exc_double_fault
- 	/*
- 	 * This may fault.  Non-paranoid faults on return to userspace are
- 	 * handled by fixup_bad_iret.  These include #SS, #GP, and #NP.
-@@ -744,6 +747,7 @@ SYM_FUNC_START(asm_load_gs_index)
- 	FRAME_BEGIN
- 	swapgs
- .Lgs_change:
-+	ANNOTATE_NOENDBR // error_entry
- 	movl	%edi, %gs
- 2:	ALTERNATIVE "", "mfence", X86_BUG_SWAPGS_FENCE
- 	swapgs
-@@ -1322,6 +1326,7 @@ SYM_CODE_START(asm_exc_nmi)
- #endif
- 
- repeat_nmi:
-+	ANNOTATE_NOENDBR // this code
- 	/*
- 	 * If there was a nested NMI, the first NMI's iret will return
- 	 * here. But NMIs are still enabled and we can take another
-@@ -1350,6 +1355,7 @@ SYM_CODE_START(asm_exc_nmi)
- 	.endr
- 	subq	$(5*8), %rsp
- end_repeat_nmi:
-+	ANNOTATE_NOENDBR // this code
- 
- 	/*
- 	 * Everything below this point can be preempted by a nested NMI.
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -148,6 +148,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
- 	popfq
- 	jmp	.Lsysenter_flags_fixed
- SYM_INNER_LABEL(__end_entry_SYSENTER_compat, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR // is_sysenter_singlestep
- SYM_CODE_END(entry_SYSENTER_compat)
- 
- /*
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -713,6 +713,7 @@ asm (
- "	.pushsection	.init.text, \"ax\", @progbits\n"
- "	.type		int3_magic, @function\n"
- "int3_magic:\n"
-+	ANNOTATE_NOENDBR
- "	movl	$1, (%" _ASM_ARG1 ")\n"
- 	ASM_RET
- "	.size		int3_magic, .-int3_magic\n"
-@@ -724,16 +725,19 @@ extern void int3_selftest_ip(void); /* d
- static int __init
- int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
- {
-+	unsigned long selftest = (unsigned long)&int3_selftest_ip;
- 	struct die_args *args = data;
- 	struct pt_regs *regs = args->regs;
- 
-+	OPTIMIZER_HIDE_VAR(selftest);
-+
- 	if (!regs || user_mode(regs))
- 		return NOTIFY_DONE;
- 
- 	if (val != DIE_INT3)
- 		return NOTIFY_DONE;
- 
--	if (regs->ip - INT3_INSN_SIZE != (unsigned long)&int3_selftest_ip)
-+	if (regs->ip - INT3_INSN_SIZE != selftest)
- 		return NOTIFY_DONE;
- 
- 	int3_emulate_call(regs, (unsigned long)&int3_magic);
-@@ -757,7 +761,9 @@ static void __init int3_selftest(void)
- 	 * then trigger the INT3, padded with NOPs to match a CALL instruction
- 	 * length.
- 	 */
--	asm volatile ("int3_selftest_ip: int3; nop; nop; nop; nop\n\t"
-+	asm volatile ("int3_selftest_ip:\n\t"
-+		      ANNOTATE_NOENDBR
-+		      "    int3; nop; nop; nop; nop\n\t"
- 		      : ASM_CALL_CONSTRAINT
- 		      : __ASM_SEL_RAW(a, D) (&val)
- 		      : "memory");
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -99,6 +99,7 @@ SYM_CODE_END(startup_64)
- 
- SYM_CODE_START(secondary_startup_64)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
- 	/*
- 	 * At this point the CPU runs in 64bit mode CS.L = 1 CS.D = 0,
- 	 * and someone has loaded a mapped page table.
-@@ -127,6 +128,7 @@ SYM_CODE_START(secondary_startup_64)
- 	 */
- SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
- 
- 	/*
- 	 * Retrieve the modifier (SME encryption mask if SME is active) to be
-@@ -192,6 +194,7 @@ SYM_INNER_LABEL(secondary_startup_64_no_
- 	jmp	*%rax
- 1:
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR // above
- 
- 	/*
- 	 * We must switch to a new descriptor in kernel space for the GDT
-@@ -299,6 +302,7 @@ SYM_INNER_LABEL(secondary_startup_64_no_
- 	pushq	%rax		# target address in negative space
- 	lretq
- .Lafter_lret:
-+	ANNOTATE_NOENDBR
- SYM_CODE_END(secondary_startup_64)
- 
- #include "verify_cpu.S"
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -1033,6 +1033,7 @@ asm(
- 	".type __kretprobe_trampoline, @function\n"
- 	"__kretprobe_trampoline:\n"
- #ifdef CONFIG_X86_64
-+	ANNOTATE_NOENDBR
- 	/* Push a fake return address to tell the unwinder it's a kretprobe. */
- 	"	pushq $__kretprobe_trampoline\n"
- 	UNWIND_HINT_FUNC
---- a/arch/x86/kernel/relocate_kernel_64.S
-+++ b/arch/x86/kernel/relocate_kernel_64.S
-@@ -42,6 +42,7 @@
- 	.code64
- SYM_CODE_START_NOALIGN(relocate_kernel)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
- 	/*
- 	 * %rdi indirection_page
- 	 * %rsi page_list
-@@ -223,6 +224,7 @@ SYM_CODE_END(identity_mapped)
- 
- SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR // RET target, above
- 	movq	RSP(%r8), %rsp
- 	movq	CR4(%r8), %rax
- 	movq	%rax, %cr4
---- a/arch/x86/lib/error-inject.c
-+++ b/arch/x86/lib/error-inject.c
-@@ -3,6 +3,7 @@
- #include <linux/linkage.h>
- #include <linux/error-injection.h>
- #include <linux/kprobes.h>
-+#include <linux/objtool.h>
- 
- asmlinkage void just_return_func(void);
- 
-@@ -11,6 +12,7 @@ asm(
- 	".type just_return_func, @function\n"
- 	".globl just_return_func\n"
- 	"just_return_func:\n"
-+		ANNOTATE_NOENDBR
- 		ASM_RET
- 	".size just_return_func, .-just_return_func\n"
- );
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -55,6 +55,7 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
- 
- 	.align RETPOLINE_THUNK_SIZE
- SYM_CODE_START(__x86_indirect_thunk_array)
-+	ANNOTATE_NOENDBR // apply_retpolines
- 
- #define GEN(reg) THUNK reg
- #include <asm/GEN-for-each-reg.h>
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 4.9.305-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.9.y
+* git commit: d3c7ac3bc77206ec467f48bf73c25596bcb22bc8
+* git describe: v4.9.304-34-gd3c7ac3bc772
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
+04-34-gd3c7ac3bc772
 
+## Test Regressions (compared to v4.9.304-28-gdc7cbaf71913)
+No test regressions found.
+
+## Metric Regressions (compared to v4.9.304-28-gdc7cbaf71913)
+No metric regressions found.
+
+## Test Fixes (compared to v4.9.304-28-gdc7cbaf71913)
+No test fixes found.
+
+## Metric Fixes (compared to v4.9.304-28-gdc7cbaf71913)
+No metric fixes found.
+
+## Test result summary
+total: 80795, pass: 63818, fail: 895, skip: 13595, xfail: 2487
+
+## Build Summary
+* arm: 254 total, 238 passed, 16 failed
+* arm64: 32 total, 32 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 22 total, 22 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 31 total, 31 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
