@@ -2,57 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED615C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55292C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbiCIBOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
+        id S230373AbiCIBOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231848AbiCIBNs (ORCPT
+        with ESMTP id S231887AbiCIBNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:13:48 -0500
-Received: from mail-oi1-x249.google.com (mail-oi1-x249.google.com [IPv6:2607:f8b0:4864:20::249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E6D15AF3E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:58:05 -0800 (PST)
-Received: by mail-oi1-x249.google.com with SMTP id x15-20020a54400f000000b002d9be4bd8a2so716071oie.20
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:58:05 -0800 (PST)
+        Tue, 8 Mar 2022 20:13:51 -0500
+Received: from mail-oi1-x24a.google.com (mail-oi1-x24a.google.com [IPv6:2607:f8b0:4864:20::24a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BA714A04F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:58:12 -0800 (PST)
+Received: by mail-oi1-x24a.google.com with SMTP id g5-20020a0568080dc500b002d73eb5c37fso728032oic.16
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:58:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=Ho7f/NeezaNx/+VE1xEC1BmmHhvU/tXr7U8nm19Ny/8=;
-        b=Kug63PWFYJQb+IwWw8YfG9c5gyFA/+YkOMbdO97VJcnY3F7XuGvLqV1qb6eKsstYC6
-         fu8W4sy6PFGBz9UK+746zgHTSZVNYleA69c+Vq1TWk4/TU0EuK497e70zIiIOamehA0h
-         Gr8W0c+sSHve+4eRxqrR5ljYMTvqacpM74fUU6qQ0A3IGEfMNnRqsozICggpkVL7/dY2
-         AvgPNCEIzB1Ja/2nNKG0O2O9vsy6qG9DZgHVDhhRhmUleDNdAcGGbCYTbG8epYqydwO0
-         gs5Tif4RsqE8crhUUYHOSkRUeNWcEXmkJs1SO+Rol7UpeJyHXqzn/uBhfzxuF7jaIr8/
-         O7WA==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=6zkzNRV8wmPwhORmgYz0bc4ZQgL4U+7vsiCzk+iuvWs=;
+        b=HecYxFCrzsSrT1ldrYrS/mqRTgeCRLX0mTSkr547ds+KVXMCPDj8FjwHvwrS0QbkKp
+         53K8gYoyKVjx2ta9dMsCnPCnjjcS+sJSN+nJnuGLjUA1qzVP25IVhUWTLL4hOt19EV0a
+         Wb/ioilk+lpb78t1Vil4kflzQvojy+hB1uDVQwpzQtSk9qX+565tkGSjHRQj9YlRjnCO
+         swSrGrxiyZod15e/8iDR28Z///wAAz6IVEMADv7K3jcw5P5KTaHdlpGlPnIETNZaBVmP
+         qcn/pJyvJl8zKuj2zBQEOmFp72rh+vX4JA062zjQEn4YVp02abvO+UBy3MnV7T5bc0QK
+         WnTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=Ho7f/NeezaNx/+VE1xEC1BmmHhvU/tXr7U8nm19Ny/8=;
-        b=t4HvKu842SHGXwB26IKqe3oe5xBoMs10n6Z+RXIIWO5W1t6Pi0Nh0LD5iWhEYUREfI
-         +xltbxWZDQcXaz082uvV+Lj1DQn5oSGS1pdiovUMrNB8dito528HR/PkULZFe7K32gsc
-         KtE9NqPBu2/81SKMb8E8oW4rgA5rcUv/J8Tkj38zHzX3GehsLBbmcEZdd8pS1rNbqu0B
-         ERq7ShRRfWBDLpEIxwcMig3GYmR7AX+uj4DXAypDDUXRxg2qSjzMwSf3ZCYn9W/XM+Fu
-         7/sdiiZ+VBGgd522sVpxiFUiRFRKWV/BTWbOKmQI69nMlA6SvyuOXDavUKxSMjKD1XBp
-         yBAw==
-X-Gm-Message-State: AOAM533elqznhSBJdwloDzuFSZsg1/wHT3L5kHcwkImIe56PnYkMrchu
-        k0fTPo3S7R5o1cIY2I4q0HkMvvViFBs=
-X-Google-Smtp-Source: ABdhPJzM4xXQoy+k+mVLsuJXY9MtpV9RL7jteuvpZLDCBS3uEqNMbJUnHqoKnZ3hL+Nd69OrayRE4a4XWJk=
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=6zkzNRV8wmPwhORmgYz0bc4ZQgL4U+7vsiCzk+iuvWs=;
+        b=b3ZT+RoT6ztLd5DrPJsV7meJ+SPu4XGbXrG3dFgBUC9mcskE45fv9jGg6NVEuJCRA0
+         f52g4z+crKzx4L2vCi8N3TenOrECMh/WdE8p2LCb/EwT1E7iF4Lle+pLMsYxAryTBdoW
+         aqAR7/GpBVNFngjdJMSp78Tlkx08+Y+kzpkvLKvXQ83XInF7K7QuRWF5ZNe4jNY647Px
+         dLwpSxBwvLxVwlgbSFTFpu/LuIK/N/uwF/GezHIUNGd/r7Zx5bmUdmdD2F6IcfCB+dKE
+         3qRWA8jFTl4wfveB0jhPQgKvBOicRkHIOx35xOcJqx27nCNZkSy8Osw/+fdPcd3U5t+k
+         i3jw==
+X-Gm-Message-State: AOAM532ysXyaiHzhCaLAlR7jEEqtPxoAibM8xRNiEl+l+EFaolwXv9yZ
+        BPkGArdK6Wf65bDaqArZueEhkPM2Y34=
+X-Google-Smtp-Source: ABdhPJzjZjd/upjgmScTySg0XOtEQpia+ZlmG/2uZUwC3R3uquZ7eHu04FnC+kA+5D1s7AiDSd4GYFzqLHc=
 X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:57a6:54a6:aad1:c0a8])
- (user=yuzhao job=sendgmr) by 2002:a05:6808:1455:b0:2d9:a01a:4bbd with SMTP id
- x21-20020a056808145500b002d9a01a4bbdmr4227260oiv.228.1646783316883; Tue, 08
- Mar 2022 15:48:36 -0800 (PST)
-Date:   Tue,  8 Mar 2022 16:47:19 -0700
-In-Reply-To: <20220308234723.3834941-1-yuzhao@google.com>
-Message-Id: <20220308234723.3834941-10-yuzhao@google.com>
+ (user=yuzhao job=sendgmr) by 2002:a25:3bd7:0:b0:628:f47a:f156 with SMTP id
+ i206-20020a253bd7000000b00628f47af156mr14008089yba.468.1646783303975; Tue, 08
+ Mar 2022 15:48:23 -0800 (PST)
+Date:   Tue,  8 Mar 2022 16:47:10 -0700
+Message-Id: <20220308234723.3834941-1-yuzhao@google.com>
 Mime-Version: 1.0
-References: <20220308234723.3834941-1-yuzhao@google.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH v8 09/14] mm: multi-gen LRU: optimize multiple memcgs
+Subject: [PATCH v8 00/14] Multi-Gen LRU Framework
 From:   Yu Zhao <yuzhao@google.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andi Kleen <ak@linux.intel.com>,
@@ -76,230 +72,321 @@ Cc:     Andi Kleen <ak@linux.intel.com>,
         linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         page-reclaim@google.com, x86@kernel.org,
-        Yu Zhao <yuzhao@google.com>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
+        Yu Zhao <yuzhao@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When multiple memcgs are available, it is possible to make better
-choices based on generations and tiers and therefore improve the
-overall performance under global memory pressure. This patch adds a
-rudimentary optimization to select memcgs that can drop single-use
-unmapped clean pages first. Doing so reduces the chance of going into
-the aging path or swapping. These two operations can be costly.
+What's new
+==========
+Minor renaming, refactoring, etc.
 
-A typical example that benefits from this optimization is a server
-running mixed types of workloads, e.g., heavy anon workload in one
-memcg and heavy buffered I/O workload in the other.
+TLDR
+====
+The current page reclaim is too expensive in terms of CPU usage and it
+often makes poor choices about what to evict. This patchset offers an
+alternative solution that is performant, versatile and
+straightforward.
 
-Though this optimization can be applied to both kswapd and direct
-reclaim, it is only added to kswapd to keep the patchset manageable.
-Later improvements will cover the direct reclaim path.
+Patchset overview
+=================
+The design and implementation overview is in patch 14:
+https://lore.kernel.org/lkml/20220308234723.3834941-15-yuzhao@google.com/
 
-Server benchmark results:
-  Mixed workloads:
-    fio (buffered I/O): -[28, 30]%
-                IOPS         BW
-      patch1-7: 3117k        11.9GiB/s
-      patch1-8: 2217k        8661MiB/s
+01. mm: x86, arm64: add arch_has_hw_pte_young()
+02. mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
+Take advantage of hardware features when trying to clear the accessed
+bit in many PTEs.
 
-    memcached (anon): +[247, 251]%
-                Ops/sec      KB/sec
-      patch1-7: 563772.35    21900.01
-      patch1-8: 1968343.76   76461.24
+03. mm/vmscan.c: refactor shrink_node()
+04. Revert "include/linux/mm_inline.h: fold __update_lru_size() into
+    its sole caller"
+Minor refactors to improve readability for the following patches.
 
-  Mixed workloads:
-    fio (buffered I/O): -[4, 6]%
-                IOPS         BW
-      5.17-rc2: 2338k        9133MiB/s
-      patch1-8: 2217k        8661MiB/s
+05. mm: multi-gen LRU: groundwork
+Adds the basic data structure and the functions that insert pages to
+and remove pages from the multi-gen LRU (MGLRU) lists.
 
-    memcached (anon): +[524, 530]%
-                Ops/sec      KB/sec
-      5.17-rc2: 313821.65    12190.55
-      patch1-8: 1968343.76   76461.24
+06. mm: multi-gen LRU: minimal implementation
+A minimal implementation without any optimizations.
 
-  Configurations:
-    (changes since patch 5)
+07. mm: multi-gen LRU: exploit locality in rmap
+Exploits spatial locality to improve efficiency when using the rmap.
 
-    cat mixed.sh
-    modprobe brd rd_nr=3D2 rd_size=3D56623104
+08. mm: multi-gen LRU: support page table walks
+Further exploits spatial locality by optionally scanning page tables.
 
-    swapoff -a
-    mkswap /dev/ram0
-    swapon /dev/ram0
+09. mm: multi-gen LRU: optimize multiple memcgs
+Optimizes the overall performance for multiple memcgs running mixed
+types of workloads.
 
-    mkfs.ext4 /dev/ram1
-    mount -t ext4 /dev/ram1 /mnt
+10. mm: multi-gen LRU: kill switch
+Adds a kill switch to enable or disable MGLRU at runtime.
 
-    memtier_benchmark -S /var/run/memcached/memcached.sock \
-      -P memcache_binary -n allkeys --key-minimum=3D1 \
-      --key-maximum=3D50000000 --key-pattern=3DP:P -c 1 -t 36 \
-      --ratio 1:0 --pipeline 8 -d 2000
+11. mm: multi-gen LRU: thrashing prevention
+12. mm: multi-gen LRU: debugfs interface
+Provide userspace with features like thrashing prevention, working set
+estimation and proactive reclaim.
 
-    fio -name=3Dmglru --numjobs=3D36 --directory=3D/mnt --size=3D1408m \
-      --buffered=3D1 --ioengine=3Dio_uring --iodepth=3D128 \
-      --iodepth_batch_submit=3D32 --iodepth_batch_complete=3D32 \
-      --rw=3Drandread --random_distribution=3Drandom --norandommap \
-      --time_based --ramp_time=3D10m --runtime=3D90m --group_reporting &
-    pid=3D$!
+13. mm: multi-gen LRU: admin guide
+14. mm: multi-gen LRU: design doc
+Add an admin guide and a design doc.
 
-    sleep 200
+Benchmark results
+=================
+Independent lab results
+-----------------------
+Based on the popularity of searches [01] and the memory usage in
+Google's public cloud, the most popular open-source memory-hungry
+applications, in alphabetical order, are:
+      Apache Cassandra      Memcached
+      Apache Hadoop         MongoDB
+      Apache Spark          PostgreSQL
+      MariaDB (MySQL)       Redis
 
-    memtier_benchmark -S /var/run/memcached/memcached.sock \
-      -P memcache_binary -n allkeys --key-minimum=3D1 \
-      --key-maximum=3D50000000 --key-pattern=3DR:R -c 1 -t 36 \
-      --ratio 0:1 --pipeline 8 --randomize --distinct-client-seed
+An independent lab evaluated MGLRU with the most widely used benchmark
+suites for the above applications. They posted 960 data points along
+with kernel metrics and perf profiles collected over more than 500
+hours of total benchmark time. Their final reports show that, with 95%
+confidence intervals (CIs), the above applications all performed
+significantly better for at least part of their benchmark matrices.
 
-    kill -INT $pid
-    wait
+On 5.14:
+1. Apache Spark [02] took 95% CIs [9.28, 11.19]% and [12.20, 14.93]%
+   less wall time to sort three billion random integers, respectively,
+   under the medium- and the high-concurrency conditions, when
+   overcommitting memory. There were no statistically significant
+   changes in wall time for the rest of the benchmark matrix.
+2. MariaDB [03] achieved 95% CIs [5.24, 10.71]% and [20.22, 25.97]%
+   more transactions per minute (TPM), respectively, under the medium-
+   and the high-concurrency conditions, when overcommitting memory.
+   There were no statistically significant changes in TPM for the rest
+   of the benchmark matrix.
+3. Memcached [04] achieved 95% CIs [23.54, 32.25]%, [20.76, 41.61]%
+   and [21.59, 30.02]% more operations per second (OPS), respectively,
+   for sequential access, random access and Gaussian (distribution)
+   access, when THP=always; 95% CIs [13.85, 15.97]% and
+   [23.94, 29.92]% more OPS, respectively, for random access and
+   Gaussian access, when THP=never. There were no statistically
+   significant changes in OPS for the rest of the benchmark matrix.
+4. MongoDB [05] achieved 95% CIs [2.23, 3.44]%, [6.97, 9.73]% and
+   [2.16, 3.55]% more operations per second (OPS), respectively, for
+   exponential (distribution) access, random access and Zipfian
+   (distribution) access, when underutilizing memory; 95% CIs
+   [8.83, 10.03]%, [21.12, 23.14]% and [5.53, 6.46]% more OPS,
+   respectively, for exponential access, random access and Zipfian
+   access, when overcommitting memory.
 
-Client benchmark results:
-  no change (CONFIG_MEMCG=3Dn)
+On 5.15:
+5. Apache Cassandra [06] achieved 95% CIs [1.06, 4.10]%, [1.94, 5.43]%
+   and [4.11, 7.50]% more operations per second (OPS), respectively,
+   for exponential (distribution) access, random access and Zipfian
+   (distribution) access, when swap was off; 95% CIs [0.50, 2.60]%,
+   [6.51, 8.77]% and [3.29, 6.75]% more OPS, respectively, for
+   exponential access, random access and Zipfian access, when swap was
+   on.
+6. Apache Hadoop [07] took 95% CIs [5.31, 9.69]% and [2.02, 7.86]%
+   less average wall time to finish twelve parallel TeraSort jobs,
+   respectively, under the medium- and the high-concurrency
+   conditions, when swap was on. There were no statistically
+   significant changes in average wall time for the rest of the
+   benchmark matrix.
+7. PostgreSQL [08] achieved 95% CI [1.75, 6.42]% more transactions per
+   minute (TPM) under the high-concurrency condition, when swap was
+   off; 95% CIs [12.82, 18.69]% and [22.70, 46.86]% more TPM,
+   respectively, under the medium- and the high-concurrency
+   conditions, when swap was on. There were no statistically
+   significant changes in TPM for the rest of the benchmark matrix.
+8. Redis [09] achieved 95% CIs [0.58, 5.94]%, [6.55, 14.58]% and
+   [11.47, 19.36]% more total operations per second (OPS),
+   respectively, for sequential access, random access and Gaussian
+   (distribution) access, when THP=always; 95% CIs [1.27, 3.54]%,
+   [10.11, 14.81]% and [8.75, 13.64]% more total OPS, respectively,
+   for sequential access, random access and Gaussian access, when
+   THP=never.
 
-Signed-off-by: Yu Zhao <yuzhao@google.com>
-Acked-by: Brian Geffon <bgeffon@google.com>
-Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Acked-by: Steven Barrett <steven@liquorix.net>
-Acked-by: Suleiman Souhlal <suleiman@google.com>
-Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-Tested-by: Donald Carr <d@chaos-reins.com>
-Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
----
- mm/vmscan.c | 45 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
+Our lab results
+---------------
+To supplement the above results, we ran the following benchmark suites
+on 5.16-rc7 and found no regressions [10]. (These synthetic benchmarks
+are popular among MM developers, but we prefer large-scale A/B
+experiments to validate improvements.)
+      fs_fio_bench_hdd_mq      pft
+      fs_lmbench               pgsql-hammerdb
+      fs_parallelio            redis
+      fs_postmark              stream
+      hackbench                sysbenchthread
+      kernbench                tpcc_spark
+      memcached                unixbench
+      multichase               vm-scalability
+      mutilate                 will-it-scale
+      nginx
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 67dc4190e790..7375c9dae08f 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -127,6 +127,13 @@ struct scan_control {
- 	/* Always discard instead of demoting to lower tier memory */
- 	unsigned int no_demotion:1;
-=20
-+#ifdef CONFIG_LRU_GEN
-+	/* help make better choices when multiple memcgs are available */
-+	unsigned int memcgs_need_aging:1;
-+	unsigned int memcgs_need_swapping:1;
-+	unsigned int memcgs_avoid_swapping:1;
-+#endif
-+
- 	/* Allocation order */
- 	s8 order;
-=20
-@@ -4348,6 +4355,22 @@ static void lru_gen_age_node(struct pglist_data *pgd=
-at, struct scan_control *sc)
-=20
- 	VM_BUG_ON(!current_is_kswapd());
-=20
-+	/*
-+	 * To reduce the chance of going into the aging path or swapping, which
-+	 * can be costly, optimistically skip them unless their corresponding
-+	 * flags were cleared in the eviction path. This improves the overall
-+	 * performance when multiple memcgs are available.
-+	 */
-+	if (!sc->memcgs_need_aging) {
-+		sc->memcgs_need_aging =3D true;
-+		sc->memcgs_avoid_swapping =3D !sc->memcgs_need_swapping;
-+		sc->memcgs_need_swapping =3D true;
-+		return;
-+	}
-+
-+	sc->memcgs_need_swapping =3D true;
-+	sc->memcgs_avoid_swapping =3D true;
-+
- 	current->reclaim_state->mm_walk =3D &pgdat->mm_walk;
-=20
- 	memcg =3D mem_cgroup_iter(NULL, NULL, NULL);
-@@ -4750,7 +4773,8 @@ static int isolate_folios(struct lruvec *lruvec, stru=
-ct scan_control *sc, int sw
- 	return scanned;
- }
-=20
--static int evict_folios(struct lruvec *lruvec, struct scan_control *sc, in=
-t swappiness)
-+static int evict_folios(struct lruvec *lruvec, struct scan_control *sc, in=
-t swappiness,
-+			bool *swapped)
- {
- 	int type;
- 	int scanned;
-@@ -4816,6 +4840,9 @@ static int evict_folios(struct lruvec *lruvec, struct=
- scan_control *sc, int swap
-=20
- 	sc->nr_reclaimed +=3D reclaimed;
-=20
-+	if (type =3D=3D LRU_GEN_ANON && swapped)
-+		*swapped =3D true;
-+
- 	return scanned;
- }
-=20
-@@ -4844,8 +4871,10 @@ static long get_nr_to_scan(struct lruvec *lruvec, st=
-ruct scan_control *sc, bool
- 	if (!nr_to_scan)
- 		return 0;
-=20
--	if (!need_aging)
-+	if (!need_aging) {
-+		sc->memcgs_need_aging =3D false;
- 		return nr_to_scan;
-+	}
-=20
- 	/* leave the work to lru_gen_age_node() */
- 	if (current_is_kswapd())
-@@ -4867,6 +4896,8 @@ static void lru_gen_shrink_lruvec(struct lruvec *lruv=
-ec, struct scan_control *sc
- {
- 	struct blk_plug plug;
- 	long scanned =3D 0;
-+	bool swapped =3D false;
-+	unsigned long reclaimed =3D sc->nr_reclaimed;
- 	struct pglist_data *pgdat =3D lruvec_pgdat(lruvec);
-=20
- 	lru_add_drain();
-@@ -4892,13 +4923,19 @@ static void lru_gen_shrink_lruvec(struct lruvec *lr=
-uvec, struct scan_control *sc
- 		if (!nr_to_scan)
- 			break;
-=20
--		delta =3D evict_folios(lruvec, sc, swappiness);
-+		delta =3D evict_folios(lruvec, sc, swappiness, &swapped);
- 		if (!delta)
- 			break;
-=20
-+		if (sc->memcgs_avoid_swapping && swappiness < 200 && swapped)
-+			break;
-+
- 		scanned +=3D delta;
--		if (scanned >=3D nr_to_scan)
-+		if (scanned >=3D nr_to_scan) {
-+			if (!swapped && sc->nr_reclaimed - reclaimed >=3D MIN_LRU_BATCH)
-+				sc->memcgs_need_swapping =3D false;
- 			break;
-+		}
-=20
- 		cond_resched();
- 	}
---=20
+[01] https://trends.google.com
+[02] https://lore.kernel.org/lkml/20211102002002.92051-1-bot@edi.works/
+[03] https://lore.kernel.org/lkml/20211009054315.47073-1-bot@edi.works/
+[04] https://lore.kernel.org/lkml/20211021194103.65648-1-bot@edi.works/
+[05] https://lore.kernel.org/lkml/20211109021346.50266-1-bot@edi.works/
+[06] https://lore.kernel.org/lkml/20211202062806.80365-1-bot@edi.works/
+[07] https://lore.kernel.org/lkml/20211209072416.33606-1-bot@edi.works/
+[08] https://lore.kernel.org/lkml/20211218071041.24077-1-bot@edi.works/
+[09] https://lore.kernel.org/lkml/20211122053248.57311-1-bot@edi.works/
+[10] https://lore.kernel.org/lkml/20220104202247.2903702-1-yuzhao@google.com/
+
+Read-world applications
+=======================
+Third-party testimonials
+------------------------
+Konstantin reported [11]:
+   I have Archlinux with 8G RAM + zswap + swap. While developing, I
+   have lots of apps opened such as multiple LSP-servers for different
+   langs, chats, two browsers, etc... Usually, my system gets quickly
+   to a point of SWAP-storms, where I have to kill LSP-servers,
+   restart browsers to free memory, etc, otherwise the system lags
+   heavily and is barely usable.
+   
+   1.5 day ago I migrated from 5.11.15 kernel to 5.12 + the LRU
+   patchset, and I started up by opening lots of apps to create memory
+   pressure, and worked for a day like this. Till now I had not a
+   single SWAP-storm, and mind you I got 3.4G in SWAP. I was never
+   getting to the point of 3G in SWAP before without a single
+   SWAP-storm.
+
+Vaibhav from IBM reported [12]:
+   In a synthetic MongoDB Benchmark, seeing an average of ~19%
+   throughput improvement on POWER10(Radix MMU + 64K Page Size) with
+   MGLRU patches on top of v5.16 kernel for MongoDB + YCSB across
+   three different request distributions, namely, Exponential, Uniform
+   and Zipfan.
+
+Shuang from U of Rochester reported [13]:
+   With the MGLRU, fio achieved 95% CIs [38.95, 40.26]%, [4.12, 6.64]%
+   and [9.26, 10.36]% higher throughput, respectively, for random
+   access, Zipfian (distribution) access and Gaussian (distribution)
+   access, when the average number of jobs per CPU is 1; 95% CIs
+   [42.32, 49.15]%, [9.44, 9.89]% and [20.99, 22.86]% higher
+   throughput, respectively, for random access, Zipfian access and
+   Gaussian access, when the average number of jobs per CPU is 2.
+
+Daniel from Michigan Tech reported [14]:
+   With Memcached allocating ~100GB of byte-addressable Optante,
+   performance improvement in terms of throughput (measured as queries
+   per second) was about 10% for a series of workloads.
+
+Large-scale deployments
+-----------------------
+The downstream kernels that have been using MGLRU include:
+1. Android ARCVM [15]
+2. Arch Linux Zen [16]
+3. Chrome OS [17]
+4. Liquorix [18]
+5. post-factum [19]
+6. XanMod [20]
+
+We've rolled out MGLRU to tens of millions of Chrome OS users and
+about a million Android users. Google's fleetwide profiling [21] shows
+an overall 40% decrease in kswapd CPU usage, in addition to
+improvements in other UX metrics, e.g., an 85% decrease in the number
+of low-memory kills at the 75th percentile and an 18% decrease in
+rendering latency at the 50th percentile.
+
+[11] https://lore.kernel.org/lkml/140226722f2032c86301fbd326d91baefe3d7d23.camel@yandex.ru/
+[12] https://lore.kernel.org/lkml/87czj3mux0.fsf@vajain21.in.ibm.com/
+[13] https://lore.kernel.org/lkml/20220105024423.26409-1-szhai2@cs.rochester.edu/
+[14] https://lore.kernel.org/linux-mm/CA+4-3vksGvKd18FgRinxhqHetBS1hQekJE2gwco8Ja-bJWKtFw@mail.gmail.com/
+[15] https://chromium.googlesource.com/chromiumos/third_party/kernel
+[16] https://archlinux.org
+[17] https://chromium.org
+[18] https://liquorix.net
+[19] https://gitlab.com/post-factum/pf-kernel
+[20] https://xanmod.org
+[21] https://research.google/pubs/pub44271/
+
+Summery
+=======
+The facts are:
+1. The independent lab results and the real-world applications
+   indicate substantial improvements; there are no known regressions.
+2. Thrashing prevention, working set estimation and proactive reclaim
+   work out of the box; there are no equivalent solutions.
+3. There is a lot of new code; no one has demonstrated smaller changes
+   with similar effects.
+
+Our options, accordingly, are:
+1. Given the amount of evidence, the reported improvements will likely
+   materialize for a wide range of workloads.
+2. Gauging the interest from the past discussions [22][23][24], the
+   new features will likely be put to use for both personal computers
+   and data centers.
+3. Based on Google's track record, the new code will likely be well
+   maintained in the long term. It'd be more difficult if not
+   impossible to achieve similar effects on top of the existing
+   design.
+
+[22] https://lore.kernel.org/lkml/20201005081313.732745-1-andrea.righi@canonical.com/
+[23] https://lore.kernel.org/lkml/20210716081449.22187-1-sj38.park@gmail.com/
+[24] https://lore.kernel.org/lkml/20211130201652.2218636d@mail.inbox.lv/
+
+Yu Zhao (14):
+  mm: x86, arm64: add arch_has_hw_pte_young()
+  mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
+  mm/vmscan.c: refactor shrink_node()
+  Revert "include/linux/mm_inline.h: fold __update_lru_size() into its
+    sole caller"
+  mm: multi-gen LRU: groundwork
+  mm: multi-gen LRU: minimal implementation
+  mm: multi-gen LRU: exploit locality in rmap
+  mm: multi-gen LRU: support page table walks
+  mm: multi-gen LRU: optimize multiple memcgs
+  mm: multi-gen LRU: kill switch
+  mm: multi-gen LRU: thrashing prevention
+  mm: multi-gen LRU: debugfs interface
+  mm: multi-gen LRU: admin guide
+  mm: multi-gen LRU: design doc
+
+ Documentation/admin-guide/mm/index.rst        |    1 +
+ Documentation/admin-guide/mm/multigen_lru.rst |  146 +
+ Documentation/vm/index.rst                    |    1 +
+ Documentation/vm/multigen_lru.rst             |  156 +
+ arch/Kconfig                                  |    9 +
+ arch/arm64/include/asm/pgtable.h              |   14 +-
+ arch/x86/Kconfig                              |    1 +
+ arch/x86/include/asm/pgtable.h                |    9 +-
+ arch/x86/mm/pgtable.c                         |    5 +-
+ fs/exec.c                                     |    2 +
+ fs/fuse/dev.c                                 |    3 +-
+ include/linux/cgroup.h                        |   15 +-
+ include/linux/memcontrol.h                    |   36 +
+ include/linux/mm.h                            |    8 +
+ include/linux/mm_inline.h                     |  217 +-
+ include/linux/mm_types.h                      |   78 +
+ include/linux/mmzone.h                        |  199 ++
+ include/linux/nodemask.h                      |    1 +
+ include/linux/page-flags-layout.h             |   19 +-
+ include/linux/page-flags.h                    |    4 +-
+ include/linux/pgtable.h                       |   17 +-
+ include/linux/sched.h                         |    4 +
+ include/linux/swap.h                          |    5 +
+ kernel/bounds.c                               |    3 +
+ kernel/cgroup/cgroup-internal.h               |    1 -
+ kernel/exit.c                                 |    1 +
+ kernel/fork.c                                 |    9 +
+ kernel/sched/core.c                           |    1 +
+ mm/Kconfig                                    |   49 +
+ mm/huge_memory.c                              |    3 +-
+ mm/memcontrol.c                               |   27 +
+ mm/memory.c                                   |   39 +-
+ mm/mm_init.c                                  |    6 +-
+ mm/mmzone.c                                   |    2 +
+ mm/rmap.c                                     |    7 +
+ mm/swap.c                                     |   55 +-
+ mm/vmscan.c                                   | 2824 ++++++++++++++++-
+ mm/workingset.c                               |  119 +-
+ 38 files changed, 3949 insertions(+), 147 deletions(-)
+ create mode 100644 Documentation/admin-guide/mm/multigen_lru.rst
+ create mode 100644 Documentation/vm/multigen_lru.rst
+
+-- 
 2.35.1.616.g0bdcbb4464-goog
 
