@@ -2,190 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2225C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0309BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346400AbiCHLOO (ORCPT
+        id S1346404AbiCHLOX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:14:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        Tue, 8 Mar 2022 06:14:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346350AbiCHLOI (ORCPT
+        with ESMTP id S1346386AbiCHLOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:14:08 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2943A5F6;
-        Tue,  8 Mar 2022 03:13:10 -0800 (PST)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KCXf02Jckz9sQw;
-        Tue,  8 Mar 2022 19:09:28 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 19:13:08 +0800
-CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
-        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH v5 3/8] hisi_ptt: Register PMU device for PTT trace
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Yicong Yang <yangyicong@hisilicon.com>
-References: <20220308084930.5142-1-yangyicong@hisilicon.com>
- <20220308084930.5142-4-yangyicong@hisilicon.com>
- <20220308102157.00003725@Huawei.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <d3b555c1-ed7e-f668-7d81-9cc2dbe6ffba@huawei.com>
-Date:   Tue, 8 Mar 2022 19:13:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Tue, 8 Mar 2022 06:14:19 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A793AA5D
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:13:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646738002; x=1678274002;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SgFlLyhZap8eNw/AK5DH4h0j97Zqi/QT6WmpeTYc2/o=;
+  b=iHzFWH0XtriV+m9rB0w+flLYVqfsz0NxaIhPZ8xGL1lTLZeOdwtqv9j+
+   5djujUXnBuTsLKZWl4VsQOwl0iI+28Ntc+iYmkcYDXG9xCxdp8v9RU3S5
+   UVR0sVZiy1GEYwOohtSYr0ti4xDxh9L09Irc6fERx0bIWMLAeRzYXF3n1
+   2OW2cf+IxTkuRjUsX4gQysHtHNAiAScBv/9jt0IgpA6WIVQbrhfVqlsj6
+   1CBd7HncDfZKIvP23mfiqFa8Oe5RAeDCQXiZa8U3DMvt/XMwSaFaSd8tY
+   ts7rSPJKdptI5WVISxiRhlRXK3dW2syrGfggfBXdMFUWpNIBkSoy7xIUE
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254848899"
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="254848899"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:13:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
+   d="scan'208";a="577960819"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 08 Mar 2022 03:13:20 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRXmJ-0001Jc-HC; Tue, 08 Mar 2022 11:13:19 +0000
+Date:   Tue, 8 Mar 2022 19:12:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
+Subject: [ammarfaizi2-block:powerpc/linux/next-test 142/143]
+ arch/powerpc/kernel/prom_init.c:3302:22: error: no previous prototype for
+ 'prom_init'
+Message-ID: <202203081921.SpUkNaaj-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220308102157.00003725@Huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/8 18:21, Jonathan Cameron wrote:
-> On Tue, 8 Mar 2022 16:49:25 +0800
-> Yicong Yang <yangyicong@hisilicon.com> wrote:
-> 
->> Register PMU device of PTT trace, then users can use trace through perf
->> command. The driver makes use of perf AUX trace and support following
->> events to configure the trace:
->>
->> - filter: select Root port or Endpoint to trace
->> - type: select the type of traced TLP headers
->> - direction: select the direction of traced TLP headers
->> - format: select the data format of the traced TLP headers
->>
->> This patch adds the PMU driver part of PTT trace. The perf command support
->> of PTT trace is added in the following patch.
->>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> 
-> It seems to me that you ended up doing both suggestions for
-> how to clean up the remove order when it was meant to be
-> a question of picking one or the other.
-> 
-> Otherwise this looks good to me - so with that tidied up
-> 
+tree:   https://github.com/ammarfaizi2/linux-block powerpc/linux/next-test
+head:   0a448e06d10e149bf5ed23202d49246b6c4cf77b
+commit: 21dad3fa76176d992e8ddf3f49ad0866a5424da5 [142/143] powerpc: Move C prototypes out of asm-prototypes.h
+config: powerpc64-randconfig-s031-20220307 (https://download.01.org/0day-ci/archive/20220308/202203081921.SpUkNaaj-lkp@intel.com/config)
+compiler: powerpc64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/21dad3fa76176d992e8ddf3f49ad0866a5424da5
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block powerpc/linux/next-test
+        git checkout 21dad3fa76176d992e8ddf3f49ad0866a5424da5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/
 
-Hi Jonathan,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for the comments. I'd like to illustrate the reason why I decide to
-manually unregister the PMU device.
+All errors (new ones prefixed by >>):
 
-The DMA buffers are devm allocated when necessary. They're only allocated
-when user is going to use the PTT in the first time after the driver's probe,
-so when driver removal the buffers are released prior to the PMU device's
-unregistration. I think there's a race condition.
+>> arch/powerpc/kernel/prom_init.c:3302:22: error: no previous prototype for 'prom_init' [-Werror=missing-prototypes]
+    3302 | unsigned long __init prom_init(unsigned long r3, unsigned long r4,
+         |                      ^~~~~~~~~
+   cc1: all warnings being treated as errors
 
-IIUC, The PMU device(as the user interface) should be unregistered first then
-we're safe to free the DMA buffers. But unregister the PMU device by devm
-cannot keep that order.
 
-Thanks,
-Yicong
+vim +/prom_init +3302 arch/powerpc/kernel/prom_init.c
 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
->> ---
-> 
->> +
->> +static int hisi_ptt_register_pmu(struct hisi_ptt *hisi_ptt)
->> +{
->> +	u16 core_id, sicl_id;
->> +	char *pmu_name;
->> +	u32 reg;
->> +
->> +	hisi_ptt->hisi_ptt_pmu = (struct pmu) {
->> +		.module		= THIS_MODULE,
->> +		.capabilities	= PERF_PMU_CAP_EXCLUSIVE | PERF_PMU_CAP_ITRACE,
->> +		.task_ctx_nr	= perf_sw_context,
->> +		.attr_groups	= hisi_ptt_pmu_groups,
->> +		.event_init	= hisi_ptt_pmu_event_init,
->> +		.setup_aux	= hisi_ptt_pmu_setup_aux,
->> +		.free_aux	= hisi_ptt_pmu_free_aux,
->> +		.start		= hisi_ptt_pmu_start,
->> +		.stop		= hisi_ptt_pmu_stop,
->> +		.add		= hisi_ptt_pmu_add,
->> +		.del		= hisi_ptt_pmu_del,
->> +	};
->> +
->> +	reg = readl(hisi_ptt->iobase + HISI_PTT_LOCATION);
->> +	core_id = FIELD_GET(HISI_PTT_CORE_ID, reg);
->> +	sicl_id = FIELD_GET(HISI_PTT_SICL_ID, reg);
->> +
->> +	pmu_name = devm_kasprintf(&hisi_ptt->pdev->dev, GFP_KERNEL, "hisi_ptt%u_%u",
->> +				  sicl_id, core_id);
->> +	if (!pmu_name)
->> +		return -ENOMEM;
->> +
->> +	return perf_pmu_register(&hisi_ptt->hisi_ptt_pmu, pmu_name, -1);
-> 
-> As below, you can put back the devm cleanup that you had in v4 now you
-> have modified how the filter cleanup is done to also be devm managed.
-> 
->> +}
->> +
->>  /*
->>   * The DMA of PTT trace can only use direct mapping, due to some
->>   * hardware restriction. Check whether there is an IOMMU or the
->> @@ -303,15 +825,32 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
->>  
->>  	pci_set_master(pdev);
->>  
->> +	ret = hisi_ptt_register_irq(hisi_ptt);
->> +	if (ret)
->> +		return ret;
->> +
->>  	ret = hisi_ptt_init_ctrls(hisi_ptt);
->>  	if (ret) {
->>  		pci_err(pdev, "failed to init controls, ret = %d.\n", ret);
->>  		return ret;
->>  	}
->>  
->> +	ret = hisi_ptt_register_pmu(hisi_ptt);
->> +	if (ret) {
->> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
->> +		return ret;
->> +	}
->> +
->>  	return 0;
->>  }
->>  
->> +void hisi_ptt_remove(struct pci_dev *pdev)
->> +{
->> +	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
->> +
->> +	perf_pmu_unregister(&hisi_ptt->hisi_ptt_pmu);
-> 
-> Now you have the filter cleanup occurring using a devm_add_action_or_reset()
-> there is no need to have a manual cleanup of this - you can
-> use the approach of a devm_add_action_or_reset like you had in v4.
-> 
-> As it is the last call in the probe() order it will be the first one
-> called in the device managed cleanup.
-> 
->> +}
->> +
-> 
-> 
-> .
-> 
+6a9c930bd7751b Ram Pai        2019-08-19  3296  
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3297  /*
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3298   * We enter here early on, when the Open Firmware prom is still
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3299   * handling exceptions and the MMU hash table for us.
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3300   */
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3301  
+9b6b563c0d2d25 Paul Mackerras 2005-10-06 @3302  unsigned long __init prom_init(unsigned long r3, unsigned long r4,
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3303  			       unsigned long pp,
+549e8152de8039 Paul Mackerras 2008-08-30  3304  			       unsigned long r6, unsigned long r7,
+549e8152de8039 Paul Mackerras 2008-08-30  3305  			       unsigned long kbase)
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3306  {	
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3307  	unsigned long hdr;
+9b6b563c0d2d25 Paul Mackerras 2005-10-06  3308  
+
+:::::: The code at line 3302 was first introduced by commit
+:::::: 9b6b563c0d2d25ecc3111916031aa7255543fbfb powerpc: Merge in the ppc64 version of the prom code.
+
+:::::: TO: Paul Mackerras <paulus@samba.org>
+:::::: CC: Paul Mackerras <paulus@samba.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
