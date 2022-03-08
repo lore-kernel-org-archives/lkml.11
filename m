@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D87EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347787AbiCHPMK (ORCPT
+        id S1347797AbiCHPMN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:12:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
+        Tue, 8 Mar 2022 10:12:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347757AbiCHPMF (ORCPT
+        with ESMTP id S1347768AbiCHPMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:12:05 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C18C38D9D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:11:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646752266; x=1678288266;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=yHcVks0rZ5KbEhC3PatYkdzXGhiO+H+bN06X78E65lg=;
-  b=FuDepTZxLNb6XLqIeJcBrZ7Yunx4ZVD+CdbG96/qKoRD1/y3PVI13F9/
-   10QKF0jYUGG7SH7KWNuK3mamYo+akVfANUuTDSM0TVbD+jIgOwDQEGZuC
-   8CWMqldt/P/8EcmcDPZ+GLV+T4fdNuvUonvMyN6s3WrTzh3le9pIgZHan
-   XAs7nO+t7noDirxwuq/We/4CmK5fzdgZ2lDEzxnbNfBu0GnzsRcVGEy0S
-   uwqPmSckZINmSopyjCZ8RyvOoCuHmv0uJDOZGMaKhY1B/rDR9kC1EEUsz
-   5JCoo+xswO/Wz+/mH3XXC+PRIjev/5kYmSkcZoL2cA76DcVx+LxQotIR5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="242144420"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="242144420"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:11:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="632256871"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Mar 2022 07:11:04 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 9E07F411; Tue,  8 Mar 2022 17:11:22 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 4/4] auxdisplay: lcd2s: Use array size explicitly in lcd2s_gotoxy()
-Date:   Tue,  8 Mar 2022 17:11:19 +0200
-Message-Id: <20220308151119.48412-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220308151119.48412-1-andriy.shevchenko@linux.intel.com>
-References: <20220308151119.48412-1-andriy.shevchenko@linux.intel.com>
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCDD39804
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:11:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646752268; x=1678288268;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=11qjO4saXcBE/FZtwptBC1qhYkmlivHxUIX47RP5/Ak=;
+  b=wdKwmD3g4Gf42hJ16VhH4utRovxQcxoiJfxhq4hqdYWoG0+B07MYMa1O
+   xrjQ4NclXCjvVvdKUHLbWKiXPUiOo490lDGkFM3n5as7FAej12JgZaLoa
+   v/QVAi94wbB7Fh8OA1+5YOocBCM1I1zwOl3U60ZrcyK75dOrpvlfIz8Bv
+   g=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 08 Mar 2022 07:11:08 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:11:07 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 8 Mar 2022 07:11:07 -0800
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 8 Mar 2022
+ 07:11:06 -0800
+Date:   Tue, 8 Mar 2022 10:11:04 -0500
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] configs/debug: set CONFIG_DEBUG_INFO=y properly
+Message-ID: <YidyCKCO4y4L6fF3@qian>
+References: <20220301202920.18488-1-quic_qiancai@quicinc.com>
+ <20220308104215.q4asb6z3vicq2vja@maple.lan>
+ <YidgcE0ypmKWzvai@qian>
+ <20220308143029.j6wbbnmkmmmhl2jt@maple.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220308143029.j6wbbnmkmmmhl2jt@maple.lan>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the reading of the onstack array is confusing since two
-out of three members are of different types. Let it be more clear
-by explicitly set the array size, so everybody will understand that
-parameters are cast to the type of the array.
+On Tue, Mar 08, 2022 at 02:30:29PM +0000, Daniel Thompson wrote:
+> That is *not* an example of debug.config working correctly. It is an
+> example that only works by accident because the arm64 defconfig already
+> included CONFIG_DEBUG_INFO=y (that's why I explicitly disabled it in my
+> example demonstrating the problem before I applied debug.config).
+> 
+> However debug.config is not specific to arm64 and, for v5.17-rc7 it is
+> also not working with the defconfigs for (at least) arm, powerpc, riscv and
+> x86 (both i386 and x86_64).
+> 
+> I'm still of the view that any change that removes CONFIG_DEBUG_INFO=y
+> cannot be sensibly applied to kernels that do not include Kees' patch.
 
-While at it, add a missed space.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/auxdisplay/lcd2s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/auxdisplay/lcd2s.c b/drivers/auxdisplay/lcd2s.c
-index a4503765a95d..86103cecdd3e 100644
---- a/drivers/auxdisplay/lcd2s.c
-+++ b/drivers/auxdisplay/lcd2s.c
-@@ -106,7 +106,7 @@ static int lcd2s_print(struct charlcd *lcd, int c)
- static int lcd2s_gotoxy(struct charlcd *lcd, unsigned int x, unsigned int y)
- {
- 	struct lcd2s_data *lcd2s = lcd->drvdata;
--	u8 buf[] = { LCD2S_CMD_CUR_POS, y + 1, x + 1};
-+	u8 buf[3] = { LCD2S_CMD_CUR_POS, y + 1, x + 1 };
- 
- 	lcd2s_i2c_master_send(lcd2s->i2c, buf, sizeof(buf));
- 
--- 
-2.34.1
-
+Okay, good points. I'll make a patch for v5.17, so people don't need to
+wait for a few weeks for flip DEBUG_INFO without Kees' patch then.
