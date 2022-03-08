@@ -2,117 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62988C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344235AbiCHBTi (ORCPT
+        id S1344230AbiCHBUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 20:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52368 "EHLO
+        Mon, 7 Mar 2022 20:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238576AbiCHBT3 (ORCPT
+        with ESMTP id S238576AbiCHBUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 20:19:29 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CF836E22;
-        Mon,  7 Mar 2022 17:18:31 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 88DB04C8;
-        Mon,  7 Mar 2022 17:18:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1646702310;
-        bh=WA0g01ylI3uRFuxsoi3Sd/kmAWCJhNXmCT+GLDXKrng=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SZNk3TyQOZhh0La1+PbuuAmh0QkAcMusjnejTEgP1Jtip5aWdNrM7TvXDaleiYAXK
-         4JfZiX5YIKSxw8wiHovUOS/eKTh9eXOjA57LYz/8irtXvFiiJ4WXyuJKSujRPfhW5R
-         f09morTBdSS0o3gNVvohpJuseqFlC/PmNXZjwzRM=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: [PATCH v2 0/2] misc: Add power-efuse driver
-Date:   Mon,  7 Mar 2022 17:18:08 -0800
-Message-Id: <20220308011811.10353-1-zev@bewilderbeest.net>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Mar 2022 20:20:12 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918D837009
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 17:19:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646702356; x=1678238356;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9VShFtUnHahYjXoEmhuEaaKsxAaqPctuFnTiXKgAwlg=;
+  b=D+ngteafjReZWyptzAB8yL1mNX8G/YdEODs8JzftLZDi6dn0awwK/Hpd
+   B4GolPcx6jIKZ5vAXAF53QDxbC41nd4lz1qH7sob9q72v8wxTdwDT6eKy
+   BK7TnmJo469HxcZRiOzXjVg8s0qryoyvxCZK+sh2z+wCLtzEwh3xSZOr1
+   kO/bldyF5GfFeeYvBfR71l4MYVdjz61EGeaKHmOCBMS7pmIJmnUiRcHzO
+   2hF/FWzC8nQ9YjyUwoFNiksCmOQlYCoCt/TWhnyBC0TgNqGqqsw4VGnh6
+   2skx6XwQMyhMNiSBBly8vzUacEO1w3/e+khJYy+ewHdudibksIGdjlhRQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="340987297"
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="340987297"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 17:19:16 -0800
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
+   d="scan'208";a="537357528"
+Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.255.31.213]) ([10.255.31.213])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 17:19:08 -0800
+Message-ID: <4a4a672f-a21e-f50d-9289-27456923f6df@intel.com>
+Date:   Tue, 8 Mar 2022 09:19:06 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [PATCHv5 23/30] x86/boot: Avoid #VE during boot for TDX platforms
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
+ <20220302142806.51844-24-kirill.shutemov@linux.intel.com>
+ <e8452e86-4063-c85b-5e21-c7cd6ce51423@intel.com>
+ <20220307223353.f7cqzqispfeltvb2@black.fi.intel.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <20220307223353.f7cqzqispfeltvb2@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 3/8/2022 6:33 AM, Kirill A. Shutemov wrote:
+> On Mon, Mar 07, 2022 at 05:29:27PM +0800, Xiaoyao Li wrote:
+...
+>> Even though CPUID reports MCE is supported, all the access to MCE related
+>> MSRs causes #VE. If they are accessed via mce_rdmsrl(), the #VE will be
+>> fixed up and goes to ex_handler_msr_mce(). Finally lead to panic().
+> 
+> It is not panic, but warning. Like this:
+> 
+> 	unchecked MSR access error: RDMSR from 0x179 at rIP: 0xffffffff810df1e9 (__mcheck_cpu_cap_init+0x9/0x130)
+> 	Call Trace:
+> 	 <TASK>
+> 	 mcheck_cpu_init+0x3d/0x2c0
+> 	 identify_cpu+0x85a/0x910
+> 	 identify_boot_cpu+0xc/0x98
+> 	 check_bugs+0x6/0xa7
+> 	 start_kernel+0x363/0x3d1
+> 	 secondary_startup_64_no_verify+0xe5/0xeb
+> 	 </TASK>
+> 
+> It is annoying, but not fatal. The patchset is big enough as it is.
+> I tried to keep patch number under control.
+> 
 
-This is a second revision of the v1 patch series posted previously
-[2].
+I did hit panic as below.
 
-Changes since v1:
- - dropped pmbus/lm25066 patches, submitted separately via hwmon tree [Guenter]
- - fixed indentation in power-efuse.yaml [Rob's bot]
- - added more detailed description in power-efuse.yaml [Rob]
- - added sysfs ABI documentation [Greg]
- - replaced manual struct attribute_group and sysfs_create_group()
-   with ATTRIBUTE_GROUPS() and driver.dev_groups [Greg]
-
-A lightly edited version of the previous cover letter follows.
-
-
-This patch series is another incarnation of some previous efforts [0]
-at enabling userspace access to the OPERATION state (and now status
-flags) of PMBus devices, specifically with respect to efuses
-protecting general-purpose power outputs.  This functionality is an
-important component enabling a port of OpenBMC to the Delta AHE-50DC
-Open19 power shelf [1].
-
-The first patch adds dt-bindings, and the second adds the
-implementation of the power-efuse driver.  The driver is fairly
-simple; it merely provides a sysfs interface to enable, disable, and
-retrieve error flags from an underlying regulator (which in the
-expected usage will most likely be a PMBus device).
-
-There is one aspect of its usage of the regulator API I'm a bit
-uncertain about, however: this driver seems like a case where an
-exclusive 'get' of the regulator (i.e. devm_regulator_get_exclusive()
-instead of devm_regulator_get() in efuse_probe()) would be
-appropriate, since in the intended usage no other device should be
-using an efuse's regulator.  With an exclusive get though, the
-regulator's use_count and the consumer's enable_count don't balance
-out properly to allow the enable/disable operations to work properly
-(the former ending up one more than the latter, leading to
-enable_count underflows on attempts to disable the regulator).  So at
-least for now it's using a non-exclusive get -- I'd be happy to hear
-any pointers on a way to allow an exclusive get to work here, though.
-
-
-Thanks,
-Zev
-
-[0] https://lore.kernel.org/openbmc/YGLepYLvtlO6Ikzs@hatter.bewilderbeest.net/
-[1] https://www.open19.org/marketplace/delta-16kw-power-shelf/
-[2] https://lore.kernel.org/openbmc/20220217104444.7695-1-zev@bewilderbeest.net/
-
-Zev Weiss (2):
-  dt-bindings: Add power-efuse binding
-  misc: Add power-efuse driver
-
- .../ABI/testing/sysfs-driver-power-efuse      |  32 +++
- .../devicetree/bindings/misc/power-efuse.yaml |  49 ++++
- MAINTAINERS                                   |   5 +
- drivers/misc/Kconfig                          |  15 ++
- drivers/misc/Makefile                         |   1 +
- drivers/misc/power-efuse.c                    | 212 ++++++++++++++++++
- 6 files changed, 314 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-driver-power-efuse
- create mode 100644 Documentation/devicetree/bindings/misc/power-efuse.yaml
- create mode 100644 drivers/misc/power-efuse.c
-
--- 
-2.35.1
+[    0.578792] mce: MSR access error: RDMSR from 0x475 at rIP: 
+0xffffffffb94daa92 (mce_rdmsrl+0x22/0x60)
+[    0.578792] Call Trace:
+[    0.578792]  <TASK>
+[    0.578792]  machine_check_poll+0xf0/0x260
+[    0.578792]  __mcheck_cpu_init_generic+0x3d/0xb0
+[    0.578792]  mcheck_cpu_init+0x16b/0x4a0
+[    0.578792]  identify_cpu+0x467/0x5c0
+[    0.578792]  identify_boot_cpu+0x10/0x9a
+[    0.578792]  check_bugs+0x2a/0xa06
+[    0.578792]  start_kernel+0x6bc/0x6f1
+[    0.578792]  x86_64_start_reservations+0x24/0x26
+[    0.578792]  x86_64_start_kernel+0xad/0xb2
+[    0.578792]  secondary_startup_64_no_verify+0xe4/0xeb
+[    0.578792]  </TASK>
+[    0.578792] Kernel panic - not syncing: MCA architectural violation!
+[    0.578792] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 
+5.17.0-rc5-td-guest-upstream+ #2
+[    0.578792] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 
+0.0.0 02/06/2015
+[    0.578792] Call Trace:
+[    0.578792]  <TASK>
+[    0.578792]  dump_stack_lvl+0x49/0x5f
+[    0.578792]  dump_stack+0x10/0x12
+[    0.578792]  panic+0xf9/0x2d0
+[    0.578792]  ex_handler_msr_mce+0x5e/0x5e
+[    0.578792]  fixup_exception+0x2f4/0x310
+[    0.578792]  exc_virtualization_exception+0x9b/0x100
+[    0.578792]  asm_exc_virtualization_exception+0x12/0x40
+[    0.578792] RIP: 0010:mce_rdmsrl+0x22/0x60
+[    0.578792] Code: a0 b9 e8 75 4d fb ff 90 55 48 89 e5 41 54 53 89 fb 
+48 c7 c7 9c c1 f6 b9 e8 4b 28 00 00 65 8a 05 97 52 b4 46 84 c0 75 10 89 
+d9 <0f> 32 48 c1 e2 20 48 09 d0 5b 41 5c 5d c3 89 df e8 c9 5a 17 ff 4c
+[    0.578792] RSP: 0000:ffffffffba203cd8 EFLAGS: 00010246
+[    0.578792] RAX: 0000000000000000 RBX: 0000000000000475 RCX: 
+0000000000000475
+[    0.578792] RDX: 00000000000001d0 RSI: ffffffffb9f6c19c RDI: 
+ffffffffb9ece016
+[    0.578792] RBP: ffffffffba203ce8 R08: ffffffffba203cb0 R09: 
+ffffffffba203cb4
+[    0.578792] R10: 0000000000000000 R11: 000000000000000f R12: 
+0000000000000001
+[    0.578792] R13: ffffffffba203dc0 R14: 000000000000000a R15: 
+000000000000001d
+[    0.578792]  ? mce_rdmsrl+0x15/0x60
+[    0.578792]  machine_check_poll+0xf0/0x260
+[    0.578792]  __mcheck_cpu_init_generic+0x3d/0xb0
+[    0.578792]  mcheck_cpu_init+0x16b/0x4a0
+[    0.578792]  identify_cpu+0x467/0x5c0
+[    0.578792]  identify_boot_cpu+0x10/0x9a
+[    0.578792]  check_bugs+0x2a/0xa06
+[    0.578792]  start_kernel+0x6bc/0x6f1
+[    0.578792]  x86_64_start_reservations+0x24/0x26
+[    0.578792]  x86_64_start_kernel+0xad/0xb2
+[    0.578792]  secondary_startup_64_no_verify+0xe4/0xeb
+[    0.578792]  </TASK>
+[    0.578792] ---[ end Kernel panic - not syncing: MCA architectural 
+violation! ]---
 
