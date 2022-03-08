@@ -2,93 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 813BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7730CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:09:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347452AbiCHRJu (ORCPT
+        id S1348381AbiCHRKc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
+        Tue, 8 Mar 2022 12:10:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiCHRJs (ORCPT
+        with ESMTP id S245053AbiCHRKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:09:48 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C2636305;
-        Tue,  8 Mar 2022 09:08:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646759332; x=1678295332;
-  h=from:to:cc:subject:date:message-id;
-  bh=R0CDGnvApoSO1gfn9j+YZMCQMFxsSEmVfmtBoWiu+Qw=;
-  b=S5ceqGltaeFtsuLCkCWcq1CU6lm58G8qp3DcNfKNZe2xngHbgFXK+Vzb
-   YOxt3IJwein2lAKXqMsOe1a/yCqcf87Ud6CWKxlgLSL51XXxNnYXeItDk
-   Im4kbNNa25FkUyu0QgHTblfapkjQY8M6p2MMthC84g7QR1UIX1uFXUGvD
-   Rq8BMLaUfuGh80VcRWyyD6lTr46hhVONpGmiO3yZ8zEZmigZsllJX9+M2
-   egta+QvEcoje0c6k2fjnvkYZhd26zvq6ZAWTWAmSVeoaZ6/YwRR5sqXuJ
-   lY0M2QOrhudGFu7JGGKmMljaWm0qKw+HiWJ5TJm/UuIc7U/ft4EPnGyFU
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="235352219"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="235352219"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 09:08:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="641822768"
-Received: from gio-01395267462.iind.intel.com ([10.49.4.124])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Mar 2022 09:08:49 -0800
-From:   shruthi.sanil@intel.com
-To:     balbi@kernel.org, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     heikki.krogerus@intel.com, srikanth.thokala@intel.com,
-        mallikarjunappa.sangannavar@intel.com, shruthi.sanil@intel.com
-Subject: [PATCH] usb: dwc3: pci: Add support for Intel Alder Lake
-Date:   Tue,  8 Mar 2022 22:38:48 +0530
-Message-Id: <20220308170848.30722-1-shruthi.sanil@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 8 Mar 2022 12:10:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA14336B4D
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:09:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646759373;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9kvrF8a5fSjVKql9gaDkDoyGNlOLifpMBJz2kVYkRkE=;
+        b=BI1s2Vs9ivhHP20PzWPB5/4zLjZdPPArGsIo/vq1qjYG3id/MTOlGbbK/oHxcT2AeGlyS2
+        GYl+dUivcOrqCE4Go+4K2asek91sPQE/9sYhnC6wT8Xyl/Ia8Lc6Gyu9Y48vD2UaykrIIj
+        49/xVnj3Zper4cZGmVygEIuKbp72Ong=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-505-GicO_gLLPdGsjqd5MZyW7A-1; Tue, 08 Mar 2022 12:09:28 -0500
+X-MC-Unique: GicO_gLLPdGsjqd5MZyW7A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 763941006AA7;
+        Tue,  8 Mar 2022 17:09:25 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BF09C86C3B;
+        Tue,  8 Mar 2022 17:08:46 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id BB821416D5C1; Tue,  8 Mar 2022 10:12:35 -0300 (-03)
+Date:   Tue, 8 Mar 2022 10:12:35 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Oscar Shiang <oscar0225@livemail.tw>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: Re: [patch v11 00/13] extensible prctl task isolation interface and
+ vmstat sync
+Message-ID: <YidWQ28Jgs/FpmL1@fuller.cnet>
+References: <YhZvV5rRkHw4nOlR@fuller.cnet>
+ <TYCP286MB19134DD105CC996925379EC8A1099@TYCP286MB1913.JPNP286.PROD.OUTLOOK.COM>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TYCP286MB19134DD105CC996925379EC8A1099@TYCP286MB1913.JPNP286.PROD.OUTLOOK.COM>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shruthi Sanil <shruthi.sanil@intel.com>
+On Tue, Mar 08, 2022 at 02:32:46PM +0800, Oscar Shiang wrote:
+> On Feb 24, 2022, at 1:31 AM, Marcelo Tosatti <mtosatti@redhat.com> wrote:
+> > Hi Oscar,
+> > 
+> > On Sat, Feb 19, 2022 at 04:02:10PM +0800, Oscar Shiang wrote:
+> > > Hi Marcelo,
+> > > 
+> > > I tried to apply your patches to kernel v5.15.18-rt28 and measured
+> > > the latencies through oslat [1].
+> > > 
+> > > It turns out that the peak latency (around 100us) can drop to about 90us.
+> > > The result is impressive since I only changed the guest's kernel
+> > > instead of installing the patched kernel to both host and guest.
+> > > 
+> > > However, I am still curious about:
+> > > 1) Why did I catch a bigger maximum latency in almost each of the
+> > >   results of applying task isolation patches? Or does it come from
+> > >   other reasons?
+> > 
+> > There are a number of things that need to be done in order to have an 
+> > "well enough" isolated CPU so you can measure latency reliably:
+> > 
+> > * Boot a kernel with isolated CPU (or better, use realtime-virtual-host profile of
+> > https://github.com/redhat-performance/tuned.git, which does a bunch of
+> > other things to avoid interruptions to isolated CPUs).
+> > * Apply the userspace patches at https://people.redhat.com/~mtosatti/task-isol-v6-userspace-patches/
+> > to util-linux and rt-tests.
+> > 
+> > Run oslat with chisol:
+> > 
+> > chisol -q vmstat_sync -I conf oslat -c ...
+> > 
+> > Where chisol is from patched util-linux and oslat from patched rt-tests.
+> > 
+> > If you had "-f 1" (FIFO priority), on oslat, then the vmstat work would be hung.
+> > 
+> > Are you doing those things?
+> > 
+> > > 2) Why did we only get a 10us improvement on quiescing vmstat?
+> > 
+> > If you did not have FIFO priority on oslat, then other daemons 
+> > could be interrupting it, so better make sure the 10us improvement 
+> > you see is due to vmstat_flush workqueue work not executing anymore.
+> > 
+> > The testcase i use is: 
+> > 
+> > Stock kernel:
+> > 
+> > terminal 1: 
+> > # oslat -f 1 -c X ...
+> > 
+> > terminal 2:
+> > # echo 1 > /proc/sys/vm/stat_refresh
+> > (hang)
+> > 
+> > Patched kernel:
+> > 
+> > terminal 1: 
+> > # chisol -q vmstat_sync -I conf oslat -f 1 -c X ...
+> > 
+> > terminal 2:
+> > # echo 1 > /proc/sys/vm/stat_refresh
+> > # 
+> 
+> Sure, I did see the terminal hung during oslat with FIFO priority.
+> 
+> BTW, thanks for providing this test case. I used to run all workload stuff to just
+> verify the improvement of task isolation. It is a more straightr- forward way to do.
+> 
+> > > [1]: The result and the test scripts I used can be found at
+> > > https://gist.github.com/OscarShiang/8b530a00f472fd1c39f5979ee601516d#testing-task-isolation-via-oslat
+> > 
+> > OK, you seem to be doing everything necessary for chisol 
+> > to work. Does /proc/pid/task_isolation of the oslat worker thread
+> > (note its not the same pid as the main oslat thread) show "vmstat"
+> > configured and activated for quiesce?
+> 
+> The status of task_isolation seems to be set properly with "vmstat" and activated
+> 
+> > However 100us is really high. You should be able to get < 10us with
+> > realtime-virtual-host (i see 4us on an idle system).
+> > 
+> > The answer might be: because 10us is what it takes to execute
+> > vmstat_worker on the isolated CPU (you can verify with tracepoints).
+> > 
+> > That time depends on the number of per-CPU vmstat variables that need flushing, 
+> > i suppose...
+> 
+> Considering the interferences outside of the KVM, I have redone the measurements
+> directly on my x86_64 computer [1].
+> 
+> As result, most of the latencies are down to 60us (and below). There are still
+> some latencies larger than 80us, I am working on and trying to figure out the reason.
+> 
+> [1]: https://gist.github.com/OscarShiang/202eb691e649557fe3eaa5ec67a5aa82
 
-Add the PCI device ID and update the dwc3_pci_id_table
-for Intel Alder Lake SoC.
+Oscar,
 
-The DWC3 controllor in the CPU block handles the USB3 traffic
-and the device ID is common across the Alder Lake platforms.
+Did you confirm with hwlatdetect that the BIOS does not have long
+running SMIs?
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Shruthi Sanil <shruthi.sanil@intel.com>
----
- drivers/usb/dwc3/dwc3-pci.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 06d0e88ec8af..d8b9798fc7d4 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -40,6 +40,7 @@
- #define PCI_DEVICE_ID_INTEL_TGPLP		0xa0ee
- #define PCI_DEVICE_ID_INTEL_TGPH		0x43ee
- #define PCI_DEVICE_ID_INTEL_JSP			0x4dee
-+#define PCI_DEVICE_ID_INTEL_ADL			0x465e
- #define PCI_DEVICE_ID_INTEL_ADLP		0x51ee
- #define PCI_DEVICE_ID_INTEL_ADLM		0x54ee
- #define PCI_DEVICE_ID_INTEL_ADLS		0x7ae1
-@@ -412,6 +413,9 @@ static const struct pci_device_id dwc3_pci_id_table[] = {
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_JSP),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
-+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ADL),
-+	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ADLP),
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
-
-base-commit: ea4424be16887a37735d6550cfd0611528dbe5d9
--- 
-2.17.1
+Also, for the software part, you could save time by using the
+realtime-virtual-host profile (check /usr/lib/tuned/realtime-virtual-host/
+to see what its doing in addition to isolcpus=).
 
