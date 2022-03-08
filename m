@@ -2,124 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F908C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349473AbiCHTUH (ORCPT
+        id S1349484AbiCHTVi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 14:20:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        Tue, 8 Mar 2022 14:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241169AbiCHTUF (ORCPT
+        with ESMTP id S231518AbiCHTVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 14:20:05 -0500
-Received: from post.munsonfam.org (post.munsonfam.org [172.104.17.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46CF4BBA6;
-        Tue,  8 Mar 2022 11:19:07 -0800 (PST)
-X-Virus-Scanned: Debian amavisd-new at munsonfam.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=munsonfam.org;
-        s=20211029; t=1646767146;
-        bh=WUDUq32+avV6AuvvB00/SiKeDAyjsl+E+09hOXUIlG8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nPlof2j+MkJzBhl0+6G8Np+VGzF2OkilZCdyG5jnY0vZ7fdBnrDOkjoEsKsOgjsu7
-         JAVIDuc4OlFwcdaLBEYLqLWK+Ldu0ACLQhelvm5QUZFjbl1bddKmW18GU+ULZ4JsL6
-         BdtD/I5WOe2UIobPWDf0lUl2C6BXj0X6M5us/yvHhladfaTsP2m4E7SfH1MY4cjitg
-         JFiqFGpIkyny8qlrk8HViQFufwaUfpfkMjnEoeG/fS8b2XzU4jwHMg+0bdIg/SuPYh
-         TipU7iL45fGIXO8f0yuoTHefu3p2Nu4NvhGwpa/zaqZk+e+jlY5wQU/DK6Pn+AOAAz
-         PiGv9nCKzp/gA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=munsonfam.org;
- s=20211029; t=1646767146;
- bh=WUDUq32+avV6AuvvB00/SiKeDAyjsl+E+09hOXUIlG8=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=nPlof2j+MkJzBhl0+6G8Np+VGzF2OkilZCdyG5jnY0vZ7fdBnrDOkjoEsKsOgjsu7
- JAVIDuc4OlFwcdaLBEYLqLWK+Ldu0ACLQhelvm5QUZFjbl1bddKmW18GU+ULZ4JsL6
- BdtD/I5WOe2UIobPWDf0lUl2C6BXj0X6M5us/yvHhladfaTsP2m4E7SfH1MY4cjitg
- JFiqFGpIkyny8qlrk8HViQFufwaUfpfkMjnEoeG/fS8b2XzU4jwHMg+0bdIg/SuPYh
- TipU7iL45fGIXO8f0yuoTHefu3p2Nu4NvhGwpa/zaqZk+e+jlY5wQU/DK6Pn+AOAAz
- PiGv9nCKzp/gA==
-Received: by lappy-486.munsonfam.org (Postfix, from userid 1000)
- id 64F009E010E; Tue,  8 Mar 2022 14:19:03 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=munsonfam.org;
- s=20211029; t=1646767145;
- bh=WUDUq32+avV6AuvvB00/SiKeDAyjsl+E+09hOXUIlG8=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=ZwjMrn6NAsHhSfg1/pTnEuCPuMWoBs7PQuU+vyf/u5jeSqEQa4ZZrUMaeoHr+NLVs
- auu6qlkuMUqdzTnWeYJXiNxIAGIc/4nRpJGTsXKfO/MP+aJl+PO6Rh+KM/ZfVPkcxe
- +njgSqYg+41OxdvqWKeaMyntLvzjEfp7XqXDde9piosKg3vkR6+cOZPYOa5kdv5DOU
- wMnoB2u7NFgU2kSYRHp+U9UjtYYd+aoWnaol/rvp33W3IWaPC6+pO7/8/b6VemY0Z4
- TXkn4NKescgF1Ri6bH5UGST40krqjpVIALxN/MsJ/4VyBsQvMOnyJ7NhTkaziaFam8
- ItYA3HL2nZ94w==
-Date:   Tue, 8 Mar 2022 14:19:03 -0500
-From:   Eric B Munson <eric@munsonfam.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Problem: Bluetooth stops connecting to paired devices after
- commit 6a98e3836fa207
-Message-ID: <YiesJ4sLv010CpsA@munsonfam.org>
-References: <Yh/HKSW05IfXCGbR@munsonfam.org>
+        Tue, 8 Mar 2022 14:21:36 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED64D249
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:20:38 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KClXh6dmCz9sSY;
+        Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ybODevLGLuFg; Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KClXh5pY9z9sSV;
+        Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id AF2A08B786;
+        Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 4sDAj8rm35dU; Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.9])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 35EB18B77E;
+        Tue,  8 Mar 2022 20:20:36 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 228JKTYW3553853
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 8 Mar 2022 20:20:29 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 228JKTrX3553852;
+        Tue, 8 Mar 2022 20:20:29 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v1 4/6] powerpc: Add missing declaration in asm/drmem.h
+Date:   Tue,  8 Mar 2022 20:20:23 +0100
+Message-Id: <5643ec410e51b749db0636471cb7979524f9ed0e.1646767214.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <3c88286b55413730d7784133993a46ef4a3607ce.1646767214.git.christophe.leroy@csgroup.eu>
+References: <3c88286b55413730d7784133993a46ef4a3607ce.1646767214.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature"; boundary="+OQ+VktpKdL07tFC"
-Content-Disposition: inline
-In-Reply-To: <Yh/HKSW05IfXCGbR@munsonfam.org>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1646767223; l=760; s=20211009; h=from:subject:message-id; bh=mekaVXTCPn1sNWhK8UYxAQp3WpMd9vw87Reer+CRQmk=; b=QXnOnQ/tl8tULBuWRmeBgrwwlHLaC0B9LzxHvy4gRu3eUqploNsEUaSxX47nWyTdhyTPEkGaZCvz 6Nskw2+eAEZaG2Mjrz1ZW4YyRheNLm16IKe5c2qDvzCbY4xuyF9j
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Don't rely on random inclusion of linux/of.h by users
+of asm/drmem.h
 
---+OQ+VktpKdL07tFC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add a forward declaration of struct property and
+struct device_node.
 
-On Wed, 02 Mar 2022, Eric B Munson wrote:
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/drmem.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> Hi,
->=20
-> When testing the latest upstream this morning, my bluetooth mouse
-> stopped working. Further inspection showed that my laptop is failing to
-> connect, but I didn't see anything relevant in dmesg, the driver seemed
-> to load firmware and intialize fine.
->=20
-> A bisect turned up commit 6a98e3836fa207 as the first bad one, but
-> unfortunately there was another problem discovered during the bisect
-> where my bluetooth radio failed to come up at all.
->=20
-> I am using a 5 year old Lenovo X1 carbon which is using the Intel
-> Wireless 8265 / 8275 card and the btintel driver.
->=20
-> I can easily reproduce, and would be happy to test patches or help
-> diagnose if I can. Is this a known issue?
->=20
-> Regards,
-> Eric
+diff --git a/arch/powerpc/include/asm/drmem.h b/arch/powerpc/include/asm/drmem.h
+index 4265d5e95c2c..13bf6dee8e2d 100644
+--- a/arch/powerpc/include/asm/drmem.h
++++ b/arch/powerpc/include/asm/drmem.h
+@@ -23,6 +23,9 @@ struct drmem_lmb_info {
+ 	u64                     lmb_size;
+ };
+ 
++struct device_node;
++struct property;
++
+ extern struct drmem_lmb_info *drmem_info;
+ 
+ static inline struct drmem_lmb *drmem_lmb_next(struct drmem_lmb *lmb,
+-- 
+2.34.1
 
-This problem remains with the latest 5.17-rc7 kernel. Is there anything
-I can offer to help pinpoint what the cause is?
-
-Regards,
-Eric
-
---+OQ+VktpKdL07tFC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEZ71cx3bfGX4kMtFBqEb2cZzVukkFAmInrB4ACgkQqEb2cZzV
-ukkveQ//YkLwFAz9um8O0Zth3ajoyVf5iD34ftR9Tyx1IS7c6QHijhRCYhvDpsHm
-h9B1aVk0e7vN9GRCZuZx06MgVrv0Iv8iCVX/vbfJrHuKM+nv4uu92b3Vzbwq7u6D
-fxOFrtrbbyPBTzSSCb2YkNnvfX8NbkK9CoaP2quYflsOtxUGunJ3gtEcmuVC+f03
-qPeRFIor/TOldxacj1Y8hewDo1wr4Wzk+EAio7FVlnk4QJ7vZ5pM3HJ1DpKCtIX+
-rj5uWt/yyNVU89Af+woHECJIfRrgTrTGFpqcc2PIJBGSn1k4oOOfKD2JO8E0sfxp
-C+D40fIlQ3Y/cVH+TcvyD0Si4CJ9IwhuFk22D/izoIGdkZgHW9Hjx4Gc6VFOaBIb
-KYTnog/KDJGZNe3zfOqB4DXOw4ADWLE7QuL0E75oICj0Nb6oQJUsv3EKVKwzZfuG
-Qi+yIdgrPf+xtTt4+IiWbq52sgFO6CCqMjoHS94LhdspYqcUrVkVJTCwtrzQ0S0v
-RkIISpbauVezANNu7BXPq5xz3rSLVeUXEcDzIGbYeR1s9/Nt3LEfFnkwSdAlXz95
-+P/kGSes/ZfZOZcKMGwFgfJVonuR8RjKeTzHkTFQJGSlgntcusR18TxlbaZF7P7+
-KyiM5Q0CLSQSqfzpIbZAPxjTgoUBIdeqQTZ7EutvVMHFi2fCkIA=
-=eAcx
------END PGP SIGNATURE-----
-
---+OQ+VktpKdL07tFC--
