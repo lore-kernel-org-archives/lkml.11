@@ -2,147 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89092C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00967C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345642AbiCHKHs (ORCPT
+        id S1345625AbiCHKJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:07:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        Tue, 8 Mar 2022 05:09:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345621AbiCHKHo (ORCPT
+        with ESMTP id S1345632AbiCHKJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:07:44 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D240915;
-        Tue,  8 Mar 2022 02:06:48 -0800 (PST)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2287j8pb012052;
-        Tue, 8 Mar 2022 10:06:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=WPiUHp7Llsw5SNrmHjEwv6thabpRY2uwdIC/chRd+9c=;
- b=IteXf2ofpBG9LbAEPdQhWaJ0pj6HlOTLjD4d8+x+7+e9f9RUnG11sJ+t4+DvqIidPPQK
- 2nwMT2aXzMygMpdIOyL00xRV2sYBVzOIqMsDSkBx89HX+6QlDB4qdi4OkNVKCKmmY2p0
- FBz3TBUdeLrvsrcMNru2H93IiBiBD6SyPYsJ/LfDwl8IxKgtlU5pZUxtWzb540JrkuqP
- DSyYbCjGfnSoo6LNraA8JXD8Xn1eWli/4slZfTRz40vOi4zHX42jo0guWed37vcqgaoQ
- 2l3Sj3yIVavWpeNwWol+r68AH7DhuTSvlnAK8VKd7yjD3CP3Lig3QJ4ACSXAv59SNuuP 4A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ep03ve2r7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 10:06:46 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2289pSbT027404;
-        Tue, 8 Mar 2022 10:06:46 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ep03ve2qn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 10:06:45 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 228A33Kc020419;
-        Tue, 8 Mar 2022 10:06:43 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3eky4hy7fe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 10:06:43 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 228A6etH49283388
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Mar 2022 10:06:40 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6E42E4C050;
-        Tue,  8 Mar 2022 10:06:40 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B2D8C4C040;
-        Tue,  8 Mar 2022 10:06:39 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.68.74])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Tue,  8 Mar 2022 10:06:39 +0000 (GMT)
-Date:   Tue, 8 Mar 2022 11:06:37 +0100
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Tony Krowiak <akrowiak@linux.ibm.com>
-Cc:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, alex.williamson@redhat.com,
-        kwankhede@nvidia.com, fiuczy@linux.ibm.com,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH v18 08/18] s390/vfio-ap: allow assignment of unavailable
- AP queues to mdev device
-Message-ID: <20220308110637.2e839732.pasic@linux.ibm.com>
-In-Reply-To: <eb30a519-5707-717a-ff22-cc3a8e65dc7e@linux.ibm.com>
-References: <20220215005040.52697-1-akrowiak@linux.ibm.com>
-        <20220215005040.52697-9-akrowiak@linux.ibm.com>
-        <97681738-50a1-976d-9f0f-be326eab7202@linux.ibm.com>
-        <9ac3908e-06da-6276-d1df-94898918fc5b@linux.ibm.com>
-        <20220307142711.5af33ece.pasic@linux.ibm.com>
-        <151241e6-3099-4be2-da54-1f0e5cb3a705@linux.ibm.com>
-        <20220307181027.29c821b6.pasic@linux.ibm.com>
-        <eb30a519-5707-717a-ff22-cc3a8e65dc7e@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Tue, 8 Mar 2022 05:09:48 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24952251B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:08:51 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso1135650wmr.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 02:08:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=SkUfNfh3Db7trPuKU1cr1xzPGmDu+V01w8HeZZrfZF4=;
+        b=TcEZ7SnCqx+88Ek0cWwzw0I0uG+pFNYXYTSd6/FUBFUNJcDZChkJJ7aym8/zsrh9wP
+         0WJgPgrTgga9nbrft6Qq3nPhOdr+MPh3ve1ACFwiAtZ1rDXFoxerrnct9JfMVDD9vNBu
+         OVt7YNvg58Lpaq4XSGltz3TE2P1VPLaSGGWj0ekHuYkbs1y0QLp2/q2TKPBPjgaBgYZm
+         FndSCehbwzLESjJjkPoLr143+oqKI3+53ODsNc2UrDsJ7JxHh88NLirt+Z0q4CIxGxz3
+         Vghz+IB7ZlQCNmZ0+SdIERYZwTdCaLnVmvnqMTFRhkSMoqNHWVB32uO4XfMp6DyYlqXs
+         OZVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SkUfNfh3Db7trPuKU1cr1xzPGmDu+V01w8HeZZrfZF4=;
+        b=lJBRhuWGPgbDMSl1YTbR4q3TjkLs0mlsQXHMGawks3YULIZB7sHhq6x9804xl6j+p9
+         q8zLcepwDo7t44nA+DqQ54EpuAVAmEPhkXmMw39L+ov5iAJhpyEp1A0Xs7+xfW+HcS1y
+         owXrsVqReEvBUuLsr9LLItJp1Z9u6EHEr//HGpLHpgDwY8K8PPAeyDjxBMgTFIulJkg+
+         XHI8w+M8RxzXUxtf7PPcLwPCGRhxWQarqU7JA5OwPHsKDjiH/Y+vR+nFY7nNbgDakgjJ
+         MxLmKCs+9qrj9N6jKfiKXSMX6KDHPf07aBrLiDUT6TEd6ruzoIP73oujIhdMasrpj8HK
+         HUiw==
+X-Gm-Message-State: AOAM53018/bhHlstsaqW6caLloQBH7sCTXCRIo9PZTFxxOqAerLFYFSq
+        l2XWBt08TuaHEixBjik3nzR0Bg==
+X-Google-Smtp-Source: ABdhPJyrzL3jGMmbS7hVKMZbspK5xUkBY1M3etbicBcGEMsABnOdM650d1NvL9CixlA6YyPMGo+S2Q==
+X-Received: by 2002:a1c:6a08:0:b0:388:73a2:1548 with SMTP id f8-20020a1c6a08000000b0038873a21548mr2868053wmc.163.1646734130240;
+        Tue, 08 Mar 2022 02:08:50 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id u14-20020adfed4e000000b001e3323611e5sm12978222wro.26.2022.03.08.02.08.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 02:08:49 -0800 (PST)
+Date:   Tue, 8 Mar 2022 10:08:47 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <YicrL1RXZhXXsA6t@google.com>
+References: <20220307191757.3177139-1-lee.jones@linaro.org>
+ <YiZeB7l49KC2Y5Gz@kroah.com>
+ <YicPXnNFHpoJHcUN@google.com>
+ <Yicalf1I6oBytbse@kroah.com>
+ <Yicer3yGg5rrdSIs@google.com>
+ <YicolvcbY9VT6AKc@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: G9yLo1VpFU1J1bzoLhYxh5HJSn66nx17
-X-Proofpoint-ORIG-GUID: EtQJUWOuC8QThu3OceJgqNtyPqcbOz5V
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-08_03,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- spamscore=0 clxscore=1015 malwarescore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 adultscore=0 phishscore=0 impostorscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203080053
+In-Reply-To: <YicolvcbY9VT6AKc@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 18:45:45 -0500
-Tony Krowiak <akrowiak@linux.ibm.com> wrote:
+On Tue, 08 Mar 2022, Greg KH wrote:
 
-[..]
-> >>> s/belong to the matrix_mdev's matrix/are fields of the matrix_mdev
-> >>> object/  
-> >> This is the comment I wrote:
-> >>
-> >>           /*
-> >>            * Comparing an mdev's newly updated apm/aqm with itself would
-> >>            * result in a false positive when verifying whether any APQNs
-> >>            * are shared; so, if the input apm and aqm belong to the
-> >>            * matrix_mdev's matrix, then move on to the next one.
-> >>            */
-> >>
-> >> However, I'd be happy to change it to whatever either of you want.  
-> > What ain't obvious for the comment is that "belong to" actually means
-> > composition and not association. In other words, there there is no
-> > pointer/indirection involved, a pointer that would tell us what matrix
-> > does belong to what matrix_mdev, but rather the matrix is just a part
-> > of the matrix_mdev object.
-> >
-> > I don't like 'false positive' either, and whether the apm/aqm is
-> > newly updated or not is also redundant and confusing in my opinion. When
-> > we check because of inuse there is not updated whatever. IMHO the old
-> > message was better than this one.
-> >
-> > Just my opinion, if you two agree, that this is the way to go, I'm fine
-> > with that.
-> >
-> > Regards,
-> > Halil  
+> On Tue, Mar 08, 2022 at 09:15:27AM +0000, Lee Jones wrote:
+> > On Tue, 08 Mar 2022, Greg KH wrote:
+> > 
+> > > On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
+> > > > On Mon, 07 Mar 2022, Greg KH wrote:
+> > > > 
+> > > > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
+> > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
+> > > > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > > > 
+> > > > > > Also WARN() as a precautionary measure.  The purpose of this is to
+> > > > > > capture possible future race conditions which may pop up over time.
+> > > > > > 
+> > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > > > 
+> > > > > > Cc: <stable@vger.kernel.org>
+> > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > ---
+> > > > > >  drivers/vhost/vhost.c | 10 ++++++++++
+> > > > > >  1 file changed, 10 insertions(+)
+> > > > > > 
+> > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > > > index 59edb5a1ffe28..ef7e371e3e649 100644
+> > > > > > --- a/drivers/vhost/vhost.c
+> > > > > > +++ b/drivers/vhost/vhost.c
+> > > > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > >  	int i;
+> > > > > >  
+> > > > > >  	for (i = 0; i < dev->nvqs; ++i) {
+> > > > > > +		/* No workers should run here by design. However, races have
+> > > > > > +		 * previously occurred where drivers have been unable to flush
+> > > > > > +		 * all work properly prior to clean-up.  Without a successful
+> > > > > > +		 * flush the guest will malfunction, but avoiding host memory
+> > > > > > +		 * corruption in those cases does seem preferable.
+> > > > > > +		 */
+> > > > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > > > > 
+> > > > > So you are trading one syzbot triggered issue for another one in the
+> > > > > future?  :)
+> > > > > 
+> > > > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
+> > > > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
+> > > > > you want that to happen?
+> > > > 
+> > > > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
+> > > 
+> > > Has it changed?  Last I looked, it did trigger on WARN_* calls, which
+> > > has resulted in a huge number of kernel fixes because of that.
+> > 
+> > Everything is customisable in syzkaller, so maybe there are specific
+> > builds which panic_on_warn enabled, but none that I'm involved with
+> > do.
 > 
-> Feel free to recommend the verbiage for this comment. I'm not married
-> to my comments and am open to anything that helps others to
-> understand what is going on here. It seems obvious to me, but I wrote
-> the code. Obviously, it is not so obvious based on Jason's comments,
-> so maybe someone else can compose a better comment.
+> Many systems run with panic-on-warn (i.e. the cloud), as they want to
+> drop a box and restart it if anything goes wrong.
+> 
+> That's why syzbot reports on WARN_* calls.  They should never be
+> reachable by userspace actions.
+> 
+> > Here follows a topical example.  The report above in the Link: tag
+> > comes with a crashlog [0].  In there you can see the WARN() at the
+> > bottom of vhost_dev_cleanup() trigger many times due to a populated
+> > (non-flushed) worker list, before finally tripping the BUG() which
+> > triggers the report:
+> > 
+> > [0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
+> 
+> Ok, so both happens here.  But don't add a warning for something that
+> can't happen.  Just handle it and move on.  It looks like you are
+> handling it in this code, so please drop the WARN_ON().
 
-/*
-* If the input apm and aqm are fields of the matrix_mdev object,
-* then move on to the next matrix_mdev.
-*/
+Happy to oblige.
 
-Regards,
-Halil
+Let's give Micheal a chance to speak, then I'll fix-up if he agrees.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
