@@ -2,195 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347093AbiCHNSU (ORCPT
+        id S1347109AbiCHNSo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
+        Tue, 8 Mar 2022 08:18:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347158AbiCHNSE (ORCPT
+        with ESMTP id S1347094AbiCHNSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:18:04 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939F748E7A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:17:07 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id b5so28542720wrr.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 05:17:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DlKhxu+LqVz17YluSD/2WMyqg3I/bzdDeK8Xd5lH4Nc=;
-        b=tUpT+l/kDbEnrxwoPe0cSlkoHFeIwcOIW34nEeAfTPLzg9g3X3m+2wb+kf6CF5WruS
-         0uHfQcbl0j3HUZrgH5zNoEOadjHjWWZTyypxkET0RXrAYoWU0Jt3Pjv8KbMxMvpb3KVR
-         glykef1q0jt6Zr/UshpSLSB5H5CAsbcCvI9ZGfV21RY3q4jb1xdUew2vLy55dsDZ2dlc
-         m47imykZZVCdCkiLfI+A7NccsHLepDUnd3nnTWnCLXuKfrtxE+P8Uv5OeWTBry+vJB7z
-         9Mi2D4JmgdpMQ82s+1oeuJaLQRSx5zs4EUGATFnb4xNMQ6XQwISOyNY7NOI1gjPJpyeK
-         uTPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DlKhxu+LqVz17YluSD/2WMyqg3I/bzdDeK8Xd5lH4Nc=;
-        b=palit3BJsaDfGLbM7LuIoTUnxCV1x7+L3MMxKIvtTizHDS/h5WfpSxFdrG9jrfTRyX
-         zChPRlUCmryXUSl8U2+PK9dc9AZJTcaiAMS+cE3vnkI+EImPj+bk8DjLEXC2HaQxWMDM
-         pFuVgAAtrO9VY2tr0nsfNb867fOAmpNKvOrjIvKsNc0JkFEXPp3KpsX1On40LPEgzc7C
-         RyuSDa+fa2tuXEaKkV7Hw4Ndf5mNJiOhSemHlNnOfprJbtFuYtHJzYBI4bLryuYlSl4P
-         eYrOoJZxBS8uQ2dlIBcCsoUAQUQJ5RV128A5+ac83qJEDer0KstMjJawGLQQtQUwKPco
-         hQRQ==
-X-Gm-Message-State: AOAM531yXzwPd7H83PBS82FMf3bsdUO5M7eZQd1O6pH7c2IjDWXkBWOZ
-        slZLXEXr92w3vb/ti2cPFWRjug==
-X-Google-Smtp-Source: ABdhPJwbgYMOFPI4IWRNj/NoVcAezAtsLTQB67NBB/7Wxh6IySHxoNz1f7HejTNRMpjkOwC4T7R9yw==
-X-Received: by 2002:a05:6000:1acf:b0:1f0:5e62:9b28 with SMTP id i15-20020a0560001acf00b001f05e629b28mr11817701wry.448.1646745426018;
-        Tue, 08 Mar 2022 05:17:06 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id w6-20020a5d6806000000b002036515dda7sm2022427wru.33.2022.03.08.05.17.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 05:17:05 -0800 (PST)
-Date:   Tue, 8 Mar 2022 13:17:03 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <YidXT6zP1QN5KZUs@google.com>
-References: <20220307191757.3177139-1-lee.jones@linaro.org>
- <YiZeB7l49KC2Y5Gz@kroah.com>
- <YicPXnNFHpoJHcUN@google.com>
- <Yicalf1I6oBytbse@kroah.com>
- <Yicer3yGg5rrdSIs@google.com>
- <YicolvcbY9VT6AKc@kroah.com>
- <20220308055003-mutt-send-email-mst@kernel.org>
- <YidBz7SxED2ii1Lh@kroah.com>
- <20220308071718-mutt-send-email-mst@kernel.org>
+        Tue, 8 Mar 2022 08:18:38 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCD3D68
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:17:40 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id BE0921F4404A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646745458;
+        bh=x9ELuT5l87DnnSxAfWp7rgapLQDyu7nCQiypyxue8IM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AisYgY0SCcQ5uduxHtXdKUR2x0DoQxIo226widUi6WSmtBN1xj8h9SZTrrSUfiGIy
+         llAL/4sMgykVk4nZLHf0mtj2emCXySfJQJSXNdeOSfHAtasXicNewl/AONMV5ZyFP2
+         Mh8GEjMu2Dtjv/rFeFOqc794iaNlOJdOg0fwO5xwSDifSptRzZPvUpiGhUnJYySVq9
+         jhUFKIhW/D/Go75+oMcrGP80IruArXJEuMdnUPMbwFRA/v1mrp1aU1jdg9GjCJqT7G
+         i6szm0wpV/RBuzl6mjP+++y/La8Ogbyse7wLBDrktUDEVAmISM68uVLMUulwt5gHUO
+         rFOjfwWn3X6iA==
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v1 1/5] drm/virtio: Correct drm_gem_shmem_get_sg_table() error handling
+Date:   Tue,  8 Mar 2022 16:17:21 +0300
+Message-Id: <20220308131725.60607-2-dmitry.osipenko@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220308071718-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 08 Mar 2022, Michael S. Tsirkin wrote:
+drm_gem_shmem_get_sg_table() never ever returned NULL on error. Correct
+the error handling to avoid crash on OOM.
 
-> On Tue, Mar 08, 2022 at 12:45:19PM +0100, Greg KH wrote:
-> > On Tue, Mar 08, 2022 at 05:55:58AM -0500, Michael S. Tsirkin wrote:
-> > > On Tue, Mar 08, 2022 at 10:57:42AM +0100, Greg KH wrote:
-> > > > On Tue, Mar 08, 2022 at 09:15:27AM +0000, Lee Jones wrote:
-> > > > > On Tue, 08 Mar 2022, Greg KH wrote:
-> > > > > 
-> > > > > > On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
-> > > > > > > On Mon, 07 Mar 2022, Greg KH wrote:
-> > > > > > > 
-> > > > > > > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
-> > > > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > > > > > > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > > > > > > > > during virtqueue clean-up and we mitigate the reported issues.
-> > > > > > > > > 
-> > > > > > > > > Also WARN() as a precautionary measure.  The purpose of this is to
-> > > > > > > > > capture possible future race conditions which may pop up over time.
-> > > > > > > > > 
-> > > > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > > > > > > > > 
-> > > > > > > > > Cc: <stable@vger.kernel.org>
-> > > > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > > > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > > > > > ---
-> > > > > > > > >  drivers/vhost/vhost.c | 10 ++++++++++
-> > > > > > > > >  1 file changed, 10 insertions(+)
-> > > > > > > > > 
-> > > > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > > > > > > > index 59edb5a1ffe28..ef7e371e3e649 100644
-> > > > > > > > > --- a/drivers/vhost/vhost.c
-> > > > > > > > > +++ b/drivers/vhost/vhost.c
-> > > > > > > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > > > > > > > >  	int i;
-> > > > > > > > >  
-> > > > > > > > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > > > > > > > +		/* No workers should run here by design. However, races have
-> > > > > > > > > +		 * previously occurred where drivers have been unable to flush
-> > > > > > > > > +		 * all work properly prior to clean-up.  Without a successful
-> > > > > > > > > +		 * flush the guest will malfunction, but avoiding host memory
-> > > > > > > > > +		 * corruption in those cases does seem preferable.
-> > > > > > > > > +		 */
-> > > > > > > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > > > > > > > 
-> > > > > > > > So you are trading one syzbot triggered issue for another one in the
-> > > > > > > > future?  :)
-> > > > > > > > 
-> > > > > > > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
-> > > > > > > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
-> > > > > > > > you want that to happen?
-> > > > > > > 
-> > > > > > > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
-> > > > > > 
-> > > > > > Has it changed?  Last I looked, it did trigger on WARN_* calls, which
-> > > > > > has resulted in a huge number of kernel fixes because of that.
-> > > > > 
-> > > > > Everything is customisable in syzkaller, so maybe there are specific
-> > > > > builds which panic_on_warn enabled, but none that I'm involved with
-> > > > > do.
-> > > > 
-> > > > Many systems run with panic-on-warn (i.e. the cloud), as they want to
-> > > > drop a box and restart it if anything goes wrong.
-> > > > 
-> > > > That's why syzbot reports on WARN_* calls.  They should never be
-> > > > reachable by userspace actions.
-> > > > 
-> > > > > Here follows a topical example.  The report above in the Link: tag
-> > > > > comes with a crashlog [0].  In there you can see the WARN() at the
-> > > > > bottom of vhost_dev_cleanup() trigger many times due to a populated
-> > > > > (non-flushed) worker list, before finally tripping the BUG() which
-> > > > > triggers the report:
-> > > > > 
-> > > > > [0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
-> > > > 
-> > > > Ok, so both happens here.  But don't add a warning for something that
-> > > > can't happen.  Just handle it and move on.  It looks like you are
-> > > > handling it in this code, so please drop the WARN_ON().
-> > > > 
-> > > > thanks,
-> > > > 
-> > > > greg k-h
-> > > 
-> > > Hmm. Well this will mean if we ever reintroduce the bug then
-> > > syzkaller will not catch it for us :( And the bug is there,
-> > > it just results in a hard to reproduce error for userspace.
-> > 
-> > Is this an error you can recover from in the kernel?
-> >  What is userspace
-> > supposed to know with this information when it sees it?
-> 
-> IIUC we are talking about a use after free here since we somehow
-> managed to have a pointer to the device in a worker while
-> device is being destroyed.
-> 
-> That's the point of the warning as use after free is hard to debug. You
-> ask can we recover from a use after free? 
-> 
-> As regards to the added lock, IIUC it kind of shifts the use after free
-> window to later and since we zero out some of the memory just before we
-> free it, it's a bit more likely to recover.  I would still like to see
-> some more analysis on why the situation is always better than it was
-> before though.
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+---
+ drivers/gpu/drm/virtio/virtgpu_object.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-With the locks in place, the UAF should not occur.
-
-The issue here is that you have 2 different tasks processing the
-same area of memory (via pointers to structs).  In these scenarios you
-should always provide locking and/or reference counting to prevent
-memory corruption or UAF.
-
+diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
+index f293e6ad52da..bea7806a3ae3 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_object.c
++++ b/drivers/gpu/drm/virtio/virtgpu_object.c
+@@ -168,9 +168,11 @@ static int virtio_gpu_object_shmem_init(struct virtio_gpu_device *vgdev,
+ 	 * since virtio_gpu doesn't support dma-buf import from other devices.
+ 	 */
+ 	shmem->pages = drm_gem_shmem_get_sg_table(&bo->base);
+-	if (!shmem->pages) {
++	ret = PTR_ERR(shmem->pages);
++	if (ret) {
+ 		drm_gem_shmem_unpin(&bo->base);
+-		return -EINVAL;
++		shmem->pages = NULL;
++		return ret;
+ 	}
+ 
+ 	if (use_dma_api) {
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.35.1
+
