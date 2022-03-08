@@ -2,214 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5587FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 03:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0847CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 04:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243638AbiCHD7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 22:59:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        id S242263AbiCHEDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 23:03:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235259AbiCHD7i (ORCPT
+        with ESMTP id S235259AbiCHEDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 22:59:38 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E583E26D6
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 19:58:42 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id z11so15918903pla.7
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 19:58:42 -0800 (PST)
+        Mon, 7 Mar 2022 23:03:01 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACC934666
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 20:02:04 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id e25-20020a0568301e5900b005b236d5d74fso3238538otj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 20:02:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iM+PV4fpxYW+ye1hFiFOovw7UPOtpG0DgMDRwiqD2pI=;
-        b=n/TquMYDiCS5XjFnrqg2Rfynuci2nh/x9QjaQhiXqLLqPStY3bnxMEPjbLiw6cZoGp
-         A9otGqZJeMd6QGFiV/WNAeCfNIDR7ISElcUT49MAqD/QjwZFCvK4eP8dXpJXCUbWbc9h
-         uEteC7JvE5XvAdQRtp13A+i0HoYrpaB/J5UgctQgpbHN4rbjmiy7vjZ61ROpwvnJUoEk
-         bq4138IxI9XWGpynxni7wJhx5OCIejex8YoIJAc5Q/3JPSiO6iWszBoEBkHDVhDlesgQ
-         Kqsa1qmSA9bwHrzY3zoOjWR4Ue9q574rukZgL12erl1XBX3nhjvwfv9vUqYnonEcxHn6
-         9xGw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lL2jwquuB5a1bVZ3DDxZSoQNHav7KSw0idCUxdrZUO4=;
+        b=HRK0rxQEbLI+AV+583AuIQ/lhxdQPR/ugRj8NfVtUG5sH4r/szAQTyirCldbNOcqdB
+         zy/JQwkfv/1ncYXk4UHWediqxlwq2MdKfEMBeuM740RC5X925zrKVegxX4KfM4E2+MrB
+         722pHMKj62741Jrfbb557NT8yB4+RTdOyQUwfy7WsZvoTSIsc9Y4nTj4O3hnVZiOE9Rl
+         ZgI1nzUoPkWDKRUovI6TfgtT8UXvaCd9sZ0IXGHxboFEVTucW68aDvcbbre4yG8HDyLv
+         xtQWwQ0TB0LPbx7LQs1LyD8wmhYyfo5p//r8hHgQYAb2iPNFrshw6vLDfYU1nZeUK1wd
+         kUCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iM+PV4fpxYW+ye1hFiFOovw7UPOtpG0DgMDRwiqD2pI=;
-        b=sfbJsgExoBwksfMxjdibxNBtH+deSW819uGdCgiJRtoRjB66RQL5fCQqp9nGnRt3z5
-         uf0TzeznMexycr71hfdfvqGw2u+e6D77Crs4ZwidBbAY7GVB8Ynqv+lRi0ae2L2BaTQy
-         uIhV0rKKiwA/OrZpRMFPC9U87ideGvqAkuv1YTt8Plw4u2WfExW3Mw4Qu9V9MnrL3F47
-         bbNNtOUO2dugIjz+lnNe+pHesHChH6KDm93d/0D7LSr4EIRSRhRSRPIGVt7fNerllDP8
-         F7wzVpcUUxruRUpvaTPr9vZLOeRelGH5Usv14zFSNrO6hFUa8+a1H/KJ5SCfKz71q05J
-         oVbQ==
-X-Gm-Message-State: AOAM5329BmRw90CjSmjSJI2iTQ9eIYtNtIBAOJchv8zSSqVpJwOdtj0a
-        K2u5RulisNLn+wJb+yfROPA=
-X-Google-Smtp-Source: ABdhPJzJPZcseuHrMrdVO5mr7+LcGX6jZWezgCPAs/E3Ubo62ruRz2MrzGgdUxgq7qTTe/ZD/Irr1g==
-X-Received: by 2002:a17:902:7802:b0:150:baa:bc1a with SMTP id p2-20020a170902780200b001500baabc1amr15501161pll.110.1646711922412;
-        Mon, 07 Mar 2022 19:58:42 -0800 (PST)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id x9-20020aa79409000000b004f704d33ca0sm4909272pfo.136.2022.03.07.19.58.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lL2jwquuB5a1bVZ3DDxZSoQNHav7KSw0idCUxdrZUO4=;
+        b=LITnn4AJCh6g3Gf1e+N41xsbT6jx7vcFTjwuggRXLSMTzy5gLlwN9hV0LkkJw6oqqa
+         pXJPoH1QKGKs7YwzPSzDER2zuhndEafcKKlD5aWQsV+1PHm7Yfwpuf5R/NI6F2k89bR0
+         qwjhxS05m9GATHNHGSWH/g5sZNGQ+z1VT9AyookfYA+NixuEl2M3AnBv7CDIABycXNNF
+         mVo5BV5MAqA8v04D8kRk26gdHjL3bYRH1s3t7btPWA+1pC8lfSysGwAoAzMYSXbpSzYp
+         YOUtGOdRKpnGST9NYXZTdb6m9N5bWrDrcZHeuBb81gmEXpp7WXsGOhJWjuiqqImUvN3I
+         p1qQ==
+X-Gm-Message-State: AOAM533sG6nCg3wF/Kx84eemG0AVI29rq38yoJpXryC8wPckji4NOA9p
+        xAYIfbrYt7XkoYZrL9OGV86LDA==
+X-Google-Smtp-Source: ABdhPJysS6dMaKwQEavYolUtYHmmOh0f0I+99qjQrxBpzIFAVQJ6ws+v8JgBMwlHODQofOxzC+XCOg==
+X-Received: by 2002:a05:6830:1e8a:b0:5ad:c4c:c52a with SMTP id n10-20020a0568301e8a00b005ad0c4cc52amr7559488otr.90.1646712124079;
+        Mon, 07 Mar 2022 20:02:04 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id l84-20020aca3e57000000b002d97bda3872sm7199789oia.55.2022.03.07.20.02.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 19:58:41 -0800 (PST)
-Date:   Tue, 8 Mar 2022 03:58:37 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] mm/slub: refactor deactivate_slab()
-Message-ID: <YibUbZeTSqMyE2rM@ip-172-31-19-208.ap-northeast-1.compute.internal>
-References: <20220307074057.902222-1-42.hyeyoo@gmail.com>
- <20220307074057.902222-3-42.hyeyoo@gmail.com>
- <07d4f687-544f-17d4-51cd-7b86aa23fb21@suse.cz>
+        Mon, 07 Mar 2022 20:02:03 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Amit Nischal <anischal@codeaurora.org>,
+        Taniya Das <tdas@codeaurora.org>
+Cc:     dmitry.baryshkov@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] clk: qcom: rcg2: Cache CFG register updates for parked RCGs
+Date:   Mon,  7 Mar 2022 20:03:48 -0800
+Message-Id: <20220308040348.1340405-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <07d4f687-544f-17d4-51cd-7b86aa23fb21@suse.cz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 05:40:42PM +0100, Vlastimil Babka wrote:
-> On 3/7/22 08:40, Hyeonggon Yoo wrote:
-> > Simplify deactivate_slab() by unlocking n->list_lock and retrying
-> > cmpxchg_double() when cmpxchg_double() fails, and perform
-> > add_{partial,full} only when it succeed.
-> > 
-> > Releasing and taking n->list_lock again here is not harmful as SLUB
-> > avoids deactivating slabs as much as possible.
-> > 
-> > [ vbabka@suse.cz: perform add_{partial,full} when cmpxchg_double()
-> >   succeed.
-> > 
-> >   count deactivating full slabs even if debugging flag is not set. ]
-> > 
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> 
-> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-> 
-> adding both to slab-next. Fixed up some nits myself, see below:
-> 
-> >  
-> > @@ -2420,61 +2416,50 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
-> >  	new.frozen = 0;
-> >  
-> >  	if (!new.inuse && n->nr_partial >= s->min_partial)
-> > -		m = M_FREE;
-> > +		mode = M_FREE;
-> >  	else if (new.freelist) {
-> 
-> This was against kernel style even before the patch - we use { } in the
-> 'else if' branch, thus all branches should use { } even if one-line.
->
+As GDSCs are turned on and off some associated clocks are momentarily
+enabled for house keeping purposes. For this, and similar, purposes the
+"shared RCGs" will park the RCG on a source clock which is known to be
+available.
+When the RCG is parked, a safe clock source will be selected and
+committed, then the original source would be written back and upon enable
+the change back to the unparked source would be committed.
 
-Ah, you are right. Agree with this change.
-"Remove unnecessary brace" rule does not apply here.
+But starting with SM8350 this fails, as the value in CFG is committed by
+the GDSC handshake and without a valid parent the GDSC enablement will
+fail.
 
-> > -		m = M_PARTIAL;
-> > -		if (!lock) {
-> > -			lock = 1;
-> > -			/*
-> > -			 * Taking the spinlock removes the possibility that
-> > -			 * acquire_slab() will see a slab that is frozen
-> > -			 */
-> > -			spin_lock_irqsave(&n->list_lock, flags);
-> > -		}
-> > -	} else {
-> > -		m = M_FULL;
-> > -		if (kmem_cache_debug_flags(s, SLAB_STORE_USER) && !lock) {
-> > -			lock = 1;
-> > -			/*
-> > -			 * This also ensures that the scanning of full
-> > -			 * slabs from diagnostic functions will not see
-> > -			 * any frozen slabs.
-> > -			 */
-> > -			spin_lock_irqsave(&n->list_lock, flags);
-> > -		}
-> > -	}
-> > -
-> > -	if (l != m) {
-> > -		if (l == M_PARTIAL)
-> > -			remove_partial(n, slab);
-> > -		else if (l == M_FULL)
-> > -			remove_full(s, n, slab);
-> > +		mode = M_PARTIAL;
-> > +		/*
-> > +		 * Taking the spinlock removes the possibility that
-> > +		 * acquire_slab() will see a slab that is frozen
-> > +		 */
-> > +		spin_lock_irqsave(&n->list_lock, flags);
-> > +	} else if (kmem_cache_debug_flags(s, SLAB_STORE_USER)) {
-> > +		mode = M_FULL;
-> > +		/*
-> > +		 * This also ensures that the scanning of full
-> > +		 * slabs from diagnostic functions will not see
-> > +		 * any frozen slabs.
-> > +		 */
-> > +		spin_lock_irqsave(&n->list_lock, flags);
-> > +	} else
-> > +		mode = M_FULL_NOLIST;
-> 
-> Ditto here (this is new).
+To avoid this problem, the software needs to cache the CFG register
+content while the shared RCG is parked.
 
-Yes.
+Writes to M, N and D registers are committed as they are requested. New
+helpers for get_parent() and recalc_rate() are extracted from their
+previous implementations and __clk_rcg2_configure() is modified to allow
+it to operate on the cached value.
 
-> 
-> > -		if (m == M_PARTIAL)
-> > -			add_partial(n, slab, tail);
-> > -		else if (m == M_FULL)
-> > -			add_full(s, n, slab);
-> > -	}
-> >  
-> > -	l = m;
-> >  	if (!cmpxchg_double_slab(s, slab,
-> >  				old.freelist, old.counters,
-> >  				new.freelist, new.counters,
-> > -				"unfreezing slab"))
-> > +				"unfreezing slab")) {
-> > +		if (mode == M_PARTIAL || mode == M_FULL)
-> > +			spin_unlock_irqrestore(&n->list_lock, flags);
-> >  		goto redo;
-> > +	}
-> >  
-> > -	if (lock)
-> > -		spin_unlock_irqrestore(&n->list_lock, flags);
-> >  
-> > -	if (m == M_PARTIAL)
-> > +	if (mode == M_PARTIAL) {
-> > +		add_partial(n, slab, tail);
-> > +		spin_unlock_irqrestore(&n->list_lock, flags);
-> >  		stat(s, tail);
-> > -	else if (m == M_FULL)
-> > -		stat(s, DEACTIVATE_FULL);
-> > -	else if (m == M_FREE) {
-> > +	} else if (mode == M_FREE) {
-> >  		stat(s, DEACTIVATE_EMPTY);
-> >  		discard_slab(s, slab);
-> >  		stat(s, FREE_SLAB);
-> > -	}
-> > +	} else if (mode == M_FULL) {
-> > +		add_full(s, n, slab);
-> > +		spin_unlock_irqrestore(&n->list_lock, flags);
-> > +		stat(s, DEACTIVATE_FULL);
-> > +	} else if (mode == M_FULL_NOLIST)
-> > +		stat(s, DEACTIVATE_FULL);
-> 
-> And here.
->
+Fixes: 7ef6f11887bd ("clk: qcom: Configure the RCGs to a safe source as needed")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
-Yes.
+Changes since v1:
+- Rather than caching the last requested freqnecy, cache and update the CFG
+  register value while the shared RCG is disabled.
+- Use/modify the cached RCG value in get_parent(), set_parent() and
+  recalc_rate() for parked shared RCGs as well.
+- Rewrote the commit message.
 
-> >  }
-> >  
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> 
+ drivers/clk/qcom/clk-rcg.h  |   2 +
+ drivers/clk/qcom/clk-rcg2.c | 134 +++++++++++++++++++++++++++---------
+ 2 files changed, 104 insertions(+), 32 deletions(-)
 
-Thanks!
-
+diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
+index 99efcc7f8d88..7bcbda8e4f17 100644
+--- a/drivers/clk/qcom/clk-rcg.h
++++ b/drivers/clk/qcom/clk-rcg.h
+@@ -139,6 +139,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
+  * @freq_tbl: frequency table
+  * @clkr: regmap clock handle
+  * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
++ * @parked_cfg: cached value of the CFG register for parked RCGs
+  */
+ struct clk_rcg2 {
+ 	u32			cmd_rcgr;
+@@ -149,6 +150,7 @@ struct clk_rcg2 {
+ 	const struct freq_tbl	*freq_tbl;
+ 	struct clk_regmap	clkr;
+ 	u8			cfg_off;
++	u32			parked_cfg;
+ };
+ 
+ #define to_clk_rcg2(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg2, clkr)
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index e1b1b426fae4..8e3aebb72191 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -73,16 +73,11 @@ static int clk_rcg2_is_enabled(struct clk_hw *hw)
+ 	return (cmd & CMD_ROOT_OFF) == 0;
+ }
+ 
+-static u8 clk_rcg2_get_parent(struct clk_hw *hw)
++static u8 __clk_rcg2_get_parent(struct clk_hw *hw, u32 cfg)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+ 	int num_parents = clk_hw_get_num_parents(hw);
+-	u32 cfg;
+-	int i, ret;
+-
+-	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
+-	if (ret)
+-		goto err;
++	int i;
+ 
+ 	cfg &= CFG_SRC_SEL_MASK;
+ 	cfg >>= CFG_SRC_SEL_SHIFT;
+@@ -91,12 +86,27 @@ static u8 clk_rcg2_get_parent(struct clk_hw *hw)
+ 		if (cfg == rcg->parent_map[i].cfg)
+ 			return i;
+ 
+-err:
+ 	pr_debug("%s: Clock %s has invalid parent, using default.\n",
+ 		 __func__, clk_hw_get_name(hw));
+ 	return 0;
+ }
+ 
++static u8 clk_rcg2_get_parent(struct clk_hw *hw)
++{
++	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++	u32 cfg;
++	int ret;
++
++	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
++	if (ret) {
++		pr_err("%s: Unable to read CFG register for %s\n",
++		       __func__, clk_hw_get_name(hw));
++		return 0;
++	}
++
++	return __clk_rcg2_get_parent(hw, cfg);
++}
++
+ static int update_config(struct clk_rcg2 *rcg)
+ {
+ 	int count, ret;
+@@ -163,12 +173,10 @@ calc_rate(unsigned long rate, u32 m, u32 n, u32 mode, u32 hid_div)
+ }
+ 
+ static unsigned long
+-clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
++__clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate, u32 cfg)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+-	u32 cfg, hid_div, m = 0, n = 0, mode = 0, mask;
+-
+-	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
++	u32 hid_div, m = 0, n = 0, mode = 0, mask;
+ 
+ 	if (rcg->mnd_width) {
+ 		mask = BIT(rcg->mnd_width) - 1;
+@@ -189,6 +197,17 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+ 	return calc_rate(parent_rate, m, n, mode, hid_div);
+ }
+ 
++static unsigned long
++clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
++{
++	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++	u32 cfg;
++
++	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
++
++	return __clk_rcg2_recalc_rate(hw, parent_rate, cfg);
++}
++
+ static int _freq_tbl_determine_rate(struct clk_hw *hw, const struct freq_tbl *f,
+ 				    struct clk_rate_request *req,
+ 				    enum freq_policy policy)
+@@ -262,9 +281,10 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
+ 	return _freq_tbl_determine_rate(hw, rcg->freq_tbl, req, FLOOR);
+ }
+ 
+-static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
++static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f,
++				u32 *cfg)
+ {
+-	u32 cfg, mask;
++	u32 mask;
+ 	struct clk_hw *hw = &rcg->clkr.hw;
+ 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
+ 
+@@ -289,21 +309,31 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ 			return ret;
+ 	}
+ 
+-	mask = BIT(rcg->hid_width) - 1;
+-	mask |= CFG_SRC_SEL_MASK | CFG_MODE_MASK | CFG_HW_CLK_CTRL_MASK;
+-	cfg = f->pre_div << CFG_SRC_DIV_SHIFT;
+-	cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
++	*cfg &= ~GENMASK(rcg->hid_width - 1, 0);
++	*cfg &= ~(CFG_SRC_SEL_MASK | CFG_MODE_MASK | CFG_HW_CLK_CTRL_MASK);
++
++	*cfg = f->pre_div << CFG_SRC_DIV_SHIFT;
++	*cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
+ 	if (rcg->mnd_width && f->n && (f->m != f->n))
+-		cfg |= CFG_MODE_DUAL_EDGE;
+-	return regmap_update_bits(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg),
+-					mask, cfg);
++		*cfg |= CFG_MODE_DUAL_EDGE;
++
++	return 0;
+ }
+ 
+ static int clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ {
++	u32 cfg;
+ 	int ret;
+ 
+-	ret = __clk_rcg2_configure(rcg, f);
++	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
++	if (ret)
++		return ret;
++
++	ret = __clk_rcg2_configure(rcg, f, &cfg);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), cfg);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -969,11 +999,12 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
+ 		return -EINVAL;
+ 
+ 	/*
+-	 * In case clock is disabled, update the CFG, M, N and D registers
+-	 * and don't hit the update bit of CMD register.
++	 * In case clock is disabled, update the M, N and D registers and cache
++	 * the CFG value in parked_cfg.
+ 	 */
++
+ 	if (!__clk_is_enabled(hw->clk))
+-		return __clk_rcg2_configure(rcg, f);
++		return __clk_rcg2_configure(rcg, f, &rcg->parked_cfg);
+ 
+ 	return clk_rcg2_shared_force_enable_clear(hw, f);
+ }
+@@ -997,6 +1028,11 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Write back the stored configuration corresponding to current rate */
++	ret = regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, rcg->parked_cfg);
++	if (ret)
++		return ret;
++
+ 	ret = update_config(rcg);
+ 	if (ret)
+ 		return ret;
+@@ -1007,13 +1043,12 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
+ static void clk_rcg2_shared_disable(struct clk_hw *hw)
+ {
+ 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
+-	u32 cfg;
+ 
+ 	/*
+ 	 * Store current configuration as switching to safe source would clear
+ 	 * the SRC and DIV of CFG register
+ 	 */
+-	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &cfg);
++	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &rcg->parked_cfg);
+ 
+ 	/*
+ 	 * Park the RCG at a safe configuration - sourced off of safe source.
+@@ -1031,17 +1066,52 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
+ 	update_config(rcg);
+ 
+ 	clk_rcg2_clear_force_enable(hw);
++}
+ 
+-	/* Write back the stored configuration corresponding to current rate */
+-	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, cfg);
++static u8 clk_rcg2_shared_get_parent(struct clk_hw *hw)
++{
++	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++
++	/* If the shared rcg is parked used the cached cfg instead */
++	if (!__clk_is_enabled(hw->clk))
++		return __clk_rcg2_get_parent(hw, rcg->parked_cfg);
++
++	return clk_rcg2_get_parent(hw);
++}
++
++static int clk_rcg2_shared_set_parent(struct clk_hw *hw, u8 index)
++{
++	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++
++	/* If the shared rcg is parked only update the cached cfg */
++	if (!__clk_is_enabled(hw->clk)) {
++		rcg->parked_cfg &= ~CFG_SRC_SEL_MASK;
++		rcg->parked_cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
++
++		return 0;
++	}
++
++	return clk_rcg2_set_parent(hw, index);
++}
++
++static unsigned long
++clk_rcg2_shared_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
++{
++	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
++
++	/* If the shared rcg is parked used the cached cfg instead */
++	if (!__clk_is_enabled(hw->clk))
++		return __clk_rcg2_recalc_rate(hw, parent_rate, rcg->parked_cfg);
++
++	return clk_rcg2_recalc_rate(hw, parent_rate);
+ }
+ 
+ const struct clk_ops clk_rcg2_shared_ops = {
+ 	.enable = clk_rcg2_shared_enable,
+ 	.disable = clk_rcg2_shared_disable,
+-	.get_parent = clk_rcg2_get_parent,
+-	.set_parent = clk_rcg2_set_parent,
+-	.recalc_rate = clk_rcg2_recalc_rate,
++	.get_parent = clk_rcg2_shared_get_parent,
++	.set_parent = clk_rcg2_shared_set_parent,
++	.recalc_rate = clk_rcg2_shared_recalc_rate,
+ 	.determine_rate = clk_rcg2_determine_rate,
+ 	.set_rate = clk_rcg2_shared_set_rate,
+ 	.set_rate_and_parent = clk_rcg2_shared_set_rate_and_parent,
 -- 
-Thank you, You are awesome!
-Hyeonggon :-)
+2.33.1
+
