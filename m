@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB565C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95997C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350802AbiCHWev (ORCPT
+        id S1350808AbiCHWex (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 17:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
+        Tue, 8 Mar 2022 17:34:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350780AbiCHWeq (ORCPT
+        with ESMTP id S1350778AbiCHWer (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 17:34:46 -0500
+        Tue, 8 Mar 2022 17:34:47 -0500
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6325B58E4A;
-        Tue,  8 Mar 2022 14:33:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9170158E48;
+        Tue,  8 Mar 2022 14:33:50 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.90,165,1643641200"; 
-   d="scan'208";a="113755997"
+   d="scan'208";a="113756005"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 09 Mar 2022 07:33:45 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 09 Mar 2022 07:33:50 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 8DA1F400F2D5;
-        Wed,  9 Mar 2022 07:33:43 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 55F33400F2D7;
+        Wed,  9 Mar 2022 07:33:48 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -33,9 +33,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 1/3] arm64: dts: renesas: r9a07g054: Fillup the GPU node
-Date:   Tue,  8 Mar 2022 22:33:22 +0000
-Message-Id: <20220308223324.7456-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 3/3] arm64: dts: renesas: r9a07g054: Add TSU node
+Date:   Tue,  8 Mar 2022 22:33:24 +0000
+Message-Id: <20220308223324.7456-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220308223324.7456-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20220308223324.7456-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -43,96 +43,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Renesas RZ/V2L SoC has Mali-G31 GPU, this patch fills up the GPU node and
-adds opp table to RZ/V2L (R9A07G054) SoC DTSI.
+Add TSU and thermal-zones nodes to RZ/V2L (R9A07G054) SoC DTSI.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- arch/arm64/boot/dts/renesas/r9a07g054.dtsi | 62 +++++++++++++++++++++-
- 1 file changed, 61 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/renesas/r9a07g054.dtsi | 41 ++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-index 9e730171efa8..e4f1defa0ff8 100644
+index bdf0a104e82c..f35aa0311e9c 100644
 --- a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
 +++ b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-@@ -83,6 +83,50 @@
+@@ -589,6 +589,16 @@
+ 			};
+ 		};
+ 
++		tsu: thermal@10059400 {
++			compatible = "renesas,r9a07g054-tsu",
++				     "renesas,rzg2l-tsu";
++			reg = <0 0x10059400 0 0x400>;
++			clocks = <&cpg CPG_MOD R9A07G054_TSU_PCLK>;
++			resets = <&cpg R9A07G054_TSU_PRESETN>;
++			power-domains = <&cpg>;
++			#thermal-sensor-cells = <1>;
++		};
++
+ 		sbc: spi@10060000 {
+ 			compatible = "renesas,r9a07g054-rpc-if",
+ 				     "renesas,rzg2l-rpc-if";
+@@ -974,6 +984,37 @@
  		};
  	};
  
-+	gpu_opp_table: opp-table-1 {
-+		compatible = "operating-points-v2";
++	thermal-zones {
++		cpu-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&tsu 0>;
++			sustainable-power = <717>;
 +
-+		opp-500000000 {
-+			opp-hz = /bits/ 64 <500000000>;
-+			opp-microvolt = <1100000>;
-+		};
++			cooling-maps {
++				map0 {
++					trip = <&target>;
++					cooling-device = <&cpu0 0 2>;
++					contribution = <1024>;
++				};
++			};
 +
-+		opp-400000000 {
-+			opp-hz = /bits/ 64 <400000000>;
-+			opp-microvolt = <1100000>;
-+		};
++			trips {
++				sensor_crit: sensor-crit {
++					temperature = <125000>;
++					hysteresis = <1000>;
++					type = "critical";
++				};
 +
-+		opp-250000000 {
-+			opp-hz = /bits/ 64 <250000000>;
-+			opp-microvolt = <1100000>;
-+		};
-+
-+		opp-200000000 {
-+			opp-hz = /bits/ 64 <200000000>;
-+			opp-microvolt = <1100000>;
-+		};
-+
-+		opp-125000000 {
-+			opp-hz = /bits/ 64 <125000000>;
-+			opp-microvolt = <1100000>;
-+		};
-+
-+		opp-100000000 {
-+			opp-hz = /bits/ 64 <100000000>;
-+			opp-microvolt = <1100000>;
-+		};
-+
-+		opp-62500000 {
-+			opp-hz = /bits/ 64 <62500000>;
-+			opp-microvolt = <1100000>;
-+		};
-+
-+		opp-50000000 {
-+			opp-hz = /bits/ 64 <50000000>;
-+			opp-microvolt = <1100000>;
++				target: trip-point {
++					temperature = <100000>;
++					hysteresis = <1000>;
++					type = "passive";
++				};
++			};
 +		};
 +	};
 +
- 	psci {
- 		compatible = "arm,psci-1.0", "arm,psci-0.2";
- 		method = "smc";
-@@ -606,8 +650,24 @@
- 		};
- 
- 		gpu: gpu@11840000 {
-+			compatible = "renesas,r9a07g054-mali",
-+				     "arm,mali-bifrost";
- 			reg = <0x0 0x11840000 0x0 0x10000>;
--			/* place holder */
-+			interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "job", "mmu", "gpu", "event";
-+			clocks = <&cpg CPG_MOD R9A07G054_GPU_CLK>,
-+				 <&cpg CPG_MOD R9A07G054_GPU_AXI_CLK>,
-+				 <&cpg CPG_MOD R9A07G054_GPU_ACE_CLK>;
-+			clock-names = "gpu", "bus", "bus_ace";
-+			power-domains = <&cpg>;
-+			resets = <&cpg R9A07G054_GPU_RESETN>,
-+				 <&cpg R9A07G054_GPU_AXI_RESETN>,
-+				 <&cpg R9A07G054_GPU_ACE_RESETN>;
-+			reset-names = "rst", "axi_rst", "ace_rst";
-+			operating-points-v2 = <&gpu_opp_table>;
- 		};
- 
- 		gic: interrupt-controller@11900000 {
+ 	timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupts-extended = <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
 -- 
 2.17.1
 
