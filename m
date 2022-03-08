@@ -2,86 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 944CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241131AbiCHW2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 17:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        id S1347211AbiCHW2o (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 17:28:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350822AbiCHW2F (ORCPT
+        with ESMTP id S241588AbiCHW2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 17:28:05 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4014F583B8;
-        Tue,  8 Mar 2022 14:27:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646778428; x=1678314428;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7l6jxbKbZmfdRAwe6nmc8SY4mZKw+uHcQDJK850rraA=;
-  b=BRVJwWwbiEWNDfB3L/yAaGn9clgPfU9STD6kDGrH+AzQlkuMl7ojV7tq
-   vC3us92cLSu773/f2naMMepVo5vOY8Lhf8p33z9mB2xS8gzbKugpEmCp4
-   Ebk3p2vUjzeJ6T4TYwZaQoGQv2Dz3oaJ4WrikEMugY2Jx/BdhKM98b/bH
-   gN/mBj/RJXDkeY+5KHKCHEhEjSlExJ/rRfIH7Que5SsvjT10gj1bTf6S7
-   88kAnFXe+k8OsFyvAQI+an8vMci8x0yEiToAepaLEXEuMXlVIE93OYxdF
-   ghPDw4sbb65MvGCcIYZTfeUrkdiG7o7qnxobwWs2CX9dx2MCR9fC9D2dY
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
-   d="scan'208";a="156181155"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 15:27:07 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Mar 2022 15:27:07 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 8 Mar 2022 15:27:07 -0700
-Date:   Tue, 8 Mar 2022 23:30:00 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Message-ID: <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
+        Tue, 8 Mar 2022 17:28:40 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDF6DF21;
+        Tue,  8 Mar 2022 14:27:43 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id u3so658899ybh.5;
+        Tue, 08 Mar 2022 14:27:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aSMng1r6YjOAee+dAY6//eCefHSkP2I3JjBP1oWQxRg=;
+        b=q3uiZE17K5cFw81g4rRpSe8E/+9wtX2qPZn7LpHns+YaxgO/kWSOiyEAwuqBzipu+V
+         2m3KorASjgl3YKvSrO91pfuFgHshrr5peMdqESH85XJhk8iShkg+wRafioTL3SIGRcQI
+         yzrpxcVrRAVnUpIYAtPphjqdSmdZ38aJcTJvgoIdlhy8O8McKj2A6OqSyVuvFn9pbIpt
+         jpoWr5MKjgU0ZzuRN3JUoM4RVHgblEpNLVRFMqs74j/3IGpZK9QqXILo7Z4vtEyneoVg
+         DNK5f30Va8jCWponJZs5CncrWFfZfPXRB6L+7f/Q1Mg7R+W1jQpxiCThQNDCaLRc5USi
+         QVYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aSMng1r6YjOAee+dAY6//eCefHSkP2I3JjBP1oWQxRg=;
+        b=hNLaJyTBMB47CtcqHIBadyTcAANUZUcrXBpE+MqVeUprSbzOulZoM7AdogAuo+Qy53
+         EIsp1l3lFnduHo69WrKwni1qKR2Wth2j/FVosKzrA6ch2Uy3FkGiHDO7ju0icFyGjwkl
+         yZiS5QkLr+Eu2RwiGVwAeW65N3u6C7OKkW+5hbECKzesefO9swfgfetwx5cYIGJUsC80
+         zlGxSTPmw2ePQ8Bz8KA44AeUj2+APSS/QZv8ue7VCySNdfxp6ChvQuzVBLuEDWTrlwEG
+         8oQ9kUbttvUqfnUNolQRTDzaWk8vlpn4+iQI9KgOSTmI0Qtul6JMJcCF1w1fFmPQqxiP
+         H1wg==
+X-Gm-Message-State: AOAM531g+8uVz1SIrYeUf9DeH+4/jzUqh9ErmSW8bvIWvI15hM95MTp7
+        3ycLRWtvVmkaUpweJZEEjkUnJPMzpPA9VPAyXwA=
+X-Google-Smtp-Source: ABdhPJxKmcGmC/yQ0zmUDBoYPdak5GwjSOLmmPUkVZWES9yLFunHu/+8ajzgMQOkfPJtbNrIyJEKy6gc80/S1Z3MXP4=
+X-Received: by 2002:a25:7504:0:b0:629:308e:9d95 with SMTP id
+ q4-20020a257504000000b00629308e9d95mr11553190ybc.106.1646778462706; Tue, 08
+ Mar 2022 14:27:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YifMSUA/uZoPnpf1@lunn.ch>
+References: <20220307162207.188028559@linuxfoundation.org> <Yid4BNbLm3mStBi2@debian>
+ <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
+ <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com> <YifFMPFMp9gPnjPc@kroah.com>
+In-Reply-To: <YifFMPFMp9gPnjPc@kroah.com>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Tue, 8 Mar 2022 22:27:06 +0000
+Message-ID: <CADVatmMs_+YN3YAajL95fy98iEgoeb-7qXA_ZJ7K3QsdHGG=oA@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Huang Pei <huangpei@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/08/2022 22:36, Andrew Lunn wrote:
-> 
-> >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
-> >  {
-> > -     u32 val;
-> > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
-> > +     int ret = 0;
+On Tue, Mar 8, 2022 at 9:05 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Mar 08, 2022 at 11:08:10PM +0530, Naresh Kamboju wrote:
+> > Hi Greg,
 > >
-> > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
-> > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
-> > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
-> > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
-> > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> > +             if (time_after(jiffies, time)) {
-> > +                     ret = -ETIMEDOUT;
-> > +                     break;
-> > +             }
-> 
-> Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
-> explicitly supports that.
+> > On Tue, 8 Mar 2022 at 21:40, Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
+> > >
+> > > On Tue, Mar 8, 2022 at 3:36 PM Sudip Mukherjee
+> > > <sudipm.mukherjee@gmail.com> wrote:
+> > > >
+> > > > Hi Greg,
+> > > >
+> > > > On Mon, Mar 07, 2022 at 05:28:50PM +0100, Greg Kroah-Hartman wrote:
+> > > > > This is the start of the stable review cycle for the 5.15.27 release.
+> > > > > There are 256 patches in this series, all will be posted as a response
+> > > > > to this one.  If anyone has any issues with these being applied, please
+> > > > > let me know.
+> > > > >
+> > >
+> > > <snip>
+> > >
+> > > >
+> > > > Mips failures,
+> > > >
+> > > > allmodconfig, gpr_defconfig and mtx1_defconfig fails with:
+> >
 
-I have tried but it didn't improve. It was the same as before.
+<snip>
 
-> 
->     Andrew
+>
+> Ah, I'll queue up the revert for that in the morning, thanks for finding
+> it.  Odd it doesn't trigger the same issue in 5.16.y.
+
+ohh.. thats odd. I don't build v5.16.y, so never thought of it.
+Just checked a little now, and I was expecting it to be fixed by:
+e5b40668e930 ("slip: fix macro redefine warning")
+but it still has the build error. I will check tomorrow morning what
+is missing in v5.15.y
+Please delay the revert till tomorrow afternoon.
+
 
 -- 
-/Horatiu
+Regards
+Sudip
