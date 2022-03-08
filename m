@@ -2,96 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D06C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7116C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349512AbiCHT3I (ORCPT
+        id S1349540AbiCHT31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 14:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
+        Tue, 8 Mar 2022 14:29:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349129AbiCHT3F (ORCPT
+        with ESMTP id S1349531AbiCHT3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 14:29:05 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C832FFFF
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:28:07 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 8E2181F444B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646767685;
-        bh=wTrQZzTeDzl3S/Woe+temKvCkXTTxdkP03ZFoe6Rj9E=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=JaIccFmi1jX1ewpbOHkkQGyiOhdvqKxkBql/3KQWmeEBQn/mP+wHpnZhb1wis3XJI
-         XZhjoIwXc65vjwfJ/RWJzRoRjZQ17T4hYNBj1rk3qnMxIBzU2jmPIgD53sRpDbTvCA
-         L5xqICzA0o8+u8NbxpCDnGKpDaGP08JoVK46goArxgFJElNE/jkMtCa15MfDt/YGzi
-         LYURN3gjJ0/HMiCflPowekOpYyKzx0v55sCPVNEipd7jXFkRabu2pEmsAeOc8J+/+p
-         EV4yRSp29+JTPdXCnN+2MrvPyFySxaO9NBklmjUqlJftdKQ6RDxPu8nNXlPWuZh1+k
-         0ZqbjSNLJScNg==
-Message-ID: <d2290971-ea22-8203-631e-b896c76a994b@collabora.com>
-Date:   Tue, 8 Mar 2022 22:28:01 +0300
+        Tue, 8 Mar 2022 14:29:24 -0500
+X-Greylist: delayed 593 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 11:28:25 PST
+Received: from luna.linkmauve.fr (82-65-109-163.subs.proxad.net [82.65.109.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1552E6A1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:28:25 -0800 (PST)
+Received: by luna.linkmauve.fr (Postfix, from userid 1000)
+        id B18F3F418F8; Tue,  8 Mar 2022 20:18:29 +0100 (CET)
+From:   Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Subject: [PATCH] ARM: fix compilation error when BPF_SYSCALL is disabled
+Date:   Tue,  8 Mar 2022 20:18:20 +0100
+Message-Id: <20220308191820.18270-1-linkmauve@linkmauve.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Rob Clark <robdclark@chromium.org>
-References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
- <CAF6AEGt=aVJ9nR+Wv+bJEFZrn-cNOSNXG1TaJr=Cx-FTgutwKA@mail.gmail.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <CAF6AEGt=aVJ9nR+Wv+bJEFZrn-cNOSNXG1TaJr=Cx-FTgutwKA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 19:29, Rob Clark wrote:
-> On Tue, Mar 8, 2022 at 5:17 AM Dmitry Osipenko
-> <dmitry.osipenko@collabora.com> wrote:
->>
->> Hello,
->>
->> This patchset introduces memory shrinker for the VirtIO-GPU DRM driver.
->> During OOM, the shrinker will release BOs that are marked as "not needed"
->> by userspace using the new madvise IOCTL. The userspace in this case is
->> the Mesa VirGL driver, it will mark the cached BOs as "not needed",
->> allowing kernel driver to release memory of the cached shmem BOs on lowmem
->> situations, preventing OOM kills.
-> 
-> Will host memory pressure already trigger shrinker in guest? 
+It was missing a semicolon.
 
-The host memory pressure won't trigger shrinker in guest here. This
-series will help only with the memory pressure within the guest using a
-usual "virgl context".
+Fixes build error introduced in
+25875aa71dfefd1959f07e626c4d285b88b27ac2.
 
-Having a host shrinker in a case of "virgl contexts" should be a
-difficult problem to solve.
+Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+---
+ arch/arm/kernel/spectre.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This is
-> something I'm quite interested in for "virtgpu native contexts" (ie.
-> native guest driver with new context type sitting on top of virtgpu),
+diff --git a/arch/arm/kernel/spectre.c b/arch/arm/kernel/spectre.c
+index e7fea962d632..0dcefc36fb7a 100644
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(void)
+ #ifdef CONFIG_BPF_SYSCALL
+ 	return !sysctl_unprivileged_bpf_disabled;
+ #else
+-	return false
++	return false;
+ #endif
+ }
+ 
+-- 
+2.35.1
 
-In a case of "native contexts" it should be doable, at least I can't see
-any obvious problems. The madvise invocations could be passed to the
-host using a new virtio-gpu command by the guest's madvise IOCTL
-handler, instead-of/in-addition-to handling madvise in the guest's
-kernel, and that's it.
-
-> since that isn't using host storage
-
-s/host/guest ?
