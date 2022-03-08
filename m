@@ -2,109 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A3FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4D1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347040AbiCHNFk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:05:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        id S236924AbiCHNGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 08:06:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346893AbiCHNFi (ORCPT
+        with ESMTP id S232603AbiCHNGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:05:38 -0500
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5815547AEE;
-        Tue,  8 Mar 2022 05:04:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=y2IyLNhcIcqW/P9xsp3kK8t+WoLf+fyXhFG9KATTpEU=; b=FNkRgec82ncuQvKLVwyz4kOmJ8
-        4U/FYkpMDZxDHCgItgQ85ivg4FhuKpnd2kbdnwnQdNeKvLRvSqtGxzL7z8RfSKEbwjzsZHVwYQRsf
-        nTysstqkRhPaf+M6YkMyP4nGFDYW2kTVmNq18WFEw9JPc0RJ+0iBh2+1ki+n6aKER/b+KuUb50EY1
-        5LgC1OB5Z7FZeLvzA/1PeZ1j5aJkK1bGU9l/qgqvc7XamjscU//dNYyd2mDiI8r33J/HHSyu9JSS4
-        UwR9LAo6DabWmyo/j0gUA6LaJDzAcQ87lgkFJAsG9cdqIMqihCpRBDLtxyh7W+M8E13Yxi/ervoQU
-        8lJv6jPw==;
-Received: from [187.56.66.217] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nRZVp-000CZ4-Dc; Tue, 08 Mar 2022 14:04:25 +0100
-Message-ID: <23044cc6-ae58-d464-d5d1-3b5e6d4202c8@igalia.com>
-Date:   Tue, 8 Mar 2022 10:04:06 -0300
+        Tue, 8 Mar 2022 08:06:18 -0500
+X-Greylist: delayed 573 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 05:05:20 PST
+Received: from smtp-out.xnet.cz (smtp-out.xnet.cz [178.217.244.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E683C47AEE;
+        Tue,  8 Mar 2022 05:05:20 -0800 (PST)
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 800163ED0;
+        Tue,  8 Mar 2022 13:55:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=true.cz; s=xnet;
+        t=1646744145; bh=IQtZfpMDBgNq+XqyyqcXkjpmhkMzPfrWtiIPXWEftkA=;
+        h=From:To:Cc:Subject:Date;
+        b=V5hxtIpNw/RdC4vprgPE1HhlvLfGbHUa5Tk2RyGpT+nY+b83oDxPMgcfj4vD6ZE2q
+         8y7IzJPJQwUvH1syMkj1OUpsAUlQW7EpTcSAfeQXMqxKkLgOhM/sr0aWclNPacgOy+
+         WTW7GwtOyIUCkK40klQ4OwlNiRTIeS5XFZVDaazY=
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id 78341216;
+        Tue, 8 Mar 2022 13:55:20 +0100 (CET)
+From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Bastien=20Roucari=C3=A8s?= <rouca@debian.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] Revert "ARM: dts: sun7i: A20-olinuxino-lime2: Fix ethernet phy-mode"
+Date:   Tue,  8 Mar 2022 13:55:30 +0100
+Message-Id: <20220308125531.27305-1-ynezz@true.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     "bhe@redhat.com" <bhe@redhat.com>,
-        "d.hatayama@fujitsu.com" <d.hatayama@fujitsu.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>
-References: <TYAPR01MB6507D06BA6D32218F6E88198955F9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
- <fda509a5-ea0d-4d1d-a1c1-ca5e80010fc0@igalia.com>
- <TYAPR01MB6507D9747647685B554B8F8F955F9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
- <fb5e66b6-049a-22ab-5913-a04cc302b629@igalia.com> <YfPxvzSzDLjO5ldp@alley>
- <73011b6f-084b-43f5-cc01-1818a8a57e56@igalia.com>
- <YiV/HbXftVF2iAvU@MiWiFi-R3L-srv>
- <e1033adc-46ff-5dbc-e739-1bf725b6fed0@igalia.com>
- <YiYQ/w6Hn5Zb67di@MiWiFi-R3L-srv>
- <788ab36d-ef65-4cc8-4edf-a46d2687d97e@igalia.com> <YidSI33Uk8wHDuO9@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YidSI33Uk8wHDuO9@alley>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/03/2022 09:54, Petr Mladek wrote:
-> [...]
-> Honestly, I am not that keen about enforcing the priorities.
-> 
-> It would make sense only when the ordering is really important.
-> Then there should be some rules. It should be obvious why
-> something has to be done earlier than something else.
-> 
-> From my POV, it is just another complexity. Someone will need to
-> assign the priority to the existing notifiers. People will wonder
-> about it for newly added notifiers.
-> 
-> Reproducibility seems to be the only motivation. Is it really a
-> problem? Do the notifiers affect each other?
-> 
-> Also the notifiers are typically registered by some early boot
-> code. It will define some ordering out of box.
-> 
-> Best Regards,
-> Petr
+This reverts commit 55dd7e059098ce4bd0a55c251cb78e74604abb57 as it
+breaks network on my A20-olinuxino-lime2 hardware revision "K" which has
+Micrel KSZ9031RNXCC-TR Gigabit PHY. Bastien has probably some previous
+hardware revisions which were based on RTL8211E-VB-CG1 PHY and thus this
+fix was working on his board.
 
-OK Petr, makes sense. I feel that one the pros of the approach would be
-to document all the notifiers in the header, but I guess nothing
-prevents me to do that heh
-I don't need enforcing the priorities for this.
+Cc: stable@vger.kernel.org
+Cc: Bastien Roucariès <rouca@debian.org>
+References: https://github.com/openwrt/openwrt/issues/9153
+References: https://github.com/OLIMEX/OLINUXINO/blob/master/HARDWARE/A20-OLinuXino-LIME2/hardware_revision_changes_log.txt
+Signed-off-by: Petr Štetiar <ynezz@true.cz>
+---
+ arch/arm/boot/dts/sun7i-a20-olinuxino-lime2.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I liked the idea of having everything "reproducible" as you said, but we
-could face the problem of how to order some independent notifiers...
-would be something "ad-hoc".
-
-I'll progress here without priorities for now, if somebody see an
-advantage for that, we can use it.
-
-Thanks for your points,
-
-
-Guilherme
+diff --git a/arch/arm/boot/dts/sun7i-a20-olinuxino-lime2.dts b/arch/arm/boot/dts/sun7i-a20-olinuxino-lime2.dts
+index ecb91fb899ff..8077f1716fbc 100644
+--- a/arch/arm/boot/dts/sun7i-a20-olinuxino-lime2.dts
++++ b/arch/arm/boot/dts/sun7i-a20-olinuxino-lime2.dts
+@@ -112,7 +112,7 @@ &gmac {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&gmac_rgmii_pins>;
+ 	phy-handle = <&phy1>;
+-	phy-mode = "rgmii-id";
++	phy-mode = "rgmii";
+ 	status = "okay";
+ };
+ 
