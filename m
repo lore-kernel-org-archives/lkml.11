@@ -2,93 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00731C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A120C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345601AbiCHKBO (ORCPT
+        id S1345602AbiCHKBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        Tue, 8 Mar 2022 05:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345586AbiCHKBK (ORCPT
+        with ESMTP id S1345629AbiCHKB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:01:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F04D424BA;
-        Tue,  8 Mar 2022 02:00:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C884B81852;
-        Tue,  8 Mar 2022 10:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A211C340EC;
-        Tue,  8 Mar 2022 10:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646733610;
-        bh=i9OsW0AxWUwQAqlooc3ym6MdFnqZBd8K+5Fvlrk6mtU=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ckuT8PXN7SFaIJqlzPOteFj+N41XPUi/lgSmPd73URwm6TZgybje+FEe++jWtUObn
-         B0WKkxsEHzpzIdfW4TqdKsEbhtXvD/LFaSLzqXnlR1dR+0Vi0JWrcAAlXxLaEwRc36
-         aMSFEtLBEBU5mopwbCP7GEenk9ts3TpohdI7eFUyQ7gDTXV+8jgaFi+uoZ6eiA09Dm
-         1D7938BniNvXaWXOgVS8giW362QJ+FzLA5avakNRIHx6jo8PVU90RCYeo7ItSIvvlS
-         zfjyxpRcTcy6rWrcDC84EyMxQVi/FHphI2oUziOCuHFdxUpp6CvtSW9MuRpSL3BtdH
-         iajV0MXm1oyEA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     ath11k@lists.infradead.org,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: rectify entry for QUALCOMM ATHEROS ATH11K WIRELESS DRIVER
-References: <20220308071827.9453-1-lukas.bulwahn@gmail.com>
-        <87o82gsvqf.fsf@kernel.org>
-        <CAKXUXMwhMuUCzATH15GD7was8SkHqcYz-8swTMdE+wuE0yvknQ@mail.gmail.com>
-Date:   Tue, 08 Mar 2022 12:00:04 +0200
-In-Reply-To: <CAKXUXMwhMuUCzATH15GD7was8SkHqcYz-8swTMdE+wuE0yvknQ@mail.gmail.com>
-        (Lukas Bulwahn's message of "Tue, 8 Mar 2022 09:57:02 +0100")
-Message-ID: <87k0d4sr17.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Tue, 8 Mar 2022 05:01:28 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2042C427FF
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 02:00:32 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id kx6-20020a17090b228600b001bf859159bfso1765792pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 02:00:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w3pwSt00P8dq6UBwqoWZplPcJrIB0Twk+vNu1P1BFVs=;
+        b=L7srTIOZ8D0DZTGnRZ7EHHRoCmawxSsPAQyn/J9KoAPqsTr+S5L+A2Wrx55SIn5X+H
+         l6oRFyDkbe2VZLF9uHm4CqDRJpfC5E6s8qTi5CGq5NTLl1ZXQ+2ngxCTbu5MoLwZRCjX
+         FE/dnSTMzKVHzHr3G41DX6xkQb5EMUvQquStOPuzl0jSHoi1yequGbqPgo7XswP6tjh8
+         z74qBjieToCxyJ8JyCVa9UOomtKdiXwHHMoJ4TpefldBA93npQYduoRrrD3eFEfeBaeB
+         va8s4KKAXSXJDOMFpKFb+v+rbgCCQ+4j4Z4qzKQPxE/ArYrt1PYwb0Jcme81inWNactP
+         Zs6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w3pwSt00P8dq6UBwqoWZplPcJrIB0Twk+vNu1P1BFVs=;
+        b=S7P7Dcc8bZLbW+vocKZc1/YRKSaTLVPhjJFDmsbyjMC0Ru9wtgHgtaJtZvjnYPI4Ge
+         bmOAYOg+UZuhu+jQAjyydM5ARLny5+0RtxCvftqvdNq3BrWDl6ZuaUAiSfRqqYkLE6Wi
+         ssKJK3nxlQmzBR4Dv96WYIZg6zAw9j/Qmr6cTGtUxjC/T1z+fLE658TVV1UJr11bRefH
+         G5Ecza2SaLKb2QbsqPBaN4XxRsSk7686iF8I3abHpFpiGVZX2v54z92ShJYALGanVMZm
+         5UybOPS0qPJVmYGvsqmaUraw0YkQyMpisLY2Q/J75sbuTdgqoG7tH3jg9GKVdGVZheWc
+         1L7A==
+X-Gm-Message-State: AOAM533gzDyINTHe6bqz0eKoe8UXRYAJjtCsM8lpZwTMbBFTkNanZdSO
+        ZeWi6KxW7gGvxxVdnwwJfovYsi1lfGSpDNWu6A6Htw==
+X-Google-Smtp-Source: ABdhPJzXQqAcXnz/aS3XETnYjpLXEoBzJ29ntiGDh/VQ4OO+pWZTDXDaij3GjfN1QM1mGyOkybVK52zKUs0tJl9KZPs=
+X-Received: by 2002:a17:90b:906:b0:1be:e765:882 with SMTP id
+ bo6-20020a17090b090600b001bee7650882mr3815408pjb.152.1646733631227; Tue, 08
+ Mar 2022 02:00:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20211105031904.2641088-1-xji@analogixsemi.com>
+ <20211105031904.2641088-3-xji@analogixsemi.com> <YiTruiCIkyxs3jTC@pendragon.ideasonboard.com>
+ <YiWiYpEfTOOqgyAN@google.com> <CAG3jFys-BYsBp07AAFQ2O_TFsXOwhcVDnsOh8WVNNSag3HZw+Q@mail.gmail.com>
+In-Reply-To: <CAG3jFys-BYsBp07AAFQ2O_TFsXOwhcVDnsOh8WVNNSag3HZw+Q@mail.gmail.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Tue, 8 Mar 2022 11:00:20 +0100
+Message-ID: <CAG3jFyu47cv8oSecONM95KVoP=NOvgwafAp4TQ33CZ0Y4zWmnQ@mail.gmail.com>
+Subject: Re: [PATCH v12 3/4] drm/bridge: anx7625: add MIPI DPI input feature
+To:     Chen-Yu Tsai <wenst@chromium.org>
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Xin Ji <xji@analogixsemi.com>,
+        a.hajda@samsung.com, narmstrong@baylibre.com,
+        dan.carpenter@oracle.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        sam@ravnborg.org, pihsun@chromium.org, tzungbi@google.com,
+        maxime@cerno.tech, drinkcat@google.com, hsinyi@chromium.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        bliang@analogixsemi.com, qwen@analogixsemi.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Lukas Bulwahn <lukas.bulwahn@gmail.com> writes:
-
-> On Tue, Mar 8, 2022 at 9:18 AM Kalle Valo <kvalo@kernel.org> wrote:
->>
->> + linux-wireless
->>
->> Lukas Bulwahn <lukas.bulwahn@gmail.com> writes:
->>
->> > Commit dae0978d4174 ("dt: bindings: net: add qcom,ath11k.yaml") obviously
->> > adds qcom,ath11k.yaml, but the file entry in MAINTAINERS, added with
->> > commit fcda1cb81663 ("MAINTAINERS: add DT bindings files for ath10k and
->> > ath11k") then refers to qcom,ath11k.txt.
->> >
->> > Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
->> > broken reference.
->> >
->> > Repair this file reference in QUALCOMM ATHEROS ATH11K WIRELESS DRIVER, and
->> > put it in alphabetic order while at it.
->> >
->> > Fixes: fcda1cb81663 ("MAINTAINERS: add DT bindings files for ath10k and ath11k")
->> > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
->> > ---
->> > Kalle, please pick this minor non-urgent clean-up patch.
->>
->> Can you resubmit as v2 and also CC linux-wireless, please? This way I
->> can pick this up directly from patchwork.
->>
+On Mon, 7 Mar 2022 at 16:49, Robert Foss <robert.foss@linaro.org> wrote:
 >
-> Sure, I just did so, see:
+> On Mon, 7 Mar 2022 at 07:12, Chen-Yu Tsai <wenst@chromium.org> wrote:
+> >
+> > On Sun, Mar 06, 2022 at 07:13:30PM +0200, Laurent Pinchart wrote:
+> > > Hello Xin,
+> > >
+> > > (Question for Rob below, and I'm afraid this is urgent as we need to
+> > > merge a fix in v5.17).
+> > >
+> > > On Fri, Nov 05, 2021 at 11:19:03AM +0800, Xin Ji wrote:
+> > > > The basic anx7625 driver only support MIPI DSI rx signal input.
+> > > > This patch add MIPI DPI rx input configuration support, after apply
+> > > > this patch, the driver can support DSI rx or DPI rx by adding
+> > > > 'bus-type' in DT.
+> > > >
+> > > > Reviewed-by: Robert Foss <robert.foss@linaro.org>
+> > > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> > > > ---
+> > > >  drivers/gpu/drm/bridge/analogix/anx7625.c | 247 ++++++++++++++++------
+> > > >  drivers/gpu/drm/bridge/analogix/anx7625.h |  18 +-
+> > > >  2 files changed, 205 insertions(+), 60 deletions(-)
+> > > >
+> > > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > > index f48e91134c20..f7c3386c8929 100644
+> > > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> >
+> > [...]
+> >
+> > > >  static int anx7625_parse_dt(struct device *dev,
+> > > >                         struct anx7625_platform_data *pdata)
+> > > >  {
+> > > > -   struct device_node *np = dev->of_node;
+> > > > +   struct device_node *np = dev->of_node, *ep0;
+> > > >     struct drm_panel *panel;
+> > > >     int ret;
+> > > > +   int bus_type, mipi_lanes;
+> > > > +
+> > > > +   anx7625_get_swing_setting(dev, pdata);
+> > > >
+> > > > +   pdata->is_dpi = 1; /* default dpi mode */
+> > > >     pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
+> > > >     if (!pdata->mipi_host_node) {
+> > > >             DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
+> > > >             return -ENODEV;
+> > > >     }
+> > > >
+> > > > -   DRM_DEV_DEBUG_DRIVER(dev, "found dsi host node.\n");
+> > > > +   bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
+> > > > +   mipi_lanes = MAX_LANES_SUPPORT;
+> > > > +   ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
+> > > > +   if (ep0) {
+> > > > +           if (of_property_read_u32(ep0, "bus-type", &bus_type))
+> > > > +                   bus_type = 0;
+> > > > +
+> > > > +           mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
+> > > > +   }
+> > > > +
+> > > > +   if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
+> > >
+> > > This is not correct *at all*. V4L2_FWNODE_BUS_TYPE_PARALLEL has nothing
+> > > to do with DSI. DSI stands for Digital *Serial* Interface. If anything,
+> > > the V4L2_FWNODE_BUS_TYPE_PARALLEL type would map better to DPI, even if
+> > > it's not an exact match.
+> > >
+> > > This patch has landed in v5.17-rc1, along with the corresponding
+> > > bindings. As DT bindings are an ABI, we should really fix this before
+> > > v5.17 is released. There is no DSI bus types defined in DT, and adding
+> > > one as a fix so late in the v5.17-rc cycle seems a bit of a stretch to
+> > > me (unless Rob disagrees).
+> > >
+> > > It would seem best to revert this series and the corresponding bindings,
+> > > and retry in v5.18.
+> >
+> > There is a DT patch using this property that is already queued up for 5.17
+> > in the soc tree:
+> >
+> > https://lore.kernel.org/all/20220214200507.2500693-1-nfraprado@collabora.com/
+> >
+> > merged here:
+> >
+> > http://git.kernel.org/soc/soc/c/32568ae37596b529628ac09b875f4874e614f63f
+> >
+> > We will need to revert that one as well.
 >
-> https://lore.kernel.org/linux-wireless/20220308085503.537-1-lukas.bulwahn@gmail.com/
+> I just submitted a series reverting the dt-binding change + the
+> related commit to "mt8183: jacuzzi".
+> Can I get a quick r-b/a-b in order to get this into v5.17.
+>
+> https://lore.kernel.org/all/20220307154558.2505734-3-robert.foss@linaro.org/
+>
 
-And I see it in patchwork now, thanks.
+v2 of revert submitted.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+https://lore.kernel.org/all/20220308094911.2680291-1-robert.foss@linaro.org/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Xin: Will you spin a series that adds DPI support and re-enables DPI
+for anx7625? Additionally, "mt8183: jacuzzi" will have to have DPI
+re-enabled.
