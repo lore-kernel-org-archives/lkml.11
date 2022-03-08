@@ -2,131 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2225C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346371AbiCHLOK (ORCPT
+        id S1346400AbiCHLOO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:14:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
+        Tue, 8 Mar 2022 06:14:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346579AbiCHLND (ORCPT
+        with ESMTP id S1346350AbiCHLOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:13:03 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5481F45794
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:12:07 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KCXhz2CXTz4xvN;
-        Tue,  8 Mar 2022 22:12:03 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1646737923;
-        bh=buvhDmN44a7EjR7cfC8Y+d11RSrc5DDw84MVawIAw0g=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=MjQPGrm0AjorCpR4jq0lCg/VQy/SiwnkYszlGtxCVhkFDjj8ShmYAKaPLTzUDwMJq
-         KeUHvCk7fSbirP1W0WjTUe0qj0XLDdvqhk5RnsayvJ2xryY2G2w7AyMTpSo4cZdCPf
-         WLpUw63UImpRFJS9iRg28UpLvFM1J1pqB5WrnU/1V3YOtCoGYH1UtX4d0uPuCVgSnN
-         S+fg0dKwxFpOE2XDsY+cQBdt4P6cnyN+fJDRqzQSrNEF3u2TNbmZtZOnXNnm/QHQyZ
-         kRxw7OznZHsVe4NYrgoddb8fwpxypXrP8B1TVuwUeUCtCa4jHf3q/1lPHKVoPb0M5D
-         PN2vuBytg5S9Q==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH v1 4/4] powerpc: Move C prototypes out of asm-prototypes.h
-In-Reply-To: <5c839e08-661f-6430-0da8-0f3b1c87c2e8@csgroup.eu>
-References: <3ed660a585df2080ea8412ec20fbf652f5bf013a.1646413435.git.christophe.leroy@csgroup.eu>
- <62d46904eca74042097acf4cb12c175e3067f3d1.1646413435.git.christophe.leroy@csgroup.eu>
- <5c839e08-661f-6430-0da8-0f3b1c87c2e8@csgroup.eu>
-Date:   Tue, 08 Mar 2022 22:12:02 +1100
-Message-ID: <87v8won1fh.fsf@mpe.ellerman.id.au>
+        Tue, 8 Mar 2022 06:14:08 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2943A5F6;
+        Tue,  8 Mar 2022 03:13:10 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KCXf02Jckz9sQw;
+        Tue,  8 Mar 2022 19:09:28 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 19:13:08 +0800
+CC:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+        <john.garry@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>, <prime.zeng@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v5 3/8] hisi_ptt: Register PMU device for PTT trace
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>
+References: <20220308084930.5142-1-yangyicong@hisilicon.com>
+ <20220308084930.5142-4-yangyicong@hisilicon.com>
+ <20220308102157.00003725@Huawei.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <d3b555c1-ed7e-f668-7d81-9cc2dbe6ffba@huawei.com>
+Date:   Tue, 8 Mar 2022 19:13:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220308102157.00003725@Huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> Le 04/03/2022 =C3=A0 18:04, Christophe Leroy a =C3=A9crit=C2=A0:
->> We originally added asm-prototypes.h in commit 42f5b4cacd78 ("powerpc:
->> Introduce asm-prototypes.h"). It's purpose was for prototypes of C
->> functions that are only called from asm, in order to fix sparse
->> warnings about missing prototypes.
->>=20
->> A few months later Nick added a different use case in
->> commit 4efca4ed05cb ("kbuild: modversions for EXPORT_SYMBOL() for asm")
->> for C prototypes for exported asm functions. This is basically the
->> inverse of our original usage.
->>=20
->> Since then we've added various prototypes to asm-prototypes.h for both
->> reasons, meaning we now need to unstitch it all.
->>=20
->> Dispatch prototypes of C functions into relevant headers and keep
->> only the prototypes for functions defined in assembly.
->>=20
->> For the time being, leave prom_init() there because moving it
->> into asm/prom.h or asm/setup.h conflicts with
->> drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.o
->> This will be fixed later by untaggling asm/pci.h and asm/prom.h
->> or by renaming the function in shadowrom.c
->>=20
->> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+On 2022/3/8 18:21, Jonathan Cameron wrote:
+> On Tue, 8 Mar 2022 16:49:25 +0800
+> Yicong Yang <yangyicong@hisilicon.com> wrote:
+> 
+>> Register PMU device of PTT trace, then users can use trace through perf
+>> command. The driver makes use of perf AUX trace and support following
+>> events to configure the trace:
+>>
+>> - filter: select Root port or Endpoint to trace
+>> - type: select the type of traced TLP headers
+>> - direction: select the direction of traced TLP headers
+>> - format: select the data format of the traced TLP headers
+>>
+>> This patch adds the PMU driver part of PTT trace. The perf command support
+>> of PTT trace is added in the following patch.
+>>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> 
+> It seems to me that you ended up doing both suggestions for
+> how to clean up the remove order when it was meant to be
+> a question of picking one or the other.
+> 
+> Otherwise this looks good to me - so with that tidied up
+> 
+
+Hi Jonathan,
+
+Thanks for the comments. I'd like to illustrate the reason why I decide to
+manually unregister the PMU device.
+
+The DMA buffers are devm allocated when necessary. They're only allocated
+when user is going to use the PTT in the first time after the driver's probe,
+so when driver removal the buffers are released prior to the PMU device's
+unregistration. I think there's a race condition.
+
+IIUC, The PMU device(as the user interface) should be unregistered first then
+we're safe to free the DMA buffers. But unregister the PMU device by devm
+cannot keep that order.
+
+Thanks,
+Yicong
+
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
 >> ---
->>   arch/powerpc/include/asm/asm-prototypes.h     | 51 -------------------
->>   arch/powerpc/include/asm/ftrace.h             |  3 ++
->>   arch/powerpc/include/asm/hvcall.h             |  5 ++
->>   arch/powerpc/include/asm/interrupt.h          | 11 ++++
->>   arch/powerpc/include/asm/kexec.h              |  2 +
->>   arch/powerpc/include/asm/processor.h          |  8 +++
->>   arch/powerpc/include/asm/setup.h              |  7 +++
->>   arch/powerpc/include/asm/smp.h                |  3 ++
->>   arch/powerpc/include/asm/syscalls.h           |  4 ++
->>   arch/powerpc/kernel/early_32.c                |  1 -
->>   arch/powerpc/kernel/interrupt.c               |  1 -
->>   arch/powerpc/kernel/irq.c                     |  1 -
->>   arch/powerpc/kernel/mce.c                     |  1 -
->>   arch/powerpc/kernel/prom_init.c               |  1 -
->>   arch/powerpc/kernel/ptrace/ptrace.c           |  1 -
->>   arch/powerpc/kernel/setup_64.c                |  1 -
->>   arch/powerpc/kernel/smp.c                     |  1 -
->>   arch/powerpc/kernel/syscalls.c                |  1 -
->>   arch/powerpc/kernel/tau_6xx.c                 |  1 -
->>   arch/powerpc/kernel/time.c                    |  1 -
->>   arch/powerpc/kernel/trace/ftrace.c            |  1 -
->>   arch/powerpc/kexec/core_64.c                  |  1 -
->>   arch/powerpc/kvm/book3s_hv_builtin.c          |  1 -
->>   arch/powerpc/kvm/book3s_hv_rm_xive.c          |  1 -
->>   arch/powerpc/lib/vmx-helper.c                 |  1 -
->>   arch/powerpc/mm/book3s64/slb.c                |  1 -
->>   arch/powerpc/mm/fault.c                       |  1 -
->>   arch/powerpc/platforms/powernv/idle.c         |  1 -
->>   .../platforms/powernv/opal-tracepoints.c      |  1 -
->>   arch/powerpc/platforms/pseries/lpar.c         |  1 -
->>   30 files changed, 43 insertions(+), 72 deletions(-)
->>=20
->> diff --git a/arch/powerpc/kernel/prom_init.c b/arch/powerpc/kernel/prom_=
-init.c
->> index 0ac5faacc909..3b49065daf21 100644
->> --- a/arch/powerpc/kernel/prom_init.c
->> +++ b/arch/powerpc/kernel/prom_init.c
->> @@ -41,7 +41,6 @@
->>   #include <asm/btext.h>
->>   #include <asm/sections.h>
->>   #include <asm/machdep.h>
->> -#include <asm/asm-prototypes.h>
->
-> Need to keep this include as prom_init() couldn't be moved to asm/prom.h=
-=20
-> due to conflict with drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c
->
-> Can you fix it ?
-
-Yep, done.
-
-cheers
+> 
+>> +
+>> +static int hisi_ptt_register_pmu(struct hisi_ptt *hisi_ptt)
+>> +{
+>> +	u16 core_id, sicl_id;
+>> +	char *pmu_name;
+>> +	u32 reg;
+>> +
+>> +	hisi_ptt->hisi_ptt_pmu = (struct pmu) {
+>> +		.module		= THIS_MODULE,
+>> +		.capabilities	= PERF_PMU_CAP_EXCLUSIVE | PERF_PMU_CAP_ITRACE,
+>> +		.task_ctx_nr	= perf_sw_context,
+>> +		.attr_groups	= hisi_ptt_pmu_groups,
+>> +		.event_init	= hisi_ptt_pmu_event_init,
+>> +		.setup_aux	= hisi_ptt_pmu_setup_aux,
+>> +		.free_aux	= hisi_ptt_pmu_free_aux,
+>> +		.start		= hisi_ptt_pmu_start,
+>> +		.stop		= hisi_ptt_pmu_stop,
+>> +		.add		= hisi_ptt_pmu_add,
+>> +		.del		= hisi_ptt_pmu_del,
+>> +	};
+>> +
+>> +	reg = readl(hisi_ptt->iobase + HISI_PTT_LOCATION);
+>> +	core_id = FIELD_GET(HISI_PTT_CORE_ID, reg);
+>> +	sicl_id = FIELD_GET(HISI_PTT_SICL_ID, reg);
+>> +
+>> +	pmu_name = devm_kasprintf(&hisi_ptt->pdev->dev, GFP_KERNEL, "hisi_ptt%u_%u",
+>> +				  sicl_id, core_id);
+>> +	if (!pmu_name)
+>> +		return -ENOMEM;
+>> +
+>> +	return perf_pmu_register(&hisi_ptt->hisi_ptt_pmu, pmu_name, -1);
+> 
+> As below, you can put back the devm cleanup that you had in v4 now you
+> have modified how the filter cleanup is done to also be devm managed.
+> 
+>> +}
+>> +
+>>  /*
+>>   * The DMA of PTT trace can only use direct mapping, due to some
+>>   * hardware restriction. Check whether there is an IOMMU or the
+>> @@ -303,15 +825,32 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+>>  
+>>  	pci_set_master(pdev);
+>>  
+>> +	ret = hisi_ptt_register_irq(hisi_ptt);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>>  	ret = hisi_ptt_init_ctrls(hisi_ptt);
+>>  	if (ret) {
+>>  		pci_err(pdev, "failed to init controls, ret = %d.\n", ret);
+>>  		return ret;
+>>  	}
+>>  
+>> +	ret = hisi_ptt_register_pmu(hisi_ptt);
+>> +	if (ret) {
+>> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
+>> +		return ret;
+>> +	}
+>> +
+>>  	return 0;
+>>  }
+>>  
+>> +void hisi_ptt_remove(struct pci_dev *pdev)
+>> +{
+>> +	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
+>> +
+>> +	perf_pmu_unregister(&hisi_ptt->hisi_ptt_pmu);
+> 
+> Now you have the filter cleanup occurring using a devm_add_action_or_reset()
+> there is no need to have a manual cleanup of this - you can
+> use the approach of a devm_add_action_or_reset like you had in v4.
+> 
+> As it is the last call in the probe() order it will be the first one
+> called in the device managed cleanup.
+> 
+>> +}
+>> +
+> 
+> 
+> .
+> 
