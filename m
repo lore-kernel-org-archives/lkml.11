@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07753C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72286C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243395AbiCHP5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:57:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        id S1348026AbiCHP5E (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:57:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348044AbiCHP4E (ORCPT
+        with ESMTP id S1348033AbiCHP4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:04 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA454F9CF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA6C4F47D
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=drGG7z9wXSjoirqs/jFmcbkXc11ClO+eo/+GaDxmf4w=; b=KNkZEExL2ikee5MU76cCdqIxKQ
-        KOVTbPNBWJl6he0u1ji/192TRJmtyC+ISPeA+kKqlZlXQsphL0veEOTHQX02kJ8wTfU6kqZrNSqbD
-        kUG7O1/xPtLwNE1tsaLN6V7ByinqGhux3K/QYBas6cwL274eqkMgyd41GMHCtV6YYPJ2FdQipGKZe
-        38OyMROthz/h/HBzBrpASA+Ylg+x0wesElcrxDEq5kXyJIA5x/+UFsYsvxsiDHDFqGO3R1XlsX9UW
-        LuGzFVX0lW8BZEQkG+38VvorXbh5pCIQac1ExEvhP6YcsFiiE6X3+JrUyePybN1SZtejbCOSl7U5e
-        aZ+70EjQ==;
+        bh=a8RzkWIyNVeQCr7WhMgSPa2HnZwX8Lz4UbWUw4JBOXo=; b=kDLcgh1/5K+lErR1foNH14mBkD
+        L60ZNh7q+559RXjevqAEDG4JVGoDEgLqq3nTQkwntA2hS6wpyNerBmP2lR3QXsK3Tww6GQFsUpMVC
+        jQ4M3h4S4Pdv+/W2Y678Q5Qqv+K6AATHM9KxIksgfqcvgMRweCFhu/EudJiJJO5AUcF87Vo2mX+tK
+        iD3BPp68BO2GhDK64IgqDNr1Ffr50+cP0eZILQDQX5wYi2a4FJwIcgyrTd5xE+r3N9u5IkXRi3CEr
+        BfMLjc46iCC+ydL28J6v9SN2rxzeisshxpjrsYTn9pA63BZ3ovdz20XR3sgUKaTlI3Hr5EdjFcgw4
+        GWEQuhSw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAd-00GIvV-EB; Tue, 08 Mar 2022 15:54:43 +0000
+        id 1nRcAc-00GIv7-Hg; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5342E302DDC;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 349FB301A96;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id EA0F62B5649DD; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154319.586815435@infradead.org>
+        id 1D58B2B561919; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.110500806@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:52 +0100
+Date:   Tue, 08 Mar 2022 16:30:27 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 41/45] objtool: Read the NOENDBR annotation
+Subject: [PATCH v4 16/45] x86/ibt,crypto: Add ENDBR for the jump-table entries
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,81 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read the new NOENDBR annotation. While there, attempt to not bloat
-struct instruction.
+The code does:
+
+	## branch into array
+	mov     jump_table(,%rax,8), %bufp
+	JMP_NOSPEC bufp
+
+resulting in needing to mark the jump-table entries with ENDBR.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- tools/objtool/check.c                 |   27 +++++++++++++++++++++++++++
- tools/objtool/include/objtool/check.h |   13 ++++++++++---
- 2 files changed, 37 insertions(+), 3 deletions(-)
+ arch/x86/crypto/crc32c-pcl-intel-asm_64.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1860,6 +1860,29 @@ static int read_unwind_hints(struct objt
- 	return 0;
- }
+--- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
++++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
+@@ -195,6 +195,7 @@ SYM_FUNC_START(crc_pcl)
+ .altmacro
+ LABEL crc_ %i
+ .noaltmacro
++	ENDBR
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+ 	crc32q   -i*8(block_2), crc2
+@@ -204,6 +205,7 @@ LABEL crc_ %i
+ .altmacro
+ LABEL crc_ %i
+ .noaltmacro
++	ENDBR
+ 	crc32q   -i*8(block_0), crc_init
+ 	crc32q   -i*8(block_1), crc1
+ # SKIP  crc32  -i*8(block_2), crc2 ; Don't do this one yet
+@@ -237,6 +239,7 @@ LABEL crc_ %i
+ 	################################################################
  
-+static int read_noendbr_hints(struct objtool_file *file)
-+{
-+	struct section *sec;
-+	struct instruction *insn;
-+	struct reloc *reloc;
-+
-+	sec = find_section_by_name(file->elf, ".rela.discard.noendbr");
-+	if (!sec)
-+		return 0;
-+
-+	list_for_each_entry(reloc, &sec->reloc_list, list) {
-+		insn = find_insn(file, reloc->sym->sec, reloc->sym->offset + reloc->addend);
-+		if (!insn) {
-+			WARN("bad .discard.noendbr entry");
-+			return -1;
-+		}
-+
-+		insn->noendbr = 1;
-+	}
-+
-+	return 0;
-+}
-+
- static int read_retpoline_hints(struct objtool_file *file)
- {
- 	struct section *sec;
-@@ -2097,6 +2120,10 @@ static int decode_sections(struct objtoo
- 	if (ret)
- 		return ret;
- 
-+	ret = read_noendbr_hints(file);
-+	if (ret)
-+		return ret;
-+
- 	/*
- 	 * Must be before add_{jump_call}_destination.
- 	 */
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -45,11 +45,18 @@ struct instruction {
- 	unsigned int len;
- 	enum insn_type type;
- 	unsigned long immediate;
--	bool dead_end, ignore, ignore_alts;
--	bool hint;
--	bool retpoline_safe;
-+
-+	u8 dead_end	: 1,
-+	   ignore	: 1,
-+	   ignore_alts	: 1,
-+	   hint		: 1,
-+	   retpoline_safe : 1,
-+	   noendbr	: 1;
-+		/* 2 bit hole */
- 	s8 instr;
- 	u8 visited;
-+	/* u8 hole */
-+
- 	struct alt_group *alt_group;
- 	struct symbol *call_dest;
- 	struct instruction *jump_dest;
+ LABEL crc_ 0
++	ENDBR
+ 	mov     tmp, len
+ 	cmp     $128*24, tmp
+ 	jae     full_block
 
 
