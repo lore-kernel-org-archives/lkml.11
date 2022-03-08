@@ -2,123 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbiCHXIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 18:08:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        id S229706AbiCHXKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 18:10:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiCHXIT (ORCPT
+        with ESMTP id S229447AbiCHXKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 18:08:19 -0500
-X-Greylist: delayed 1285 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 15:07:20 PST
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5729760071
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:07:19 -0800 (PST)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id D61321228A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:45:53 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id RiaXnXURNdx86RiaXne4LX; Tue, 08 Mar 2022 16:45:53 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RZMiZ7ROUmJLlPppAwRoBUqTifoIUpfa1vCZOri7D3s=; b=DGm0f2OIHgjMnBB2LLOuDtu32k
-        2SVRJpPyUcz4n2Tfrz8+RIjOdUkz3C0Z6lVGgzv9vDsBhZ8uDeXyeuYaIMNu1hqNdT5s5RiPOmkdz
-        VgyOVRHQPVK01Sby4nuom7l7EDBJ7L7SoYUMAb5Dn6Lw+mHYwqbWMmip9rMyANacA9ilEWwm+FcvK
-        TKbG4/6BwTEpDxyeTi/4T6nmUKDby647fPUQVsTpqrpbwvrh6U/gRZFQbqL2fmOFmUZN0lKvqVhEM
-        KqGz4ITkMfdRljgzNKCVNu2fxkCr3zNsUEWQK8htnsZXN+mSnPltDcOUqFT8LpjPAq0KOLm76yvkV
-        0tIVoLhw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38110)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nRiaX-0042Fl-1M; Tue, 08 Mar 2022 22:45:53 +0000
-Message-ID: <ab0b668c-e321-e1d9-3cc3-a609111b828d@roeck-us.net>
-Date:   Tue, 8 Mar 2022 14:45:50 -0800
+        Tue, 8 Mar 2022 18:10:31 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFFF6E4FA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:09:31 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id b5so429860wrr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 15:09:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1f5gPcrqfy750U/J52Wg+Mj+0/UcxsK3pfUKBKWLDR0=;
+        b=rY724zyNQvt0W7k77uJ6mdsljpHhmPedp6A01Ybgi4ape+kd29m4bzWSt+PlFv6VGk
+         5F64VH7NbTfh9lbiAtg/QqctdXYwNeto4qq8ILBsk1UjKlgBgsCMQeBPoPLONRLpHghE
+         cWdsR0etuAIMnRL3KlwUvfLr789Koi+WEO7RwGW0jHeOJ70GUKcFjnSzplqBRUYBRhT6
+         QP8IEuX2CtkcOTNnpXBR5MGZ0IWr8YG+CglWc/j5+G1oi8Hir+ky5riHmAiBgpzzzCL3
+         WDmeIljWzrU1rFQ9e3oINeWI9gqLxDH39hU6jNdl97UeioJbJwXvtYXCCKepzEEDLGHC
+         BVFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1f5gPcrqfy750U/J52Wg+Mj+0/UcxsK3pfUKBKWLDR0=;
+        b=bEOhlMhYpST0fnIumWxAU8tdw6za2naxeuhAbQ/0ywMFoCtoMc9XPW0rL0prEzVrIP
+         w312e++lnMIqpFc7PO7poMv8VE9BnfOCYGyDblb52k6wBB0/DgvvLHk7FcqgsawMztER
+         nYBsFNUk5Q1/dV3xpQJKN3F8POM+/Eq4GgwLC9fG/7zKhExnXgw35VYr/1C19WGsvfGM
+         JLAveIiOtbvVOWHgMNO9++kEdKUocPHaIbgpHzxfkOqFSZucBkEem0Lm+ep8kT1ae6Te
+         28qCeBHm/q7HvpCGVn61K8mZUwOK9AalA1O4ffyhcUubuMiFTrarsbhNQ8sVdXQFVfOC
+         rrLg==
+X-Gm-Message-State: AOAM530g5hz0m0cBa66a5H773VmVd86DGyrnTiSmiNpDG7RITG6cozl+
+        cIRthINXyLMqO5BcnL5DT7PDLt/mSm5tQYvD/5HvZw==
+X-Google-Smtp-Source: ABdhPJwNHy+VN+JXLWCDADBmqbJunnYlm8shlOKM3wtyDi3l0Nvo++c+lLHsCuWeoJlsi7IJiccAZFbP2qFwzcnxW0Q=
+X-Received: by 2002:adf:eb86:0:b0:1e6:8c92:af6b with SMTP id
+ t6-20020adfeb86000000b001e68c92af6bmr13872277wrn.116.1646780969857; Tue, 08
+ Mar 2022 15:09:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Huang Pei <huangpei@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-References: <20220307162207.188028559@linuxfoundation.org>
- <Yid4BNbLm3mStBi2@debian>
- <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
- <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com>
- <YifFMPFMp9gPnjPc@kroah.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <YifFMPFMp9gPnjPc@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nRiaX-0042Fl-1M
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38110
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 11
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+References: <20220307184935.1704614-1-kaleshsingh@google.com>
+ <20220307184935.1704614-2-kaleshsingh@google.com> <CAE-0n52LmVRkrSNN=eJf+TYYnmesVjFv99nnetYvRWshm82rOg@mail.gmail.com>
+In-Reply-To: <CAE-0n52LmVRkrSNN=eJf+TYYnmesVjFv99nnetYvRWshm82rOg@mail.gmail.com>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Tue, 8 Mar 2022 15:09:18 -0800
+Message-ID: <CAC_TJvc6LYp95BXQc0DSBBBAZpYpixa+NyHKMLFWsBADD5Ubhg@mail.gmail.com>
+Subject: Re: [PATCH v5 1/8] KVM: arm64: Introduce hyp_alloc_private_va_range()
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Fuad Tabba <tabba@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 13:05, Greg Kroah-Hartman wrote:
-> On Tue, Mar 08, 2022 at 11:08:10PM +0530, Naresh Kamboju wrote:
+On Tue, Mar 8, 2022 at 12:21 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+HI Stephen. Thanks for the review.
 
+> Quoting Kalesh Singh (2022-03-07 10:48:59)
+> > diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
+> > index bc2aba953299..ccb2847ee2f4 100644
+> > --- a/arch/arm64/kvm/mmu.c
+> > +++ b/arch/arm64/kvm/mmu.c
+> > @@ -457,22 +457,17 @@ int create_hyp_mappings(void *from, void *to, enum kvm_pgtable_prot prot)
+> >         return 0;
+> >  }
+> >
+> > -static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+> > -                                       unsigned long *haddr,
+> > -                                       enum kvm_pgtable_prot prot)
+> > +
+> > +/**
+> > + * hyp_alloc_private_va_range - Allocates a private VA range.
+> > + * @size:      The size of the VA range to reserve.
+> > + *
+> > + * The private VA range is allocated below io_map_base and
+> > + * aligned based on the order of @size.
+>
+> Add what it returns?
+>
+> Return: Start address of allocated VA range or some error value... (I don't
+> understand this part).
+>
+> It may also be a good idea to write out what VA is in the description:
+>
+> The private virtual address (VA) range is allocated below io_map_base
+>
 
-[ ... ]
+Ack
 
->>>
->>> Reverting 4778338032b3 ("MIPS: fix local_{add,sub}_return on MIPS64")
->>> has fixed all the 3 build failures.
->>
->> MIPS: fix local_{add,sub}_return on MIPS64
->> [ Upstream commit 277c8cb3e8ac199f075bf9576ad286687ed17173 ]
->>
->> Use "daddu/dsubu" for long int on MIPS64 instead of "addu/subu"
->>
->> Fixes: 7232311ef14c ("local_t: mips extension")
->> Signed-off-by: Huang Pei <huangpei@loongson.cn>
->> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> 
-> Ah, I'll queue up the revert for that in the morning, thanks for finding
-> it.  Odd it doesn't trigger the same issue in 5.16.y.
-> 
+> > + */
+> > +unsigned long hyp_alloc_private_va_range(size_t size)
+> >  {
+> >         unsigned long base;
+> > -       int ret = 0;
+> > -
+> > -       if (!kvm_host_owns_hyp_mappings()) {
+> > -               base = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
+> > -                                        phys_addr, size, prot);
+> > -               if (IS_ERR_OR_NULL((void *)base))
+> > -                       return PTR_ERR((void *)base);
+> > -               *haddr = base;
+> > -
+> > -               return 0;
+> > -       }
+> >
+> >         mutex_lock(&kvm_hyp_pgd_mutex);
+> >
+> > @@ -484,29 +479,53 @@ static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+> >          *
+> >          * The allocated size is always a multiple of PAGE_SIZE.
+> >          */
+> > -       size = PAGE_ALIGN(size + offset_in_page(phys_addr));
+> > -       base = io_map_base - size;
+> > +       base = io_map_base - PAGE_ALIGN(size);
+> > +
+> > +       /* Align the allocation based on the order of its size */
+> > +       base = ALIGN_DOWN(base, PAGE_SIZE << get_order(size));
+> >
+> >         /*
+> >          * Verify that BIT(VA_BITS - 1) hasn't been flipped by
+> >          * allocating the new area, as it would indicate we've
+> >          * overflowed the idmap/IO address range.
+> >          */
+> > -       if ((base ^ io_map_base) & BIT(VA_BITS - 1))
+> > -               ret = -ENOMEM;
+> > +       if (!base || (base ^ io_map_base) & BIT(VA_BITS - 1))
+> > +               base = (unsigned long)ERR_PTR(-ENOMEM);
+>
+> It looks odd to use an error pointer casted to unsigned long to return
+> from an address allocation function. Why not pass a pointer for base
+> like the function was written before and return an int from this
+> function with 0 for success and negative error value?Otherwise some
+> sort of define should made like DMA_MAPPING_ERROR and that can be used
+> to indicate to the caller that the allocation failed, or a simple zero
+> may work?
 
-If you don't want to revert: the fix needs the following two patches:
+I wanted to keep consistent between the pkvm and traditional nvhe
+code. I will refactor both *alloc_private_va_range() functions to take
+a pointer and return an int error if that's preferred. There would
+still be a case of this kind of cast in
+__pkvm_create_private_mapping() which does return an unsigned long
+address or ERR_PTR(...). It looks like it was made to return the
+address to facilitate use as a hypercall (@Quentin CMIW).
 
-e5b40668e93 ("slip: fix macro redefine warning")
-b81e0c2372e ("block: drop unused includes in <linux/genhd.h>")
+>
+> >         else
+> >                 io_map_base = base;
+> >
+> >         mutex_unlock(&kvm_hyp_pgd_mutex);
+> >
+> > -       if (ret)
+> > -               goto out;
+> > +       return base;
+> > +}
+> > +
+> > +static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+> > +                                       unsigned long *haddr,
+> > +                                       enum kvm_pgtable_prot prot)
+> > +{
+> > +       unsigned long addr;
+> > +       int ret = 0;
+> > +
+> > +       if (!kvm_host_owns_hyp_mappings()) {
+> > +               addr = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
+> > +                                        phys_addr, size, prot);
+> > +               if (IS_ERR((void *)addr))
+>
+> IS_ERR_VALUE()?
 
-Both are in v5.16, so you won't see the problem there.
+Good idea, will remove the extra cast.
 
-Guenter
+>
+> > +                       return PTR_ERR((void *)addr);
+> > +               *haddr = addr;
+> > +
+> > +               return 0;
+> > +       }
+> > +
+> > +       size += offset_in_page(phys_addr);
+> > +       addr = hyp_alloc_private_va_range(size);
+> > +       if (IS_ERR((void *)addr))
+>
+> IS_ERR_VALUE()?
+
+Ack
+
+>
+> > +               return PTR_ERR((void *)addr);
+> >
+> > -       ret = __create_hyp_mappings(base, size, phys_addr, prot);
+> > +       ret = __create_hyp_mappings(addr, size, phys_addr, prot);
+> >         if (ret)
+> >                 goto out;
+> >
+> > -       *haddr = base + offset_in_page(phys_addr);
+> > +       *haddr = addr + offset_in_page(phys_addr);
+> >  out:
+> >         return ret;
+>
+> Would be simpler to remove the goto, or return early.
+>
+>         if (!ret)
+>                 *haddr = addr + offset_in_page(phys_addr);
+>
+>         return ret;
+
+Agreed, I'll remove the goto in the next version.
+
+Thanks,
+Kalesh
+>
+> >  }
