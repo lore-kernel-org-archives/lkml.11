@@ -2,67 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B651AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E46FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiCIBOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:14:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        id S230399AbiCIBOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbiCIBNK (ORCPT
+        with ESMTP id S231473AbiCIBNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:13:10 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8654A15879C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:56:18 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id g17so1041338lfh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:56:18 -0800 (PST)
+        Tue, 8 Mar 2022 20:13:23 -0500
+Received: from mail-ot1-x349.google.com (mail-ot1-x349.google.com [IPv6:2607:f8b0:4864:20::349])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD6B159282
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:56:51 -0800 (PST)
+Received: by mail-ot1-x349.google.com with SMTP id w7-20020a9d6747000000b005b25c9036fdso613482otm.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:56:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dlXc7nO4VVenbG9TQJ/z1TWtkG9nDmF64Ost29V8AWc=;
-        b=fk9Kkf3UiaboVe5n2sPqRmsu9R/9pSJ0MBG82T7odsoD9Z+4tUrGity1EBUSVcd5bO
-         Ay+GVgtTlqOjk5DG157lanciRnAlDA9OLu41FZ3ehebtgoQkdRl4IX3y8PNM/lSEI5AP
-         dZRPNM6mHBzmKNa87ZpX/gBVrjQgnOz7vbrW0=
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=Tgx8ae//L5IA0Yqg+D9TLCaQ78LCepfaB8sQmorTCkw=;
+        b=VOKPAsZMw2EV5dnaXWEgHzcI5T7bLhbnjoKi9m50b58E08xYQ7AQ9wyvJWF/iwQD2i
+         aBXNXX/+p5kssXAP/xEEA3iE4zfOV/rH1m4zIE6673YDm2JTUpG3vhISAhVnVF10BZDA
+         er/lKNdTchIWlOMT8Mla52KvQtNMtEt9wsIyC6NF+oclvaI3bW05E/B9XEX9wmL4iINU
+         f0EG9As4WkKNuXXMbHqrhPU6ANTfBbNNev1NL0Mo1YxqfJqgwfQb3+vzaKCEGigpkhUM
+         7XDGWwezEmMQZpnvkAmwolSIauMUP6Qkdgy7xp0FCmDnQsCgZGbAPTtAnZlTffldFHoW
+         8SkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dlXc7nO4VVenbG9TQJ/z1TWtkG9nDmF64Ost29V8AWc=;
-        b=YGVD+Q+fiXunJmLZ9gPqdq8JYgj6Lh8fq+bo0Qf+p/ZSYcLunbN770b/VuV/9+Jb/d
-         6dLWyNLNPTSDUNxUNf4mg8ojEmJSD7CmITpYFAZDaKQbMze3Hss/auYsP7X7lL1u1dWi
-         UvG2ugBEuZOAWy3HSaRrRm7PzG+FIz8mgK8peQshaDWlH3W5jvyJJUD6XtkHDbY4jFrA
-         6bJBjtNNYW+IiKjWzIdnSy8qlelTODVjZHrgcOqcyHRKJuMca52y13yYmoBf1wNmQxYZ
-         5q5Iq6H3L0TFe6Dju7LOLafXzkl+2AjBr1ltbt/Xz5jIQqh2LiS2xKzLfnRwcYWrjeAg
-         f1Hw==
-X-Gm-Message-State: AOAM532X51eiNjtOaPa40+DaR7GCDVMalmv7S8nMN1mKm6l1fuHVWGZA
-        Q1fvWw72uRToJ3a0JShoQMqr9/aI6tCAO6mKCAg=
-X-Google-Smtp-Source: ABdhPJzxiKdZrGW/psZjQD22B72hrb/aK1eFi029KadW+xrT0pF3YkWVx9q/DroWJTM77OJuzqILRA==
-X-Received: by 2002:a17:906:a148:b0:6cd:50c7:8d4d with SMTP id bu8-20020a170906a14800b006cd50c78d4dmr15512508ejb.641.1646785800129;
-        Tue, 08 Mar 2022 16:30:00 -0800 (PST)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id r6-20020a1709064d0600b006da7ca3e514sm98042eju.208.2022.03.08.16.29.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 16:29:59 -0800 (PST)
-Received: by mail-ej1-f43.google.com with SMTP id p15so1468953ejc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:29:59 -0800 (PST)
-X-Received: by 2002:ac2:44a4:0:b0:445:8fc5:a12a with SMTP id
- c4-20020ac244a4000000b004458fc5a12amr12499712lfm.27.1646785789558; Tue, 08
- Mar 2022 16:29:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20220308234723.3834941-1-yuzhao@google.com> <CAHk-=wi5wg=72exwHODJdVtAfqa1e85dGfjGftuhHQ5Z4v-DNA@mail.gmail.com>
- <CAOUHufYFDawK6vmkQ16EQm7FSHresViifnxW2yj_RDuMSjJPjg@mail.gmail.com>
-In-Reply-To: <CAOUHufYFDawK6vmkQ16EQm7FSHresViifnxW2yj_RDuMSjJPjg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 8 Mar 2022 16:29:33 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgwgqJMyxbrxa-mY3cYh--BZ5JKDieVc=RfXR1mdqsYkQ@mail.gmail.com>
-Message-ID: <CAHk-=wgwgqJMyxbrxa-mY3cYh--BZ5JKDieVc=RfXR1mdqsYkQ@mail.gmail.com>
-Subject: Re: [PATCH v8 00/14] Multi-Gen LRU Framework
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=Tgx8ae//L5IA0Yqg+D9TLCaQ78LCepfaB8sQmorTCkw=;
+        b=BcUSh4MO1T0P4JIxeu/oqbtAfxdLEeB0sdvi1R8UOHAiTzQoGHCOCOudvHCGdhjX1q
+         pgzQYgfs8NGwbpZsMuWrEHNOvSuCovDXaiireR//HDw/B0+NmjAzpcrB0681HpPRewC/
+         HDDMCRd9ziaZ/Rnupa9OkGzAp0UKi2fw/Tx4AchJROr0iQF80pxfkz4AeTDh4N0RVtoa
+         t6LzBCkU2CW/5+iFSwlf3FF/BcfZQWAjsxiROjuwYm/f/y6yNKxBohiwx0+KHZOjUdX7
+         dd/B8HESn+Hbfh8Hu5QfYP4ebiKpzoMVHNExaCM4wyIxSvR5fOGCb5rBCs69u4lhB+fS
+         ijnQ==
+X-Gm-Message-State: AOAM533L3fvo8colA3da4un7peo6B2hPoydFxX0FTzzt+JwHDY1j3a9b
+        8oJqDrtboWGXrX9xW3owwxSLUjSzc08=
+X-Google-Smtp-Source: ABdhPJzr/LkGrf4zyQbWc/3GKFRSRZHS+D+1l8yz6GSzSf+zXSNr/RBGB8TIrC/rAfzru4/+7Vn4wNwfMpY=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:57a6:54a6:aad1:c0a8])
+ (user=yuzhao job=sendgmr) by 2002:a25:dd87:0:b0:628:e822:bd with SMTP id
+ u129-20020a25dd87000000b00628e82200bdmr13462896ybg.505.1646783306798; Tue, 08
+ Mar 2022 15:48:26 -0800 (PST)
+Date:   Tue,  8 Mar 2022 16:47:12 -0700
+In-Reply-To: <20220308234723.3834941-1-yuzhao@google.com>
+Message-Id: <20220308234723.3834941-3-yuzhao@google.com>
+Mime-Version: 1.0
+References: <20220308234723.3834941-1-yuzhao@google.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+Subject: [PATCH v8 02/14] mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
         Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
@@ -70,6 +63,7 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Jesse Barnes <jsbarnes@google.com>,
         Johannes Weiner <hannes@cmpxchg.org>,
         Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Matthew Wilcox <willy@infradead.org>,
         Mel Gorman <mgorman@suse.de>,
         Michael Larabel <Michael@michaellarabel.com>,
@@ -79,44 +73,163 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Vlastimil Babka <vbabka@suse.cz>,
         Will Deacon <will@kernel.org>,
         Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Yu Zhao <yuzhao@google.com>, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 4:15 PM Yu Zhao <yuzhao@google.com> wrote:
->
-> This sounds self-serving: our data centers want them, so I had to try.
+Some architectures support the accessed bit in non-leaf PMD entries,
+e.g., x86 sets the accessed bit in a non-leaf PMD entry when using it
+as part of linear address translation [1]. Page table walkers that
+clear the accessed bit may use this capability to reduce their search
+space.
 
-Heh. I'm not opposed to putting them back in, but if/when we merge the
-multi-gen LRU code, I really want people to be all testing the same
-thing.
+Note that:
+1. Although an inline function is preferable, this capability is added
+   as a configuration option for consistency with the existing macros.
+2. Due to the little interest in other varieties, this capability was
+   only tested on Intel and AMD CPUs.
 
-I also think that if we put them back in, that should come with
+[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
+     Volume 3 (June 2021), section 4.8
 
- (a) performance numbers for the different cases
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Acked-by: Brian Geffon <bgeffon@google.com>
+Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Acked-by: Steven Barrett <steven@liquorix.net>
+Acked-by: Suleiman Souhlal <suleiman@google.com>
+Tested-by: Daniel Byrne <djbyrne@mtu.edu>
+Tested-by: Donald Carr <d@chaos-reins.com>
+Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
+Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+---
+ arch/Kconfig                   | 9 +++++++++
+ arch/x86/Kconfig               | 1 +
+ arch/x86/include/asm/pgtable.h | 3 ++-
+ arch/x86/mm/pgtable.c          | 5 ++++-
+ include/linux/pgtable.h        | 4 ++--
+ 5 files changed, 18 insertions(+), 4 deletions(-)
 
- (b) hard guidance of what the numbers should be, and under what
-circumstances (ie giving the user enough information that he *can*
-answer the question for his configuration)
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 678a80713b21..f9c59ecadbbb 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1322,6 +1322,15 @@ config DYNAMIC_SIGFRAME
+ config HAVE_ARCH_NODE_DEV_GROUP
+ 	bool
+=20
++config ARCH_HAS_NONLEAF_PMD_YOUNG
++	bool
++	depends on PGTABLE_LEVELS > 2
++	help
++	  Architectures that select this option are capable of setting the
++	  accessed bit in non-leaf PMD entries when using them as part of linear
++	  address translations. Page table walkers that clear the accessed bit
++	  may use this capability to reduce their search space.
++
+ source "kernel/gcov/Kconfig"
+=20
+ source "scripts/gcc-plugins/Kconfig"
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..e787b7fc75be 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -85,6 +85,7 @@ config X86
+ 	select ARCH_HAS_PMEM_API		if X86_64
+ 	select ARCH_HAS_PTE_DEVMAP		if X86_64
+ 	select ARCH_HAS_PTE_SPECIAL
++	select ARCH_HAS_NONLEAF_PMD_YOUNG
+ 	select ARCH_HAS_UACCESS_FLUSHCACHE	if X86_64
+ 	select ARCH_HAS_COPY_MC			if X86_64
+ 	select ARCH_HAS_SET_MEMORY
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.=
+h
+index 60b6ce45c2e3..f973788f6b21 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -819,7 +819,8 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+=20
+ static inline int pmd_bad(pmd_t pmd)
+ {
+-	return (pmd_flags(pmd) & ~_PAGE_USER) !=3D _KERNPG_TABLE;
++	return (pmd_flags(pmd) & ~(_PAGE_USER | _PAGE_ACCESSED)) !=3D
++	       (_KERNPG_TABLE & ~_PAGE_ACCESSED);
+ }
+=20
+ static inline unsigned long pages_to_mb(unsigned long npg)
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index 3481b35cb4ec..a224193d84bf 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -550,7 +550,7 @@ int ptep_test_and_clear_young(struct vm_area_struct *vm=
+a,
+ 	return ret;
+ }
+=20
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_ARCH_HAS_NONLEA=
+F_PMD_YOUNG)
+ int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pmd_t *pmdp)
+ {
+@@ -562,6 +562,9 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vm=
+a,
+=20
+ 	return ret;
+ }
++#endif
++
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ int pudp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pud_t *pudp)
+ {
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index 79f64dcff07d..743e7fc4afda 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -212,7 +212,7 @@ static inline int ptep_test_and_clear_young(struct vm_a=
+rea_struct *vma,
+ #endif
+=20
+ #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_ARCH_HAS_NONLEA=
+F_PMD_YOUNG)
+ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 					    unsigned long address,
+ 					    pmd_t *pmdp)
+@@ -233,7 +233,7 @@ static inline int pmdp_test_and_clear_young(struct vm_a=
+rea_struct *vma,
+ 	BUILD_BUG();
+ 	return 0;
+ }
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=
+ */
+ #endif
+=20
+ #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
+--=20
+2.35.1.616.g0bdcbb4464-goog
 
- (c) some thought about perhaps making them possibly more dynamic than
-a hardcoded build-time value (assuming the numbers show that it's
-worth doing in the first place, of course)
-
-so I think that the support for the concept can/should be left in, but
-I think that kind of fancy "I want more generations or fewer
-tiers-per-generation because of XYZ" needs to be a separate issue with
-more explanation from the initial "This multi-gen LRU gives better
-performance" merge.
-
-Because as-is, I don't think those config options had nearly enough
-information associated with them to merit them existing.
-
-                  Linus
