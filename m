@@ -2,225 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F774C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348121AbiCHP75 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:59:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58342 "EHLO
+        id S233739AbiCHQCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348740AbiCHP6a (ORCPT
+        with ESMTP id S1348256AbiCHQB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:58:30 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DDE50455
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:57:12 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id z30so25833938ybi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 07:57:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ivli1yNVzu/BVQSOyUimOD2b+2+dda9CCsU8uGTbCP0=;
-        b=p2+11DZVCYoklN8jXeZDOZDTzL2R4ogOloB6z+XmLWAjmm/2RoT2clIoFp5OCU4Zee
-         IjK5hIxKDmYG6Dp7KvfWlYi070k9IKnbgXjc9mwswDkhQW/8TdlrWozMZtqeEyV8JYg0
-         xABORydvDRXWd6xLMTAlI8JY0TBDAIVqAYBvMwOLrEmaEIr0OEH1RLrsjboQxYRYDE+F
-         4Mncch8obm8tcpqzgFF5Xg9+5EwvtAsdoJwDJ0l//Yg/3Nan2cwnhuz4BZxqKulMT/Wv
-         PuRk52VaragZ0JSXD1FOXsHtR3AMLmnq2eDturyzipCPSfRKCcQD9QHr20NT+0Yc/vDT
-         lh5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ivli1yNVzu/BVQSOyUimOD2b+2+dda9CCsU8uGTbCP0=;
-        b=bjpK4RNlUMnqT/pmRQKb46CAsUnXOjiVdElmBMTucaKFfdz5xFDtUNdAKiY4SMUmlo
-         yieNaChHzwK/JDuXVisVMEwmMeopiVEyQ5Vb+IOrylRvjZdmK4vpeu+YcPIXXcJo448S
-         SSwk2GLymifI/Vl+7fhoxnHFK82BmtXCz9N08RODWVhIkOUFz+u1N6rD5u9nICgm8u8R
-         lG/qYICbmFlnIVnqD7qnpZ0HItWi/cqEy1Y4WeKz9dHsPggtOBHKHhBXUl7KKUkAANl4
-         UQxHLfXRruHmDOQGYIppCGvcIqTeFKv4Tf6H6LWtycYzw+iIzEKC1BGQwNW/zHAToECf
-         ewAQ==
-X-Gm-Message-State: AOAM533a9kt3MCheDrt1SsZYI/zTlKpYjMcX0bFnpfTZVJ0L7+Y4rgpy
-        zenEDOP8SkIOYpKvxBy0w25YUx30JfsvIOaHZJTbLA==
-X-Google-Smtp-Source: ABdhPJx/rcTLADrrZkKd1h2AAzSOPSiR8P/0H3/GDYIp9prodoFVvS4LRsIiR8GdqldgX0UsTGU5Tek4hH3cKRkUS8M=
-X-Received: by 2002:a25:338b:0:b0:610:a221:af23 with SMTP id
- z133-20020a25338b000000b00610a221af23mr12964910ybz.474.1646755031807; Tue, 08
- Mar 2022 07:57:11 -0800 (PST)
+        Tue, 8 Mar 2022 11:01:56 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5443750055
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:00:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646755249; x=1678291249;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=aFTJDJ6yKoaxFI6g8sPE9CQvYWqYMdAKSLo3OBtYCBs=;
+  b=Q2q2h4KYtLqxcNffUenWZlZEdti3HmRvpuJ/fKMTBeUENO69Xi/RAEGM
+   yyFpJmWKawTjH883oQxfULlcoiQyrE95XOx2OQYJF0ztPmhGJ26YBhfsk
+   SV0tkGb+PP1QVMqwBJL0LeN7tQKUo/p/ptn4+ppV18gDnjSVga2ee6mHQ
+   Co91YzvHJU/aOLoRK5hMknV7nzIwIOxhZ1ZrnC3jch5KZJqSs2uGR9uHR
+   tCtRqwOk2w7CGt/qDcHwuV2GVvNVUqdQfSniXjgt3CuS/YIWQBnGlDClQ
+   vDtf/8o7SSnfOFfVZS+z8aHEBApQGuh7AtHa7Alg156zzrZUhiZVppF2u
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="234673925"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="234673925"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 08:00:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="632273708"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Mar 2022 08:00:30 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRcGD-0001eD-9O; Tue, 08 Mar 2022 16:00:29 +0000
+Date:   Wed, 9 Mar 2022 00:00:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev 82/84]
+ kernel/rcu/tree.c:2678:3: error: implicit declaration of function
+ 'rcu_tasks_classic_qs'
+Message-ID: <202203082348.j9qeWzns-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220307091634.434478485@linuxfoundation.org>
-In-Reply-To: <20220307091634.434478485@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 8 Mar 2022 21:27:00 +0530
-Message-ID: <CA+G9fYs3GP9oMpadARzT6b8iFj69Qs0wT5XbFzbd7wK=_dXe+Q@mail.gmail.com>
-Subject: Re: [PATCH 4.9 00/32] 4.9.305-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 at 14:50, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.9.305 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.9.305-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.9.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+head:   fb8d1afe45bd6fcb50dff8bac4636725358fde94
+commit: c8c42c80febd4e6d346f7f62958300eb8205aa31 [82/84] rcu-tasks: Make Tasks RCU account for userspace execution
+config: arm-defconfig (https://download.01.org/0day-ci/archive/20220308/202203082348.j9qeWzns-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/ammarfaizi2/linux-block/commit/c8c42c80febd4e6d346f7f62958300eb8205aa31
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+        git checkout c8c42c80febd4e6d346f7f62958300eb8205aa31
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+All errors (new ones prefixed by >>):
 
-## Build
-* kernel: 4.9.305-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-4.9.y
-* git commit: d3c7ac3bc77206ec467f48bf73c25596bcb22bc8
-* git describe: v4.9.304-34-gd3c7ac3bc772
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
-04-34-gd3c7ac3bc772
+>> kernel/rcu/tree.c:2678:3: error: implicit declaration of function 'rcu_tasks_classic_qs' [-Werror,-Wimplicit-function-declaration]
+                   rcu_tasks_classic_qs(current, false);
+                   ^
+   1 error generated.
 
-## Test Regressions (compared to v4.9.304-28-gdc7cbaf71913)
-No test regressions found.
 
-## Metric Regressions (compared to v4.9.304-28-gdc7cbaf71913)
-No metric regressions found.
+vim +/rcu_tasks_classic_qs +2678 kernel/rcu/tree.c
 
-## Test Fixes (compared to v4.9.304-28-gdc7cbaf71913)
-No test fixes found.
+  2644	
+  2645	/*
+  2646	 * This function is invoked from each scheduling-clock interrupt,
+  2647	 * and checks to see if this CPU is in a non-context-switch quiescent
+  2648	 * state, for example, user mode or idle loop.  It also schedules RCU
+  2649	 * core processing.  If the current grace period has gone on too long,
+  2650	 * it will ask the scheduler to manufacture a context switch for the sole
+  2651	 * purpose of providing the needed quiescent state.
+  2652	 */
+  2653	void rcu_sched_clock_irq(int user)
+  2654	{
+  2655		unsigned long j;
+  2656	
+  2657		if (IS_ENABLED(CONFIG_PROVE_RCU)) {
+  2658			j = jiffies;
+  2659			WARN_ON_ONCE(time_before(j, __this_cpu_read(rcu_data.last_sched_clock)));
+  2660			__this_cpu_write(rcu_data.last_sched_clock, j);
+  2661		}
+  2662		trace_rcu_utilization(TPS("Start scheduler-tick"));
+  2663		lockdep_assert_irqs_disabled();
+  2664		raw_cpu_inc(rcu_data.ticks_this_gp);
+  2665		/* The load-acquire pairs with the store-release setting to true. */
+  2666		if (smp_load_acquire(this_cpu_ptr(&rcu_data.rcu_urgent_qs))) {
+  2667			/* Idle and userspace execution already are quiescent states. */
+  2668			if (!rcu_is_cpu_rrupt_from_idle() && !user) {
+  2669				set_tsk_need_resched(current);
+  2670				set_preempt_need_resched();
+  2671			}
+  2672			__this_cpu_write(rcu_data.rcu_urgent_qs, false);
+  2673		}
+  2674		rcu_flavor_sched_clock_irq(user);
+  2675		if (rcu_pending(user))
+  2676			invoke_rcu_core();
+  2677		if (user)
+> 2678			rcu_tasks_classic_qs(current, false);
+  2679		lockdep_assert_irqs_disabled();
+  2680	
+  2681		trace_rcu_utilization(TPS("End scheduler-tick"));
+  2682	}
+  2683	
 
-## Metric Fixes (compared to v4.9.304-28-gdc7cbaf71913)
-No metric fixes found.
-
-## Test result summary
-total: 80795, pass: 63818, fail: 895, skip: 13595, xfail: 2487
-
-## Build Summary
-* arm: 254 total, 238 passed, 16 failed
-* arm64: 32 total, 32 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 19 total, 19 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 22 total, 22 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 31 total, 31 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
