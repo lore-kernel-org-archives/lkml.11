@@ -2,76 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08AC4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C14E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349305AbiCHVWK (ORCPT
+        id S1350396AbiCHVYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:22:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        Tue, 8 Mar 2022 16:24:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234333AbiCHVWI (ORCPT
+        with ESMTP id S234333AbiCHVY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:22:08 -0500
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920094C791;
-        Tue,  8 Mar 2022 13:21:09 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id AAAE760002;
-        Tue,  8 Mar 2022 21:21:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646774468;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=i7AoCPZjX8EcXcmu8+pXmdmkFDbCvm0vHt0f5l1KUJE=;
-        b=EfDvoJU4KgnmtozSgKvLajcx77V1MmRGLq+Lp993CBYaxypHAapvgIPojbiXMf5kd9wFwy
-        1dp9zItaWM3zaHQh2OkVBwX8mBnR6WMZgsk8ju1QUNe7sVqWEoB0Qsv/E8eHpfpP6nG7ZH
-        a5q0KQrNQvRwAKOpLpVNE2mG5kdZMIRLK3QdwUsfSPNBrJkFvPE8sDWb0Xa54SdWLZxD+/
-        edkASdwKhi2YCqq/jB56/zbrqgct1hJVGYNcJkxpG6LSuposnbJRxu3HFDzHxS8ZNgNdie
-        fHzGnmRmOL0bhBjeWHIh4aCe7CXssjsWRtOsIeRAVwhaJiPSwpry1jGzifpc8w==
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Samuel Holland <samuel@sholland.org>,
-        Rob Herring <robh@kernel.org>, Icenowy Zheng <icenowy@aosc.io>,
-        Ondrej Jirman <megous@megous.com>,
-        Alessandro Zummo <a.zummo@towertech.it>
-Subject: Re: (subset) [PATCH v10 03/18] rtc: sun6i: Fix time overflow handling
-Date:   Tue,  8 Mar 2022 22:21:05 +0100
-Message-Id: <164677445867.88674.16740426287923298243.b4-ty@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220211122643.1343315-4-andre.przywara@arm.com>
-References: <20220211122643.1343315-1-andre.przywara@arm.com> <20220211122643.1343315-4-andre.przywara@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Tue, 8 Mar 2022 16:24:26 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6999832ED5;
+        Tue,  8 Mar 2022 13:23:28 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.90,165,1643641200"; 
+   d="scan'208";a="113751372"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 09 Mar 2022 06:23:27 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 1EACA40ED6B8;
+        Wed,  9 Mar 2022 06:23:24 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] dt-bindings: thermal: rzg2l-thermal: Document RZ/V2L bindings
+Date:   Tue,  8 Mar 2022 21:23:15 +0000
+Message-Id: <20220308212315.4551-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 12:26:28 +0000, Andre Przywara wrote:
-> Using "unsigned long" for UNIX timestamps is never a good idea, and
-> comparing the value of such a variable against U32_MAX does not do
-> anything useful on 32-bit systems.
-> 
-> Use the proper time64_t type when dealing with timestamps, and avoid
-> cutting down the time range unnecessarily. This also fixes the flawed
-> check for the alarm time being too far into the future.
-> 
-> [...]
+Document RZ/V2L TSU bindings. The TSU block on RZ/V2L is identical to one
+found on RZ/G2L SoC. No driver changes are required as generic compatible
+string "renesas,rzg2l-tsu" will be used as a fallback.
 
-Applied, thanks!
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+ Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-[03/18] rtc: sun6i: Fix time overflow handling
-        commit: 25c9815569cefd4f719c6c1266fe897e57642278
-
-Best regards,
+diff --git a/Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml b/Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml
+index ccab9511a042..dfb6dce5652a 100644
+--- a/Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml
++++ b/Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml
+@@ -18,6 +18,7 @@ properties:
+     items:
+       - enum:
+           - renesas,r9a07g044-tsu # RZ/G2{L,LC}
++          - renesas,r9a07g054-tsu # RZ/V2L
+       - const: renesas,rzg2l-tsu
+ 
+   reg:
 -- 
-Alexandre Belloni <alexandre.belloni@bootlin.com>
+2.17.1
+
