@@ -2,172 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7730CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BEEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348381AbiCHRKc (ORCPT
+        id S1348619AbiCHRKi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
+        Tue, 8 Mar 2022 12:10:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245053AbiCHRKb (ORCPT
+        with ESMTP id S1348421AbiCHRKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:10:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA14336B4D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646759373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9kvrF8a5fSjVKql9gaDkDoyGNlOLifpMBJz2kVYkRkE=;
-        b=BI1s2Vs9ivhHP20PzWPB5/4zLjZdPPArGsIo/vq1qjYG3id/MTOlGbbK/oHxcT2AeGlyS2
-        GYl+dUivcOrqCE4Go+4K2asek91sPQE/9sYhnC6wT8Xyl/Ia8Lc6Gyu9Y48vD2UaykrIIj
-        49/xVnj3Zper4cZGmVygEIuKbp72Ong=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-505-GicO_gLLPdGsjqd5MZyW7A-1; Tue, 08 Mar 2022 12:09:28 -0500
-X-MC-Unique: GicO_gLLPdGsjqd5MZyW7A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 763941006AA7;
-        Tue,  8 Mar 2022 17:09:25 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BF09C86C3B;
-        Tue,  8 Mar 2022 17:08:46 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id BB821416D5C1; Tue,  8 Mar 2022 10:12:35 -0300 (-03)
-Date:   Tue, 8 Mar 2022 10:12:35 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Oscar Shiang <oscar0225@livemail.tw>
-Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: Re: [patch v11 00/13] extensible prctl task isolation interface and
- vmstat sync
-Message-ID: <YidWQ28Jgs/FpmL1@fuller.cnet>
-References: <YhZvV5rRkHw4nOlR@fuller.cnet>
- <TYCP286MB19134DD105CC996925379EC8A1099@TYCP286MB1913.JPNP286.PROD.OUTLOOK.COM>
+        Tue, 8 Mar 2022 12:10:34 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FFA36E1A;
+        Tue,  8 Mar 2022 09:09:37 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id d10so40679852eje.10;
+        Tue, 08 Mar 2022 09:09:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DOdGQeqCpYXaPiv3FTiB/YOqJ4lEo750BpQvbc/UAeI=;
+        b=bMbwrDBcaXwa367L6NIq1Dx+ubrnoNm0OZbFllsIFAivPdFLc923Lvjdhdg9Mz7m0P
+         vZt2s7jx/4SdeOXuZ53+J/AbTQ2aJuUIdSN+rpNTqdmr0R71la2saasNcju++Ll4SeEz
+         7Dzb1wxygwgg7tA1J2GNjyfrj//kkM4AleeFoPI8R/fk/SvpFYxUapLyHicPewphSMoi
+         5mQ1/F/dHmklwz4rhozdYGlFDaD67Nn+35oyXwVq0HI7RMIG4s1X15blUfgGjsXFbXT9
+         0u83L2R4njw62ySrlwy7p2wNdkSYmyxmJu3HEvXW6n6A1BuuwpKcSm8RrfQGKAvi9NTy
+         +ACw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DOdGQeqCpYXaPiv3FTiB/YOqJ4lEo750BpQvbc/UAeI=;
+        b=U6Q1ZvXLLn/oTftzdgcd2zsWupBHD9M3aY7Y7lWL2jMXpR91yRHtMusZZPYeGOZDDB
+         ph0+rh1kkB6T6KEPbDhWh0z5L8+aiWPSXmrnF5K9Gx40efs5IdEahwE4zSYs2dwCyy7d
+         TkcoIJ68DBF07vf9Qt341CHnjqo4C4wBRU4OffnoJN4dgbzX8/LQmr3U7IsIcvcoNwOl
+         NGcTZSjDikcQWP+lqYwNBMvPIMZXfcB2ZaGsy9sNhx3iNO2yVVMA4MAnGnVOC3EvWa9J
+         7hklsWaHQgFsmmT8vODYJ+WaEQbFKpY16lsPfCGpD6ez5/DfWpMJRWY0DwxH/yNSOTQq
+         Qgjw==
+X-Gm-Message-State: AOAM531cJ+wyd1BIZmW5qZ35C+HFEKT+BqR29fdvgu1AgmeWePN8wMyE
+        tX/J1NyDPWbagiJu6aQCRoDT9Sd+mn8Jwg==
+X-Google-Smtp-Source: ABdhPJyeNwSfLyxrgPkLjbw5ubx2q+bLyD0P6+SR9bXANfjYj7eUmKomlYuskiRclYhx/J1WfTiwIA==
+X-Received: by 2002:a17:906:2b97:b0:6cd:6d67:ab5d with SMTP id m23-20020a1709062b9700b006cd6d67ab5dmr14406385ejg.723.1646759375991;
+        Tue, 08 Mar 2022 09:09:35 -0800 (PST)
+Received: from debianHome.localdomain (dynamic-077-006-252-105.77.6.pool.telefonica.de. [77.6.252.105])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056402354600b004167d09f418sm443751edd.55.2022.03.08.09.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 09:09:35 -0800 (PST)
+From:   =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
+To:     selinux@vger.kernel.org
+Cc:     James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH v2] selinux: log anon inode class name
+Date:   Tue,  8 Mar 2022 18:09:26 +0100
+Message-Id: <20220308170928.58040-1-cgzones@googlemail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220217143457.75229-1-cgzones@googlemail.com>
+References: <20220217143457.75229-1-cgzones@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <TYCP286MB19134DD105CC996925379EC8A1099@TYCP286MB1913.JPNP286.PROD.OUTLOOK.COM>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 02:32:46PM +0800, Oscar Shiang wrote:
-> On Feb 24, 2022, at 1:31 AM, Marcelo Tosatti <mtosatti@redhat.com> wrote:
-> > Hi Oscar,
-> > 
-> > On Sat, Feb 19, 2022 at 04:02:10PM +0800, Oscar Shiang wrote:
-> > > Hi Marcelo,
-> > > 
-> > > I tried to apply your patches to kernel v5.15.18-rt28 and measured
-> > > the latencies through oslat [1].
-> > > 
-> > > It turns out that the peak latency (around 100us) can drop to about 90us.
-> > > The result is impressive since I only changed the guest's kernel
-> > > instead of installing the patched kernel to both host and guest.
-> > > 
-> > > However, I am still curious about:
-> > > 1) Why did I catch a bigger maximum latency in almost each of the
-> > >   results of applying task isolation patches? Or does it come from
-> > >   other reasons?
-> > 
-> > There are a number of things that need to be done in order to have an 
-> > "well enough" isolated CPU so you can measure latency reliably:
-> > 
-> > * Boot a kernel with isolated CPU (or better, use realtime-virtual-host profile of
-> > https://github.com/redhat-performance/tuned.git, which does a bunch of
-> > other things to avoid interruptions to isolated CPUs).
-> > * Apply the userspace patches at https://people.redhat.com/~mtosatti/task-isol-v6-userspace-patches/
-> > to util-linux and rt-tests.
-> > 
-> > Run oslat with chisol:
-> > 
-> > chisol -q vmstat_sync -I conf oslat -c ...
-> > 
-> > Where chisol is from patched util-linux and oslat from patched rt-tests.
-> > 
-> > If you had "-f 1" (FIFO priority), on oslat, then the vmstat work would be hung.
-> > 
-> > Are you doing those things?
-> > 
-> > > 2) Why did we only get a 10us improvement on quiescing vmstat?
-> > 
-> > If you did not have FIFO priority on oslat, then other daemons 
-> > could be interrupting it, so better make sure the 10us improvement 
-> > you see is due to vmstat_flush workqueue work not executing anymore.
-> > 
-> > The testcase i use is: 
-> > 
-> > Stock kernel:
-> > 
-> > terminal 1: 
-> > # oslat -f 1 -c X ...
-> > 
-> > terminal 2:
-> > # echo 1 > /proc/sys/vm/stat_refresh
-> > (hang)
-> > 
-> > Patched kernel:
-> > 
-> > terminal 1: 
-> > # chisol -q vmstat_sync -I conf oslat -f 1 -c X ...
-> > 
-> > terminal 2:
-> > # echo 1 > /proc/sys/vm/stat_refresh
-> > # 
-> 
-> Sure, I did see the terminal hung during oslat with FIFO priority.
-> 
-> BTW, thanks for providing this test case. I used to run all workload stuff to just
-> verify the improvement of task isolation. It is a more straightr- forward way to do.
-> 
-> > > [1]: The result and the test scripts I used can be found at
-> > > https://gist.github.com/OscarShiang/8b530a00f472fd1c39f5979ee601516d#testing-task-isolation-via-oslat
-> > 
-> > OK, you seem to be doing everything necessary for chisol 
-> > to work. Does /proc/pid/task_isolation of the oslat worker thread
-> > (note its not the same pid as the main oslat thread) show "vmstat"
-> > configured and activated for quiesce?
-> 
-> The status of task_isolation seems to be set properly with "vmstat" and activated
-> 
-> > However 100us is really high. You should be able to get < 10us with
-> > realtime-virtual-host (i see 4us on an idle system).
-> > 
-> > The answer might be: because 10us is what it takes to execute
-> > vmstat_worker on the isolated CPU (you can verify with tracepoints).
-> > 
-> > That time depends on the number of per-CPU vmstat variables that need flushing, 
-> > i suppose...
-> 
-> Considering the interferences outside of the KVM, I have redone the measurements
-> directly on my x86_64 computer [1].
-> 
-> As result, most of the latencies are down to 60us (and below). There are still
-> some latencies larger than 80us, I am working on and trying to figure out the reason.
-> 
-> [1]: https://gist.github.com/OscarShiang/202eb691e649557fe3eaa5ec67a5aa82
+Log the anonymous inode class name in the security hook
+inode_init_security_anon.  This name is the key for name based type
+transitions on the anon_inode security class on creation.  Example:
 
-Oscar,
+    type=AVC msg=audit(02/16/22 22:02:50.585:216) : avc:  granted \
+        { create } for  pid=2136 comm=mariadbd anonclass="[io_uring]" \
+        scontext=system_u:system_r:mysqld_t:s0 \
+        tcontext=system_u:system_r:mysqld_iouring_t:s0 tclass=anon_inode
 
-Did you confirm with hwlatdetect that the BIOS does not have long
-running SMIs?
+Add a new LSM audit data type holding the inode and the class name.
 
-Also, for the software part, you could save time by using the
-realtime-virtual-host profile (check /usr/lib/tuned/realtime-virtual-host/
-to see what its doing in addition to isolcpus=).
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+
+---
+v2:
+  - drop dev= and name= output for anonymous inodes, and hence simplify
+    the common_audit_data union member.
+  - drop WARN_ON() on empty name passed to inode_init_security_anon hook
+---
+ include/linux/lsm_audit.h | 2 ++
+ security/lsm_audit.c      | 4 ++++
+ security/selinux/hooks.c  | 4 ++--
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/lsm_audit.h b/include/linux/lsm_audit.h
+index 17d02eda9538..97a8b21eb033 100644
+--- a/include/linux/lsm_audit.h
++++ b/include/linux/lsm_audit.h
+@@ -76,6 +76,7 @@ struct common_audit_data {
+ #define LSM_AUDIT_DATA_IBENDPORT 14
+ #define LSM_AUDIT_DATA_LOCKDOWN 15
+ #define LSM_AUDIT_DATA_NOTIFICATION 16
++#define LSM_AUDIT_DATA_ANONINODE	17
+ 	union 	{
+ 		struct path path;
+ 		struct dentry *dentry;
+@@ -96,6 +97,7 @@ struct common_audit_data {
+ 		struct lsm_ibpkey_audit *ibpkey;
+ 		struct lsm_ibendport_audit *ibendport;
+ 		int reason;
++		const char *anonclass;
+ 	} u;
+ 	/* this union contains LSM specific data */
+ 	union {
+diff --git a/security/lsm_audit.c b/security/lsm_audit.c
+index 1897cbf6fc69..981f6a4e4590 100644
+--- a/security/lsm_audit.c
++++ b/security/lsm_audit.c
+@@ -433,6 +433,10 @@ static void dump_common_audit_data(struct audit_buffer *ab,
+ 		audit_log_format(ab, " lockdown_reason=\"%s\"",
+ 				 lockdown_reasons[a->u.reason]);
+ 		break;
++	case LSM_AUDIT_DATA_ANONINODE:
++		audit_log_format(ab, " anonclass=");
++		audit_log_untrustedstring(ab, a->u.anonclass);
++		break;
+ 	} /* switch (a->type) */
+ }
+ 
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index b12e14b2797b..49c0abfd2f6a 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2965,8 +2965,8 @@ static int selinux_inode_init_security_anon(struct inode *inode,
+ 	 * allowed to actually create this type of anonymous inode.
+ 	 */
+ 
+-	ad.type = LSM_AUDIT_DATA_INODE;
+-	ad.u.inode = inode;
++	ad.type = LSM_AUDIT_DATA_ANONINODE;
++	ad.u.anonclass = name ? (const char *)name->name : "?";
+ 
+ 	return avc_has_perm(&selinux_state,
+ 			    tsec->sid,
+-- 
+2.35.1
 
