@@ -2,356 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D415C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345240AbiCHJOg (ORCPT
+        id S1345285AbiCHJQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:14:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
+        Tue, 8 Mar 2022 04:16:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344104AbiCHJOf (ORCPT
+        with ESMTP id S233068AbiCHJQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:14:35 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB6033E32;
-        Tue,  8 Mar 2022 01:13:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 948FCCE1390;
-        Tue,  8 Mar 2022 09:13:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51FF4C340EC;
-        Tue,  8 Mar 2022 09:13:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646730814;
-        bh=P2ow813GjxN7y90Nbi5mdcX3/Qx4pkrzBJMjlJuB0bI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KIyJ5Z4W+xpoAD4uEopMj0FyUy6TilJVBwQnKphQxiVjAS2oYNV3kOC9cFmXV4Ds5
-         QgqGPhJX4awF1yKDWV/IK6R2owmLHfLdXpPoJmRvt83sizBCQ/6hR969iatF/Oz/L0
-         YfIyLex4Fovm0OIRiU8g3yW/vSwrLVb4tkwMRHOtV3ydtGlqsZ1zBPldiPVr1ObBcE
-         B6KfzSomzYQsALKvIzauTgMdqqc3BlgdX7lb3PWKcRIlmBenkIoXlZSq4hExloE9JF
-         wHVDm6Fjl3kg3l72/8on1OtOQZ0vc+L4AUf0+SNUi6IqPK84tLw06Luq+robd0ShKk
-         eE15ZSJbq+1gg==
-Date:   Tue, 8 Mar 2022 11:12:54 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 06/32] x86/sgx: Support VMA permissions more relaxed
- than enclave permissions
-Message-ID: <YiceFtul/VsViuUu@iki.fi>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <0555a4b4a5e8879eb8f879ab3d9908302000f11c.1644274683.git.reinette.chatre@intel.com>
- <YiY8bD/QcmcHH8dz@iki.fi>
- <774e906c-53fc-279c-1fb7-0922557a9da5@intel.com>
- <YicQbzR1o1qZUGbw@iki.fi>
- <YiccplUukAJ5SeFn@iki.fi>
+        Tue, 8 Mar 2022 04:16:28 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D48A40A16
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 01:15:31 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id r10so27414552wrp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 01:15:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=A67AlhskYiiSCgOgMfxOM8VtIq/AZbd8NuTpwj7+O9E=;
+        b=ru0ZMHr+H3SzWxJ5c6z+akoloC2eYUtrZZDP/bO0aM7LsTlONsVtFwFb/M0zFfOyf8
+         ElYyllP0vUy0v0lbdXhcPYe4WzX7ped6as7iO4g3cCmAJaWF+VZOQBy9ug42T440YpRF
+         GUNi+yilLEuh339WAnK2G0QLo/WGwWiiz6vZ/8lCD4bCmK0TFsJdNrkLS30iJ3WFSL83
+         SnRbArDjmbspkK6+UFofwFDjTRmpVBG0W/hwgBdGn/4koeWXQAPzHE106Pho9SQPGPFW
+         5I7zM7fAiaC+9DyvnsQWd0h5V5zBpL4P1Hkpp1YpcllRm9Tk5tHYCkPE7/0BSdXqV9ip
+         lg1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=A67AlhskYiiSCgOgMfxOM8VtIq/AZbd8NuTpwj7+O9E=;
+        b=WU4wqvA87V1RfDJODQsbTAvCEQ+MaZM9rCd+0PrbWYMLucfLPJI+SW422FLSgCmeEf
+         RmPV/kLFJcl1a3feHxtoRGAm0LGUUGiKtMuutCxH54WuleGr1P51UdlexxZhXLcKgPyj
+         4wZQaSpp9yKgtxamel9Cv7V6gvyR4Q5BWOXnnLWXwGFIoKyBjQwMNIacWt8jRrjR/gGF
+         qV+aU3j2Rl0trII5zZsQriN9S2UvYI3rouG8xSBP98at4zB64mPq3sGe2mXwNaJklm/l
+         EwXb3drYajBQ9VQcouiBa7uaRPVr5fOAOy81VLBWvAsRCzICQJ8GgWkeequq2KNt4uVA
+         tXXA==
+X-Gm-Message-State: AOAM532wrXEuPV7YS81sX7ZUF0JeD6S2eigsfsGR7B4P+NTqVDLPb8B1
+        BSP21pbZR2zLpInI2mZwRJeXhQ==
+X-Google-Smtp-Source: ABdhPJy9FjH8HkL7B/j6ELLmslkDBEpsnA6isr76dWseTv/sIBWInh7Ka7q7NHwbZ1Go3z4nK7Q0BQ==
+X-Received: by 2002:adf:e448:0:b0:1ea:c7b6:782 with SMTP id t8-20020adfe448000000b001eac7b60782mr11302842wrm.29.1646730930092;
+        Tue, 08 Mar 2022 01:15:30 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id h13-20020adff18d000000b001f1de9f930esm15425518wro.81.2022.03.08.01.15.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 01:15:29 -0800 (PST)
+Date:   Tue, 8 Mar 2022 09:15:27 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <Yicer3yGg5rrdSIs@google.com>
+References: <20220307191757.3177139-1-lee.jones@linaro.org>
+ <YiZeB7l49KC2Y5Gz@kroah.com>
+ <YicPXnNFHpoJHcUN@google.com>
+ <Yicalf1I6oBytbse@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YiccplUukAJ5SeFn@iki.fi>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yicalf1I6oBytbse@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:06:46AM +0200, Jarkko Sakkinen wrote:
-> On Tue, Mar 08, 2022 at 10:14:42AM +0200, Jarkko Sakkinen wrote:
-> > On Mon, Mar 07, 2022 at 09:36:36AM -0800, Reinette Chatre wrote:
-> > > Hi Jarkko,
-> > > 
-> > > On 3/7/2022 9:10 AM, Jarkko Sakkinen wrote:
-> > > > On Mon, Feb 07, 2022 at 04:45:28PM -0800, Reinette Chatre wrote:
-> > > >> === Summary ===
-> > > >>
-> > > >> An SGX VMA can only be created if its permissions are the same or
-> > > >> weaker than the Enclave Page Cache Map (EPCM) permissions. After VMA
-> > > >> creation this same rule is again enforced by the page fault handler:
-> > > >> faulted enclave pages are required to have equal or more relaxed
-> > > >> EPCM permissions than the VMA permissions.
-> > > >>
-> > > >> On SGX1 systems the additional enforcement in the page fault handler
-> > > >> is redundant and on SGX2 systems it incorrectly prevents access.
-> > > >> On SGX1 systems it is unnecessary to repeat the enforcement of the
-> > > >> permission rule. The rule used during original VMA creation will
-> > > >> ensure that any access attempt will use correct permissions.
-> > > >> With SGX2 the EPCM permissions of a page can change after VMA
-> > > >> creation resulting in the VMA permissions potentially being more
-> > > >> relaxed than the EPCM permissions and the page fault handler
-> > > >> incorrectly blocking valid access attempts.
-> > > >>
-> > > >> Enable the VMA's pages to remain accessible while ensuring that
-> > > >> the PTEs are installed to match the EPCM permissions but not be
-> > > >> more relaxed than the VMA permissions.
-> > > >>
-> > > >> === Full Changelog ===
-> > > >>
-> > > >> An SGX enclave is an area of memory where parts of an application
-> > > >> can reside. First an enclave is created and loaded (from
-> > > >> non-enclave memory) with the code and data of an application,
-> > > >> then user space can map (mmap()) the enclave memory to
-> > > >> be able to enter the enclave at its defined entry points for
-> > > >> execution within it.
-> > > >>
-> > > >> The hardware maintains a secure structure, the Enclave Page Cache Map
-> > > >> (EPCM), that tracks the contents of the enclave. Of interest here is
-> > > >> its tracking of the enclave page permissions. When a page is loaded
-> > > >> into the enclave its permissions are specified and recorded in the
-> > > >> EPCM. In parallel the kernel maintains permissions within the
-> > > >> page table entries (PTEs) and the rule is that PTE permissions
-> > > >> are not allowed to be more relaxed than the EPCM permissions.
-> > > >>
-> > > >> A new mapping (mmap()) of enclave memory can only succeed if the
-> > > >> mapping has the same or weaker permissions than the permissions that
-> > > >> were vetted during enclave creation. This is enforced by
-> > > >> sgx_encl_may_map() that is called on the mmap() as well as mprotect()
-> > > >> paths. This rule remains.
-> > > >>
-> > > >> One feature of SGX2 is to support the modification of EPCM permissions
-> > > >> after enclave initialization. Enclave pages may thus already be part
-> > > >> of a VMA at the time their EPCM permissions are changed resulting
-> > > >> in the VMA's permissions potentially being more relaxed than the EPCM
-> > > >> permissions.
-> > > >>
-> > > >> Allow permissions of existing VMAs to be more relaxed than EPCM
-> > > >> permissions in preparation for dynamic EPCM permission changes
-> > > >> made possible in SGX2.  New VMAs that attempt to have more relaxed
-> > > >> permissions than EPCM permissions continue to be unsupported.
-> > > >>
-> > > >> Reasons why permissions of existing VMAs are allowed to be more relaxed
-> > > >> than EPCM permissions instead of dynamically changing VMA permissions
-> > > >> when EPCM permissions change are:
-> > > >> 1) Changing VMA permissions involve splitting VMAs which is an
-> > > >>    operation that can fail. Additionally changing EPCM permissions of
-> > > >>    a range of pages could also fail on any of the pages involved.
-> > > >>    Handling these error cases causes problems. For example, if an
-> > > >>    EPCM permission change fails and the VMA has already been split
-> > > >>    then it is not possible to undo the VMA split nor possible to
-> > > >>    undo the EPCM permission changes that did succeed before the
-> > > >>    failure.
-> > > >> 2) The kernel has little insight into the user space where EPCM
-> > > >>    permissions are controlled from. For example, a RW page may
-> > > >>    be made RO just before it is made RX and splitting the VMAs
-> > > >>    while the VMAs may change soon is unnecessary.
-> > > >>
-> > > >> Remove the extra permission check called on a page fault
-> > > >> (vm_operations_struct->fault) or during debugging
-> > > >> (vm_operations_struct->access) when loading the enclave page from swap
-> > > >> that ensures that the VMA permissions are not more relaxed than the
-> > > >> EPCM permissions. Since a VMA could only exist if it passed the
-> > > >> original permission checks during mmap() and a VMA may indeed
-> > > >> have more relaxed permissions than the EPCM permissions this extra
-> > > >> permission check is no longer appropriate.
-> > > >>
-> > > >> With the permission check removed, ensure that PTEs do
-> > > >> not blindly inherit the VMA permissions but instead the permissions
-> > > >> that the VMA and EPCM agree on. PTEs for writable pages (from VMA
-> > > >> and enclave perspective) are installed with the writable bit set,
-> > > >> reducing the need for this additional flow to the permission mismatch
-> > > >> cases handled next.
-> > > >>
-> > > >> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-> > > >> ---
-> > > >> Changes since V1:
-> > > >> - Reword commit message (Jarkko).
-> > > >> - Use "relax" instead of "exceed" when referring to permissions (Dave).
-> > > >> - Add snippet to Documentation/x86/sgx.rst that highlights the
-> > > >>   relationship between VMA, EPCM, and PTE permissions on SGX
-> > > >>   systems (Andy).
-> > > >>
-> > > >>  Documentation/x86/sgx.rst      | 10 +++++++++
-> > > >>  arch/x86/kernel/cpu/sgx/encl.c | 38 ++++++++++++++++++----------------
-> > > >>  2 files changed, 30 insertions(+), 18 deletions(-)
-> > > >>
-> > > >> diff --git a/Documentation/x86/sgx.rst b/Documentation/x86/sgx.rst
-> > > >> index 89ff924b1480..5659932728a5 100644
-> > > >> --- a/Documentation/x86/sgx.rst
-> > > >> +++ b/Documentation/x86/sgx.rst
-> > > >> @@ -99,6 +99,16 @@ The relationships between the different permission masks are:
-> > > >>  * PTEs are installed to match the EPCM permissions, but not be more
-> > > >>    relaxed than the VMA permissions.
-> > > >>  
-> > > >> +On systems supporting SGX2 EPCM permissions may change while the
-> > > >> +enclave page belongs to a VMA without impacting the VMA permissions.
-> > > >> +This means that a running VMA may appear to allow access to an enclave
-> > > >> +page that is not allowed by its EPCM permissions. For example, when an
-> > > >> +enclave page with RW EPCM permissions is mapped by a RW VMA but is
-> > > >> +subsequently changed to have read-only EPCM permissions. The kernel
-> > > >> +continues to maintain correct access to the enclave page through the
-> > > >> +PTE that will ensure that only access allowed by both the VMA
-> > > >> +and EPCM permissions are permitted.
-> > > >> +
-> > > >>  Application interface
-> > > >>  =====================
-> > > >>  
-> > > >> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-> > > >> index 48afe96ae0f0..b6105d9e7c46 100644
-> > > >> --- a/arch/x86/kernel/cpu/sgx/encl.c
-> > > >> +++ b/arch/x86/kernel/cpu/sgx/encl.c
-> > > >> @@ -91,10 +91,8 @@ static struct sgx_epc_page *sgx_encl_eldu(struct sgx_encl_page *encl_page,
-> > > >>  }
-> > > >>  
-> > > >>  static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-> > > >> -						unsigned long addr,
-> > > >> -						unsigned long vm_flags)
-> > > >> +						unsigned long addr)
-> > > >>  {
-> > > >> -	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
-> > > >>  	struct sgx_epc_page *epc_page;
-> > > >>  	struct sgx_encl_page *entry;
-> > > >>  
-> > > >> @@ -102,14 +100,6 @@ static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-> > > >>  	if (!entry)
-> > > >>  		return ERR_PTR(-EFAULT);
-> > > >>  
-> > > >> -	/*
-> > > >> -	 * Verify that the faulted page has equal or higher build time
-> > > >> -	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
-> > > >> -	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
-> > > >> -	 */
-> > > >> -	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
-> > > >> -		return ERR_PTR(-EFAULT);
-> > > >> -
-> > > >>  	/* Entry successfully located. */
-> > > >>  	if (entry->epc_page) {
-> > > >>  		if (entry->desc & SGX_ENCL_PAGE_BEING_RECLAIMED)
-> > > >> @@ -138,7 +128,9 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
-> > > >>  {
-> > > >>  	unsigned long addr = (unsigned long)vmf->address;
-> > > >>  	struct vm_area_struct *vma = vmf->vma;
-> > > >> +	unsigned long page_prot_bits;
-> > > >>  	struct sgx_encl_page *entry;
-> > > >> +	unsigned long vm_prot_bits;
-> > > >>  	unsigned long phys_addr;
-> > > >>  	struct sgx_encl *encl;
-> > > >>  	vm_fault_t ret;
-> > > >> @@ -155,7 +147,7 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
-> > > >>  
-> > > >>  	mutex_lock(&encl->lock);
-> > > >>  
-> > > >> -	entry = sgx_encl_load_page(encl, addr, vma->vm_flags);
-> > > >> +	entry = sgx_encl_load_page(encl, addr);
-> > > >>  	if (IS_ERR(entry)) {
-> > > >>  		mutex_unlock(&encl->lock);
-> > > >   
-> > > >> @@ -167,7 +159,19 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
-> > > >>  
-> > > >>  	phys_addr = sgx_get_epc_phys_addr(entry->epc_page);
-> > > >>  
-> > > >> -	ret = vmf_insert_pfn(vma, addr, PFN_DOWN(phys_addr));
-> > > >> +	/*
-> > > >> +	 * Insert PTE to match the EPCM page permissions ensured to not
-> > > >> +	 * exceed the VMA permissions.
-> > > >> +	 */
-> > > >> +	vm_prot_bits = vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
-> > > >> +	page_prot_bits = entry->vm_max_prot_bits & vm_prot_bits;
-> > > >> +	/*
-> > > >> +	 * Add VM_SHARED so that PTE is made writable right away if VMA
-> > > >> +	 * and EPCM are writable (no COW in SGX).
-> > > >> +	 */
-> > > >> +	page_prot_bits |= (vma->vm_flags & VM_SHARED);
-> > > >> +	ret = vmf_insert_pfn_prot(vma, addr, PFN_DOWN(phys_addr),
-> > > >> +				  vm_get_page_prot(page_prot_bits));
-> > > >>  	if (ret != VM_FAULT_NOPAGE) {
-> > > >>  		mutex_unlock(&encl->lock);
-> > > >>  
-> > > >> @@ -295,15 +299,14 @@ static int sgx_encl_debug_write(struct sgx_encl *encl, struct sgx_encl_page *pag
-> > > >>   * Load an enclave page to EPC if required, and take encl->lock.
-> > > >>   */
-> > > >>  static struct sgx_encl_page *sgx_encl_reserve_page(struct sgx_encl *encl,
-> > > >> -						   unsigned long addr,
-> > > >> -						   unsigned long vm_flags)
-> > > >> +						   unsigned long addr)
-> > > >>  {
-> > > >>  	struct sgx_encl_page *entry;
-> > > >>  
-> > > >>  	for ( ; ; ) {
-> > > >>  		mutex_lock(&encl->lock);
-> > > >>  
-> > > >> -		entry = sgx_encl_load_page(encl, addr, vm_flags);
-> > > >> +		entry = sgx_encl_load_page(encl, addr);
-> > > >>  		if (PTR_ERR(entry) != -EBUSY)
-> > > >>  			break;
-> > > >>  
-> > > >> @@ -339,8 +342,7 @@ static int sgx_vma_access(struct vm_area_struct *vma, unsigned long addr,
-> > > >>  		return -EFAULT;
-> > > >>  
-> > > >>  	for (i = 0; i < len; i += cnt) {
-> > > >> -		entry = sgx_encl_reserve_page(encl, (addr + i) & PAGE_MASK,
-> > > >> -					      vma->vm_flags);
-> > > >> +		entry = sgx_encl_reserve_page(encl, (addr + i) & PAGE_MASK);
-> > > >>  		if (IS_ERR(entry)) {
-> > > >>  			ret = PTR_ERR(entry);
-> > > >>  			break;
-> > > >> -- 
-> > > >> 2.25.1
-> > > >>
-> > > > 
-> > > > If you unconditionally set vm_max_prot_bits to RWX for dynamically created
-> > > > pags, you would not need to do this.
-> > > > 
-> > > > These patches could be then safely dropped then:
-> > > > 
-> > > > - [PATCH V2 06/32] x86/sgx: Support VMA permissions more relaxed than enclave permissions 
-> > > > - [PATCH V2 08/32] x86/sgx: x86/sgx: Add sgx_encl_page->vm_run_prot_bits for dynamic permission changes
-> > > > - [PATCH V2 15/32] x86/sgx: Support relaxing of enclave page permissions
-> > > > 
-> > > > And that would also keep full ABI compatibility without exceptions to the
-> > > > existing mainline code.
-> > > > 
-> > > 
-> > > Dropping these changes do not just impact dynamically created pages. Dropping
-> > > these patches would result in EPCM page permission restriction being supported
-> > > for all pages, those added before enclave initialization as well as dynamically
-> > > added pages, but their PTEs will not be impacted.
-> > > 
-> > > For example, if a RW enclave page is added via SGX_IOC_ENCLAVE_ADD_PAGES and
-> > > then later made read-only via SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS then Linux
-> > > would keep allowing and installing RW PTEs to this page.
-> > 
-> > I think that would be perfectly fine, if someone wants to do that. There is
-> > no corrateral damage on doing that. Kernel does not get messed because of
-> > that. It's a use case that does not make sense in the first place, so it'd
-> > be stupid to build anything extensive around it to the kernel.
-> > 
-> > Shooting yourself to the foot is something that kernel does and should not
-> > protect user space from unless there is a risk of messing the state of the
-> > kernel itself.
-> > 
-> > Much worse is that we have e.g. completely artificial ioctl
-> > SGX_IOC_ENCLAVE_RELAX_PERMISSIONS to support this scheme, which could e.g.
-> > cause extra roundtrips for simple EMODPE.
-> > 
-> > Also this means not having to include 06/32, which keeps 100% backwards
-> > compatibility in run-time behaviour to the mainline while not restricting
-> > at all dynamically created pages. And we get rid of complex book keeping
-> > of vm_run_prot_bits.
-> > 
-> > And generally the whole model is then very easy to understand and explain.
-> > If I had to keep presentation of the current mess in the patch set in a
-> > conference, I can honestly say that I would be in serious trouble. It's
-> > not clean and clear security model, which is a risk by itself.
-> 
-> I.e.
-> 
-> 1. For EADD'd pages: stick what has been the invariant 1,5 years now. Do
->    not change it by any means (e.g. 06/32).
-> 2. For EAUG'd pages: set vm_max_prot_bits RWX, which essentially means do
->    what ever you want with PTE's and EPCM.
-> 
-> It's a clear and understandable model that does nothing bad to the kernel,
-> and a run-time developer can surely find away to get things on going. For
-> user space, the most important thing is the clarity in kernel behaviour,
-> and this does deliver that clarity. It's not perfect but it does do the
-> job and anyone can get it.
+On Tue, 08 Mar 2022, Greg KH wrote:
 
-Also a quantitive argument for this is that by simplifying security model
-this way it is one ioctl less, which must be considered as +1. We do not
-want to add new ioctls unless it is something we absolutely cannnot live
-without. We absolutely can live without SGX_IOC_ENCLAVE_RELAX_PERMISSIONS.
+> On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
+> > On Mon, 07 Mar 2022, Greg KH wrote:
+> > 
+> > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
+> > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
+> > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > 
+> > > > Also WARN() as a precautionary measure.  The purpose of this is to
+> > > > capture possible future race conditions which may pop up over time.
+> > > > 
+> > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > 
+> > > > Cc: <stable@vger.kernel.org>
+> > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > ---
+> > > >  drivers/vhost/vhost.c | 10 ++++++++++
+> > > >  1 file changed, 10 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > index 59edb5a1ffe28..ef7e371e3e649 100644
+> > > > --- a/drivers/vhost/vhost.c
+> > > > +++ b/drivers/vhost/vhost.c
+> > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > >  	int i;
+> > > >  
+> > > >  	for (i = 0; i < dev->nvqs; ++i) {
+> > > > +		/* No workers should run here by design. However, races have
+> > > > +		 * previously occurred where drivers have been unable to flush
+> > > > +		 * all work properly prior to clean-up.  Without a successful
+> > > > +		 * flush the guest will malfunction, but avoiding host memory
+> > > > +		 * corruption in those cases does seem preferable.
+> > > > +		 */
+> > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > > 
+> > > So you are trading one syzbot triggered issue for another one in the
+> > > future?  :)
+> > > 
+> > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
+> > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
+> > > you want that to happen?
+> > 
+> > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
+> 
+> Has it changed?  Last I looked, it did trigger on WARN_* calls, which
+> has resulted in a huge number of kernel fixes because of that.
 
-BR, Jarkko
+Everything is customisable in syzkaller, so maybe there are specific
+builds which panic_on_warn enabled, but none that I'm involved with
+do.
+
+Here follows a topical example.  The report above in the Link: tag
+comes with a crashlog [0].  In there you can see the WARN() at the
+bottom of vhost_dev_cleanup() trigger many times due to a populated
+(non-flushed) worker list, before finally tripping the BUG() which
+triggers the report:
+
+[0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
+
+> > > And what happens if the mutex is locked _RIGHT_ after you checked it?
+> > > You still have a race...
+> > 
+> > No, we miss a warning that one time.  Memory is still protected.
+> 
+> Then don't warn on something that doesn't matter.  This line can be
+> dropped as there's nothing anyone can do about it, right?
+
+You'll have to take that point up with Michael.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
