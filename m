@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50889C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D816EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346594AbiCHLn5 (ORCPT
+        id S1346682AbiCHLoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        Tue, 8 Mar 2022 06:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346558AbiCHLni (ORCPT
+        with ESMTP id S1346583AbiCHLnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:43:38 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BACF5FD2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:42:37 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id w37so16223202pga.7
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 03:42:37 -0800 (PST)
+        Tue, 8 Mar 2022 06:43:51 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC4CDF06
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:42:43 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id k92so7800582pjh.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 03:42:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NJODWLWI7+P4Y4wf9Goyx7nWejvl0xaH4jd1S+sBpGc=;
-        b=k8DqROsNj3BWSNG2HVRj2m3y+wA/g1RB5ufaW5G7A1VfyTlpqnavG7Y+AXEIbYf6LO
-         CQeU9DHNU7Uk2GkBYnTLXY2YE/UEppE8Qj1TSTiTEAu4/qVWu4fCymEufSGdwNM/IbkR
-         9mnZcPZDvpVlpepo9JHszhsl/PntsBcfeLgsA+CXe29/GkjBeBEelKB+saVHeAv5yHZ+
-         PF4wn+R5lVgcCz+a1R7wELDHwKDHEPc8kXdVdX1T9gx6EHcnem8AyUhc41CMP82Ff8UA
-         obfS73XrO2zVNOq4kkECRHvM6D+DybvJKPdPsA9VX0LwkA9ct45SLx6GLyJCZ/2DPbMV
-         nmgA==
+        bh=WyJUzAbm9yHjJ4QKSKKsRPqOaZ/q3Aw9wGC8avt4y3A=;
+        b=SPOB2Is9v5XHsx3KQKzQnq3I+g7W8LG2kR7QM7TXpvg7Yy/WQuHZEsBvJVobSOf7TL
+         S0Y5M5vqJcfdS51VXiGAzQe5WwhM5NXOmkw5bdY5Q5WSxRN4ffqzxXZnkMpWzqC0nsGC
+         pQKd/G9pyhqk62HNgFxlL3PPLu7a4u7RKHj6qguBWeNrl81xQHwFBaXc4YcGDx74fQ6H
+         /EQeI77O1+2AC+zZFbojMcQ+ZmaVDV00jrpTjS7YIaHHMzUUkSb1zVu9+gaXwFZ2+jW0
+         ZYZooIb73Psyq0sG1WsaQl+lPMt4gf+lSMEp5zDZXy+VfkO2Jr+iNY9O2vezybOEWf6O
+         wwtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NJODWLWI7+P4Y4wf9Goyx7nWejvl0xaH4jd1S+sBpGc=;
-        b=fSRyttv992634ouHQIaVR3ajA+4gLfgim5ZTfHZAlBIo2gNW49o8kzr8gTtb5mYj6m
-         pcfNM/q0f1caWrJyOPxF5DMMXFf9p94FxwsJfKOOg7e5rX9wb+oT38mPQLxH8tV55lIR
-         43k4HD+NccGE9bcJpftMpp1h6mLy/kXDbc9k5qYR9ab9wyfciz6v3jpTw2P3iIqJfp1e
-         FLsFIFd1+YBzPko2ppz8brqVv9iHvL94ozJlC7jZsgYV0dya0o2th6ClE3Pl5XDJ6095
-         G2aU5zqHOBzjDxvsADunxpQ/a6vXB1QQF6ZAXHs8l9LFGbR520mghaRoPjUOqQKyF6n2
-         rkSQ==
-X-Gm-Message-State: AOAM533MQ2yU2GcfacmDmWNBtGIZw2YKY9KdwwSSO2a3HRYIC2EigrgP
-        EX08YTbsuPZJFYgou4izbKs=
-X-Google-Smtp-Source: ABdhPJyfjhk94lYAce75iEXeUf2t8Pcrxd7uSvQMXJhrHla2T9WmCnuYSkcYeNf816yPaaO3IIbsMg==
-X-Received: by 2002:a63:8742:0:b0:37c:94b7:4fba with SMTP id i63-20020a638742000000b0037c94b74fbamr13501881pge.507.1646739756570;
-        Tue, 08 Mar 2022 03:42:36 -0800 (PST)
+        bh=WyJUzAbm9yHjJ4QKSKKsRPqOaZ/q3Aw9wGC8avt4y3A=;
+        b=j28bD6tILI+DBjS1g7TQfKc8UbWZ/3qYckA7q7ouzVvsFhkG0/QWgTSHvH+5tytaei
+         o1oWGq0JyckD0D54zaH02qDt8qFr+cZEPfzK2ppvON4v+AWlLFJ9T3/1GuBxmY3bFGeD
+         40yhxWinP4HBmrbrq8Oz34bbHb/7BZgZUX87l27gSjDP5RcfFsq8jsZW1U8nKguTGLZn
+         re3DUSSsrOt8ipD16v9mrrwMPovqNtT6J9IGjoKnmMbMRgJoZWUcPCKBxDgbcdXsoINS
+         yJugPtTnzyfALfw9XpifBj89+g3qERJIcysP2LoEImny2N7HTLRxHl5Cd7icpyA+/lUH
+         pcWQ==
+X-Gm-Message-State: AOAM532+oqU+BJJytVLa2ucItceAFOEfDuFP09gtnd3AGLDpTCq5jLCb
+        VWX60YVILaueEcC4E8baV0k=
+X-Google-Smtp-Source: ABdhPJwBBmcQhwZHwUbPZucQH/JdiAMEHfLJ+/PU4B7VIoOPrR4kHVV3U6pLD61NDo5NAPt4lomuqA==
+X-Received: by 2002:a17:902:7298:b0:151:842b:a241 with SMTP id d24-20020a170902729800b00151842ba241mr16959617pll.115.1646739762983;
+        Tue, 08 Mar 2022 03:42:42 -0800 (PST)
 Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id i2-20020a17090ac40200b001bd0e552d27sm2578285pjt.11.2022.03.08.03.42.33
+        by smtp.gmail.com with ESMTPSA id i2-20020a17090ac40200b001bd0e552d27sm2578285pjt.11.2022.03.08.03.42.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 03:42:36 -0800 (PST)
+        Tue, 08 Mar 2022 03:42:42 -0800 (PST)
 From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
 To:     linux-mm@kvack.org
 Cc:     Christoph Lameter <cl@linux.com>,
@@ -61,9 +61,9 @@ Cc:     Christoph Lameter <cl@linux.com>,
         Matthew WilCox <willy@infradead.org>,
         Roman Gushchin <roman.gushchin@linux.dev>,
         linux-kernel@vger.kernel.org, 42.hyeyoo@gmail.com
-Subject: [RFC PATCH v1 06/15] mm/slab_common: cleanup kmalloc_large()
-Date:   Tue,  8 Mar 2022 11:41:33 +0000
-Message-Id: <20220308114142.1744229-7-42.hyeyoo@gmail.com>
+Subject: [RFC PATCH v1 08/15] mm/sl[auo]b: cleanup kmalloc()
+Date:   Tue,  8 Mar 2022 11:41:35 +0000
+Message-Id: <20220308114142.1744229-9-42.hyeyoo@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
 References: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
@@ -73,75 +73,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that kmalloc_large() and kmalloc_large_node() do same job,
-make kmalloc_large() wrapper of kmalloc_large_node().
+Now that kmalloc() and kmalloc_node() do same job, make kmalloc()
+wrapper of kmalloc_node().
 
-This makes slab allocators to use kmalloc_node tracepoint in
-kmalloc_large().
+Remove kmalloc_trace() that is now unused. This patch makes slab
+allocator use kmalloc_node tracepoints in kmalloc().
 
 Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 ---
- include/linux/slab.h |  8 +++++---
- mm/slab_common.c     | 24 ------------------------
- 2 files changed, 5 insertions(+), 27 deletions(-)
+ include/linux/slab.h | 82 +++++++++++++++++---------------------------
+ mm/slab.c            | 14 --------
+ mm/slub.c            |  9 -----
+ 3 files changed, 31 insertions(+), 74 deletions(-)
 
 diff --git a/include/linux/slab.h b/include/linux/slab.h
-index 60d27635c13d..8840b2d55567 100644
+index 33d4260bce8b..dfcc8301d969 100644
 --- a/include/linux/slab.h
 +++ b/include/linux/slab.h
-@@ -467,12 +467,14 @@ extern void *kmem_cache_alloc_node_trace(struct kmem_cache *s, gfp_t gfpflags,
+@@ -460,9 +460,6 @@ static __always_inline void kfree_bulk(size_t size, void **p)
+ 	kmem_cache_free_bulk(NULL, size, p);
+ }
+ 
+-extern void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t flags, size_t size)
+-				   __assume_slab_alignment __alloc_size(3);
+-
+ extern void *kmem_cache_alloc_node_trace(struct kmem_cache *s, gfp_t gfpflags,
  					 int node, size_t size) __assume_slab_alignment
  								__alloc_size(4);
+@@ -475,6 +472,36 @@ static __always_inline void *kmalloc_large(size_t size, gfp_t flags)
+ 	return kmalloc_large_node(size, flags, NUMA_NO_NODE);
+ }
  
--extern void *kmalloc_large(size_t size, gfp_t flags) __assume_page_alignment
--						     __alloc_size(1);
--
- extern void *kmalloc_large_node(size_t size, gfp_t flags, int node)
- 				__assume_page_alignment __alloc_size(1);
- 
-+static __always_inline void *kmalloc_large(size_t size, gfp_t flags)
++#ifndef CONFIG_SLOB
++static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
 +{
-+	return kmalloc_large_node(size, flags, NUMA_NO_NODE);
++	if (__builtin_constant_p(size)) {
++		unsigned int index;
++
++		if (size > KMALLOC_MAX_CACHE_SIZE)
++			return kmalloc_large(size, flags);
++
++		index = kmalloc_index(size);
++
++		if (!index)
++			return ZERO_SIZE_PTR;
++
++		return kmem_cache_alloc_node_trace(
++				kmalloc_caches[kmalloc_type(flags)][index],
++						flags, node, size);
++	}
++	return __kmalloc_node(size, flags, node);
 +}
++#else
++static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
++{
++	if (__builtin_constant_p(size) && size > KMALLOC_MAX_CACHE_SIZE)
++		return kmalloc_large(size, flags);
++
++	return __kmalloc_node(size, flags, node);
++}
++#endif
 +
  /**
   * kmalloc - allocate memory
   * @size: how many bytes of memory are required.
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index f61ac7458829..1fe2f2a7326d 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -932,30 +932,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags)
-  * directly to the page allocator. We use __GFP_COMP, because we will need to
-  * know the allocation order to free the pages properly in kfree.
+@@ -531,55 +558,8 @@ static __always_inline void *kmalloc_large(size_t size, gfp_t flags)
   */
--void *kmalloc_large(size_t size, gfp_t flags)
--{
--	void *ret = NULL;
--	struct page *page;
--	unsigned int order = get_order(size);
+ static __always_inline __alloc_size(1) void *kmalloc(size_t size, gfp_t flags)
+ {
+-	if (__builtin_constant_p(size)) {
+-#ifndef CONFIG_SLOB
+-		unsigned int index;
+-#endif
+-		if (size > KMALLOC_MAX_CACHE_SIZE)
+-			return kmalloc_large(size, flags);
+-#ifndef CONFIG_SLOB
+-		index = kmalloc_index(size);
 -
--	if (unlikely(flags & GFP_SLAB_BUG_MASK))
--		flags = kmalloc_fix_flags(flags);
+-		if (!index)
+-			return ZERO_SIZE_PTR;
 -
--	flags |= __GFP_COMP;
--	page = alloc_pages(flags, order);
--	if (likely(page)) {
--		ret = page_address(page);
--		mod_lruvec_page_state(page, NR_SLAB_UNRECLAIMABLE_B,
--				      PAGE_SIZE << order);
+-		return kmem_cache_alloc_trace(
+-				kmalloc_caches[kmalloc_type(flags)][index],
+-				flags, size);
+-#endif
 -	}
--	ret = kasan_kmalloc_large(ret, size, flags);
--	/* As ret might get tagged, call kmemleak hook after KASAN. */
--	kmemleak_alloc(ret, size, 1, flags);
--	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
+-	return __kmalloc(size, flags);
+-}
+-
+-#ifndef CONFIG_SLOB
+-static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
+-{
+-	if (__builtin_constant_p(size)) {
+-		unsigned int index;
+-
+-		if (size > KMALLOC_MAX_CACHE_SIZE)
+-			return kmalloc_large_node(size, flags, node);
+-
+-		index = kmalloc_index(size);
+-
+-		if (!index)
+-			return ZERO_SIZE_PTR;
+-
+-		return kmem_cache_alloc_node_trace(
+-				kmalloc_caches[kmalloc_type(flags)][i],
+-						flags, node, size);
+-	}
+-	return __kmalloc_node(size, flags, node);
+-}
+-#else
+-static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
+-{
+-	if (__builtin_constant_p(size) && size > KMALLOC_MAX_CACHE_SIZE)
+-		return kmalloc_large_node(size, flags, node);
+-
+-	return __kmalloc_node(size, flags, node);
++	return kmalloc_node(size, flags, NUMA_NO_NODE);
+ }
+-#endif
+ 
+ /**
+  * kmalloc_array - allocate memory for an array.
+diff --git a/mm/slab.c b/mm/slab.c
+index 1f3195344bdf..6ebf509bf2de 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3519,20 +3519,6 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ }
+ EXPORT_SYMBOL(kmem_cache_alloc_bulk);
+ 
+-void *
+-kmem_cache_alloc_trace(struct kmem_cache *cachep, gfp_t flags, size_t size)
+-{
+-	void *ret;
+-
+-	ret = slab_alloc(cachep, flags, size, _RET_IP_);
+-
+-	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc(_RET_IP_, ret,
+-		      size, cachep->size, flags);
 -	return ret;
 -}
--EXPORT_SYMBOL(kmalloc_large);
+-EXPORT_SYMBOL(kmem_cache_alloc_trace);
 -
- void *kmalloc_large_node(size_t size, gfp_t flags, int node)
+ /**
+  * kmem_cache_alloc_node - Allocate an object on the specified node
+  * @cachep: The cache to allocate from.
+diff --git a/mm/slub.c b/mm/slub.c
+index cdbbf0e97637..d8fb987ff7e0 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3230,15 +3230,6 @@ static __always_inline void *slab_alloc(struct kmem_cache *s,
+ 	return slab_alloc_node(s, gfpflags, NUMA_NO_NODE, addr, orig_size);
+ }
+ 
+-void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t gfpflags, size_t size)
+-{
+-	void *ret = slab_alloc(s, gfpflags, _RET_IP_, size);
+-	trace_kmalloc(_RET_IP_, ret, size, s->size, gfpflags);
+-	ret = kasan_kmalloc(s, ret, size, gfpflags);
+-	return ret;
+-}
+-EXPORT_SYMBOL(kmem_cache_alloc_trace);
+-
+ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
  {
- 	struct page *page;
+ 	void *ret = slab_alloc_node(s, gfpflags, node, _RET_IP_, s->object_size);
 -- 
 2.33.1
 
