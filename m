@@ -2,119 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C278C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237886AbiCHKMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
+        id S1345735AbiCHKMP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 05:12:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345765AbiCHKLu (ORCPT
+        with ESMTP id S1345852AbiCHKLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:11:50 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509B343396;
-        Tue,  8 Mar 2022 02:10:40 -0800 (PST)
+        Tue, 8 Mar 2022 05:11:55 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C1743AF5;
+        Tue,  8 Mar 2022 02:10:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646734240; x=1678270240;
+  t=1646734250; x=1678270250;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=2NchkUqJuLC9fxChOVIJfJ5CdtV5WqGvdfd1Xbt72Hk=;
-  b=EMsbL1xL7zN+sf3KxkUN+Bgv8/6CbCVPOxO0OJMVTVU9KME76BJ9wgBo
-   sJ61GSccUQ02zhwTShdbfabIscc8ZjossYtL/6B9n5FE9v5/uwY77Zz9u
-   keFJmbcHeTrZf6sbNTQX/6wrfD/Wnc5RUowgUGHNrkB0F+BmZR2SR00C1
-   gxlY9DqFD6AKOXp3hj8ksgCQGR53OiCVF4lFiPKfLzD0raW16C44h4aaV
-   kQLzEX5XeB2jOIaRBj+3oVqsmcMqKW9p0GQXZ/cCHJvysTGARDdH3Q8ZE
-   g+c+pkNQgyQoFpAKgS0LGRc0vADYNDZCJD5HaSCHOosT3MG6K6A3ZhpzD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="235256129"
+  bh=7ejrIRDi0eLEWqSUSsS80pzyQyiNB/5BCzaO1wi9Cco=;
+  b=GwzXJMdSRjynlRZ0qhbw+W+QjBQr9Nj0VLSkvtPPsuwiHvvRL/37LfR+
+   jev5OHH3ucKBHj67VtNN64Xdixz/oQnkyJKNoOPw/HwZFgi0+z8/gB+Ho
+   OeEAlJ+GhO70nWX5P18eB7Et/8NEKkFqYDXpdlT6ygOTy0RyswOeYQ0/t
+   V51Z62Y+tp5qYhPwbQs9nnnCp1l3vmBAEyQCM4YJgo8w7BKeLx4Pzflf3
+   dgukn9SjkOohixlceSEOi+taBfo/J9oECvNVQUZoCmI+Jnhm4qacEoCZ3
+   wFZWej+8DFEGLnZYclzzBatFAVa96BJJA6vghowOP6owACbJi6WpFntgK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254587409"
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="235256129"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:10:39 -0800
+   d="scan'208";a="254587409"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:10:49 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="641695907"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 02:10:37 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nRWmv-00DI2B-Bv;
-        Tue, 08 Mar 2022 12:09:53 +0200
-Date:   Tue, 8 Mar 2022 12:09:53 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
+   d="scan'208";a="687874826"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 08 Mar 2022 02:10:46 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 08 Mar 2022 12:10:45 +0200
+Date:   Tue, 8 Mar 2022 12:10:45 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH v3 1/1] device property: Allow error pointer to be passed
- to fwnode APIs
-Message-ID: <YicrcRUXVKzETq+l@smile.fi.intel.com>
-References: <20220307202949.75300-1-andriy.shevchenko@linux.intel.com>
- <PH0PR03MB67867223806C29FF1DF90E6499099@PH0PR03MB6786.namprd03.prod.outlook.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v8 1/3] usb: typec: tcpci: move tcpci.h to
+ include/linux/usb/ directory
+Message-ID: <YicrpWig4kwdh2lg@kuha.fi.intel.com>
+References: <20220308073431.1217890-1-xji@analogixsemi.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR03MB67867223806C29FF1DF90E6499099@PH0PR03MB6786.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220308073431.1217890-1-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 09:25:07AM +0000, Sa, Nuno wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Monday, March 7, 2022 9:30 PM
+On Tue, Mar 08, 2022 at 03:34:28PM +0800, Xin Ji wrote:
+> As for convenience use TCPCI register definition, move tcpci.h to
+> include/linux/usb/ directory.
 
-...
+To be honest, I was still hoping for a better explanation here.
 
-> > v3: dropped test of secondary fwnode (Nuno), added tag (Nuno),
-> > amended commit message
-> > v2: adjusted the entire fwnode API (Sakari)
-> > 
-> > Nuno, can you re-test this with the ltc2983 series to be sure it is still
-> > okay?
+The reason why this header is made global is because some USB PD
+controllers - PD controllers consisting of a microcontroller
+(acting as the TCPM) and a port controller (TCPC) - may require that
+the driver for the PD controller accesses directly also the on-chip
+port controller in some cases.
+
+I was hoping that that was explained in the commit message somehow.
+
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
 > 
-> Still works!
-
-Thanks for confirming!
-
-...
-
-> > @@ -988,14 +998,14 @@ fwnode_graph_get_next_endpoint(const
-> > struct fwnode_handle *fwnode,
-> >  		parent = fwnode_graph_get_port_parent(prev);
-> >  	else
-> >  		parent = fwnode;
-> > +	if (IS_ERR_OR_NULL(parent))
-> > +		return NULL;
-
-(1)
-
-> >  	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint,
-> > prev);
-> > +	if (ep)
-> > +		return ep;
+> ---
+> V7 -> V8: Fix Guanter's comment, remove unnecessary explain.
+> ---
+>  drivers/usb/typec/tcpm/tcpci.c                        | 3 +--
+>  drivers/usb/typec/tcpm/tcpci_maxim.c                  | 3 +--
+>  drivers/usb/typec/tcpm/tcpci_mt6360.c                 | 3 +--
+>  drivers/usb/typec/tcpm/tcpci_rt1711h.c                | 2 +-
+>  {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h | 1 +
+>  5 files changed, 5 insertions(+), 7 deletions(-)
+>  rename {drivers/usb/typec/tcpm => include/linux/usb}/tcpci.h (99%)
 > 
-> I might be missing something but before the check being done was
-> 'if (IS_ERR_OR_NULL(ep)'. Is there anyway for ep to be an error
-> pointer? Looking at OF, It seems that only NULL or a valid pointer
-> is being returned. Did not looked at others implementations of
-> though...
-
-Yes, the IS_ERR() part is redundant there. I was quite confused with
-that code while working on this change. So, now it looks much clearer
-what's going on and what kind of values are being expected. This also
-justifies the choice of returned value in (1).
+> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+> index e07d26a3cd8e..9c907296596f 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.c
+> +++ b/drivers/usb/typec/tcpm/tcpci.c
+> @@ -13,11 +13,10 @@
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>  #include <linux/usb/tcpm.h>
+>  #include <linux/usb/typec.h>
+>  
+> -#include "tcpci.h"
+> -
+>  #define	PD_RETRY_COUNT_DEFAULT			3
+>  #define	PD_RETRY_COUNT_3_0_OR_HIGHER		2
+>  #define	AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV	3500
+> diff --git a/drivers/usb/typec/tcpm/tcpci_maxim.c b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> index df2505570f07..4b6705f3d7b7 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_maxim.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_maxim.c
+> @@ -11,11 +11,10 @@
+>  #include <linux/module.h>
+>  #include <linux/regmap.h>
+>  #include <linux/usb/pd.h>
+> +#include <linux/usb/tcpci.h>
+>  #include <linux/usb/tcpm.h>
+>  #include <linux/usb/typec.h>
+>  
+> -#include "tcpci.h"
+> -
+>  #define PD_ACTIVITY_TIMEOUT_MS				10000
+>  
+>  #define TCPC_VENDOR_ALERT				0x80
+> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> index f1bd9e09bc87..9e0338bce7ef 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> @@ -11,10 +11,9 @@
+>  #include <linux/of.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+> +#include <linux/usb/tcpci.h>
+>  #include <linux/usb/tcpm.h>
+>  
+> -#include "tcpci.h"
+> -
+>  #define MT6360_REG_VCONNCTRL1	0x8C
+>  #define MT6360_REG_MODECTRL2	0x8F
+>  #define MT6360_REG_SWRESET	0xA0
+> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> index b56a0880a044..3291ca4948da 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> @@ -10,9 +10,9 @@
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/gpio/consumer.h>
+> +#include <linux/usb/tcpci.h>
+>  #include <linux/usb/tcpm.h>
+>  #include <linux/regmap.h>
+> -#include "tcpci.h"
+>  
+>  #define RT1711H_VID		0x29CF
+>  #define RT1711H_PID		0x1711
+> diff --git a/drivers/usb/typec/tcpm/tcpci.h b/include/linux/usb/tcpci.h
+> similarity index 99%
+> rename from drivers/usb/typec/tcpm/tcpci.h
+> rename to include/linux/usb/tcpci.h
+> index b2edd45f13c6..20c0bedb8ec8 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.h
+> +++ b/include/linux/usb/tcpci.h
+> @@ -9,6 +9,7 @@
+>  #define __LINUX_USB_TCPCI_H
+>  
+>  #include <linux/usb/typec.h>
+> +#include <linux/usb/tcpm.h>
+>  
+>  #define TCPC_VENDOR_ID			0x0
+>  #define TCPC_PRODUCT_ID			0x2
+> -- 
+> 2.25.1
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+heikki
