@@ -2,190 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 06:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF452C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 06:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241274AbiCHGSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 01:18:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
+        id S243050AbiCHGSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 01:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244224AbiCHGSS (ORCPT
+        with ESMTP id S231127AbiCHGSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 01:18:18 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D9C3C72A;
-        Mon,  7 Mar 2022 22:17:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646720238; x=1678256238;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oUoapiglXBZdB+xUrXHwyfLIrHMQEETInYEPrlsdhzg=;
-  b=XWpcuEvQYaKqw5NRVUtvPablplxEGDGBOVG8trR6cX4Ym2LZlkaIaG2F
-   YpAAPhICGUrjbYP4HqVibFfhNv+YJ/2ms1JNeGnIqd272/WOC07KsVyri
-   9zql+N4Az2G40nUAzJL3giTqb81OfvUBYYm+Xx1yiqSDCik2kFjCfeVBa
-   nngDXSpodA+9r6PCKDoP03xkBFFN2TnqBurIztUt4oeJQRkkTnvGzDXIk
-   REbdYhu+HRkrb5V4JC2g9Xg3SxQ9ngTBO0dTLYvfLRyAKp63pJwbOjg6h
-   5vAAN13s1TFLoWVyUYSX13GvnF6xcFyj8g2uA6t1jN1QhnS4pvqI8Hx2z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="341036085"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="341036085"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 22:17:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="643543418"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 07 Mar 2022 22:17:14 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRT9l-00010a-Jk; Tue, 08 Mar 2022 06:17:13 +0000
-Date:   Tue, 8 Mar 2022 14:16:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daehwan Jung <dh10.jung@samsung.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>,
-        Daehwan Jung <dh10.jung@samsung.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-Subject: Re: [PATCH v1 2/4] usb: host: add xhci hooks for USB offload
-Message-ID: <202203081440.zCZudmlJ-lkp@intel.com>
-References: <891095110.61646375404257.JavaMail.epsvc@epcpadp3>
+        Tue, 8 Mar 2022 01:18:43 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70070.outbound.protection.outlook.com [40.107.7.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B9A1D30A;
+        Mon,  7 Mar 2022 22:17:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RhoZO+SC5vDnXITbS99OvwaLqBGhMkAz/r6feAdvmDUps0gOjH8KmBikCctTFW++/1lWErqUoO02Stauzixc7dfOCI35U2lPphqQQBvKyplWckPQh5m5QXBQyXURVic6NJsISplzgEtNxFujBb5IVMDA35ao+e6LonI6Hingltf2y6XbZmsptAEzFkcWjhIBCYkOgXNZF9u56IRjR+FXzOJsyCzTzku2ZCVCOYyoH6erNEqGkrU+e+1V9RDlxgosQzNAU/q2o8wGDQbwjIt041G1owLEJJkkv5vApL2ulBPlqpYR4G8RoPEHaq35LQh1NaqWyQd6hdd4Y7rrk/r4Ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fwPn2dF8VI8vvmwy8Xext5YlnO8ZnE6EA0YrSzcuiUs=;
+ b=PQSa3wKBznLEugoyYgryCUV9KKpthLDlKrYxy6fwc2zDxIB/VBWUxI3QRn/xmvsthhkwAh1ayD7vpepaqjwQSGMbbehA/2Q2lu23x4yYJcJkqn02vBZCGFOxdpqS63aQy5NJgtzaAZEJY31dTzptQ6Vsv3AgDrpFj8xfdvKMSaK1b3fjuX6p96mLWR6yw6JKQAUrlclDIaSLosMtIk60inYMRjpMaK+ZLgn5GZvU3c3WUBa0+F7h3YwsUz9ov9oiSmmFolUt91RQrt8/lgxAyXGaOHCYSyvMC/YNY4tpnnRA5ltqqcSeOk7Snv9Is6F59qrfCit66sxmGapI6fD05w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fwPn2dF8VI8vvmwy8Xext5YlnO8ZnE6EA0YrSzcuiUs=;
+ b=HU+FAHDkDsSXNQIyyoC7ZNCYPJGwwN7j6LQLdbhXykbSOUF2UfwJF7LjK4/l7MgZMQTKLpZOzTk4Jz/qXE5In7DTbJHfgi3SAOEcPPB3czFomwcRsEZNP2zIwFibV++66SXp+yEIhmlWNAu0Pugjo62JqSkdMwARk1RQ4GknD9E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DB7PR04MB4186.eurprd04.prod.outlook.com (2603:10a6:5:22::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.20; Tue, 8 Mar
+ 2022 06:17:41 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
+ 06:17:41 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V2] remoteproc: imx_rproc: Ignore create mem entry for resource table
+Date:   Tue,  8 Mar 2022 14:57:54 +0800
+Message-Id: <20220308065754.3355-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.30.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR04CA0014.apcprd04.prod.outlook.com
+ (2603:1096:4:197::18) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <891095110.61646375404257.JavaMail.epsvc@epcpadp3>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 87de867c-31b8-4b79-3063-08da00cb59a8
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4186:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB41860446B88353ACB90404D5C9099@DB7PR04MB4186.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WB1GbI6bHEHTQPMv0oDvKic4YpQQGvy/6hjg3sWOgZjQjMEYv4dMzalsJs8MQkcN6Ks0ihp82pBtj/XxLpUOVTmkXecQgJqCTsY5uXrSaDEeYMOz0JZ36SHegy0aG1Vq9LKlRQZmdUjwiTaeUbSql3jHehUWA3bec5E1B5kEgWcZkODQw3BZncfHXBG6bZJEATzJyDk85tKEXjQsjshgeleactwGkM79fT3NKO8mnLFXGGmwlRzZt7kZzdsiCtgWxdNTwY8Rh9974IckcRG9QnOF2+mlM/Nf/HbO3yWzIctZWlpyvEg5fk7UFyMLaGRsxrEF9z9b2Azmpd1LkXeKiJpwY8BG6voaRoq/WssgdBXO2Ucb0RsjAY0T5pTuuoTI47CNH2M2LD3rrkvjljRUOdVq/urjQzxWf95143FSjIQP1KcRjdL8zEL4y7pXXkN6D44VI9UBU5DaTzdylQhxMuqueZkv6MYon8kYfZWemRt+Op51FyuALseJ6XpdP4nYiZ1j8ggJ268cKigpkvYSLlIFgzn0jmXX7mzIFzlUGn+t8F2sd8c7yvemJ5zmM303XXiyotGuJNuVe2HWAlH5FydmpsDiqkNwij2AkQi3AqblkG0ovC0wGRh7PDbFY/w49QHcHJ5yEHHf8Z97Tz8y8Nze/rbLnsq687QIHEj0sCmKJayJk2hOS299puJ5c8Q9cDsB68/QUfa8JxUZqWzfuc0TFqqWAz+L6F6fHte/Ssm/sAgEM2YIKLRg/KYohned11s5TNnmK94ReVUqZ2KDpH3HveqK2mW80UxsRWsWn/k=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4744005)(6666004)(6506007)(5660300002)(8936002)(86362001)(6512007)(52116002)(2906002)(508600001)(966005)(6486002)(38100700002)(38350700002)(316002)(4326008)(66946007)(66476007)(8676002)(1076003)(66556008)(186003)(26005)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9RY+6UaL0bfV3br9hiJSZm+WcX17MkZ8CrZUMmBd52NdfOQqc1Kl6G7DAQUV?=
+ =?us-ascii?Q?UIcvi4LzcI1XEvQL+CwQ0BZdJDrDwo2/qSJLfpaZSug4WnJAeK42xw9qiNe+?=
+ =?us-ascii?Q?gagDZaWrgFkFg6TM7I0+U8xgaOCZ9ceWKUpmEQJLeXaZUOXSFnwbQNjZ2LEq?=
+ =?us-ascii?Q?cAkrEI4mT2afm9iY7ZFgx4ROgLCAqSL5DIYO/1rcZEf//nyiTcjDHz6/eflb?=
+ =?us-ascii?Q?MDfd1BCUiep+VoEEGNxhvPijE00yFgNimwXG5gQ9eHZwtCGaPb0obTnKHOX6?=
+ =?us-ascii?Q?y94vSM79hizC2qcoI8M5SAXQa9jFdBq3Z28YgYmBDDWfe+Lkd6F4+BakO5Et?=
+ =?us-ascii?Q?ihIg3LkT6fZ49tkLtt/gi6ICucSM7FnxWOFmxKhU89KlhMHScKbgjZxRifZR?=
+ =?us-ascii?Q?hEB8BoQ1ksHdCA0UPPFkSVdzWiuGj/D97egMto1dT1qtb6Uo3JMMWoGC/AiK?=
+ =?us-ascii?Q?cVquYKDVVxv7ywO9xUaI7ufTqbHdwQW8Lq3p8oF+UufECeinNdfM1+zrmdbB?=
+ =?us-ascii?Q?Lk0rmRwz4MN9fNXOvH7sjD3DkcBcxGa6JIwsub4254RAQPpFjOEeXm0jubOw?=
+ =?us-ascii?Q?07P+NFovdHsbYPPF/tAgzs3+kOb/Su03ei1ygX/cOuWeUwtWWzAQyOTk3Cmg?=
+ =?us-ascii?Q?cKoyDH2I8G0ife8fcaK+RgQsiKR/KUQ5/krZi+Z22jacTgeIMMLg9o7YtdnN?=
+ =?us-ascii?Q?3Bf/w2COz6NPVQ9hEqkx8E+6gXYQdiZkGm6aA60ZObkHOkvsUxgrqiAqNPZM?=
+ =?us-ascii?Q?VmJEYM/mzB6Yj4NctupOLtPkYbcs0emjbIXoyuSM6elOS015TIxTV32XOmaH?=
+ =?us-ascii?Q?To0admymgTf8LE6UdTB8vfnPU5oo9sglGHmVSmqFu0tcBGRj4qpYdf49hC1A?=
+ =?us-ascii?Q?PHXRBafHjMSJ3Bq03ZtvNMr0iyB13JkW+G/HwNVpUiYkgM9rZRJDtLYWbsq0?=
+ =?us-ascii?Q?/WAMjsE7BeR9AyOK3IZPu2EiKF/zfINYNkx5GqbkPtZ3A9dpYpdXr4FrCett?=
+ =?us-ascii?Q?LpV6DxoK9hi5qTiGwjsmYbR5EIDB4GP5xN/GkLKp6X7jsj1apkJYoOmyQ4Iy?=
+ =?us-ascii?Q?bxqVmUnD9fKKe3Yah52Ltgfy3cJUCd+wjbgRK/RaghQm6sgUeJrrHSKYyLxG?=
+ =?us-ascii?Q?1o5Vbu8FpUSpx3ZQX+XrkhkiOQXgrjJMcbril81Y7pfNDx1ysw6uG9DGibBC?=
+ =?us-ascii?Q?NXo8J7EeiQ8cZHfjbvYo3+4mDzbgR8mHKyvjHrZPexWjNe7/ggTmYIt/WO8Y?=
+ =?us-ascii?Q?ZhriEADE3DxOQx/sqnG3okH+cMz8SgGK+VxjpzTU3j3iJ6pEW2gWCWgexK+t?=
+ =?us-ascii?Q?8dtDjSSesQQq+PHLj/eiiL+Qt5KsAVvGD8K4IiWQv98PfOsY3MtpghBaawg5?=
+ =?us-ascii?Q?S18E3rRWLpT71j0PXAS+vQjCMcIEEJaH+3yl1kBmqOc/IW2g/opLYc0RoDSp?=
+ =?us-ascii?Q?ujs9oU+lsrNO9/egN7OXX6LbKh1j0/j5sqrJdllRCAQSfn5cd/20HK+5yJhA?=
+ =?us-ascii?Q?oHcY5i2SDz8xlpUMwTtNUJdUw901Fng+A5DnYC4oOByecba2snEMuW6HpXJZ?=
+ =?us-ascii?Q?Ex6PqUv9DGfDbv2QuLKhrn1DiDqXSz5IA5QzDVen36WvGc6x/BqgY1y2HOjh?=
+ =?us-ascii?Q?/XYnmw8YRrIDvhJihaK7eZg=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87de867c-31b8-4b79-3063-08da00cb59a8
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 06:17:41.1557
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xuE23wX+K7uKGdIEO4CyXqxxYN+w0f18tK1s9XIHrvq3nSNMK5jn+9enDWx0WrZrfJXDEAkJhjZEHYoIBwF35g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4186
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daehwan,
+From: Peng Fan <peng.fan@nxp.com>
 
-Thank you for the patch! Yet something to improve:
+Resource table will not be used for memory allocation, no need to create
+rproc mem entry.
 
-[auto build test ERROR on krzk/for-next]
-[also build test ERROR on char-misc/char-misc-testing v5.17-rc7]
-[cannot apply to usb/usb-testing next-20220307]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Daehwan-Jung/usb-host-export-symbols-for-xhci-hooks-usage/20220304-143406
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git for-next
-config: hexagon-randconfig-r045-20220304 (https://download.01.org/0day-ci/archive/20220308/202203081440.zCZudmlJ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/2b6a5d700c2bbb0a3ccfcd6e83a7f7b2ea049db9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Daehwan-Jung/usb-host-export-symbols-for-xhci-hooks-usage/20220304-143406
-        git checkout 2b6a5d700c2bbb0a3ccfcd6e83a7f7b2ea049db9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/usb/host/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/usb/host/xhci.c:4361:5: warning: no previous prototype for function 'xhci_address_device' [-Wmissing-prototypes]
-   int xhci_address_device(struct usb_hcd *hcd, struct usb_device *udev)
-       ^
-   drivers/usb/host/xhci.c:4361:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int xhci_address_device(struct usb_hcd *hcd, struct usb_device *udev)
-   ^
-   static 
->> drivers/usb/host/xhci.c:4459:15: error: no member named 'vendor_ops' in 'struct xhci_hcd'
-           return xhci->vendor_ops;
-                  ~~~~  ^
-   drivers/usb/host/xhci.c:5421:23: warning: shift count >= width of type [-Wshift-count-overflow]
-                           !dma_set_mask(dev, DMA_BIT_MASK(64))) {
-                           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^
-   include/linux/compiler.h:56:47: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:52: note: expanded from macro '__trace_if_var'
-   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-                                                      ^~~~
-   drivers/usb/host/xhci.c:5421:23: warning: shift count >= width of type [-Wshift-count-overflow]
-                           !dma_set_mask(dev, DMA_BIT_MASK(64))) {
-                           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^
-   include/linux/compiler.h:56:47: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:61: note: expanded from macro '__trace_if_var'
-   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-                                                               ^~~~
-   drivers/usb/host/xhci.c:5421:23: warning: shift count >= width of type [-Wshift-count-overflow]
-                           !dma_set_mask(dev, DMA_BIT_MASK(64))) {
-                           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^
-   include/linux/compiler.h:56:47: note: expanded from macro 'if'
-   #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
-                              ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:58:86: note: expanded from macro '__trace_if_var'
-   #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
-                                                                       ~~~~~~~~~~~~~~~~~^~~~~
-   include/linux/compiler.h:69:3: note: expanded from macro '__trace_if_value'
-           (cond) ?                                        \
-            ^~~~
-   drivers/usb/host/xhci.c:5423:30: warning: shift count >= width of type [-Wshift-count-overflow]
-                   dma_set_coherent_mask(dev, DMA_BIT_MASK(64));
-                                              ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   5 warnings and 1 error generated.
---
->> drivers/usb/host/xhci-plat.c:205:15: error: no member named 'vendor_ops' in 'struct xhci_hcd'
-                   ops = xhci->vendor_ops = xhci_plat_vendor_overwrite.vendor_ops;
-                         ~~~~  ^
-   drivers/usb/host/xhci-plat.c:219:8: error: no member named 'vendor_ops' in 'struct xhci_hcd'
-           xhci->vendor_ops = NULL;
-           ~~~~  ^
-   drivers/usb/host/xhci-plat.c:268:10: warning: shift count >= width of type [-Wshift-count-overflow]
-                                                      DMA_BIT_MASK(64));
-                                                      ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   drivers/usb/host/xhci-plat.c:270:43: warning: shift count >= width of type [-Wshift-count-overflow]
-                   ret = dma_set_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
-                                                           ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   2 warnings and 2 errors generated.
-
-
-vim +4459 drivers/usb/host/xhci.c
-
-  4456	
-  4457	struct xhci_vendor_ops *xhci_vendor_get_ops(struct xhci_hcd *xhci)
-  4458	{
-> 4459		return xhci->vendor_ops;
-  4460	}
-  4461	EXPORT_SYMBOL_GPL(xhci_vendor_get_ops);
-  4462	
-
+Fixes: b29b4249f8f0c ("remoteproc: imx_rproc: add i.MX specific parse fw hook")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+V2:
+ Add Fixes tag
+ Separate the patch from https://patchwork.kernel.org/project/linux-remoteproc/patch/20220111033333.403448-7-peng.fan@oss.nxp.com/
+ Address typo
+
+ drivers/remoteproc/imx_rproc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+index 7a096f1891e6..f2bfc9077c19 100644
+--- a/drivers/remoteproc/imx_rproc.c
++++ b/drivers/remoteproc/imx_rproc.c
+@@ -423,6 +423,9 @@ static int imx_rproc_prepare(struct rproc *rproc)
+ 		if (!strcmp(it.node->name, "vdev0buffer"))
+ 			continue;
+ 
++		if (!strncmp(it.node->name, "rsc-table", strlen("rsc-table")))
++			continue;
++
+ 		rmem = of_reserved_mem_lookup(it.node);
+ 		if (!rmem) {
+ 			dev_err(priv->dev, "unable to acquire memory-region\n");
+-- 
+2.30.0
+
