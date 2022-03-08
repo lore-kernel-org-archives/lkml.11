@@ -2,121 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2596EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99694C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiCIBRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:17:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S230189AbiCIBRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:17:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiCIBQ7 (ORCPT
+        with ESMTP id S230270AbiCIBRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:16:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 904FA52B1E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:06:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646788011;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L3U4YdOzPofzWCCkzEnvDXhPt7YijalSg+AHzDLKGVQ=;
-        b=Bd+eklTk9TjU7YjCdKffnzR2TA12EXjXnchFrdl4sj2fGiEyIiSRSwg/ICv1XXJPhjh4OQ
-        cq76ZqmeIHk/1wPw7tVgjfBOJ0KSKN7RCW2HBmGAQU1GseX3cTP3ccrYX7Yvdq3k3GkG6l
-        Ud5StSJ042YwKkzR63Sb1UqBtxReOfc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-I2p555uFPhusjyQX_uIt-g-1; Tue, 08 Mar 2022 20:06:48 -0500
-X-MC-Unique: I2p555uFPhusjyQX_uIt-g-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9F141108088A;
-        Wed,  9 Mar 2022 01:06:46 +0000 (UTC)
-Received: from [10.22.11.135] (unknown [10.22.11.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DA5E65C232;
-        Wed,  9 Mar 2022 01:06:45 +0000 (UTC)
-Message-ID: <5b2dd92f-2a6d-ed84-9403-0e21fcd01d7a@redhat.com>
-Date:   Tue, 8 Mar 2022 20:06:45 -0500
+        Tue, 8 Mar 2022 20:17:01 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8221C125
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:07:03 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id h11so1001964ljb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 17:07:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BVNrGCcOfvHiAcGFTY5YLY7Z1HHPIFngZYQsO1KxKDY=;
+        b=SG8/miPNs2SqQ8nycTJeRar97B4Q7FMFusbGeyij2z7w6RORJwBq1pHwdtxhXCkrRP
+         31vF6vX9uuDq2YbmdD68fWT0Gox8vxJsIr/Xdf2NdLBT+tW3RUdzKm+1mBy81yu0fuoT
+         DDi5tUBGsrtwdVz6rvkrIvBZrf5rTovzb5E7U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BVNrGCcOfvHiAcGFTY5YLY7Z1HHPIFngZYQsO1KxKDY=;
+        b=HULZkjVdYtQBbxTlaOD5zDuQ5TaqWaJ2N5TtFIkjolAFfC6GlBZBamA1Gq14327IfM
+         oKHGpHorjA+ecPwcmkiyAfzqFBCwCVcgG75RServbnf6ij4509ixcKPsCKteY56bX2Nn
+         KK9xnYvX6ZE0IFr1I/2I1bTvxJfbVTILvGtDRV71WwLyQx0Wsa66cF/JLf4heLq4Y2aN
+         4aLdCRpw9E8A1MmWLFv0EJXyybpZoomhiV0B0AGNgC9X9GNCzfh0wErDeFqmnjBdSMuD
+         aYdul+inArKBV/rrVVkUumr2USz0KJBEMRx6TY6wBVeRsDe8h/Vuu7RJ5WsRFUvTlN3G
+         bkjg==
+X-Gm-Message-State: AOAM533DgkIxdSUrTCNkQ5Imu+wMiJTH7uvc5rE/jQi2q+tq+7+gmq6K
+        /wUP9Egkx6HfjdgdNqPVmfNJzV5l/4hk2Z8yKK0=
+X-Google-Smtp-Source: ABdhPJx6AWqrHOVly8fQhiPxze4QcU+7vA0PYzffwjLDU90qzRXd1euF1Z2zesQMKoDRH45N1MgEQQ==
+X-Received: by 2002:a17:906:7745:b0:6b5:fe2b:4827 with SMTP id o5-20020a170906774500b006b5fe2b4827mr15214443ejn.628.1646783951712;
+        Tue, 08 Mar 2022 15:59:11 -0800 (PST)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id h7-20020a1709066d8700b006d4b4d137fbsm86756ejt.50.2022.03.08.15.59.11
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 15:59:11 -0800 (PST)
+Received: by mail-ej1-f46.google.com with SMTP id p15so1351947ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 15:59:11 -0800 (PST)
+X-Received: by 2002:a2e:924d:0:b0:246:370c:5618 with SMTP id
+ v13-20020a2e924d000000b00246370c5618mr12145935ljg.358.1646783940635; Tue, 08
+ Mar 2022 15:59:00 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] mm/list_lru: Optimize memcg_drain_list_lru_node()
-Content-Language: en-US
-From:   Waiman Long <longman@redhat.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-References: <20220308033009.1400464-1-longman@redhat.com>
- <YibeERR3Nmh7+9ZA@carbon.dhcp.thefacebook.com>
- <3faa2be7-3a08-ee6d-35e8-c4a35e825c77@redhat.com>
- <YifyG3ak3oNOjELK@carbon.dhcp.thefacebook.com>
- <34bc9788-0459-9126-8aa9-e0d10e9f5b5f@redhat.com>
-In-Reply-To: <34bc9788-0459-9126-8aa9-e0d10e9f5b5f@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20220308234723.3834941-1-yuzhao@google.com> <20220308234723.3834941-6-yuzhao@google.com>
+In-Reply-To: <20220308234723.3834941-6-yuzhao@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 8 Mar 2022 15:58:44 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wggLcQSk3i2h8RWR2GYnCDQW_t5sWOExh2Oojmxvz0hcA@mail.gmail.com>
+Message-ID: <CAHk-=wggLcQSk3i2h8RWR2GYnCDQW_t5sWOExh2Oojmxvz0hcA@mail.gmail.com>
+Subject: Re: [PATCH v8 05/14] mm: multi-gen LRU: groundwork
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, page-reclaim@google.com,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 19:50, Waiman Long wrote:
-> On 3/8/22 19:17, Roman Gushchin wrote:
->> On Tue, Mar 08, 2022 at 10:41:38AM -0500, Waiman Long wrote:
->>> On 3/7/22 23:39, Roman Gushchin wrote:
->>>> On Mon, Mar 07, 2022 at 10:30:09PM -0500, Waiman Long wrote:
->>>>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
->>>>> to be race free"), we are tracking the total number of lru
->>>>> entries in a list_lru_node in its nr_items field.  In the case of
->>>>> memcg_drain_list_lru_node(), there is nothing to be done if nr_items
->>>>> is 0.  We don't even need to take the nlru->lock as no new lru entry
->>>>> could be added by a racing list_lru_add() to the draining src_idx 
->>>>> memcg
->>>>> at this point.
->>>>>
->>>>> Signed-off-by: Waiman Long <longman@redhat.com>
->>>> Hi Waiman!
->>>>
->>>> The patch makes total sense to me, however it needs to be rebased 
->>>> at least
->>>> on top of "mm: list_lru: rename memcg_drain_all_list_lrus to 
->>>> memcg_reparent_list_lrus".
->>>>
->>>> Thanks!
->>>>
->>>>
->>> This patch was based on the current linux-next tree which includes 
->>> commit
->>> ff221bc26bdd ("mm: list_lru: rename memcg_drain_all_list_lrus to
->>> memcg_reparent_list_lrus"). I do remember to double-check linux-next 
->>> before
->>> sending this patch out. In fact, the same patch can be applied to 
->>> both linux
->>> and linux-next tree without problem.
->> I'm looking at the mm tree (https://github.com/hnaz/linux-mm.git) and 
->> clearly
->> see that commit "mm: list_lru: rename memcg_drain_all_list_lrus to
->> memcg_reparent_list_lrus" eliminated the function with the name
->> memcg_drain_list_lru_node(), which your patch is touching.
->> Currently the function is located in list_lru.c and is named
->> memcg_reparent_list_lru_node().
->>
->> linux-next is sometimes a bit behind the mm tree.
+I still think this part is fundamentally wrong:
+
+On Tue, Mar 8, 2022 at 3:48 PM Yu Zhao <yuzhao@google.com> wrote:
 >
-> Oh, you are right. I will rebase the patch based on linux-mm.
+> diff --git a/mm/Kconfig b/mm/Kconfig
+> index 3326ee3903f3..4ef67f157374 100644
+> --- a/mm/Kconfig
+> +++ b/mm/Kconfig
+> @@ -892,6 +892,28 @@ config ANON_VMA_NAME
+>           area from being merged with adjacent virtual memory areas due to the
+>           difference in their name.
 >
-> Thanks for the suggestion.
+> +# the multi-gen LRU {
+> +config LRU_GEN
+> +       bool "Multi-Gen LRU"
+> +       depends on MMU
+> +       # the following options can use up the spare bits in page flags
+> +       depends on !MAXSMP && (64BIT || !SPARSEMEM || SPARSEMEM_VMEMMAP)
+> +       help
+> +         A high performance LRU implementation for memory overcommit.
+> +
+> +config NR_LRU_GENS
+> +       int "Max number of generations"
+> +       depends on LRU_GEN
+> +       range 4 31
+> +       default 4
+> +       help
+> +         Do not increase this value unless you plan to use working set
+> +         estimation and proactive reclaim. These features are usually for job
+> +         scheduling optimizations in data centers.
+> +
+> +         This option uses order_base_2(N+1) bits in page flags.
+> +# }
 
-The patch was originally based on the linux tree. Then I applied it onto 
-linux-next without any issue. Unfortunately, I failed to notice that the 
-hunk was applied to memcg_reparent_list_lru_node() without realizing 
-that it is the new name for the old memcg_drain_list_lru_node(). The 
-linux-next tree that I used does have all the necessary patches.
+Pick a value. Don't ask a user for a value.
 
-Cheers,
-Longman
+If you don't know what the value should be, the user sure as hell doesn't.
 
+And if you don't pick a value for people to test, then people will
+test random values and dilute and make the testing less valid in the
+process.
 
+There is absolutely no upside to asking people a question like this,
+and only downsides.
+
+If the quoted "schedulign optimizations" are real, then maybe bigger
+values should be the default? Or maybe it should be a run-time
+tunable, so that people can actually _test_ them?
+
+Or - more likely - that config variable just shouldn't exist, at least
+in some initial series, and you just should say "we use four
+generations, we can tweak this if people have hard numbers later".
+
+                 Linus
