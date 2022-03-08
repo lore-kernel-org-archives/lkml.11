@@ -2,162 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 904F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345190AbiCHIxf (ORCPT
+        id S1344982AbiCHIya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:53:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        Tue, 8 Mar 2022 03:54:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242666AbiCHIx3 (ORCPT
+        with ESMTP id S231325AbiCHIy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:53:29 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B6BADF9E;
-        Tue,  8 Mar 2022 00:52:33 -0800 (PST)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KCTZJ5hGSz6F93y;
-        Tue,  8 Mar 2022 16:51:04 +0800 (CST)
-Received: from lhreml715-chm.china.huawei.com (10.201.108.66) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 09:52:31 +0100
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml715-chm.china.huawei.com (10.201.108.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 08:52:30 +0000
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2308.021; Tue, 8 Mar 2022 08:52:30 +0000
-From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>
-CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
-        "yishaih@nvidia.com" <yishaih@nvidia.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        liulongfang <liulongfang@huawei.com>,
-        "Zengtao (B)" <prime.zeng@hisilicon.com>,
-        "Jonathan Cameron" <jonathan.cameron@huawei.com>,
-        "Wangzhou (B)" <wangzhou1@hisilicon.com>
-Subject: RE: [PATCH v8 8/9] hisi_acc_vfio_pci: Add support for VFIO live
- migration
-Thread-Topic: [PATCH v8 8/9] hisi_acc_vfio_pci: Add support for VFIO live
- migration
-Thread-Index: AQHYL1LUtVDDY2S/e06nk5NDxfriXKy1IT6AgAASKKA=
-Date:   Tue, 8 Mar 2022 08:52:30 +0000
-Message-ID: <50b0d11d57d3488da809f318576466cd@huawei.com>
-References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
- <20220303230131.2103-9-shameerali.kolothum.thodi@huawei.com>
- <BN9PR11MB527661103A2CFE13E4F3EC528C099@BN9PR11MB5276.namprd11.prod.outlook.com>
-In-Reply-To: <BN9PR11MB527661103A2CFE13E4F3EC528C099@BN9PR11MB5276.namprd11.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.27.151]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 8 Mar 2022 03:54:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B4E73B03C
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:53:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646729609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=McCP1GFFVgE7UURnAsPiV2iHmS5OBmDZ+4yFuy2Ffa4=;
+        b=Qeo5lWVQXRBzlPSwdOBegep/NHhHswxVDlzrTD1Pp63fd3YeUXbPtNQ0xtdgYX/e3lNREa
+        T6Cd+k9q4LHbHp/kMdWbGFbpxW9x/KFG3HomzQhgnunA7pCHqkEk0vkeyynLQb0W0K59DP
+        GA5+ssvOm4YKMXl7cQHeGvRB50hgvEk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-8-KrRGLddHO8SWls6frIkM9A-1; Tue, 08 Mar 2022 03:53:28 -0500
+X-MC-Unique: KrRGLddHO8SWls6frIkM9A-1
+Received: by mail-wm1-f72.google.com with SMTP id f24-20020a1c6a18000000b00388874b17a8so820394wmc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 00:53:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=McCP1GFFVgE7UURnAsPiV2iHmS5OBmDZ+4yFuy2Ffa4=;
+        b=E0xT+n2Uw5sgxS0+KYFXKqlnuJmj9wxwAo8RXHbqOkiqAMwesjtjifZMubOn44/IN1
+         kpBJrykRtNGF4jPO5PyVtMLf2OB5UoO8ztkywZHH6GGiCtPTgFbCU0X+z/jwGkbOONck
+         pKc91GM+2aNki2UaAbrtOvl0DOo501l+8El7otkIEoLx4wZzgQtYMcevV4cY1fQbkmpy
+         iMAhhTDT9+NyJBYAXg1tjGNsBfygv1N2iUrObA3Cs+l1qOepYjRWIUHSFzP/61JMVMbg
+         ROZyXPUVv4sjlFGEowTjc8J9Lca//M0qb9bNmqN5/SKRyQp4CdXyrp1DMZXikpVq5J9a
+         62/A==
+X-Gm-Message-State: AOAM5315e/FFrJ9JTcOJLbSv9BtI5PgmpxGCSZxF6QGMSoFvyNmvmRCo
+        gIcoSWcGm1p4JkoB/1jT0uLOCFjXMSFdnD3vhoUXY9FXMne8yTsapu8mKSTodatQmLFrQh1QUk/
+        qDn5LArut1TgMlRqAv0LrNE5N
+X-Received: by 2002:a05:600c:4f4f:b0:37b:d847:ef15 with SMTP id m15-20020a05600c4f4f00b0037bd847ef15mr2570090wmq.130.1646729607074;
+        Tue, 08 Mar 2022 00:53:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwfE9toN3qehdJsk1B+YMs1118DTmEo7CTeTOm9RdOjB8ja6Hj8ALlXAHzetoDJ35FFQ2+evg==
+X-Received: by 2002:a05:600c:4f4f:b0:37b:d847:ef15 with SMTP id m15-20020a05600c4f4f00b0037bd847ef15mr2570068wmq.130.1646729606832;
+        Tue, 08 Mar 2022 00:53:26 -0800 (PST)
+Received: from ?IPV6:2003:cb:c708:b000:acda:b420:16aa:6b67? (p200300cbc708b000acdab42016aa6b67.dip0.t-ipconnect.de. [2003:cb:c708:b000:acda:b420:16aa:6b67])
+        by smtp.gmail.com with ESMTPSA id o11-20020adf9d4b000000b001f0077ea337sm13785536wre.22.2022.03.08.00.53.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 00:53:26 -0800 (PST)
+Message-ID: <9f7431c6-4021-4821-e71e-296dd328c1a9@redhat.com>
+Date:   Tue, 8 Mar 2022 09:53:25 +0100
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting
+ PMD
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Matthew Wilcox <willy@infradead.org>
+References: <20220303222014.517033-1-shy828301@gmail.com>
+ <CADFyXm6W9CVkO4XPYep-tHg55c8m8NES783kcVYrdjSMbzYoDA@mail.gmail.com>
+ <CAHbLzkriyBy2HqjssurLSnhoyuUzpJRZjMPNx34MTgxeO0dddg@mail.gmail.com>
+ <13ad4ba1-2a88-9459-3995-70af36aba33e@redhat.com>
+ <20220306180718.6d4e6233130b94fdad98df88@linux-foundation.org>
+ <84a6c9c1-d18f-6955-2666-0a2d7bce6094@redhat.com>
+ <20220307154326.6494f7fca7def491a23e5df1@linux-foundation.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220307154326.6494f7fca7def491a23e5df1@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVGlhbiwgS2V2aW4gW21h
-aWx0bzprZXZpbi50aWFuQGludGVsLmNvbV0NCj4gU2VudDogMDggTWFyY2ggMjAyMiAwNzo0Mg0K
-PiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9k
-aUBodWF3ZWkuY29tPjsNCj4ga3ZtQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIu
-a2VybmVsLm9yZzsNCj4gbGludXgtY3J5cHRvQHZnZXIua2VybmVsLm9yZw0KPiBDYzogbGludXgt
-cGNpQHZnZXIua2VybmVsLm9yZzsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5jb207IGpnZ0Budmlk
-aWEuY29tOw0KPiBjb2h1Y2tAcmVkaGF0LmNvbTsgbWd1cnRvdm95QG52aWRpYS5jb207IHlpc2hh
-aWhAbnZpZGlhLmNvbTsgTGludXhhcm0NCj4gPGxpbnV4YXJtQGh1YXdlaS5jb20+OyBsaXVsb25n
-ZmFuZyA8bGl1bG9uZ2ZhbmdAaHVhd2VpLmNvbT47IFplbmd0YW8gKEIpDQo+IDxwcmltZS56ZW5n
-QGhpc2lsaWNvbi5jb20+OyBKb25hdGhhbiBDYW1lcm9uDQo+IDxqb25hdGhhbi5jYW1lcm9uQGh1
-YXdlaS5jb20+OyBXYW5nemhvdSAoQikgPHdhbmd6aG91MUBoaXNpbGljb24uY29tPg0KPiBTdWJq
-ZWN0OiBSRTogW1BBVENIIHY4IDgvOV0gaGlzaV9hY2NfdmZpb19wY2k6IEFkZCBzdXBwb3J0IGZv
-ciBWRklPIGxpdmUNCj4gbWlncmF0aW9uDQo+IA0KPiA+IEZyb206IFNoYW1lZXIgS29sb3RodW0g
-PHNoYW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gPiBTZW50OiBGcmlkYXks
-IE1hcmNoIDQsIDIwMjIgNzowMiBBTQ0KPiA+ICsvKg0KPiA+ICsgKiBFYWNoIHN0YXRlIFJlZyBp
-cyBjaGVja2VkIDEwMCB0aW1lcywNCj4gPiArICogd2l0aCBhIGRlbGF5IG9mIDEwMCBtaWNyb3Nl
-Y29uZHMgYWZ0ZXIgZWFjaCBjaGVjayAgKi8gc3RhdGljIHUzMg0KPiA+ICthY2NfY2hlY2tfcmVn
-X3N0YXRlKHN0cnVjdCBoaXNpX3FtICpxbSwgdTMyIHJlZ3MpDQo+IA0KPiBxbV9jaGVja19yZWdf
-c3RhdGUoKSBnaXZlbiB0aGUgMXN0IGFyZ3VtZW50IGlzIHFtDQo+IA0KPiA+ICsvKiBDaGVjayB0
-aGUgUEYncyBSQVMgc3RhdGUgYW5kIEZ1bmN0aW9uIElOVCBzdGF0ZSAqLyBzdGF0aWMgaW50DQo+
-ID4gK3FtX2NoZWNrX2ludF9zdGF0ZShzdHJ1Y3QgaGlzaV9hY2NfdmZfY29yZV9kZXZpY2UgKmhp
-c2lfYWNjX3ZkZXYpDQo+IA0KPiB0aGVuIHRoaXMgc2hvdWxkIGJlIGFjY19jaGVja19pbnRfc3Rh
-dGUoKSBnaXZlbiB0aGUgaW5wdXQgaXMgYW4gYWNjIGRldmljZT8NCj4gDQo+IGFueXdheSBwbGVh
-c2UgaGF2ZSBhIGNvbnNpc3RlbnQgbmFtaW5nIGNvbnZlbnRpb24gaGVyZS4NCj4gDQo+ID4gK3N0
-YXRpYyBpbnQgcW1fcmVhZF9yZWcoc3RydWN0IGhpc2lfcW0gKnFtLCB1MzIgcmVnX2FkZHIsDQo+
-ID4gKwkJICAgICAgIHUzMiAqZGF0YSwgdTggbnVtcykNCj4gDQo+IHFtX3JlYWRfcmVncygpIHRv
-IHJlZmxlY3QgdGhhdCBtdWx0aXBsZSByZWdpc3RlcnMgYXJlIHByb2Nlc3NlZC4NCj4gDQo+ID4g
-Kw0KPiA+ICtzdGF0aWMgaW50IHFtX3dyaXRlX3JlZyhzdHJ1Y3QgaGlzaV9xbSAqcW0sIHUzMiBy
-ZWcsDQo+ID4gKwkJCXUzMiAqZGF0YSwgdTggbnVtcykNCj4gDQo+IHFtX3dyaXRlX3JlZ3MoKQ0K
-PiANCj4gPiArDQo+ID4gK3N0YXRpYyBpbnQgcW1fcndfcmVnc19yZWFkKHN0cnVjdCBoaXNpX3Ft
-ICpxbSwgc3RydWN0IGFjY192Zl9kYXRhDQo+ID4gKyp2Zl9kYXRhKQ0KPiANCj4gcW1fbG9hZF9y
-ZWdzKCkuIEl0J3MgY29uZnVzaW5nIHRvIGhhdmUgYm90aCAncncnIGFuZCAncmVhZCcuDQo+IA0K
-PiA+ICsNCj4gPiArc3RhdGljIGludCBxbV9yd19yZWdzX3dyaXRlKHN0cnVjdCBoaXNpX3FtICpx
-bSwgc3RydWN0IGFjY192Zl9kYXRhDQo+ID4gKnZmX2RhdGEpDQo+IA0KPiBxbV9zYXZlX3JlZ3Mo
-KQ0KDQpSaWdodC4gSSBhbSBPayB3aXRoIHRoZSBhYm92ZSBzdWdnZXN0aW9ucy4NCg0KPiANCj4g
-PiArc3RhdGljIGludCBoaXNpX2FjY192Zl9xbV9pbml0KHN0cnVjdCBoaXNpX2FjY192Zl9jb3Jl
-X2RldmljZQ0KPiA+ICsqaGlzaV9hY2NfdmRldikgew0KPiA+ICsJc3RydWN0IHZmaW9fcGNpX2Nv
-cmVfZGV2aWNlICp2ZGV2ID0gJmhpc2lfYWNjX3ZkZXYtPmNvcmVfZGV2aWNlOw0KPiA+ICsJc3Ry
-dWN0IGhpc2lfcW0gKnZmX3FtID0gJmhpc2lfYWNjX3ZkZXYtPnZmX3FtOw0KPiA+ICsJc3RydWN0
-IHBjaV9kZXYgKnZmX2RldiA9IHZkZXYtPnBkZXY7DQo+ID4gKw0KPiA+ICsJLyoNCj4gPiArCSAq
-IEFDQyBWRiBkZXYgQkFSMiByZWdpb24gY29uc2lzdHMgb2YgYm90aCBmdW5jdGlvbmFsIHJlZ2lz
-dGVyIHNwYWNlDQo+ID4gKwkgKiBhbmQgbWlncmF0aW9uIGNvbnRyb2wgcmVnaXN0ZXIgc3BhY2Uu
-IEZvciBtaWdyYXRpb24gdG8gd29yaywgd2UNCj4gPiArCSAqIG5lZWQgYWNjZXNzIHRvIGJvdGgu
-IEhlbmNlLCB3ZSBtYXAgdGhlIGVudGlyZSBCQVIyIHJlZ2lvbiBoZXJlLg0KPiA+ICsJICogQnV0
-IGZyb20gYSBzZWN1cml0eSBwb2ludCBvZiB2aWV3LCB3ZSByZXN0cmljdCBhY2Nlc3MgdG8gdGhl
-DQo+ID4gKwkgKiBtaWdyYXRpb24gY29udHJvbCBzcGFjZSBmcm9tIEd1ZXN0KFBsZWFzZSBzZWUN
-Cj4gPiBtbWFwL2lvY3RsL3JlYWQvd3JpdGUNCj4gPiArCSAqIG92ZXJyaWRlIGZ1bmN0aW9ucyku
-DQo+IA0KPiAoUGxlYXNlIHNlZSBoaXNpX2FjY192ZmlvX3BjaV9taWdybl9vcHMpDQo+IA0KPiA+
-ICsJICoNCj4gPiArCSAqIEFsc28gdGhlIEhpU2lsaWNvbiBBQ0MgVkYgZGV2aWNlcyBzdXBwb3J0
-ZWQgYnkgdGhpcyBkcml2ZXIgb24NCj4gPiArCSAqIEhpU2lsaWNvbiBoYXJkd2FyZSBwbGF0Zm9y
-bXMgYXJlIGludGVncmF0ZWQgZW5kIHBvaW50IGRldmljZXMNCj4gPiArCSAqIGFuZCBoYXMgbm8g
-Y2FwYWJpbGl0eSB0byBwZXJmb3JtIFBDSWUgUDJQLg0KPiANCj4gQWNjb3JkaW5nIHRvIHY1IGRp
-c2N1c3Npb24gSSB0aGluayBpdCBpcyB0aGUgcGxhdGZvcm0gd2hpY2ggbGFja3Mgb2YgdGhlIFAy
-UA0KPiBjYXBhYmlsaXR5IGluc3RlYWQgb2YgdGhlIGRldmljZS4gQ3VycmVudCB3cml0aW5nIGlz
-IHJlYWQgdG8gdGhlIGxhdHRlci4NCj4gDQo+IGJldHRlciBjbGFyaWZ5IGl0IGFjY3VyYXRlbHku
-IPCfmIoNCg0KVGhhdOKAmXMgcmlnaHQuIEl0IGlzIHRoZSBwbGF0Zm9ybS4NCg0KPiANCj4gPiAg
-c3RhdGljIGludCBoaXNpX2FjY192ZmlvX3BjaV9wcm9iZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwg
-Y29uc3Qgc3RydWN0DQo+ID4gcGNpX2RldmljZV9pZCAqaWQpICB7DQo+ID4gLQlzdHJ1Y3QgdmZp
-b19wY2lfY29yZV9kZXZpY2UgKnZkZXY7DQo+ID4gKwlzdHJ1Y3QgaGlzaV9hY2NfdmZfY29yZV9k
-ZXZpY2UgKmhpc2lfYWNjX3ZkZXY7DQo+ID4gKwlzdHJ1Y3QgaGlzaV9xbSAqcGZfcW07DQo+ID4g
-IAlpbnQgcmV0Ow0KPiA+DQo+ID4gLQl2ZGV2ID0ga3phbGxvYyhzaXplb2YoKnZkZXYpLCBHRlBf
-S0VSTkVMKTsNCj4gPiAtCWlmICghdmRldikNCj4gPiArCWhpc2lfYWNjX3ZkZXYgPSBremFsbG9j
-KHNpemVvZigqaGlzaV9hY2NfdmRldiksIEdGUF9LRVJORUwpOw0KPiA+ICsJaWYgKCFoaXNpX2Fj
-Y192ZGV2KQ0KPiA+ICAJCXJldHVybiAtRU5PTUVNOw0KPiA+DQo+ID4gLQl2ZmlvX3BjaV9jb3Jl
-X2luaXRfZGV2aWNlKHZkZXYsIHBkZXYsICZoaXNpX2FjY192ZmlvX3BjaV9vcHMpOw0KPiA+ICsJ
-cGZfcW0gPSBoaXNpX2FjY19nZXRfcGZfcW0ocGRldik7DQo+ID4gKwlpZiAocGZfcW0gJiYgcGZf
-cW0tPnZlciA+PSBRTV9IV19WMykgew0KPiA+ICsJCXJldCA9IGhpc2lfYWNjX3ZmaW9fcGNpX21p
-Z3JuX2luaXQoaGlzaV9hY2NfdmRldiwgcGRldiwNCj4gPiBwZl9xbSk7DQo+ID4gKwkJaWYgKCFy
-ZXQpIHsNCj4gPiArCQkJdmZpb19wY2lfY29yZV9pbml0X2RldmljZSgmaGlzaV9hY2NfdmRldi0N
-Cj4gPiA+Y29yZV9kZXZpY2UsIHBkZXYsDQo+ID4gKw0KPiA+ICZoaXNpX2FjY192ZmlvX3BjaV9t
-aWdybl9vcHMpOw0KPiA+ICsJCX0gZWxzZSB7DQo+ID4gKwkJCXBjaV93YXJuKHBkZXYsICJtaWdy
-YXRpb24gc3VwcG9ydCBmYWlsZWQsIGNvbnRpbnVlDQo+ID4gd2l0aCBnZW5lcmljIGludGVyZmFj
-ZVxuIik7DQo+ID4gKwkJCXZmaW9fcGNpX2NvcmVfaW5pdF9kZXZpY2UoJmhpc2lfYWNjX3ZkZXYt
-DQo+ID4gPmNvcmVfZGV2aWNlLCBwZGV2LA0KPiA+ICsJCQkJCQkgICZoaXNpX2FjY192ZmlvX3Bj
-aV9vcHMpOw0KPiA+ICsJCX0NCj4gDQo+IFRoaXMgbG9naWMgbG9va3Mgd2VpcmQuIEVhcmxpZXIg
-eW91IHN0YXRlIHRoYXQgdGhlIG1pZ3JhdGlvbiBjb250cm9sIHJlZ2lvbiBtdXN0DQo+IGJlIGhp
-ZGRlbiBmcm9tIHRoZSB1c2Vyc3BhY2UgYXMgYSBzZWN1cml0eSByZXF1aXJlbWVudCwgYnV0IGFi
-b3ZlIGxvZ2ljIHJlYWRzDQo+IGxpa2UgaWYgdGhlIGRyaXZlciBmYWlscyB0byBpbml0aWFsaXpl
-IG1pZ3JhdGlvbiBzdXBwb3J0IHRoZW4gd2UganVzdCBmYWxsIGJhY2sgdG8gdGhlDQo+IGRlZmF1
-bHQgb3BzIHdoaWNoIGdyYW50cyB0aGUgdXNlciB0aGUgZnVsbCBhY2Nlc3MgdG8gdGhlIGVudGly
-ZSBNTUlPIGJhci4NCg0KQXMgSSBleHBsYWluZWQgcHJldmlvdXNseSB0aGUgcmlzayBvZiBleHBv
-c2luZyBtaWdyYXRpb24gQkFSIGlzIG9ubHkgbGltaXRlZCB0byBtaWdyYXRpb24NCnVzZSBjYXNl
-LiBTbyBpZiBmb3Igc29tZSByZWFzb24gd2UgY2FuJ3QgZ2V0IHRoZSBtaWdyYXRpb24gd29ya2lu
-Zywgd2UgZGVmYXVsdCB0byB0aGUNCmdlbmVyaWMgdmZpby1wY2kgbGlrZSBiZWhhdmlvci4NCiAN
-Cj4gDQo+ID4gKwl9IGVsc2Ugew0KPiA+ICsJCXZmaW9fcGNpX2NvcmVfaW5pdF9kZXZpY2UoJmhp
-c2lfYWNjX3ZkZXYtPmNvcmVfZGV2aWNlLCBwZGV2LA0KPiA+ICsJCQkJCSAgJmhpc2lfYWNjX3Zm
-aW9fcGNpX29wcyk7DQo+ID4gKwl9DQo+IA0KPiBJZiB0aGUgaGFyZHdhcmUgaXRzZWxmIGRvZXNu
-J3Qgc3VwcG9ydCB0aGUgbWlncmF0aW9uIGNhcGFiaWxpdHksIGNhbiB3ZSBqdXN0DQo+IG1vdmUg
-aXQgb3V0IG9mIHRoZSBpZCB0YWJsZSBhbmQgbGV0IHZmaW8tcGNpIHRvIGRyaXZlIGl0Pw0KPiAN
-CiBCdXQgdGhlIGFib3ZlIGlzIGp1c3QgbGlrZSB2ZmlvLXBjaSBkcml2aW5nIGl0LCByaWdodD8N
-Cg0KVGhhbmtzLA0KU2hhbWVlcg0K
+On 08.03.22 00:43, Andrew Morton wrote:
+> On Mon, 7 Mar 2022 09:24:58 +0100 David Hildenbrand <david@redhat.com> wrote:
+> 
+>> On 07.03.22 03:07, Andrew Morton wrote:
+>>> On Fri, 4 Mar 2022 19:50:08 +0100 David Hildenbrand <david@redhat.com> wrote:
+>>>
+>>>> @Andrew, the last mail I received was
+>>>>
+>>>> + mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+>>>> added to -mm tree
+>>>>
+>>>> The patch shows up in mmotm as
+>>>>
+>>>> #[merged]mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+>>>>
+>>>> ... which shouldn't be true.
+>>>
+>>> I guess I mislabelled the reason for dropping it.  Should have been to-be-updated, 
+>>> due to https://lkml.kernel.org/r/CAHbLzkpbnQyHRckoRtbZoaLvANu92MY4kEsbKudaQ8MDUA3nVg@mail.gmail.com
+>>>
+>>
+>> Let me clarify.
+>>
+>> 1. I sent [1] (9 patches)
+>>
+>> 2. You queued the 9 patches
+>>
+>> E.g., in "mmotm 2022-02-15-20-22 uploaded"
+>>
+>> * mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+>> * mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+>> * mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+>> * mm-streamline-cow-logic-in-do_swap_page.patch
+>> * mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+>> * mm-khugepaged-remove-reuse_swap_page-usage.patch
+>> * mm-swapfile-remove-stale-reuse_swap_page.patch
+>> * mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+>> * mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+>>
+>> 3. The last patch in the series was dropped. What remains are 8 patches.
+>>
+>> E.g., in "mmotm 2022-02-24-22-38 uploaded"
+>>
+>> * mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+>> * mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+>> * mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+>> * mm-streamline-cow-logic-in-do_swap_page.patch
+>> * mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+>> * mm-khugepaged-remove-reuse_swap_page-usage.patch
+>> * mm-swapfile-remove-stale-reuse_swap_page.patch
+>> * mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+>>
+>> 4. Yang Shi sent his patch (the one we're replying to)
+>>
+>> 5. You picked his patch and dropped it again due to [2]
+>>
+>>
+>> I'm wondering why 3 happened and why
+>> https://www.ozlabs.org/~akpm/mmotm/series contains:
+>>
+>>
+>> mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
+>> mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
+>> mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
+>> mm-streamline-cow-logic-in-do_swap_page.patch
+>> mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
+>> mm-khugepaged-remove-reuse_swap_page-usage.patch
+>> mm-swapfile-remove-stale-reuse_swap_page.patch
+>> mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
+>> ...
+>> #[merged]mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
+> 
+> OK, thanks.  I guess it was me seeing 100% rejects when merging onto
+> the folio changes then incorrectly deciding the patch was now in
+> linux-next via some other tree.
+> 
+
+Thanks Andrew, my 2 cents would have been that my series, which fixes
+actual CVEs should go in before folio cleanups. But that's a different
+discussion (and the patch is question is just a cleanup part of the same
+series, so i don't particularly care).
+
+> I restored it and fixed things up.  Please check.
+> 
+
+That change looks good to me. I'd even say that we do the second cleanup
+separately, with Yang Shi being the author. But whatever you+others prefer.
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
