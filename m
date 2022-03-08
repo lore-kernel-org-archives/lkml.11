@@ -2,160 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF35C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 12:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346704AbiCHMIZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:08:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S243713AbiCHMKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 07:10:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346678AbiCHMIL (ORCPT
+        with ESMTP id S234183AbiCHMKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 07:08:11 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89C12FFCB
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:07:13 -0800 (PST)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220308120711epoutp0483a038eadefa1889d6a95e6ad7586266~aZmzz0k7F3138531385epoutp04N
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:07:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220308120711epoutp0483a038eadefa1889d6a95e6ad7586266~aZmzz0k7F3138531385epoutp04N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646741231;
-        bh=lEcoaPQ0wXcqoYAXTOO0tu1gYfLWrks8XW836Y3b+ZM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsCS/+PfU4+VcpLMeqZyL4IRziA+ZrDtDLtLPjlnXqlW0cbMohZ5cbNHl24pydJ+c
-         nM+i4Rnxp03VfdbEvjJ0iOO/Xr5dbXpLfzptY1A0+NsuK7Fo+M7KDxVoIHBwTTp76Q
-         Bv5bQLVxBB/uAxcwXGsFyntEpTui/K2q66Tp/bAo=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220308120711epcas5p1807eac5e4de9c0f10ef5668f7261fb93~aZmzXll0Q1111211112epcas5p14;
-        Tue,  8 Mar 2022 12:07:11 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.182]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4KCYwV3DmLz4x9Q1; Tue,  8 Mar
-        2022 12:07:06 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        ED.C6.05590.AE647226; Tue,  8 Mar 2022 21:07:06 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2~aZmuTgLS52571125711epcas5p2M;
-        Tue,  8 Mar 2022 12:07:05 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220308120705epsmtrp27766982a47bfd56b961a818cc47fcde7~aZmuSlDcb3197431974epsmtrp23;
-        Tue,  8 Mar 2022 12:07:05 +0000 (GMT)
-X-AuditID: b6c32a4b-739ff700000015d6-42-622746eaae3f
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        89.8B.29871.9E647226; Tue,  8 Mar 2022 21:07:05 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220308120703epsmtip14761939bdaf6e1f980febe8da9f3a2a2~aZmsQcw4Z0869908699epsmtip1d;
-        Tue,  8 Mar 2022 12:07:03 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linus.walleij@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        broonie@kernel.org, andi@etezian.org, linux-spi@vger.kernel.org,
-        lee.jones@linaro.org, Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-fsd@tesla.com, Aswani Reddy <aswani.reddy@samsung.com>
-Subject: [RESEND PATCH v3 2/2] spi: s3c64xx: Add spi port configuration for
- Tesla FSD SoC
-Date:   Tue,  8 Mar 2022 17:46:40 +0530
-Message-Id: <20220308121640.27344-2-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220308121640.27344-1-alim.akhtar@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpjk+LIzCtJLcpLzFFi42LZdlhTQ/eVm3qSwa25ohYP5m1js1j84zmT
-        xaHNW9ktpj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
-        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
-        b5IL4IjKtslITUxJLVJIzUvOT8nMS7dV8g6Od443NTMw1DW0tDBXUshLzE21VXLxCdB1y8wB
-        ul1JoSwxpxQoFJBYXKykb2dTlF9akqqQkV9cYquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBk
-        ClSYkJ3xsH8pY8E57oqjr06xNDA+4Oxi5OSQEDCR2PF6I3MXIxeHkMBuRokpu9qgnE+MEis7
-        jjOBVAkJfGOUuHuOH6Zj8ps/TBBFexklJn1byQbhtDBJ3DzyjBWkik1AW+Lu9C1g3SICbhI3
-        GjvAbGaBT0wSC5fmg9jCAtES7/ZeZQGxWQRUJZYdW8cMYvMK2Eh8nLiZFWKbvMTqDQeA4hwc
-        nAK2Eu+nOYPskhCYyiFx8f5uFogaF4lzU+YzQtjCEq+Ob2GHsKUkPr/bywbSKyGQLdGzyxgi
-        XCOxdN4xqFZ7iQNX5rCAlDALaEqs36UPcSWfRO/vJ0wQnbwSHW1CENWqEs3vrkJ1SktM7O6G
-        OtJDYvGOadBwm8AosXvWVfYJjLKzEKYuYGRcxSiZWlCcm55abFpgnJdaDo+m5PzcTYzgBKnl
-        vYPx0YMPeocYmTgYDzFKcDArifDeP6+SJMSbklhZlVqUH19UmpNafIjRFBhiE5mlRJPzgSk6
-        ryTe0MTSwMTMzMzE0tjMUEmc91T6hkQhgfTEktTs1NSC1CKYPiYOTqkGplmOVWsWL36s9XzK
-        Sw0OvdiglVzaDzb5cj9N92qY8VD/cJLU3JCWs48vNpxgS5Let+3izUmFt5hjcoPKn8qYspWy
-        pYkfze29NmEe3/PKy67P13snRswIrb5q9WF+8qp/Zd3mG5LvlV7lLL579G66xNsFK8yCLp88
-        waf0rDSU/UWC/oX9l/IVvBd+teA8ZuF36toL7biEjRerddImMz6SOR+znMXkpcx1m87v737M
-        +nrOaWqggpmzW3HFwyWrvOKLLmzZ2Tg9i7n1UZRl9GpudoP1UepndH6XJHKV9ckrrVdtmqlf
-        4NrilJq0OGPD1YAVXleNe1e2Xni8/Nfq/pXShTtK3u6SkmFuca8O5RfbqMRSnJFoqMVcVJwI
-        AOG9wGkZBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNLMWRmVeSWpSXmKPExsWy7bCSnO5LN/Ukg5ddZhYP5m1js1j84zmT
-        xaHNW9ktpj58wmYx/8g5VouNb38wWdz/epTRYsqf5UwWmx5fY7V4+Crc4vKuOWwWM87vY7Jo
-        /HiT3WLR1i/sFq17j7A78HvMauhl87i+5BOzx6ZVnWwed67tYfPYvKTeo2/LKkaPf01z2T0+
-        b5IL4IjisklJzcksSy3St0vgynjYv5Sx4Bx3xdFXp1gaGB9wdjFyckgImEhMfvOHCcQWEtjN
-        KNG1KgUiLi1xfeMEdghbWGLlv+dANhdQTROTxJ5nV1hBEmwC2hJ3p28BaxYR8JBo+3ePGaSI
-        WaCBWWL9jn5mkISwQKTE9hV7GEFsFgFViWXH1oHFeQVsJD5O3MwKsUFeYvWGA0BxDg5OAVuJ
-        99OcIQ6ykZhxpZ91AiPfAkaGVYySqQXFuem5xYYFhnmp5XrFibnFpXnpesn5uZsYweGtpbmD
-        cfuqD3qHGJk4GA8xSnAwK4nw3j+vkiTEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTE
-        ktTs1NSC1CKYLBMHp1QDU6Xi0rBX81S3sxbnKTusN8pvuL2b27697JfuVEH/luPyDf3ycziY
-        IuREWkwWnr34Rmjrd/UaNkPVazHH2hTn2sQfLIzYXHnw64aIhmczzhlfrcrd+J55U861NwLa
-        MbntXw+rSz/b9WEnGxP7owfbt+15yZ53iqvs/RnFie6btwZU5brmiKw+eb13/40dDbPtpCzr
-        T566p7Ynu/3uTXvVvdv71Mw+L1pvyLV76xPfnhfHxab0MHTmrTrZyPU2/KyMV9L0OQGuNcsr
-        zLqSdZJnCwvbbb6y9qOfyN4fjYU6JrsneaTyvf3clWTWoeiv8k01pXhN5N9I5S7GuC9Cmmtq
-        vW95TZkxS+LIE1sJ3tRwJZbijERDLeai4kQAwrXRxN4CAAA=
-X-CMS-MailID: 20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
+        Tue, 8 Mar 2022 07:10:17 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10888338BB
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 04:09:20 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KCYsT5fmxzbcCZ;
+        Tue,  8 Mar 2022 20:04:29 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 20:09:16 +0800
+Subject: Re: [PATCH 04/16] mm/migration: reduce the rcu lock duration
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
+        <minchan@kernel.org>, <apopple@nvidia.com>,
+        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
+        <almasrymina@google.com>, <jhubbard@nvidia.com>,
+        <rcampbell@nvidia.com>, <peterx@redhat.com>,
+        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+ <20220304093409.25829-5-linmiaohe@huawei.com>
+ <8735ju7as9.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <2eb3fc34-3c81-394f-3bca-8eb00027afcf@huawei.com>
+Date:   Tue, 8 Mar 2022 20:09:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <8735ju7as9.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2
-References: <20220308121640.27344-1-alim.akhtar@samsung.com>
-        <CGME20220308120705epcas5p21f5cf07d2ab98f89cf87fe3b9fd595b2@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible and port configuration for spi controller
-for Tesla Full Self-Driving SoC.
+On 2022/3/7 10:32, Huang, Ying wrote:
+> Miaohe Lin <linmiaohe@huawei.com> writes:
+> 
+>> rcu_read_lock is required by grabbing the task refcount but it's not
+>> needed for ptrace_may_access. So we could release the rcu lock after
+>> task refcount is successfully grabbed to reduce the rcu holding time.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/migrate.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/mm/migrate.c b/mm/migrate.c
+>> index da5a81052468..26943bd819e8 100644
+>> --- a/mm/migrate.c
+>> +++ b/mm/migrate.c
+>> @@ -1907,17 +1907,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
+>>  		return ERR_PTR(-ESRCH);
+>>  	}
+>>  	get_task_struct(task);
+>> +	rcu_read_unlock();
+>>  
+>>  	/*
+>>  	 * Check if this process has the right to modify the specified
+>>  	 * process. Use the regular "ptrace_may_access()" checks.
+>>  	 */
+>>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+>> -		rcu_read_unlock();
+>>  		mm = ERR_PTR(-EPERM);
+>>  		goto out;
+>>  	}
+>> -	rcu_read_unlock();
+>>  
+>>  	mm = ERR_PTR(security_task_movememory(task));
+>>  	if (IS_ERR(mm))
+> 
+> Digged some history via `git blame`, found that the RCU read lock is
+> extended in the following commit,
+> 
+> "
+> 3268c63eded4612a3d07b56d1e02ce7731e6608e
+> Author:     Christoph Lameter <cl@linux.com>
+> AuthorDate: Wed Mar 21 16:34:06 2012 -0700
+> Commit:     Linus Torvalds <torvalds@linux-foundation.org>
+> CommitDate: Wed Mar 21 17:54:58 2012 -0700
+> 
+> mm: fix move/migrate_pages() race on task struct
+> 
+> Migration functions perform the rcu_read_unlock too early.  As a result
+> the task pointed to may change from under us.  This can result in an oops,
+> as reported by Dave Hansen in https://lkml.org/lkml/2012/2/23/302.
+> 
+> The following patch extend the period of the rcu_read_lock until after the
+> permissions checks are done.  We also take a refcount so that the task
+> reference is stable when calling security check functions and performing
+> cpuset node validation (which takes a mutex).
+> 
+> The refcount is dropped before actual page migration occurs so there is no
+> change to the refcounts held during page migration.
+> 
+> Also move the determination of the mm of the task struct to immediately
+> before the do_migrate*() calls so that it is clear that we switch from
+> handling the task during permission checks to the mm for the actual
+> migration.  Since the determination is only done once and we then no
+> longer use the task_struct we can be sure that we operate on a specific
+> address space that will not change from under us.
+> "
+> 
+> After that, the permission checking has been changed from __task_cred()
+> to ptrace_may_access().  So the situation may change somewhat.  Cced
 
-Cc: linux-fsd@tesla.com
-Signed-off-by: Aswani Reddy <aswani.reddy@samsung.com>
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Andi Shyti <andi@etezian.org>
----
- drivers/spi/spi-s3c64xx.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+In ptrace_may_access, __task_cred is access while holding the rcu read lock.
+It seems this is ensured by the ptrace_may_access itself.
 
-diff --git a/drivers/spi/spi-s3c64xx.c b/drivers/spi/spi-s3c64xx.c
-index 386550fca81c..423518bf0270 100644
---- a/drivers/spi/spi-s3c64xx.c
-+++ b/drivers/spi/spi-s3c64xx.c
-@@ -1440,6 +1440,16 @@ static const struct s3c64xx_spi_port_config exynos5433_spi_port_config = {
- 	.quirks		= S3C64XX_SPI_QUIRK_CS_AUTO,
- };
- 
-+static struct s3c64xx_spi_port_config fsd_spi_port_config = {
-+	.fifo_lvl_mask	= { 0x7f, 0x7f, 0x7f, 0x7f, 0x7f},
-+	.rx_lvl_offset	= 15,
-+	.tx_st_done	= 25,
-+	.high_speed	= true,
-+	.clk_from_cmu	= true,
-+	.clk_ioclk	= false,
-+	.quirks		= S3C64XX_SPI_QUIRK_CS_AUTO,
-+};
-+
- static const struct platform_device_id s3c64xx_spi_driver_ids[] = {
- 	{
- 		.name		= "s3c2443-spi",
-@@ -1470,6 +1480,9 @@ static const struct of_device_id s3c64xx_spi_dt_match[] = {
- 	{ .compatible = "samsung,exynos5433-spi",
- 			.data = (void *)&exynos5433_spi_port_config,
- 	},
-+	{ .compatible = "tesla,fsd-spi",
-+			.data = (void *)&fsd_spi_port_config,
-+	},
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, s3c64xx_spi_dt_match);
--- 
-2.25.1
+> some names found in git history to verify.
+
+Thanks for your carefulness.
+
+> 
+> Best Regards,
+> Huang, Ying
+> .
+> 
 
