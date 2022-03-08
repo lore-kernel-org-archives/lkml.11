@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B286C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52061C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348561AbiCHQlm (ORCPT
+        id S1348469AbiCHQmB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        Tue, 8 Mar 2022 11:42:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348495AbiCHQky (ORCPT
+        with ESMTP id S1348558AbiCHQlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:40:54 -0500
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95A517DD;
-        Tue,  8 Mar 2022 08:39:57 -0800 (PST)
-Received: by mail-oo1-f45.google.com with SMTP id 6-20020a4a0906000000b0031d7eb98d31so22765140ooa.10;
-        Tue, 08 Mar 2022 08:39:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LqsblcX3MtbRMMm9B3Z+AqAZ1YQp8Xi0MtRM0YAPQak=;
-        b=dPG4myIAKGpsOBZZJU0tUcMv8+ECBFzINH7oWbaejoFWJo2sz+W7TK00VFrXkGQS6X
-         0zSyq4ySEGfl7tJsjermiFyaFXVSU62egkJwjPQ7GX+Z5OHujOai54nunVJIy/ZR2e4A
-         zw9pHN5e8VSQJORM0o4EMkaHtm7khwA/Rf1Zl3ihePL/yjXWCa8InObYgVdkS7FNdS6v
-         uXGonslmZXUCeGeqMDFF0ECubHrwCz10opFk21gZVebHzOPCXuqr4RmV18Saslk76TWM
-         2XJqhqS/JsEjXJxlOt5cY3Smluj8EG4Lk4GfJIr0OjmMkP+clEHUIoXpgkF0CwSk+Ilq
-         BA2g==
-X-Gm-Message-State: AOAM533t1uyiyiVJ0rsY8atP9LHmLSZQbCGQuhHUbD2hHzltt8lZ83Qv
-        A81D3CJrWkNXjOpMlJxqug==
-X-Google-Smtp-Source: ABdhPJx8LX7mJBIVppVai6vgrJ7wctTztsVswtwWgW7rpKjxqFl4p4gEhzFq17Vl8bc/ghG4DRyyNg==
-X-Received: by 2002:a05:6870:d69e:b0:d9:ad7e:f0e9 with SMTP id z30-20020a056870d69e00b000d9ad7ef0e9mr2872881oap.138.1646757596928;
-        Tue, 08 Mar 2022 08:39:56 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z26-20020a9d62da000000b005b23f5488cdsm2220577otk.52.2022.03.08.08.39.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 08:39:56 -0800 (PST)
-Received: (nullmailer pid 919426 invoked by uid 1000);
-        Tue, 08 Mar 2022 16:39:55 -0000
-Date:   Tue, 8 Mar 2022 10:39:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-can@vger.kernel.org,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: phy: ti, tcan104x-can: Document
- mux-states property
-Message-ID: <YieG22mgIzsL7TMn@robh.at.kernel.org>
-References: <20211216041012.16892-1-a-govindraju@ti.com>
- <20211216041012.16892-2-a-govindraju@ti.com>
+        Tue, 8 Mar 2022 11:41:31 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3231752B0E;
+        Tue,  8 Mar 2022 08:40:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646757617; x=1678293617;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xQzJKcusyvUkkA9RXf+HpUrMRJQ394C+/khbeGtB8Rs=;
+  b=ZEjJanj1lVqzjtdFspKEsA3MDxqwQAi1hn725sfB8JzTkuEbGLBPw2Me
+   I/QtCd0loFK9GJcaivnebY4lQC+9nxnwrdPVXYfzSBQw3BSLyGq2O0uPg
+   fYP8Sewx1huU6KxmBQjpAvMn1jaxXaoa5qVwtmea4TRtxjSaNC7MzJjUo
+   mKCsU2sYVjftFJLJwqGARHWa53UM0tLxAW4RB6NIrCxtM0wtUpF4wLJxO
+   Q03cP7rLFJlqrHXdDcm/efIX9aTTjkZ7tw2IZ37mQm6SHCQfvMG8NpYsE
+   vd+rR6DAVZH+K5RMXhhaB6F5lCMRHDVaXPc/DzKqicQSjGyVh6M8V5Wbz
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
+   d="scan'208";a="148493344"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 09:40:16 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 09:40:15 -0700
+Received: from [10.12.73.60] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 09:40:13 -0700
+Message-ID: <ca66b439-ef3d-9968-7bf7-d0bf5e98813f@microchip.com>
+Date:   Tue, 8 Mar 2022 17:40:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216041012.16892-2-a-govindraju@ti.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: rtc: at91: rename rtt bindings file
+Content-Language: en-US
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+CC:     <linux-rtc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220308155735.54146-1-alexandre.belloni@bootlin.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220308155735.54146-1-alexandre.belloni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 09:40:11AM +0530, Aswath Govindraju wrote:
-> On some boards, for routing CAN signals from controller to transceivers,
-> muxes might need to be set. This can be implemented using mux-states
-> property. Therefore, document the same in the respective bindings.
+On 08/03/2022 at 16:57, Alexandre Belloni wrote:
+> atmel,at91sam9-rtc is a confuing name for this file as it is documenting
+
+confusing ^
+
+> the RTT used as an RTC and not the other regular RTC (atmel,at91rm9200-rtc
+> and atmel,at91sam9x5-rtc)
 > 
-> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+
+Yes, clearer indeed:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+True that this driver's name was confusing from day 1...
+
+Thanks Alexandre, best regards,
+   Nicolas
+
 > ---
->  Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
+>   .../rtc/{atmel,at91sam9-rtc.yaml => atmel,at91sam9260-rtt.yaml}   | 0
+>   1 file changed, 0 insertions(+), 0 deletions(-)
+>   rename Documentation/devicetree/bindings/rtc/{atmel,at91sam9-rtc.yaml => atmel,at91sam9260-rtt.yaml} (100%)
+> 
+> diff --git a/Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml b/Documentation/devicetree/bindings/rtc/atmel,at91sam9260-rtt.yaml
+> similarity index 100%
+> rename from Documentation/devicetree/bindings/rtc/atmel,at91sam9-rtc.yaml
+> rename to Documentation/devicetree/bindings/rtc/atmel,at91sam9260-rtt.yaml
+> --
+> 2.35.1
+> 
 
-As the warning without this is still there and it hasn't been resent, 
-I've applied it.
 
-Rob
+-- 
+Nicolas Ferre
