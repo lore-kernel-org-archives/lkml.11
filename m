@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C723C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 823AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347666AbiCHO4E (ORCPT
+        id S1347676AbiCHO4Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50248 "EHLO
+        Tue, 8 Mar 2022 09:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344500AbiCHO4B (ORCPT
+        with ESMTP id S1347669AbiCHO4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:56:01 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103A24C40B;
-        Tue,  8 Mar 2022 06:55:05 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id e2so17275589pls.10;
-        Tue, 08 Mar 2022 06:55:05 -0800 (PST)
+        Tue, 8 Mar 2022 09:56:11 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064284D614;
+        Tue,  8 Mar 2022 06:55:15 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id x5so24781095edd.11;
+        Tue, 08 Mar 2022 06:55:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=HMX124D2O6WPuvZBHig1l49K2rmUx1oosDsmC1rlFeI=;
-        b=MehPtKYdoA5tKN/dBDD12lz/SPGrsdZ9+QMqxA2bTZTWRE4BBYBvAU/mTGk9MAHjHD
-         C468idWwn5HVyuLPZF9ZMkI6mJ+YPCaPpBba1GvldllwD3+K7Xz2Rc5r7cLPyEUlLD01
-         0mYHyBLdwpQqE+YjVyiqvOHlKV7XhU1SYy5+hWdqWIKSvF/f/UO4rCSEepSusTY1J4LL
-         BOGMDtGBtqvk3brYh6UmrAYZ2u8m0oazi5qznWSwROX0wVLVkkrfFvbZVsPwRGsXKnnv
-         SOvG05PF0vQxEbMxrfek7uFoEZ4tcOjuEibTZyAQ2UcwX7cELZ6S3VoLxxpCcampOTzK
-         4QYQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W3N2onZNeXEWUzsjOhw5lgCOnooSllP3AJaBPnKLKa4=;
+        b=cF3pFpGgsqh/x0O0WYaF1G/ds8gl5IPznUxWzBDUnwryuQjj2erEikKXEmJmDAEwac
+         SqSiXNIJNgNK6/P7a6OmTsRygL8siE+jjxWC2jCvXYLAnO3Q8PLBXQbIUgW5Ch4jO4Sb
+         eJ2baKwVhvQcJwoXaB3A5MynHxfdPwmqxNzUV7w1tFE2iA1UTg29aRMs8h9WxuUaAPj3
+         X1k/wm97jt6+aw5/6STGgqcA9xXm/hbxjZnmUr0JbEiyh4S7cOKlICT0gz0w8+jT5YSP
+         vLhua+dZM/YObcOBwqkloUXb2JivS7+92w6lO5j3Q82O9qWuJd/g5CF2bPA7RJFzb+Mm
+         6MGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=HMX124D2O6WPuvZBHig1l49K2rmUx1oosDsmC1rlFeI=;
-        b=VWTDbbneizFQCae4IsQkuqfYhOpgkLCfuuOnTIGd1UOnSpr26C/6ceEzMfk1FSjRlD
-         yf20Dvrm8Kj8Oyn5MuscGr2eSXMeN6teryAAzpk+nSWSsyApcVj4B3kkh0DKDqApj+oD
-         +qW+iFmMgj+5V0vQdNWOXaT8SSO++ORCpsygnAJ1u8ooFX2KGw+VEzqARNpMXvgnkRRc
-         lNU6jcfMD69748CJqAkHQ5+5Bf5A3MYi+Qi7wQDcpMSCIyqtuJruPU42PAxNKjqWissx
-         2O8583Hb9vDZIDviSlEtx8mbzKonA9CZT70dJZiVKrGHC4/50Tu8cb6SEnWyBh8iDcWm
-         wEng==
-X-Gm-Message-State: AOAM530VPEY4T74mP1GmF0jyncrgfOQCJckaz+kHnEj9BGw4UPMFbkdL
-        v9EtjFr/Z6OvSlMChYMZkP4=
-X-Google-Smtp-Source: ABdhPJxrh7nKcxgGctqWO5BYXIxGIJ54+G6QuTy2xEnrQRAxiikZzw8nB6Yh2MXXL3oBRzU1KJvA+Q==
-X-Received: by 2002:a17:90a:cf03:b0:1bf:7005:7d73 with SMTP id h3-20020a17090acf0300b001bf70057d73mr5082347pju.8.1646751304511;
-        Tue, 08 Mar 2022 06:55:04 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id pc17-20020a17090b3b9100b001bf88fe5edcsm3392883pjb.9.2022.03.08.06.55.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 06:55:04 -0800 (PST)
-Date:   Tue, 8 Mar 2022 06:55:02 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] ptp: idt82p33: use rsmu driver to access i2c/spi bus
-Message-ID: <20220308145502.GE29063@hoboy.vegasvil.org>
-References: <1646748651-16811-1-git-send-email-min.li.xe@renesas.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W3N2onZNeXEWUzsjOhw5lgCOnooSllP3AJaBPnKLKa4=;
+        b=COrst7vNMuA3ev0QUJOVG8lC/0qR/ew9cpxbk9UsUDgBxZvwKjU00QaUA4eCpLGCWj
+         d/MLxbpwCpKCplVaXvWredIQCq31ljFM17rEG6upX1RTFkJz7mXCQo4eNR4h6d/5FX5P
+         nwfNBW6SF7MRh9l9EC1qznMpvAOTUzZ1VuaPyzG//PhLhl33+JoT4G9EDAH94vXjiqXw
+         P+u67LbfvEcRk1AjzpgtI1y1BaxYNnuOTX2ujPNEr7BAOptZ4UF834F8AsdMxRr37t5K
+         nMIfQSJbuzvYZgE2+LPyWXcfbxdbF8y4PNuyzfIjLD7vN3JBcispjTeDKhFWQkrkkohm
+         jeig==
+X-Gm-Message-State: AOAM5300aMrBRrsk+lBjg40F7K6FiR6Jyawf+aVJ583bb6LHQN2oFIIN
+        qVOq4KiXihNIVQj+T/o+pCrUjSz15kEyO1lMxZE=
+X-Google-Smtp-Source: ABdhPJy186BBAJ+8888FuwNYh2a/36jnGkxB9fjC/QjwyNVZWRM5U2djbwUwdYrGc3tqLepqzxoLsixLK774/uzEZ68=
+X-Received: by 2002:a05:6402:3589:b0:416:7de7:cdde with SMTP id
+ y9-20020a056402358900b004167de7cddemr348358edc.218.1646751313432; Tue, 08 Mar
+ 2022 06:55:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646748651-16811-1-git-send-email-min.li.xe@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
+ <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de>
+ <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+ <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com> <20220307191854.GA27748@wunner.de>
+ <YiZfdlw0A75cojCx@smile.fi.intel.com> <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com>
+ <20220308122220.GA24694@wunner.de> <d9aabfe-1179-67c2-98d1-f36e7e698f33@linux.intel.com>
+ <20220308145042.GA20520@wunner.de>
+In-Reply-To: <20220308145042.GA20520@wunner.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 8 Mar 2022 16:53:56 +0200
+Message-ID: <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 09:10:51AM -0500, Min Li wrote:
-> rsmu (Renesas Synchronization Management Unit ) driver is located in
-> drivers/mfd and responsible for creating multiple devices including
-> idt82p33 phc, which will then use the exposed regmap and mutex
-> handle to access i2c/spi bus.
-> 
-> Signed-off-by: Min Li <min.li.xe@renesas.com>
+On Tue, Mar 8, 2022 at 4:50 PM Lukas Wunner <lukas@wunner.de> wrote:
+> On Tue, Mar 08, 2022 at 02:59:59PM +0200, Ilpo J=C3=A4rvinen wrote:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+...
+
+> Of course, if hardware-assisted DE assertion requires a particular pinmux
+> state, we could double-check whether that pinmux state is set.
+
+I'm wondering how to achieve this.
+
+--=20
+With Best Regards,
+Andy Shevchenko
