@@ -2,107 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B999C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244000AbiCHPln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        id S1347891AbiCHPly (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:41:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231753AbiCHPll (ORCPT
+        with ESMTP id S1345898AbiCHPlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:41:41 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A544ECC9
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:40:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646754045; x=1678290045;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=982OeylbgUqsOrJYjdn0FmN/E/k6EPVv1mvCzWyKIvo=;
-  b=kobE0j5IzLZxPK9n1yALMePxeKTWtKmMsyySVSejbuRnz0UoAdGMYeUv
-   4vtxK9bvHNCd0lIGrH3JenjLvi9LREM3K0FbObkYLkmbv2pWkFh7vle3O
-   JKWYxSVmvnc8MoVBuWyuoMlTjyNcWLpmjyCOIRoiHmrwRgUr4cbMNRtIv
-   lIEzgMeHAg1Ope35uEDgShqIF0i75U7Xj4npgimF6G3yZYUC+uIHpYliZ
-   6fnyF7w2PkhiddwM2Gnc2Grk0yyVufZ6VEQz4ibfA724HpWj3G1M5e1be
-   2+fTbBbWy4Igd7dEdz5w+9THqI+AThuxp4JtGKmDup0E+19VuacwsRINq
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="252284986"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="252284986"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:40:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="643692197"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 07:40:28 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRbwq-0001cV-29; Tue, 08 Mar 2022 15:40:28 +0000
-Date:   Tue, 8 Mar 2022 23:39:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.4
- 4027/9999] drivers/dma-buf/heaps/page_pool.c:236:17: sparse: sparse: symbol
- 'pool_shrinker' was not declared. Should it be static?
-Message-ID: <202203082348.wcdj5T0l-lkp@intel.com>
+        Tue, 8 Mar 2022 10:41:50 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365B14ECD4;
+        Tue,  8 Mar 2022 07:40:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646754054; x=1678290054;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NzNzwhD5Vp7SgosRFhjzNuPWzbCIrT4UeOhxKam0WG4=;
+  b=NGOiX0Fd9hrBl+o/4/zVCLvz6J1wwLig9uUeFbEphxRuXedKxIBG4vr+
+   CAK0VGZaCi9cM10o2U9E2IXSfhUc+N+0U73be8Xh2CMFDnqpN/rGbutjT
+   4wvc8K2SdaD4gwSBRSSlVR5lsVT2TTafIvIuJskiaKRB2CuhIvtIaMyHv
+   giCxOlY7jP/l7zwXmcB0AdHzm+r5oo85Y78igu1Q/TG+YWwx4963CDXuj
+   G8iRCAu8xb/7GIWF8aL/uwxatgKl+/+GWQ+iDCTPmLvNrdO91Gl6zrUjX
+   OXp8TXKOOobxxUi/JRMCnjXq4QOHOpXixZHIR7FHJgLw8R3PJpWkMUMuw
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
+   d="scan'208";a="164948629"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 08:40:53 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 08:40:53 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 08:40:53 -0700
+Date:   Tue, 8 Mar 2022 16:43:45 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YidgHT8CLWrmhbTW@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
+Hi Andrew,
 
-First bad commit (maybe != root cause):
+The 03/08/2022 14:54, Andrew Lunn wrote:
+> 
+> > > Thanks for the reply, but you did not answer my question:
+> > >
+> > >   Does this mean the hardware itself cannot tell you it is missing the
+> > >   needed hardware?
+> > >
+> > > Don't you have different IDs in register 2 and 3 for those devices with clock
+> > > register and those without?
+> > >
+> >
+> 
+> > The purpose of this option is, if both PHY and MAC supports
+> > timestamping then always timestamping is done in PHY.  If
+> > timestamping need to be done in MAC we need a way to stop PHY
+> > timestamping. If this flag is used then timestamping is taken care
+> > by MAC.
+> 
+> This is not a valid use of DT, since this is configuration, not
+> describing the hardware. There has been recent extension in the UAPI
+> to allow user space to do this configuration. Please look at that
+> work.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.4
-head:   8a3679a75730c1babde6bf63e35d227f3305bd90
-commit: 44008f99d9ca0793e2562967e1da01fa74ee4a41 [4027/9999] ANDROID: dma-buf: system_heap: Add pagepool support to system heap
-config: x86_64-randconfig-s021-20220307 (https://download.01.org/0day-ci/archive/20220308/202203082348.wcdj5T0l-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/44008f99d9ca0793e2562967e1da01fa74ee4a41
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.4
-        git checkout 44008f99d9ca0793e2562967e1da01fa74ee4a41
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/dma-buf/heaps/ init/
+Ah ... now we have found Richard patch series.
+So we will remove this option and once Richard's patch series will be
+accepted we will use that.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> 
+> > Sorry I answered wrong. Latency values vary depending on the position of PHY in board.
+> > We have used this PHY in different hardware's, where latency values differs based on PHY positioning.
+> > So we used latency option in DTS file.
+> > If you have other ideas or I'm wrong please let me know?
+> 
+> So this is a function of the track length between the MAC and the PHY?
 
+Nope.
+This latency represents the time it takes for the frame to travel from RJ45
+module to the timestamping unit inside the PHY. To be more precisely,
+the timestamping unit will do the timestamp when it detects the end of
+the start of the frame. So it represents the time from when the frame
+reaches the RJ45 to when the end of start of the frame reaches the
+timestamping unit inside the PHY.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/dma-buf/heaps/page_pool.c:236:17: sparse: sparse: symbol 'pool_shrinker' was not declared. Should it be static?
-   drivers/dma-buf/heaps/page_pool.c:243:5: sparse: sparse: symbol 'dmabuf_page_pool_init_shrinker' was not declared. Should it be static?
+And because each board manufacture could put the same PHY but in
+different places, then each of them would have a different latency.
+That is the main reason why we put this latencies in the DT and not put
+them inside the driver. Because we think each board manufacture will
+need to use different values.
 
-vim +/pool_shrinker +236 drivers/dma-buf/heaps/page_pool.c
+Another reason is that we want the board manufacture to determine these
+values and not the end users. I have seen that also Richard commenting
+on this, saying that the latencies should not be in DT.
+Currently I don't know where else they can be. I know that ptp4l has
+these option in SW to update the ingress/egress latencies but if someone
+else is running another application, what will they do?
 
-bd4db96bfc247af John Stultz 2020-10-02  235  
-bd4db96bfc247af John Stultz 2020-10-02 @236  struct shrinker pool_shrinker = {
-bd4db96bfc247af John Stultz 2020-10-02  237  	.count_objects = dmabuf_page_pool_shrink_count,
-bd4db96bfc247af John Stultz 2020-10-02  238  	.scan_objects = dmabuf_page_pool_shrink_scan,
-bd4db96bfc247af John Stultz 2020-10-02  239  	.seeks = DEFAULT_SEEKS,
-bd4db96bfc247af John Stultz 2020-10-02  240  	.batch = 0,
-bd4db96bfc247af John Stultz 2020-10-02  241  };
-bd4db96bfc247af John Stultz 2020-10-02  242  
+> How do you determine these values?
 
-:::::: The code at line 236 was first introduced by commit
-:::::: bd4db96bfc247afdaf7a4cfde85fd8147522f3e6 ANDROID: dma-buf: heaps: Add a shrinker controlled page pool
+This is a little bit more complicated.
+So first you will need a device that you know already that is
+calibrated. Then you connect the device that you want to calibrate to
+the calibrated one with a known length cable. We presume that there is a
+5ns delay per meter of the cable. And then basically we run ptp4l on
+each device where the master will be the calibrated one and the slave
+will be the device that will be calibrated. When we run ptp4l we can see
+mean path delay, and we subtract the delay introduced by the cable(5ns)
+and then we take this value and divided by 2. And then
+the result is added to the current rx latency and subtracted from tx
+latency.
+This is how we have calculated the values.
 
-:::::: TO: John Stultz <john.stultz@linaro.org>
-:::::: CC: John Stultz <john.stultz@linaro.org>
+> There is no point having
+> configuration values if you don't document how to determine what value
+> should be used.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I agree, we should do a better job at this and also explaining what
+these values represent. Definitely we will do that in the next patch.
+
+> 
+>        Andrew
+
+-- 
+/Horatiu
