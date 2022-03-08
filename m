@@ -2,92 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 705B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A51C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347331AbiCHOL4 (ORCPT
+        id S1347353AbiCHOMU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        Tue, 8 Mar 2022 09:12:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235850AbiCHOLz (ORCPT
+        with ESMTP id S235850AbiCHOMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:11:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5B64AE0E;
-        Tue,  8 Mar 2022 06:10:59 -0800 (PST)
+        Tue, 8 Mar 2022 09:12:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5882D4AE14;
+        Tue,  8 Mar 2022 06:11:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B71D0B818B4;
-        Tue,  8 Mar 2022 14:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086DDC340EB;
-        Tue,  8 Mar 2022 14:10:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E775C61328;
+        Tue,  8 Mar 2022 14:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38284C340EB;
+        Tue,  8 Mar 2022 14:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646748656;
-        bh=K5hOSnCQGMOmt/IEIcA7LTELy76XtsnTeSUtRHpSjMI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H8ZgAweQxHnQcRrc7YeQLvfiGEP7eJ7VE4JoZvnjij9ixBcX2oaN8pur5zg0MxOhZ
-         GY3fBqHK2sZQXIpTJMOE4F2VqSkYWhKyEHHTfl0wJYQlipLCtvLLsucs8nW4lq7lZI
-         Bc22y9OVZKU7zzpJ/BQ5NuwONONqA6GYZ6NnkGuTd4jHTpOgMhAvGbc6AMurdwAApp
-         pYg2pn7j2TH2ut5VcSwOzL88pt962JlNG1MZ1jQkScxlR2jUT+/emich1hvPrPJRvM
-         i42TlTqc7ncLlF1gfgvXfMplqnxyRHzGlt9nXQxfNbNmtPpI7yXUPsdt7qbtvNiGlA
-         0Uc36aPUNUJ1g==
-Date:   Tue, 8 Mar 2022 14:10:50 +0000
+        s=k20201202; t=1646748681;
+        bh=ZrUA6nrdR/8oeAEl079SCCbVe8IbdFIRolvVvTFqyTQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GgUYMgTeIqtuwLx0mpKjRetwXfGSxMMugbQ6+Eq3PK3Cokh7SFZ6lRHzJNDMe4r7W
+         HdfyenVz/QD4iJsu40ZgbCIDaNXFu0iSCecKFr1BFH+WmC5pN65+0ks7qTIlABE1VT
+         uDl6VLGweiqtwGmTuADz6P7XMcHjJ/luo8JOvq42C12506bQR9KLDWT+tFjNu8aCSS
+         1pzNTqwPRBwILty74OzGbfinqF3IupC8K/wEJsz8hE3bUdu2jEO8WICSRAp/toM9d7
+         0lMsLpjaV4j+JiDE1TUy/RRidJe7Rymvh3b9w0CEViyQFw6cdXs4GbDgkFSxAYVQzF
+         WEjpQY5JYtnMQ==
 From:   Will Deacon <will@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dougall <dougallj@gmail.com>, kernel-team@android.com
-Subject: Re: [PATCH v5 00/10] drivers/perf: CPU PMU driver for Apple M1
-Message-ID: <20220308141049.GA31812@willie-the-truck>
-References: <20220208185604.1097957-1-maz@kernel.org>
- <875yop21vj.wl-maz@kernel.org>
+To:     linux-arm-kernel@lists.infradead.org, sgoutham@marvell.com,
+        mark.rutland@arm.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        Bharat Bhushan <bbhushan2@marvell.com>, bbudiredla@marvell.com
+Cc:     catalin.marinas@arm.com, kernel-team@android.com,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v8 0/4] cn10k DDR Performance monitor support
+Date:   Tue,  8 Mar 2022 14:11:09 +0000
+Message-Id: <164673825754.1681008.8324027520511694988.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220211045346.17894-1-bbhushan2@marvell.com>
+References: <20220211045346.17894-1-bbhushan2@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875yop21vj.wl-maz@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 03:55:44PM +0000, Marc Zyngier wrote:
-> On Tue, 08 Feb 2022 18:55:54 +0000,
-> Marc Zyngier <maz@kernel.org> wrote:
-> > 
-> > The M1 SoC embeds a per-CPU PMU that has a very different programming
-> > interface compared to the architected PMUv3 that is normally present
-> > on standard implementations.
-> > 
-> > This small series adds a driver for this HW by leveraging the arm_pmu
-> > infrastructure, resulting in a rather simple driver.
-> > 
-> > Of course, we know next to nothing about the actual events this PMU
-> > counts, aside from CPU cycles and instructions. Everything else is
-> > undocumented (though as Dougall pointed out, someone could extract the
-> > relevant information from a macOS install if they wanted -- I don't).
-> > I'm looking at allowing the perf userspace tool to load the event
-> > descriptions at runtime, which would probably help.
+On Fri, 11 Feb 2022 10:23:42 +0530, Bharat Bhushan wrote:
+> This patch series adds DDR performance monitor support on Marvell cn10k series of processor.
+> 
+> First patch adds device tree binding changes.
+> Second patch add basic support (without overflow and event ownership). Third and fourth patch adds overflow and event ownership respectively.
+> 
+> Seems like 4th patch can be merged in second patch, For easy review it is currently separate
 > 
 > [...]
-> 
-> FWIW, I have created two branches:
-> 
-> - [1] has the full series
-> - [2] has the irqchip/DT prefix of [1]
-> 
-> Both branches are stable, and I expect [2] to be used as a shared
-> branch between the irqchip and perf trees.
 
-Cheers, I've picked this up in the arm64 tree (by pulling [2] and applying
-the two extra patches from [1] on top) here:
+Applied to will (for-next/perf), thanks!
 
-https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/log/?h=for-next/perf-m1
+[1/4] dt-bindings: perf: marvell: cn10k ddr performance monitor
+      https://git.kernel.org/will/c/805bbdf28b27
+[2/4] perf/marvell: CN10k DDR performance monitor support
+      https://git.kernel.org/will/c/7cf83e222bce
+[3/4] perf/marvell: cn10k DDR perfmon event overflow handling
+      https://git.kernel.org/will/c/35a43326a9e3
+[4/4] perf/marvell: cn10k DDR perf event core ownership
+      https://git.kernel.org/will/c/68fa55f0e05c
 
+Cheers,
+-- 
 Will
+
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
