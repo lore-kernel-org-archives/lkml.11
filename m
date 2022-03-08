@@ -2,94 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB9DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345270AbiCHJF1 (ORCPT
+        id S1345151AbiCHJIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        Tue, 8 Mar 2022 04:08:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345198AbiCHJFU (ORCPT
+        with ESMTP id S233897AbiCHJHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:05:20 -0500
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C47C3CA53;
-        Tue,  8 Mar 2022 01:04:24 -0800 (PST)
-Received: by mail-qk1-f171.google.com with SMTP id v189so5286088qkd.2;
-        Tue, 08 Mar 2022 01:04:24 -0800 (PST)
+        Tue, 8 Mar 2022 04:07:45 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A233FBE0;
+        Tue,  8 Mar 2022 01:06:49 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id g39so30951063lfv.10;
+        Tue, 08 Mar 2022 01:06:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=ZSSqssguaqD2tjMmjJKfil49rhUxKlYemuYgWRJDFc4=;
+        b=i8KUKVpplsOozfpS14HotNRNIdGXHN1AJwMaWOsj/7F1Z/kamP4qLBs1oQDWZJFPQp
+         IjgvlodAyvdg4SoaDmaGyc+bxGAuQUi3+QsWoG7ibRCJN+/hUy/CwnDceCejBmQfuwYd
+         fe9E7f1yKxtRd30ECx58R64okM17jy8ojVQcvuUxAGPYcpkNfKUQjM8AP2tMV7cVA1FZ
+         UW6+c6/e5A9PdwjoykmWlafGXizCSH6U1CcDMu7qSQhl/po96hOnF6wGaaVpChd8s0r0
+         zHy3iLteMOKwp8mJCqEFLjU7La0luzdqGLLByI6GgBoGEn1GRP6suqma9mi7yNp7Uc7N
+         aB/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=phYHKaDp3iu7d/YQ5n28M+fKfbNGfwGCdmxQu5jfrxQ=;
-        b=bFBktnL+3vRZCIqa5W8rfV+DMd85Urm37liXIlaO5gwdL1ko6F40MSjAIphH1fZ6Uo
-         Q96vUvy24MrqxdZebsjlx4+2YR7qs3bRb5vt1i7FeBYvGxKtoTcII0iJJIIQzcKtBzDX
-         ZscthDETRBL0EdI0c7gQ//P3WL5XDNuRMksWBy8ZyXiWLMkzOrjDVk4JZT2biK9srI6U
-         SBjBl+oLlZlIin79A7E+aQ/dr2rtl8QEwndzao8k+3nckGsHR/+hNvgsMk6DPzFywu3N
-         wjqU+7UI4+w21SAhmY48kDA5/phl5PQLWGt1/K4KRiut8Y3zUB59oa3rDRD03kQMCxjW
-         IhFA==
-X-Gm-Message-State: AOAM532pFkmRGFBD+jPdYImvw7z+LkD+5IPoyqXZVUkVvz/gJJtpV8o5
-        QJrWfmPIGL7TbDQWhnft5wyzGIc3zSJoow==
-X-Google-Smtp-Source: ABdhPJzJLVgkJDbJXbQ+FMgzII9DfrzotprkYS06w0GZMSDhl9N1H/S9M6llGCLgqI1AJ4fys/RLcg==
-X-Received: by 2002:a37:45d4:0:b0:47e:c694:2370 with SMTP id s203-20020a3745d4000000b0047ec6942370mr9482859qka.773.1646730263358;
-        Tue, 08 Mar 2022 01:04:23 -0800 (PST)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id c11-20020a05622a024b00b002ddb43850fdsm9905983qtx.15.2022.03.08.01.04.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 01:04:23 -0800 (PST)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2d6d0cb5da4so193474957b3.10;
-        Tue, 08 Mar 2022 01:04:22 -0800 (PST)
-X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
- v133-20020a81618b000000b002dbd9528a39mr11937869ywb.132.1646730262599; Tue, 08
- Mar 2022 01:04:22 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=ZSSqssguaqD2tjMmjJKfil49rhUxKlYemuYgWRJDFc4=;
+        b=xejnvqwttB317hl/WQ2wGQo0lt7kL/3SUdFvxY63RnxKi8L7+3MR6P1aa59qG1gU30
+         mbQjcEmdV5dWP1SIC7kx9TNcuA73IiNiTASB/LK/7yskrtfaBR89IgmJOz/5/TP63rzt
+         fo7dDeo5uc5Ziha5FgNZEmDQv+nHeoPAjx/tJJ1WALMhQYaF2c8GJaYti3SY4ec+SwFP
+         +YeN9B1aC+iB4RdTscBRB+5X3rRKmrQD7GPLYFU84XBsd1f0/5TNS0AB4j088Tgx5YxV
+         ix5afYfGJvfyDgQ7aV8j9F2IosmLuD9bpxQ3sem9hQBf9mjJaQeyjdhQhyYILlRZGl3z
+         EPLQ==
+X-Gm-Message-State: AOAM532DXCzAecIH0HhPHiSwPXS0s03kyTI5jiax4HzitBVuO2jgof9w
+        vJzlGYYYqq5TmJ06mxYEgxU=
+X-Google-Smtp-Source: ABdhPJw9TP6u4KkztcCyk+LiyHCv0kAMZ0i30SGTKsh3ic6MF4I9uJqKFnh7OrKajZI+ONY2va6a6Q==
+X-Received: by 2002:a05:6512:b19:b0:446:f1c6:81bd with SMTP id w25-20020a0565120b1900b00446f1c681bdmr10299826lfu.320.1646730407178;
+        Tue, 08 Mar 2022 01:06:47 -0800 (PST)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id f21-20020ac251b5000000b004478fa4a744sm2871298lfk.56.2022.03.08.01.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 01:06:46 -0800 (PST)
+Date:   Tue, 8 Mar 2022 11:06:43 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
+        linux-fbdev@vger.kernel.org, linux-m68k@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 RFC 08/10] drm/fourcc: Document that single-channel
+ "red" can be any color
+Message-ID: <20220308110643.5220f8ae@eldfell>
+In-Reply-To: <585dc03acb4016bba910e7d15fec3ef4f0aec5b0.1646683502.git.geert@linux-m68k.org>
+References: <cover.1646683502.git.geert@linux-m68k.org>
+        <585dc03acb4016bba910e7d15fec3ef4f0aec5b0.1646683502.git.geert@linux-m68k.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220308085136.30753-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220308085136.30753-1-lukas.bulwahn@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 8 Mar 2022 10:04:11 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXPtgSRwwXyKwROkuKY3m8YY-bOfvobB58X55Hm8B3qfw@mail.gmail.com>
-Message-ID: <CAMuHMdXPtgSRwwXyKwROkuKY3m8YY-bOfvobB58X55Hm8B3qfw@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: rectify entry for ROHM MULTIFUNCTION
- BD9571MWV-M PMIC DEVICE DRIVERS
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        kernel-janitors@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/hJXpHsxaCnYZ11VUzvhv1th";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lukas,
+--Sig_/hJXpHsxaCnYZ11VUzvhv1th
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 8, 2022 at 9:51 AM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-> Commit 983b62975e90 ("dt-bindings: mfd: bd9571mwv: Convert to json-schema")
-> converts bd9571mwv.txt to rohm,bd9571mwv.yaml, but missed to adjust its
-> reference in MAINTAINERS.
->
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> broken reference.
->
-> Repair this file reference in ROHM MULTIFUNCTION BD9571MWV-M PMIC DEVICE
-> DRIVERS.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+On Mon,  7 Mar 2022 21:52:43 +0100
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-Thanks, my bad.
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Traditionally, the first channel has been called the "red" channel, but
+> the fourcc values for single-channel "red" formats can also be used for
+> other light-on-dark displays, like grayscale.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+> RFC, as I have no immediate need for these formats.
+>=20
+> v2:
+>   - New.
+> ---
+>  include/uapi/drm/drm_fourcc.h | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+> index 457ed39cc48f08e1..f0187cf20e4619d2 100644
+> --- a/include/uapi/drm/drm_fourcc.h
+> +++ b/include/uapi/drm/drm_fourcc.h
+> @@ -104,16 +104,16 @@ extern "C" {
+>  #define DRM_FORMAT_C4		fourcc_code('C', '4', ' ', ' ') /* [7:0] C0:C1 4:=
+4 two pixels/byte */
+>  #define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C 8 one =
+pixel/byte */
+> =20
+> -/* 8 bpp Red */
+> +/* 8 bpp Red (or generic light-on-dark) */
+>  #define DRM_FORMAT_R8		fourcc_code('R', '8', ' ', ' ') /* [7:0] R */
+> =20
+> -/* 10 bpp Red */
+> +/* 10 bpp Red (or generic light-on-dark) */
+>  #define DRM_FORMAT_R10		fourcc_code('R', '1', '0', ' ') /* [15:0] x:R 6:=
+10 little endian */
+> =20
+> -/* 12 bpp Red */
+> +/* 12 bpp Red (or generic light-on-dark) */
+>  #define DRM_FORMAT_R12		fourcc_code('R', '1', '2', ' ') /* [15:0] x:R 4:=
+12 little endian */
+> =20
+> -/* 16 bpp Red */
+> +/* 16 bpp Red (or generic light-on-dark) */
+>  #define DRM_FORMAT_R16		fourcc_code('R', '1', '6', ' ') /* [15:0] R litt=
+le endian */
+> =20
+>  /* 16 bpp RG */
 
-Gr{oetje,eeting}s,
+Hi Geert,
 
-                        Geert
+this is a good idea. I just wonder whether light-on-dark is an accurate
+description. To me, light-on-dark means things like bright characters
+on a dark background, but that is a property of the image as a whole and
+not a property of the pixel format. What I think you are after here is
+that increasing channel value mean increasing brightness.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+How to word that concisely...
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Direct relationship to brightness (vs. inverse relationship to brightness)?
+
+This does not imply a linear relationship, and I'd also use
+"brightness" to denote that it is a qualitative factor relating to
+human observation.
+
+
+Thanks,
+pq
+
+--Sig_/hJXpHsxaCnYZ11VUzvhv1th
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmInHKMACgkQI1/ltBGq
+qqe1FhAAhV61IfBbTfh9T9cYYsQ6Hh2uefFJl1NqodXNWfd7nLXNxgkcTZ5YeMYY
+WvKAbNrIX24tS4ZJWjQWK0o/L+TPilrKph0QgB7qeAsPL/uXomH0YJI3YQ70/eCF
+JHFt3aQH8ne8VTN5IwGdDh+4vpyO/S5924QbxyXG8yVRAnKL1e0dfGFmNM8luQd+
+4ON5X2Fw2jwC61bZfvPVo2lO+2Osw84nrgkMOpCqJLxjPzxjBRH8V4UPi6UPru+Z
+7BkXVAqoSby15cM2fsSGEd4OnTRbsdkCX9uptsPaqVenhM6pzE6pN9E9plzckmjW
+mWGwxsUPT5AHRCQPxRPak6ClYCIpmg9AA8aMngRmcUjXuPqH1/s6q0tPFPCDkbbL
+brrvRgUYtBVdwKeJ1uUsfsAbqRl2rDIlCu3MdrrOlMthDx4llBJ89gmrYgemvqbV
+ZuPg5fx/n5sQfROyU9HFboaFyBkP6t7xsc8Wdp/3tsDuPZiwCNzmfOy0qTes4pya
+craCaUJf9VXE2F8ZBOOIgYzAlt/nso4JZE/Dzt2bUb86FWOQhP79qo6qSZSxqfEY
+NKPKGiWEqnpe8q26KTSgbV5ACiy3rW/o/H7Rz0sdmkwm0j3pcWYqcSyLnwvJdmCl
+SsiBN+ZkqdxpjnVc2uvYaJc5Vw6t6lTzE+sPyTp6/1aEFlIFFvw=
+=nrsn
+-----END PGP SIGNATURE-----
+
+--Sig_/hJXpHsxaCnYZ11VUzvhv1th--
