@@ -2,98 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E644AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2978C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348879AbiCHRUX (ORCPT
+        id S1348935AbiCHRUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        Tue, 8 Mar 2022 12:20:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348898AbiCHRUN (ORCPT
+        with ESMTP id S1348891AbiCHRU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:20:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CECE53B51
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:18:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14819B81B8B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59BCEC340EB;
-        Tue,  8 Mar 2022 17:18:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BiuKkS0j"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646759933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AZ+d5tFFjQ1rNjN45rdxTOo6PPrAddVrmZAsuxSqFck=;
-        b=BiuKkS0j8xqotj6mFNIf7r/lkKm0JyJSrUJKyckxpjJPW9FNuvEqdj3dVtHlBIFTyWo1jE
-        P05CokGXeCz2hz5tn8XQY4UYavumtAgD8urzDuN0328r4mGvk0nj8HdfSd1PcbanRlTWGJ
-        q/5985/J7MGtA/X2b/IlMbHQIiGyAwQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dfec7c9e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 8 Mar 2022 17:18:53 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH] random: check for signal and try earlier when generating entropy
-Date:   Tue,  8 Mar 2022 10:18:49 -0700
-Message-Id: <20220308171849.242534-1-Jason@zx2c4.com>
+        Tue, 8 Mar 2022 12:20:26 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F85554196;
+        Tue,  8 Mar 2022 09:19:09 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id h13so13272650ede.5;
+        Tue, 08 Mar 2022 09:19:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NKBqq8H8G0r7u4YOEB6Uo0ujE9phZkj1yTyESdTdeCM=;
+        b=ZFc9SayGmZuwBLkbiqoy2iDFk5f3qgEhdtJj3Dv7GHS2ypdaZTjxauZ+hlp0trYtJa
+         6M4QEG5riT1if7unqpPROovPT4iZy7DxsyzKiO2keZ0zP9SCUfH7za56UNf4yhEYiR1W
+         Zv+nf4lMjwR3fkHJjnmEWcK2WW460qfUBwPOMjkzv3eCkyDQyykoDbItDltUuRcTwrJr
+         pG4CP1bXQLDtWdHmUqjSgKORnsAbOU39eGOAbT2p8g3172LnhTr91WyaVlTWNbKBB2zn
+         NIRM0BhkmF4hLKwhkuY7VdmK0q5FKA7xmA8wUQfGsEiCXrWBclx4AShbCuvx1pPHky0J
+         VNgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NKBqq8H8G0r7u4YOEB6Uo0ujE9phZkj1yTyESdTdeCM=;
+        b=CWBilmSslu5Oi2bneCx+AoGqfJSYyp8V7Lf/icZlvFCqEJhe8083qF0+zt99X8tnHo
+         52GUpid3dd8RrMX+L+ZydDd3ZsqvdHopharXixVHwCO7C8g9ij0Ehp1JC7qQZtwG8qD7
+         VEOftuHA8tBw8jmXUl1gXkvHz8/qcXkUXPy5AFXd77accdXNlJorPMZvZcoRrtyN4X0D
+         HRTsh2hvPpXnQ6AOXBrjh9vJ2tLhONjHQQk3JyQuwkruYOnwyLfH1QZkMqcp6M6s+FL/
+         gh/FAENHMhziuBDTM4r5qVYkP1THtvFVLxJiGjaJAjTQEdKfrMwcPqMXWZpetNtfTZvS
+         lGng==
+X-Gm-Message-State: AOAM530SPcdggP13rsXv/yvz2e8xryZgKd9OZUzkkCwJ5Jb41bbUEmnB
+        PlRvzLoiMBHrR0SqsLq0vZU=
+X-Google-Smtp-Source: ABdhPJyM1gC52QuGTeL8TtyGBMOIEOKlyECvrtuFR/2dTrbGjWxPBGFVVbIaUboCG3sJrNF8ZedJPg==
+X-Received: by 2002:a05:6402:40c4:b0:416:3e66:1825 with SMTP id z4-20020a05640240c400b004163e661825mr12232139edb.284.1646759947785;
+        Tue, 08 Mar 2022 09:19:07 -0800 (PST)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id rv11-20020a17090710cb00b006d5c0cd5e0dsm6085044ejb.82.2022.03.08.09.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 09:19:07 -0800 (PST)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Greg Kroah-Hartman <greg@kroah.com>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Felipe Balbi <balbi@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Cristian Birsan <cristian.birsan@microchip.com>,
+        Al Cooper <alcooperx@gmail.com>, Li Yang <leoyang.li@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-usb@vger.kernel.org (open list:USB GADGET/PERIPHERAL SUBSYSTEM),
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH v2 02/26] usb: gadget: bdc: remove usage of list iterator past the loop body
+Date:   Tue,  8 Mar 2022 18:17:54 +0100
+Message-Id: <20220308171818.384491-3-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220308171818.384491-1-jakobkoschel@gmail.com>
+References: <20220308171818.384491-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We call try_to_generate_entropy() from wait_for_random_bytes().
-wait_for_random_bytes() always uses wait_event_interruptible_timeout()
-when waiting, since it's called by userspace code in restartable
-contexts, where signals can pend. When entering a busy loop in
-try_to_generate_entropy(), we should therefore also check to see if any
-signals are pending, so that a process doesn't get stuck in that loop
-longer than expected. As well, there's no point in waiting for a full
-second before trying to generate entropy; instead do it in the opposite
-order, where we try to generate, and then go into the waitable.
+If the list representing the request queue does not contain the expected
+request, the value of the list_for_each_entry() iterator will not point
+to a valid structure. To avoid type confusion in such case, the list
+iterator scope will be limited to the list_for_each_entry() loop.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+In preparation to limiting scope of the list iterator to the list traversal
+loop, use a dedicated pointer to point to the found request object [1].
+
+Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/char/random.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/bdc/bdc_ep.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index edb5b06544da..4c5f515b6080 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -128,11 +128,12 @@ int wait_for_random_bytes(void)
- 
- 	do {
- 		int ret;
+diff --git a/drivers/usb/gadget/udc/bdc/bdc_ep.c b/drivers/usb/gadget/udc/bdc/bdc_ep.c
+index 8e2f20b12519..fa88f210ecd5 100644
+--- a/drivers/usb/gadget/udc/bdc/bdc_ep.c
++++ b/drivers/usb/gadget/udc/bdc/bdc_ep.c
+@@ -1757,6 +1757,7 @@ static int bdc_gadget_ep_dequeue(struct usb_ep *_ep,
+ 				  struct usb_request *_req)
+ {
+ 	struct bdc_req *req;
++	struct bdc_req *iter;
+ 	unsigned long flags;
+ 	struct bdc_ep *ep;
+ 	struct bdc *bdc;
+@@ -1771,12 +1772,16 @@ static int bdc_gadget_ep_dequeue(struct usb_ep *_ep,
+ 	dev_dbg(bdc->dev, "%s ep:%s req:%p\n", __func__, ep->name, req);
+ 	bdc_dbg_bd_list(bdc, ep);
+ 	spin_lock_irqsave(&bdc->lock, flags);
 +
-+		try_to_generate_entropy();
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
- 
--		try_to_generate_entropy();
- 	} while (!crng_ready());
- 
- 	return 0;
-@@ -1374,7 +1375,7 @@ static void try_to_generate_entropy(void)
- 		return;
- 
- 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
--	while (!crng_ready()) {
-+	while (!crng_ready() && !signal_pending(current)) {
- 		if (!timer_pending(&stack.timer))
- 			mod_timer(&stack.timer, jiffies + 1);
- 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
++	req = NULL;
+ 	/* make sure it's still queued on this endpoint */
+-	list_for_each_entry(req, &ep->queue, queue) {
+-		if (&req->usb_req == _req)
+-			break;
++	list_for_each_entry(iter, &ep->queue, queue) {
++		if (&iter->usb_req != _req)
++			continue;
++		req = iter;
++		break;
+ 	}
+-	if (&req->usb_req != _req) {
++	if (!req) {
+ 		spin_unlock_irqrestore(&bdc->lock, flags);
+ 		dev_err(bdc->dev, "usb_req !=req n");
+ 		return -EINVAL;
 -- 
-2.35.1
+2.25.1
 
