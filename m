@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44DA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348037AbiCHP5i (ORCPT
+        id S1348208AbiCHP5m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:57:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        Tue, 8 Mar 2022 10:57:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348053AbiCHP4G (ORCPT
+        with ESMTP id S1348052AbiCHP4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:06 -0500
+        Tue, 8 Mar 2022 10:56:05 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031624F9D8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2964F9C1
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=JWR1Jvatd2wRq94EgF2FFUHDrJsSm4yXOI7jdL4Xcs4=; b=RAuVSgYkc64ZPvBoryhP2e1q75
-        nzGLiFM2O3pDGyI5dv+RAcq2Ldf8vkkfwyE2351g5KyobLe84eD3IvAgXlx9axF6jsmIaqbFwb0y0
-        V5ssyAbKnH7RNKWi/nGXZg4UFtl6yfyJrEW31IfEm6OKimJVnMZkT+4Iza2sr3/5SKwJPCJM0LPRo
-        n9fUBQu7WDTSQwmQH6nPQl74nLKO6H8R2tXrOepao0wwNwNlCPBt6RPJdq+JHsBxiBr+H6WnrCTqA
-        DwG4PQuK5Y0NUI/VW9ofjY6Je0FZAs2HycBalJmwwiHe81qMoYEliQLHofj1/5YDawa/HcgNSib1Q
-        nqp/hC2A==;
+        bh=eML9RLDC/cQALZAn3V17jKIU3Pd2WZbKiLikbOlkBgk=; b=k7dqYZIW8opId2R5YfBfyKs2ST
+        oeegECYJWXUKSW3ABcuOmV0T9d1SGZV08N4V8KQn0IOlpJCj9DU5VPExha6cZd+Fr7/lGjpHnG1Fi
+        kabPaMf9PwkN+yDln0jkZufHNAD/ONAAeMsc6zy+EzSuhk2EuJm4pxuk7MaiNOn2qUO0eEJdtkUg/
+        ahJPgWe2zTwM8vACbyLqmdS0iwbkAV56MaJA7N6BmccV0zpbJXcahBGO6gHgNVXukM6rrq8Zu/Rgr
+        zd9YhcKGIPayeuSd+8J5FAEQbaDsEsH7/pte7LMSkkoaPFYHkvb1xlooW/p1s1koSWZPidA8DcIOp
+        gwcAz6NA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GUie-T3; Tue, 08 Mar 2022 15:54:43 +0000
+        id 1nRcAc-00GUiX-LV; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4B1EE302DD0;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3F722302AD4;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id AA1D12B5649C7; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154319.113767246@infradead.org>
+        id 509702B561927; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.464998838@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:44 +0100
+Date:   Tue, 08 Mar 2022 16:30:33 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 33/45] x86/ibt: Ensure module init/exit points have references
+Subject: [PATCH v4 22/45] x86/ibt,bpf: Add ENDBR instructions to prologue and trampoline
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,35 +56,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the references to the module init/exit points only have external
-references, a module LTO run will consider them 'unused' and seal
-them, leading to an immediate fail on module load.
+With IBT enabled builds we need ENDBR instructions at indirect jump
+target sites, since we start execution of the JIT'ed code through an
+indirect jump, the very first instruction needs to be ENDBR.
+
+Similarly, since eBPF tail-calls use indirect branches, their landing
+site needs to be an ENDBR too.
+
+The trampolines need similar adjustment.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/linux/cfi.h |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/x86/net/bpf_jit_comp.c |   16 ++++++++++++++--
+ kernel/bpf/trampoline.c     |   20 ++++----------------
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
---- a/include/linux/cfi.h
-+++ b/include/linux/cfi.h
-@@ -34,8 +34,17 @@ static inline void cfi_module_remove(str
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -46,6 +46,12 @@ static u8 *emit_code(u8 *ptr, u32 bytes,
+ #define EMIT4_off32(b1, b2, b3, b4, off) \
+ 	do { EMIT4(b1, b2, b3, b4); EMIT(off, 4); } while (0)
  
- #else /* !CONFIG_CFI_CLANG */
- 
--#define __CFI_ADDRESSABLE(fn, __attr)
 +#ifdef CONFIG_X86_KERNEL_IBT
-+
-+#define __CFI_ADDRESSABLE(fn, __attr) \
-+	const void *__cfi_jt_ ## fn __visible __attr = (void *)&fn
-+
-+#endif /* CONFIG_X86_KERNEL_IBT */
- 
- #endif /* CONFIG_CFI_CLANG */
- 
-+#ifndef __CFI_ADDRESSABLE
-+#define __CFI_ADDRESSABLE(fn, __attr)
++#define EMIT_ENDBR()	EMIT(gen_endbr(), 4)
++#else
++#define EMIT_ENDBR()
 +#endif
 +
- #endif /* _LINUX_CFI_H */
+ static bool is_imm8(int value)
+ {
+ 	return value <= 127 && value >= -128;
+@@ -241,7 +247,7 @@ struct jit_context {
+ /* Number of bytes emit_patch() needs to generate instructions */
+ #define X86_PATCH_SIZE		5
+ /* Number of bytes that will be skipped on tailcall */
+-#define X86_TAIL_CALL_OFFSET	11
++#define X86_TAIL_CALL_OFFSET	(11 + ENDBR_INSN_SIZE)
+ 
+ static void push_callee_regs(u8 **pprog, bool *callee_regs_used)
+ {
+@@ -286,6 +292,7 @@ static void emit_prologue(u8 **pprog, u3
+ 	/* BPF trampoline can be made to work without these nops,
+ 	 * but let's waste 5 bytes for now and optimize later
+ 	 */
++	EMIT_ENDBR();
+ 	memcpy(prog, x86_nops[5], X86_PATCH_SIZE);
+ 	prog += X86_PATCH_SIZE;
+ 	if (!ebpf_from_cbpf) {
+@@ -296,6 +303,10 @@ static void emit_prologue(u8 **pprog, u3
+ 	}
+ 	EMIT1(0x55);             /* push rbp */
+ 	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
++
++	/* X86_TAIL_CALL_OFFSET is here */
++	EMIT_ENDBR();
++
+ 	/* sub rsp, rounded_stack_depth */
+ 	if (stack_depth)
+ 		EMIT3_off32(0x48, 0x81, 0xEC, round_up(stack_depth, 8));
+@@ -2028,10 +2039,11 @@ int arch_prepare_bpf_trampoline(struct b
+ 		/* skip patched call instruction and point orig_call to actual
+ 		 * body of the kernel function.
+ 		 */
+-		orig_call += X86_PATCH_SIZE;
++		orig_call += X86_PATCH_SIZE + ENDBR_INSN_SIZE;
+ 
+ 	prog = image;
+ 
++	EMIT_ENDBR();
+ 	EMIT1(0x55);		 /* push rbp */
+ 	EMIT3(0x48, 0x89, 0xE5); /* mov rbp, rsp */
+ 	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
 
 
