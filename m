@@ -2,99 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244382AbiCHLbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
+        id S1346400AbiCHLcK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 06:32:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbiCHLbd (ORCPT
+        with ESMTP id S230461AbiCHLcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:31:33 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924EF3FD96
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:30:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646739037; x=1678275037;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=FfySqN0vQa4ttzZHSXEhhQ3ALTvA9lNDII7nXpWIblk=;
-  b=U8rzKHNYjTsRYwrs7GJcPeXlo4I63PIkKzhiRmKTJt4KNVJ88RyMVh8L
-   +N8gdxbSNmtYDoNwzX5+AnaGVHRJ5H1LfR6WOh4ZKzmvVu8y5R6ogPri6
-   11ogS0k8GK5wAplADUH6k54ji21iFE7FtPTON1WESNRWzkRFRnZLw2oJh
-   ovwULfLkXMTWu9tUMTo1d5BcW0qFbSfMYPeMgrJY/NxcTINttBAzHUXXz
-   GgA4jNqP5tvSMyzbCyMzAc5ib2gfSRPJmUnffNQDPrgB+Rt8i91HjaHgv
-   unQcA7zzLfFEgTZF/EIICRtg93n84+gbM9ftR3KPWKJUCiX72QczU5BO0
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="341093265"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="341093265"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:30:37 -0800
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="687893094"
-Received: from nsedoc-mobl.ger.corp.intel.com (HELO [10.251.218.162]) ([10.251.218.162])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:30:33 -0800
-Message-ID: <886a7712-ffdc-4d0c-fde5-5498b84e416c@linux.intel.com>
-Date:   Tue, 8 Mar 2022 13:30:41 +0200
+        Tue, 8 Mar 2022 06:32:08 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E232842A34;
+        Tue,  8 Mar 2022 03:31:12 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso1946350pjj.2;
+        Tue, 08 Mar 2022 03:31:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HwYw6UCyoABQdRBRd1yhW2c7K50Bveoo4+Wjmoa50zo=;
+        b=dM6KzRJGdqy0RZKW65Mmi00X1hYAe56e/tarN+bZUJiIEmmQYK3TnQGUmZdgZuzZ7X
+         ncQGosXHgJslwJJTthS1skxibiQF0/m5woIiTSXnmPLiBM556leLnwotm6S44wGNstER
+         r2oc2IrgQ0g7SA57xnNRIXuME8F8FymVEox+vMIRvFPouUbKQ1HbBBezZ2EvRwhvtGiX
+         6cl+IbVVaC3cveWq97fV9bnn2PvgWGe8kTg2nPAMQTSomhzHjkzS2O1m9q7t5m+mZqa/
+         2EL1CBsozUzKyntfzFEllD8zYlUNU899SihgT1O3ZSQWWtZMmDvgkfVVrQyt7boeN/zl
+         9aOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HwYw6UCyoABQdRBRd1yhW2c7K50Bveoo4+Wjmoa50zo=;
+        b=xvv7XJdp1kdRHnExcdt6RKgyPScRCry/MrD3qBpVNsAtA+I+i9ATUfhMavCHl0d+v9
+         U+xhHsifZ6BBBC0nt/khhiHglG06EXdh2g02hRZBicqOzPIqQRWPmLOAC4PSf/45FVRJ
+         vB5AADrRaULIyEzld/dHArh4zhmSoz/Zlv8WyDhTcaVt69jzz9NUB8pPwntOi3WrfNQO
+         oyrJ2/RRifFYI04zc3pBdtpUpCkpCVOAZpjXn4aPMTRxdAOLXL4WqfanJ6SbAKLV39lj
+         9Qr6U28mH9aD7r22AzZ/SNKoB91VcgOAM1ifjyI9lmzA7StEuUWjAMBurRJeeNqJYdpf
+         Euxg==
+X-Gm-Message-State: AOAM533w1So9tACyQdy7zM9YM7/pbpVq6pELqReE1LFN9FaWorkYssEA
+        W+ecnOpSZKirJkXMLY4j4x4squot/wjqfQ==
+X-Google-Smtp-Source: ABdhPJzi3HS2uJRqE1jJb7DSwpJAxEqdJJejAJYKA+rLIfRPZeMYyrmR806+7//fUQz3sqZsY6F0gw==
+X-Received: by 2002:a17:902:d505:b0:151:9e65:b844 with SMTP id b5-20020a170902d50500b001519e65b844mr17452429plg.49.1646739071793;
+        Tue, 08 Mar 2022 03:31:11 -0800 (PST)
+Received: from localhost.localdomain (114-24-142-127.dynamic-ip.hinet.net. [114.24.142.127])
+        by smtp.gmail.com with ESMTPSA id v66-20020a622f45000000b004f129e7767fsm18470726pfv.130.2022.03.08.03.31.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 03:31:11 -0800 (PST)
+From:   Wei Ming Chen <jj251510319013@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     andreyknvl@gmail.com, balbi@kernel.org, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, Wei Ming Chen <jj251510319013@gmail.com>
+Subject: [PATCH] usb: gadget: return -EINVAL if no proper ep address available
+Date:   Tue,  8 Mar 2022 19:28:32 +0800
+Message-Id: <20220308112832.6170-1-jj251510319013@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] ASoC: SOF: Add missing of_node_put() in imx8m_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220308023325.31702-1-linmq006@gmail.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
-In-Reply-To: <20220308023325.31702-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If we try to use raw_ioctl_ep_enable() for ep5in on a hardware that
+only support from ep1-ep4 for both in and out direction, it will return
+-EBUSY originally.
 
+I think it will be more intuitive if we return -EINVAL, Cuz -EBUSY sounds
+like ep5in is not available now, but might be available in the future.
 
-On 08/03/2022 04:33, Miaoqian Lin wrote:
-> The device_node pointer is returned by of_parse_phandle()  with refcount
-> incremented. We should use of_node_put() on it when done.
+Signed-off-by: Wei Ming Chen <jj251510319013@gmail.com>
+---
+ drivers/usb/gadget/legacy/raw_gadget.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-
-> Fixes: afb93d716533 ("ASoC: SOF: imx: Add i.MX8M HW support")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  sound/soc/sof/imx/imx8m.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/sound/soc/sof/imx/imx8m.c b/sound/soc/sof/imx/imx8m.c
-> index 788e77bcb603..60251486b24b 100644
-> --- a/sound/soc/sof/imx/imx8m.c
-> +++ b/sound/soc/sof/imx/imx8m.c
-> @@ -224,6 +224,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
->  	}
->  
->  	ret = of_address_to_resource(res_node, 0, &res);
-> +	of_node_put(res_node);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to get reserved region address\n");
->  		goto exit_pdev_unregister;
-
+diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+index d86c3a36441e..b4cc083a7ca6 100644
+--- a/drivers/usb/gadget/legacy/raw_gadget.c
++++ b/drivers/usb/gadget/legacy/raw_gadget.c
+@@ -758,6 +758,7 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
+ 	unsigned long flags;
+ 	struct usb_endpoint_descriptor *desc;
+ 	struct raw_ep *ep;
++	bool ep_num_matched = false;
+ 
+ 	desc = memdup_user((void __user *)value, sizeof(*desc));
+ 	if (IS_ERR(desc))
+@@ -792,6 +793,7 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
+ 		if (ep->addr != usb_endpoint_num(desc) &&
+ 				ep->addr != USB_RAW_EP_ADDR_ANY)
+ 			continue;
++		ep_num_matched = true;
+ 		if (!usb_gadget_ep_match_desc(dev->gadget, ep->ep, desc, NULL))
+ 			continue;
+ 		ep->ep->desc = desc;
+@@ -815,6 +817,12 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
+ 		goto out_unlock;
+ 	}
+ 
++	if (!ep_num_matched) {
++		dev_dbg(&dev->gadget->dev, "fail, no proper ep address available\n");
++		ret = -EINVAL;
++		goto out_free;
++	}
++
+ 	dev_dbg(&dev->gadget->dev, "fail, no gadget endpoints available\n");
+ 	ret = -EBUSY;
+ 
 -- 
-Péter
+2.25.1
+
