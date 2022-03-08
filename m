@@ -2,106 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB173C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350600AbiCHWMQ (ORCPT
+        id S1349388AbiCHWNw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 17:12:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        Tue, 8 Mar 2022 17:13:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiCHWML (ORCPT
+        with ESMTP id S229902AbiCHWNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 17:12:11 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E43947AEA;
-        Tue,  8 Mar 2022 14:11:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646777473; x=1678313473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kQ5srqxv0waYBab8nwYT1ubD1rarswGHiGwSxhd9OF8=;
-  b=etZFsZ2Wig4gasV5YZAuGDzJyrEZmJC0VvZ7qosJ+W8piWzJQGk5/F0x
-   3C9xmhSR2vcyZGu0x2TOnkiL7IbuwutMZAuPmevAsmkaduKlY/8JWriPW
-   Q8M++YpWNDBtAWbfWW1tuFGXSPrU78nH8OGBPw9QfmZT0wLzdU8Uu+FEU
-   2/tK8btvGLuHd5CwggHjFsi7xAYjVTLL+n4OHSJo7+ryp3tqc6ANbP0vK
-   QNAOJ4JPsbCd6rFmYMO9O9/7Vlr4JALhs4xV2THFY0USlHeePUKWOPVkJ
-   XYeOklkK2/CPtgkYjQFJz9RZFrrAGwAEb42bRV4ilwF4FBf/idJihLiku
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
-   d="scan'208";a="165010573"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 15:11:12 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Mar 2022 15:11:11 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 8 Mar 2022 15:11:11 -0700
-Date:   Tue, 8 Mar 2022 23:14:04 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <20220304093418.31645-3-Divya.Koppera@microchip.com>
- <YiILJ3tXs9Sba42B@lunn.ch>
- <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
+        Tue, 8 Mar 2022 17:13:48 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3E22C664
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 14:12:50 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id dr20so935711ejc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 14:12:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q667ThhdkxL8AUOuU2qYFbGa17GC7zYlSfkMfKxv3/4=;
+        b=NusUdDknL66lGLdEP5FNX3LOWWrWLPuP37qgc1opFNmna8r1+mPTnGkGut+szDcFa/
+         g2D3r9SMSZRg66H5SIzcejOYlji2wOURANJzlFKjsk/PS2e7FWmhTkUb8u8CDBkM67p8
+         4ySDCD9CGHFSObrQ6khjnN5ALk0dIGbg/2xbA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q667ThhdkxL8AUOuU2qYFbGa17GC7zYlSfkMfKxv3/4=;
+        b=qKfX9Gabc//o9VSsWzx+edvjmM5FOGQ/svIabymNiHNm/T7SoGE2v8GOA7VSeQAOze
+         KGuuLNpSfovaRZaxGx5DbMNk0b+3Uw41dbRkG6ODVQu0eSHXJDC8RZTq7n2VN9aUqcF0
+         +FlBf0gdBKin4dq+zHgCIaKaceu+3Ph0QCBG9y05AixsBdPvdnevkUXamBR69kjaU/V2
+         SCAkXY2Mcflugf5DPWH35lX+Cqc2QQvZuBtZgopBcQaMuaNXqMqXGExtM2k7A8a6mMaj
+         Kor19UPnM6CsSGZ0wmYQEukhPvaJvg93gXK52cBGUEo9zfX95uYtPqVeI9wNPgY4NetB
+         m4Cg==
+X-Gm-Message-State: AOAM5327k9V4j4G9idzGi99l1VfNAJY87pd2FPMchRSQOu7c3zg5LeK8
+        15mK9VCYyrre3Clc539ty2THI5XXKDHeXYdI
+X-Google-Smtp-Source: ABdhPJxinXXRPvFPh/f69nnS2GNvG0n7Bq4rjfjUdPzWtyUIjnsjzatwwDGMZNEB0LGsbmcAJFTwmw==
+X-Received: by 2002:a17:907:7da9:b0:6da:866a:3c59 with SMTP id oz41-20020a1709077da900b006da866a3c59mr15376272ejc.13.1646777568948;
+        Tue, 08 Mar 2022 14:12:48 -0800 (PST)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm17870ejy.87.2022.03.08.14.12.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 14:12:48 -0800 (PST)
+Received: by mail-wr1-f54.google.com with SMTP id r10so262091wrp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 14:12:47 -0800 (PST)
+X-Received: by 2002:adf:eb45:0:b0:1ef:6070:7641 with SMTP id
+ u5-20020adfeb45000000b001ef60707641mr14280334wrn.301.1646777567076; Tue, 08
+ Mar 2022 14:12:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YiecBKGhVui1Gtb/@lunn.ch>
+References: <20220308033241.22099-1-rdunlap@infradead.org> <CAD=FV=W90Hd-baPzurraEaDUGNOCxb8FLUysHKOQg2frMuZRAQ@mail.gmail.com>
+ <2c693cb8-f4b8-a723-c804-9492d9cc4881@infradead.org>
+In-Reply-To: <2c693cb8-f4b8-a723-c804-9492d9cc4881@infradead.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 8 Mar 2022 14:12:34 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=X004_55zOovjazkqqZ_EXQ-QCYS1o4VxdCvEjt3+7Tbw@mail.gmail.com>
+Message-ID: <CAD=FV=X004_55zOovjazkqqZ_EXQ-QCYS1o4VxdCvEjt3+7Tbw@mail.gmail.com>
+Subject: Re: [PATCH] kgdboc: fix return value of __setup handler
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Laura Abbott <labbott@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/08/2022 19:10, Andrew Lunn wrote:
-> 
-> > > So this is a function of the track length between the MAC and the PHY?
+Hi,
+
+On Tue, Mar 8, 2022 at 1:19 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> Hi Doug,
+>
+> >> Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+> >>   kgdboc=kbd kgdbts=", will be passed to user space.
+> >>
+> >>  Run /sbin/init as init process
+> >>    with arguments:
+> >>      /sbin/init
+> >>    with environment:
+> >>      HOME=/
+> >>      TERM=linux
+> >>      BOOT_IMAGE=/boot/bzImage-517rc7
+> >>      kgdboc=kbd
+> >>      kgdbts=
+> >>
+> >> Fixes: 1cd25cbb2fed ("kgdboc: Fix warning with module build")
 > >
-> > Nope.
-> > This latency represents the time it takes for the frame to travel from RJ45
-> > module to the timestamping unit inside the PHY. To be more precisely,
-> > the timestamping unit will do the timestamp when it detects the end of
-> > the start of the frame. So it represents the time from when the frame
-> > reaches the RJ45 to when the end of start of the frame reaches the
-> > timestamping unit inside the PHY.
-> 
-> I must be missing something here. How do you measure the latency
-> difference for a 1 meter cable vs a 100m cable?
+> > Are you certain about this "Fixes" line? That commit was just code
+> > motion to move the code inside the #ifdef. It sure looks like it was
+> > broken even before this.
+> >
+>
+> Yes, but I am not enough of a git user to be able to backtrack
+> to see where this code was added. :(
+> (help?)
 
-In the same way because the end result will be the same.
-Lets presume that the cable introduce a 5ns latency per meter.
-So, if we use a 1m cable and the mean path delay is 11, then
-the latency is 11 - 5.
-If we use a 100m cable then the mean path delay will be 506(if is not
-506 then is something wrong) then the latency is 506 - 500.
+I always just chain back w/ git blame. In this case:
 
-> Does 100m cable plus 1cm of track from the RJ45 to the PHY make a difference
-> compared to 100m cable plus 1.5cm of track?
+git blame 1cd25cbb2fed~ -- drivers/tty/serial/kgdboc.c
 
-In that case I don't think you will see any difference.
+...then search for __setup there and it finds:
 
-> Isn't this error all just in the noise?
-
-I am not sure I follow this question.
-
-> 
->    Andrew
-
--- 
-/Horatiu
+Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
