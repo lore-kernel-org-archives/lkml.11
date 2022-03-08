@@ -2,100 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C229C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347143AbiCHNn7 (ORCPT
+        id S1347169AbiCHNoN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:43:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        Tue, 8 Mar 2022 08:44:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244061AbiCHNnz (ORCPT
+        with ESMTP id S244837AbiCHNoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:43:55 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607A0630A;
-        Tue,  8 Mar 2022 05:42:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8pkICFhiQrDMR5XEgxN0JP/tBSupmgqyH9KAmeTxGhc=; b=P7zkpwUPfx+xcaFbChLscMHDY5
-        uPlaT9EMJ20vfU48hKN0tg6p61J3YzJjIpXv3fw0dpFG6HY4qTv540lZzpU6inifzsV8KN9z4pKea
-        6WJ8Wpx83f1oxFut+KcMxsVp3GjQSJrpSECGka/OrSTBYSupSVsmeSuzy2328cROcu8M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nRa6u-009noG-43; Tue, 08 Mar 2022 14:42:44 +0100
-Date:   Tue, 8 Mar 2022 14:42:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
-Message-ID: <YiddVEBJvM81u1jJ@lunn.ch>
-References: <20220308111005.4953-1-niejianglei2021@163.com>
+        Tue, 8 Mar 2022 08:44:10 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCA721E15;
+        Tue,  8 Mar 2022 05:43:14 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 22AA81F433C1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646746993;
+        bh=kSUI2BRp2JNG5LsOGU9IRITk5p6tBa0tvOC+DAN6vH4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Q17/LXQEF1Xjh+aRlsNdjnnsHqr21WtQKV55Zg0+Gie1vBzNWqbspKyuzxJGQggds
+         FpmVkV2N8dx2CQ6XBB85sHQ/Jc9emmJ8hgK8hBKCTY7MiM/DYCYP+LaF9yIgYSpeoI
+         TTjC63wCGpDBfYPEEcbFXek3QHGn8Pso+VW7FtSNquuOuLBPqVo7U3EOOeBOcUo6es
+         CKHcCasSUH4BrjSfrtAz0EsfymVDtAziRJ2MQZV87nccB2uLprZ0JzWcWWOowr6YG8
+         50ZVWoJt2+O5aszZoxUiF9NZEzTowqD4CiAH6R8pk6sar49wsDKaZneTz3rUhmPKKZ
+         /05k2uL5pyCWw==
+Message-ID: <9f794d5f-49ad-d2f2-b1ea-6beaa1d5912c@collabora.com>
+Date:   Tue, 8 Mar 2022 14:43:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308111005.4953-1-niejianglei2021@163.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RESEND v13 22/22] arm64: dts: mt8195: add display node for
+ vdosys1
+Content-Language: en-US
+To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
+        linux@roeck-us.net
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, llvm@lists.linux.dev,
+        singo.chang@mediatek.com, srv_heupstream@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220308093018.24189-1-nancy.lin@mediatek.com>
+ <20220308093018.24189-23-nancy.lin@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220308093018.24189-23-nancy.lin@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 07:10:05PM +0800, Jianglei Nie wrote:
-> If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
-> the "bus". But bus->name is still used in the next line, which will lead
-> to a use after free.
+Il 08/03/22 10:30, Nancy.Lin ha scritto:
+> Add display node for vdosys1.
 > 
-> We can fix it by putting the bus->name in a local variable and then use
-> the name in the error message without referring to bus to avoid the uaf.
-> 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
 > ---
->  drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
-> index 9acf589b1178..33fd63d227ef 100644
-> --- a/drivers/net/ethernet/arc/emac_mdio.c
-> +++ b/drivers/net/ethernet/arc/emac_mdio.c
-> @@ -134,6 +134,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
->  	struct device_node *np = priv->dev->of_node;
->  	struct mii_bus *bus;
->  	int error;
-> +	const char *name = "Synopsys MII Bus";
-
-Netdev uses reverse christmass tree, meaning you need to sort
-variables longest to shortest.
-
-I'm also wondering about the lifetime of name. name itself is a stack
-variable, so it will disappear as soon as the function exits. The
-string itself is in the rodata section. But is a copy made onto the
-stack, or does bus->name point to the rodata?
-
-       Andrew
-
->  	bus = mdiobus_alloc();
->  	if (!bus)
-> @@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
->  	priv->bus = bus;
->  	bus->priv = priv;
->  	bus->parent = priv->dev;
-> -	bus->name = "Synopsys MII Bus";
-> +	bus->name = name;
->  	bus->read = &arc_mdio_read;
->  	bus->write = &arc_mdio_write;
->  	bus->reset = &arc_mdio_reset;
-> @@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
->  	if (error) {
->  		mdiobus_free(bus);
->  		return dev_err_probe(priv->dev, error,
-> -				     "cannot register MDIO bus %s\n", bus->name);
-> +				     "cannot register MDIO bus %s\n", name);
->  	}
->  
->  	return 0;
-> -- 
-> 2.25.1
+>   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 223 +++++++++++++++++++++++
+>   1 file changed, 223 insertions(+)
 > 
