@@ -2,145 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B88C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 08:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345029AbiCHIkS (ORCPT
+        id S1345022AbiCHIlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
+        Tue, 8 Mar 2022 03:41:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344993AbiCHIkP (ORCPT
+        with ESMTP id S232253AbiCHIlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:40:15 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB35338B4
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:39:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646728758; x=1678264758;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ojJn4Qayf0tbV7qscSJpjL73hYZJUR6Sn3DeCgJ06Kw=;
-  b=mD6hn6NfLvmfolzmAGYcYVIaoYYJcLfyxinb52yehFrppd2q6+K69kwO
-   zP5YDZF8Fh8/GbYaQrKGJ2dNi8RawU8qopXv/FDTHN5H/enWrWgsZ6TR+
-   b+67PtCn3h0UTyT71YJDKvS1RoJcZL3+Tfw3ovuYqehD0amuKKVetZpoT
-   YtxfIxg49iSdpjXK2eL8LkPItwtcPA6Sro69RudMyamXaVrTvULrGI8b8
-   ODnoSMLuLrGkKHHj8CF/clgae5zLc2cNTEGjNP8dC+c3996oNXDNnu+UY
-   WbrqlCinAqfwFDFcjfsKQyLzkzbTvA9HR8ZFYTlZKCr+ktc55xQOnh4UI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254358597"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="254358597"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 00:39:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="643582887"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 00:39:17 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRVNE-00019Y-Bv; Tue, 08 Mar 2022 08:39:16 +0000
-Date:   Tue, 8 Mar 2022 16:38:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [esmil:visionfive 57/61] drivers/soc/sifive/sifive_l2_cache.c:158:3:
- error: implicit declaration of function 'writeq'
-Message-ID: <202203081628.ECRiVnPH-lkp@intel.com>
+        Tue, 8 Mar 2022 03:41:37 -0500
+Received: from mxout03.lancloud.ru (mxout03.lancloud.ru [45.84.86.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC9C3FBD5;
+        Tue,  8 Mar 2022 00:40:38 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 7728820EAF98
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] ata: Use platform_get_irq() to get the interrupt
+To:     <cgel.zte@gmail.com>
+CC:     <damien.lemoal@opensource.wdc.com>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        "Zeal Robot" <zealci@zte.com.cn>
+References: <20220308025940.2077329-1-chi.minghao@zte.com.cn>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <db22c7c4-8b87-cd6d-469d-2cdd7046a25e@omp.ru>
+Date:   Tue, 8 Mar 2022 11:40:35 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220308025940.2077329-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Emil,
+Hello!
 
-First bad commit (maybe != root cause):
+   Please be more specific in the subject: s/ata:/pata_pxa:/.
 
-tree:   https://github.com/esmil/linux visionfive
-head:   b75fcbba0e03fd9655bc4c8854422d51474664d3
-commit: ad49c3fa8088809d886f993496240bd41155ab2a [57/61] RISC-V: Enable SIFIVE_L2_FLUSH for StarFive SoCs
-config: riscv-randconfig-r042-20220307 (https://download.01.org/0day-ci/archive/20220308/202203081628.ECRiVnPH-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/ad49c3fa8088809d886f993496240bd41155ab2a
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout ad49c3fa8088809d886f993496240bd41155ab2a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/soc/sifive/
+On 3/8/22 5:59 AM, cgel.zte@gmail.com wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> 
+> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> allocation of IRQ resources in DT core code, this causes an issue
+> when using hierarchical interrupt domains using "interrupts" property
+> in the node as this bypassed the hierarchical setup and messed up the
+> irq chaining.
+> 
+> In preparation for removal of static setup of IRQ resource from DT core
+> code use platform_get_irq().
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> ---
+>  drivers/ata/pata_pxa.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/ata/pata_pxa.c b/drivers/ata/pata_pxa.c
+> index 41430f79663c..6394ab4cbc1b 100644
+> --- a/drivers/ata/pata_pxa.c
+> +++ b/drivers/ata/pata_pxa.c
+[...]
+> @@ -205,8 +205,8 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	/*
+>  	 * IRQ pin
+>  	 */
+> -	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -	if (unlikely(irq_res == NULL))
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (unlikely(irq < 0))
+>  		return -EINVAL;
 
-All error/warnings (new ones prefixed by >>):
+   Why did you not switch to returning 'irq'? The way it is now, the deferred
+probing doesn't work...
 
->> drivers/soc/sifive/sifive_l2_cache.c:158:3: error: implicit declaration of function 'writeq' [-Werror,-Wimplicit-function-declaration]
-                   writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-                   ^
->> drivers/soc/sifive/sifive_l2_cache.c:148:19: warning: result of comparison of constant 36507222016 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
-              (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-              ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning and 1 error generated.
+[...]
 
-
-vim +/writeq +158 drivers/soc/sifive/sifive_l2_cache.c
-
-a967a289f16969 arch/riscv/mm/sifive_l2_cache.c      Yash Shah          2019-05-06  126  
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  127  #ifdef CONFIG_SIFIVE_L2_FLUSH
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  128  void sifive_l2_flush64_range(unsigned long start, unsigned long len)
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  129  {
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  130  	unsigned long line;
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  131  
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  132  	if(!l2_base) {
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  133  		pr_warn("L2CACHE: base addr invalid, skipping flush\n");
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  134  		return;
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  135  	}
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  136  
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  137  	/* TODO: if (len == 0), skipping flush or going on? */
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  138  	if(!len) {
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  139  		pr_debug("L2CACHE: flush64 range @ 0x%lx(len:0)\n", start);
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  140  		return;
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  141  	}
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  142  
-95728482b5e3e7 drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  143  	len = len + (start % SIFIVE_L2_FLUSH64_LINE_LEN);
-95728482b5e3e7 drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  144  	start = ALIGN_DOWN(start, SIFIVE_L2_FLUSH64_LINE_LEN);
-95728482b5e3e7 drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  145  
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  146  	/* make sure the address is in the range */
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  147  	if(start < CONFIG_SIFIVE_L2_FLUSH_START ||
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08 @148  	   (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  149  			     CONFIG_SIFIVE_L2_FLUSH_SIZE)) {
-b2ba91ef9c8b60 drivers/soc/sifive/sifive_l2_cache.c Geert Uytterhoeven 2021-05-21  150  		WARN(1, "L2CACHE: flush64 out of range: %lx(%lx), skip flush\n",
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  151  		     start, len);
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  152  		return;
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  153  	}
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  154  
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  155  	mb();	/* sync */
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  156  	for (line = start; line < start + len;
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  157  	     line += SIFIVE_L2_FLUSH64_LINE_LEN) {
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08 @158  		writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  159  		mb();
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  160  	}
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  161  }
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  162  EXPORT_SYMBOL_GPL(sifive_l2_flush64_range);
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  163  #endif
-def7ba448ac4b5 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  164  
-
-:::::: The code at line 158 was first introduced by commit
-:::::: def7ba448ac4b53b788d238985ef97702dc802a1 sifive/sifive_l2_cache: Add sifive_l2_flush64_range function
-
-:::::: TO: Tom <support@vamrs.com>
-:::::: CC: Emil Renner Berthing <kernel@esmil.dk>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+MBR, Sergey
