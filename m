@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D813C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 705B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347350AbiCHOKy (ORCPT
+        id S1347331AbiCHOL4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:10:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56800 "EHLO
+        Tue, 8 Mar 2022 09:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347341AbiCHOKu (ORCPT
+        with ESMTP id S235850AbiCHOLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:10:50 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4A54AE01
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:09:54 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id c23so21086895ioi.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 06:09:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EbG/qqfr/wurjd2//LUTHT4MZ/YTGKmKEm4o3JLwT/s=;
-        b=HvQ65t8feIo0gRSK95UMXEATxi4c4DoYSB6JJZCO8NKipsnwvobh9/vyJW6KnA4Ta1
-         d7ZwUmtiJ9X9jqfy4IyCBp4LwwKTbw252gdFl5IvhQiRdHGR+yCENQLl6YhN+Eluw8tQ
-         kcsLzGPN/hCZpD3pYKze6xFjB0UPWoHCBjA50sP7SsW7R5wpEeuxbiE3yJhYMEBqJ9bL
-         DL4o8ZvmQtB1yX8NmUi3iRxe7s+oVJCKQx4wO7WQnzy96JG53slddSp/RQXUmkWTUPAr
-         nRzkkgeolSvSx262NMoqgxSeyHHln9AkpMp2esCK/ML/vQmG2XrTEL8q9aTEd6O62roq
-         FPXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EbG/qqfr/wurjd2//LUTHT4MZ/YTGKmKEm4o3JLwT/s=;
-        b=VLqGrKqGDD2vMd6FQxn+wO2V/WfJYSPm/SB7pKnHzX5Fqh9ePN8SlSxz+ApFSIJ9al
-         gaYJJ5HlPlWIH9yHl166VRNu+R2qimxgI3YsKsSqdb2caLQ03BS9YmOHzvhLKXfKQz/n
-         Gynq7eIr7KtYszJ2sWPoUcx/xhtsSz2j9oJrLbppuKSUnf5B2Yv9uwN7bxEebNd/spn8
-         XEvjunbUssu5SC/RZ4ptoKcnLJm8/+ACuhjKPeWRMFrJppNkZZq+d42SfBq+tFYMsw+E
-         Bm493HD4Jt8OGtLI11P5OTV6UtzAnv1pSkTrCbyDfCP+/rQW9QrOPmUWSTZbeqUYboTg
-         HtCQ==
-X-Gm-Message-State: AOAM532lQCdbfQBa2UqpM07QqzHrm0Bu3Rm+itr6LpYMR+6o91BPF8pL
-        jGEex0n/EqQbxsLdnv9AXMrCM3ftJJ5StOt6jIUz7qTa
-X-Google-Smtp-Source: ABdhPJyHVEnG80mBmkBO7S9LJFrKBhfsOeGnPEpj31gTwsUsW8Xe9N4Iq792Vb2CDymIu/7dlukAnPRZFx0iJ7bN6ok=
-X-Received: by 2002:a05:6638:d85:b0:317:d2f5:8f1d with SMTP id
- l5-20020a0566380d8500b00317d2f58f1dmr4997851jaj.117.1646748593868; Tue, 08
- Mar 2022 06:09:53 -0800 (PST)
+        Tue, 8 Mar 2022 09:11:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5B64AE0E;
+        Tue,  8 Mar 2022 06:10:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B71D0B818B4;
+        Tue,  8 Mar 2022 14:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086DDC340EB;
+        Tue,  8 Mar 2022 14:10:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646748656;
+        bh=K5hOSnCQGMOmt/IEIcA7LTELy76XtsnTeSUtRHpSjMI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H8ZgAweQxHnQcRrc7YeQLvfiGEP7eJ7VE4JoZvnjij9ixBcX2oaN8pur5zg0MxOhZ
+         GY3fBqHK2sZQXIpTJMOE4F2VqSkYWhKyEHHTfl0wJYQlipLCtvLLsucs8nW4lq7lZI
+         Bc22y9OVZKU7zzpJ/BQ5NuwONONqA6GYZ6NnkGuTd4jHTpOgMhAvGbc6AMurdwAApp
+         pYg2pn7j2TH2ut5VcSwOzL88pt962JlNG1MZ1jQkScxlR2jUT+/emich1hvPrPJRvM
+         i42TlTqc7ncLlF1gfgvXfMplqnxyRHzGlt9nXQxfNbNmtPpI7yXUPsdt7qbtvNiGlA
+         0Uc36aPUNUJ1g==
+Date:   Tue, 8 Mar 2022 14:10:50 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dougall <dougallj@gmail.com>, kernel-team@android.com
+Subject: Re: [PATCH v5 00/10] drivers/perf: CPU PMU driver for Apple M1
+Message-ID: <20220308141049.GA31812@willie-the-truck>
+References: <20220208185604.1097957-1-maz@kernel.org>
+ <875yop21vj.wl-maz@kernel.org>
 MIME-Version: 1.0
-References: <cover.1646237226.git.andreyknvl@google.com> <029aaa87ceadde0702f3312a34697c9139c9fb53.1646237226.git.andreyknvl@google.com>
- <CAG_fn=WE80ueUTC3EYjGNGJc8FvAG8Ph-La9cxBXGRBX17d-6w@mail.gmail.com>
-In-Reply-To: <CAG_fn=WE80ueUTC3EYjGNGJc8FvAG8Ph-La9cxBXGRBX17d-6w@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Tue, 8 Mar 2022 15:09:43 +0100
-Message-ID: <CA+fCnZd-0jE22cocyL8XPC4oEuY508U-7PB1oYOkTxJiLeUTiQ@mail.gmail.com>
-Subject: Re: [PATCH mm 05/22] kasan: print basic stack frame info for SW_TAGS
-To:     Alexander Potapenko <glider@google.com>
-Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875yop21vj.wl-maz@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 6:34 PM Alexander Potapenko <glider@google.com> wrote:
->
->> diff --git a/mm/kasan/report_sw_tags.c b/mm/kasan/report_sw_tags.c
->> index d2298c357834..44577b8d47a7 100644
->> --- a/mm/kasan/report_sw_tags.c
->> +++ b/mm/kasan/report_sw_tags.c
->> @@ -51,3 +51,14 @@ void kasan_print_tags(u8 addr_tag, const void *addr)
->>
->>         pr_err("Pointer tag: [%02x], memory tag: [%02x]\n", addr_tag, *shadow);
->>  }
->> +
->> +#ifdef CONFIG_KASAN_STACK
->> +void kasan_print_address_stack_frame(const void *addr)
->> +{
->> +       if (WARN_ON(!object_is_on_stack(addr)))
->> +               return;
->> +
->> +       pr_err("The buggy address belongs to stack of task %s/%d\n",
->> +              current->comm, task_pid_nr(current));
->
-> This comm/pid pattern starts to appear often, maybe we could replace it with an inline function performing pr_cont()?
+On Mon, Mar 07, 2022 at 03:55:44PM +0000, Marc Zyngier wrote:
+> On Tue, 08 Feb 2022 18:55:54 +0000,
+> Marc Zyngier <maz@kernel.org> wrote:
+> > 
+> > The M1 SoC embeds a per-CPU PMU that has a very different programming
+> > interface compared to the architected PMUv3 that is normally present
+> > on standard implementations.
+> > 
+> > This small series adds a driver for this HW by leveraging the arm_pmu
+> > infrastructure, resulting in a rather simple driver.
+> > 
+> > Of course, we know next to nothing about the actual events this PMU
+> > counts, aside from CPU cycles and instructions. Everything else is
+> > undocumented (though as Dougall pointed out, someone could extract the
+> > relevant information from a macOS install if they wanted -- I don't).
+> > I'm looking at allowing the perf userspace tool to load the event
+> > descriptions at runtime, which would probably help.
+> 
+> [...]
+> 
+> FWIW, I have created two branches:
+> 
+> - [1] has the full series
+> - [2] has the irqchip/DT prefix of [1]
+> 
+> Both branches are stable, and I expect [2] to be used as a shared
+> branch between the irqchip and perf trees.
 
-Sounds good, will do if/when posting a v2. Thanks!
+Cheers, I've picked this up in the arm64 tree (by pulling [2] and applying
+the two extra patches from [1] on top) here:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/log/?h=for-next/perf-m1
+
+Will
