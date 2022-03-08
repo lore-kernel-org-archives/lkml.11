@@ -2,108 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02028C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbiCHXT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 18:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33736 "EHLO
+        id S229498AbiCIBCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:02:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiCHXT4 (ORCPT
+        with ESMTP id S229481AbiCIBCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 18:19:56 -0500
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33A49D4C6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:18:50 -0800 (PST)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2dc585dbb02so4445787b3.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 15:18:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eendtF7O1jT4ZpjoFlzKIyJ4YNYGYwK/GXLvyJ/A4B0=;
-        b=rWZalxpbNZkyKJTe0k9BvpqyDA6xyuUWEczrB/MzwuKjD1dqeAAJkFpYG7Rd9qHBVI
-         9egVQB3Iqk6Yv8xdg7MOdOWlKJf8Bl///qOS2RrGkcf7tuQqO7GKtNtRpFai3hWY6CIj
-         PdsqqLhM+fW9R/dQKoJLgJmXGkkJ6vdgjFgwjIVieW3QjrE0/bx8WpSD1cI9vPSNATBc
-         eTaJ+V/aflZrW3st1K5SLYbO8UU5nTaSksOPkX+FZE/jl1cK6PSF2tDtkwdxvvuaFSsf
-         KcE5YGkbsORk7mrWPkeM/Q63MD6UHFU/ztOn42tOJhBr/m/VyQfnHJfzyJXX29ubQMRk
-         7BNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eendtF7O1jT4ZpjoFlzKIyJ4YNYGYwK/GXLvyJ/A4B0=;
-        b=jxBOMQxZwOq3KW7eQowYTDTQQYNnsfNGM3IXvBK0jhefRiVg3cOnhbodISXdA7PkbC
-         +Q1fL4WoOq9jxNLlo+TH2H9wyfZ+2BT+z/mVhhEAwz36tZLkv5cAK+5gFxXFnK8yzjtQ
-         qmk3ndp8h1iEgIRGGXgm1AWLiB6A0RfqCz321WXbYV+XtsPMH9/H2F20bmYoyhD6//q2
-         j13dpZGwMWw1rT7UHpE46Lfn0NFrFMSR+dW/cMRcZj6YXzk4KWRdel/wd25e0YmXYAU7
-         lCbv7tcbwU2s+5zAbc5vMor+Ugju/XPtl5rH1Jaai1BKfa+C2HBhDpcSPNeWXaGsV+jM
-         lnzg==
-X-Gm-Message-State: AOAM531M49/kI5rnw/crOtVqPYIfFfCg9mjzIUFk6b4QLQk044LkRPvU
-        s3c9UHPY9WTNoobR4KDWAUAk58ASsrrBjYN4TQjgUg==
-X-Google-Smtp-Source: ABdhPJyxNvJB5rMyTyEHv+H72i/rock+GNdS99gSt/QH7EFnMLXaTPsW8vasGCJ6GKScN3VQe205u1vwaNdV7any5Mw=
-X-Received: by 2002:a81:1043:0:b0:2dc:289f:9533 with SMTP id
- 64-20020a811043000000b002dc289f9533mr14625066ywq.467.1646781516920; Tue, 08
- Mar 2022 15:18:36 -0800 (PST)
+        Tue, 8 Mar 2022 20:02:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF57E26B57B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646786335;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t4qvsbNI6sw/nBCf9DXoGk82250g6Xxiz3eVjMRBEbQ=;
+        b=imHZkZKf0qQhGWM6fbGsecDKO1/kzxeSKR7gCuX1NFWW/hbZCZGJOeMMxA2xUoLNlKC/Wq
+        FjGp2Z+/4vIQo79kecqyjPcQv2+6CHxI1XiuWvnWSOYAECzpWkLk8JdZmujL2bhyYhnc2k
+        tfHWQsitmgl6fiqguB7umW2vWUbiu30=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567--uKi_RuZOOqulntcXSiGhQ-1; Tue, 08 Mar 2022 18:28:02 -0500
+X-MC-Unique: -uKi_RuZOOqulntcXSiGhQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 731EF1091DA2;
+        Tue,  8 Mar 2022 23:28:00 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B00071006910;
+        Tue,  8 Mar 2022 23:27:26 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH v2 09/19] netfs: Adjust the netfs_failure tracepoint to
+ indicate non-subreq lines
+From:   David Howells <dhowells@redhat.com>
+To:     linux-cachefs@redhat.com
+Cc:     dhowells@redhat.com, Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jeff Layton <jlayton@redhat.com>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 08 Mar 2022 23:27:25 +0000
+Message-ID: <164678204587.1200972.14893513018190383961.stgit@warthog.procyon.org.uk>
+In-Reply-To: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
+References: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-References: <20220308212531.752215-1-jeffreyjilinux@gmail.com> <d1b25466-6f83-591e-39a6-8fdbd56846fb@kernel.org>
-In-Reply-To: <d1b25466-6f83-591e-39a6-8fdbd56846fb@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 8 Mar 2022 15:18:25 -0800
-Message-ID: <CANn89iKvP-8VpOrf_ppVVgsd4kQtAEFWkBVxKW4BP+rtu_Egrw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] net-core: add rx_otherhost_dropped counter
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        jeffreyji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 2:51 PM David Ahern <dsahern@kernel.org> wrote:
->
-> On 3/8/22 2:25 PM, Jeffrey Ji wrote:
-> > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> > index 95f7bb052784..8b87ea99904b 100644
-> > --- a/net/ipv4/ip_input.c
-> > +++ b/net/ipv4/ip_input.c
-> > @@ -451,6 +451,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
-> >        * that it receives, do not try to analyse it.
-> >        */
-> >       if (skb->pkt_type == PACKET_OTHERHOST) {
-> > +             atomic_long_inc(&skb->dev->rx_otherhost_dropped);
-> >               drop_reason = SKB_DROP_REASON_OTHERHOST;
-> >               goto drop;
-> >       }
-> > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> > index 5b5ea35635f9..5624c937f87f 100644
-> > --- a/net/ipv6/ip6_input.c
-> > +++ b/net/ipv6/ip6_input.c
-> > @@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> >       struct inet6_dev *idev;
-> >
-> >       if (skb->pkt_type == PACKET_OTHERHOST) {
-> > +             atomic_long_inc(&skb->dev->rx_otherhost_dropped);
-> >               kfree_skb(skb);
-> >               return NULL;
-> >       }
->
-> that's an expensive packet counter for a common path (e.g., hosting
-> environments).
+Adjust the netfs_failure tracepoint to indicate a subrequest number of -1
+when it's a full-request failure unrelated to any particular subrequest,
+such as a failure to encrypt its data buffer.
 
-This was the reason for the initial patch, using SNMP stat, being per cpu.
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-cachefs@redhat.com
 
-Adding per-device per-cpu data for this counter will increase cost of
-netdevice dismantle phase,
-and increase time for ndo_get_stats64(), especially on hosts with 256
-or 512 cpus.
+Link: https://lore.kernel.org/r/164623001948.3564931.2353852999649380059.stgit@warthog.procyon.org.uk/ # v1
+---
+
+ include/trace/events/netfs.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/trace/events/netfs.h b/include/trace/events/netfs.h
+index ddf34cb476dc..273ae5f6a54c 100644
+--- a/include/trace/events/netfs.h
++++ b/include/trace/events/netfs.h
+@@ -222,7 +222,7 @@ TRACE_EVENT(netfs_failure,
+ 
+ 	    TP_STRUCT__entry(
+ 		    __field(unsigned int,		rreq		)
+-		    __field(unsigned short,		index		)
++		    __field(short,			index		)
+ 		    __field(short,			error		)
+ 		    __field(unsigned short,		flags		)
+ 		    __field(enum netfs_io_source,	source		)
+@@ -234,17 +234,17 @@ TRACE_EVENT(netfs_failure,
+ 
+ 	    TP_fast_assign(
+ 		    __entry->rreq	= rreq->debug_id;
+-		    __entry->index	= sreq ? sreq->debug_index : 0;
++		    __entry->index	= sreq ? sreq->debug_index : -1;
+ 		    __entry->error	= error;
+ 		    __entry->flags	= sreq ? sreq->flags : 0;
+ 		    __entry->source	= sreq ? sreq->source : NETFS_INVALID_READ;
+ 		    __entry->what	= what;
+-		    __entry->len	= sreq ? sreq->len : 0;
++		    __entry->len	= sreq ? sreq->len : rreq->len;
+ 		    __entry->transferred = sreq ? sreq->transferred : 0;
+ 		    __entry->start	= sreq ? sreq->start : 0;
+ 			   ),
+ 
+-	    TP_printk("R=%08x[%u] %s f=%02x s=%llx %zx/%zx %s e=%d",
++	    TP_printk("R=%08x[%d] %s f=%02x s=%llx %zx/%zx %s e=%d",
+ 		      __entry->rreq, __entry->index,
+ 		      __print_symbolic(__entry->source, netfs_sreq_sources),
+ 		      __entry->flags,
+
+
