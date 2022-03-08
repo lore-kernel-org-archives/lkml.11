@@ -2,208 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D53C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4762C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347803AbiCHPVO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50784 "EHLO
+        id S244709AbiCHPVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:21:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347753AbiCHPVI (ORCPT
+        with ESMTP id S230263AbiCHPVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:21:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F104DF4A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:20:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AEE961587
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF91C340EC;
-        Tue,  8 Mar 2022 15:20:08 +0000 (UTC)
-Date:   Tue, 8 Mar 2022 10:20:07 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alex Sverdlin <alexander.sverdlin@nokia.com>,
-        Abel Vesa <abelvesa@linux.com>, Rabin Vincent <rabin@rab.in>,
-        Colin Cross <ccross@android.com>
-Subject: Re: ftrace bug
-Message-ID: <20220308102007.6c6618e7@gandalf.local.home>
-In-Reply-To: <62c01368-b67f-66af-2e31-d62f4df75b61@broadcom.com>
-References: <9a86b2c9-1009-1683-442e-61c5a7dc8cf3@broadcom.com>
-        <20220307082450.641ed866@gandalf.local.home>
-        <62c01368-b67f-66af-2e31-d62f4df75b61@broadcom.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 8 Mar 2022 10:21:49 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B024DF4E;
+        Tue,  8 Mar 2022 07:20:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646752852; x=1678288852;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=I8K/GbKHIgRGVF6Y27S47TZkoaxOyZifE0LQwcfM2Kc=;
+  b=MGRjbZe5efZ37TIYTVdZ+qGWqTT27eEvaf3UK47lP2GitOEZbFRGghud
+   TsCYues9+ml3Hiq2m7WAr0mn5c0BsZquWtrdbFq50kltF+78A/pZg4fhG
+   KRWBMID8ays5r/uKz5QgjABGLwzhL/ljjUEJAssciOjr6WIjKa1ypXiig
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Mar 2022 07:20:52 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 07:20:52 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 8 Mar 2022 07:20:51 -0800
+Received: from codeaurora.org (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 8 Mar 2022
+ 07:20:49 -0800
+From:   Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Manaf Meethalavalappu Pallikunhi" <quic_manafm@quicinc.com>
+Subject: [PATCH] drivers/thermal/thermal_of: Add change_mode ops support for thermal_of sensor
+Date:   Tue, 8 Mar 2022 20:50:34 +0530
+Message-ID: <1646752834-25043-1-git-send-email-quic_manafm@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[ Adding ARM folks (and those that touched the ftrace ARM port) as I don't
-  know the ARM code ]
+The sensor driver which register through thermal_of interface doesn't
+have an option to get thermal zone mode change notification from
+thermal core.
 
-On Tue, 8 Mar 2022 11:53:35 +0100
-Arend van Spriel <arend.vanspriel@broadcom.com> wrote:
+Add support for change_mode ops in thermal_of interface so that sensor
+driver can use this ops for mode change notification.
 
-> On 3/7/2022 2:24 PM, Steven Rostedt wrote:
-> > On Mon, 7 Mar 2022 12:26:45 +0100
-> > Arend van Spriel <arend.vanspriel@broadcom.com> wrote:
-> >   
-> >> Hi Steven,
-> >>
-> >> I wanted to use FTRACE on an ARM platform and I hit the following
-> >> warning which results in ftrace bug. This happens upon loading a module.
-> >> Looking up the warning I suspect the branch target is too far off. The
-> >> module is quite large and therefor not loaded in the modules section. Is
-> >> there a way to exclude a module. In ftrace_module_init I see a check for
-> >> !mod->num_ftrace_callsites. Is there a way to avoid creating ftrace
-> >> callsites in a module?  
-> > 
-> > Are you sure it's the size. Just want to make sure that's the reason before
-> > going with different solutions.  
-> 
-> Interpreting the warning statement in insn.c and given the fact that the 
-> module is loaded at 0xe3xxxxxx instead of kernel module space at 
-> 0xbfxxxxxx I made this assumption, but ....
-> 
-> >>
-> >> Regards,
-> >> Arend
-> >>
-> >> ------------[ cut here ]------------
-> >>
-> >> WARNING: CPU: 2 PID: 1525 at arch/arm/kernel/insn.c:47
-> >> __arm_gen_branch+0x70/0x78
-> >>
-> >> CPU: 2 PID: 1525 Comm: insmod Tainted: P                  4.19.183 #2
-> >>
-> >> Hardware name: Generic DT based system
-> >>
-> >> [<c02139e4>] (unwind_backtrace) from [<c020d4f8>] (show_stack+0x20/0x24)
-> >>
-> >> [<c020d4f8>] (show_stack) from [<c0922aec>] (dump_stack+0x98/0xac)
-> >>
-> >> [<c0922aec>] (dump_stack) from [<c0919b98>] (__warn.part.0+0xcc/0xe8)
-> >>
-> >> [<c0919b98>] (__warn.part.0) from [<c0919d4c>]
-> >> (warn_slowpath_null+0x54/0x74)
-> >> [<c0919d4c>] (warn_slowpath_null) from [<c021225c>]
-> >> (__arm_gen_branch+0x70/0x78)
-> >> [<c021225c>] (__arm_gen_branch) from [<c02120e4>]
-> >> (ftrace_make_nop+0x64/0xec)
-> >> [<c02120e4>] (ftrace_make_nop) from [<c02ac2b0>]
-> >> (ftrace_process_locs+0x370/0x4b4)
-> >>
-> >> [<c02ac2b0>] (ftrace_process_locs) from [<c02af538>]
-> >> (ftrace_module_init+0x38/0x3c)
-> >>
-> >> [<c02af538>] (ftrace_module_init) from [<c02a47d8>]
-> >> (load_module+0x18d0/0x2570)
-> >> [<c02a47d8>] (load_module) from [<c02a56f8>]
-> >> (sys_finit_module+0xe0/0xf8)
-> >> [<c02a56f8>] (sys_finit_module) from [<c0201000>]
-> >> (ret_fast_syscall+0x0/0x58)
-> >> Exception stack(0xd9b1bfa8 to 0xd9b1bff0)
-> >>
-> >> bfa0:                   01170228 00000000 00000003 01170228 00000000
-> >> beb7ceb3
-> >> bfc0: 01170228 00000000 beb7cdc4 0000017b 00127010 00000000 00000000
-> >> 00000000
-> >> bfe0: beb7cc38 beb7cc28 0001a0dc 00012890
-> >>
-> >> ---[ end trace f48808a851a4544a ]---
-> >>
-> >> ------------[ cut here ]------------
-> >>
-> >> WARNING: CPU: 2 PID: 1525 at kernel/trace/ftrace.c:2034
-> >> ftrace_bug+0xfc/0x394  
-> > 
-> > Three should be more content after the "cut here" that is very relevant (I
-> > hate that cut here, because I constantly need to tell people to show me
-> > more :-p I need to add a "ftrace bug cut here" line.)
-> > 
-> > 
-> > Could you show me the output right after that.  
-> 
-> ... here is the output I think you were looking for:
-> 
-> ftrace failed to modify 
-> 
-> [<a82ca82d>] (suspected corrupt symbol) 
+Signed-off-by: Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
+---
+ drivers/thermal/thermal_of.c | 14 ++++++++++++++
+ include/linux/thermal.h      |  3 +++
+ 2 files changed, 17 insertions(+)
 
-Is the above "suspected corrupt symbol" kernel output? I don't see it in my
-tree. What version of the kernel is this.
-
-I'm guessing the above address a82ca82d is where it is trying to modify,
-and is not in the symbol table. So something looks to be messed up.
-
-> 
->   actual:   63:17:16:eb 
-
-The above is what it found in that location.
-
-Perhaps others have ideas.
-
--- Steve
-
-> 
-> Initializing ftrace call sites 
-> 
-> ftrace record flags: 2000000 
-> 
->   (0) 
-> 
->   expected tramp: c0211b88 
-> 
-> ftrace failed to modify 
-> 
-> [<6c88ec64>] (suspected corrupt symbol) 
-> 
->   actual:   72:ab:08:eb 
-> 
-> Initializing ftrace call sites 
-> 
-> ftrace record flags: 2000000 
-> 
->   (0) 
-> 
->   expected tramp: c0211b88 
-> 
-> ftrace failed to modify 
-> 
-> [<b1ed303a>] (suspected corrupt symbol) 
-> 
->   actual:   04:12:04:eb 
-> 
-> Initializing ftrace call sites 
-> 
-> ftrace record flags: 2000000 
-> 
->   (0) 
-> 
->   expected tramp: c0211b88 
-> 
-> ftrace failed to modify 
-> 
-> [<eb2fee66>] (suspected corrupt symbol) 
-> 
->   actual:   d6:7e:00:eb 
-> 
-> Initializing ftrace call sites 
-> 
-> ftrace record flags: 2000000 
-> 
->   (0) 
-> 
->   expected tramp: c0211b88
-> 
-> Regards,
-> Arend
-
+diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
+index 9233f7e..a4e3820 100644
+--- a/drivers/thermal/thermal_of.c
++++ b/drivers/thermal/thermal_of.c
+@@ -203,6 +203,17 @@ static int of_thermal_get_trend(struct thermal_zone_device *tz, int trip,
+ 	return data->ops->get_trend(data->sensor_data, trip, trend);
+ }
+ 
++static int of_thermal_change_mode(struct thermal_zone_device *tz,
++				enum thermal_device_mode mode)
++{
++	struct __thermal_zone *data = tz->devdata;
++
++	if (!data->ops || !data->ops->change_mode)
++		return -EINVAL;
++
++	return data->ops->change_mode(data->sensor_data, mode);
++}
++
+ static int of_thermal_bind(struct thermal_zone_device *thermal,
+ 			   struct thermal_cooling_device *cdev)
+ {
+@@ -408,6 +419,9 @@ thermal_zone_of_add_sensor(struct device_node *zone,
+ 	if (ops->set_emul_temp)
+ 		tzd->ops->set_emul_temp = of_thermal_set_emul_temp;
+ 
++	if (ops->change_mode)
++		tzd->ops->change_mode = of_thermal_change_mode;
++
+ 	mutex_unlock(&tzd->lock);
+ 
+ 	return tzd;
+diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+index c3148939..365733b 100644
+--- a/include/linux/thermal.h
++++ b/include/linux/thermal.h
+@@ -299,6 +299,8 @@ struct thermal_zone_params {
+  *		   temperature.
+  * @set_trip_temp: a pointer to a function that sets the trip temperature on
+  *		   hardware.
++ * @change_mode: a pointer to a function that notifies the thermal zone
++ *		   mode change.
+  */
+ struct thermal_zone_of_device_ops {
+ 	int (*get_temp)(void *, int *);
+@@ -306,6 +308,7 @@ struct thermal_zone_of_device_ops {
+ 	int (*set_trips)(void *, int, int);
+ 	int (*set_emul_temp)(void *, int);
+ 	int (*set_trip_temp)(void *, int, int);
++	int (*change_mode) (void *, enum thermal_device_mode);
+ };
+ 
+ /* Function declarations */
