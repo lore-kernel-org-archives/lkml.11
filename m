@@ -2,137 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A57AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344202AbiCHBHd (ORCPT
+        id S1344181AbiCHBIS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 20:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        Mon, 7 Mar 2022 20:08:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242839AbiCHBHU (ORCPT
+        with ESMTP id S231221AbiCHBIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 20:07:20 -0500
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C84F30F6E;
-        Mon,  7 Mar 2022 17:06:25 -0800 (PST)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 227NIDU1019922;
-        Tue, 8 Mar 2022 01:05:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pps0720;
- bh=fDTsdmG1pqyVShSr12ajAIDhLg24fyBw6k5XjNje+2c=;
- b=hnTalihwQNFzYF149WlS+Q/ctrOMXVU0HoFiQA39Pmwn2k7TlT4bsKc8w5pgmhThsZbQ
- N1RUHM+aDAOlUxEE7syiebGVCCbqCSUfQIM0mr2U3vpUPR6+m5PNUWfcIuJ1BWMFmzz8
- CSAmMbRQ4wRJvMR/XYJuBlRgmKjdGpt1I/GdvCjMP1UFwl/8xaHb1wOGWAF4n/Tbl6ON
- KxEOnioPhD7q+JWp4yEnS5Ys8Xg3uKatnO5/jsDkSuXOVj7jdysMNEFj8Q5Mc8G9hTs+
- U2AH2wLcJO7QlZTk2q27ZPZICkQypxkl1QgRiz4plLnwUCIwXO5XQA4dwkCvbn50MK9Y LA== 
-Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3ensrf1dcc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 01:05:51 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g4t3426.houston.hpe.com (Postfix) with ESMTP id 7A1CC4F;
-        Tue,  8 Mar 2022 01:05:50 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 960D64A;
-        Tue,  8 Mar 2022 01:05:49 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH 2/4] x86/platform/uv: Update NMI Handler for UV5
-Date:   Mon,  7 Mar 2022 19:05:35 -0600
-Message-Id: <20220308010537.70150-3-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220308010537.70150-1-mike.travis@hpe.com>
-References: <20220308010537.70150-1-mike.travis@hpe.com>
+        Mon, 7 Mar 2022 20:08:15 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52E331202;
+        Mon,  7 Mar 2022 17:07:18 -0800 (PST)
+Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KCHFb25nSzdfwr;
+        Tue,  8 Mar 2022 09:05:55 +0800 (CST)
+Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
+ kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 09:07:16 +0800
+Received: from [10.67.102.118] (10.67.102.118) by
+ kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 09:07:16 +0800
+Subject: Re: [PATCH v8 1/9] crypto: hisilicon/qm: Move the QM header to
+ include/linux
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
+        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
+        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>
+References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+ <20220303230131.2103-2-shameerali.kolothum.thodi@huawei.com>
+From:   liulongfang <liulongfang@huawei.com>
+Message-ID: <42d94745-c664-bd7c-7bc5-d20359669765@huawei.com>
+Date:   Tue, 8 Mar 2022 09:07:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: wM21q4DL4STOqrLNBdYBhKkeIaVAJzDf
-X-Proofpoint-GUID: wM21q4DL4STOqrLNBdYBhKkeIaVAJzDf
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-07_12,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- bulkscore=0 lowpriorityscore=0 impostorscore=0 spamscore=0 malwarescore=0
- adultscore=0 suspectscore=0 clxscore=1015 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203080000
+In-Reply-To: <20220303230131.2103-2-shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.118]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600005.china.huawei.com (7.193.23.191)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update NMI handler to interface with UV5 hardware. This involves
-changing the EVENT_OCCURRED MMR used by the hardware and removes
-the check for the newer NMI function supported by UV BIOS.
+On 2022/3/4 7:01, Shameer Kolothum Wrote:
+> Since we are going to introduce VFIO PCI HiSilicon ACC driver for live
+> migration in subsequent patches, move the ACC QM header file to a
+> common include dir.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/crypto/hisilicon/hpre/hpre.h                         | 2 +-
+>  drivers/crypto/hisilicon/qm.c                                | 2 +-
+>  drivers/crypto/hisilicon/sec2/sec.h                          | 2 +-
+>  drivers/crypto/hisilicon/sgl.c                               | 2 +-
+>  drivers/crypto/hisilicon/zip/zip.h                           | 2 +-
+>  drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h | 0
+>  6 files changed, 5 insertions(+), 5 deletions(-)
+>  rename drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h (100%)
+> 
+> diff --git a/drivers/crypto/hisilicon/hpre/hpre.h b/drivers/crypto/hisilicon/hpre/hpre.h
+> index e0b4a1982ee9..9a0558ed82f9 100644
+> --- a/drivers/crypto/hisilicon/hpre/hpre.h
+> +++ b/drivers/crypto/hisilicon/hpre/hpre.h
+> @@ -4,7 +4,7 @@
+>  #define __HISI_HPRE_H
+>  
+>  #include <linux/list.h>
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>  
+>  #define HPRE_SQE_SIZE			sizeof(struct hpre_sqe)
+>  #define HPRE_PF_DEF_Q_NUM		64
+> diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+> index c5b84a5ea350..ed23e1d3fa27 100644
+> --- a/drivers/crypto/hisilicon/qm.c
+> +++ b/drivers/crypto/hisilicon/qm.c
+> @@ -15,7 +15,7 @@
+>  #include <linux/uacce.h>
+>  #include <linux/uaccess.h>
+>  #include <uapi/misc/uacce/hisi_qm.h>
+> -#include "qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>  
+>  /* eq/aeq irq enable */
+>  #define QM_VF_AEQ_INT_SOURCE		0x0
+> diff --git a/drivers/crypto/hisilicon/sec2/sec.h b/drivers/crypto/hisilicon/sec2/sec.h
+> index d97cf02b1df7..c2e9b01187a7 100644
+> --- a/drivers/crypto/hisilicon/sec2/sec.h
+> +++ b/drivers/crypto/hisilicon/sec2/sec.h
+> @@ -4,7 +4,7 @@
+>  #ifndef __HISI_SEC_V2_H
+>  #define __HISI_SEC_V2_H
+>  
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>  #include "sec_crypto.h"
+>  
+>  /* Algorithm resource per hardware SEC queue */
+> diff --git a/drivers/crypto/hisilicon/sgl.c b/drivers/crypto/hisilicon/sgl.c
+> index 057273769f26..f7efc02b065f 100644
+> --- a/drivers/crypto/hisilicon/sgl.c
+> +++ b/drivers/crypto/hisilicon/sgl.c
+> @@ -1,9 +1,9 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /* Copyright (c) 2019 HiSilicon Limited. */
+>  #include <linux/dma-mapping.h>
+> +#include <linux/hisi_acc_qm.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+> -#include "qm.h"
+>  
+>  #define HISI_ACC_SGL_SGE_NR_MIN		1
+>  #define HISI_ACC_SGL_NR_MAX		256
+> diff --git a/drivers/crypto/hisilicon/zip/zip.h b/drivers/crypto/hisilicon/zip/zip.h
+> index 517fdbdff3ea..3dfd3bac5a33 100644
+> --- a/drivers/crypto/hisilicon/zip/zip.h
+> +++ b/drivers/crypto/hisilicon/zip/zip.h
+> @@ -7,7 +7,7 @@
+>  #define pr_fmt(fmt)	"hisi_zip: " fmt
+>  
+>  #include <linux/list.h>
+> -#include "../qm.h"
+> +#include <linux/hisi_acc_qm.h>
+>  
+>  enum hisi_zip_error_type {
+>  	/* negative compression */
+> diff --git a/drivers/crypto/hisilicon/qm.h b/include/linux/hisi_acc_qm.h
+> similarity index 100%
+> rename from drivers/crypto/hisilicon/qm.h
+> rename to include/linux/hisi_acc_qm.h
+> 
+Acked-by: Longfang Liu <liulongfang@huawei.com>
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
----
- arch/x86/platform/uv/uv_nmi.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/arch/x86/platform/uv/uv_nmi.c b/arch/x86/platform/uv/uv_nmi.c
-index 926a4e006e5a..38f4beae9fab 100644
---- a/arch/x86/platform/uv/uv_nmi.c
-+++ b/arch/x86/platform/uv/uv_nmi.c
-@@ -245,7 +245,7 @@ static inline bool uv_nmi_action_is(const char *action)
- static void uv_nmi_setup_mmrs(void)
- {
- 	/* First determine arch specific MMRs to handshake with BIOS */
--	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {
-+	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {	/* UV2,3,4 setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED0;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED0_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED0_EXTIO_INT0_SHFT;
-@@ -255,26 +255,26 @@ static void uv_nmi_setup_mmrs(void)
- 		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
- 		uvh_nmi_mmrx_req_shift = 62;
- 
--	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) {
-+	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) { /* UV5 setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED1;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED1_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED1_EXTIO_INT0_SHFT;
- 		uvh_nmi_mmrx_type = "OCRD1-EXTIO_INT0";
- 
--		uvh_nmi_mmrx_supported = UVH_EXTIO_INT0_BROADCAST;
--		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
--		uvh_nmi_mmrx_req_shift = 62;
-+		uvh_nmi_mmrx_supported = 1;
-+		uvh_nmi_mmrx_req = 0;
- 
- 	} else {
--		pr_err("UV:%s:cannot find EVENT_OCCURRED*_EXTIO_INT0\n",
--			__func__);
-+		pr_err("UV:%s:NMI support not available on this system\n", __func__);
- 		return;
- 	}
- 
--	/* Then find out if new NMI is supported */
--	if (likely(uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
--		uv_write_local_mmr(uvh_nmi_mmrx_req,
--					1UL << uvh_nmi_mmrx_req_shift);
-+	/* Then find out if new NMI is supported (assumed on UV5) */
-+	if (likely(uvh_nmi_mmrx_supported == 1) ||
-+	   (uv_read_local_mmr(uvh_nmi_mmrx_supported) & 1UL << uvh_nmi_mmrx_req_shift)) {
-+		if (uvh_nmi_mmrx_req)
-+			uv_write_local_mmr(uvh_nmi_mmrx_req,
-+						1UL << uvh_nmi_mmrx_req_shift);
- 		nmi_mmr = uvh_nmi_mmrx;
- 		nmi_mmr_clear = uvh_nmi_mmrx_clear;
- 		nmi_mmr_pending = 1UL << uvh_nmi_mmrx_shift;
--- 
-2.26.2
-
+Thanks,
+Longfang
