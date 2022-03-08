@@ -2,83 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76418C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE26C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiCIBEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        id S229730AbiCIBEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:04:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiCIBE3 (ORCPT
+        with ESMTP id S229899AbiCIBEa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:04:29 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7585725C79
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:41:50 -0800 (PST)
-Date:   Tue, 8 Mar 2022 16:17:31 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646785055;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/MNfsQC78m9BLUcGnHt9G4reyS0BmkH4pO0IBzHcGic=;
-        b=iiptEpK8tsYEgjL8XVi48pn/op9wY7TtsUtnxroTFeWOqFXIoMOatZqnCYoDXxKl7W7IQw
-        bYE7xyoRJRulF1LB4MclGhAiXOkS3OD0cFJyyTT4RJcE1loPDHGpyQXUl3ATOvujFitd01
-        9e3d0hfM4SJaiun2Ua+NncKBpm77VRI=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH] mm/list_lru: Optimize memcg_drain_list_lru_node()
-Message-ID: <YifyG3ak3oNOjELK@carbon.dhcp.thefacebook.com>
-References: <20220308033009.1400464-1-longman@redhat.com>
- <YibeERR3Nmh7+9ZA@carbon.dhcp.thefacebook.com>
- <3faa2be7-3a08-ee6d-35e8-c4a35e825c77@redhat.com>
+        Tue, 8 Mar 2022 20:04:30 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA67275F6;
+        Tue,  8 Mar 2022 16:41:55 -0800 (PST)
+X-UUID: 5643b9c7fc6f4726a569dd98f1f01242-20220309
+X-UUID: 5643b9c7fc6f4726a569dd98f1f01242-20220309
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 373336592; Wed, 09 Mar 2022 07:23:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 9 Mar 2022 07:23:33 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Mar 2022 07:23:33 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <alice.chao@mediatek.com>
+CC:     <cc.chou@mediatek.com>, <chaotian.jing@mediatek.com>,
+        <chun-hung.wu@mediatek.com>, <jejb@linux.ibm.com>,
+        <jiajie.hao@mediatek.com>, <jonathan.hsu@mediatek.com>,
+        <lin.gui@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-scsi@vger.kernel.org>,
+        <martin.petersen@oracle.com>, <matthias.bgg@gmail.com>,
+        <peter.wang@mediatek.com>, <powen.kao@mediatek.com>,
+        <qilin.tan@mediatek.com>, <stanley.chu@mediatek.com>,
+        <wsd_upstream@mediatek.com>, <yanxu.wei@mediatek.com>
+Subject: Re: [PATCH v2 1/1] scsi: Fix racing between dev init and dev reset
+Date:   Wed, 9 Mar 2022 07:23:33 +0800
+Message-ID: <20220308232333.28978-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220308020725.16116-2-alice.chao@mediatek.com>
+References: <20220308020725.16116-2-alice.chao@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3faa2be7-3a08-ee6d-35e8-c4a35e825c77@redhat.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 10:41:38AM -0500, Waiman Long wrote:
-> On 3/7/22 23:39, Roman Gushchin wrote:
-> > On Mon, Mar 07, 2022 at 10:30:09PM -0500, Waiman Long wrote:
-> > > Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
-> > > to be race free"), we are tracking the total number of lru
-> > > entries in a list_lru_node in its nr_items field.  In the case of
-> > > memcg_drain_list_lru_node(), there is nothing to be done if nr_items
-> > > is 0.  We don't even need to take the nlru->lock as no new lru entry
-> > > could be added by a racing list_lru_add() to the draining src_idx memcg
-> > > at this point.
-> > > 
-> > > Signed-off-by: Waiman Long <longman@redhat.com>
-> > Hi Waiman!
-> > 
-> > The patch makes total sense to me, however it needs to be rebased at least
-> > on top of "mm: list_lru: rename memcg_drain_all_list_lrus to memcg_reparent_list_lrus".
-> > 
-> > Thanks!
-> > 
-> > 
-> This patch was based on the current linux-next tree which includes commit
-> ff221bc26bdd ("mm: list_lru: rename memcg_drain_all_list_lrus to
-> memcg_reparent_list_lrus"). I do remember to double-check linux-next before
-> sending this patch out. In fact, the same patch can be applied to both linux
-> and linux-next tree without problem.
+Hi Alice,
 
-I'm looking at the mm tree (https://github.com/hnaz/linux-mm.git) and clearly
-see that commit "mm: list_lru: rename memcg_drain_all_list_lrus to
-memcg_reparent_list_lrus" eliminated the function with the name
-memcg_drain_list_lru_node(), which your patch is touching.
-Currently the function is located in list_lru.c and is named
-memcg_reparent_list_lru_node().
+Thanks for your patch. I have some questions.
 
-linux-next is sometimes a bit behind the mm tree.
+> Device reset thread uses kobject_uevent_env() to get kobj.parent
+> after scsi_evt_emit(), and it races with device init thread which
+> calls device_add() to create kobj.parent before kobject_uevent_env().
+> 
+> Device reset call trace:
+> fill_kobj_path
+> kobject_get_path
+> kobject_uevent_env
+> scsi_evt_emit			<- add wait_event()
+> scsi_evt_thread
+> 
+> Device init call trace:
+> fill_kobj_path
+> kobject_get_path
+> kobject_uevent_env
+> device_add				<- create kobj.parent
+> scsi_target_add
+> scsi_sysfs_add_sdev
+> scsi_add_lun
+> scsi_probe_and_add_lun
 
-Thanks!
+These are backtraces, and the things above looks like your solution, not
+the problem.
+It's better to describe the problem first and solution later:
+
+Device init call:                              Device reset call:   
+scsi_probe_and_add_lun()                       scsi_evt_thread()
+  scsi_add_lun()
+    scsi_sysfs_add_sdev()                        scsi_evt_emit()
+      scsi_target_add()                            kobject_uevent_env() 
+        device_add()                                 kobject_get_path() // something wrong?
+	                                               fill_kobj_path()
+	  get_device_parent() // I see a get, not create parent kobj, could you show me that point?
+	  kobject_uevent()
+            kobject_uevent_env()
+              kobject_get_path()
+                fill_kobj_path()
+
+> 
+> These two jobs are scheduled asynchronously, we can't guaranteed that
+> kobj.parent will be created in device init thread before device reset
+> thread calls kobj_get_path().
+
+What happens if device reset thread calls kobj_get_path() before kobj.parent's
+creation? a crash or something?
+
+> 
+> To resolve the racing issue between device init thread and device
+> reset thread, we use wait_event() in scsi_evt_emit() to wait for
+> device_add() to complete the creation of kobj.parent.
+> 
+> Signed-off-by: Alice Chao <alice.chao@mediatek.com>
+
+When we send patch N+1, we have to put the change log between patch v1 to vN
+under a "---", so others can understand the changes between patch N and N+1.
+e.g.,
+
+---
+
+Change since v1
+- remove Change-Id
+
+> ---
+>  drivers/scsi/scsi_lib.c  | 1 +
+>  drivers/scsi/scsi_scan.c | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+> index 0a70aa763a96..abf9a71ed77c 100644
+> --- a/drivers/scsi/scsi_lib.c
+> +++ b/drivers/scsi/scsi_lib.c
+> @@ -2461,6 +2461,7 @@ static void scsi_evt_emit(struct scsi_device *sdev, struct scsi_event *evt)
+>  		break;
+>  	case SDEV_EVT_POWER_ON_RESET_OCCURRED:
+>  		envp[idx++] = "SDEV_UA=POWER_ON_RESET_OCCURRED";
+> +		wait_event(sdev->host->host_wait, sdev->sdev_gendev.kobj.parent != NULL);
+>  		break;
+>  	default:
+>  		/* do nothing */
+> diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
+> index f4e6c68ac99e..431f229ac435 100644
+> --- a/drivers/scsi/scsi_scan.c
+> +++ b/drivers/scsi/scsi_scan.c
+> @@ -1904,6 +1904,7 @@ static void do_scsi_scan_host(struct Scsi_Host *shost)
+>  	} else {
+>  		scsi_scan_host_selected(shost, SCAN_WILD_CARD, SCAN_WILD_CARD,
+>  				SCAN_WILD_CARD, 0);
+> +		wake_up(&shost->host_wait);
+
+do_scsi_scan_host() is not in the call trace above, could you show the relationship
+of do_scsi_scan_host in the call flow?
+
+thanks,
+Miles
+
+>  	}
+>  }
