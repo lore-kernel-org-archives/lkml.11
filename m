@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62395C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71391C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348579AbiCHP6T (ORCPT
+        id S1348667AbiCHP6X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:58:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        Tue, 8 Mar 2022 10:58:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348059AbiCHP4I (ORCPT
+        with ESMTP id S1348063AbiCHP4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:08 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CC44F9DF
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE224F9E5
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=ubKvPzHSTf9I/HpHJnBuEu/vAwkkIzBDgMQoNkBO5jQ=; b=FWSdbCa8xbz8sUYZECPMakE7Nr
-        xGTIqCIqLoebYe9lX3NwzdDVMfLfZ99vZg6nWh7Z80p+qUd1X24VoYqoT9DmBmbcVq94HuIDyquAw
-        v3XOPwFduaPRtGyHGlaTuUo5uzoVfgJaZLzUq8bzUz0MGBGgSvwSafmwFWihAuah6Deh1uK0mSpOo
-        Rc9o9Wh0Br8VK7F7fPWF4bPHF2hkwV0pBxqLKsOXfpJeJsBm+ITsiGFJ+oCyyBak5EnzIGpQPHveu
-        /VugHYAPVQV6+u94XAiode46fgu9Fn8zZnuloSBdekqRO+82Mr4fu+yxO/gAWunWj7mAqnTNG1tIt
-        oTJRWjUg==;
+        bh=vD0W8Bg9OSPLjosR2mk55Ig4ZSTAO551TZzfWzYeejs=; b=lb9DF7Y8PdFkGU1/gIeAyrLmJz
+        AiLQ3SRlqKkmg/46Q5WJ0SbiANzIkZTzYrFe9WGQdyIpai6VpYxu4Cujf/Bjtog0snsYutJxaNzo1
+        CtERwLuiHv/qoNB3NIJDE81T+ZgbKFiC0sE8Ud4MXY/1GepHc90a5Ylr23TXIlohfoLMObK1lrUrf
+        DzesVRmz01vcwZgFMsnnn3wKvqNY/cdborgVNm233i77OuS1LOxNx5AqAxqYpW76ExzDMfuBhJaTj
+        hHYBWh/RFEZWjyf+4LUSKEvcPhI7AqcLI5xeQLPbDgR2G6MbcBGUPeNQnA0o+pgpScutd2ed3d7yq
+        dRgqGTsA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GUib-Q3; Tue, 08 Mar 2022 15:54:43 +0000
+        id 1nRcAc-00GUiS-Hi; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 436C7302D49;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 349773017B1;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 70EC82B561933; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.700456643@infradead.org>
+        id 0CC942B561915; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154317.992708941@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:37 +0100
+Date:   Tue, 08 Mar 2022 16:30:25 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 26/45] x86/alternative: Simplify int3_selftest_ip
+Subject: [PATCH v4 14/45] x86/linkage: Add ENDBR to SYM_FUNC_START*()
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,49 +56,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to ibt_selftest_ip, apply the same pattern.
+Ensure the ASM functions have ENDBR on for IBT builds, this follows
+the ARM64 example. Unlike ARM64, we'll likely end up overwriting them
+with poison.
 
-Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/kernel/alternative.c |   13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ arch/x86/include/asm/linkage.h |   31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -719,7 +719,7 @@ asm (
- "	.popsection\n"
- );
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -3,6 +3,7 @@
+ #define _ASM_X86_LINKAGE_H
  
--extern __initdata unsigned long int3_selftest_ip; /* defined in asm below */
-+extern void int3_selftest_ip(void); /* defined in asm below */
+ #include <linux/stringify.h>
++#include <asm/ibt.h>
  
- static int __init
- int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
-@@ -733,7 +733,7 @@ int3_exception_notify(struct notifier_bl
- 	if (val != DIE_INT3)
- 		return NOTIFY_DONE;
+ #undef notrace
+ #define notrace __attribute__((no_instrument_function))
+@@ -34,5 +35,35 @@
  
--	if (regs->ip - INT3_INSN_SIZE != int3_selftest_ip)
-+	if (regs->ip - INT3_INSN_SIZE != (unsigned long)&int3_selftest_ip)
- 		return NOTIFY_DONE;
+ #endif /* __ASSEMBLY__ */
  
- 	int3_emulate_call(regs, (unsigned long)&int3_magic);
-@@ -757,14 +757,7 @@ static void __init int3_selftest(void)
- 	 * then trigger the INT3, padded with NOPs to match a CALL instruction
- 	 * length.
- 	 */
--	asm volatile ("1: int3; nop; nop; nop; nop\n\t"
--		      ".pushsection .init.data,\"aw\"\n\t"
--		      ".align " __ASM_SEL(4, 8) "\n\t"
--		      ".type int3_selftest_ip, @object\n\t"
--		      ".size int3_selftest_ip, " __ASM_SEL(4, 8) "\n\t"
--		      "int3_selftest_ip:\n\t"
--		      __ASM_SEL(.long, .quad) " 1b\n\t"
--		      ".popsection\n\t"
-+	asm volatile ("int3_selftest_ip: int3; nop; nop; nop; nop\n\t"
- 		      : ASM_CALL_CONSTRAINT
- 		      : __ASM_SEL_RAW(a, D) (&val)
- 		      : "memory");
++/* SYM_FUNC_START -- use for global functions */
++#define SYM_FUNC_START(name)				\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
++#define SYM_FUNC_START_NOALIGN(name)			\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL -- use for local functions */
++#define SYM_FUNC_START_LOCAL(name)			\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
++#define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK -- use for weak functions */
++#define SYM_FUNC_START_WEAK(name)			\
++	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
++#define SYM_FUNC_START_WEAK_NOALIGN(name)		\
++	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
++	ENDBR
++
+ #endif /* _ASM_X86_LINKAGE_H */
+ 
 
 
