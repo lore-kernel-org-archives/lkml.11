@@ -2,225 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB79C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 413A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346336AbiCHLMP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:12:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51618 "EHLO
+        id S232182AbiCHLOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 06:14:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346358AbiCHLME (ORCPT
+        with ESMTP id S1346512AbiCHLMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:12:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C3046654;
-        Tue,  8 Mar 2022 03:11:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 8 Mar 2022 06:12:50 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814E847562
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:11:48 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70A00B817ED;
-        Tue,  8 Mar 2022 11:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D486DC340EC;
-        Tue,  8 Mar 2022 11:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646737861;
-        bh=Cgl0qA66PzKkXnlxny3eTwo2XWjpLBhZQNxtn6qkKoU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CVtFPe97vYFj1FySCYQWFItXlCjdHBBevaQR2H2MDTh3XK+vDmVt//BRtA8eHgtSQ
-         sjX3dV+dGnVsmQYynsHa/6CG+cH0iJ2JSz3zSBflrcMfirdI7SyWgZhv0+b1zK8Qtx
-         LQYHNrL7tJC94dmVVVh2CnD+25qW+oEDV+a+ghj9X2HmsDMXGQ90hDhpJZ0b6QOBT6
-         lp7hj/hCt2UF8R+q8mi8232uYww0mHcsALmH/I0HEEQR9/JhaihoUeYb4yqZzavdE7
-         vcolydOfAj/JirilBmcmgMWxom4Fj+/urpSMPIBbrl/KqfGN9mquzr1bqZP6F5GxKm
-         93WsFFOMUijxg==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-sgx@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH RFC v2 3/3] x86/sgx: Implement EAUG population with MAP_POPULATE
-Date:   Tue,  8 Mar 2022 13:10:03 +0200
-Message-Id: <20220308111003.257351-4-jarkko@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220308111003.257351-1-jarkko@kernel.org>
-References: <20220308111003.257351-1-jarkko@kernel.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KCXhf24X2z4xvN;
+        Tue,  8 Mar 2022 22:11:46 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1646737906;
+        bh=iOnNOIqgLPTazq0S8O+41ZSz/Qp62x8qyJNjvWgvGLc=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=EEwodP8VRsJMZ4ffsI9EmVSQOs8C3WFFNy4JpJ6ZToIS0d6cxIC1Czn6mE6bo0br8
+         arsIVqYL/xPOLwfAB7vNYXmexnJdv8b/68+doGciVv8nwb/zURT2fuW4gP3SP0Vee+
+         Vpc4xOU9bKu9WdHhvT9gCzs2sj96SOVW3FPUfoGoBu6nYn8NpmL2D+tJxD7gysi8of
+         NVzPZaNTWijzxT5IYegCP7NxggqUHAQ6IvOb4HPbNbieTHP6eExQsFmWMwfvmZf/Jz
+         CaT1h8vA4elOL7fHFbFd771g/6/6oqC9JzXXrjx3Wv7Cu5gjDxu1MfGqB7gHggdUqI
+         u6c4eutuIm0tA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH v1 1/4] powerpc: Cleanup asm-prototypes.c
+In-Reply-To: <d8a91ad9-328f-d0cb-1112-7ddccd8873d4@csgroup.eu>
+References: <3ed660a585df2080ea8412ec20fbf652f5bf013a.1646413435.git.christophe.leroy@csgroup.eu>
+ <d8a91ad9-328f-d0cb-1112-7ddccd8873d4@csgroup.eu>
+Date:   Tue, 08 Mar 2022 22:11:45 +1100
+Message-ID: <87y21kn1fy.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With SGX1 an enclave needs to be created with its maximum memory demands
-pre-allocated. Pages cannot be added to an enclave after it is initialized.
-SGX2 introduces a new function, ENCLS[EAUG] for adding pages to an
-initialized enclave.
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> Le 04/03/2022 =C3=A0 18:04, Christophe Leroy a =C3=A9crit=C2=A0:
+>> Last call to sys_swapcontext() from ASM was removed by
+>> commit fbcee2ebe8ed ("powerpc/32: Always save non volatile GPRs at
+>> syscall entry")
+>>=20
+>> sys_debug_setcontext() prototype not needed anymore since
+>> commit f3675644e172 ("powerpc/syscalls: signal_{32, 64} - switch
+>> to SYSCALL_DEFINE")
+>>=20
+>> sys_switch_endian() prototype not needed anymore since
+>> commit 81dac8177862 ("powerpc/64: Make sys_switch_endian() traceable")
+>>=20
+>> _mount() prototype is already in asm/ftrace.h
+>>=20
+>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+>> ---
+>
+> I see this series in next-test branch.
+>
+> Can you #include <asm/ftrace.h> in asm/asm-prototypes.h so that=20
+> _mcount() still gets versionned.
 
-Add support for dynamically adding pages to an initialized enclave with
-mmap() by populating pages with EAUG. Use f_ops->populate() callback to
-achieve this behaviour.
+I just left the existing _mcount() prototype in asm-prototypes.h.
 
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
----
- arch/x86/kernel/cpu/sgx/driver.c | 128 +++++++++++++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+I've run that through some build tests, and want to push it for
+tomorrow's next, so I'd rather not change it now.
 
-diff --git a/arch/x86/kernel/cpu/sgx/driver.c b/arch/x86/kernel/cpu/sgx/driver.c
-index aa9b8b868867..848938334e8a 100644
---- a/arch/x86/kernel/cpu/sgx/driver.c
-+++ b/arch/x86/kernel/cpu/sgx/driver.c
-@@ -9,6 +9,7 @@
- #include <asm/traps.h>
- #include "driver.h"
- #include "encl.h"
-+#include "encls.h"
- 
- u64 sgx_attributes_reserved_mask;
- u64 sgx_xfrm_reserved_mask = ~0x3;
-@@ -101,6 +102,132 @@ static int sgx_mmap(struct file *file, struct vm_area_struct *vma)
- 	return 0;
- }
- 
-+static int sgx_encl_augment_page(struct sgx_encl *encl, unsigned long offset)
-+{
-+	struct sgx_pageinfo pginfo = {0};
-+	struct sgx_encl_page *encl_page;
-+	struct sgx_epc_page *epc_page;
-+	struct sgx_va_page *va_page;
-+	u64 secinfo_flags;
-+	int ret;
-+
-+	/*
-+	 * Ignore internal permission checking for dynamically added pages.
-+	 * They matter only for data added during the pre-initialization phase.
-+	 * The enclave decides the permissions by the means of EACCEPT,
-+	 * EACCEPTCOPY and EMODPE.
-+	 */
-+	secinfo_flags = SGX_SECINFO_R | SGX_SECINFO_W | SGX_SECINFO_X;
-+	encl_page = sgx_encl_page_alloc(encl, offset, secinfo_flags);
-+	if (IS_ERR(encl_page))
-+		return PTR_ERR(encl_page);
-+
-+	epc_page = sgx_alloc_epc_page(encl_page, true);
-+	if (IS_ERR(epc_page)) {
-+		ret = PTR_ERR(epc_page);
-+		goto err_alloc_epc_page;
-+	}
-+
-+	va_page = sgx_encl_grow(encl);
-+	if (IS_ERR(va_page)) {
-+		ret = PTR_ERR(va_page);
-+		goto err_grow;
-+	}
-+
-+	mutex_lock(&encl->lock);
-+
-+	/*
-+	 * Adding to encl->va_pages must be done under encl->lock.  Ditto for
-+	 * deleting (via sgx_encl_shrink()) in the error path.
-+	 */
-+	if (va_page)
-+		list_add(&va_page->list, &encl->va_pages);
-+
-+	/*
-+	 * Insert prior to EADD in case of OOM.  EADD modifies MRENCLAVE, i.e.
-+	 * can't be gracefully unwound, while failure on EADD/EXTEND is limited
-+	 * to userspace errors (or kernel/hardware bugs).
-+	 */
-+	ret = xa_insert(&encl->page_array, PFN_DOWN(encl_page->desc),
-+			encl_page, GFP_KERNEL);
-+
-+	/*
-+	 * If ret == -EBUSY then page was created in another flow while
-+	 * running without encl->lock
-+	 */
-+	if (ret)
-+		goto err_xa_insert;
-+
-+	pginfo.secs = (unsigned long)sgx_get_epc_virt_addr(encl->secs.epc_page);
-+	pginfo.addr = encl_page->desc & PAGE_MASK;
-+	pginfo.metadata = 0;
-+
-+	ret = __eaug(&pginfo, sgx_get_epc_virt_addr(epc_page));
-+	if (ret)
-+		goto err_eaug;
-+
-+	encl_page->encl = encl;
-+	encl_page->epc_page = epc_page;
-+	encl_page->type = SGX_PAGE_TYPE_REG;
-+	encl->secs_child_cnt++;
-+
-+	sgx_mark_page_reclaimable(encl_page->epc_page);
-+
-+	mutex_unlock(&encl->lock);
-+
-+	return 0;
-+
-+err_eaug:
-+	xa_erase(&encl->page_array, PFN_DOWN(encl_page->desc));
-+
-+err_xa_insert:
-+	sgx_encl_shrink(encl, va_page);
-+	mutex_unlock(&encl->lock);
-+
-+err_grow:
-+	sgx_encl_free_epc_page(epc_page);
-+
-+err_alloc_epc_page:
-+	kfree(encl_page);
-+
-+	return VM_FAULT_SIGBUS;
-+}
-+
-+/*
-+ * Add new pages to the enclave sequentially with ENCLS[EAUG]. Note that
-+ * sgx_mmap() validates that the given VMA is within the enclave range. Calling
-+ * here sgx_encl_may_map() second time would too time consuming.
-+ */
-+static int sgx_populate(struct file *file, unsigned long start, unsigned long end)
-+{
-+	struct sgx_encl *encl = file->private_data;
-+	unsigned long length = end - start;
-+	unsigned long pos;
-+	int ret;
-+
-+	/* EAUG works only for initialized enclaves. */
-+	if (!test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
-+		return -EINVAL;
-+
-+	for (pos = 0 ; pos < length; pos += PAGE_SIZE) {
-+		if (signal_pending(current)) {
-+			if (!pos)
-+				ret = -ERESTARTSYS;
-+
-+			break;
-+		}
-+
-+		if (need_resched())
-+			cond_resched();
-+
-+		ret = sgx_encl_augment_page(encl, start + pos);
-+		if (ret)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
- static unsigned long sgx_get_unmapped_area(struct file *file,
- 					   unsigned long addr,
- 					   unsigned long len,
-@@ -133,6 +260,7 @@ static const struct file_operations sgx_encl_fops = {
- 	.compat_ioctl		= sgx_compat_ioctl,
- #endif
- 	.mmap			= sgx_mmap,
-+	.populate		= sgx_populate,
- 	.get_unmapped_area	= sgx_get_unmapped_area,
- };
- 
--- 
-2.35.1
+Send me a follow-up patch to add the include of ftrace.h and drop the
+_mcount() prototype.
 
+cheers
