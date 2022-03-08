@@ -2,122 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4171EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349178AbiCHRbh (ORCPT
+        id S1347963AbiCHRhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        Tue, 8 Mar 2022 12:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiCHRbe (ORCPT
+        with ESMTP id S235466AbiCHRhb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:31:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C81255574F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:30:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646760635;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l7asnA7LXZyQWZy5g2QEgoRUfjTEVlMr+Ij+QDuYX2o=;
-        b=dGMnYALNImQh37g0kDktb054hMk5YidZm0GuH+DfZi+vefeg8CdvUeO2Vhd2HpmxvJ2rIE
-        eRqBXDxzoplpnPR7woNGs+2eiapuTZI3MagtiFSMTlsGWk144qeCGKLN6CwJohEErbxRkf
-        JurDjG9yPA+ypvEmvU8mit8WxjOQdoY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-317-q1-q4eNMNACB3cZJvaqAHQ-1; Tue, 08 Mar 2022 12:30:32 -0500
-X-MC-Unique: q1-q4eNMNACB3cZJvaqAHQ-1
-Received: by mail-wr1-f69.google.com with SMTP id a11-20020adffb8b000000b001efe754a488so5705991wrr.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:30:32 -0800 (PST)
+        Tue, 8 Mar 2022 12:37:31 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6545F554B9
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:36:34 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id p17so17705139plo.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:36:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0ilNtvLV0LkLBCJ4u2ZvgTuBzfH8DdAUiWYvR9CsaB0=;
+        b=lPZ0Fq+AmHR0fTK4mu8Q11Kovw3c6jHNs6F6X4OH54L/w7QkcggF77SqUOPGLAcGH3
+         +UgdQqp+wa78LSbS/fNS9vf9RvjsMN6DyRyOAun0UMHec+eTuEfbvBjYniF9yBGyBSFY
+         c/ASL9DGT7p5ZJu3RQZ7nxdN9CsBz4fa1I52dqIRZGbnytCrNCrJjIcOcaeoa18Jx2NZ
+         HGTS+kQdevKIA4td7Wcjp0nhwG64obnBLLUSjhyOHyYVX92TFuhU2QfsyIRQnsL8gnjb
+         nkUZlfB+DlpTIqjXwU3PjvAIR03uxb7KOKqq4J7nJsfH4B2WcVKlRlqbLvWiZGqzBtDK
+         uB3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=l7asnA7LXZyQWZy5g2QEgoRUfjTEVlMr+Ij+QDuYX2o=;
-        b=Ufpv/E0iOwQRheeIaEo8VbyjwwEHEIvv4VrL+8qNESuny08QkyV/g1PO1I7e7XuIqU
-         4UqrJBJ9xb8jLMB9KivpabyssivGyK+Dbs4yRqnCgqRqQ6F8H10kVa1STlyHvySMk2WZ
-         HoEuFkL8hhIhtJF1yYLz80iP992hurF2Ha/X+aR5lsY9P0Jyh/tDWpkcX8Y3skk8PulF
-         kv+gCR7DeAbOigjSVcSWdtW7Avq10M8bnl/xIN9r0SNA60FVthlrZk6NgZG6wjDipqp3
-         ZaRgRmCUwjyBcSlN9t8Fn50V/ZhC77QNrt7Lgjr8tS8tGYuAAIesFik2dXsLkaBQ0mC7
-         6xaA==
-X-Gm-Message-State: AOAM533Orup0ySkbVTjlxh7tfNIqgdD/jrP3IJu0HJUCKKrnR0bV0K4o
-        Yq5DHXNqMeJH16Ood0QnjYo6rAPRIPIVXp7j0Sk5Nr+a6oQT0TON/KvSJhJf22ei0fI6WJRK1oH
-        KwN/AvTkEjzuQ5qAfuBLIPVw4
-X-Received: by 2002:a5d:5255:0:b0:1f0:5992:673e with SMTP id k21-20020a5d5255000000b001f05992673emr13005761wrc.423.1646760631157;
-        Tue, 08 Mar 2022 09:30:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwiu9fGlgmzu8FeVd8qv7AaiAa/14Gb+xn6++scnNFw2UwFoXBTbpf2fcr3a6+avTm0rZ+KxQ==
-X-Received: by 2002:a5d:5255:0:b0:1f0:5992:673e with SMTP id k21-20020a5d5255000000b001f05992673emr13005744wrc.423.1646760630937;
-        Tue, 08 Mar 2022 09:30:30 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:3506:3400:69b5:c807:1d52:ff67? ([2a0c:5a80:3506:3400:69b5:c807:1d52:ff67])
-        by smtp.gmail.com with ESMTPSA id r186-20020a1c2bc3000000b0037bdd94a4e5sm2757590wmr.39.2022.03.08.09.30.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0ilNtvLV0LkLBCJ4u2ZvgTuBzfH8DdAUiWYvR9CsaB0=;
+        b=Lb4hnYf2LlTX5tzemK9SAgnrDwGoXlucGX56kEoJlhmxqiHBXeohRBEO/Z9qVcnv4b
+         djrdQiAdXAZatiG/DazXeq3+ke0PUvcgz2JlEnIGh4xXulhjez/cH54NU7IhgYQfnkuJ
+         ndiKTnKr0Xk9diknTTEAH96YE272VAaDviKdZKKVsdV2+gNLj3l8gGXKr/SAYEXJf3RN
+         mFZNV+0ci622hrXstXEkzUDAoU2geK89PlsLVAfwZbD3M0lBW6U8u62/ldNGi9sXw9jL
+         kNCOZcHk1Tr5mUsTM4fFwCKA9HMYcGo1H4BAWoUbNPffyU0IGuQOquE0u+orFiVMfD+4
+         75UA==
+X-Gm-Message-State: AOAM530cDBltG0lXv79V2wXRD3HhcUpgnGEB6zGZzyAtqeqNVwF9Puh/
+        BSoOyOR7ij07B+kISyroz6FKnRuW+csK2w==
+X-Google-Smtp-Source: ABdhPJxKUjH6zqhOjdi9bTErD28lYIvnwk+e2mH2PTxOoSNMCM/QK9pdthKb9G+DZMtS/mXlDN5CGA==
+X-Received: by 2002:a17:90b:4c8f:b0:1bc:a64b:805 with SMTP id my15-20020a17090b4c8f00b001bca64b0805mr5861663pjb.156.1646760993687;
+        Tue, 08 Mar 2022 09:36:33 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u25-20020a62ed19000000b004f140515d56sm20407660pfh.46.2022.03.08.09.36.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:30:29 -0800 (PST)
-Message-ID: <c898d1911f7f9303b7e14726e7cc9678fbfb4a0e.camel@redhat.com>
-Subject: Warning when exiting osnoise tracer
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Steven Rostedt <rostedt@goodmis.org>, bristot <bristot@kernel.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-trace-devel@vger.kernel.org, mtosatti <mtosatti@redhat.com>
-Date:   Tue, 08 Mar 2022 18:30:25 +0100
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Tue, 08 Mar 2022 09:36:33 -0800 (PST)
+Date:   Tue, 8 Mar 2022 17:36:29 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        dmatlack@google.com
+Subject: Re: [PATCH v2 08/25] KVM: x86/mmu: split cpu_mode from mmu_role
+Message-ID: <YieUHVgFxOo3LAa8@google.com>
+References: <20220221162243.683208-1-pbonzini@redhat.com>
+ <20220221162243.683208-9-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221162243.683208-9-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While running next-20220307, on a system with isolated CPUs (don't know if
-relevant but less tested code-path), I see this after killing (ctrl-C) the
-following trace command:
+On Mon, Feb 21, 2022, Paolo Bonzini wrote:
+> Snapshot the state of the processor registers that govern page walk into
+> a new field of struct kvm_mmu.  This is a more natural representation
+> than having it *mostly* in mmu_role but not exclusively; the delta
+> right now is represented in other fields, such as root_level.
+> 
+> The nested MMU now has only the CPU mode; and in fact the new function
+> kvm_calc_cpu_mode is analogous to the previous kvm_calc_nested_mmu_role,
+> except that it has role.base.direct equal to CR0.PG.  It is not clear
+> what the code meant by "setting role.base.direct to true to detect bogus
+> usage of the nested MMU".
 
-	trace-cmd record -e all -M 10 -p osnoise --poll
+The idea was to trigger fireworks due to a incoherent state (e.g. direct mmu_role with
+non-direct hooks) if the nested_mmu was ever used as a "real" MMU (handling faults,
+installing SPs/SPTEs, etc...).  For a walk-only MMU, "direct" has no meaning and so
+rather than arbitrarily leave it '0', I arbitrarily set it '1'.
 
-Note that this is *without* my recent osnoise patch.
+Maybe this?
 
-[  129.925474] ------------[ cut here ]------------
-[  129.926021] WARNING: CPU: 0 PID: 1217 at kernel/tracepoint.c:404 tracepoint_probe_unregister+0x280/0x370
-[  129.927077] Modules linked in: nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 rfkill ip_set nf_tables nfnetlink intel_rapl_msr intel_rapl_common irqbypass iTCO_wdt rapl snd_pcm iTCO_vendor_support snd_timer snd soundcore i2c_i801 lpc_ich i2c_smbus virtio_balloon pcspkr fuse drm xfs libcrc32c crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel ahci libahci serio_raw virtio_net libata net_failover failover virtio_blk
-[  129.932263] CPU: 0 PID: 1217 Comm: trace-cmd Not tainted 5.17.0-rc6-next-20220307-nico+ #19
-[  129.933184] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.15.0-1.el9 04/01/2014
-[  129.933947] RIP: 0010:tracepoint_probe_unregister+0x280/0x370
-[  129.934590] Code: 48 8d 04 40 48 8d 0c c3 48 8b 01 48 85 c0 74 21 49 39 c5 75 e5 4c 3b 71 08 75 df 48 c7 01 20 95 3e ae eb d6 41 bc fe ff ff ff <0f> 0b e9 22 ff ff ff 48 81 fb 00 f0 ff ff 0f 87 cb 00 00 00 45 31
-[  129.936605] RSP: 0018:ffffb978c1093db8 EFLAGS: 00010246
-[  129.937192] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[  129.937968] RDX: ffff8ee953ab8000 RSI: ffffffffae40cb20 RDI: ffffffffafc4c940
-[  129.938752] RBP: ffffffffafd1c560 R08: 0000000000000000 R09: 0000000000000000
-[  129.939537] R10: 0000000000000010 R11: 0000000000000000 R12: 00000000fffffffe
-[  129.940323] R13: ffffffffae40cb20 R14: 0000000000000000 R15: 0000000000000003
-[  129.941104] FS:  00007ff9198d1740(0000) GS:ffff8ee97ca00000(0000) knlGS:0000000000000000
-[  129.941992] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  129.942633] CR2: 00007ff919b29497 CR3: 0000000109da4005 CR4: 0000000000170ef0
-[  129.943420] Call Trace:
-[  129.943714]  <TASK>
-[  129.943960]  osnoise_workload_stop+0x36/0x90
-[  129.944447]  tracing_set_tracer+0x108/0x260
-[  129.944917]  tracing_set_trace_write+0x94/0xd0
-[  129.945423]  ? __check_object_size.part.0+0x10a/0x150
-[  129.945986]  ? selinux_file_permission+0x104/0x150
-[  129.946531]  vfs_write+0xb5/0x290
-[  129.946908]  ksys_write+0x5f/0xe0
-[  129.947291]  do_syscall_64+0x3b/0x90
-[  129.947693]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  129.948257] RIP: 0033:0x7ff919a18127
-[  129.948660] Code: 0b 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-[  129.950688] RSP: 002b:00007ffe388ceda8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[  129.951530] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007ff919a18127
-[  129.952355] RDX: 0000000000000003 RSI: 000000000044a514 RDI: 0000000000000004
-[  129.953142] RBP: 00007ffe388cede0 R08: 0000000001cffd40 R09: 00007ff919a8a4e0
-[  129.953917] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffe388cf0c8
-[  129.954692] R13: 000000000040a578 R14: 00007ff919b67aa0 R15: 0000000000461d18
-[  129.955477]  </TASK>
-[  129.955728] ---[ end trace 0000000000000000 ]---
+  The nested MMU now has only the CPU mode; and in fact the new function
+  kvm_calc_cpu_mode is analogous to the previous kvm_calc_nested_mmu_role,
+  except that it has role.base.direct equal to CR0.PG.  Having "direct"
+  track CR0.PG has the serendipitious side effect of being an even better
+  sentinel than arbitrarily setting direct to true for the nested MMU, as
+  KVM will run afoul of sanity checks for both direct and indirect MMUs if
+  KVM attempts to use the nested MMU as a "real" MMU, e.g. for page faults.
+ 
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h |   1 +
+>  arch/x86/kvm/mmu/mmu.c          | 107 ++++++++++++++++++++------------
+>  arch/x86/kvm/mmu/paging_tmpl.h  |   2 +-
+>  3 files changed, 68 insertions(+), 42 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 92855d3984a7..cc268116eb3f 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -433,6 +433,7 @@ struct kvm_mmu {
+>  			 struct kvm_mmu_page *sp);
+>  	void (*invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa);
+>  	struct kvm_mmu_root_info root;
+> +	union kvm_mmu_role cpu_mode;
+>  	union kvm_mmu_role mmu_role;
+>  	u8 root_level;
+>  	u8 shadow_root_level;
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 7c835253a330..1af898f0cf87 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -221,7 +221,7 @@ BUILD_MMU_ROLE_REGS_ACCESSOR(efer, lma, EFER_LMA);
+>  #define BUILD_MMU_ROLE_ACCESSOR(base_or_ext, reg, name)		\
+>  static inline bool __maybe_unused is_##reg##_##name(struct kvm_mmu *mmu)	\
+>  {								\
+> -	return !!(mmu->mmu_role. base_or_ext . reg##_##name);	\
+> +	return !!(mmu->cpu_mode. base_or_ext . reg##_##name);	\
+>  }
+>  BUILD_MMU_ROLE_ACCESSOR(ext,  cr0, pg);
+>  BUILD_MMU_ROLE_ACCESSOR(base, cr0, wp);
+> @@ -4680,6 +4680,39 @@ static void paging32_init_context(struct kvm_mmu *context)
+>  	context->direct_map = false;
+>  }
+>  
+> +static union kvm_mmu_role
+> +kvm_calc_cpu_mode(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
 
-Regards,
+I strongly prefer we avoid putting the return type on a different line unless
+absolutely "necessary".
 
--- 
-Nicolás Sáenz
+static union kvm_mmu_role kvm_calc_cpu_mode(struct kvm_vcpu *vcpu,
+					    const struct kvm_mmu_role_regs *regs)
 
+> +{
+> +	union kvm_mmu_role role = {0};
+> +
+> +	role.base.access = ACC_ALL;
+> +	role.base.smm = is_smm(vcpu);
+> +	role.base.guest_mode = is_guest_mode(vcpu);
+> +	role.base.direct = !____is_cr0_pg(regs);
+> +	if (!role.base.direct) {
+
+Can we check ____is_cr0_pg() instead of "direct"?  IMO that's more intuitive for
+understanding why the bits below are left zero.  I was scratching my head trying
+to figure out whether or not this was safe/correct for direct MMUs...
+
+And this indentation is quite nasty, and will only get worse.  An early return or
+a goto would solve that nicely.  I think I have a slight preference for an early
+return?
+
+	role.ext.valid = 1;
+	
+	if (!____is_cr0_pg(regs))
+		return role;
+
+	role.base.efer_nx = ____is_efer_nx(regs);
+	role.base.cr0_wp = ____is_cr0_wp(regs);
+	role.base.smep_andnot_wp = ____is_cr4_smep(regs) && !____is_cr0_wp(regs);
+	role.base.smap_andnot_wp = ____is_cr4_smap(regs) && !____is_cr0_wp(regs);
+	role.base.has_4_byte_gpte = !____is_cr4_pae(regs);
+	role.base.level = role_regs_to_root_level(regs);
+
+	role.ext.cr0_pg = 1;
+	role.ext.cr4_pae = ____is_cr4_pae(regs);
+	role.ext.cr4_smep = ____is_cr4_smep(regs);
+	role.ext.cr4_smap = ____is_cr4_smap(regs);
+	role.ext.cr4_pse = ____is_cr4_pse(regs);
+
+	/* PKEY and LA57 are active iff long mode is active. */
+	role.ext.cr4_pke = ____is_efer_lma(regs) && ____is_cr4_pke(regs);
+	role.ext.cr4_la57 = ____is_efer_lma(regs) && ____is_cr4_la57(regs);
+	role.ext.efer_lma = ____is_efer_lma(regs);
+
+	return role;
