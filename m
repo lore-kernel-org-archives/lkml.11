@@ -2,109 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E612C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350458AbiCHVaK (ORCPT
+        id S1350494AbiCHVan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:30:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        Tue, 8 Mar 2022 16:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350480AbiCHVaH (ORCPT
+        with ESMTP id S1349965AbiCHVak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 16:30:07 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8047649CB1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:29:09 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 132so243500pga.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 13:29:09 -0800 (PST)
+        Tue, 8 Mar 2022 16:30:40 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1463849273
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:29:43 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id v28so403156ljv.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 13:29:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LMQ8AOMqqmqopzig17jUsU9/I303Wa2KV8iSyK2C8QA=;
-        b=WNDbXoXIOar/wXxjMrbLZybR4KUBP9I7doIbDaHXlaOZvNyWWyEki6sfU6jGydFaRk
-         eXOv1p69nRIvQy5jat7OAdT48dIFywwEon4KKy1nYiLVVs+i6fMpNzUbGueLFWYLr6I9
-         2rQbA023WRUUnsPQW32MJnzDsUOYuvgwdHOrDBgHBVU6mOJX4XfkQG7S2orpc15vMA9G
-         0krpTjx4KgzEzHwMv4rJOZmsTRKBZ/ks2icky8g2MiZ7cCnou26T1teHclapxVJAGYIG
-         nXqx4joM5vxY6I4TLRX4ZFKuOd0IerD3ZeF6h1/jPnGRcGYo0D1BTsHJucbuZ9xlFQAY
-         4mpQ==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ITqWpEZwrmmJzxal3MypORnmA0mDOzhlH8+XcvCxIyo=;
+        b=HBj/d6ypv10UMkfaM2OS15pVbsLfF4xN6WVmpOfhU/y5gJzN5IFBq1T04eDhff8+n3
+         G2fSh+r/zEea/7VW6snxkdVJFPV846h0LVdPFFmKUFSATqCBw+wjJGQDAqaDfbX2/4WM
+         6s5tfRAAowQx5Php/TTtIUA6tereJtP6Hwk5E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LMQ8AOMqqmqopzig17jUsU9/I303Wa2KV8iSyK2C8QA=;
-        b=eID6+ZPVgsRRS0K97Ex/Gvo6i6me4eb/HS3fbdl7nEkq8k2H/Cz+h8Pl4APQHr3dKf
-         4g8kp1wcso3U5gkYxilh9uiUnfWYKm8aJzQyrMeGGeIwxapX+aK+VHxNGPDtw6EsjG5+
-         ROgRms0UFVb7ok+nsU+zJemtfwjI+D6Xb+KlztIN769YRAwVnPEN0J9NazFOW7qRw9vs
-         o+iZ7H+wMeIO1MT0o73opO1yfXYYPfWDCZHSyQ/7t13fo+zL3lg6Po8VAuAnvUYuY+0U
-         OMTte3UBq3NK9UbbBxl02VWQlK5YL3gfA0oEBsgicDQ3a0R8PXhFgjbNtuxu9e39NSmB
-         VfQw==
-X-Gm-Message-State: AOAM5304luAI8mK/jqXClHM8J1N4yza8f29p8ZAsB/j6ljbYfqocuYgC
-        GljMt3kNabqHdB5ZltGCYkK4DQ==
-X-Google-Smtp-Source: ABdhPJxaudcIUUVL6UZGM/dSdkzC6iFnk2758wDZzs2B1y5Sgh+P0ylUpx0H2Bb0QaOPv2Z/zEl48w==
-X-Received: by 2002:a63:e84b:0:b0:372:a079:302 with SMTP id a11-20020a63e84b000000b00372a0790302mr15745200pgk.272.1646774948794;
-        Tue, 08 Mar 2022 13:29:08 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id o1-20020a637e41000000b003804d0e2c9esm51728pgn.35.2022.03.08.13.29.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 13:29:07 -0800 (PST)
-Date:   Tue, 8 Mar 2022 21:29:04 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Mingwei Zhang <mizhang@google.com>
-Subject: Re: [PATCH v4 21/30] KVM: x86/mmu: Zap invalidated roots via
- asynchronous worker
-Message-ID: <YifKoCZAmymIxDTQ@google.com>
-References: <20220303193842.370645-1-pbonzini@redhat.com>
- <20220303193842.370645-22-pbonzini@redhat.com>
- <YiExLB3O2byI4Xdu@google.com>
- <YiEz3D18wEn8lcEq@google.com>
- <eeac12f0-0a18-8c63-1987-494a2032fa9d@redhat.com>
- <YiI4AmYkm2oiuiio@google.com>
- <8b8c28cf-cf54-f889-be7d-afc9f5430ecd@redhat.com>
- <YiKwFznqqiB9VRyn@google.com>
- <20497464-0606-7ea5-89b8-8f5cd56a1a68@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ITqWpEZwrmmJzxal3MypORnmA0mDOzhlH8+XcvCxIyo=;
+        b=ypH7ir+Q/6MwdfooP3Gb1qcXdWS57Potmv3H+WmwGDdLDgizhtM4HuTYNbBz3w9dkW
+         DInpn2GZcbyUpqb9h1UdDXAagC86PsMhcAeHW+bnzkusGbWx768HlQPCOms5DFu9kOjw
+         n9KygrdlZDzTsMTVZ4YMQWzMQOO35Bc911miqa7C7uJqXIDIrCb3ivrlBX4v1EHpd89q
+         jrw6LZ2KOcIdxAk1FcJZde1VuzmG1QogSGiYKmcswNyraqiKHzFoTD0edRTeP4Ih/81c
+         T+7SO4QspN5uTNvVjhczfIS7q2wElUP49cM3vYzIJqMntJw3gkPaZPEjbJXudU7vOKoD
+         F2Iw==
+X-Gm-Message-State: AOAM533/o81zSc6JOnq2LirDZQXoYEdxFhmbX0UGIys198SvGyq6dIx5
+        sohd6ohOFwuLlC6W+Ppr9tl9ApocYaWl1dyk+zM=
+X-Google-Smtp-Source: ABdhPJwfROa0IfxjdhvJmmOR18YPwSNdgmiBP/SF86c1MP6Nx60aBPXuTsRdm4OCg0faFVTY4oIucA==
+X-Received: by 2002:a2e:81d5:0:b0:247:feb8:5e25 with SMTP id s21-20020a2e81d5000000b00247feb85e25mr1020113ljg.178.1646774981105;
+        Tue, 08 Mar 2022 13:29:41 -0800 (PST)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id n5-20020a056512388500b004439696b40csm3689627lft.47.2022.03.08.13.29.40
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 13:29:40 -0800 (PST)
+Received: by mail-lj1-f174.google.com with SMTP id r22so432918ljd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 13:29:40 -0800 (PST)
+X-Received: by 2002:a2e:6f17:0:b0:248:124:9c08 with SMTP id
+ k23-20020a2e6f17000000b0024801249c08mr334510ljc.506.1646774547965; Tue, 08
+ Mar 2022 13:22:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20497464-0606-7ea5-89b8-8f5cd56a1a68@redhat.com>
+References: <20220308141437.144919-1-david@redhat.com>
+In-Reply-To: <20220308141437.144919-1-david@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 8 Mar 2022 13:22:11 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiA0KMVbLacK-Gi5_ZsZhXVi++6ePTtPrJkgf0az7r2ww@mail.gmail.com>
+Message-ID: <CAHk-=wiA0KMVbLacK-Gi5_ZsZhXVi++6ePTtPrJkgf0az7r2ww@mail.gmail.com>
+Subject: Re: [PATCH v1 00/15] mm: COW fixes part 2: reliable GUP pins of
+ anonymous pages
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        Khalid Aziz <khalid.aziz@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022, Paolo Bonzini wrote:
-> On 3/5/22 01:34, Sean Christopherson wrote:
-> > On Fri, Mar 04, 2022, Paolo Bonzini wrote:
-> > > On 3/4/22 17:02, Sean Christopherson wrote:
-> > > > On Fri, Mar 04, 2022, Paolo Bonzini wrote:
-> > > > > On 3/3/22 22:32, Sean Christopherson wrote:
-> > > > > I didn't remove the paragraph from the commit message, but I think it's
-> > > > > unnecessary now.  The workqueue is flushed in kvm_mmu_zap_all_fast() and
-> > > > > kvm_mmu_uninit_tdp_mmu(), unlike the buggy patch, so it doesn't need to take
-> > > > > a reference to the VM.
-> > > > > 
-> > > > > I think I don't even need to check kvm->users_count in the defunct root
-> > > > > case, as long as kvm_mmu_uninit_tdp_mmu() flushes and destroys the workqueue
-> > > > > before it checks that the lists are empty.
-> > > > 
-> > > > Yes, that should work.  IIRC, the WARN_ONs will tell us/you quite quickly if
-> > > > we're wrong :-)  mmu_notifier_unregister() will call the "slow" kvm_mmu_zap_all()
-> > > > and thus ensure all non-root pages zapped, but "leaking" a worker will trigger
-> > > > the WARN_ON that there are no roots on the list.
-> > > 
-> > > Good, for the record these are the commit messages I have:
-> 
-> I'm seeing some hangs in ~50% of installation jobs, both Windows and Linux.
-> I have not yet tried to reproduce outside the automated tests, or to bisect,
-> but I'll try to push at least the first part of the series for 5.18.
+On Tue, Mar 8, 2022 at 6:14 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> This series fixes memory corruptions when a GUP pin (FOLL_PIN) was taken
+> on an anonymous page and COW logic fails to detect exclusivity of the page
+> to then replacing the anonymous page by a copy in the page table [...]
 
-Out of curiosity, what was the bug?  I see this got pushed to kvm/next.
+From a cursory scan of the patches, this looks sane.
+
+I'm not sure what the next step should be, but I really would like the
+people who do a lot of pinning stuff to give it a good shake-down.
+Including both looking at the patches, but very much actually running
+it on whatever test-cases etc you people have.
+
+Please?
+
+                 Linus
