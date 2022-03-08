@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B10FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F22C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348236AbiCHP51 (ORCPT
+        id S1348241AbiCHP5b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:57:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
+        Tue, 8 Mar 2022 10:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348050AbiCHP4F (ORCPT
+        with ESMTP id S1348049AbiCHP4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:05 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5494F467
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED85A4F478
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=kaekhGQnbqIAOSbPxlFxjf8WrK3PvHPuLWeA2b7V9bc=; b=mqqPXbWytPaZMsAvo9nd4Km6Po
-        vbjrW/qS9R3kuMn5oVH1SDfNutlq8cR0X0pn37STWpZDDaTgWBUNnpWSl0tV+GmOLZBaPfd26ae/E
-        1p7HTSw0QC1L/lVa220ylqHjG7kj12MbsslHrxzFBFUpY4VTakbkOs+mFb1JB+4JhbE8hiJHo/A2U
-        6wqcDgiJlcEHePKbr4hsT1XwNkChgp3ycuQGKdB1xUlf2zGohH8lGTkECCKrAWZ3448+UWoOnG60c
-        5SRVKlE91jsk6xLqI+ycYLdDyKFJdmSfXOrkQgfFeG7ghUzbl+0Afqncp3w+rM/vsZBwH2HooGYw6
-        Bd9TiwiA==;
+        bh=pvJTiNP5ceLdw6/edn6fcpO+Sqt+miAq8Ka0H1NrBcI=; b=f+GA1mffk93cK2gqR4bqI7sw0S
+        NIYj7FziL/SQ9pyhNealxp0z8GHMqR4bRlNFgumiKFTLSfWvGr/ZjMiRxIlRq4yC0uT8ooxw8P338
+        yYiT8yUdgYNEGGl40v9Y16WoCA0H2DF6f2IL0ht81/2hwl6HjxZnZ5LjsWMh/VIqW9l3PnacfxnIl
+        yWwe6TJJUU6QIZO4W9Z4cZ0ARqiCs69i3bZ8LtYO/dcGQhU+ELXq0cn+HRZ8QmeDCrrLznCmjuhoC
+        /spHCxXAixlVq1nV/gT4MTsAFxQ8Y466E+YpEMkbNktIdQTlGuQr15imFngyUD9WMZbCxnB+LQegK
+        de5FbCsQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GUiU-Jq; Tue, 08 Mar 2022 15:54:42 +0000
+        id 1nRcAc-00GUiO-2Y; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 349C9301A50;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1F84F3007C6;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 1516E2B561917; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.051635891@infradead.org>
+        id C6DF62B55FFBD; Tue,  8 Mar 2022 16:54:38 +0100 (CET)
+Message-ID: <20220308154317.461283840@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:26 +0100
+Date:   Tue, 08 Mar 2022 16:30:16 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 15/45] x86/ibt,paravirt: Sprinkle ENDBR
+Subject: [PATCH v4 05/45] objtool: Have WARN_FUNC fall back to sym+off
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,77 +56,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Currently WARN_FUNC() either prints func+off and failing that prints
+sec+off, add an intermediate sym+off. This is useful when playing
+around with entry code.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/include/asm/paravirt.h           |    1 +
- arch/x86/include/asm/qspinlock_paravirt.h |    3 +++
- arch/x86/kernel/kvm.c                     |    3 ++-
- arch/x86/kernel/paravirt.c                |    2 ++
- 4 files changed, 8 insertions(+), 1 deletion(-)
+ tools/objtool/include/objtool/warn.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/x86/include/asm/paravirt.h
-+++ b/arch/x86/include/asm/paravirt.h
-@@ -666,6 +666,7 @@ bool __raw_callee_save___native_vcpu_is_
- 	    ".globl " PV_THUNK_NAME(func) ";"				\
- 	    ".type " PV_THUNK_NAME(func) ", @function;"			\
- 	    PV_THUNK_NAME(func) ":"					\
-+	    ASM_ENDBR							\
- 	    FRAME_BEGIN							\
- 	    PV_SAVE_ALL_CALLER_REGS					\
- 	    "call " #func ";"						\
---- a/arch/x86/include/asm/qspinlock_paravirt.h
-+++ b/arch/x86/include/asm/qspinlock_paravirt.h
-@@ -2,6 +2,8 @@
- #ifndef __ASM_QSPINLOCK_PARAVIRT_H
- #define __ASM_QSPINLOCK_PARAVIRT_H
+--- a/tools/objtool/include/objtool/warn.h
++++ b/tools/objtool/include/objtool/warn.h
+@@ -22,6 +22,8 @@ static inline char *offstr(struct sectio
+ 	unsigned long name_off;
  
-+#include <asm/ibt.h>
-+
- /*
-  * For x86-64, PV_CALLEE_SAVE_REGS_THUNK() saves and restores 8 64-bit
-  * registers. For i386, however, only 1 32-bit register needs to be saved
-@@ -39,6 +41,7 @@ asm    (".pushsection .text;"
- 	".type " PV_UNLOCK ", @function;"
- 	".align 4,0x90;"
- 	PV_UNLOCK ": "
-+	ASM_ENDBR
- 	FRAME_BEGIN
- 	"push  %rdx;"
- 	"mov   $0x1,%eax;"
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -1024,10 +1024,11 @@ asm(
- ".global __raw_callee_save___kvm_vcpu_is_preempted;"
- ".type __raw_callee_save___kvm_vcpu_is_preempted, @function;"
- "__raw_callee_save___kvm_vcpu_is_preempted:"
-+ASM_ENDBR
- "movq	__per_cpu_offset(,%rdi,8), %rax;"
- "cmpb	$0, " __stringify(KVM_STEAL_TIME_preempted) "+steal_time(%rax);"
- "setne	%al;"
--"ret;"
-+ASM_RET
- ".size __raw_callee_save___kvm_vcpu_is_preempted, .-__raw_callee_save___kvm_vcpu_is_preempted;"
- ".popsection");
- 
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -41,6 +41,7 @@ extern void _paravirt_nop(void);
- asm (".pushsection .entry.text, \"ax\"\n"
-      ".global _paravirt_nop\n"
-      "_paravirt_nop:\n\t"
-+     ASM_ENDBR
-      ASM_RET
-      ".size _paravirt_nop, . - _paravirt_nop\n\t"
-      ".type _paravirt_nop, @function\n\t"
-@@ -50,6 +51,7 @@ asm (".pushsection .entry.text, \"ax\"\n
- asm (".pushsection .entry.text, \"ax\"\n"
-      ".global paravirt_ret0\n"
-      "paravirt_ret0:\n\t"
-+     ASM_ENDBR
-      "xor %" _ASM_AX ", %" _ASM_AX ";\n\t"
-      ASM_RET
-      ".size paravirt_ret0, . - paravirt_ret0\n\t"
+ 	func = find_func_containing(sec, offset);
++	if (!func)
++		func = find_symbol_containing(sec, offset);
+ 	if (func) {
+ 		name = func->name;
+ 		name_off = offset - func->offset;
 
 
