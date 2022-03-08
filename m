@@ -2,81 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E952C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244298AbiCHAtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 19:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
+        id S1343753AbiCHAvT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 19:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239014AbiCHAtr (ORCPT
+        with ESMTP id S244301AbiCHAvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 19:49:47 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5EC2BDE;
-        Mon,  7 Mar 2022 16:48:48 -0800 (PST)
-X-UUID: 86dc2c76fc1d4523a29abb31b9ace1f5-20220308
-X-UUID: 86dc2c76fc1d4523a29abb31b9ace1f5-20220308
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <qii.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 192907405; Tue, 08 Mar 2022 08:48:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 8 Mar 2022 08:48:39 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Mar 2022 08:48:38 +0800
-Message-ID: <731cc7131849095bcbe50e7929b1b9d7e76c766e.camel@mediatek.com>
-Subject: Re: [PATCH v1 1/2] dt-bindings: i2c: update bindings for MT8168 SoC
-From:   Qii Wang <qii.wang@mediatek.com>
-To:     Kewei Xu <kewei.xu@mediatek.com>, <wsa@the-dreams.de>
-CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
-        <liguo.zhang@mediatek.com>, <caiyu.chen@mediatek.com>,
-        <housong.zhang@mediatek.com>, <yuhan.wei@mediatek.com>
-Date:   Tue, 8 Mar 2022 08:48:38 +0800
-In-Reply-To: <20220307033649.11564-2-kewei.xu@mediatek.com>
-References: <20220307033649.11564-1-kewei.xu@mediatek.com>
-         <20220307033649.11564-2-kewei.xu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
+        Mon, 7 Mar 2022 19:51:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE11F28E29
+        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:50:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66DAFB81686
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 00:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD099C340EF;
+        Tue,  8 Mar 2022 00:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1646700616;
+        bh=Kv+yY9E+DYOUfGXI4e3etZBeNRkR4t4l0wyhFQINGm4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=icoTRQd5NmdJTiFKjqLxohZMoKg1VLUj244SwSAg3OjjkIg4C0hSdDvv8VB73qd5h
+         tKSNRNKZhlTu24R5AuQLD5Oz4CiNZ4o0SBneRR5sUTHkD7XnaQlvTR+W/ocnxGJL83
+         p5kij24S6LMz1dJ82NPR3HZmFIae5LFUOtmHU5Ys=
+Date:   Mon, 7 Mar 2022 16:50:15 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH] mm: thp: don't have to lock page anymore when splitting
+ PMD
+Message-Id: <20220307165015.77fbcbe9e1fa2fe15f3eb239@linux-foundation.org>
+In-Reply-To: <CAHbLzkqY69nFniK+ckQaeu117Q+OqZ2hvFEdVbZaW2C_zAzDbg@mail.gmail.com>
+References: <20220303222014.517033-1-shy828301@gmail.com>
+        <CADFyXm6W9CVkO4XPYep-tHg55c8m8NES783kcVYrdjSMbzYoDA@mail.gmail.com>
+        <CAHbLzkriyBy2HqjssurLSnhoyuUzpJRZjMPNx34MTgxeO0dddg@mail.gmail.com>
+        <13ad4ba1-2a88-9459-3995-70af36aba33e@redhat.com>
+        <20220306180718.6d4e6233130b94fdad98df88@linux-foundation.org>
+        <84a6c9c1-d18f-6955-2666-0a2d7bce6094@redhat.com>
+        <20220307154326.6494f7fca7def491a23e5df1@linux-foundation.org>
+        <CAHbLzkqY69nFniK+ckQaeu117Q+OqZ2hvFEdVbZaW2C_zAzDbg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-07 at 11:36 +0800, Kewei Xu wrote:
-> Add a DT binding documentation for the MT8168 soc.
-> 
-> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
+On Mon, 7 Mar 2022 16:03:12 -0800 Yang Shi <shy828301@gmail.com> wrote:
 
-Reviewed-by: Qii Wang <qii.wang@mediatek.com>
-
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt | 1 +
->  1 file changed, 1 insertion(+)
+> On Mon, Mar 7, 2022 at 3:43 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > @@ -2133,8 +2133,6 @@ void __split_huge_pmd(struct vm_area_str
+> >  {
+> >         spinlock_t *ptl;
+> >         struct mmu_notifier_range range;
+> > -       bool do_unlock_folio = false;
+> > -       pmd_t _pmd;
+> >
+> >         mmu_notifier_range_init(&range, MMU_NOTIFY_CLEAR, 0, vma, vma->vm_mm,
+> >                                 address & HPAGE_PMD_MASK,
+> > @@ -2153,42 +2151,14 @@ void __split_huge_pmd(struct vm_area_str
+> >                         goto out;
+> >         }
+> >
+> > -repeat:
+> >         if (pmd_trans_huge(*pmd)) {
+> > -               if (!folio) {
+> > +               if (!folio)
+> >                         folio = page_folio(pmd_page(*pmd));
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-> b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-> index 88f74a3c81ec..026985b8f61a 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-> @@ -12,6 +12,7 @@ Required properties:
->        "mediatek,mt7622-i2c": for MediaTek MT7622
->        "mediatek,mt7623-i2c", "mediatek,mt6577-i2c": for MediaTek
-> MT7623
->        "mediatek,mt7629-i2c", "mediatek,mt2712-i2c": for MediaTek
-> MT7629
-> +      "mediatek,mt8168-i2c": for MediaTek MT8168
->        "mediatek,mt8173-i2c": for MediaTek MT8173
->        "mediatek,mt8183-i2c": for MediaTek MT8183
->        "mediatek,mt8186-i2c": for MediaTek MT8186
+> We could remove the "if (pmd_trans_huge(*pmd))" section since folio is
+> actually not used afterward at all.
+
+>
+> ...
+>
+> 
+> With the above if removed, this could be changed to:
+> 
+> if (pmd_trans_huge(*pmd) || pmd_devmap(*pmd) ||
+>             is_pmd_migration_entry(*pmd))
+>                 __split_huge_pmd_locked(vma, pmd, range.start, freeze);
+> 
+
+OK, looks sane.  Can someone please test all this?
+
+--- a/mm/huge_memory.c~mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd-fix
++++ a/mm/huge_memory.c
+@@ -2151,12 +2151,10 @@ void __split_huge_pmd(struct vm_area_str
+ 			goto out;
+ 	}
+ 
+-	if (pmd_trans_huge(*pmd)) {
+-		if (!folio)
+-			folio = page_folio(pmd_page(*pmd));
+-	} else if (!(pmd_devmap(*pmd) || is_pmd_migration_entry(*pmd)))
+-		goto out;
+-	__split_huge_pmd_locked(vma, pmd, range.start, freeze);
++	if (pmd_trans_huge(*pmd) || pmd_devmap(*pmd) ||
++	    is_pmd_migration_entry(*pmd)))
++		__split_huge_pmd_locked(vma, pmd, range.start, freeze);
++
+ out:
+ 	spin_unlock(ptl);
+ 	/*
+_
 
