@@ -2,139 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 865A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 943ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348465AbiCHRtp (ORCPT
+        id S1349271AbiCHRuK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:49:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        Tue, 8 Mar 2022 12:50:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiCHRtm (ORCPT
+        with ESMTP id S1349265AbiCHRuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:49:42 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7E34839E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:48:45 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id k92so8772592pjh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:48:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9EY+jbz7yxv8opR/z4nwJHkmZWRpRix7BFXhHKCoISQ=;
-        b=HXAGF40IVistJKOXvEgTZPX31PpRTlv2NhZQsp0w0nAlT2c3IssIMwMm2CLCQGRgfV
-         LqMUB0KqsayxM/XW+vAOSclwOFINpQGuUCmIaQTzvbU/PELYLARX16koTM8NzkLc3ELA
-         8ihK5SuqfLYJm5oCY7ubBwGo1uTABBeS3ChzZTuMt/SBatkzzUgdsUSHyxb6ZYtsczQt
-         TlruRmDyHW292Lc2Eg7PbhrmWIRY7OSl43JwLv7e7Co0iqfRRlj5UGmwvbrZTVgry/t7
-         wsHLI7NrvxKHkQGXKWpe8I/MqFFP96YKNsRNAHneRx1okFTEcK5kyY+jm0+nM1pCUD+F
-         Y4Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9EY+jbz7yxv8opR/z4nwJHkmZWRpRix7BFXhHKCoISQ=;
-        b=ossaLhBN4ivYVlR3T01Pd+BtXvbFQ1lktNGcQTB4Yiyq2+310RUsFYcoVeIZlCABht
-         IRZ/kckgQJsc4EJvf6rV7RyO1OE1nadunrICfecBIU6f8YoLOpSqzL86s1EaNRRJsjFO
-         fAcgBRpsi6V0Mlt/0RcIKOjPVAc7hGiwIhKIgy0PiOOJDnFXwX5cr+KirfIMmyeLhYZs
-         i9CAdVBLds6NcLss9N4s4ssQPP2LZUCa9mSWztjinYWtQS8O8Se+pOLCaWGNLyQ70cDb
-         65roJcVpbTU8X0Dga3n+d9Ct9B8PWglFiond00Ynp2by72NVnp2j5PYt87GdXCyP2eN0
-         0yPQ==
-X-Gm-Message-State: AOAM530bOEWwZrbnf0u3gkkdl3T9gUYVSYMhcHlCzOtm7CWmRMiq5VZo
-        0ArkfueoSLdSW+8Ec+UfFESw+g==
-X-Google-Smtp-Source: ABdhPJzAMqaA2eVSkxGml9gMR9kbyJkC+ocfJL8hF2J8qHUTa3dshAXxR+KRdUTYP8+4wSVp0hTH3w==
-X-Received: by 2002:a17:90a:5d93:b0:1bc:4f9c:8eed with SMTP id t19-20020a17090a5d9300b001bc4f9c8eedmr5918639pji.180.1646761725209;
-        Tue, 08 Mar 2022 09:48:45 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i11-20020a056a00004b00b004f6907b2cd3sm19046452pfk.122.2022.03.08.09.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:48:44 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:48:40 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-Subject: Re: [PATCH v2 11/25] KVM: x86/mmu: remove
- kvm_calc_shadow_root_page_role_common
-Message-ID: <YieW+PZarPdsSnO7@google.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-12-pbonzini@redhat.com>
+        Tue, 8 Mar 2022 12:50:09 -0500
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF2C4839E
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:49:11 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6100:2d37:4115:c358])
+        by baptiste.telenet-ops.be with bizsmtp
+        id 3tp72700V1Yj8bA01tp7Qb; Tue, 08 Mar 2022 18:49:09 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRdxL-003DQP-4j; Tue, 08 Mar 2022 18:49:07 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nRdxK-006gpQ-H6; Tue, 08 Mar 2022 18:49:06 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] dt-bindings: firmware: arm,scpi: Add missing maxItems to mboxes/shmem
+Date:   Tue,  8 Mar 2022 18:49:02 +0100
+Message-Id: <58b7c706f259f88a61bfe82d9106fe0a93a9838d.1646761693.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-12-pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> kvm_calc_shadow_root_page_role_common is the same as
-> kvm_calc_cpu_mode except for the level, which is overwritten
-> afterwards in kvm_calc_shadow_mmu_root_page_role
-> and kvm_calc_shadow_npt_root_page_role.
-> 
-> role.base.direct is already set correctly for the CPU mode,
-> and CR0.PG=1 is required for VMRUN so it will also be
-> correct for nested NPT.
+"make dt_binding_check":
 
-Bzzzt, this is wrong, the nested NPT MMU is indirect but will be computed as direct.
+    Documentation/devicetree/bindings/firmware/arm,scpi.example.dt.yaml: scpi: shmem: [[2], [1]] is too long
 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 21 ++-------------------
->  1 file changed, 2 insertions(+), 19 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 3ffa6f2bf991..31874fad12fb 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -4796,27 +4796,11 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
->  	reset_tdp_shadow_zero_bits_mask(context);
->  }
->  
-> -static union kvm_mmu_role
-> -kvm_calc_shadow_root_page_role_common(struct kvm_vcpu *vcpu,
-> -				      const struct kvm_mmu_role_regs *regs)
-> -{
-> -	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs);
-> -
-> -	role.base.smep_andnot_wp = role.ext.cr4_smep && !____is_cr0_wp(regs);
-> -	role.base.smap_andnot_wp = role.ext.cr4_smap && !____is_cr0_wp(regs);
-> -	role.base.has_4_byte_gpte = ____is_cr0_pg(regs) && !____is_cr4_pae(regs);
-> -
-> -	return role;
-> -}
-> -
->  static union kvm_mmu_role
->  kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
->  				   const struct kvm_mmu_role_regs *regs)
->  {
-> -	union kvm_mmu_role role =
-> -		kvm_calc_shadow_root_page_role_common(vcpu, regs);
-> -
-> -	role.base.direct = !____is_cr0_pg(regs);
-> +	union kvm_mmu_role role = kvm_calc_cpu_mode(vcpu, regs);
->  
->  	if (!____is_efer_lma(regs))
->  		role.base.level = PT32E_ROOT_LEVEL;
-> @@ -4869,9 +4853,8 @@ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
->  				   const struct kvm_mmu_role_regs *regs)
->  {
->  	union kvm_mmu_role role =
-> -		kvm_calc_shadow_root_page_role_common(vcpu, regs);
-> +               kvm_calc_cpu_mode(vcpu, regs);
+Fix this by adding a proper maxItems value to the shmem property,
+and to the related mboxes property.
 
-No need to split this line with the less verbose name.
+Fix the grouping of the "mboxes" property in the example.
 
->  
-> -	role.base.direct = false;
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+---
+Exposed by commit 39bd2b6a3783b899 ("dt-bindings: Improve phandle-array
+schemas").
 
-As above, this line needs to stay.
+v2:
+  - Change limit from 2 to 4, as requested by Sudeep,
+  - Add Acked-by,
+  - Add maxItems to mboxes properties,
+  - Group mboxes in example.
+---
+ Documentation/devicetree/bindings/firmware/arm,scpi.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->  	role.base.level = kvm_mmu_get_tdp_level(vcpu);
->  
->  	return role;
-> -- 
-> 2.31.1
-> 
-> 
+diff --git a/Documentation/devicetree/bindings/firmware/arm,scpi.yaml b/Documentation/devicetree/bindings/firmware/arm,scpi.yaml
+index 800417a76bda0bd9..1f9322925e7c9f2d 100644
+--- a/Documentation/devicetree/bindings/firmware/arm,scpi.yaml
++++ b/Documentation/devicetree/bindings/firmware/arm,scpi.yaml
+@@ -43,6 +43,7 @@ properties:
+       by remote SCP firmware for use by SCPI message protocol should be
+       specified in any order.
+     minItems: 1
++    maxItems: 4
+ 
+   shmem:
+     description:
+@@ -51,6 +52,7 @@ properties:
+       be any memory reserved for the purpose of this communication between the
+       processors.
+     minItems: 1
++    maxItems: 4
+ 
+   power-controller:
+     type: object
+@@ -235,7 +237,7 @@ examples:
+     firmware {
+         scpi {
+             compatible = "amlogic,meson-gxbb-scpi", "arm,scpi-pre-1.0";
+-            mboxes = <&mailbox 1 &mailbox 2>;
++            mboxes = <&mailbox 1>, <&mailbox 2>;
+             shmem = <&cpu_scp_lpri>, <&cpu_scp_hpri>;
+ 
+             scpi_sensors1: sensors {
+-- 
+2.25.1
+
