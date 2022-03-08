@@ -2,88 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D982DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349596AbiCHTeI (ORCPT
+        id S1349986AbiCHTeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 14:34:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        Tue, 8 Mar 2022 14:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349436AbiCHTeH (ORCPT
+        with ESMTP id S1349436AbiCHTeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 14:34:07 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A435553B4F;
-        Tue,  8 Mar 2022 11:33:09 -0800 (PST)
-Received: from nazgul.tnic (dynamic-002-247-253-133.2.247.pool.telefonica.de [2.247.253.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F22091EC064E;
-        Tue,  8 Mar 2022 20:33:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1646767984;
+        Tue, 8 Mar 2022 14:34:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3BAC53B6B
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:33:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646767997;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=OYNiKYESHbJzHK2pSiTjx95k/lbxvnxmuLbmGVL/AhY=;
-        b=i5zRFdrpK8KYCCl8uZHUc22dp9WKizOpoyWUJ4RJliF3+o+PPYjT+OBbElgNpC/jB2oEW+
-        cFaB+4Z4oSt5TSdxPJNUi5+Qrz+HXaBnD7qjfjYKgVcGgw5QPVMBbd0G0z6uPNBLWCx3uH
-        /YFY29m4pUSU7HRMhFYMxje1kcbyhlA=
-Date:   Tue, 8 Mar 2022 20:32:51 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Carlos Bilbao <carlos.bilbao@amd.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-        x86@kernel.org, yazen.ghannam@amd.com,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        bilbao@vt.edu
-Subject: Re: [PATCH] x86/mce: Unify vendors grading logic and provide AMD
- machine error checks
-Message-ID: <YievKnn5hSK0AvMt@nazgul.tnic>
-References: <20220308184133.712761-1-carlos.bilbao@amd.com>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bmFvlno7qSph5d/HcceOLIPkKssn1EWwfPpWF2drkf8=;
+        b=UD5qHH96lfvSSr1C6bXNDWeIpIrPW4bGiTIocBD+Dfg8Uw/ejoWznyfRdmwDaX7YuhbcJ1
+        9avAuWiFtx0NTBJTvQvlIuMQSYlm80gvVrbw3WyfEHN1Ul8Qe9EfV0Ah+lLJ4H8M1dHz3r
+        54U4oV/XxiQwwT+UIlqaztFNtNXWhtw=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-253-RPgSWuTwMuqy0MBBihgJ4g-1; Tue, 08 Mar 2022 14:33:16 -0500
+X-MC-Unique: RPgSWuTwMuqy0MBBihgJ4g-1
+Received: by mail-io1-f69.google.com with SMTP id w25-20020a6bd619000000b00640ddd0ad11so183026ioa.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 11:33:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=bmFvlno7qSph5d/HcceOLIPkKssn1EWwfPpWF2drkf8=;
+        b=B++K/T8/qZt4XHx16dQYOCSMWpqyLA3Mk8QiPRyrJ7itM1NTSJ1UX+qtyMBAv+79Nc
+         dIMfpdKlHPtORB+voe4RoNIFD48CMG6PF0CZshRLPJNfss2WHolylQw3UAZ3LKCWJ8nt
+         DeIRTQ0TPXpcUC6LQ01f/g7E+XaxW5mwxSw3yKDlEXcmBrbWFhM9HXyHx/FPgA2ZTpmT
+         i/NBGf0YEQ6vRKq6WABhtq0W5h5Z6KTea5FTriWaVvPMjLHJK37A3GjE3V5hyPfmi0Jy
+         xIrjQsvkuKDsMPc04RIFumj/A3S5sINa+4zLd1CS1+9Z7qEQavpiDooVYTXkmzGJNAal
+         0+vQ==
+X-Gm-Message-State: AOAM532mv2lXylu7Ya/3G+TuR9GmE0iMODgkdClCzuNFmABWkh9a0bn3
+        G9KK7rnLO16DswtxN+CuAzhxD6wJQIT8jpMlomegrLGx+eO4OonmlB82tCCzc4dw1IDPfjLjzP7
+        lL+UD6JAC3Lo5CKPTsA+CIore
+X-Received: by 2002:a05:6638:3014:b0:317:9daf:c42c with SMTP id r20-20020a056638301400b003179dafc42cmr16033238jak.10.1646767995255;
+        Tue, 08 Mar 2022 11:33:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxDpYCevcieEIuPGlNXODXoatrNQxiFQEvGtMSUMx1SJ+hhy7jWFeUDPSTwNXSqLKnEDsZnrQ==
+X-Received: by 2002:a05:6638:3014:b0:317:9daf:c42c with SMTP id r20-20020a056638301400b003179dafc42cmr16033227jak.10.1646767995008;
+        Tue, 08 Mar 2022 11:33:15 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id k5-20020a5d97c5000000b006412c791f90sm10607942ios.31.2022.03.08.11.33.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 11:33:14 -0800 (PST)
+Date:   Tue, 8 Mar 2022 12:33:12 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        liulongfang <liulongfang@huawei.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        "Jonathan Cameron" <jonathan.cameron@huawei.com>,
+        "Wangzhou (B)" <wangzhou1@hisilicon.com>,
+        Xu Zaibo <xuzaibo@huawei.com>
+Subject: Re: [PATCH v8 8/9] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Message-ID: <20220308123312.1f4ba768.alex.williamson@redhat.com>
+In-Reply-To: <BN9PR11MB5276EBE887402EBE22630BAB8C099@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+ <20220303230131.2103-9-shameerali.kolothum.thodi@huawei.com>
+ <20220304205720.GE219866@nvidia.com>
+ <20220307120513.74743f17.alex.williamson@redhat.com>
+ <aac9a26dc27140d9a1ce56ebdec393a6@huawei.com>
+ <20220307125239.7261c97d.alex.williamson@redhat.com>
+ <BN9PR11MB5276EBE887402EBE22630BAB8C099@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220308184133.712761-1-carlos.bilbao@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 12:41:34PM -0600, Carlos Bilbao wrote:
-> AMD's severity grading covers very few machine errors. In the graded cases
-> there are no user-readable messages, complicating debugging of critical
-> hardware errors. Furthermore, with the current implementation AMD MCEs have
-> no support for the severities-coverage file. Adding new severities for AMD
-> with the current logic would be too convoluted.
-> 
-> Fix the above issues including AMD severities to the severity table, in
-> combination with Intel MCEs. Unify the severity grading logic of both
-> vendors. Label the vendor-specific cases (e.g. cases with different
-> registers) where checks cannot be implicit with the available features.
-> 
-> Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
-> ---
->  arch/x86/include/asm/mce.h         |   7 ++
->  arch/x86/kernel/cpu/mce/severity.c | 188 +++++++++++++++--------------
->  2 files changed, 103 insertions(+), 92 deletions(-)
+On Tue, 8 Mar 2022 08:11:11 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-Sorry, maybe you're too new to this and you probably haven't read the
-old discussions we have had about the severity grading turd. In order to
-save you some time: adding more to that macro insanity is not going to
-happen.
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Tuesday, March 8, 2022 3:53 AM =20
+> > > =20
+> > > > I think we still require acks from Bjorn and Zaibo for select patch=
+es
+> > > > in this series. =20
+> > >
+> > > I checked with Ziabo. He moved projects and is no longer looking into=
+ =20
+> > crypto stuff. =20
+> > > Wangzhou and LiuLongfang now take care of this. Received acks from =20
+> > Wangzhou =20
+> > > already and I will request Longfang to provide his. Hope that's ok. =
+=20
+> >=20
+> > Maybe a good time to have them update MAINTAINERS as well.  Thanks,
+> >  =20
+>=20
+> I have one question here (similar to what we discussed for mdev before).
+>=20
+> Now we are adding vendor specific drivers under /drivers/vfio. Two drivers
+> on radar and more will come. Then what would be the criteria for=20
+> accepting such a driver? Do we prefer to a model in which the author shou=
+ld
+> provide enough background for vfio community to understand how it works=20
+> or as done here just rely on the PF driver owner to cover device specific
+> code?
+>=20
+> If the former we may need document some process for what information
+> is necessary and also need secure increased review bandwidth from key
+> reviewers in vfio community.
+>=20
+> If the latter then how can we guarantee no corner case overlooked by both
+> sides (i.e. how to know the coverage of total reviews)? Another open is w=
+ho
+> from the PF driver sub-system should be considered as the one to give the
+> green signal. If the sub-system maintainer trusts the PF driver owner and
+> just pulls commits from him then having the r-b from the PF driver owner =
+is
+> sufficient. But if the sub-system maintainer wants to review detail change
+> in every underlying driver then we probably also want to get the ack from
+> the maintainer.
+>=20
+> Overall I didn't mean to slow down the progress of this series. But above
+> does be some puzzle occurred in my review. =F0=9F=98=8A
 
-The AMD severity grading functions are *actually* readable vs this
-abomination which I hate with passion.
+Hi Kevin,
 
-If you want to add more logic, you should add to mce_severity_amd(),
-perhaps call other helper functions which grade based on a certain
-aspect of the error type, split the logic, use comments, etc, but
-*definitely* not this.
+Good questions, I'd like a better understanding of expectations as
+well.  I think the intentions are the same as any other sub-system, the
+drivers make use of shared interfaces and extensions and the role of
+the sub-system should be to make sure those interfaces are used
+correctly and extensions fit well within the overall design.  However,
+just as the network maintainer isn't expected to fully understand every
+NIC driver, I think/hope we have the same expectations here.  It's
+certainly a benefit to the community and perceived trustworthiness if
+each driver outlines its operating model and security nuances, but
+those are only ever going to be the nuances identified by the people
+who have the access and energy to evaluate the device.
 
-Thx.
+It's going to be up to the community to try to determine that any new
+drivers are seriously considering security and not opening any new gaps
+relative to behavior using the base vfio-pci driver.  For the driver
+examples we have, this seems a bit easier than evaluating an entire
+mdev device because they're largely providing direct access to the
+device rather than trying to multiplex a shared physical device.  We
+can therefore focus on incremental functionality, as both drivers have
+done, implementing a boilerplate vendor driver, then adding migration
+support.  I imagine this won't always be the case though and some
+drivers will re-implement much of the core to support further emulation
+and shared resources.
 
--- 
-Regards/Gruss,
-    Boris.
+So how do we as a community want to handle this?  I wouldn't mind, I'd
+actually welcome, some sort of review requirement for new vfio vendor
+driver variants.  Is that reasonable?  What would be the criteria?
+Approval from the PF driver owner, if different/necessary, and at least
+one unaffiliated reviewer (preferably an active vfio reviewer or
+existing vfio variant driver owner/contributor)?  Ideas welcome.
+Thanks,
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Alex
+
