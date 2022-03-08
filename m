@@ -2,93 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C291DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 11:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346412AbiCHLOq (ORCPT
+        id S1346353AbiCHLQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        Tue, 8 Mar 2022 06:16:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346444AbiCHLOk (ORCPT
+        with ESMTP id S238474AbiCHLQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:14:40 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712273AA6F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 03:13:42 -0800 (PST)
+        Tue, 8 Mar 2022 06:16:24 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D433B544;
+        Tue,  8 Mar 2022 03:15:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646738022; x=1678274022;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pCYELmXBkIigiPJtVwTBqLUssyAEYgfH3V+jgi7461E=;
-  b=C03Q7OHtgVi0z+HvN/DJnwBTbsOE1//xHVak6zbiwicAW/ZSleiVoKuf
-   MXdpDMhBg2ckizrpekjXuJ+3DtUo5eYCl7vNWgq73Y51EPUL87llhsniS
-   bS4qVk3GtU1dTzG5vG/ZQsG4nC7KeyjNXEGyS82AvDeAFkN042BqyQWdK
-   l3nuhEut3NNNwhIcfNzqgYx4ogfDWqAqdM+ZYxniEu7gBtDo93+WWLLWD
-   NHxNVwkSts+csb69WXnn+oKZShtfSzV1cVqsOGhCxjRwpvE+p9W50J6IJ
-   /+8BvTJas41yt+eez10bB2s7f9Z8S/CaZWEAJpym03P+Ykq0AzpZXzKKB
+  t=1646738128; x=1678274128;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=KoWUG7e7YIIFnTkCHQYkhAmq+KJ3tI1osWCdZnLLdoA=;
+  b=LfuroAc2KzuWJh/WvWUH0MvosJfnabbIobdUGxpjv6rzXc3t7YAUh67U
+   IfumdSV6EOgPa17PqC/CcA084xydLTmo5vGjYVOcpYYO5WglX2ISDRNM8
+   BdyyGqKOllKPZCZK1etLOd8mzbXgRTe0C36YnqrcmDwKApBVJz8U58E6O
+   5ZLF3tSd/FTPUnpkpz65Hij7ejXtZkknsZoUp7eDdYdccmT2ZXJ9c/6s5
+   DPPvwyR+eIyCl8HPA3Xx5//lMQxec9zwt7hhSdeEyUHYHhvzjMs75lnYS
+   GxIiaulK6/chQLLP2GIPsW2Mho5YdF6p7pRO6pycvv19tAEZpNZqqQ0jx
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315374225"
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="235267719"
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="315374225"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:13:22 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="235267719"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:15:27 -0800
 X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="595854279"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Mar 2022 03:13:20 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRXmJ-0001Je-Hh; Tue, 08 Mar 2022 11:13:19 +0000
-Date:   Tue, 8 Mar 2022 19:12:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wei Fu <wefu@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
-        Liu Shaohua <liush@allwinnertech.com>,
-        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>
-Subject: [ammarfaizi2-block:palmer/linux/riscv-d1 10/12] WARNING: modpost:
- vmlinux.o(.text.unlikely+0x1dc): Section mismatch in reference from the
- function riscv_cpufeature_patch_func() to the function
- .init.text:cpufeature_probe()
-Message-ID: <202203081902.SJP6xqjp-lkp@intel.com>
+   d="scan'208";a="513069069"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 03:15:24 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with ESMTP id 4CA01204C3;
+        Tue,  8 Mar 2022 13:15:22 +0200 (EET)
+Date:   Tue, 8 Mar 2022 13:15:22 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Subject: Re: [PATCH v3 1/1] device property: Allow error pointer to be passed
+ to fwnode APIs
+Message-ID: <Yic6yr6aycu7IHHh@paasikivi.fi.intel.com>
+References: <20220307202949.75300-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220307202949.75300-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-d1
-head:   b3cda759adb0111b5b3efd3a0b986864b647a94a
-commit: e1dda1383ff02ab54b09c2173527ee1e79a220ba [10/12] riscv: add RISC-V Svpbmt extension support
-config: riscv-defconfig (https://download.01.org/0day-ci/archive/20220308/202203081902.SJP6xqjp-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e1dda1383ff02ab54b09c2173527ee1e79a220ba
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-d1
-        git checkout e1dda1383ff02ab54b09c2173527ee1e79a220ba
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+Hi Andy,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This makes secondary handling quite a big nicer, thanks! A few comments
+below. Apart from that,
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
->> WARNING: modpost: vmlinux.o(.text.unlikely+0x1dc): Section mismatch in reference from the function riscv_cpufeature_patch_func() to the function .init.text:cpufeature_probe()
-The function riscv_cpufeature_patch_func() references
-the function __init cpufeature_probe().
-This is often because riscv_cpufeature_patch_func lacks a __init
-annotation or the annotation of cpufeature_probe is wrong.
+On Mon, Mar 07, 2022 at 10:29:49PM +0200, Andy Shevchenko wrote:
+> Some of the fwnode APIs might return an error pointer instead of NULL
+> or valid fwnode handle. The result of such API call may be considered
+> optional and hence the test for it is usually done in a form of
+> 
+> 	fwnode = fwnode_find_reference(...);
+> 	if (IS_ERR(fwnode))
+> 		...error handling...
+> 
+> Nevertheless the resulting fwnode may have bumped the reference count
+> and hence caller of the above API is obliged to call fwnode_handle_put().
+> Since fwnode may be not valid either as NULL or error pointer the check
+> has to be performed there. This approach uglifies the code and adds
+> a point of making a mistake, i.e. forgetting about error point case.
+> 
+> To prevent this, allow an error pointer to be passed to the fwnode APIs.
+> 
+> Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
+> Reported-by: Nuno Sá <nuno.sa@analog.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Tested-by: Nuno Sá <nuno.sa@analog.com>
+> ---
+> 
+> v3: dropped test of secondary fwnode (Nuno), added tag (Nuno), amended commit message
+> v2: adjusted the entire fwnode API (Sakari)
+> 
+> Nuno, can you re-test this with the ltc2983 series to be sure it is still okay?
+> 
+>  drivers/base/property.c | 76 +++++++++++++++++++++++------------------
+>  include/linux/fwnode.h  | 10 +++---
+>  2 files changed, 48 insertions(+), 38 deletions(-)
+> 
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index c0e94cce9c29..635a0e556a4f 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/acpi.h>
+>  #include <linux/export.h>
+> +#include <linux/fwnode.h>
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Is this intended? linux/property.h already includes linux/fwnode.h.
+
+>  #include <linux/kernel.h>
+>  #include <linux/of.h>
+>  #include <linux/of_address.h>
+> @@ -47,12 +48,14 @@ bool fwnode_property_present(const struct fwnode_handle *fwnode,
+>  {
+>  	bool ret;
+>  
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return false;
+> +
+>  	ret = fwnode_call_bool_op(fwnode, property_present, propname);
+> -	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
+> -	    !IS_ERR_OR_NULL(fwnode->secondary))
+> -		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
+> -					 propname);
+> -	return ret;
+> +	if (ret == true)
+
+It's already bool. I'd instead use:
+
+	if (ret)
+
+> +		return ret;
+> +
+> +	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_property_present);
+>  
+> @@ -232,15 +235,16 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
+>  {
+>  	int ret;
+>  
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return -EINVAL;
+> +
+>  	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
+>  				 elem_size, val, nval);
+> -	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+> -	    !IS_ERR_OR_NULL(fwnode->secondary))
+> -		ret = fwnode_call_int_op(
+> -			fwnode->secondary, property_read_int_array, propname,
+> -			elem_size, val, nval);
+> +	if (ret != -EINVAL)
+> +		return ret;
+>  
+> -	return ret;
+> +	return fwnode_call_int_op(fwnode->secondary, property_read_int_array, propname,
+> +				  elem_size, val, nval);
+>  }
+>  
+>  /**
+> @@ -371,14 +375,16 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+>  {
+>  	int ret;
+>  
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return -EINVAL;
+> +
+>  	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
+>  				 val, nval);
+> -	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+> -	    !IS_ERR_OR_NULL(fwnode->secondary))
+> -		ret = fwnode_call_int_op(fwnode->secondary,
+> -					 property_read_string_array, propname,
+> -					 val, nval);
+> -	return ret;
+> +	if (ret != -EINVAL)
+> +		return ret;
+> +
+> +	return fwnode_call_int_op(fwnode->secondary, property_read_string_array, propname,
+> +				  val, nval);
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_property_read_string_array);
+>  
+> @@ -480,15 +486,16 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
+>  {
+>  	int ret;
+>  
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return -ENOENT;
+> +
+>  	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+>  				 nargs, index, args);
+> +	if (ret == 0)
+> +		return ret;
+>  
+> -	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+> -	    !IS_ERR_OR_NULL(fwnode->secondary))
+> -		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
+> -					 prop, nargs_prop, nargs, index, args);
+> -
+> -	return ret;
+> +	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
+> +				  nargs, index, args);
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
+>  
+> @@ -698,7 +705,7 @@ fwnode_get_next_available_child_node(const struct fwnode_handle *fwnode,
+>  {
+>  	struct fwnode_handle *next_child = child;
+>  
+> -	if (!fwnode)
+> +	if (IS_ERR_OR_NULL(fwnode))
+>  		return NULL;
+>  
+>  	do {
+> @@ -722,16 +729,16 @@ struct fwnode_handle *device_get_next_child_node(struct device *dev,
+>  	const struct fwnode_handle *fwnode = dev_fwnode(dev);
+>  	struct fwnode_handle *next;
+>  
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return NULL;
+> +
+>  	/* Try to find a child in primary fwnode */
+>  	next = fwnode_get_next_child_node(fwnode, child);
+>  	if (next)
+>  		return next;
+>  
+>  	/* When no more children in primary, continue with secondary */
+> -	if (fwnode && !IS_ERR_OR_NULL(fwnode->secondary))
+> -		next = fwnode_get_next_child_node(fwnode->secondary, child);
+> -
+> -	return next;
+> +	return fwnode_get_next_child_node(fwnode->secondary, child);
+>  }
+>  EXPORT_SYMBOL_GPL(device_get_next_child_node);
+>  
+> @@ -798,6 +805,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
+>   */
+>  bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
+>  {
+> +	if (IS_ERR_OR_NULL(fwnode))
+> +		return false;
+> +
+>  	if (!fwnode_has_op(fwnode, device_is_available))
+>  		return true;
+>  
+> @@ -988,14 +998,14 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
+>  		parent = fwnode_graph_get_port_parent(prev);
+>  	else
+>  		parent = fwnode;
+> +	if (IS_ERR_OR_NULL(parent))
+> +		return NULL;
+>  
+>  	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
+> +	if (ep)
+> +		return ep;
+>  
+> -	if (IS_ERR_OR_NULL(ep) &&
+> -	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
+> -		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+> -
+> -	return ep;
+> +	return fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+>  }
+>  EXPORT_SYMBOL_GPL(fwnode_graph_get_next_endpoint);
+>  
+> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+> index 3a532ba66f6c..7defac04f9a3 100644
+> --- a/include/linux/fwnode.h
+> +++ b/include/linux/fwnode.h
+> @@ -148,12 +148,12 @@ struct fwnode_operations {
+>  	int (*add_links)(struct fwnode_handle *fwnode);
+>  };
+>  
+> -#define fwnode_has_op(fwnode, op)				\
+> -	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
+> +#define fwnode_has_op(fwnode, op)					\
+> +	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
+> +
+>  #define fwnode_call_int_op(fwnode, op, ...)				\
+> -	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
+> -		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
+> -	 -EINVAL)
+> +	(fwnode_has_op(fwnode, op) ?					\
+> +	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
+>  
+>  #define fwnode_call_bool_op(fwnode, op, ...)		\
+>  	(fwnode_has_op(fwnode, op) ?			\
+
+-- 
+Kind regards,
+
+Sakari Ailus
