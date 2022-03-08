@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52492C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 902F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348989AbiCHRY6 (ORCPT
+        id S1348971AbiCHRZC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55290 "EHLO
+        Tue, 8 Mar 2022 12:25:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349244AbiCHRWz (ORCPT
+        with ESMTP id S1349502AbiCHRXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:22:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCDE546A2
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:20:56 -0800 (PST)
+        Tue, 8 Mar 2022 12:23:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB40556439
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:21:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2719B81B90
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739ACC36AF4;
-        Tue,  8 Mar 2022 17:20:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32D38B81BA6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F08C340EB;
+        Tue,  8 Mar 2022 17:21:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646760052;
-        bh=Lg5l+lVaiRIYO+OoxUwg4IcaNNcQpd0IYxoVQ9lTYyc=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=P5jpwNriCQnrkXZfgZbGJA+O8dFA/CLORZmFnDVhwGnFmh45csUJUDeISFA2z79zF
-         eYOyLl9YBPhKUA6NJwP4XONz2NqEkqipQuCKIIc+LDAQ1M4TBYZ1eDZHkgGqbZJBy9
-         c8IG6ilWDCFtSBJQ5Y/3OnUwWWnoV6cXQxYa95+XFbk+R8nkrkKv3DqBKVKp+a/P7M
-         fkSLWYTI9jO2Abbxhv5NA/OrN7N1OniOcrx/JRJWrzdhsOUh1TQ30L5e7+xATOQ4Ba
-         hX6qC+LhswHYrVob3V9yWC6w26K4NtNEPXDiOa5trmYOAh8BowOC1l7K5EtM5B+W1m
-         mH19YylPEprjg==
+        s=k20201202; t=1646760074;
+        bh=YzDVRHHe4KzIf6sXoA5Jjdffip2Zv92DuhYkKW62tqo=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=EvLSWYVIL9zy84zHJXvJHR6qwowDJYxdmUl1KmGK8Zl+1Ve1KT11oG6GYDPPD+YZ3
+         CPgSdPx2EGvltyY6moIgaWk1gj7GSBAjVi/eFlPXTN52ec2wTKfjWutVsMNPD5kDe1
+         1Xf0eDyS5dQG3ALvR6VLhciHatZPRUf6LTaWgPhKBg+1eyJqBwyat7c55d2A0l7iUG
+         wtgNwE5psvgV9Xfz3sFCrsT4iPTYqg5vpz3+J5qweW86JR8q+XlLufld5CrD5Gka1x
+         kgr4NC7xLVOoTOQMYvcRXjixWJJ4vvM22r9jOFHXUSteeAPnr6UX6cs5xkq1GhwnaS
+         YfFzsx0/VG5cQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     Jaroslav Kysela <perex@perex.cz>,
-        Lianjie Zhang <zhanglianjie@uniontech.com>
-Cc:     Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
-        linux-kernel@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>
-In-Reply-To: <20220307151939.32870-1-zhanglianjie@uniontech.com>
-References: <20220307151939.32870-1-zhanglianjie@uniontech.com>
-Subject: Re: [PATCH v2] ASoC: Intel: catpt: use asoc_substream_to_rtd()
-Message-Id: <164676005019.54315.15405377603345473367.b4-ty@kernel.org>
-Date:   Tue, 08 Mar 2022 17:20:50 +0000
+To:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+In-Reply-To: <20220308020146.26496-1-linmq006@gmail.com>
+References: <20220308020146.26496-1-linmq006@gmail.com>
+Subject: Re: [PATCH] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
+Message-Id: <164676007157.54315.10226994232050384296.b4-ty@kernel.org>
+Date:   Tue, 08 Mar 2022 17:21:11 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,11 +57,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 23:19:39 +0800, Lianjie Zhang wrote:
-> Now we can use asoc_substream_to_rtd() macro,
-> let's use it.
+On Tue, 8 Mar 2022 02:01:44 +0000, Miaoqian Lin wrote:
+> This function only calls of_node_put() in the regular path.
+> And it will cause refcount leak in error paths.
+> For example, when codec_np is NULL, saif_np[0] and saif_np[1]
+> are not NULL, it will cause leaks.
 > 
+> of_node_put() will check if the node pointer is NULL, so we can
+> call it directly to release the refcount of regular pointers.
 > 
+> [...]
 
 Applied to
 
@@ -66,8 +74,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: Intel: catpt: use asoc_substream_to_rtd()
-      commit: 51996ca26fc7b5dbeea80eddba0e8a4ece6af459
+[1/1] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
+      commit: 6ae0a4d8fec551ec581d620f0eb1fe31f755551c
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
