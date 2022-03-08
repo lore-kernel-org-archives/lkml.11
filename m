@@ -2,127 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1726EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A312C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 19:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242196AbiCHTQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 14:16:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38672 "EHLO
+        id S244635AbiCHTQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 14:16:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiCHTQl (ORCPT
+        with ESMTP id S232050AbiCHTQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 14:16:41 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3564EA03
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:15:44 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id v4so233772pjh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 11:15:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5tlumRnUSQglQq/+mWE9RjiXVXWEbK2EvGGExgddWkc=;
-        b=sCQ3di/YdCWVkNgx6JQrLP5gl311dT7UwNR1xAyphg/768Pa0fjac5O5dEC5kHD4iG
-         /yGiyocomy/THvBBttTG+I2bmD4D7Gyc6fUKUMNvY43Ac++TzvofyASIImW6wgdpzoRP
-         KtZtPvC0gKKeqwWpGG4wjfULoSWtVc3Tey/Hk92FOrwoxMDDIt1mmF+ztcRycO+yxCUZ
-         viOMzvuSKKWeJjJk/UMOPlvNntcGvkJg/JGdYoN3edN2l7TwxURMoLgcZjyH6UQ7X71C
-         xssYwmFSXiEtw4h9zESlNQ9g41Ca/JZ2oLV3pvStaQo+zKFwq7zprW2Om+n5bu8ELxs7
-         HF7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5tlumRnUSQglQq/+mWE9RjiXVXWEbK2EvGGExgddWkc=;
-        b=ZKfvdmIq+Kym6N/xA5WdfqSxn1J88kXM4BCba1lB2Wj99DJIx3E6lt1w2KkdApoNCJ
-         Hr8SlXbR5h02dis4T487A20w3x+1txWqWv/nolnOrejtU0Q41TOlIqLb8q0LKMPHyf2x
-         EMjDj0FwzFvDGQ653oU2VxMRKIi6Pgp4/x6XVkyx7CReyr8MUjg4RPRBa7h+T6QoD4Pz
-         kiQ+M6rCQp65zQ2a08PnRQ9LbhtBYhRHY9yc3DrpVFuCgTBfihgug+tFzTOR2UpCRcqF
-         lF6tGXz0H5CfoSokvb0vMnBEhoPvgaMqDwKviod8ueJt6/cTb5Ku+neDv2qsNauZotC4
-         Qfpw==
-X-Gm-Message-State: AOAM532U4Xk2F+vkzMPdvKCmPaBQhzeZVPo0aMxTEJT4T7vZ5V3bVkL+
-        8TjuHbvXUx6hjsaTxCRhpr+JuxmrGpNxyQ==
-X-Google-Smtp-Source: ABdhPJydNcfCwG0t9dztRqYGilmcV87Dl6j5Ro/inIEy5gYIF2PexhSqT1b9H/frSjYR1oh8Mj0sPQ==
-X-Received: by 2002:a17:90b:3e8d:b0:1bf:4525:c834 with SMTP id rj13-20020a17090b3e8d00b001bf4525c834mr6294421pjb.63.1646766944234;
-        Tue, 08 Mar 2022 11:15:44 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id v10-20020a056a00148a00b004e0f420dd90sm21989018pfu.40.2022.03.08.11.15.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 11:15:43 -0800 (PST)
-Date:   Tue, 8 Mar 2022 19:15:40 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-Subject: Re: [PATCH v2 16/25] KVM: x86/mmu: rename kvm_mmu_role union
-Message-ID: <YierXBEvTdp5aw+u@google.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-17-pbonzini@redhat.com>
+        Tue, 8 Mar 2022 14:16:44 -0500
+X-Greylist: delayed 1405 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 11:15:47 PST
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.58.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC80B4EA20
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:15:47 -0800 (PST)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id C316E400CB986
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 12:52:21 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id RewXncGVjRnrrRewXnK5x4; Tue, 08 Mar 2022 12:52:21 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rG5f3jQYnuxfEk/KKG0uOcNSlv/iKtxoSLVQ4t4GFXg=; b=E0ikV0HCb7WrLCcdBIxeGlDaq6
+        FZ2J+lamLMADM0hIuF6nlz/QnwmxgPJFDHLSbhTxb3cDG6DVy6o906vwIU+Kfhz8gYvWN+e4afJLg
+        LX9w8s311fIaiEl0nk390QjlFYwHNg7PWlu0WHRaXWCT3cfMF8qtSdXk5FCrW1tnxyT9aBJzDv6kk
+        lvjp4RXNXtMAKcMcxq6YY1Mh6jsV2VlytHuvR8e9M+fhKxxn3qmht0qcE4lUqsxHLPCleU3b09uCH
+        U96eSJ3fzb4LT4rRJ0mbbMydbAgycbGgzLbMmXxMIWQMwCnFfIXw8CbFOx5w+wldypOn3N6arpdPg
+        t+qjH4qQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58904 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRewX-0012O6-1e; Tue, 08 Mar 2022 18:52:21 +0000
+Date:   Tue, 8 Mar 2022 10:52:19 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.16 000/184] 5.16.13-rc2 review
+Message-ID: <20220308185219.GA3686655@roeck-us.net>
+References: <20220307162147.440035361@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-17-pbonzini@redhat.com>
+In-Reply-To: <20220307162147.440035361@linuxfoundation.org>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRewX-0012O6-1e
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58904
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 12
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> It is quite confusing that the "full" union is called kvm_mmu_role
-> but is used for the "cpu_mode" field of struct kvm_mmu.  Rename it
-> to kvm_mmu_paging_mode.
+On Mon, Mar 07, 2022 at 05:28:30PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.13 release.
+> There are 184 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 09 Mar 2022 16:21:20 +0000.
+> Anything received after that time might be too late.
+> 
 
-My official vote is to use
+Your cycles are getting too short for my test system to provide results
+in time. It gets overwhelmed, especially when there are updates affecting
+all stable branches which trigger a complete rebuild of all those branches.
 
-	union kvm_mmu_cpu_role cpu_role
+I see you published the current set of releases already, so I won't bother
+sending test feedback this time around.
 
-instead of
-
-	union kvm_mmu_paging_mode cpu_mode
-
-The latter has too many inconsistencies, e.g. helpers using "role" instead of "mode",
-the union using "paging" but the field/params using "cpu".  The cpu instead of paging
-thing isn't a coincidence as having the param be "paging_mode" would be really, really
-confusing (ditto for kvm_calc_paging_mode()).
-
-IMO this is consistent, if imperfect.
-
-static union kvm_mmu_cpu_role kvm_calc_cpu_role(struct kvm_vcpu *vcpu,
-						const struct kvm_mmu_role_regs *regs)
-{
-	union kvm_mmu_cpu_role role = {0};
-
-	role.base.access = ACC_ALL;
-	role.base.smm = is_smm(vcpu);
-	role.base.guest_mode = is_guest_mode(vcpu);
-	role.base.direct = !____is_cr0_pg(regs);
-
-	role.ext.valid = 1;
-
-	if (!____is_cr0_pg(regs))
-		return role;
-
-	...
-
-	return role;
-}
-
-Whereas this is inconsistent, and also imperfect.
-
-static union kvm_mmu_paging_mode kvm_calc_cpu_mode(struct kvm_vcpu *vcpu,
-						   const struct kvm_mmu_role_regs *regs)
-{
-	union kvm_mmu_paging_mode role = {0};
-
-	role.base.access = ACC_ALL;
-	role.base.smm = is_smm(vcpu);
-	role.base.guest_mode = is_guest_mode(vcpu);
-	role.base.direct = !____is_cr0_pg(regs);
-
-	role.ext.valid = 1;
-
-	if (!____is_cr0_pg(regs))
-		return role;
-
-	...
-
-	return role;
-}
+Guenter
