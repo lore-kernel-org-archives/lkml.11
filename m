@@ -2,102 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A69C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D48C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347265AbiCHN4m (ORCPT
+        id S1347267AbiCHN5D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        Tue, 8 Mar 2022 08:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239756AbiCHN4l (ORCPT
+        with ESMTP id S241615AbiCHN5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:56:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EF2749F83
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:55:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646747743;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1IBDuOS2fA0Ut8e4IiZznBpFVrC7yMpgLFek2NZWFfs=;
-        b=T9jdB2dl3v0/ZLlYNeb/oV5yazRPOl3B0PMh7i0TVzuoN7zaGGMzmOc9so1ojgD0wqGcD+
-        73HiKHAH3CxBWesrCftjhqI6Wv5YuDHTTBFMd8aUBltsxyeQZ9DTiwLUM+rgvpkVKqrOlv
-        DQc7v2LxRtC0qDkT72WjrIYEU9Dt6VY=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-2-ypDoFvcUPQi32STGsvskVg-1; Tue, 08 Mar 2022 08:55:42 -0500
-X-MC-Unique: ypDoFvcUPQi32STGsvskVg-1
-Received: by mail-ej1-f69.google.com with SMTP id lf15-20020a170906ae4f00b006da86a43346so7575390ejb.14
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 05:55:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1IBDuOS2fA0Ut8e4IiZznBpFVrC7yMpgLFek2NZWFfs=;
-        b=FRlo8S57su1n1jULvifix1ULETRrdT7+cvFcn0izpTkrX5S1FoxRmrNCx9+IuYuE0d
-         OkRg/ldImMSVmN5KRoJXPUinDg7uJqW2KCAa2Sx+GKV3ptgSVhLT8c4+8a7XDwYzZ4nN
-         LJ51icbNHq6gtcF3JSCuqwIpk/yQ+s2cr9EBCn/VQ6gWDJjFRwRUfvj7x4D1gxisWekk
-         CsaMcRMy4bOG0tiNCUt9CtlsmYubs4FJaNrmsfZ9XIYSkBMp/tHqSAJzNv9JQhjtR0+q
-         G8WFrBCdjjctT0zJj99Dv3EJq8EjkC1QqvectAc7N1n0iW3rHunsN5b+y6pIJ0cTU3R6
-         4p3A==
-X-Gm-Message-State: AOAM530hX9sngeedtp2UhXUa5rMzxgjP5qMhXxA5tjdIdO/CfuMlXDkL
-        eUrudOq2GJNaSKvTLUmSnl+91T8H8O8y+mQYBES6PtEod0/vPgCEbwcdmHMNYAV9bKM6WXjEWQp
-        UriUmzMFMzx96DVQg2DdV1hHd
-X-Received: by 2002:a17:907:72c5:b0:6da:e99e:226c with SMTP id du5-20020a17090772c500b006dae99e226cmr13706565ejc.515.1646747741392;
-        Tue, 08 Mar 2022 05:55:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz6WmZv3/KHM1kx7+bdzcMlRqoo8+XkXcFt2ZUztmnvExDivbuO3SMLPcZhEKvKFLdILNTj/A==
-X-Received: by 2002:a17:907:72c5:b0:6da:e99e:226c with SMTP id du5-20020a17090772c500b006dae99e226cmr13706551ejc.515.1646747741189;
-        Tue, 08 Mar 2022 05:55:41 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id n9-20020a05640205c900b00415fbbdabbbsm6684307edx.9.2022.03.08.05.55.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 05:55:40 -0800 (PST)
-Message-ID: <77a34051-2672-88cf-99dd-60f5acfb905e@redhat.com>
-Date:   Tue, 8 Mar 2022 14:55:39 +0100
+        Tue, 8 Mar 2022 08:57:00 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA54649F87
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 05:56:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646747763; x=1678283763;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fyqN8RLn8JO7kE1GkcGhN9M7OuJ6K/kGI6Eh5ScqH74=;
+  b=jHFubqP+r1inoGIGAn4wFAn/opXzdLnqU0bdjCHQ/NKuN9MQ9w04rvPK
+   WM22mQpK4K3Z3XwPeJ6usd+RYQ/eKEy/EDP249Ek/DZa3uoO2GO1V63qq
+   zAugcftC5qydoAFBGj5PGSwBXg6aIb8VdcKRXf20IZBYEqOI4Na6BBhvb
+   k=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Mar 2022 05:56:03 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 05:56:03 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 8 Mar 2022 05:56:03 -0800
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 8 Mar 2022
+ 05:56:02 -0800
+Date:   Tue, 8 Mar 2022 08:56:00 -0500
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] configs/debug: set CONFIG_DEBUG_INFO=y properly
+Message-ID: <YidgcE0ypmKWzvai@qian>
+References: <20220301202920.18488-1-quic_qiancai@quicinc.com>
+ <20220308104215.q4asb6z3vicq2vja@maple.lan>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/3] mm: vmalloc: introduce array allocation functions
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, stable@vger.kernel.org
-References: <20220308105918.615575-1-pbonzini@redhat.com>
- <20220308105918.615575-2-pbonzini@redhat.com>
- <Yidefp4G/Hk2Twfy@dhcp22.suse.cz>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yidefp4G/Hk2Twfy@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220308104215.q4asb6z3vicq2vja@maple.lan>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 14:47, Michal Hocko wrote:
-> Seems useful
-> Acked-by: Michal Hocko<mhocko@suse.com>
+On Tue, Mar 08, 2022 at 10:42:15AM +0000, Daniel Thompson wrote:
+> On Tue, Mar 01, 2022 at 03:29:20PM -0500, Qian Cai wrote:
+> > CONFIG_DEBUG_INFO can't be set by user directly,
 > 
-> Is there any reason you haven't used __alloc_size(1, 2) annotation?
+> What do you mean by "can't be set by user directly"? DEBUG_INFO
+> is fully controlable via menuconfig.
 
-It's enough to have them in the header:
+On linux-next, we no longer able to select DEBUG_INFO directly due to this
+patch:
 
->> +extern void *__vmalloc_array(size_t n, size_t size, gfp_t flags) __alloc_size(1, 2);
->> +extern void *vmalloc_array(size_t n, size_t size) __alloc_size(1, 2);
->> +extern void *__vcalloc(size_t n, size_t size, gfp_t flags) __alloc_size(1, 2);
->> +extern void *vcalloc(size_t n, size_t size) __alloc_size(1, 2);
+https://lore.kernel.org/all/20220125075126.891825-1-keescook@chromium.org/
 
-Thanks for the quick review!
+Thus, this patch will work on both the mainline and linux-next.
 
-Paolo
+> Does this change actually work in the kernels it has merged into?
+> 
+> DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT existence is predicated on DEBUG_INFO
+> being set. It makes no sense at all to set the former without the later.
 
+It works fine here.
+
+$ git reset --hard v5.17-rc7
+$ rm .config
+$ make ARCH=arm64 defconfig debug.config
+$ grep -i debug_info .config
+CONFIG_DEBUG_INFO=y
