@@ -2,118 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFD0C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231703AbiCHXGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 18:06:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S230197AbiCHXIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 18:08:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiCHXGX (ORCPT
+        with ESMTP id S230071AbiCHXIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 18:06:23 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786A061A06
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:05:25 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id ay7so885527oib.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 15:05:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rPTUbB4h0uzOl0pyJTM1C/6sy3GotW9nFVXhWq4ooIs=;
-        b=F3pk+L2mLfEyDIMlXQr314zLDn6A+XToMiGZFsAkNrWlWlhek3i8UxrgZL1+XqQa3s
-         f3LTRr7YQhKWmKsGXZTBpH9qJi0E/aTmX9aJn05aKIQXQuft5V1ljb9dqYL/Ae9zXQwQ
-         C3xxJ1GLWpginlCgKmbsqj0yDWH5Npx60RAW3VSGQB4pTzrnzaeCPx2GtucmbcDLA4o8
-         vOuzVeG45YYHI+aqnN8hCLSthBwnBoXYAcG233HRxeJuRJzDqxk8Mla7g6Gx6/i3kKZ+
-         HNG/ippFPsFcCHPrGJkM9JLB7o++kvIkBKJkNyVYrn0FmmVPsVrzNElTtBv4/AlHAECz
-         IXmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rPTUbB4h0uzOl0pyJTM1C/6sy3GotW9nFVXhWq4ooIs=;
-        b=YHYQo+makNziwInaLpAZ4+J75npzIHzNvuzGQrNBEJs180PYfCZ8eF0A0lsdC6130w
-         8SIM+DafzLYkKRhPug0yXsOFCw6koxwsb2OGd3xzToQT/3cYD/K2JmRjPp4UrmZC86wm
-         /W9kvJG7L33e1f/Ifsa5b9v5GZ7a0M111+2EQpSjvClHyB0U5HCkNO1a2EX/xwTPqob/
-         /E0qR8dDdCT7TeUgvVThBt1AbuggA8W2Fi7yJ+90k/NHqMSbUDuRKILjXdyC8153JFwH
-         S9rutrtw9d7JHhOXlq4T1L9qJYBA/t9y8fwtqPddyHUdo1oQX3t/IEpwwui+xcLCx0ko
-         Nz4w==
-X-Gm-Message-State: AOAM531CkoQ+wqku9bWxuu7f7k/QJnss388kS15IhveFwhk7BWjb7snG
-        YtQFCBttwy/hpqGUaWVdf0bftA==
-X-Google-Smtp-Source: ABdhPJxpOde9bNTgrgx11ZxO3FN5AhtPFdFf+K/l41CqWG0KwwkGVH5xrJ3ZTIF0nuCeawss/AYHuA==
-X-Received: by 2002:a05:6808:1644:b0:2cd:6d80:9af1 with SMTP id az4-20020a056808164400b002cd6d809af1mr4201343oib.138.1646780724786;
-        Tue, 08 Mar 2022 15:05:24 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id v37-20020a056830092500b005b1f7daf40asm64940ott.75.2022.03.08.15.05.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 15:05:24 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:05:22 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, sboyd@kernel.org, tdas@codeaurora.org,
-        mturquette@baylibre.com, linux-clk@vger.kernel.org,
-        robh+dt@kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/2] arm64: dts: qcom: sm8150: Add ufs power-domain
- entries
-Message-ID: <YifhMiBXRMOCamOt@builder.lan>
-References: <20220303082140.240745-1-bhupesh.sharma@linaro.org>
- <20220303082140.240745-3-bhupesh.sharma@linaro.org>
+        Tue, 8 Mar 2022 18:08:19 -0500
+X-Greylist: delayed 1285 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 15:07:20 PST
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5729760071
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:07:19 -0800 (PST)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id D61321228A
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:45:53 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id RiaXnXURNdx86RiaXne4LX; Tue, 08 Mar 2022 16:45:53 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=RZMiZ7ROUmJLlPppAwRoBUqTifoIUpfa1vCZOri7D3s=; b=DGm0f2OIHgjMnBB2LLOuDtu32k
+        2SVRJpPyUcz4n2Tfrz8+RIjOdUkz3C0Z6lVGgzv9vDsBhZ8uDeXyeuYaIMNu1hqNdT5s5RiPOmkdz
+        VgyOVRHQPVK01Sby4nuom7l7EDBJ7L7SoYUMAb5Dn6Lw+mHYwqbWMmip9rMyANacA9ilEWwm+FcvK
+        TKbG4/6BwTEpDxyeTi/4T6nmUKDby647fPUQVsTpqrpbwvrh6U/gRZFQbqL2fmOFmUZN0lKvqVhEM
+        KqGz4ITkMfdRljgzNKCVNu2fxkCr3zNsUEWQK8htnsZXN+mSnPltDcOUqFT8LpjPAq0KOLm76yvkV
+        0tIVoLhw==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38110)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRiaX-0042Fl-1M; Tue, 08 Mar 2022 22:45:53 +0000
+Message-ID: <ab0b668c-e321-e1d9-3cc3-a609111b828d@roeck-us.net>
+Date:   Tue, 8 Mar 2022 14:45:50 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303082140.240745-3-bhupesh.sharma@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Huang Pei <huangpei@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+References: <20220307162207.188028559@linuxfoundation.org>
+ <Yid4BNbLm3mStBi2@debian>
+ <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
+ <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com>
+ <YifFMPFMp9gPnjPc@kroah.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YifFMPFMp9gPnjPc@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRiaX-0042Fl-1M
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38110
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 11
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 03 Mar 02:21 CST 2022, Bhupesh Sharma wrote:
+On 3/8/22 13:05, Greg Kroah-Hartman wrote:
+> On Tue, Mar 08, 2022 at 11:08:10PM +0530, Naresh Kamboju wrote:
 
-> Add power-domain entries for UFS controller & phy nodes
-> in sm8150 dts.
+
+[ ... ]
+
+>>>
+>>> Reverting 4778338032b3 ("MIPS: fix local_{add,sub}_return on MIPS64")
+>>> has fixed all the 3 build failures.
+>>
+>> MIPS: fix local_{add,sub}_return on MIPS64
+>> [ Upstream commit 277c8cb3e8ac199f075bf9576ad286687ed17173 ]
+>>
+>> Use "daddu/dsubu" for long int on MIPS64 instead of "addu/subu"
+>>
+>> Fixes: 7232311ef14c ("local_t: mips extension")
+>> Signed-off-by: Huang Pei <huangpei@loongson.cn>
+>> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > 
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Rob Herring <robh@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sm8150.dtsi | 5 +++++
->  1 file changed, 5 insertions(+)
+> Ah, I'll queue up the revert for that in the morning, thanks for finding
+> it.  Odd it doesn't trigger the same issue in 5.16.y.
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> index 6012322a5984..7aa879eb24d7 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-> @@ -1637,6 +1637,8 @@ ufs_mem_hc: ufshc@1d84000 {
->  			phy-names = "ufsphy";
->  			lanes-per-direction = <2>;
->  			#reset-cells = <1>;
-> +
-> +			power-domains = <&gcc UFS_PHY_GDSC>;
 
-It seems odd that the controller would be in the PHY power-domain?
+If you don't want to revert: the fix needs the following two patches:
 
->  			resets = <&gcc GCC_UFS_PHY_BCR>;
->  			reset-names = "rst";
->  
-> @@ -1687,6 +1689,9 @@ ufs_mem_phy: phy@1d87000 {
->  			clocks = <&gcc GCC_UFS_MEM_CLKREF_CLK>,
->  				 <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
->  
-> +			power-domains = <&gcc UFS_CARD_GDSC>,
-> +					<&gcc UFS_PHY_GDSC>;
+e5b40668e93 ("slip: fix macro redefine warning")
+b81e0c2372e ("block: drop unused includes in <linux/genhd.h>")
 
-And "card" is typically related to the second UFS interface, so I
-suspect you only would need the last one of these?
+Both are in v5.16, so you won't see the problem there.
 
-Regards,
-Bjorn
-
-> +			power-domain-names = "ufs_card_gdsc", "ufs_phy_gdsc";
->  			resets = <&ufs_mem_hc 0>;
->  			reset-names = "ufsphy";
->  			status = "disabled";
-> -- 
-> 2.35.1
-> 
+Guenter
