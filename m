@@ -2,86 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26374C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8588C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 23:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbiCHXBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 18:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
+        id S230217AbiCHXFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 18:05:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229890AbiCHXBl (ORCPT
+        with ESMTP id S230255AbiCHXFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 18:01:41 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C155A15A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:00:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646780443; x=1678316443;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Fm8JhLPUKU8DghtgsgBgREYSqzT88w4E4hBF0mKLXLQ=;
-  b=aWjgLM9KaXSe7jkK9Gtb3gIz+fXHGLWKgnysCaAZEG0QPayugTGQH/VE
-   5meiEVU32NEyTV5wgivH8GRaWwZpOTU2VBcnHtHPMy8b44dfrpJ+/ZRCD
-   jEjTRTv/6K+616sZY4NEP28b6CZDKJFRPrDljengLwgOoGV9nTXj3U/CE
-   ej64dAWO/HvzYJsbfVbt2WTKr3ZehdZSf4mYphEZ4kPBns97pAmtc2e8U
-   91ImDsFvQDuSBSmG7orcPZYTLASOo1JWhUbRvrzpO0Zi+Jks3hSD7vVKN
-   uFarp6Ott7xtLCmKSU+g/21cHQMs2JZ5RjOyG3yUwSX9Luba7BbRMklB2
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="252407479"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="252407479"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 15:00:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="643826577"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 15:00:41 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRior-00029L-7y; Tue, 08 Mar 2022 23:00:41 +0000
-Date:   Wed, 9 Mar 2022 06:59:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Farzad Farshchi <farzadfr@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        kernel test robot <lkp@intel.com>
-Subject: [esmil:visionfive 55/61] nvdla_core_callbacks.c:undefined reference
- to `__udivdi3'
-Message-ID: <202203090611.3NpTkqvn-lkp@intel.com>
+        Tue, 8 Mar 2022 18:05:04 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AB15EBD6
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 15:04:07 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id f8so667669pfj.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 15:04:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w1SxKbRJ8WkX9WltRoD14k9Ob0xVI9Pf1gGrPgXvoiI=;
+        b=EVgtw0P+ZA+mu2sZJnZGHuZB7XszskLKawEE3nAiNRP9dEGu7nI2QIrA5TVsfvVAGn
+         v2Nrtcwox3fbKRkSXRPXnMZh7HlBOGXfl7QZWo3Az3DsJ/Wu5DocTWIrOK3tyKTA3tPr
+         eoZCiTsg9CRb53IFehojTmdmxEuCDbWuul32W1Y0WClJB2Hp2gjAL12Qm0838c+GuVR7
+         Bvzv2Sv0dBX9B0aYlYfj7DZXintbNPXxPW801RyfHxHv6fbt+BMdZc9lhNnvSAAXjJ32
+         qEw1iU1r3Z8oirwGbptJgohfxu6CvjfIvLlv8XkS2s5KgDMtbBg4cBrHYpRWkmzeKJhp
+         c0ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w1SxKbRJ8WkX9WltRoD14k9Ob0xVI9Pf1gGrPgXvoiI=;
+        b=ZSFCc6GZWz1/oTt7NVY/YbQpFzPMLm7k8mm7CcKeZKQyzF6UebAa5SbP9MbSk0SPb/
+         diCEMU+ifuzsrY0iokAFYLuMxFnG0P4Rgh8zS5BhLeSTE/j7AHoS9/VxMkn0cpuE5gDD
+         q+soMplBJPx7gWOs1qc9uTfhGE5KXWo2ck/o9a2BR66xnJDAOmc4E8WjSe1aoBoVZ5Nc
+         UR9e8MkrvNqrXaOx2/0BGheo+YIDX+bBn8GcFb1hAkNG/QaNfUagLu4Od4GmImG+AOE2
+         jYw+rHEBpab4QOjQnJ3qQpuUPCriqUFLctz0/vCP4AgkX2E+M9MVxwC+RpwYc2zdWDZQ
+         elxQ==
+X-Gm-Message-State: AOAM533+cU9KiO41LeekfXfYnG2qNmNda9jMkI+7YJ2i6/QJeZZwaeJ9
+        gT7A+8256fOBCSqrpnDviRclIw==
+X-Google-Smtp-Source: ABdhPJytZy0DNaiUVFrbFyiAkMa1BfgnsrX/YkRy+IAt7mzDpdiZQTFzYeLxz3AHzEUWRGM1Ahp1wA==
+X-Received: by 2002:a63:1d4b:0:b0:37f:f10b:726f with SMTP id d11-20020a631d4b000000b0037ff10b726fmr15828871pgm.562.1646780646266;
+        Tue, 08 Mar 2022 15:04:06 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id h14-20020a63384e000000b00366ba5335e7sm154336pgn.72.2022.03.08.15.04.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 15:04:05 -0800 (PST)
+Date:   Tue, 8 Mar 2022 23:04:01 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        Gao Chao <chao.gao@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
+ unconditionally
+Message-ID: <Yifg4bea6zYEz1BK@google.com>
+References: <20220225082223.18288-1-guang.zeng@intel.com>
+ <20220225082223.18288-7-guang.zeng@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220225082223.18288-7-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   b75fcbba0e03fd9655bc4c8854422d51474664d3
-commit: 6146bd9336a5f9d2bb66d6a394863600b61afeb5 [55/61] nvdla: add NVDLA driver
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203090611.3NpTkqvn-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/6146bd9336a5f9d2bb66d6a394863600b61afeb5
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 6146bd9336a5f9d2bb66d6a394863600b61afeb5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+On Fri, Feb 25, 2022, Zeng Guang wrote:
+> From: Maxim Levitsky <mlevitsk@redhat.com>
+> 
+> No normal guest has any reason to change physical APIC IDs,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I don't think we can reasonably assume this, my analysis in the link (that I just
+realized I deleted from context here) shows it's at least plausible that an existing
+guest could rely on the APIC ID being writable.  And that's just one kernel, who
+know what else is out there, especially given that people use KVM to emulate really
+old stuff, often on really old hardware.
 
-All errors (new ones prefixed by >>):
+Practically speaking, anyone that wants to deploy IPIv is going to have to make
+the switch at some point, but that doesn't help people running legacy crud that
+don't care about IPIv.
 
-   m68k-linux-ld: drivers/nvdla/nvdla_core_callbacks.o: in function `dla_get_time_us':
->> nvdla_core_callbacks.c:(.text+0x396): undefined reference to `__udivdi3'
-   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
+I was thinking a module param would be trivial, and it is (see below) if the
+param is off by default.  A module param will also provide a convenient opportunity
+to resolve the loophole reported by Maxim[1][2], though it's a bit funky.
+
+Anyways, with an off-by-default module param, we can just do:
+
+	if (!enable_apicv || !cpu_has_vmx_ipiv() || !xapic_id_readonly)
+		enable_ipiv = false;
+
+Forcing userspace to take advantage of IPIv is rather annoying, but it's not the
+end of world.
+
+Having the param on by default is a mess.  Either we break userspace (above), or
+we only kinda break userspace by having it on iff IPIv is on, but then we end up
+with cyclical dependency hell.  E.g. userspace makes xAPIC ID writable and forces
+on IPIv, which one "wins"?  And if it's on by default, we can't fix the loophole
+in KVM_SET_LAPIC.
+
+If we really wanted to have it on by default, we could have a Kconfig and make
+_that_ off by default, e.g.
+
+  static bool __read_mostly xapic_id_readonly = IS_ENABLED(CONFING_KVM_XAPIC_ID_RO);
+
+but that seems like overkill.  If a kernel owner knows they want the param on,
+it should be easy enough to force it without a Kconfig.
+
+So I think my vote would be for something like this?  Compile tested only...
 
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/x86/kvm/lapic.c    | 14 +++++++++-----
+ arch/x86/kvm/svm/avic.c |  5 +++++
+ arch/x86/kvm/x86.c      |  4 ++++
+ arch/x86/kvm/x86.h      |  1 +
+ 4 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index c4c3155d98db..2c01cd45fb18 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2043,7 +2043,7 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+
+ 	switch (reg) {
+ 	case APIC_ID:		/* Local APIC ID */
+-		if (!apic_x2apic_mode(apic))
++		if (!apic_x2apic_mode(apic) && !xapic_id_readonly)
+ 			kvm_apic_set_xapic_id(apic, val >> 24);
+ 		else
+ 			ret = 1;
+@@ -2634,10 +2634,7 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
+ 		u64 icr;
+
+-		if (vcpu->kvm->arch.x2apic_format) {
+-			if (*id != vcpu->vcpu_id)
+-				return -EINVAL;
+-		} else {
++		if (!vcpu->kvm->arch.x2apic_format) {
+ 			if (set)
+ 				*id >>= 24;
+ 			else
+@@ -2650,6 +2647,10 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 		 * split to ICR+ICR2 in userspace for backwards compatibility.
+ 		 */
+ 		if (set) {
++			if ((vcpu->kvm->arch.x2apic_format || xapic_id_readonly) &&
++			    (*id != vcpu->vcpu_id))
++				return -EINVAL;
++
+ 			*ldr = kvm_apic_calc_x2apic_ldr(*id);
+
+ 			icr = __kvm_lapic_get_reg(s->regs, APIC_ICR) |
+@@ -2659,6 +2660,9 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 			icr = __kvm_lapic_get_reg64(s->regs, APIC_ICR);
+ 			__kvm_lapic_set_reg(s->regs, APIC_ICR2, icr >> 32);
+ 		}
++	} else if (set && xapic_id_readonly &&
++		   (__kvm_lapic_get_reg(s->regs, APIC_ID) >> 24) != vcpu->vcpu_id) {
++		return -EINVAL;
+ 	}
+
+ 	return 0;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index b37b353ec086..4a031d9686c2 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -442,6 +442,11 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	u32 id = kvm_xapic_id(vcpu->arch.apic);
+
++	if (xapic_id_readonly && id != vcpu->vcpu_id) {
++		kvm_prepare_emulation_failure_exit(vcpu);
++		return 0;
++	}
++
+ 	if (vcpu->vcpu_id == id)
+ 		return 0;
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4fa4d8269e5b..67706d468ed3 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -177,6 +177,10 @@ module_param(tsc_tolerance_ppm, uint, S_IRUGO | S_IWUSR);
+ static int __read_mostly lapic_timer_advance_ns = -1;
+ module_param(lapic_timer_advance_ns, int, S_IRUGO | S_IWUSR);
+
++bool __read_mostly xapic_id_readonly;
++module_param(xapic_id_readonly, bool, 0444);
++EXPORT_SYMBOL_GPL(xapic_id_readonly);
++
+ static bool __read_mostly vector_hashing = true;
+ module_param(vector_hashing, bool, S_IRUGO);
+
+diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
+index aa86abad914d..89f40c921c08 100644
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -302,6 +302,7 @@ static inline bool kvm_mpx_supported(void)
+ extern unsigned int min_timer_period_us;
+
+ extern bool enable_vmware_backdoor;
++extern bool xapic_id_readonly;
+
+ extern int pi_inject_timer;
+
+
+base-commit: 1e147f6f90668f2c2b57406d451f0cfcd2ba19d0
+--
+
