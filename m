@@ -2,177 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92118C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7991BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348196AbiCHQRe (ORCPT
+        id S1348276AbiCHQSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:17:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
+        Tue, 8 Mar 2022 11:18:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiCHQRd (ORCPT
+        with ESMTP id S1348208AbiCHQSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:17:33 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE1E50E10
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 08:16:36 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so2847787pjl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 08:16:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u43xiIzdToYyNnIi4SkjFPIKs2NeakO8JJZvxccrXJI=;
-        b=n3DOQjy5Si7UPfdp3xIsCtFT0p8P1d2sb7RXLzDqG9dWTdQyJmp//2IWkBj+fPQ/PF
-         /RFFw3XR4s5FWdFJ5tIh94Bwtp6rWnqhFGJ6dR1X7qcrYa+QLS3M5d3hyPYOSHVePJ23
-         bd119KjqKa814dNb+EUQptrYVI+96x601g5v9KLYbMo7AjWRS1G0qT+zlsxJQcMtEP2Q
-         PqfEPidTzv4vNsNsVpz+k3jnObaliEi7wgZ/CuGQc0KftRWZbQ0OEBFsJkw9JqyKxRpI
-         Qb52HcBCC4UtEitHAOkwHz/qchzlyChksu+m/piebvtk0C9ROa/Nzd4TCQ/ubRKEzlsH
-         6TPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u43xiIzdToYyNnIi4SkjFPIKs2NeakO8JJZvxccrXJI=;
-        b=1Cuxi6pWswwg++5zosQ1/trFl8+LlqUVLmKtf3Ep1mJc2p0RtjV44S1mWkWhmbvu9t
-         WZyWB9Zr+fRX21KJtvugbAYqsQOaRsyNKK1pdLzhydxH6McvYJKm/il/akGUKkRh6sJT
-         mcZXFQPD7s35gEBxo7Tz/9yrvRYReL28T9CXd4VWEYrWyz6t7NPfAiWoqo47E61a5CG0
-         3ITKLU0AlX0dVkuISCfunzFX5czISe45kXRkS+q7ez4f5T3+pJvna5xTwOplG3772i/V
-         nfCXqIOo09J3G9H89QAi7aLSyGXMVNZwtK5P3RMbDWb15YLTbfjyZG4igp0YayqVav+g
-         +aAw==
-X-Gm-Message-State: AOAM530OyXecpUmGs4ypldktK+TqHXbLQND9UHufEZMf/J/IwNv9R+Qm
-        GJxNOJkh5o/EnOaKouThrbXzkQ==
-X-Google-Smtp-Source: ABdhPJzEl/PqG/eYn90V/v7gwG57/FJkYPrscymutUImiBNn+QVUpWVW+LQiMIIoOJyUhb+XLZ5fjA==
-X-Received: by 2002:a17:902:f684:b0:151:93ab:3483 with SMTP id l4-20020a170902f68400b0015193ab3483mr18571496plg.4.1646756195577;
-        Tue, 08 Mar 2022 08:16:35 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e18-20020a056a001a9200b004bc82d0e125sm20015997pfv.119.2022.03.08.08.16.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 08:16:34 -0800 (PST)
-Date:   Tue, 8 Mar 2022 16:16:31 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com
-Subject: Re: [PATCH v2 01/25] KVM: x86/mmu: avoid indirect call for get_cr3
-Message-ID: <YieBXzkOkB9SZpyp@google.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
- <20220221162243.683208-2-pbonzini@redhat.com>
+        Tue, 8 Mar 2022 11:18:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA361013;
+        Tue,  8 Mar 2022 08:17:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A90B616F2;
+        Tue,  8 Mar 2022 16:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B684C340EB;
+        Tue,  8 Mar 2022 16:17:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646756253;
+        bh=RHG7+NaypXs6njZprF1L4oaPoKIzbTsRnRQHdaHpdxg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=opNzORxJtVFIfnE3Xb8qL/GahhvtR6BV7v2P/YREv0EXAf1ECKOmeOZWQfLD3lp7o
+         aGXdHZKjFuXiCft6gzKTjHYHzXExEKAL28DfiljubBaxZp75fWfq4d+sRsKZYqQ4gh
+         HRkss7pg/g9x9viCFjQgt0wN6WR96ic9XJHidu6LCHxQkEH/e88oaDGF4jLz3BoxP8
+         UlrOSqkDxey26M56j/wXiU4Fw6+/E7X6LevZT+JEnQaec+yrg+Mw0jcvdbrEHWwvf0
+         BIQihrPGi2FSTMp/SQUHsaOEFN1fnS752uXP1HajU6tzBn+1GZo+JNFidiS9aPNCu2
+         GaILL66Ipgc1g==
+Date:   Tue, 8 Mar 2022 08:17:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220308081731.3588b495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+        <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+        <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221162243.683208-2-pbonzini@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022, Paolo Bonzini wrote:
-> Most of the time, calls to get_guest_pgd result in calling kvm_read_cr3
-> (the exception is only nested TDP).  Check if that is the case if
-> retpolines are enabled, thus avoiding an expensive indirect call.
+On Tue, 8 Mar 2022 15:12:45 +0100 Ilya Maximets wrote:
+> >> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> >> index 9d1710f20505..ab6755621e02 100644
+> >> --- a/include/uapi/linux/openvswitch.h
+> >> +++ b/include/uapi/linux/openvswitch.h
+> >> @@ -351,11 +351,16 @@ enum ovs_key_attr {
+> >>         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+> >>         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+> >>         OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+> >> -       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+> >>  
+> >>  #ifdef __KERNEL__
+> >>         OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> >>  #endif
+> >> +       /* User space decided to squat on types 30 and 31 */
+> >> +       OVS_KEY_ATTR_IPV6_EXTHDRS = 32, /* struct ovs_key_ipv6_exthdr */
+> >> +       /* WARNING: <scary warning to avoid the problem coming back> */  
 > 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu.h             | 10 ++++++++++
->  arch/x86/kvm/mmu/mmu.c         | 15 ++++++++-------
->  arch/x86/kvm/mmu/paging_tmpl.h |  2 +-
->  arch/x86/kvm/x86.c             |  2 +-
->  4 files changed, 20 insertions(+), 9 deletions(-)
+> Yes, that is something that I had in mind too.  The only thing that makes
+> me uncomfortable is OVS_KEY_ATTR_TUNNEL_INFO = 30 here.  Even though it
+> doesn't make a lot of difference, I'd better keep the kernel-only attributes
+> at the end of the enumeration.  Is there a better way to handle kernel-only
+> attribute?
+
+My thought was to leave the kernel/userspace only types "behind" to
+avoid perpetuating the same constructs.
+
+Johannes's point about userspace to userspace messages makes the whole
+thing a little less of an aberration.
+
+Is there a reason for the types to be hidden under __KERNEL__? 
+Or someone did that in a misguided attempt to save space in attr arrays
+when parsing?
+
+> Also, the OVS_KEY_ATTR_ND_EXTENSIONS (31) attribute used to store IPv6 Neighbor
+> Discovery extensions is currently implemented only for userspace, but nothing
+> actually prevents us having the kernel implementation.  So, we need a way to
+> make it usable by the kernel in the future.
+
+The "= 32" leaves the earlier attr types as reserved so nothing
+prevents us from defining them later. But..
+
+> > It might be nicer to actually document here in what's at least supposed
+> > to be the canonical documentation of the API what those types were used
+> > for.  
 > 
-> diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-> index 1d0c1904d69a..6ee4436e46f1 100644
-> --- a/arch/x86/kvm/mmu.h
-> +++ b/arch/x86/kvm/mmu.h
-> @@ -116,6 +116,16 @@ static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
->  					  vcpu->arch.mmu->shadow_root_level);
->  }
->  
-> +extern unsigned long kvm_get_guest_cr3(struct kvm_vcpu *vcpu);
+> I agree with that.
 
-No extern please, it's superfluous and against KVM style.  Moot point though, see
-below.
-
-> +static inline unsigned long kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
-
-Wrap the params, no reason to make this line so long.
-
-> +{
-> +#ifdef CONFIG_RETPOLINE
-> +	if (mmu->get_guest_pgd == kvm_get_guest_cr3)
-> +		return kvm_read_cr3(vcpu);
-
-This is unnecessarily fragile and confusing at first glance.  Compilers are smart
-enough to generate a non-inline version of functions if they're used for function
-pointers, while still inlining where appropriate.  In other words, just drop
-kvm_get_guest_cr3() entirely, a al get_pdptr => kvm_pdptr_read().
-
----
- arch/x86/kvm/mmu.h     |  6 +++---
- arch/x86/kvm/mmu/mmu.c | 11 +++--------
- 2 files changed, 6 insertions(+), 11 deletions(-)
-
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 3af66b9df640..50528d39de8d 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -117,11 +117,11 @@ static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
- 					  vcpu->arch.mmu->shadow_root_level);
- }
-
--extern unsigned long kvm_get_guest_cr3(struct kvm_vcpu *vcpu);
--static inline unsigned long kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
-+static inline unsigned long kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu,
-+						  struct kvm_mmu *mmu)
- {
- #ifdef CONFIG_RETPOLINE
--	if (mmu->get_guest_pgd == kvm_get_guest_cr3)
-+	if (mmu->get_guest_pgd == kvm_read_cr3)
- 		return kvm_read_cr3(vcpu);
- #endif
- 	return mmu->get_guest_pgd(vcpu);
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 995c3450c20f..cc2414397e4b 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4234,11 +4234,6 @@ void kvm_mmu_new_pgd(struct kvm_vcpu *vcpu, gpa_t new_pgd)
- }
- EXPORT_SYMBOL_GPL(kvm_mmu_new_pgd);
-
--unsigned long kvm_get_guest_cr3(struct kvm_vcpu *vcpu)
--{
--	return kvm_read_cr3(vcpu);
--}
--
- static bool sync_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, gfn_t gfn,
- 			   unsigned int access)
- {
-@@ -4793,7 +4788,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu)
- 	context->invlpg = NULL;
- 	context->shadow_root_level = kvm_mmu_get_tdp_level(vcpu);
- 	context->direct_map = true;
--	context->get_guest_pgd = kvm_get_guest_cr3;
-+	context->get_guest_pgd = kvm_read_cr3;
- 	context->get_pdptr = kvm_pdptr_read;
- 	context->inject_page_fault = kvm_inject_page_fault;
- 	context->root_level = role_regs_to_root_level(&regs);
-@@ -4968,7 +4963,7 @@ static void init_kvm_softmmu(struct kvm_vcpu *vcpu)
-
- 	kvm_init_shadow_mmu(vcpu, &regs);
-
--	context->get_guest_pgd	   = kvm_get_guest_cr3;
-+	context->get_guest_pgd	   = kvm_read_cr3;
- 	context->get_pdptr         = kvm_pdptr_read;
- 	context->inject_page_fault = kvm_inject_page_fault;
- }
-@@ -5000,7 +4995,7 @@ static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu)
- 		return;
-
- 	g_context->mmu_role.as_u64 = new_role.as_u64;
--	g_context->get_guest_pgd     = kvm_get_guest_cr3;
-+	g_context->get_guest_pgd     = kvm_read_cr3;
- 	g_context->get_pdptr         = kvm_pdptr_read;
- 	g_context->inject_page_fault = kvm_inject_page_fault;
- 	g_context->root_level        = new_role.base.level;
-
-base-commit: c31df3e63672c14d8b52e34606c823e2166024b8
---
+Should we add the user space types to the kernel header and remove the
+ifdef __KERNEL__ around TUNNEL_INFO, then?
