@@ -2,148 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348659AbiCHRjY (ORCPT
+        id S1349111AbiCHRll (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:39:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        Tue, 8 Mar 2022 12:41:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345761AbiCHRjW (ORCPT
+        with ESMTP id S238659AbiCHRlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:39:22 -0500
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59284A916
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:38:22 -0800 (PST)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2dbd97f9bfcso210053497b3.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 09:38:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=73XbkgqmbcCp8jrsRpjmW22XYnfqvjYIpXZBS4eirQM=;
-        b=MM9a6dodSSdEECe1wyp0Icbc69wzcVLsyT7PY2rfd49dzp8onjx0/ypojzlSYhjgc9
-         HLR/ZYEviD2rC+Oo/JOHMiFFR+/5TMV9bnwsq1CY3UiNovS8zkjkCwEo/cERekGm++Rf
-         D++AXWigBpzAZSE1LOmhlU4G8mSCgxDLfbXD6/u7mBpCc5iwyCaXwdNEHoFU/nUVgp1L
-         VCvh/4a+DMYv8mP75N7//TwbYB9as3mPpBzBY9Wi01RnH2y7DVFXQoSIzqVVW1+4qJuF
-         Z11ABjNXtu1Vf8hdiiys3g/6h0MXv4oNCKY+injER0wj4DwtsZrEF6vNs3Qymwy7TiF2
-         BGmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=73XbkgqmbcCp8jrsRpjmW22XYnfqvjYIpXZBS4eirQM=;
-        b=u4HVyT+F+/+tpxuuyX6JGqa0l34eWDz71ETNQXLpDVeUxrq6ctT9Y8O2r7T+I2zWX0
-         1QTOUxW4odLaqmYZC5Ie9pQpGFKY6fxEcM5nwEBIqzWMVKJg1hieh9O26U/gqWSNAPvs
-         XCyYedzjI8lk94JW9v7fmja7Cf9ZjrrobpzbOVbDP9mQIaDAEVzpeWZafFwhKEQ/cGWl
-         xaxj/fSVvUObZxKYo5ys7/ruVOUGmxGUWOQhYr2IVprElU5ZPgzHrjJmrsYQPJ0dJ5ll
-         epQ3VT1/E2aQDYW4Ed/5dhb9ida9faW8cv6YyhzKrVTeiyAKOCFIGMA3eioDnrQO+BVq
-         XSYA==
-X-Gm-Message-State: AOAM531bdYXD2mgyVAUQmBL0cdUetUgGzCTeOqk4laiaq8W1v185Vw/R
-        GjHtdxntNIb1EzBREXaSrxSZmwF1oOZpLWq0TaZCOg==
-X-Google-Smtp-Source: ABdhPJyiQb+hevD4MsEfkOJACYI9vqWCrwvXESLQpiKn9owxsdu0PnJ8iDqkTXLbv6Yv3c21WxGVX3f99zFgkxdd74w=
-X-Received: by 2002:a81:e90c:0:b0:2db:d63e:56ff with SMTP id
- d12-20020a81e90c000000b002dbd63e56ffmr14332324ywm.60.1646761101606; Tue, 08
- Mar 2022 09:38:21 -0800 (PST)
+        Tue, 8 Mar 2022 12:41:40 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B168F4A925
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:40:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646761243; x=1678297243;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=deRkVfHgngx2Pgi2ZHYhGKjDOt3YM2Gvy+RyWuxgG/o=;
+  b=XJ7eqlkph4A8ifsp/dmqTioBvL66tNGHc9EtXKp61s3YNdLS6fHAl3fV
+   EUbSNNrCriZF6SRlf/C/ABmPz7xFDY0jmG5z6heGtD8cbscqu3YNu89So
+   iKMKCHeyyyl4Z6Jid5Ck1VEbXrW9+eWqYJvlLv7N3sUIiHI44bmtqv4NO
+   3+Uog7DUWBuw/jv4bbODkWVD3yBcmvsWc5qnMOw9yu8ew6gh1oMuSrKKg
+   mIERewzEBxRtO4MGmfbT/a+wtLCR7Bx1hy1ezv3wphiwDFXQuWxShYvHq
+   v+PzHco7hIty/kbpXBUQKIQOsyEosxNbmT0+CZEokmuNGywwRsGsW/CIY
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="242200971"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="242200971"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 09:32:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="510181095"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 08 Mar 2022 09:32:34 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRdhJ-0001lo-Gu; Tue, 08 Mar 2022 17:32:33 +0000
+Date:   Wed, 9 Mar 2022 01:32:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joerg Roedel <jroedel@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>
+Subject: vmlinux.o: warning: objtool: __sev_es_ist_exit()+0x2b: call to
+ ftrace_likely_update() leaves .noinstr.text section
+Message-ID: <202203090119.Hj4y6WNM-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220307162207.188028559@linuxfoundation.org> <Yid4BNbLm3mStBi2@debian>
- <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
-In-Reply-To: <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 8 Mar 2022 23:08:10 +0530
-Message-ID: <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Huang Pei <huangpei@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Hi Joerg,
 
-On Tue, 8 Mar 2022 at 21:40, Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
->
-> On Tue, Mar 8, 2022 at 3:36 PM Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > Hi Greg,
-> >
-> > On Mon, Mar 07, 2022 at 05:28:50PM +0100, Greg Kroah-Hartman wrote:
-> > > This is the start of the stable review cycle for the 5.15.27 release.
-> > > There are 256 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
->
-> <snip>
->
-> >
-> > Mips failures,
-> >
-> > allmodconfig, gpr_defconfig and mtx1_defconfig fails with:
+FYI, the error/warning still remains.
 
-LKFT build regression noticed as Sudip reported.
-   - mips-gcc-10-allmodconfig - FAILED.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   ea4424be16887a37735d6550cfd0611528dbe5d9
+commit: 315562c9af3d583502b35c4b223a08d95ce69864 x86/sev-es: Adjust #VC IST Stack on entering NMI handler
+date:   1 year, 6 months ago
+config: x86_64-buildonly-randconfig-r004-20220307 (https://download.01.org/0day-ci/archive/20220309/202203090119.Hj4y6WNM-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=315562c9af3d583502b35c4b223a08d95ce69864
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 315562c9af3d583502b35c4b223a08d95ce69864
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
->
-> And, here is the bisect log:
->
-> # bad: [7b9aacd770fa105a0a5f0be43bc72ce176d30331] Linux 5.15.27-rc2
-> # good: [8993e6067f263765fd26edabf3e3012e3ec4d81e] Linux 5.15.26
-> git bisect start 'HEAD' 'v5.15.26'
-> # bad: [6d4f8e67749d97f83f377911e874ca116be71fbd] drm/amd/display: For
-> vblank_disable_immediate, check PSR is really used
-> git bisect bad 6d4f8e67749d97f83f377911e874ca116be71fbd
-> # bad: [527ec9ffce51cb10a3172380aba30066ee2d056c] Input: ti_am335x_tsc
-> - fix STEPCONFIG setup for Z2
-> git bisect bad 527ec9ffce51cb10a3172380aba30066ee2d056c
-> # good: [96039b910c5a933221faa9aeca4f2fb2fa4976a1] arm64: Mark
-> start_backtrace() notrace and NOKPROBE_SYMBOL
-> git bisect good 96039b910c5a933221faa9aeca4f2fb2fa4976a1
-> # bad: [4778338032b338f80393b9dfab6832d02bddb819] MIPS: fix
-> local_{add,sub}_return on MIPS64
-> git bisect bad 4778338032b338f80393b9dfab6832d02bddb819
-> # good: [ba52217d4edd5824427134cfdfa9c2ab4390d77f] drm/amdgpu: check
-> vm ready by amdgpu_vm->evicting flag
-> git bisect good ba52217d4edd5824427134cfdfa9c2ab4390d77f
-> # good: [9eeb0cb7e2d675e3bbecc08302e3bafe21c61c52] NFSD: Fix
-> zero-length NFSv3 WRITEs
-> git bisect good 9eeb0cb7e2d675e3bbecc08302e3bafe21c61c52
-> # good: [8e68b6e3bdce82f387619e7fb6e85e6be9820182]
-> tools/resolve_btf_ids: Close ELF file on error
-> git bisect good 8e68b6e3bdce82f387619e7fb6e85e6be9820182
-> # good: [238d4d64ad4da4acefedd73094be0d1051897810] mtd: spi-nor: Fix
-> mtd size for s3an flashes
-> git bisect good 238d4d64ad4da4acefedd73094be0d1051897810
-> # first bad commit: [4778338032b338f80393b9dfab6832d02bddb819] MIPS:
-> fix local_{add,sub}_return on MIPS64
->
-> Reverting 4778338032b3 ("MIPS: fix local_{add,sub}_return on MIPS64")
-> has fixed all the 3 build failures.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-MIPS: fix local_{add,sub}_return on MIPS64
-[ Upstream commit 277c8cb3e8ac199f075bf9576ad286687ed17173 ]
+All warnings (new ones prefixed by >>):
 
-Use "daddu/dsubu" for long int on MIPS64 instead of "addu/subu"
+   vmlinux.o: warning: objtool: __do_fast_syscall_32()+0x45: call to syscall_enter_from_user_mode_work() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: do_int80_syscall_32()+0x35: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: idtentry_enter_nmi()+0x4a: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: idtentry_exit_nmi()+0x52: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: __rdgsbase_inactive()+0x23: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: __wrgsbase_inactive()+0x27: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: fixup_bad_iret()+0x84: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: noist_exc_debug()+0x25: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: exc_nmi()+0x179: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: poke_int3_handler()+0x48: call to ftrace_likely_update() leaves .noinstr.text section
+>> vmlinux.o: warning: objtool: __sev_es_ist_exit()+0x2b: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x3f: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x39: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_exit_to_user_mode()+0xd5: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x39: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_exit_to_user_mode()+0x32: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_exit()+0x2a: call to ftrace_likely_update() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: debug_locks_off()+0x21: call to __kasan_check_write() leaves .noinstr.text section
 
-Fixes: 7232311ef14c ("local_t: mips extension")
-Signed-off-by: Huang Pei <huangpei@loongson.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
-
---
-Linaro LKFT
-https://lkft.linaro.org
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
