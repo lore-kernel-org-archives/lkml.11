@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6506AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243576AbiCHPbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        id S1345611AbiCHPc1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 10:32:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbiCHPbx (ORCPT
+        with ESMTP id S231561AbiCHPcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:31:53 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967124E395
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:30:57 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id b5so11602526ilj.9
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 07:30:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QL+ZtmXXGFLuTx2y9WXZomB2eATV+ikv3E06Gw8vFq0=;
-        b=I68j85a6/qjvW0V3IavZmXBtBc8pD6pwX7yGYgP70N3qfY/KekXPn14gqHuXHQi3iz
-         45y3wjsfeAJoSBGDTb3kxwyUuzILLoXo2eFo4z3nCSjYHUU1aBHr+B04M3kP/DctZcqU
-         FaE5+rdNtdNZSVsKxPIjL2TKvhOwT8EAqwk6x0LlVDTkAwSZt0rUy3ePzZmsgeFzrtgj
-         IcJ9yy+JXS0yPZEfdAsbdDcR8t9w2+5GyzVroPUq4B5oDrMBfwsfDFPB6QqHpu/tXFOv
-         cMBPSu+cM5zifvwDyOWdetr6U++L+xykJjh1Zou3iBXvPcrzyzw1BY2lrHkSovZ8zh++
-         GxXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QL+ZtmXXGFLuTx2y9WXZomB2eATV+ikv3E06Gw8vFq0=;
-        b=GB85ffSYopOdsVyjfYoYgfz8yEhqJ1Mupj4vjsMH15nE+TeiY4G/EEZHQ3OIDYhOyg
-         zDiycAp8lfCBuGFDqyQZJDEEa11VkntdhUvPqNIacgKmVIBFmJnIkrbA0U2bk5a2i+Fh
-         utAZK8hGlGV10k2TJUQ10+UzKyDLA+lGEpcPzkugLVs691OnXAnq0p4ra4/z5vSolOSG
-         ZPCdHtvhIx6XhJLWw/dnafLZUsNqcR6CBfSMHImCBKF7y8fAFNgjRlWV7oj3Gdllu+dG
-         YcFvyVqd8NEMrQzPxlod5OC8n/BSQmq8JxmamhWwDLg/tbODHpM0CIQ1tpu8Hirs0d9E
-         jEnA==
-X-Gm-Message-State: AOAM532yTnwoCC9bNMLzXfSEzmdj4zTQD0s0VrGCsHNS8QZomim39wMO
-        Sn6+ykrlZbEenHiy8ULY6w9m9nfd7PX0Z2QXgkc=
-X-Google-Smtp-Source: ABdhPJyPwmIL/pO50iF8syyeci1IJTewvmDOYzdRSzAtoKHRP6OQjBCrXGlvhWl93W16Be715WB6xOEjeRlrzUnkWU8=
-X-Received: by 2002:a05:6e02:20c3:b0:2c2:9e23:8263 with SMTP id
- 3-20020a056e0220c300b002c29e238263mr16510481ilq.248.1646753456934; Tue, 08
- Mar 2022 07:30:56 -0800 (PST)
+        Tue, 8 Mar 2022 10:32:24 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAED4E3A5;
+        Tue,  8 Mar 2022 07:31:28 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2DA191F37E;
+        Tue,  8 Mar 2022 15:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646753487; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w0vmAh/kccjRH8guMo493NivfH2oji8DnSzxOP03BLQ=;
+        b=mrMLGWOuBBlfsroDd6oYIT/7H1v5hOJXMp5a9QPISbpXl/ekUC+1iESI2GAUSNovV78Maj
+        9NtPV5QtvFp7sAqRzPVyUrGOi2xg7es9JiM4YHxtUJZtm8NjSyEObJHMlrpvZygvjp4Fbl
+        uonAlY5UhIUfagInBoDjjpcUDtVCOdk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646753487;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w0vmAh/kccjRH8guMo493NivfH2oji8DnSzxOP03BLQ=;
+        b=45qz6+e4yjrb0c3W0MEw6xycEFn3U5t98k4ELCcCVRhgC/GF4XdUa95qeeK4qgWSQ8SX8b
+        bzSKLApuO61dPvAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F07B013CCE;
+        Tue,  8 Mar 2022 15:31:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id JR+yOc52J2JoWAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 08 Mar 2022 15:31:26 +0000
+Message-ID: <afc1212b-932f-0588-97c4-01e38b2e30ca@suse.cz>
+Date:   Tue, 8 Mar 2022 16:31:26 +0100
 MIME-Version: 1.0
-References: <cover.1643047180.git.andreyknvl@google.com> <fbfd9939a4dc375923c9a5c6b9e7ab05c26b8c6b.1643047180.git.andreyknvl@google.com>
- <your-ad-here.call-01646752633-ext-6250@work.hours>
-In-Reply-To: <your-ad-here.call-01646752633-ext-6250@work.hours>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Tue, 8 Mar 2022 16:30:46 +0100
-Message-ID: <CA+fCnZdCZ92BxnympNoRP8+3_gGDMZQgTeaUpga3ctuRq8zPYg@mail.gmail.com>
-Subject: Re: [PATCH v6 31/39] kasan, vmalloc: only tag normal vmalloc allocations
-To:     Vasily Gorbik <gor@linux.ibm.com>
-Cc:     andrey.konovalov@linux.dev,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Content-Type: multipart/mixed; boundary="000000000000d579e505d9b6aa3d"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] mm: madvise: MADV_DONTNEED_LOCKED
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>, Nadav Amit <nadav.amit@gmail.com>,
+        David Hildenbrand <david@redhat.com>, dgilbert@redhat.com,
+        Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
+        linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220304171912.305060-1-hannes@cmpxchg.org>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220304171912.305060-1-hannes@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000d579e505d9b6aa3d
-Content-Type: text/plain; charset="UTF-8"
+On 3/4/22 18:19, Johannes Weiner wrote:
+> MADV_DONTNEED historically rejects mlocked ranges, but with
+> MLOCK_ONFAULT and MCL_ONFAULT allowing to mlock without populating,
+> there are valid use cases for depopulating locked ranges as well.
+> 
+> Users mlock memory to protect secrets. There are allocators for secure
+> buffers that want in-use memory generally mlocked, but cleared and
+> invalidated memory to give up the physical pages. This could be done
+> with explicit munlock -> mlock calls on free -> alloc of course, but
+> that adds two unnecessary syscalls, heavy mmap_sem write locks, vma
+> splits and re-merges - only to get rid of the backing pages.
+> 
+> Users also mlockall(MCL_ONFAULT) to suppress sustained paging, but are
+> okay with on-demand initial population. It seems valid to selectively
+> free some memory during the lifetime of such a process, without having
+> to mess with its overall policy.
+> 
+> Why add a separate flag? Isn't this a pretty niche usecase?
+> 
+> - MADV_DONTNEED has been bailing on locked vmas forever. It's at least
+>   conceivable that someone, somewhere is relying on mlock to protect
+>   data from perhaps broader invalidation calls. Changing this behavior
+>   now could lead to quiet data corruption.
+> 
+> - It also clarifies expectations around MADV_FREE and maybe
+>   MADV_REMOVE. It avoids the situation where one quietly behaves
+>   different than the others. MADV_FREE_LOCKED can be added later.
 
-On Tue, Mar 8, 2022 at 4:17 PM Vasily Gorbik <gor@linux.ibm.com> wrote:
->
-> On Mon, Jan 24, 2022 at 07:05:05PM +0100, andrey.konovalov@linux.dev wrote:
-> > From: Andrey Konovalov <andreyknvl@google.com>
-> >
-> > The kernel can use to allocate executable memory. The only supported way
-> > to do that is via __vmalloc_node_range() with the executable bit set in
-> > the prot argument. (vmap() resets the bit via pgprot_nx()).
-> >
-> > Once tag-based KASAN modes start tagging vmalloc allocations, executing
-> > code from such allocations will lead to the PC register getting a tag,
-> > which is not tolerated by the kernel.
-> >
-> > Only tag the allocations for normal kernel pages.
-> >
-> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
->
-> This breaks s390 and produce huge amount of false positives.
-> I haven't been testing linux-next with KASAN for while, now tried it with
-> next-20220308 and bisected false positives to this commit.
->
-> Any idea what is going wrong here?
+Looks like the parameter is not a bitmask, so it makes sense to have
+MADV_FREE_LOCKED instead of a generic flag that combines with one of those.
 
-Hi Vasily,
+> - The combination of mlock() and madvise() in the first place is
+>   probably niche. But where it happens, I'd say that dropping pages
+>   from a locked region once they don't contain secrets or won't page
+>   anymore is much saner than relying on mlock to protect memory from
+>   speculative or errant invalidation calls. It's just that we can't
+>   change the default behavior because of the two previous points.
+> 
+> Given that, an explicit new flag seems to make the most sense.
+> 
+> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
 
-Could you try the attached fix?
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-Thanks!
-
---000000000000d579e505d9b6aa3d
-Content-Type: application/octet-stream; name="s390-kasan-vmalloc.fix"
-Content-Disposition: attachment; filename="s390-kasan-vmalloc.fix"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l0iafuk20>
-X-Attachment-Id: f_l0iafuk20
-
-ZGlmZiAtLWdpdCBhL21tL2thc2FuL3NoYWRvdy5jIGIvbW0va2FzYW4vc2hhZG93LmMKaW5kZXgg
-NzI3MmUyNDhkYjg3Li42OTM5NTRmNzcxZWMgMTAwNjQ0Ci0tLSBhL21tL2thc2FuL3NoYWRvdy5j
-CisrKyBiL21tL2thc2FuL3NoYWRvdy5jCkBAIC00OTIsNyArNDkyLDggQEAgdm9pZCAqX19rYXNh
-bl91bnBvaXNvbl92bWFsbG9jKGNvbnN0IHZvaWQgKnN0YXJ0LCB1bnNpZ25lZCBsb25nIHNpemUs
-CiAJICogRG9uJ3QgdGFnIGV4ZWN1dGFibGUgbWVtb3J5LgogCSAqIFRoZSBrZXJuZWwgZG9lc24n
-dCB0b2xlcmF0ZSBoYXZpbmcgdGhlIFBDIHJlZ2lzdGVyIHRhZ2dlZC4KIAkgKi8KLQlpZiAoIShm
-bGFncyAmIEtBU0FOX1ZNQUxMT0NfUFJPVF9OT1JNQUwpKQorCWlmIChJU19FTkFCTEVEKENPTkZJ
-R19LQVNBTl9TV19UQUdTKSAmJgorCSAgICAhKGZsYWdzICYgS0FTQU5fVk1BTExPQ19QUk9UX05P
-Uk1BTCkpCiAJCXJldHVybiAodm9pZCAqKXN0YXJ0OwogCiAJc3RhcnQgPSBzZXRfdGFnKHN0YXJ0
-LCBrYXNhbl9yYW5kb21fdGFnKCkpOwo=
---000000000000d579e505d9b6aa3d--
+> Acked-by: Michal Hocko <mhocko@suse.com>
