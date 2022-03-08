@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA009C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348181AbiCHP4b (ORCPT
+        id S1348119AbiCHP4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:56:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        Tue, 8 Mar 2022 10:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348030AbiCHP4C (ORCPT
+        with ESMTP id S1348034AbiCHP4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 10:56:02 -0500
+        Tue, 8 Mar 2022 10:56:03 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EDC4F9C3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EEA4D27C
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=AXxkY3fJyaBpuEKZHXTB+//NaiEPMsud285kPOUeKnY=; b=UdQd+oIZ8UYCHYIFoR/CIU+iPA
-        rsarLMvwo/SPMsRzyQiH7WehPMwPxXUZnRzd7CRCj9N73dGFxELbpBDtGReV4Mb+eAbrn3HAr1gHr
-        j++I8I8OvI+qKBiNi+CCCdRgAcoCwMAyH/8QitC0deK6VBo3HqsBlxwyRvOcOobN2OtgGsdhV1WLy
-        7+kmLewqyf/3yhNvbz7+u1+zRpEG69F/m7kq40W02XDYXCWNHXvE2kwsMPFLpjsK6XeUu4ws5zX0u
-        npM1gph+tn1l6jckipNjDpbnd5sgZOWK4DKG2dQGxuKac9Rg+b96VjCTV2vQvovDvxjLywq+dzHjG
-        EzaUqXMA==;
+        bh=41LwMtvOLrmCCpEeK45Bz2QrPFsLhIO0Z4y1ZqPj0RU=; b=olpLSymIbBNjd8SiQhAUktw6WC
+        m/IywXMBYh255eR7kW0f23QHj899a0yhhr/Lt0iEaNs5mVz8lDgv2+2T2d2J7jFulD3uBq7q50pjX
+        10l+TuFOnyJ/TL3f4Gi+9Q/dYeGoOEFOabQkioHUz1g1dYpgueOjkMoUOLIZ2KAfdRwF8chcM6bmf
+        OnXfF+s7aoUlTZIElSQw90QU4SglRSPdUjH+fIJR9ORK0WR/kpUnBQ205e4wQGZ3qaby7Cn3j2b/2
+        U0naVkymFbnySL1JrsYIrUm9qnsloFs9be1jjdCz055yxjEl3EnNTHfgzDTCCh5/rcx/jl2QZCDK1
+        gfCBr+Aw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GIux-0y; Tue, 08 Mar 2022 15:54:42 +0000
+        id 1nRcAc-00GIvI-RW; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 206D0300C67;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4484B302D58;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id CC1FD2B561901; Tue,  8 Mar 2022 16:54:38 +0100 (CET)
-Message-ID: <20220308154317.519875203@infradead.org>
+        id 788032B561935; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.759989383@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:17 +0100
+Date:   Tue, 08 Mar 2022 16:30:38 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 06/45] x86/ibt: Base IBT bits
+Subject: [PATCH v4 27/45] x86/ibt: Disable IBT around firmware
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,173 +56,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Kconfig, Makefile and basic instruction support for x86 IBT.
-
-(Ab)use __DISABLE_EXPORTS to disable IBT since it's already employed
-to mark compressed and purgatory. Additionally mark realmode with it
-as well to avoid inserting ENDBR instructions there. While ENDBR is
-technically a NOP, inserting them was causing some grief due to code
-growth. There's also a problem with using __noendbr in code compiled
-without -fcf-protection=branch.
+Assume firmware isn't IBT clean and disable it across calls.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/Kconfig           |   20 ++++++++++
- arch/x86/Makefile          |   16 +++++++-
- arch/x86/include/asm/ibt.h |   87 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 121 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/efi.h   |    9 +++++++--
+ arch/x86/include/asm/ibt.h   |    6 ++++++
+ arch/x86/kernel/apm_32.c     |    7 +++++++
+ arch/x86/kernel/cpu/common.c |   28 ++++++++++++++++++++++++++++
+ 4 files changed, 48 insertions(+), 2 deletions(-)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1861,6 +1861,26 @@ config X86_UMIP
- 	  specific cases in protected and virtual-8086 modes. Emulated
- 	  results are dummy.
+--- a/arch/x86/include/asm/efi.h
++++ b/arch/x86/include/asm/efi.h
+@@ -7,6 +7,7 @@
+ #include <asm/tlb.h>
+ #include <asm/nospec-branch.h>
+ #include <asm/mmu_context.h>
++#include <asm/ibt.h>
+ #include <linux/build_bug.h>
+ #include <linux/kernel.h>
+ #include <linux/pgtable.h>
+@@ -120,8 +121,12 @@ extern asmlinkage u64 __efi_call(void *f
+ 	efi_enter_mm();							\
+ })
  
-+config CC_HAS_IBT
-+	# GCC >= 9 and binutils >= 2.29
-+	# Retpoline check to work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93654
-+	# Clang/LLVM >= 14
-+	# fentry check to work around https://reviews.llvm.org/D111108
-+	def_bool ((CC_IS_GCC && $(cc-option, -fcf-protection=branch -mindirect-branch-register)) || \
-+		  (CC_IS_CLANG && $(cc-option, -fcf-protection=branch -mfentry))) && \
-+		  $(as-instr,endbr64)
-+
-+config X86_KERNEL_IBT
-+	prompt "Indirect Branch Tracking"
-+	bool
-+	depends on X86_64 && CC_HAS_IBT
-+	help
-+	  Build the kernel with support for Indirect Branch Tracking, a
-+	  hardware support course-grain forward-edge Control Flow Integrity
-+	  protection. It enforces that all indirect calls must land on
-+	  an ENDBR instruction, as such, the compiler will instrument the
-+	  code with them to make this happen.
-+
- config X86_INTEL_MEMORY_PROTECTION_KEYS
- 	prompt "Memory Protection Keys"
- 	def_bool y
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -36,7 +36,7 @@ endif
+-#define arch_efi_call_virt(p, f, args...)				\
+-	efi_call((void *)p->f, args)					\
++#define arch_efi_call_virt(p, f, args...) ({				\
++	u64 ret, ibt = ibt_save();					\
++	ret = efi_call((void *)p->f, args);				\
++	ibt_restore(ibt);						\
++	ret;								\
++})
  
- # How to compile the 16-bit code.  Note we always compile for -march=i386;
- # that way we can complain to the user if the CPU is insufficient.
--REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING \
-+REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING -D__DISABLE_EXPORTS \
- 		   -Wall -Wstrict-prototypes -march=i386 -mregparm=3 \
- 		   -fno-strict-aliasing -fomit-frame-pointer -fno-pic \
- 		   -mno-mmx -mno-sse $(call cc-option,-fcf-protection=none)
-@@ -62,8 +62,20 @@ export BITS
- #
- KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
- 
--# Intel CET isn't enabled in the kernel
-+ifeq ($(CONFIG_X86_KERNEL_IBT),y)
-+#
-+# Kernel IBT has S_CET.NOTRACK_EN=0, as such the compilers must not generate
-+# NOTRACK prefixes. Current generation compilers unconditionally employ NOTRACK
-+# for jump-tables, as such, disable jump-tables for now.
-+#
-+# (jump-tables are implicitly disabled by RETPOLINE)
-+#
-+#   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104816
-+#
-+KBUILD_CFLAGS += $(call cc-option,-fcf-protection=branch -fno-jump-tables)
-+else
- KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
-+endif
- 
- ifeq ($(CONFIG_X86_32),y)
-         BITS := 32
---- /dev/null
+ #define arch_efi_call_virt_teardown()					\
+ ({									\
+--- a/arch/x86/include/asm/ibt.h
 +++ b/arch/x86/include/asm/ibt.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_IBT_H
-+#define _ASM_X86_IBT_H
+@@ -39,6 +39,9 @@ static inline bool is_endbr(u32 val)
+ 	return val == gen_endbr();
+ }
+ 
++extern __noendbr u64 ibt_save(void);
++extern __noendbr void ibt_restore(u64 save);
 +
-+#include <linux/types.h>
+ #else /* __ASSEMBLY__ */
+ 
+ #ifdef CONFIG_X86_64
+@@ -61,6 +64,9 @@ static inline bool is_endbr(u32 val)
+ 
+ static inline bool is_endbr(u32 val) { return false; }
+ 
++static inline u64 ibt_save(void) { return 0; }
++static inline void ibt_restore(u64 save) { }
 +
-+/*
-+ * The rules for enabling IBT are:
-+ *
-+ *  - CC_HAS_IBT:         the toolchain supports it
-+ *  - X86_KERNEL_IBT:     it is selected in Kconfig
-+ *  - !__DISABLE_EXPORTS: this is regular kernel code
-+ *
-+ * Esp. that latter one is a bit non-obvious, but some code like compressed,
-+ * purgatory, realmode etc.. is built with custom CFLAGS that do not include
-+ * -fcf-protection=branch and things will go *bang*.
-+ *
-+ * When all the above are satisfied, HAS_KERNEL_IBT will be 1, otherwise 0.
-+ */
-+#if defined(CONFIG_X86_KERNEL_IBT) && !defined(__DISABLE_EXPORTS)
+ #else /* __ASSEMBLY__ */
+ 
+ #define ENDBR
+--- a/arch/x86/kernel/apm_32.c
++++ b/arch/x86/kernel/apm_32.c
+@@ -232,6 +232,7 @@
+ #include <asm/paravirt.h>
+ #include <asm/reboot.h>
+ #include <asm/nospec-branch.h>
++#include <asm/ibt.h>
+ 
+ #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
+ extern int (*console_blank_hook)(int);
+@@ -598,6 +599,7 @@ static long __apm_bios_call(void *_call)
+ 	struct desc_struct	save_desc_40;
+ 	struct desc_struct	*gdt;
+ 	struct apm_bios_call	*call = _call;
++	u64			ibt;
+ 
+ 	cpu = get_cpu();
+ 	BUG_ON(cpu != 0);
+@@ -607,11 +609,13 @@ static long __apm_bios_call(void *_call)
+ 
+ 	apm_irq_save(flags);
+ 	firmware_restrict_branch_speculation_start();
++	ibt = ibt_save();
+ 	APM_DO_SAVE_SEGS;
+ 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
+ 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
+ 			  &call->esi);
+ 	APM_DO_RESTORE_SEGS;
++	ibt_restore(ibt);
+ 	firmware_restrict_branch_speculation_end();
+ 	apm_irq_restore(flags);
+ 	gdt[0x40 / 8] = save_desc_40;
+@@ -676,6 +680,7 @@ static long __apm_bios_call_simple(void
+ 	struct desc_struct	save_desc_40;
+ 	struct desc_struct	*gdt;
+ 	struct apm_bios_call	*call = _call;
++	u64			ibt;
+ 
+ 	cpu = get_cpu();
+ 	BUG_ON(cpu != 0);
+@@ -685,10 +690,12 @@ static long __apm_bios_call_simple(void
+ 
+ 	apm_irq_save(flags);
+ 	firmware_restrict_branch_speculation_start();
++	ibt = ibt_save();
+ 	APM_DO_SAVE_SEGS;
+ 	error = apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
+ 					 &call->eax);
+ 	APM_DO_RESTORE_SEGS;
++	ibt_restore(ibt);
+ 	firmware_restrict_branch_speculation_end();
+ 	apm_irq_restore(flags);
+ 	gdt[0x40 / 8] = save_desc_40;
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -594,6 +594,34 @@ static __init int setup_disable_pku(char
+ __setup("nopku", setup_disable_pku);
+ #endif /* CONFIG_X86_64 */
+ 
++#ifdef CONFIG_X86_KERNEL_IBT
 +
-+#define HAS_KERNEL_IBT	1
-+
-+#ifndef __ASSEMBLY__
-+
-+#ifdef CONFIG_X86_64
-+#define ASM_ENDBR	"endbr64\n\t"
-+#else
-+#define ASM_ENDBR	"endbr32\n\t"
-+#endif
-+
-+#define __noendbr	__attribute__((nocf_check))
-+
-+static inline __attribute_const__ u32 gen_endbr(void)
++__noendbr u64 ibt_save(void)
 +{
-+	u32 endbr;
++	u64 msr = 0;
 +
-+	/*
-+	 * Generate ENDBR64 in a way that is sure to not result in
-+	 * an ENDBR64 instruction as immediate.
-+	 */
-+	asm ( "mov $~0xfa1e0ff3, %[endbr]\n\t"
-+	      "not %[endbr]\n\t"
-+	       : [endbr] "=&r" (endbr) );
++	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
++		rdmsrl(MSR_IA32_S_CET, msr);
++		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
++	}
 +
-+	return endbr;
++	return msr;
 +}
 +
-+static inline bool is_endbr(u32 val)
++__noendbr void ibt_restore(u64 save)
 +{
-+	val &= ~0x01000000U; /* ENDBR32 -> ENDBR64 */
-+	return val == gen_endbr();
++	u64 msr;
++
++	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
++		rdmsrl(MSR_IA32_S_CET, msr);
++		msr &= ~CET_ENDBR_EN;
++		msr |= (save & CET_ENDBR_EN);
++		wrmsrl(MSR_IA32_S_CET, msr);
++	}
 +}
 +
-+#else /* __ASSEMBLY__ */
-+
-+#ifdef CONFIG_X86_64
-+#define ENDBR	endbr64
-+#else
-+#define ENDBR	endbr32
 +#endif
 +
-+#endif /* __ASSEMBLY__ */
-+
-+#else /* !IBT */
-+
-+#define HAS_KERNEL_IBT	0
-+
-+#ifndef __ASSEMBLY__
-+
-+#define ASM_ENDBR
-+
-+#define __noendbr
-+
-+static inline bool is_endbr(u32 val) { return false; }
-+
-+#else /* __ASSEMBLY__ */
-+
-+#define ENDBR
-+
-+#endif /* __ASSEMBLY__ */
-+
-+#endif /* CONFIG_X86_KERNEL_IBT */
-+
-+#define ENDBR_INSN_SIZE		(4*HAS_KERNEL_IBT)
-+
-+#endif /* _ASM_X86_IBT_H */
+ static __always_inline void setup_cet(struct cpuinfo_x86 *c)
+ {
+ 	u64 msr = CET_ENDBR_EN;
 
 
