@@ -2,238 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347340AbiCHOIg (ORCPT
+        id S1347285AbiCHOKn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:08:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        Tue, 8 Mar 2022 09:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347333AbiCHOIa (ORCPT
+        with ESMTP id S237849AbiCHOKl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:08:30 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCCD65A0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:07:33 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id j2so38075384ybu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 06:07:33 -0800 (PST)
+        Tue, 8 Mar 2022 09:10:41 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA5D4A938
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:09:44 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id e22so8733403ioe.11
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 06:09:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eS0l7en5kynGt3cRHPFIsipgTmWpQYTaBB4iGuiUyWE=;
-        b=iKbtGYe+OzWCk39Dwv2qUEoWjf+JA7E+3udO/PLQnP5y1YG4A/cZpcERNYbKNdLUbi
-         ZuYn01YwLp1mLeDAhVpliopen6EdekVNkgHQuXRWfaZI8v88vJgrFPvI0ykWnSnf9TDe
-         aDesPU6Qmwv7f4VJKhXXibW/VRJ5IKUsCECelkOOIveJWJOs4BSgGrBsRqwRhAjRSRby
-         3SXxig4X4oycamZJEtlGPuWu2qDcI1xYycDX50vC/bzofSYo1o81ig0tcV7roK7WimjS
-         LV/EHIarwFFwfA8TBrdN6mH++H1DxyBZp3p97YEngVqPIobhSZoAqpxaSX83NDbC7bUq
-         Vxww==
+         :cc;
+        bh=hRpJxORzYHfHsib6XQ7pADNjcahneCQRQX9w7pOY0OQ=;
+        b=eYia2UnkUujMkCrYJE7d89YSUEUoxjnvl5UJEuhavn8d1SEmdyr42GRkIEpcHs7myn
+         pN7VYwTutC7jPYkkMhURoI0yONVTY7jxIPfG8MzdMeCR/7TLVUSC31QR4MQq0yaEJc4m
+         v7pl2GcX78WMtKLSqP3Ya65hsfztUJWVkgWdToaDHtYxmMGL/9d2Fv+3WRcprLBlJ1qk
+         hIGBxkEi34GmItstGIkhdUHPzOBsSYSs9iZ69kpdp8pSsB9BH4y+IRSB4V4C36SjP0dK
+         TmlMqOYK6VZY8GM5a8+sq+PGtpVnyOr+ttU52Hea0UkXgSVGZ4tmtMoOrO4RXpegyqDF
+         RkqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eS0l7en5kynGt3cRHPFIsipgTmWpQYTaBB4iGuiUyWE=;
-        b=50C9ClFos0Fp85NhEuMmBKLiXEkcOf9CdzGG/aa5gzdr1kUKkdJIXD5wvBlwPymrEu
-         vzYo7DMBTVdV9nKI00gPvpwlGLQ4o1CI/e6zOod57ed5v/k0hwkzfUp001KRkjL9zdU6
-         RwG91T6lwWy9kROZ9bUR2QpqDGZ47RlKar4obw17Qpies8DBuFoke6MG5/XxcyjHtLUC
-         i1gEkjBnsTJGlzPscdUfetzvQhATycCjul4zW1MGSBGSoNFNgVdQWqpq8R8DHguXM+sg
-         CczTp42nwFju7ujLArCst4MuWFWDcop4IGV+KnKaKJkjWlbQiLvPPEKhtOZyRpaorVaX
-         BwwQ==
-X-Gm-Message-State: AOAM5309duriNwwxqn4gwSqW4AuJmT8TVZ8KZ7qjLOMjYFNXoz+2DZws
-        blnPDd/k7NBsqMydomBv1K7A/hsB+6oNQtJhpuKnPlHkcyUdAgdI
-X-Google-Smtp-Source: ABdhPJz84RZo0O57JXEhy755jv6Ko9Xe53ByV0D8Kh7akvFNPjsm+xAk8zkN232whC+0+o/BAb9z4518DeCUKeOGLP0=
-X-Received: by 2002:a25:da91:0:b0:628:aa84:f69e with SMTP id
- n139-20020a25da91000000b00628aa84f69emr13010545ybf.603.1646748452927; Tue, 08
- Mar 2022 06:07:32 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=hRpJxORzYHfHsib6XQ7pADNjcahneCQRQX9w7pOY0OQ=;
+        b=GGGzo3SnY33mPc+8T++nPL16COwslmGKzz8a4WkT/iPF96BawMORixTGCuoWa1dGFq
+         xR/UOXo8Mi5d+9V77aXbjk1B5rcgqQrXwKBx5vMztyK2w+CjsruHBl+scf95KQeBP9RW
+         CN66kfVKqHm8NYJJsnz7uaztU4dGKdz0/B9ootBUc8paSnnhNckfqo2u/4eg6y7hORL/
+         UBonf7YkPb89mkbRry7+jDigTI3Vr/pD5ARoSUNnuWHOhZQ/PAB9kna3+7B96+DJwkL3
+         VS1CxZ6OtEREnW+COEjQKJ1avfWNrk9yYS+w02gyOtAPvFogzBwG9SNGUZi4Hs8TsxJX
+         6vCw==
+X-Gm-Message-State: AOAM5300nOGiAuUJaPSJqK5yysjl+lsG2xU7a1a0ETMmB5r7BRzrLiyG
+        SaPP5EQKO1khMI5sMVwu1/w0f5DudoyVxTPzS75ZGY3I
+X-Google-Smtp-Source: ABdhPJwqEfqCA5cagNp4O8IaA+I16blpIODquNOlVcpibSm5zKmOUZYsN+lR33Ipt82RXosZpqekJeJvvjTzV27uuTo=
+X-Received: by 2002:a05:6602:490:b0:638:c8ed:1e38 with SMTP id
+ y16-20020a056602049000b00638c8ed1e38mr14813042iov.202.1646748584377; Tue, 08
+ Mar 2022 06:09:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220307091636.988950823@linuxfoundation.org>
-In-Reply-To: <20220307091636.988950823@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 8 Mar 2022 19:37:21 +0530
-Message-ID: <CA+G9fYtg5rveiJ7CFbPEBWYNeD3ZnmteJv3_mWNCESZh1w-WcQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/51] 4.19.233-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <cover.1646237226.git.andreyknvl@google.com> <1c8ce43f97300300e62c941181afa2eb738965c5.1646237226.git.andreyknvl@google.com>
+ <CAG_fn=UX_hF4RYdCMy-NRC+=KySFLE4wOTiCmzFPBwhieWjz4w@mail.gmail.com>
+In-Reply-To: <CAG_fn=UX_hF4RYdCMy-NRC+=KySFLE4wOTiCmzFPBwhieWjz4w@mail.gmail.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Tue, 8 Mar 2022 15:09:33 +0100
+Message-ID: <CA+fCnZdQtjF-wZRiX+CJLpp4BOQbJXDvAL3vE4+xaKVYrCqpqQ@mail.gmail.com>
+Subject: Re: [PATCH mm 06/22] kasan: simplify async check in end_report
+To:     Alexander Potapenko <glider@google.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 at 14:54, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Wed, Mar 2, 2022 at 6:38 PM Alexander Potapenko <glider@google.com> wrote:
 >
-> This is the start of the stable review cycle for the 4.19.233 release.
-> There are 51 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
 >
-> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
-> Anything received after that time might be too late.
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.19.233-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.19.y
-> and the diffstat can be found below.
+> On Wed, Mar 2, 2022 at 5:37 PM <andrey.konovalov@linux.dev> wrote:
+>>
+>> From: Andrey Konovalov <andreyknvl@google.com>
+>>
+>> Currently, end_report() does not call trace_error_report_end() for bugs
+>> detected in either async or asymm mode (when kasan_async_fault_possible()
+>> returns true), as the address of the bad access might be unknown.
+>>
+>> However, for asymm mode, the address is known for faults triggered by
+>> read operations.
+>>
+>> Instead of using kasan_async_fault_possible(), simply check that
+>> the addr is not NULL when calling trace_error_report_end().
+>>
+>> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+>> ---
+>>  mm/kasan/report.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+>> index d60ee8b81e2b..2d892ec050be 100644
+>> --- a/mm/kasan/report.c
+>> +++ b/mm/kasan/report.c
+>> @@ -112,7 +112,7 @@ static void start_report(unsigned long *flags)
+>>
+>>  static void end_report(unsigned long *flags, unsigned long addr)
+>>  {
+>> -       if (!kasan_async_fault_possible())
+>> +       if (addr)
+>>                 trace_error_report_end(ERROR_DETECTOR_KASAN, addr);
 >
-> thanks,
 >
-> greg k-h
+> What happens in the case of a NULL dereference? Don't we want to trigger the tracepoint as well?
 
+A NULL pointer dereference is never reported through KASAN: for
+software modes, it triggers a GPF when accessing shadow, and for
+HW_TAGS, it takes precedence over a tag mismatch.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 4.19.233-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: [None, 'linux-4.19.y']
-* git commit: e227a7bfe445a282a8ba16771c3716b19839820b
-* git describe: v4.19.232-53-ge227a7bfe445
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
-.232-53-ge227a7bfe445
-
-## Test Regressions (compared to v4.19.232-45-g5da8d73687e7)
-No test regressions found.
-
-## Metric Regressions (compared to v4.19.232-45-g5da8d73687e7)
-No metric regressions found.
-
-## Test Fixes (compared to v4.19.232-45-g5da8d73687e7)
-No test fixes found.
-
-## Metric Fixes (compared to v4.19.232-45-g5da8d73687e7)
-No metric fixes found.
-
-## Test result summary
-total: 86182, pass: 69715, fail: 1010, skip: 13571, xfail: 1886
-
-## Build Summary
-* arm: 281 total, 275 passed, 6 failed
-* arm64: 39 total, 39 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 19 total, 19 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 27 total, 27 passed, 0 failed
-* powerpc: 60 total, 49 passed, 11 failed
-* s390: 12 total, 12 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 38 total, 38 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Thanks!
