@@ -2,117 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901F0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiCIBHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S229845AbiCIBH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:07:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiCIBHM (ORCPT
+        with ESMTP id S229983AbiCIBHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:07:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E53237C7
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:46:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFC6160A50
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 00:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ADBBC340EB;
-        Wed,  9 Mar 2022 00:22:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646785320;
-        bh=F1kzKZpYMWhM9cQPPakX62bZJT5OiMykVQym1F03byg=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=JX9rUkpPGmqfkiGs9+lC2Pj2bNqor0z2z5GIUl/W1U0nxVOriJZtRjF457Iuv4q5t
-         EOl1exgG+SGmPNcMYfOyZxCMkXWbZn67HxiVe3j5Ug9SUgM9/iY8CMsdsW3XxVA5z9
-         Ty3Ftn8Y7hdBVGb6KHOOuTL91hl47ZcBnx2yXrqejEUuFBgYziTKl4mkNblMfqVNQU
-         1bAM3Pldi+mU3C10M7W/IPChuMC213XRc8o+ziI8laadTkIyqWRNkfdrRzMVPD8Scj
-         /afRvGIJbVjw3u415mqlDuB3NFVTGSQA8uLYQ0Qm4qhTcNLPJ+3jt7zfuImlFeE4hH
-         XNRg/JleKMl7Q==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id DCCDD5C14AE; Tue,  8 Mar 2022 16:21:59 -0800 (PST)
-Date:   Tue, 8 Mar 2022 16:21:59 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        vincent.guittot@linaro.org, bristot@redhat.com,
-        zhaolei@cn.fujitsu.com, tj@kernel.org, lizefan.x@bytedance.com,
-        hannes@cmpxchg.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] sched/cpuacct: optimize away RCU read lock
-Message-ID: <20220309002159.GA3774636@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220220051426.5274-1-zhouchengming@bytedance.com>
- <20220220051426.5274-2-zhouchengming@bytedance.com>
- <CGME20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f@eucas1p2.samsung.com>
- <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
- <YifniVyoJ9NNU+pv@hirez.programming.kicks-ass.net>
- <20220308234403.GC4285@paulmck-ThinkPad-P17-Gen-1>
+        Tue, 8 Mar 2022 20:07:15 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06F5D2240;
+        Tue,  8 Mar 2022 16:47:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PXnF7xsg0OHmYSnSkaojnPw+kchBbwd7FnMF7nPOl9U=; b=hxwj8ZfHgideD0FeK4cxhmnIKt
+        CcfdqsPVOJh+YEuqUrIx25ppVNhTORh3V3ZxpkhD0b6V83+Op77NqDLRHo+35Cr6swl0+/doQY6Y3
+        ukV059i3641PXzTfxJpy0ycHHiNelFPQ+5lw5kL+fwxYK6pYAa464nFXn1qjsLoNxB1I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nRjNu-009sFO-3G; Wed, 09 Mar 2022 00:36:54 +0100
+Date:   Wed, 9 Mar 2022 00:36:54 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Divya.Koppera@microchip.com, netdev@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        richardcochran@gmail.com, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Madhuri.Sripada@microchip.com,
+        Manohar.Puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <YifoltDp4/Fs+9op@lunn.ch>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220308234403.GC4285@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 03:44:03PM -0800, Paul E. McKenney wrote:
-> On Wed, Mar 09, 2022 at 12:32:25AM +0100, Peter Zijlstra wrote:
-> > On Wed, Mar 09, 2022 at 12:20:33AM +0100, Marek Szyprowski wrote:
-> > > On 20.02.2022 06:14, Chengming Zhou wrote:
-> > > > Since cpuacct_charge() is called from the scheduler update_curr(),
-> > > > we must already have rq lock held, then the RCU read lock can
-> > > > be optimized away.
-> > > >
-> > > > And do the same thing in it's wrapper cgroup_account_cputime(),
-> > > > but we can't use lockdep_assert_rq_held() there, which defined
-> > > > in kernel/sched/sched.h.
-> > > >
-> > > > Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > > Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> > > 
-> > > This patch landed recently in linux-next as commit dc6e0818bc9a 
-> > > ("sched/cpuacct: Optimize away RCU read lock"). On my test systems I 
-> > > found that it triggers a following warning in the early boot stage:
-> > > 
-> > > Calibrating delay loop (skipped), value calculated using timer 
-> > > frequency.. 48.00 BogoMIPS (lpj=240000)
-> > > pid_max: default: 32768 minimum: 301
-> > > Mount-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
-> > > Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
-> > > CPU: Testing write buffer coherency: ok
-> > > CPU0: Spectre v2: using BPIALL workaround
-> > > 
-> > > =============================
-> > > WARNING: suspicious RCU usage
-> > > 5.17.0-rc5-00050-gdc6e0818bc9a #11458 Not tainted
-> > > -----------------------------
-> > > ./include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
+On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
+> The 03/08/2022 19:10, Andrew Lunn wrote:
 > > 
-> > Arguably, with the flavours folded again, rcu_dereference_check() ought
-> > to default include rcu_read_lock_sched_held() or its equivalent I
-> > suppose.
+> > > > So this is a function of the track length between the MAC and the PHY?
+> > >
+> > > Nope.
+> > > This latency represents the time it takes for the frame to travel from RJ45
+> > > module to the timestamping unit inside the PHY. To be more precisely,
+> > > the timestamping unit will do the timestamp when it detects the end of
+> > > the start of the frame. So it represents the time from when the frame
+> > > reaches the RJ45 to when the end of start of the frame reaches the
+> > > timestamping unit inside the PHY.
 > > 
-> > Paul?
+> > I must be missing something here. How do you measure the latency
+> > difference for a 1 meter cable vs a 100m cable?
 > 
-> That would reduce the number of warnings, but it also would hide bugs.
+> In the same way because the end result will be the same.
+
+The latency from the RJ45 to the PHY will be the same. But the latency
+from the link peer PHY to the local PHY will be much more, 500ns. In
+order for this RJ45 to PHY delay to be meaningful, don't you also need
+to know the length of the cable? Is there a configuration knob
+somewhere for the cable length?
+
+I'm assuming the ptp protocol does not try to measure the cable delay,
+since if it did, there would be no need to know the RJ45-PHY delay, it
+would be part of that.
+
+> > Isn't this error all just in the noise?
 > 
-> So, are you sure you really want this?
+> I am not sure I follow this question.
 
-Of course, if you are designing a use case that really expects multiple
-types of readers...
+At minimum, you expect to have a 1m cable. The RJ45-PHY track length
+is maybe 2cm? So 2% of the overall length. So you are trying to
+correct the error this 2% causes. If you have a 100m cable, 0.02% is
+RJ45-PHY part that you are trying to correct the error on. These
+numbers seem so small, it seems pointless. It only seems to make sense
+if you know the length of the cable, and to an accuracy of a few cm.
 
-Another approach might be rcu_dereference_brs(), but hopefully with a
-better name, that checks for either rcu_read_lock(), disabled BH, or
-disabled preemption.  Or if you are looking only for rcu_read_lock()
-or disabled preemption, rcu_dereference_rs(), again hopefully with a
-better name.
-
-Is that what you had in mind?
-
-							Thanx, Paul
-
-
+   Andrew
