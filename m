@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349095AbiCHRWL (ORCPT
+        id S1349120AbiCHRWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:22:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        Tue, 8 Mar 2022 12:22:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348986AbiCHRUh (ORCPT
+        with ESMTP id S1349003AbiCHRUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:20:37 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766E253B68;
-        Tue,  8 Mar 2022 09:19:30 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id yy13so31927368ejb.2;
-        Tue, 08 Mar 2022 09:19:30 -0800 (PST)
+        Tue, 8 Mar 2022 12:20:43 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1B553E0E;
+        Tue,  8 Mar 2022 09:19:34 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id h13so13274283ede.5;
+        Tue, 08 Mar 2022 09:19:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fephKwqGahaE5ePrpyTUfZ7vzKqhC09iEtMfdAncdNM=;
-        b=bRM/OMuDGEv0AZGOOzGCmNCsSpySNqu07Hft34oEc9A6ak9XMmK+29xqpHDV97GpvA
-         6zbYVmumIsOBgZnKtMh6+nvYaWqVcsUUWykf2ErUi5J6RWqEYk5ALbCHPcgq3K9dM25m
-         cDhwwdMGrtjPdIWCfavmaPo2986IKJvS1y1Bg4OTJML9wNk7hnOF2hf+Zy55CQHZGnMi
-         WOWCMvczodHmb4pi1JqtcqWldbpEJIUiFXKBZsOXYBbKVehmE+5GjDvhFXB2+3bL0z0C
-         O4XG2LrZZ17yMk4WfeRr1QGFuct9eYkq0XdaIUzNsdLmjDhbyFOg7wkjUakFPNNOzmje
-         520w==
+        bh=2tLXmXSOjUs3IAXSFXQ9uS1yTf2MJG7I5qLldTbEnao=;
+        b=ZwQv+ZYzEbmyyGZyL9N4a6ggod4N1RlbBwdslw7vDBQMj/75ezmdGmg4mRX8YSOx1T
+         6mih52OI+PHzzaVbIu92wqChc+JDtorksT7ddIhQiEM9qKAJVnH6y55VF4nkpswXg/pK
+         jf5esaFh4w5zRIHaWk6VvqUZY9VTjosQyLrl4ra4afLigz0qJ4orV02FGpopf9cMeWKR
+         3Dqu6bLnzKf1AgE6XXARBy5mJfpxn9XiYNwjL22Mo5BduOvzkZUMxAE97QN3n/CMfuRs
+         6OTDK+Lk9OhThCuG/jFqxw/W2yzBT0EDiSMx/14uiCnPQsRUfHR8hbFtMQuhyP/SBsl8
+         9VcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fephKwqGahaE5ePrpyTUfZ7vzKqhC09iEtMfdAncdNM=;
-        b=5/Wkr7fESjE9VSpIM61L2GEyQn5z4hg5sjAn0mTut5hprYvs1GkDOfQCMEt9Pnz+cP
-         B1o5qOLi1CL7GYcafAJWGUDYkww9irNIov9/+YKKhnyhJ5ISJl6l92ixMlqEP9ku//rf
-         WIysA9+/Tc1QURkIyg80oVYiBHpf0QrVTGUAZskK8hgGf0M0DyTBJplKCKOtMaOKIeDU
-         AEJNjbsAIedDNkOWF2sZ7JpahakpRGar7F796NVaUbQzZvMK25pHkMee+Q3LDiC0lNp5
-         HpJgh+MN+eaTkM7eYBV2uGpCAbiUzCbc8n41uEAsZZ0GTAxEHNSXWOIbDmfDQbTbuaxd
-         Ds3w==
-X-Gm-Message-State: AOAM532okICEXspmjRJg7Md8uVa1lULR5i3iCnzR4G3Ws+VIxVzGKRHu
-        vdrMGMrK4zOrF0cIDtzWmlY=
-X-Google-Smtp-Source: ABdhPJxByY5nw9jmtNB7IUcf/8bjjy7qzOQPkkkPtk4UKkjYZWHA8u51uU9OkIsMOffHmN06pgZUag==
-X-Received: by 2002:a17:907:961b:b0:6d9:acb0:5403 with SMTP id gb27-20020a170907961b00b006d9acb05403mr14001239ejc.568.1646759968956;
-        Tue, 08 Mar 2022 09:19:28 -0800 (PST)
+        bh=2tLXmXSOjUs3IAXSFXQ9uS1yTf2MJG7I5qLldTbEnao=;
+        b=ZxF4MKYghMx6f19OXdYZvK8joIdbAXV6DH9mWBNULMky1ssq3qdA7J1opKHhN954Az
+         5/lV2n/YDcxwbs7dxrsN612PIv2AB9Frg7e0VwGj7QN8cDVzAsX3qTWz6QDsFTQYxXiZ
+         bjJb1i3jufNYPpu5rj4zYHQQWLULSvWOt91DKjTkjf+q6BITNaIY9qx+TVBzrhybvrS/
+         XvLGS37n/bCuVI/JbjdLIYyF7aMrjUDLmBE8+9kFVx9o+9jb9ZpKVuLmbp3iUDptyuIA
+         gA/jPQRC8pwgVikffB7TyFes1jsvJZxiyt7pZmMr9jJSO1N7ElJP/sG6Mpc6WVLt0D7P
+         BRQQ==
+X-Gm-Message-State: AOAM532haSTvqfE/rOveIw4TDEPYmqr/1cuHjyzBj+zhCb3pAeMd3sTX
+        ddLdCJevJYhGrOxvnucIcPQ=
+X-Google-Smtp-Source: ABdhPJxiCgTengE/g8GyC8s54Z2vH1A4Pir28u+kldhuED5xvUq3bdnmEm833lpJDcdHZTZxRKPJ4w==
+X-Received: by 2002:a05:6402:5cb:b0:415:e04a:5230 with SMTP id n11-20020a05640205cb00b00415e04a5230mr17277809edx.352.1646759973277;
+        Tue, 08 Mar 2022 09:19:33 -0800 (PST)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id rv11-20020a17090710cb00b006d5c0cd5e0dsm6085044ejb.82.2022.03.08.09.19.27
+        by smtp.googlemail.com with ESMTPSA id rv11-20020a17090710cb00b006d5c0cd5e0dsm6085044ejb.82.2022.03.08.09.19.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 09:19:28 -0800 (PST)
+        Tue, 08 Mar 2022 09:19:32 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Greg Kroah-Hartman <greg@kroah.com>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -75,9 +75,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH v2 18/26] usb: gadget: legacy: remove using list iterator after loop body as a ptr
-Date:   Tue,  8 Mar 2022 18:18:10 +0100
-Message-Id: <20220308171818.384491-19-jakobkoschel@gmail.com>
+Subject: [PATCH v2 21/26] usb: gadget: composite: remove check of list iterator against head past the loop body
+Date:   Tue,  8 Mar 2022 18:18:13 +0100
+Message-Id: <20220308171818.384491-22-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308171818.384491-1-jakobkoschel@gmail.com>
 References: <20220308171818.384491-1-jakobkoschel@gmail.com>
@@ -87,65 +87,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the list does not contain the expected element, the value of
-list_for_each_entry() iterator will not point to a valid structure.
-To avoid type confusion in such case, the list iterator
-scope will be limited to list_for_each_entry() loop.
+When list_for_each_entry() completes the iteration over the whole list
+without breaking the loop, the iterator value will be a bogus pointer
+computed based on the head element.
 
-In preparation to limiting scope of a list iterator to the list traversal
-loop, use a dedicated pointer to point to the found element [1].
-Determining if an element was found is then simply checking if
-the pointer is != NULL instead of using the potentially bogus pointer.
+While it is safe to use the pointer to determine if it was computed
+based on the head element, either with list_entry_is_head() or
+&pos->member == head, using the iterator variable after the loop should
+be avoided.
+
+In preparation to limiting the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to point to the found element [1].
 
 Link: https://lore.kernel.org/all/YhdfEIwI4EdtHdym@kroah.com/
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/legacy/hid.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/usb/gadget/composite.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/gadget/legacy/hid.c b/drivers/usb/gadget/legacy/hid.c
-index 3912cc805f3a..1187ee4f316a 100644
---- a/drivers/usb/gadget/legacy/hid.c
-+++ b/drivers/usb/gadget/legacy/hid.c
-@@ -134,7 +134,7 @@ static int hid_bind(struct usb_composite_dev *cdev)
- {
- 	struct usb_gadget *gadget = cdev->gadget;
- 	struct list_head *tmp;
--	struct hidg_func_node *n, *m;
-+	struct hidg_func_node *n = NULL, *m, *iter_n;
- 	struct f_hid_opts *hid_opts;
- 	int status, funcs = 0;
+diff --git a/drivers/usb/gadget/composite.c b/drivers/usb/gadget/composite.c
+index 9315313108c9..4f7e789c3e07 100644
+--- a/drivers/usb/gadget/composite.c
++++ b/drivers/usb/gadget/composite.c
+@@ -1690,6 +1690,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
+ 	u16				w_value = le16_to_cpu(ctrl->wValue);
+ 	u16				w_length = le16_to_cpu(ctrl->wLength);
+ 	struct usb_function		*f = NULL;
++	struct usb_function		*iter;
+ 	u8				endp;
  
-@@ -144,18 +144,19 @@ static int hid_bind(struct usb_composite_dev *cdev)
- 	if (!funcs)
- 		return -ENODEV;
- 
--	list_for_each_entry(n, &hidg_func_list, node) {
--		n->fi = usb_get_function_instance("hid");
--		if (IS_ERR(n->fi)) {
--			status = PTR_ERR(n->fi);
-+	list_for_each_entry(iter_n, &hidg_func_list, node) {
-+		iter_n->fi = usb_get_function_instance("hid");
-+		if (IS_ERR(iter_n->fi)) {
-+			status = PTR_ERR(iter_n->fi);
-+			n = iter_n;
- 			goto put;
+ 	if (w_length > USB_COMP_EP0_BUFSIZ) {
+@@ -2046,12 +2047,12 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
+ 			if (!cdev->config)
+ 				break;
+ 			endp = ((w_index & 0x80) >> 3) | (w_index & 0x0f);
+-			list_for_each_entry(f, &cdev->config->functions, list) {
+-				if (test_bit(endp, f->endpoints))
++			list_for_each_entry(iter, &cdev->config->functions, list) {
++				if (test_bit(endp, iter->endpoints)) {
++					f = iter;
+ 					break;
++				}
+ 			}
+-			if (&f->list == &cdev->config->functions)
+-				f = NULL;
+ 			break;
  		}
--		hid_opts = container_of(n->fi, struct f_hid_opts, func_inst);
--		hid_opts->subclass = n->func->subclass;
--		hid_opts->protocol = n->func->protocol;
--		hid_opts->report_length = n->func->report_length;
--		hid_opts->report_desc_length = n->func->report_desc_length;
--		hid_opts->report_desc = n->func->report_desc;
-+		hid_opts = container_of(iter_n->fi, struct f_hid_opts, func_inst);
-+		hid_opts->subclass = iter_n->func->subclass;
-+		hid_opts->protocol = iter_n->func->protocol;
-+		hid_opts->report_length = iter_n->func->report_length;
-+		hid_opts->report_desc_length = iter_n->func->report_desc_length;
-+		hid_opts->report_desc = iter_n->func->report_desc;
- 	}
- 
- 
+ try_fun_setup:
 -- 
 2.25.1
 
