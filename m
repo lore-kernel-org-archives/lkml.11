@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C632BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B10FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 15:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348197AbiCHP5X (ORCPT
+        id S1348236AbiCHP51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 10:57:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        Tue, 8 Mar 2022 10:57:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348048AbiCHP4F (ORCPT
+        with ESMTP id S1348050AbiCHP4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 10:56:05 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB604F9D2
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5494F467
         for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 07:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=eZN6hyKJ4JDcYR3SEiz1RfYJjX14Z/t6y23EsdoeHg0=; b=ZMOX8B9j9hg5wdI7/uPPDE0Kc5
-        XP3VofGoomn12bL3ZWoiOyMpVJtNyWG117tGTPw6QhUlr/tUaCkOUprF+kz06LDeI5gW4zr+UXorf
-        n2GLU/Rbtd13UvNd7MNhHGwtIfdr2asgwHZG7wpjZ+29ILnm91D37JSvRb+V6uhEbrYOS1kDdpRtx
-        QRfk8751jB6XfEh3zXv1w26XLKu3JEDtEX9ak0VVJu1AecDU/P/g6J9cMng+riDQDBhPPavN50oK1
-        7zIRX4ayGvja3svffKNrp8jMMduVz1oTEQpm7aQFePE1ZizeJfkYHMEnPOOJlHPvn2ORc2ryQaQjA
-        QO6UQkCQ==;
+        bh=kaekhGQnbqIAOSbPxlFxjf8WrK3PvHPuLWeA2b7V9bc=; b=mqqPXbWytPaZMsAvo9nd4Km6Po
+        vbjrW/qS9R3kuMn5oVH1SDfNutlq8cR0X0pn37STWpZDDaTgWBUNnpWSl0tV+GmOLZBaPfd26ae/E
+        1p7HTSw0QC1L/lVa220ylqHjG7kj12MbsslHrxzFBFUpY4VTakbkOs+mFb1JB+4JhbE8hiJHo/A2U
+        6wqcDgiJlcEHePKbr4hsT1XwNkChgp3ycuQGKdB1xUlf2zGohH8lGTkECCKrAWZ3448+UWoOnG60c
+        5SRVKlE91jsk6xLqI+ycYLdDyKFJdmSfXOrkQgfFeG7ghUzbl+0Afqncp3w+rM/vsZBwH2HooGYw6
+        Bd9TiwiA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRcAc-00GIv9-Kx; Tue, 08 Mar 2022 15:54:42 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRcAc-00GUiU-Jq; Tue, 08 Mar 2022 15:54:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3CC9B302A12;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 349C9301A50;
         Tue,  8 Mar 2022 16:54:40 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 47F9D2B561925; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
-Message-ID: <20220308154318.405947704@infradead.org>
+        id 1516E2B561917; Tue,  8 Mar 2022 16:54:39 +0100 (CET)
+Message-ID: <20220308154318.051635891@infradead.org>
 User-Agent: quilt/0.66
-Date:   Tue, 08 Mar 2022 16:30:32 +0100
+Date:   Tue, 08 Mar 2022 16:30:26 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -48,7 +48,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v4 21/45] x86/ibt,kprobes: Cure sym+0 equals fentry woes
+Subject: [PATCH v4 15/45] x86/ibt,paravirt: Sprinkle ENDBR
 References: <20220308153011.021123062@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,240 +56,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to allow kprobes to skip the ENDBR instructions at sym+0 for
-X86_KERNEL_IBT builds, change _kprobe_addr() to take an architecture
-callback to inspect the function at hand and modify the offset if
-needed.
-
-This streamlines the existing interface to cover more cases and
-require less hooks. Once PowerPC gets fully converted there will only
-be the one arch hook.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/powerpc/kernel/kprobes.c  |   34 +++++++++++++--------
- arch/x86/kernel/kprobes/core.c |   28 ++++++++++++++---
- include/linux/kprobes.h        |    3 +
- kernel/kprobes.c               |   66 ++++++++++++++++++++++++++++++++---------
- 4 files changed, 98 insertions(+), 33 deletions(-)
+ arch/x86/include/asm/paravirt.h           |    1 +
+ arch/x86/include/asm/qspinlock_paravirt.h |    3 +++
+ arch/x86/kernel/kvm.c                     |    3 ++-
+ arch/x86/kernel/paravirt.c                |    2 ++
+ 4 files changed, 8 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/kernel/kprobes.c
-+++ b/arch/powerpc/kernel/kprobes.c
-@@ -105,6 +105,27 @@ kprobe_opcode_t *kprobe_lookup_name(cons
- 	return addr;
- }
+--- a/arch/x86/include/asm/paravirt.h
++++ b/arch/x86/include/asm/paravirt.h
+@@ -666,6 +666,7 @@ bool __raw_callee_save___native_vcpu_is_
+ 	    ".globl " PV_THUNK_NAME(func) ";"				\
+ 	    ".type " PV_THUNK_NAME(func) ", @function;"			\
+ 	    PV_THUNK_NAME(func) ":"					\
++	    ASM_ENDBR							\
+ 	    FRAME_BEGIN							\
+ 	    PV_SAVE_ALL_CALLER_REGS					\
+ 	    "call " #func ";"						\
+--- a/arch/x86/include/asm/qspinlock_paravirt.h
++++ b/arch/x86/include/asm/qspinlock_paravirt.h
+@@ -2,6 +2,8 @@
+ #ifndef __ASM_QSPINLOCK_PARAVIRT_H
+ #define __ASM_QSPINLOCK_PARAVIRT_H
  
-+static bool arch_kprobe_on_func_entry(unsigned long offset)
-+{
-+#ifdef PPC64_ELF_ABI_v2
-+#ifdef CONFIG_KPROBES_ON_FTRACE
-+	return offset <= 16;
-+#else
-+	return offset <= 8;
-+#endif
-+#else
-+	return !offset;
-+#endif
-+}
-+
-+/* XXX try and fold the magic of kprobe_lookup_name() in this */
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
-+					 bool *on_func_entry)
-+{
-+	*on_func_entry = arch_kprobe_on_func_entry(offset);
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
-+
- void *alloc_insn_page(void)
- {
- 	void *page;
-@@ -218,19 +239,6 @@ static nokprobe_inline void set_current_
- 	kcb->kprobe_saved_msr = regs->msr;
- }
- 
--bool arch_kprobe_on_func_entry(unsigned long offset)
--{
--#ifdef PPC64_ELF_ABI_v2
--#ifdef CONFIG_KPROBES_ON_FTRACE
--	return offset <= 16;
--#else
--	return offset <= 8;
--#endif
--#else
--	return !offset;
--#endif
--}
--
- void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
- {
- 	ri->ret_addr = (kprobe_opcode_t *)regs->link;
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -52,6 +52,7 @@
- #include <asm/insn.h>
- #include <asm/debugreg.h>
- #include <asm/set_memory.h>
 +#include <asm/ibt.h>
- 
- #include "common.h"
- 
-@@ -301,6 +303,22 @@ static int can_probe(unsigned long paddr
- 	return (addr == paddr);
- }
- 
-+/* If x86 supports IBT (ENDBR) it must be skipped. */
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
-+					 bool *on_func_entry)
-+{
-+	if (is_endbr(*(u32 *)addr)) {
-+		*on_func_entry = !offset || offset == 4;
-+		if (*on_func_entry)
-+			offset = 4;
-+
-+	} else {
-+		*on_func_entry = !offset;
-+	}
-+
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
 +
  /*
-  * Copy an instruction with recovering modified instruction by kprobes
-  * and adjust the displacement if the instruction uses the %rip-relative
---- a/include/linux/kprobes.h
-+++ b/include/linux/kprobes.h
-@@ -265,7 +265,6 @@ extern int arch_init_kprobes(void);
- extern void kprobes_inc_nmissed_count(struct kprobe *p);
- extern bool arch_within_kprobe_blacklist(unsigned long addr);
- extern int arch_populate_kprobe_blacklist(void);
--extern bool arch_kprobe_on_func_entry(unsigned long offset);
- extern int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset);
+  * For x86-64, PV_CALLEE_SAVE_REGS_THUNK() saves and restores 8 64-bit
+  * registers. For i386, however, only 1 32-bit register needs to be saved
+@@ -39,6 +41,7 @@ asm    (".pushsection .text;"
+ 	".type " PV_UNLOCK ", @function;"
+ 	".align 4,0x90;"
+ 	PV_UNLOCK ": "
++	ASM_ENDBR
+ 	FRAME_BEGIN
+ 	"push  %rdx;"
+ 	"mov   $0x1,%eax;"
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -1024,10 +1024,11 @@ asm(
+ ".global __raw_callee_save___kvm_vcpu_is_preempted;"
+ ".type __raw_callee_save___kvm_vcpu_is_preempted, @function;"
+ "__raw_callee_save___kvm_vcpu_is_preempted:"
++ASM_ENDBR
+ "movq	__per_cpu_offset(,%rdi,8), %rax;"
+ "cmpb	$0, " __stringify(KVM_STEAL_TIME_preempted) "+steal_time(%rax);"
+ "setne	%al;"
+-"ret;"
++ASM_RET
+ ".size __raw_callee_save___kvm_vcpu_is_preempted, .-__raw_callee_save___kvm_vcpu_is_preempted;"
+ ".popsection");
  
- extern bool within_kprobe_blacklist(unsigned long addr);
-@@ -384,6 +383,8 @@ static inline struct kprobe_ctlblk *get_
- }
- 
- kprobe_opcode_t *kprobe_lookup_name(const char *name, unsigned int offset);
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset, bool *on_func_entry);
-+
- int register_kprobe(struct kprobe *p);
- void unregister_kprobe(struct kprobe *p);
- int register_kprobes(struct kprobe **kps, int num);
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1489,24 +1489,68 @@ bool within_kprobe_blacklist(unsigned lo
- }
- 
- /*
-+ * arch_adjust_kprobe_addr - adjust the address
-+ * @addr: symbol base address
-+ * @offset: offset within the symbol
-+ * @on_func_entry: was this @addr+@offset on the function entry
-+ *
-+ * Typically returns @addr + @offset, except for special cases where the
-+ * function might be prefixed by a CFI landing pad, in that case any offset
-+ * inside the landing pad is mapped to the first 'real' instruction of the
-+ * symbol.
-+ *
-+ * Specifically, for things like IBT/BTI, skip the resp. ENDBR/BTI.C
-+ * instruction at +0.
-+ */
-+kprobe_opcode_t *__weak arch_adjust_kprobe_addr(unsigned long addr,
-+						unsigned long offset,
-+						bool *on_func_entry)
-+{
-+	*on_func_entry = !offset;
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
-+
-+/*
-  * If 'symbol_name' is specified, look it up and add the 'offset'
-  * to it. This way, we can specify a relative address to a symbol.
-  * This returns encoded errors if it fails to look up symbol or invalid
-  * combination of parameters.
-  */
--static kprobe_opcode_t *_kprobe_addr(kprobe_opcode_t *addr,
--			const char *symbol_name, unsigned int offset)
-+static kprobe_opcode_t *
-+_kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
-+	     unsigned long offset, bool *on_func_entry)
- {
- 	if ((symbol_name && addr) || (!symbol_name && !addr))
- 		goto invalid;
- 
- 	if (symbol_name) {
-+		/*
-+		 * Input: @sym + @offset
-+		 * Output: @addr + @offset
-+		 *
-+		 * NOTE: kprobe_lookup_name() does *NOT* fold the offset
-+		 *       argument into it's output!
-+		 */
- 		addr = kprobe_lookup_name(symbol_name, offset);
- 		if (!addr)
- 			return ERR_PTR(-ENOENT);
- 	}
- 
--	addr = (kprobe_opcode_t *)(((char *)addr) + offset);
-+	/*
-+	 * So here we have @addr + @offset, displace it into a new
-+	 * @addr' + @offset' where @addr' is the symbol start address.
-+	 */
-+	addr = (void *)addr + offset;
-+	if (!kallsyms_lookup_size_offset((unsigned long)addr, NULL, &offset))
-+		return ERR_PTR(-ENOENT);
-+	addr = (void *)addr - offset;
-+
-+	/*
-+	 * Then ask the architecture to re-combine them, taking care of
-+	 * magical function entry details while telling us if this was indeed
-+	 * at the start of the function.
-+	 */
-+	addr = arch_adjust_kprobe_addr((unsigned long)addr, offset, on_func_entry);
- 	if (addr)
- 		return addr;
- 
-@@ -1516,7 +1560,8 @@ static kprobe_opcode_t *_kprobe_addr(kpr
- 
- static kprobe_opcode_t *kprobe_addr(struct kprobe *p)
- {
--	return _kprobe_addr(p->addr, p->symbol_name, p->offset);
-+	bool on_func_entry;
-+	return _kprobe_addr(p->addr, p->symbol_name, p->offset, &on_func_entry);
- }
- 
- /*
-@@ -2047,11 +2092,6 @@ static int pre_handler_kretprobe(struct
- }
- NOKPROBE_SYMBOL(pre_handler_kretprobe);
- 
--bool __weak arch_kprobe_on_func_entry(unsigned long offset)
--{
--	return !offset;
--}
--
- /**
-  * kprobe_on_func_entry() -- check whether given address is function entry
-  * @addr: Target address
-@@ -2067,15 +2107,13 @@ bool __weak arch_kprobe_on_func_entry(un
-  */
- int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset)
- {
--	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset);
-+	bool on_func_entry;
-+	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset, &on_func_entry);
- 
- 	if (IS_ERR(kp_addr))
- 		return PTR_ERR(kp_addr);
- 
--	if (!kallsyms_lookup_size_offset((unsigned long)kp_addr, NULL, &offset))
--		return -ENOENT;
--
--	if (!arch_kprobe_on_func_entry(offset))
-+	if (!on_func_entry)
- 		return -EINVAL;
- 
- 	return 0;
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -41,6 +41,7 @@ extern void _paravirt_nop(void);
+ asm (".pushsection .entry.text, \"ax\"\n"
+      ".global _paravirt_nop\n"
+      "_paravirt_nop:\n\t"
++     ASM_ENDBR
+      ASM_RET
+      ".size _paravirt_nop, . - _paravirt_nop\n\t"
+      ".type _paravirt_nop, @function\n\t"
+@@ -50,6 +51,7 @@ asm (".pushsection .entry.text, \"ax\"\n
+ asm (".pushsection .entry.text, \"ax\"\n"
+      ".global paravirt_ret0\n"
+      "paravirt_ret0:\n\t"
++     ASM_ENDBR
+      "xor %" _ASM_AX ", %" _ASM_AX ";\n\t"
+      ASM_RET
+      ".size paravirt_ret0, . - paravirt_ret0\n\t"
 
 
