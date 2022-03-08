@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A71C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85884C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345474AbiCHRTg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:19:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
+        id S241940AbiCHRTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 12:19:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348777AbiCHRTM (ORCPT
+        with ESMTP id S1348836AbiCHRTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:19:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222BF1EEC1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:18:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEBC060C82
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:18:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE2EC340EB;
-        Tue,  8 Mar 2022 17:18:11 +0000 (UTC)
-Date:   Tue, 8 Mar 2022 17:18:07 +0000
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
-        Rongwei Wang <rongwei.wang@linux.alibaba.com>,
-        Will Deacon <will@kernel.org>, joey.gouly@arm.com,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC] arm64: improve display about CPU architecture in
- cpuinfo
-Message-ID: <YiePz/KpcE/S1+RR@arm.com>
-References: <20220307030417.22974-1-rongwei.wang@linux.alibaba.com>
- <87h78a178u.wl-maz@kernel.org>
- <a31431bf-24bb-71ac-8f3c-f9ca19f5c4f0@linux.alibaba.com>
- <87bkyi0x53.wl-maz@kernel.org>
- <1b94af8b-a294-5765-4e1e-896f70db621f@arm.com>
- <CAK8P3a3zA25=iZkVGPc=V+9tqqsWgQjoD9BSS60foGZtDwsujA@mail.gmail.com>
- <9296f97c-f894-001c-53e6-41bbfe36ce71@arm.com>
+        Tue, 8 Mar 2022 12:19:42 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14EBA532F3;
+        Tue,  8 Mar 2022 09:18:29 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 228FxtbU015166;
+        Tue, 8 Mar 2022 11:17:35 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=BSRIu4u7LP/BX+4EuzrjD7JUJiD1RuxHbQLO9l1wmac=;
+ b=JAXoJGoqVCeJMcO/wcVICcFCrWGUYS3WwH6+9ZPqVAnNt7vPW+/izcwufDE4TrSsiX0P
+ Rp/on5WpaBfu+XEseJz+mZaVbGaFTLPeo7jamjwFzDDqB+fOdA34TulILOK53jymbfXg
+ ERqYqxLnjmhxEOQJNKZqYCCRCWsAfN8sdokfJivnbH1RZ40vRR4t5JhYwPt4b5gZ7DFI
+ 8ACuS8TU+30yJb+x+ckcNkLnbYHWjugLoe5hQJfg5PRhmUyvAxy4BlwQ3x8raCSPDpKq
+ O4Oap3ncUDs6b93LEzBwsDox7aAtuEIbPDRkHpfq+kASD0DhFwxHMINl4rw6hBqdqXTp Bw== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3em55svhnr-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 08 Mar 2022 11:17:34 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Mar
+ 2022 17:17:33 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Tue, 8 Mar 2022 17:17:33 +0000
+Received: from aryzen.ad.cirrus.com (unknown [198.61.65.38])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id AF11AB06;
+        Tue,  8 Mar 2022 17:17:32 +0000 (UTC)
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v3 04/16] ALSA: hda: cs35l41: Fix I2S params comments
+Date:   Tue, 8 Mar 2022 17:17:18 +0000
+Message-ID: <20220308171730.454587-5-tanureal@opensource.cirrus.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
+References: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9296f97c-f894-001c-53e6-41bbfe36ce71@arm.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: XX9Bl1KwTYaDf6ZDRMSnhkEq93vMv_Gb
+X-Proofpoint-GUID: XX9Bl1KwTYaDf6ZDRMSnhkEq93vMv_Gb
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 08:05:06PM +0000, Robin Murphy wrote:
-> On 2022-03-07 19:30, Arnd Bergmann wrote:
-> > On Mon, Mar 7, 2022 at 5:48 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> > 
-> > > And arguably it's not even too late, because 10 years ago this *did* say
-> > > "AArch64". I don't remember all the exact details behind commit
-> > > 44b82b7700d0 ("arm64: Fix up /proc/cpuinfo") - this just tickled enough
-> > > of a memory to go and look up the git history - but I don't think we
-> > > changed any of those fields without a real reason.
-> > > 
-> > 
-> > The patch description does state that this was done for compatibility with
-> > 32-bit architectures, which does make some sense. I suppose for similar
-> > reasons, the arch/arm/ version of /proc/cpuinfo is now stuck at
-> > 'CPU architecture: 7', even for ARMv8 or higher in aarch32 mode.
-> > 
-> > The part that I find more annoying is how we leave out the one bit
-> > of information that people are generally looking for in /proc/cpuinfo:
-> > the name of the processor. Even though we already know the
-> > exact processor type in order to handle the CPU errata, this is
-> > always "model name\t: ARMv7 Processor rev %d (v7l)" on 32-bit,
-> > and "model name\t: ARMv8 Processor rev %d (%s)" on 64-bit,
-> > with the revision being the least important bit of information here...
-> 
-> Eh, it's hardly impossible to recompose a MIDR value from the implementer,
-> part, variant and revision fields if one actually needs to. Maybe we could
-> null-terminate the raw MIDR value and print it as a string of
-> largely-unprintable characters in the "model name" field... I guess that
-> might satisfy the crowd who want parity* with x86 CPUID, at least :)
+Fix clock and slot size comments
 
-You can get the MIDR from
-/sys/devices/system/cpu/cpu*/regs/identification/midr_el1.
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-As for printing the actual names, we thought we'd leave it to tools like
-lscpu. I'm not keen on maintaining a dictionary of MIDR to CPU marketing
-names in the kernel, deal with rebranding and so on. For x86 you can get
-the name from the CPU itself IIUC, that's not the case for arm.
-
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 81cdbd84cf7d..fe6f6a208d29 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -17,11 +17,11 @@
+ #include "cs35l41_hda.h"
+ 
+ static const struct reg_sequence cs35l41_hda_config[] = {
+-	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3200000Hz, BCLK Input, PLL_REFCLK_EN = 1
++	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
+ 	{ CS35L41_GLOBAL_CLK_CTRL,	0x00000003 }, // GLOBAL_FS = 48 kHz
+ 	{ CS35L41_SP_ENABLES,		0x00010000 }, // ASP_RX1_EN = 1
+ 	{ CS35L41_SP_RATE_CTRL,		0x00000021 }, // ASP_BCLK_FREQ = 3.072 MHz
+-	{ CS35L41_SP_FORMAT,		0x20200200 }, // 24 bits, I2S, BCLK Slave, FSYNC Slave
++	{ CS35L41_SP_FORMAT,		0x20200200 }, // 32 bits RX/TX slots, I2S, clk consumer
+ 	{ CS35L41_DAC_PCM1_SRC,		0x00000008 }, // DACPCM1_SRC = ASPRX1
+ 	{ CS35L41_AMP_DIG_VOL_CTRL,	0x00000000 }, // AMP_VOL_PCM  0.0 dB
+ 	{ CS35L41_AMP_GAIN_CTRL,	0x00000084 }, // AMP_GAIN_PCM 4.5 dB
 -- 
-Catalin
+2.35.1
+
