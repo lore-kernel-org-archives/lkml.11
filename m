@@ -2,176 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE322C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 14:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbiCHOSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
+        id S239921AbiCHOSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 09:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237114AbiCHOR4 (ORCPT
+        with ESMTP id S235123AbiCHOSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:17:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12B474AE3C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 06:16:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646749019;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aj4DcramAuSghxYBNgB7LsYO7zn5E/reH2YN2OU1WzY=;
-        b=XDCAqz2f0WwgFzkXTXFb73KQa503lB0OO6T8BsSLH9BhXOs5Qa6Fvk1nVC93m5P0yPGMgu
-        CkTUkJ4x9nSev2T3VSNQSpxVySV20UXsxwDC+cNvIODe+v4G3QtdKgxYBJvbBuUEpbhc5K
-        B3fUdBoOHq9jTnTRo+hQIO0Uf57BM48=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-298-iMhwvhpQMWOUK2Si7LoT8w-1; Tue, 08 Mar 2022 09:16:56 -0500
-X-MC-Unique: iMhwvhpQMWOUK2Si7LoT8w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F97E806718;
-        Tue,  8 Mar 2022 14:16:52 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.195.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F044D7886E;
-        Tue,  8 Mar 2022 14:16:17 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v1 03/15] mm/memory: slightly simplify copy_present_pte()
-Date:   Tue,  8 Mar 2022 15:14:25 +0100
-Message-Id: <20220308141437.144919-4-david@redhat.com>
-In-Reply-To: <20220308141437.144919-1-david@redhat.com>
-References: <20220308141437.144919-1-david@redhat.com>
+        Tue, 8 Mar 2022 09:18:23 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B55B2F2;
+        Tue,  8 Mar 2022 06:17:26 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id u1so28746010wrg.11;
+        Tue, 08 Mar 2022 06:17:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=V8TIHc0j5BWltEXkyzmvOawt/D8EVJ6xLmc2G9cv1xY=;
+        b=K4mICRpvPbg4yfk1/E03sYIpk212hPRiJBfYlEqJWOqDQD0I1S4dC+Lb9H2kmvCuO2
+         y9PR2ugdSdc9C69y5TRmJ23a+wY5+uJInO+y8614FH1gLjK0WYe8sJ5mQiWgkw4EdVFc
+         oasQc05uCh50MLN2NaKDTj7KDaIz8yv5BmB/sLv+YyxYGpSVGgIGgAwk/J8umYukIg/c
+         d4UJSdEg2FvqE27PF3Jm4nKcZJY9YMcX+wC8oNanxi9PVyCrcmG3HDGAaZQG0++izngK
+         91pvCR3JbVz6fLNzVp49gK7qe2f+jgSn14f2EUtlKR6loZY+ftJhoaWiRIq4bVQurVAJ
+         2zxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=V8TIHc0j5BWltEXkyzmvOawt/D8EVJ6xLmc2G9cv1xY=;
+        b=Z2znSSIMp24HDDor9Q0i+k65bV8qwzk59c5TdD0qlgqYkc9Tm9dJH2t6DzoNofC6BR
+         vp0bf65MEDj7qU6AMl5YJtY7a6ZitQtXom9ASX2df6289bUDdwsLhmIlZ8a3fKrhhb1/
+         xsCwtqcLp+H6wDRmyyoFRbCO0hkKiZVg83lwtHKCyOw4ZRAz1gPrYNqDllB1PJeNw1zD
+         qHQtkkAul3RxM00dczvkskbd3W/npJ40GnkQYxwtfN+F02M7pMpwgNHMDJXeNgicrDHC
+         b5CGdpO0aoi85iwixUfWXCeM9hJMj3nXd+0F1SvKlui2V2d3UMJGg8ttnBlUniVKjEbd
+         BsYw==
+X-Gm-Message-State: AOAM530iI1UsY02ahjfoA9pZRymrBEen6J8X4LR818U4vXpRIZzlSF0Q
+        tb/O1yHb229Ir3rflpcmKko=
+X-Google-Smtp-Source: ABdhPJxmSrGi9ymzbuPvYZowQx0hfPeyCWJrAyYDfaErh/FqxdYePSY4ti4PFua0HMh9SPgP45MVUA==
+X-Received: by 2002:a5d:6251:0:b0:1ea:9412:fc8b with SMTP id m17-20020a5d6251000000b001ea9412fc8bmr12140763wrv.657.1646749044470;
+        Tue, 08 Mar 2022 06:17:24 -0800 (PST)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id l13-20020a5d4bcd000000b001f0620ecb3csm12818160wrt.40.2022.03.08.06.17.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 06:17:23 -0800 (PST)
+Message-ID: <709dcead-8f00-3bd1-dbfe-0d1f6c228260@gmail.com>
+Date:   Tue, 8 Mar 2022 15:17:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/2] Revert "arm64: dts: mt8183: jacuzzi: Fix bus
+ properties in anx's DSI endpoint"
+Content-Language: en-US
+To:     Robert Foss <robert.foss@linaro.org>, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        laurent.pinchart@ideasonboard.com, xji@analogixsemi.com,
+        hsinyi@chromium.org, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>, arnd@arndb.de,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+References: <20220308094911.2680291-1-robert.foss@linaro.org>
+ <20220308094911.2680291-3-robert.foss@linaro.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220308094911.2680291-3-robert.foss@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's move the pinning check into the caller, to simplify return code
-logic and prepare for further changes: relocating the
-page_needs_cow_for_dma() into rmap handling code.
 
-While at it, remove the unused pte parameter and simplify the comments a
-bit.
 
-No functional change intended.
+On 08/03/2022 10:49, Robert Foss wrote:
+> This reverts commit 32568ae37596b529628ac09b875f4874e614f63f.
+> 
+> Signed-off-by: Robert Foss <robert.foss@linaro.org>
+> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/memory.c | 53 ++++++++++++++++-------------------------------------
- 1 file changed, 16 insertions(+), 37 deletions(-)
+Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-diff --git a/mm/memory.c b/mm/memory.c
-index c6177d897964..accb72a3343d 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -865,19 +865,11 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- }
- 
- /*
-- * Copy a present and normal page if necessary.
-+ * Copy a present and normal page.
-  *
-- * NOTE! The usual case is that this doesn't need to do
-- * anything, and can just return a positive value. That
-- * will let the caller know that it can just increase
-- * the page refcount and re-use the pte the traditional
-- * way.
-- *
-- * But _if_ we need to copy it because it needs to be
-- * pinned in the parent (and the child should get its own
-- * copy rather than just a reference to the same page),
-- * we'll do that here and return zero to let the caller
-- * know we're done.
-+ * NOTE! The usual case is that this isn't required;
-+ * instead, the caller can just increase the page refcount
-+ * and re-use the pte the traditional way.
-  *
-  * And if we need a pre-allocated page but don't yet have
-  * one, return a negative error to let the preallocation
-@@ -887,25 +879,10 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- static inline int
- copy_present_page(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
- 		  pte_t *dst_pte, pte_t *src_pte, unsigned long addr, int *rss,
--		  struct page **prealloc, pte_t pte, struct page *page)
-+		  struct page **prealloc, struct page *page)
- {
- 	struct page *new_page;
--
--	/*
--	 * What we want to do is to check whether this page may
--	 * have been pinned by the parent process.  If so,
--	 * instead of wrprotect the pte on both sides, we copy
--	 * the page immediately so that we'll always guarantee
--	 * the pinned page won't be randomly replaced in the
--	 * future.
--	 *
--	 * The page pinning checks are just "has this mm ever
--	 * seen pinning", along with the (inexact) check of
--	 * the page count. That might give false positives for
--	 * for pinning, but it will work correctly.
--	 */
--	if (likely(!page_needs_cow_for_dma(src_vma, page)))
--		return 1;
-+	pte_t pte;
- 
- 	new_page = *prealloc;
- 	if (!new_page)
-@@ -947,14 +924,16 @@ copy_present_pte(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
- 	struct page *page;
- 
- 	page = vm_normal_page(src_vma, addr, pte);
--	if (page) {
--		int retval;
--
--		retval = copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
--					   addr, rss, prealloc, pte, page);
--		if (retval <= 0)
--			return retval;
--
-+	if (page && unlikely(page_needs_cow_for_dma(src_vma, page))) {
-+		/*
-+		 * If this page may have been pinned by the parent process,
-+		 * copy the page immediately for the child so that we'll always
-+		 * guarantee the pinned page won't be randomly replaced in the
-+		 * future.
-+		 */
-+		return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
-+					 addr, rss, prealloc, page);
-+	} else if (page) {
- 		get_page(page);
- 		page_dup_rmap(page, false);
- 		rss[mm_counter(page)]++;
--- 
-2.35.1
-
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> index e8f133dc96b95..8f7bf33f607da 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> @@ -171,8 +171,6 @@ port@0 {
+>   
+>   			anx7625_in: endpoint {
+>   				remote-endpoint = <&dsi_out>;
+> -				bus-type = <5>;
+> -				data-lanes = <0 1 2 3>;
+>   			};
+>   		};
+>   
