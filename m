@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC66C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF397C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 21:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233423AbiCHVvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 16:51:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        id S241693AbiCHVvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 16:51:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350558AbiCHVuj (ORCPT
+        with ESMTP id S1350559AbiCHVuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 16:50:39 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D35355BF6
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A596655BC3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 13:49:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646776182; x=1678312182;
+  t=1646776181; x=1678312181;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=67VNMr74UVrUppq5yf4sQzo0i2RDK2n2/872qMkeuT0=;
-  b=gIS13/eF/pz5mEv44vh/tLjoXuBIYZsL0be8Pnc5hrt23y+5lyrrbcpJ
-   bJG71gAEze40hiWBdZKwewzzWM9S1kaBKXsvuTMeX5ou59e8YVFmydQ4H
-   cGYnPp5x/+dKKRNwEbyFlkGL9ng6n8NEXI6mztwRZHpDX1LsQkNH0/iK+
-   i2SAynnh0w5TJ8VNdTpehqjm1VrTL5CqauSLas1DiwFIf+Wh2g0TGnZs/
-   IiIi5bLLEYcdYFqpm2grYFkigJI/K4+vcyEfDopLso6cNE8AJPNmqSluQ
-   DkfsP78sEwU/DcPCW7aSW5d3CnNBzdzHk1WiwpBX63mdy4a6NCesNzcmD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553241"
+  bh=FZ/ybwXSKTVeE31D+sksw3hOpY4mhpv0+x5U06HGPoE=;
+  b=TUCvam39Qp/G33jBnwed81y99CBxyA9+z7QizYEHJey9H5UFBa+JmkwR
+   EczMd07Iy91emeQ0M/rXFGEwcBTCu3OVY7y1J8N2xS9f7Sp35wGMyub5X
+   jxKt0A+xjNgjziC1hTXM0bEco9LdueZXyzAUlLXSWfOxUi4ZiBJBzr6v2
+   9k/pM3Uk5YIFh68YDUYX83r+MzwuK/KeOYSVvWAtI/GFZCBrg7mimzw1h
+   1/BEIdoEthhXK11LO3usTXM6vUldMT1obuTtkOi9snWmasAmNem6iKxRv
+   kIW67udaSdL2cmi5JndlB3edyl5ekfIbzyI829L4EJItAlp3ZIlnZ0d4x
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254553239"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="254553241"
+   d="scan'208";a="254553239"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:39 -0800
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="495612854"
+   d="scan'208";a="495612848"
 Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.212.239.204])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:49:39 -0800
 From:   Russ Weight <russell.h.weight@intel.com>
@@ -44,9 +44,9 @@ Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
         hao.wu@intel.com, matthew.gerlach@intel.com,
         basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
         Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v1 8/8] selftests: firmware: Add firmware upload selftests
-Date:   Tue,  8 Mar 2022 13:49:32 -0800
-Message-Id: <20220308214932.24477-9-russell.h.weight@intel.com>
+Subject: [PATCH v1 7/8] test_firmware: Error injection for firmware upload
+Date:   Tue,  8 Mar 2022 13:49:31 -0800
+Message-Id: <20220308214932.24477-8-russell.h.weight@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308214932.24477-1-russell.h.weight@intel.com>
 References: <20220308214932.24477-1-russell.h.weight@intel.com>
@@ -56,303 +56,238 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add selftests to verify the firmware upload mechanism. These test
-include simple firmware uploads as well as upload cancellation and
-error injection. The test creates three firmware devices and verifies
-that they all work correctly and independently.
+Add error injection capability to the test_firmware module specifically
+for firmware upload testing. Error injection instructions are transferred
+as the first part of the firmware payload. The format of an error
+injection string is similar to the error strings that may be read from
+the error sysfs node.
+
+To inject the error "programming:hw-error", one would use the error
+injection string "inject:programming:hw-error" as the firmware payload:
+
+$ echo 1 > loading
+$ echo inject:programming:hw-error > data
+$ echo 0 > loading
+$ cat status
+idle
+$ cat error
+programming:hw-error
+
+The first part of the error string is the progress state of the upload at
+the time of the error. The progress state would be one of the following:
+"preparing", "transferring", or "programming". The second part of the
+error string is one of the following: "hw-error", "timeout", "device-busy",
+"invalid-file-size", "read-write-error", "flash-wearout", and "user-abort".
+
+Note that all of the error strings except "user-abort" will fail without
+delay. The "user-abort" error will cause the firmware upload to stall at
+the requested progress state for up to 5 minutes to allow you to echo 1
+to the cancel sysfs node. It is this cancellation that causes the
+'user-abort" error. If the upload is not cancelled within the 5 minute
+time period, then the upload will complete without an error.
 
 Signed-off-by: Russ Weight <russell.h.weight@intel.com>
 ---
- tools/testing/selftests/firmware/Makefile     |   2 +-
- tools/testing/selftests/firmware/config       |   1 +
- tools/testing/selftests/firmware/fw_lib.sh    |   7 +
- .../selftests/firmware/fw_run_tests.sh        |   4 +
- tools/testing/selftests/firmware/fw_upload.sh | 214 ++++++++++++++++++
- 5 files changed, 227 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/firmware/fw_upload.sh
+ lib/test_firmware.c | 127 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 122 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/firmware/Makefile b/tools/testing/selftests/firmware/Makefile
-index 40211cd8f0e6..7992969deaa2 100644
---- a/tools/testing/selftests/firmware/Makefile
-+++ b/tools/testing/selftests/firmware/Makefile
-@@ -4,7 +4,7 @@ CFLAGS = -Wall \
-          -O2
+diff --git a/lib/test_firmware.c b/lib/test_firmware.c
+index d6fe00c4972f..e9f9deeb3a2f 100644
+--- a/lib/test_firmware.c
++++ b/lib/test_firmware.c
+@@ -117,12 +117,18 @@ struct test_config {
+ 			    struct device *device);
+ };
  
- TEST_PROGS := fw_run_tests.sh
--TEST_FILES := fw_fallback.sh fw_filesystem.sh fw_lib.sh
-+TEST_FILES := fw_fallback.sh fw_filesystem.sh fw_upload.sh fw_lib.sh
- TEST_GEN_FILES := fw_namespace
++struct upload_inject_err {
++	const char *prog;
++	enum fw_upload_err err_code;
++};
++
+ struct test_firmware_upload {
+ 	char *name;
+ 	struct list_head node;
+ 	char *buf;
+ 	size_t size;
+ 	bool cancel_request;
++	struct upload_inject_err inject;
+ 	struct fw_upload *fwl;
+ };
  
- include ../lib.mk
-diff --git a/tools/testing/selftests/firmware/config b/tools/testing/selftests/firmware/config
-index bf634dda0720..6e402519b117 100644
---- a/tools/testing/selftests/firmware/config
-+++ b/tools/testing/selftests/firmware/config
-@@ -3,3 +3,4 @@ CONFIG_FW_LOADER=y
- CONFIG_FW_LOADER_USER_HELPER=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
-+CONFIG_FW_UPLOAD=y
-diff --git a/tools/testing/selftests/firmware/fw_lib.sh b/tools/testing/selftests/firmware/fw_lib.sh
-index 5b8c0fedee76..fe8d34dbe7ca 100755
---- a/tools/testing/selftests/firmware/fw_lib.sh
-+++ b/tools/testing/selftests/firmware/fw_lib.sh
-@@ -63,6 +63,7 @@ check_setup()
- 	HAS_FW_LOADER_USER_HELPER="$(kconfig_has CONFIG_FW_LOADER_USER_HELPER=y)"
- 	HAS_FW_LOADER_USER_HELPER_FALLBACK="$(kconfig_has CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y)"
- 	HAS_FW_LOADER_COMPRESS="$(kconfig_has CONFIG_FW_LOADER_COMPRESS=y)"
-+	HAS_FW_UPLOAD="$(kconfig_has CONFIG_FW_UPLOAD=y)"
- 	PROC_FW_IGNORE_SYSFS_FALLBACK="0"
- 	PROC_FW_FORCE_SYSFS_FALLBACK="0"
- 
-@@ -113,6 +114,12 @@ verify_reqs()
- 			exit 0
- 		fi
- 	fi
-+	if [ "$TEST_REQS_FW_UPLOAD" = "yes" ]; then
-+		if [ ! "$HAS_FW_UPLOAD" = "yes" ]; then
-+			echo "firmware upload disabled so ignoring test"
-+			exit 0
-+		fi
-+	fi
+@@ -1067,20 +1073,105 @@ static void upload_release_all(void)
+ 	test_fw_config->upload_name = NULL;
  }
  
- setup_tmp_file()
-diff --git a/tools/testing/selftests/firmware/fw_run_tests.sh b/tools/testing/selftests/firmware/fw_run_tests.sh
-index 777377078d5e..f6d95a2d5124 100755
---- a/tools/testing/selftests/firmware/fw_run_tests.sh
-+++ b/tools/testing/selftests/firmware/fw_run_tests.sh
-@@ -22,6 +22,10 @@ run_tests()
- 	proc_set_force_sysfs_fallback $1
- 	proc_set_ignore_sysfs_fallback $2
- 	$TEST_DIR/fw_fallback.sh
++/*
++ * This table is replicated from .../firmware_loader/sysfs_upload.c
++ * and needs to be kept in sync.
++ */
++static const char * const fw_upload_err_str[] = {
++	[FW_UPLOAD_ERR_NONE]	     = "none",
++	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
++	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
++	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
++	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
++	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
++	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
++	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
++};
 +
-+	proc_set_force_sysfs_fallback $1
-+	proc_set_ignore_sysfs_fallback $2
-+	$TEST_DIR/fw_upload.sh
++static void upload_err_inject_error(struct test_firmware_upload *tst,
++				    const u8 *p, const char *prog)
++{
++	enum fw_upload_err err;
++
++	for (err = FW_UPLOAD_ERR_NONE + 1; err < FW_UPLOAD_ERR_MAX; err++) {
++		if (strncmp(p, fw_upload_err_str[err],
++			    strlen(fw_upload_err_str[err])) == 0) {
++			tst->inject.prog = prog;
++			tst->inject.err_code = err;
++			return;
++		}
++	}
++}
++
++static void upload_err_inject_prog(struct test_firmware_upload *tst,
++				   const u8 *p)
++{
++	static const char * const progs[] = {
++		"preparing:", "transferring:", "programming:"
++	};
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(progs); i++) {
++		if (strncmp(p, progs[i], strlen(progs[i])) == 0) {
++			upload_err_inject_error(tst, p + strlen(progs[i]),
++						progs[i]);
++			return;
++		}
++	}
++}
++
++#define FIVE_MINUTES_MS	(5 * 60 * 1000)
++static enum fw_upload_err
++fw_upload_wait_on_cancel(struct test_firmware_upload *tst)
++{
++	int ms_delay;
++
++	for (ms_delay = 0; ms_delay < FIVE_MINUTES_MS; ms_delay += 100) {
++		msleep(100);
++		if (tst->cancel_request)
++			return FW_UPLOAD_ERR_CANCELED;
++	}
++	return FW_UPLOAD_ERR_NONE;
++}
++
+ static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
+ 						 const u8 *data, u32 size)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	enum fw_upload_err ret = FW_UPLOAD_ERR_NONE;
++	const char *progress = "preparing:";
+ 
+ 	tst->cancel_request = false;
+ 
+-	if (!size || size > TEST_UPLOAD_MAX_SIZE)
+-		return FW_UPLOAD_ERR_INVALID_SIZE;
++	if (!size || size > TEST_UPLOAD_MAX_SIZE) {
++		ret = FW_UPLOAD_ERR_INVALID_SIZE;
++		goto err_out;
++	}
++
++	if (strncmp(data, "inject:", strlen("inject:")) == 0)
++		upload_err_inject_prog(tst, data + strlen("inject:"));
+ 
+ 	memset(tst->buf, 0, TEST_UPLOAD_MAX_SIZE);
+ 	tst->size = size;
+ 
+-	return FW_UPLOAD_ERR_NONE;
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
++
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		ret = fw_upload_wait_on_cancel(tst);
++	else
++		ret = tst->inject.err_code;
++
++err_out:
++	/*
++	 * The cleanup op only executes if the prepare op succeeds.
++	 * If the prepare op fails, it must do it's own clean-up.
++	 */
++	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
++	tst->inject.prog = NULL;
++
++	return ret;
  }
  
- run_test_config_0001()
-diff --git a/tools/testing/selftests/firmware/fw_upload.sh b/tools/testing/selftests/firmware/fw_upload.sh
-new file mode 100755
-index 000000000000..c7a6f06c9adb
---- /dev/null
-+++ b/tools/testing/selftests/firmware/fw_upload.sh
-@@ -0,0 +1,214 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# This validates the user-initiated fw upload mechanism of the firmware
-+# loader. It verifies that one or more firmware devices can be created
-+# for a device driver. It also verifies the data transfer, the
-+# cancellation support, and the error flows.
-+set -e
+ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+@@ -1088,6 +1179,7 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+ 					       u32 size, u32 *written)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	const char *progress = "transferring:";
+ 	u32 blk_size;
+ 
+ 	if (tst->cancel_request)
+@@ -1097,17 +1189,33 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+ 	memcpy(tst->buf + offset, data + offset, blk_size);
+ 
+ 	*written = blk_size;
+-	return FW_UPLOAD_ERR_NONE;
 +
-+TEST_REQS_FW_UPLOAD="yes"
-+TEST_DIR=$(dirname $0)
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
 +
-+progress_states="preparing transferring  programming"
-+errors="hw-error
-+	timeout
-+	device-busy
-+	invalid-file-size
-+	read-write-error
-+	flash-wearout"
-+error_abort="user-abort"
-+fwname1=fw1
-+fwname2=fw2
-+fwname3=fw3
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		return fw_upload_wait_on_cancel(tst);
 +
-+source $TEST_DIR/fw_lib.sh
++	return tst->inject.err_code;
+ }
+ 
+ static enum fw_upload_err test_fw_upload_complete(struct fw_upload *fwl)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	const char *progress = "programming:";
+ 
+ 	if (tst->cancel_request)
+ 		return FW_UPLOAD_ERR_CANCELED;
+ 
+-	return FW_UPLOAD_ERR_NONE;
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
 +
-+check_mods
-+check_setup
-+verify_reqs
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		return fw_upload_wait_on_cancel(tst);
 +
-+trap "upload_finish" EXIT
++	return tst->inject.err_code;
+ }
+ 
+ static void test_fw_upload_cancel(struct fw_upload *fwl)
+@@ -1117,11 +1225,20 @@ static void test_fw_upload_cancel(struct fw_upload *fwl)
+ 	tst->cancel_request = true;
+ }
+ 
++static void test_fw_cleanup(struct fw_upload *fwl)
++{
++	struct test_firmware_upload *tst = fwl->dd_handle;
 +
-+upload_finish() {
-+	local fwdevs="$fwname1 $fwname2 $fwname3"
-+
-+	for name in $fwdevs; do
-+		if [ -e "$DIR/$name" ]; then
-+			echo -n "$name" > "$DIR"/upload_unregister
-+		fi
-+	done
++	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
++	tst->inject.prog = NULL;
 +}
 +
-+upload_fw() {
-+	local name="$1"
-+	local file="$2"
-+
-+	echo 1 > "$DIR"/"$name"/loading
-+	cat "$file" > "$DIR"/"$name"/data
-+	echo 0 > "$DIR"/"$name"/loading
-+}
-+
-+verify_fw() {
-+	local name="$1"
-+	local file="$2"
-+
-+	echo -n "$name" > "$DIR"/config_upload_name
-+	if ! cmp "$file" "$DIR"/upload_read > /dev/null 2>&1; then
-+		echo "$0: firmware compare for $name did not match" >&2
-+		exit 1
-+	fi
-+
-+	echo "$0: firmware upload for $name works" >&2
-+	return 0
-+}
-+
-+inject_error() {
-+	local name="$1"
-+	local status="$2"
-+	local error="$3"
-+
-+	echo 1 > "$DIR"/"$name"/loading
-+	echo -n "inject":"$status":"$error" > "$DIR"/"$name"/data
-+	echo 0 > "$DIR"/"$name"/loading
-+}
-+
-+await_status() {
-+	local name="$1"
-+	local expected="$2"
-+	local status
-+	local i
-+
-+	let i=0
-+	while [ $i -lt 50 ]; do
-+		status=$(cat "$DIR"/"$name"/status)
-+		if [ "$status" = "$expected" ]; then
-+			return 0;
-+		fi
-+		sleep 1e-03
-+		let i=$i+1
-+	done
-+
-+	echo "$0: Invalid status: Expected $expected, Actual $status" >&2
-+	return 1;
-+}
-+
-+await_idle() {
-+	local name="$1"
-+
-+	await_status "$name" "idle"
-+	return $?
-+}
-+
-+expect_error() {
-+	local name="$1"
-+	local expected="$2"
-+	local error=$(cat "$DIR"/"$name"/error)
-+
-+	if [ "$error" != "$expected" ]; then
-+		echo "Invalid error: Expected $expected, Actual $error" >&2
-+		return 1
-+	fi
-+
-+	return 0
-+}
-+
-+random_firmware() {
-+	local bs="$1"
-+	local count="$2"
-+	local file=$(mktemp -p /tmp uploadfwXXX.bin)
-+
-+	dd if=/dev/urandom of="$file" bs="$bs" count="$count" > /dev/null 2>&1
-+	echo "$file"
-+}
-+
-+test_upload_cancel() {
-+	local name="$1"
-+	local status
-+
-+	for status in $progress_states; do
-+		inject_error $name $status $error_abort
-+		if ! await_status $name $status; then
-+			exit 1
-+		fi
-+
-+		echo 1 > "$DIR"/"$name"/cancel
-+
-+		if ! await_idle $name; then
-+			exit 1
-+		fi
-+
-+		if ! expect_error $name "$status":"$error_abort"; then
-+			exit 1
-+		fi
-+	done
-+
-+	echo "$0: firmware upload cancellation works"
-+	return 0
-+}
-+
-+test_error_handling() {
-+	local name=$1
-+	local status
-+	local error
-+
-+	for status in $progress_states; do
-+		for error in $errors; do
-+			inject_error $name $status $error
-+
-+			if ! await_idle $name; then
-+				exit 1
-+			fi
-+
-+			if ! expect_error $name "$status":"$error"; then
-+				exit 1
-+			fi
-+
-+		done
-+	done
-+	echo "$0: firmware upload error handling works"
-+}
-+
-+test_fw_too_big() {
-+	local name=$1
-+	local fw_too_big=`random_firmware 512 5`
-+	local expected="preparing:invalid-file-size"
-+
-+	upload_fw $name $fw_too_big
-+	rm -f $fw_too_big
-+
-+	if ! await_idle $name; then
-+		exit 1
-+	fi
-+
-+	if ! expect_error $name $expected; then
-+		exit 1
-+	fi
-+
-+	echo "$0: oversized firmware error handling works"
-+}
-+
-+echo -n "$fwname1" > "$DIR"/upload_register
-+echo -n "$fwname2" > "$DIR"/upload_register
-+echo -n "$fwname3" > "$DIR"/upload_register
-+
-+test_upload_cancel $fwname1
-+test_error_handling $fwname1
-+test_fw_too_big $fwname1
-+
-+fw_file1=`random_firmware 512 4`
-+fw_file2=`random_firmware 512 3`
-+fw_file3=`random_firmware 512 2`
-+
-+upload_fw $fwname1 $fw_file1
-+upload_fw $fwname2 $fw_file2
-+upload_fw $fwname3 $fw_file3
-+
-+verify_fw ${fwname1} ${fw_file1}
-+verify_fw ${fwname2} ${fw_file2}
-+verify_fw ${fwname3} ${fw_file3}
-+
-+echo -n "$fwname1" > "$DIR"/upload_unregister
-+echo -n "$fwname2" > "$DIR"/upload_unregister
-+echo -n "$fwname3" > "$DIR"/upload_unregister
-+
-+exit 0
+ static const struct fw_upload_ops upload_test_ops = {
+ 	.prepare = test_fw_upload_prepare,
+ 	.write = test_fw_upload_write,
+ 	.poll_complete = test_fw_upload_complete,
+ 	.cancel = test_fw_upload_cancel,
++	.cleanup = test_fw_cleanup
+ };
+ 
+ static ssize_t upload_register_store(struct device *dev,
 -- 
 2.25.1
 
