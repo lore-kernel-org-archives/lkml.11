@@ -2,150 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3186C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbiCIBIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:08:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
+        id S230052AbiCIBIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:08:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiCIBHt (ORCPT
+        with ESMTP id S230092AbiCIBHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:07:49 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A05D13DE13
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:48:02 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id g1so870516pfv.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:48:02 -0800 (PST)
+        Tue, 8 Mar 2022 20:07:50 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C35F13DE2F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:48:11 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id x200so1184631ybe.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:48:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2kU1A0mZ+Yf718gi2yxK3phVn7nYLq00SbSALiBBt2c=;
-        b=a3wxXsXXiZ50ZckVfXFMr8KdVU78K5T3RLsMnlj3KUTmsXr2mTTchwj6lfSmoIW6Jw
-         Xxcj7nT6ioNm+beNeT7w/gpTTEoesAjFfDTQkbfIWQwfq91ifPoOm3HZ8d5QpMlRFFmu
-         /SvS/C3P+W10CB6HG+SZCcWMlW7qlD0MjWDZHoph8a3b1v7eqS2BfyKguOEWwdkttbdX
-         RqHb2uCJ+bspxUluBYFhwxvdHNOj0fFpnkuHxLzLPAlkPVyOzDfrRkJ8/tz488d1UDi3
-         MOfKNkuD4sJ9Xv7tvkhmywY4CjEK6CRMke81P29RSspDH8NnokaenIYa9TIs71rPiZ4j
-         hzYQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6blG6EAzX4w/WH2eHf6lZLaVJfDBuoOmPYe51zQt/4A=;
+        b=V39oqsH8PidHbrDaeyYTPlj2xsTvihPzTyN3cv91d+WXA3fnkhlv/m377gWtuzDsW1
+         N+UDbiIOoqMlomI5DPKFmOHepNc1QiVzaQtNWW59h74OSDKEKok24ndZz+aiTXXsIqvi
+         edgKHFlHEnHob8ds7KamIk0IoygOYIRjIAWfH5+ooKI/B3438XnSNQnFCDvOc9Bwih74
+         3hlTQbpsnTKyvSRPdyJs3pVAl6GEN0sOR0pKI2d9zxCd/CyBxMhiLkLeIlSW7+LUTkPB
+         SQUWSCOThdhBFxBgonCR0fe+eCBmIa5e/5TJHAnCo24qKGje3VPimwIZSCb6zy/sOkZP
+         wmwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2kU1A0mZ+Yf718gi2yxK3phVn7nYLq00SbSALiBBt2c=;
-        b=ftXHmJUp58ZqjO+zjN2JUkPq0FGkbd094Nq50iF0oYyaUmyrGZ9mkbYzq0S95Cli81
-         7iH0lSsddrBSkOBemWrBrlZN32hjEaLuz2Q1qYPunp7hKcPp/ZxCAGvO9U8f561NB4xX
-         IXl0DveodelRfuZS/1G3lMCg/r+VK6IADig16Y1OM9ACQC+Azf5TSf81MfF2sm9KYWPU
-         RbHA1sDhoaTWa2FKP4UdiFXjw6EhDBFYRMwrjklEegyT0FjxYfScZnMuoDGoUoMux2xQ
-         QeUOBXwciRcZeRAw1P8OtxN8JKweYBYg7BK2fNiH9elZ/X2zfvbWb6tV0rcEkgqNwkHZ
-         j9Uw==
-X-Gm-Message-State: AOAM531CXZG5twOgxMyRboHlNLcr2GwfkMfa06fIoGXmyQxHLYN3LHW/
-        cANzWli4/dtkGF9KUMiHKZg1CCZfyjnDlw==
-X-Google-Smtp-Source: ABdhPJxu5BNOL66aUTFVR0ibkfjQAJZxN1/5Jln5I65fELTDrubmqTQaTFywu9mFnXzUzDH+EMVzEQ==
-X-Received: by 2002:a17:902:b602:b0:14f:e42b:d547 with SMTP id b2-20020a170902b60200b0014fe42bd547mr19779057pls.91.1646782670904;
-        Tue, 08 Mar 2022 15:37:50 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e13-20020a056a001a8d00b004f0f28910cdsm185636pfv.42.2022.03.08.15.37.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 15:37:50 -0800 (PST)
-Date:   Tue, 8 Mar 2022 23:37:46 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Kieran Bingham <kbingham@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jessica Yu <jeyu@kernel.org>,
-        Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Yang Weijiang <weijiang.yang@intel.com>,
-        linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: Re: [PATCH v3 2/6] KVM: x86: add force_intercept_exceptions_mask
-Message-ID: <YifoysEvfnQgq59A@google.com>
-References: <20210811122927.900604-1-mlevitsk@redhat.com>
- <20210811122927.900604-3-mlevitsk@redhat.com>
- <YTECUaPa9kySQxRX@google.com>
- <0cdac80177eea408b7e316bd1fc4c0c5839ba1d4.camel@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6blG6EAzX4w/WH2eHf6lZLaVJfDBuoOmPYe51zQt/4A=;
+        b=N8dqYi15iraRzn3Ycgc7myVMRV0cgTHR/GS2aFH9+d3Wi3HA/JY7p0Kc8QTtnRUkul
+         U4oGmbMbcuAhbYGWt2/6sWbaQ/Ry2REV9Jp2ZsRwxDXCwm0Vb3NJv4zbfZlYPkZDrpmv
+         65xshr2DayaARjKTdmePR2e68/l/dqfSKmCXBniEDgtzg6BeHREJI84ATYb4xyC3bQ7k
+         xhjuB8coJqRkrQS3qsJKU7Nq9UfMpJVV2Wnv8K+fQ/AH6B4r5RIzoE2q4ruXFpIfaPV2
+         wBzdki7v1tQ8AjLuxZkFzd0ZlPnS1O+xdP0utnsMaYU81KXhOBYu+6/hIXFL1+GFOGrE
+         kEjw==
+X-Gm-Message-State: AOAM532h3Ytg1lxfZ61LGL0FVtsC3tHr/+SqtQYjpDVECQWULYSlbLtu
+        suS2cFbUr/1/W0jyQtWYIYfB7hwptIf6CnMiXukSVE+PmB2OThmD
+X-Google-Smtp-Source: ABdhPJxskEt4z+ERhyGQD17DQXn+/I/xUbH/kIs14UdAcFpT7QiQvRSl/uyYzEI6mSU/i59zf8y4l96MGMXa7to9HA8=
+X-Received: by 2002:a25:d188:0:b0:628:ba86:ee68 with SMTP id
+ i130-20020a25d188000000b00628ba86ee68mr14027361ybg.427.1646783399600; Tue, 08
+ Mar 2022 15:49:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0cdac80177eea408b7e316bd1fc4c0c5839ba1d4.camel@redhat.com>
+References: <20220304170215.1868106-1-eric.dumazet@gmail.com> <20220307091541.GD15701@techsingularity.net>
+In-Reply-To: <20220307091541.GD15701@techsingularity.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 8 Mar 2022 15:49:48 -0800
+Message-ID: <CANn89iLmwT4XQ6JPi4C7dO+Q2O_j7HK19-TAo4nA1NUf8ZSLBw@mail.gmail.com>
+Subject: Re: [PATCH v2] mm/page_alloc: call check_new_pages() while zone
+ spinlock is not held
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022, Maxim Levitsky wrote:
-> On Thu, 2021-09-02 at 16:56 +0000, Sean Christopherson wrote:
-> > Assuming this hasn't been abandoned...
-> > 
-> > On Wed, Aug 11, 2021, Maxim Levitsky wrote:
-> > > This parameter will be used by VMX and SVM code to force
-> > > interception of a set of exceptions, given by a bitmask
-> > > for guest debug and/or kvm debug.
-> > > 
-> > > This is based on an idea first shown here:
-> > > https://patchwork.kernel.org/project/kvm/patch/20160301192822.GD22677@pd.tnic/
-> > > 
-> > > CC: Borislav Petkov <bp@suse.de>
-> > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > ---
-> > >  arch/x86/kvm/x86.c | 3 +++
-> > >  arch/x86/kvm/x86.h | 2 ++
-> > >  2 files changed, 5 insertions(+)
-> > > 
-> > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > > index fdc0c18339fb..092e2fad3c0d 100644
-> > > --- a/arch/x86/kvm/x86.c
-> > > +++ b/arch/x86/kvm/x86.c
-> > > @@ -184,6 +184,9 @@ module_param(force_emulation_prefix, bool, S_IRUGO);
-> > >  int __read_mostly pi_inject_timer = -1;
-> > >  module_param(pi_inject_timer, bint, S_IRUGO | S_IWUSR);
-> > >  
-> > > +uint force_intercept_exceptions_mask;
-> > > +module_param(force_intercept_exceptions_mask, uint, S_IRUGO | S_IWUSR);
-> > 
-> > Use octal permissions.  This also can't be a simple writable param, at least not
-> > without a well-documented disclaimer, as there's no guarantee a vCPU will update
-> > its exception bitmap in a timely fashion.  An alternative to a module param would
-> > be to extend/add a per-VM ioctl(), e.g. maybe KVM_SET_GUEST_DEBUG?  The downside
-> > of an ioctl() is that it would require userspace enabling :-/
-> > 
-> 
-> All other module params in this file use macros for permissions, that is why
-> I used them too.
-> 
-> I'll add a comment with a disclaimer here - this is only for debug.
-> I strongly don't want to have this as ioctl as that will indeed need qemu patches,
-> not to mention things like unit tests and which don't even always use qemu.
-> 
-> Or I can make this parameter read-only. I don't mind reloading kvm module when
-> I change this parameter.
+On Mon, Mar 7, 2022 at 1:15 AM Mel Gorman <mgorman@techsingularity.net> wrote:
+>
+> On Fri, Mar 04, 2022 at 09:02:15AM -0800, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > For high order pages not using pcp, rmqueue() is currently calling
+> > the costly check_new_pages() while zone spinlock is held,
+> > and hard irqs masked.
+> >
+> > This is not needed, we can release the spinlock sooner to reduce
+> > zone spinlock contention.
+> >
+> > Note that after this patch, we call __mod_zone_freepage_state()
+> > before deciding to leak the page because it is in bad state.
+> >
+> > v2: We need to keep interrupts disabled to call __mod_zone_freepage_state()
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Mel Gorman <mgorman@techsingularity.net>
+> > Cc: Vlastimil Babka <vbabka@suse.cz>
+> > Cc: Michal Hocko <mhocko@kernel.org>
+> > Cc: Shakeel Butt <shakeelb@google.com>
+> > Cc: Wei Xu <weixugc@google.com>
+> > Cc: Greg Thelen <gthelen@google.com>
+> > Cc: Hugh Dickins <hughd@google.com>
+> > Cc: David Rientjes <rientjes@google.com>
+>
+> Ok, this is only more expensive in the event pages on the free list have
+> been corrupted whch is already very unlikely so thanks!
+>
+> Acked-by: Mel Gorman <mgorman@techsingularity.net>
+>
 
-Oh!  We can force an update, a la nx_huge_pages, where the setter loops through
-all VMs and does a kvm_make_all_cpus_request() to instruct vCPUs to update their
-bitmaps.  Requires a new request, but that doesn't seem like a huge deal, and it
-might help pave the way for adding more debug hooks for developers.
+One remaining question is:
 
-The param should also be "unsafe".
+After your patch ("mm/page_alloc: allow high-order pages to be stored
+on the per-cpu lists"),
+do we want to change check_pcp_refill()/check_new_pcp() to check all pages,
+and not only the head ?
 
-E.g. something like
+Or was it a conscious choice of yours ?
+(I presume part of the performance gains came from
+not having to bring ~7 cache lines per 32KB chunk on x86)
 
-static const struct kernel_param_ops force_ex_intercepts_ops = {
-	.set = set_force_exception_intercepts,
-	.get = get_force_exception_intercepts,
-};
-module_param_cb_unsafe(force_exception_intercepts, &force_ex_intercepts_ops,
-		       &force_exception_intercepts, 0644);
+Thanks !
