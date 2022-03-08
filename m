@@ -2,147 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD153C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:29:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33ACDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 10:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345872AbiCHKaC (ORCPT
+        id S1345848AbiCHKbR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 05:30:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
+        Tue, 8 Mar 2022 05:31:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244341AbiCHK36 (ORCPT
+        with ESMTP id S243608AbiCHKbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 05:29:58 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB1D3C48F;
-        Tue,  8 Mar 2022 02:29:01 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KCWjk5KmWzdb2N;
-        Tue,  8 Mar 2022 18:27:38 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 18:29:00 +0800
-Received: from [10.67.103.212] (10.67.103.212) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 18:28:59 +0800
-Subject: Re: [PATCH v8 6/9] hisi_acc_vfio_pci: Add helper to retrieve the
- struct pci_driver
-To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
- <20220303230131.2103-7-shameerali.kolothum.thodi@huawei.com>
-CC:     <linux-pci@vger.kernel.org>, <alex.williamson@redhat.com>,
-        <jgg@nvidia.com>, <cohuck@redhat.com>, <mgurtovoy@nvidia.com>,
-        <yishaih@nvidia.com>, <linuxarm@huawei.com>,
-        <liulongfang@huawei.com>, <prime.zeng@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
-From:   "yekai(A)" <yekai13@huawei.com>
-Message-ID: <77d96509-bad2-b271-aaaf-07ca6b699db6@huawei.com>
-Date:   Tue, 8 Mar 2022 18:28:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        Tue, 8 Mar 2022 05:31:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D553C3C49C;
+        Tue,  8 Mar 2022 02:30:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB3C61580;
+        Tue,  8 Mar 2022 10:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1DBC340EF;
+        Tue,  8 Mar 2022 10:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646735418;
+        bh=E6G3HiPLRyrOj03X2ujBXJMTzrUxMjwNhkXg21CG+U8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M1oThiuofqh3xeFKZQaytRfDhYBezMDPsbC39YerDdHh4F5nK9JK8QrEQH8Xxzizj
+         mdWhdifioc/a36RrkAwGUv65W9qE7o1eN1jkLp4RWCDC7Jgl1oxN7iCGMQBhtxphnF
+         fYFXZ+SB2c1J3cTZ+CHANzEIThoY+23DDUbftNvRq9GlTi6F7Kzjw08oaqeJd7FfFK
+         TpsQGsL5y4USLmVhRnavuC4O3JyMGFn5rDAlu9ec98fguQ2Q/S3mQKMf4yN7zdKSYI
+         wRRCQsLdmNRI831GB4+IYcSC9ty4y3TKUD87YJlxwfyY7EKo3+PUg9acrBX54Kmh5Y
+         n5f8EsboETDvw==
+Date:   Tue, 8 Mar 2022 10:30:12 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] topology: make core_mask include at least
+ cluster_siblings
+Message-ID: <20220308103012.GA31267@willie-the-truck>
+References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
 MIME-Version: 1.0
-In-Reply-To: <20220303230131.2103-7-shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.212]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/3/4 7:01, Shameer Kolothum wrote:
-> struct pci_driver pointer is an input into the pci_iov_get_pf_drvdata().
-> Introduce helpers to retrieve the ACC PF dev struct pci_driver pointers
-> as we use this in ACC vfio migration driver.
->
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+On Fri, Mar 04, 2022 at 09:01:36AM -0800, Darren Hart wrote:
+> Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
+> Control Unit, but have no shared CPU-side last level cache.
+> 
+> cpu_coregroup_mask() will return a cpumask with weight 1, while
+> cpu_clustergroup_mask() will return a cpumask with weight 2.
+> 
+> As a result, build_sched_domain() will BUG() once per CPU with:
+> 
+> BUG: arch topology borken
+> the CLS domain not a subset of the MC domain
+> 
+> The MC level cpumask is then extended to that of the CLS child, and is
+> later removed entirely as redundant. This sched domain topology is an
+> improvement over previous topologies, or those built without
+> SCHED_CLUSTER, particularly for certain latency sensitive workloads.
+> With the current scheduler model and heuristics, this is a desirable
+> default topology for Ampere Altra and Altra Max system.
+> 
+> Rather than create a custom sched domains topology structure and
+> introduce new logic in arch/arm64 to detect these systems, update the
+> core_mask so coregroup is never a subset of clustergroup, extending it
+> to cluster_siblings if necessary.
+> 
+> This has the added benefit over a custom topology of working for both
+> symmetric and asymmetric topologies. It does not address systems where
+> the cluster topology is above a populated mc topology, but these are not
+> considered today and can be addressed separately if and when they
+> appear.
+> 
+> The final sched domain topology for a 2 socket Ampere Altra system is
+> unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+> 
+> For CPU0:
+> 
+> CONFIG_SCHED_CLUSTER=y
+> CLS  [0-1]
+> DIE  [0-79]
+> NUMA [0-159]
+> 
+> CONFIG_SCHED_CLUSTER is not set
+> DIE  [0-79]
+> NUMA [0-159]
+> 
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> Cc: Barry Song <song.bao.hua@hisilicon.com>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+> Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> Cc: <stable@vger.kernel.org> # 5.16.x
+> Suggested-by: Barry Song <song.bao.hua@hisilicon.com>
+> Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
 > ---
->  drivers/crypto/hisilicon/hpre/hpre_main.c | 6 ++++++
->  drivers/crypto/hisilicon/sec2/sec_main.c  | 6 ++++++
->  drivers/crypto/hisilicon/zip/zip_main.c   | 6 ++++++
->  include/linux/hisi_acc_qm.h               | 5 +++++
->  4 files changed, 23 insertions(+)
->
-> diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
-> index 3589d8879b5e..36ab30e9e654 100644
-> --- a/drivers/crypto/hisilicon/hpre/hpre_main.c
-> +++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
-> @@ -1190,6 +1190,12 @@ static struct pci_driver hpre_pci_driver = {
->  	.driver.pm		= &hpre_pm_ops,
->  };
->
-> +struct pci_driver *hisi_hpre_get_pf_driver(void)
-> +{
-> +	return &hpre_pci_driver;
-> +}
-> +EXPORT_SYMBOL_GPL(hisi_hpre_get_pf_driver);
+> v1: Drop MC level if coregroup weight == 1
+> v2: New sd topo in arch/arm64/kernel/smp.c
+> v3: No new topo, extend core_mask to cluster_siblings
+> 
+>  drivers/base/arch_topology.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index 976154140f0b..a96f45db928b 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -628,6 +628,14 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
+>  			core_mask = &cpu_topology[cpu].llc_sibling;
+>  	}
+>  
+> +	/*
+> +	 * For systems with no shared cpu-side LLC but with clusters defined,
+> +	 * extend core_mask to cluster_siblings. The sched domain builder will
+> +	 * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
+> +	 */
+> +	if (cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
+> +		core_mask = &cpu_topology[cpu].cluster_sibling;
 > +
->  static void hpre_register_debugfs(void)
->  {
->  	if (!debugfs_initialized())
-> diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
-> index 311a8747b5bf..421a405ca337 100644
-> --- a/drivers/crypto/hisilicon/sec2/sec_main.c
-> +++ b/drivers/crypto/hisilicon/sec2/sec_main.c
-> @@ -1088,6 +1088,12 @@ static struct pci_driver sec_pci_driver = {
->  	.driver.pm = &sec_pm_ops,
->  };
->
-> +struct pci_driver *hisi_sec_get_pf_driver(void)
-> +{
-> +	return &sec_pci_driver;
-> +}
-> +EXPORT_SYMBOL_GPL(hisi_sec_get_pf_driver);
-> +
->  static void sec_register_debugfs(void)
->  {
->  	if (!debugfs_initialized())
-> diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
-> index 66decfe07282..4534e1e107d1 100644
-> --- a/drivers/crypto/hisilicon/zip/zip_main.c
-> +++ b/drivers/crypto/hisilicon/zip/zip_main.c
-> @@ -1012,6 +1012,12 @@ static struct pci_driver hisi_zip_pci_driver = {
->  	.driver.pm		= &hisi_zip_pm_ops,
->  };
->
-> +struct pci_driver *hisi_zip_get_pf_driver(void)
-> +{
-> +	return &hisi_zip_pci_driver;
-> +}
-> +EXPORT_SYMBOL_GPL(hisi_zip_get_pf_driver);
-> +
->  static void hisi_zip_register_debugfs(void)
->  {
->  	if (!debugfs_initialized())
-> diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-> index 6a6477c34666..00f2a4db8723 100644
-> --- a/include/linux/hisi_acc_qm.h
-> +++ b/include/linux/hisi_acc_qm.h
-> @@ -476,4 +476,9 @@ void hisi_qm_pm_init(struct hisi_qm *qm);
->  int hisi_qm_get_dfx_access(struct hisi_qm *qm);
->  void hisi_qm_put_dfx_access(struct hisi_qm *qm);
->  void hisi_qm_regs_dump(struct seq_file *s, struct debugfs_regset32 *regset);
-> +
-> +/* Used by VFIO ACC live migration driver */
-> +struct pci_driver *hisi_sec_get_pf_driver(void);
-> +struct pci_driver *hisi_hpre_get_pf_driver(void);
-> +struct pci_driver *hisi_zip_get_pf_driver(void);
->  #endif
->
 
-Hi Shameer,
+Sudeep, Vincent, are you happy with this now?
 
-It looks good to me for this movement.
-
-Acked-by:  Kai Ye <yekai13@huawei.com>
-
-Thanks,
-Kai
+Will
