@@ -2,109 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB9FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 18:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349498AbiCHSTp (ORCPT
+        id S1349490AbiCHSUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 13:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
+        Tue, 8 Mar 2022 13:20:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349485AbiCHSTm (ORCPT
+        with ESMTP id S239485AbiCHSUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 13:19:42 -0500
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C040143EDB;
-        Tue,  8 Mar 2022 10:18:45 -0800 (PST)
-Received: by mail-yb1-f182.google.com with SMTP id u10so19647119ybd.9;
-        Tue, 08 Mar 2022 10:18:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0mm42zyukh7VksC1paHdf15HMBSOa0ps1GGtSZmcm+Y=;
-        b=dUeqh/2yPGz+muX+vwmG5tihyVuaCZ7b3I27N4BZGhADqL3BVklVQJjU1CXF8dl8Z9
-         /ZOhqCGPmE9Jbm1QuLi0e/rNf21EHbPda5ZhV6fTwAFQbMJOHhg4YJvkiOwqBOR0uFEN
-         /0acz+InaTh53nQeQxODlSv4JgOvi40Dn7uDI5CpYd/5FGnMWYXjEV5uArSN0lL7zPYr
-         L2yFXyCjRHB3vlrsgKIj4hw7svFjFH2bo3RP+s/dvTDLFViL2xdwAtMAaSXaOPYDwSC9
-         niYIM3MkSn1GMQeirP0PPDMbrgd+LDoNHDmXMnna8OIJ53H8AJR1U6++ly5j1RDz+Vqu
-         yV8w==
-X-Gm-Message-State: AOAM532QpzmcAcokpNL1oe4UFldDEiEqh/SDrd0X7imfbPibFaIUSTNu
-        vDfcaJNdHp12Iz7ESCkGSa8ePqbfakXOKKacnik=
-X-Google-Smtp-Source: ABdhPJyYffrpdeu9Suv/AB1ytcqAuTnHM7S6CYgSrDk1Koww7qVyYWFAEzAtKp9ZiVc467Auy0StfRQPiSlAR7DB+9Y=
-X-Received: by 2002:a25:d7c2:0:b0:628:9d06:457b with SMTP id
- o185-20020a25d7c2000000b006289d06457bmr13331613ybg.137.1646763525016; Tue, 08
- Mar 2022 10:18:45 -0800 (PST)
-MIME-Version: 1.0
-References: <20220214101450.356047-1-ray.huang@amd.com> <CAJZ5v0jgqzzog_F+DtgKk544FDQ=iQ_rDfwKeHnEiLLrCyi9Hw@mail.gmail.com>
-In-Reply-To: <CAJZ5v0jgqzzog_F+DtgKk544FDQ=iQ_rDfwKeHnEiLLrCyi9Hw@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 8 Mar 2022 19:18:33 +0100
-Message-ID: <CAJZ5v0h6DB9d2buHKmdaicszJ0f5h8YxGN6gkLhMV78im61zBw@mail.gmail.com>
-Subject: Re: [PATCH 0/4] x86/acpi/cppc: Minor clean up for x86 CPPC implementation
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Huang Rui <ray.huang@amd.com>, Borislav Petkov <bp@alien8.de>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Giovanni Gherdovich <ggherdovich@suse.cz>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Jassmine Meng <li.meng@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 8 Mar 2022 13:20:07 -0500
+Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE033700A;
+        Tue,  8 Mar 2022 10:19:10 -0800 (PST)
+Received: from 1nReQO-000BTc-Tx by out3b.electric.net with emc1-ok (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1nReQP-000BWq-Ui; Tue, 08 Mar 2022 10:19:09 -0800
+Received: by emcmailer; Tue, 08 Mar 2022 10:19:09 -0800
+Received: from [66.210.251.27] (helo=mail.embeddedts.com)
+        by out3b.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1nReQO-000BTc-Tx; Tue, 08 Mar 2022 10:19:08 -0800
+Received: from tsdebian.Massive (unknown [75.164.75.221])
+        by mail.embeddedts.com (Postfix) with ESMTPSA id 8B65E3ED7C;
+        Tue,  8 Mar 2022 11:19:07 -0700 (MST)
+From:   Kris Bahnsen <kris@embeddedTS.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mark Featherston <mark@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>
+Subject: [PATCH v2] gpio: ts4900: Do not set DAT and OE together
+Date:   Tue,  8 Mar 2022 10:18:47 -0800
+Message-Id: <20220308181847.3276-1-kris@embeddedTS.com>
+X-Mailer: git-send-email 2.11.0
+X-Outbound-IP: 66.210.251.27
+X-Env-From: kris@embeddedTS.com
+X-Proto: esmtps
+X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
+X-HELO: mail.embeddedts.com
+X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
+X-Authenticated_ID: 
+X-Virus-Status: Scanned by VirusSMART (c)
+X-Virus-Status: Scanned by VirusSMART (b)
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Message-Id:Date:To:From; bh=N0dy6kEUIr+y8NTXo2YidNyYvMmDq2e/8v2xzNF9rqo=;b=Kjm18paC+Ml+ybk1X5KtljH52gXwoEU9JMML+juB/d6LTPUtNg59zwpVfZ2TOYufwRGYN4Py6lfkDA8NjOcWm+eMp771RjylEYt6DSW38/YGqmy1A6zyLM344PtXtkWxa+J4Y1jc18ELLCDxUF/infUNu36vrxQbpsr3SSxTce8c2E7/pANG5Tt33x7yZmRfUA/MpBIlKiNou2M8yp5MOwhSR0qevlIKSDbkat/Mls4OHHi1KOv63umc2ImeM2ha0UESOZB+DhuxTOiROJ8JVemeR9e8Qb9H4gY0CzpfZioTuqsLqEc2gsfvOj4gOJ0TmTWV3CdSurO0whsD1QVjTQ==;
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 8:20 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Mon, Feb 14, 2022 at 11:51 AM Huang Rui <ray.huang@amd.com> wrote:
-> >
-> > Hi all,
-> >
-> > While we were fixing the legacy issue below, we found the dependencies
-> > between smpboot and CPPC were not very good. But due to urgent fix for
-> > 5.17-rc1, I didn't have much time to provide a complete solution.
-> >
-> > https://lore.kernel.org/lkml/YdeWDDCwBQAYnlKb@amd.com/
-> >
-> > In these series, I expand the scope of acpi/cppc_msr to acpi/cppc to cover
-> > the all the CPPC helper functions for x86 ACPI. And then clean up the
-> > smpboot and move CPPC related functions into the acpi/cppc.c. This design
-> > is more straightforward and more clear to handle the CPPC in x86 and
-> > resolve dependency issues between CPPC and smpboot.c.
-> >
-> > Thanks,
-> > Ray
-> >
-> > Huang Rui (4):
-> >   x86/acpi: Expand the CPPC MSR file to cover the whole CPPC
-> >     implementation
-> >   x86, sched: Move AMD maximum frequency ratio setting function into x86
-> >     CPPC
-> >   x86, sched: Expose init_freq_invariance to topology header
-> >   x86/acpi: Move init_freq_invariance_cppc into x86 CPPC
-> >
-> >  arch/x86/include/asm/topology.h |  13 +++-
-> >  arch/x86/kernel/acpi/Makefile   |   2 +-
-> >  arch/x86/kernel/acpi/cppc.c     | 103 ++++++++++++++++++++++++++++++++
-> >  arch/x86/kernel/acpi/cppc_msr.c |  49 ---------------
-> >  arch/x86/kernel/smpboot.c       |  72 +---------------------
-> >  5 files changed, 118 insertions(+), 121 deletions(-)
-> >  create mode 100644 arch/x86/kernel/acpi/cppc.c
-> >  delete mode 100644 arch/x86/kernel/acpi/cppc_msr.c
-> >
-> > --
->
-> This series makes sense to me and I'm inclined to take it if there are
-> no objections, so if there are any, please let me know.
+From: Mark Featherston <mark@embeddedTS.com>
 
-And so applied as 5.18 material now with slightly adjusted subjects.
+This works around an issue with the hardware where both OE and
+DAT are exposed in the same register. If both are updated
+simultaneously, the harware makes no guarantees that OE or DAT
+will actually change in any given order and may result in a
+glitch of a few ns on a GPIO pin when changing direction and value
+in a single write.
 
-Thanks!
+Setting direction to input now only affects OE bit. Setting
+direction to output updates DAT first, then OE.
+
+Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
+
+Signed-off-by: Mark Featherston <mark@embeddedTS.com>
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+---
+V1 -> V2: Add Fixes tag
+
+ drivers/gpio/gpio-ts4900.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+index d885032cf814..fbabfca030c0 100644
+--- a/drivers/gpio/gpio-ts4900.c
++++ b/drivers/gpio/gpio-ts4900.c
+@@ -1,7 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * Digital I/O driver for Technologic Systems I2C FPGA Core
+  *
+- * Copyright (C) 2015 Technologic Systems
++ * Copyright (C) 2015-2018 Technologic Systems
+  * Copyright (C) 2016 Savoir-Faire Linux
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -55,19 +56,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
+ 
+-	/*
+-	 * This will clear the output enable bit, the other bits are
+-	 * dontcare when this is cleared
++	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
++	 * with OE and data getting to the physical pin at different times.
+ 	 */
+-	return regmap_write(priv->regmap, offset, 0);
++	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
+ }
+ 
+ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
+ 					unsigned int offset, int value)
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
++	unsigned int reg;
+ 	int ret;
+ 
++	/* If changing from an input to an output, we need to first set the
++	 * proper data bit to what is requested and then set OE bit. This
++	 * prevents a glitch that can occur on the IO line
++	 */
++	regmap_read(priv->regmap, offset, &reg);
++	if (!(reg & TS4900_GPIO_OE)) {
++		if (value)
++			reg = TS4900_GPIO_OUT;
++		else
++			reg &= ~TS4900_GPIO_OUT;
++
++		regmap_write(priv->regmap, offset, reg);
++	}
++
+ 	if (value)
+ 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
+ 							 TS4900_GPIO_OUT);
+-- 
+2.11.0
+
