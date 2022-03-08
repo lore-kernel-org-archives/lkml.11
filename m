@@ -2,68 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86283C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 01:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344215AbiCHBI4 (ORCPT
+        id S1344222AbiCHBI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 20:08:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Mon, 7 Mar 2022 20:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbiCHBIr (ORCPT
+        with ESMTP id S1344190AbiCHBIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 20:08:47 -0500
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976422CC80;
-        Mon,  7 Mar 2022 17:07:50 -0800 (PST)
-Received: by mail-oi1-f182.google.com with SMTP id x193so17290312oix.0;
-        Mon, 07 Mar 2022 17:07:50 -0800 (PST)
+        Mon, 7 Mar 2022 20:08:48 -0500
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76321ADA8;
+        Mon,  7 Mar 2022 17:07:53 -0800 (PST)
+Received: by mail-oo1-f45.google.com with SMTP id x26-20020a4a9b9a000000b003211029e80fso3637901ooj.5;
+        Mon, 07 Mar 2022 17:07:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=4Vh0skU/TpnaqVycF2Gk7ec7Z9iE5PhyKRGG3sXCJBg=;
-        b=IzzfGnauhUxQaaQdsK7A5xAaArzRgja09UERKryKqQmii0HogCjjH77xoNWvjtgd6s
-         k7hE1EOs+0vnGXO2KmSCjVy3SsMjUjvEzq0HMIUT4WAj0KajXZgGiC915VlbXu0q3oEI
-         M1/coqzSS3KTqEoCkSNSVzmDI2aPjbsut8ku3H89ZzDZbbKyIIZjrO3EPDvgHDkfX6e0
-         HpOUoBu5kdO4ppfc9WgdfzpPvya5J8K5eqirLRa+cW87bTHc+Al+3mDvtza4vHXGiLIf
-         ofH1p4TFRnJZU7MRZGT5axUxSpcEWO5TJqG6rSXvBvun8BQsKvZU57WxjoCbMWplvDx3
-         pfnA==
-X-Gm-Message-State: AOAM533CuF2BGNIXemU6vRv4uACabhvfACWo6Vk7/cuLhmnwSHQGl/6d
-        lw5pdpItJqBP0Y8cJx/U3A==
-X-Google-Smtp-Source: ABdhPJxEXFX5X26D3/ir03omCumnoMENEbRGwsO3RleYVqWM2D929Ye1JbqjPzZIxCh8ZhbBCUC6lg==
-X-Received: by 2002:a05:6808:1450:b0:2d9:dad1:a14e with SMTP id x16-20020a056808145000b002d9dad1a14emr1137355oiv.294.1646701669918;
-        Mon, 07 Mar 2022 17:07:49 -0800 (PST)
+        bh=rxea/dYu/ELTNOWQBZ1ss1F6Twz4ycLAC2ZHEe2uUro=;
+        b=qN9Py46ldMhjbS9TpTzWvqrfEaSBVr7QcR6Mo5H3n51p3qKBfGS9b9ZSHlOuHUuRri
+         GRCHJWSy5hgMK1Ne/WCm3JEw0Xc83Jg3wOZvXcvxBrVexyfFQz6gTXZ2cV4VA+WxD6jH
+         IiMs7H08DC3eBfjIkq7+Pwqb19MpSBn35EAiZsgXyIXtA3qE7bes0nSMlPdP3gHO/tCu
+         96O9/fFPZR+1BnBZynjBvIyTKL/OpPnEnjFU13NbtD+ZsXqJx7CH/B8Ua1ypWC8dAkW6
+         ETQOxfElgknTlDHTWimzCjOrVdq+t6XdJjRnXEmHxcipn9l6n95ASaExzgIzNTiv/Exl
+         hJtQ==
+X-Gm-Message-State: AOAM531AJKgYznoYxEpD4y+s6v2xZ2NM0u/E93VAvTf+gJS0SrBB93AP
+        AlMZ+oYf1AaoCokIWVLGz1RfYIRgNQ==
+X-Google-Smtp-Source: ABdhPJwuxBaYxiksU+rwdZLeIIANxi6L3vYW7ckdeo06O7RfTIGcy0DoTwNbwJESrg/gvsNx+NDLhA==
+X-Received: by 2002:a05:6870:60a0:b0:d3:a3f7:8b59 with SMTP id t32-20020a05687060a000b000d3a3f78b59mr1004731oae.94.1646701672984;
+        Mon, 07 Mar 2022 17:07:52 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q16-20020a9d4b10000000b005b22b93d468sm3186416otf.74.2022.03.07.17.07.47
+        by smtp.gmail.com with ESMTPSA id p21-20020a4a2f15000000b00320fca09b74sm1377596oop.1.2022.03.07.17.07.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 17:07:49 -0800 (PST)
-Received: (nullmailer pid 3624787 invoked by uid 1000);
+        Mon, 07 Mar 2022 17:07:51 -0800 (PST)
+Received: (nullmailer pid 3624778 invoked by uid 1000);
         Tue, 08 Mar 2022 01:07:40 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Jacky Huang <ychuang3@nuvoton.com>
-Cc:     sboyd@kernel.org, robh+dt@kernel.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de,
-        olof@lixom.net, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220307091923.9909-3-ychuang3@nuvoton.com>
-References: <20220307091923.9909-1-ychuang3@nuvoton.com> <20220307091923.9909-3-ychuang3@nuvoton.com>
-Subject: Re: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller bindings
+To:     Richard Zhu <hongxing.zhu@nxp.com>
+Cc:     kernel@pengutronix.de, linux-phy@lists.infradead.org,
+        shawnguo@kernel.org, linux-pci@vger.kernel.org,
+        alexander.stein@ew.tq-group.com, bhelgaas@google.com,
+        linux-arm-kernel@lists.infradead.org, p.zabel@pengutronix.de,
+        lorenzo.pieralisi@arm.com, devicetree@vger.kernel.org,
+        vkoul@kernel.org, l.stach@pengutronix.de, linux-imx@nxp.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1646644054-24421-3-git-send-email-hongxing.zhu@nxp.com>
+References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com> <1646644054-24421-3-git-send-email-hongxing.zhu@nxp.com>
+Subject: Re: [PATCH v2 2/7] dt-binding: phy: Add iMX8MP PCIe PHY binding
 Date:   Mon, 07 Mar 2022 19:07:40 -0600
-Message-Id: <1646701660.895821.3624783.nullmailer@robh.at.kernel.org>
+Message-Id: <1646701660.888371.3624774.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 07 Mar 2022 17:19:22 +0800, Jacky Huang wrote:
-> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
+On Mon, 07 Mar 2022 17:07:29 +0800, Richard Zhu wrote:
+> Add i.MX8MP PCIe PHY binding.
 > 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 > ---
->  .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 66 +++++++++++++++++++
->  1 file changed, 66 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>  Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -72,18 +73,14 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml: properties: 'clocks' is a dependency of 'assigned-clocks'
-	from schema $id: http://devicetree.org/meta-schemas/clocks.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml: ignoring, error in schema: properties
-Error: Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.example.dts:24.37-38 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1398: dt_binding_check] Error 2
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.example.dt.yaml: pcie-phy@32f00000: resets: [[4294967295, 26]] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.example.dt.yaml: pcie-phy@32f00000: reset-names: ['pciephy'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1601972
+See https://patchwork.ozlabs.org/patch/1601963
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
