@@ -2,138 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF43C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B45ABC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 09:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345407AbiCHJss (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 04:48:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
+        id S242870AbiCHJuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 04:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345478AbiCHJrM (ORCPT
+        with ESMTP id S239173AbiCHJuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 04:47:12 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2084.outbound.protection.outlook.com [40.107.223.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081A94163D;
-        Tue,  8 Mar 2022 01:46:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QyYbYgzCM5Vr5y3VTnEtkLkvSFa+37RbgoUPrpfz2OB8QTNt2he2/It9/pzeGrABX3cWn4z339wBdIDSxh6C1DzhEpxw/mpkRHXicNZnYgCt3eY08WQFqEUawnM4/FHnCCDc1WsjEFQvTNF4YRCS043P/18JVwCZm1ZZ71K1gQ4+FY8eL2Zb8oxOsPUwdPUMnyYs0DhIi8ysPotbe9m+3YRnPV6jEtE9VOBkGvlqzA7wca6AyaSDLR6ta9IifrJsBWndE4AfcE6iU2ASekqp97UkSexca2oHkvPyHcQOqgwyUyRiymjO6p6/C0t8HLJKzvMb6X8qftLCZ8cwZ8oMjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jt8cKOgxVPstoWwfZUTB1O7ys+RUUeieCm5OMjh8Z5Q=;
- b=oZWAvTpqeIFsexUyqHbvEKS6o2XNQ6wdy1q1HY7N82gBclpraSn6AfYx8Y0mKy0MqF9ap+l7bPCYzMUYqehonlJQh3+/WE0dUzC2y7yeEXoVvQvncKzX9OiVBysMaPdvN4V1lr6u9hTcYz3bmqSpYLmihSPi8UiVywjFNmg/bCheQA/nN9/Hyw8ZRtS66CuuKMrMVKoVVhncD1474jaMhWXYdob995RwlOlyFq0xHFHpPUmuy6qu+qBng+P+3ajcSSZp/FzI52qhlIPSxhouCiOOBxnmLzHK8c2CU9IrKpqD88k6LLShOKdX5yebVariJqaLTxkzPCh6FayM3T1K1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Tue, 8 Mar 2022 04:50:13 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FFC340C4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 01:49:16 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id u10so25906051wra.9
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 01:49:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jt8cKOgxVPstoWwfZUTB1O7ys+RUUeieCm5OMjh8Z5Q=;
- b=r/Mw00yEFFgjPiCmSi3Dy9LPe5OTawT/zSxJ7/kNFRdkue4wHRm2CnSQUiHGLaxJCaCrF2unciNXtouxNqC91r1AQ1gq/w798xSeSj5KuXW/pBYcv1NvNjrqLfFxRgqo1V0TXiQomGkSSQcmpPePH1CIpdPqJVVhTs2W6GI8fiU=
-Received: from DS7PR05CA0054.namprd05.prod.outlook.com (2603:10b6:8:2f::28) by
- MWHPR0201MB3466.namprd02.prod.outlook.com (2603:10b6:301:7b::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.20; Tue, 8 Mar
- 2022 09:46:08 +0000
-Received: from DM3NAM02FT021.eop-nam02.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::1f) by DS7PR05CA0054.outlook.office365.com
- (2603:10b6:8:2f::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.17 via Frontend
- Transport; Tue, 8 Mar 2022 09:46:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT021.mail.protection.outlook.com (10.13.4.249) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Tue, 8 Mar 2022 09:46:08 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 8 Mar 2022 01:46:05 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 8 Mar 2022 01:46:05 -0800
-Envelope-to: mdf@kernel.org,
- hao.wu@intel.com,
- yilun.xu@intel.com,
- trix@redhat.com,
- linux-fpga@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-Received: from [10.140.6.60] (port=33304 helo=xhdnavam40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <nava.manne@xilinx.com>)
-        id 1nRWPt-000G0A-4J; Tue, 08 Mar 2022 01:46:05 -0800
-From:   Nava kishore Manne <nava.manne@xilinx.com>
-To:     <mdf@kernel.org>, <hao.wu@intel.com>, <yilun.xu@intel.com>,
-        <trix@redhat.com>, <michal.simek@xilinx.com>,
-        <linux-fpga@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Nava kishore Manne <nava.manne@xilinx.com>
-Subject: [PATCH 5/6] fpga: Use tab instead of spaces for indentation
-Date:   Tue, 8 Mar 2022 15:15:18 +0530
-Message-ID: <20220308094519.1816649-6-nava.manne@xilinx.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220308094519.1816649-1-nava.manne@xilinx.com>
-References: <20220308094519.1816649-1-nava.manne@xilinx.com>
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=02UDf1pdb0U70hOLizwodglM9/0MIkQTrFbx130jmiE=;
+        b=TjZphH9hgyELIqRwTi2WvGdoGj1J9+ko37q3Dy+QljjxZrcmoDk6pGD+9BkVeoWGl1
+         c9cQYim68QjDDKBJC75LgOBARQdj4uHxDI5dHKKBf7O/my4JRPQbITljSvXVICz+kIzQ
+         uzMuCIEvQpgxiO7KMGkHAA9CI20uLtfq+mC2kUGMuJymhFoQsgvBfeH8Dh37Ijctf9/1
+         j9s1H20UTvvd4CNKc+lJbQwbO0zPanfu1nuz0cHXv/0abJA/1RsruwvnID4aMwSvIGmN
+         GPY9CCl/Vys09GOCr4GHKBC8J9A02W7kZrjPxLAvuU0LUvaGFMMvdelTSF37S0lPxzqf
+         ddAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=02UDf1pdb0U70hOLizwodglM9/0MIkQTrFbx130jmiE=;
+        b=c+3md0KNZZVFrGK8zkGvNmDLyqfUrpXwb6RQGRfKewgHivkV0vGlieDySwWCIZAPYg
+         sXAwbZorwbIwhoqDEKviOuqLjIsJL0jj8flwOmqUrG3/UbYSiXsvzPEHZnIc5LIz4rE4
+         PSP1MSpu3Fo7K8lV8L0U/ICFFK1BseyM47lNYN4z/lUiOXrkk2wnIN6S3NxjdhtNx4d9
+         QGpyPVKI+UlLWc1W5i5ZCMHVNWyUbf7rxOHwwwmunVaYYLm2TnlaHtkJW5g8dCUbIo1L
+         f+CrNB0+XUomm2OoUBCBck5wUWjtpS1TvoEsmLlQGi1lcLVYtAZjQcyFXOo3/58iZV9v
+         biXQ==
+X-Gm-Message-State: AOAM53293wl9KAaFVZvlST1bXhgqBA0T9DXVtUcT+kVmm2mlb1Do1zAV
+        6Ze8jUGHCQKlvScttjWYvjOEOA==
+X-Google-Smtp-Source: ABdhPJwJl4t5Tn7r80HbhzAHKE1pKs8GUwcFZWPV2LvK0bS7AXZojL7riB/OQzKcrK/Px9dayrwCYg==
+X-Received: by 2002:adf:fa46:0:b0:1f1:d99a:4b1 with SMTP id y6-20020adffa46000000b001f1d99a04b1mr11663745wrr.516.1646732954621;
+        Tue, 08 Mar 2022 01:49:14 -0800 (PST)
+Received: from prec5560.. (freifunk-gw.bsa1-cpe1.syseleven.net. [176.74.57.43])
+        by smtp.gmail.com with ESMTPSA id z3-20020a1cf403000000b0037d1f4a2201sm1684885wma.21.2022.03.08.01.49.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 01:49:14 -0800 (PST)
+From:   Robert Foss <robert.foss@linaro.org>
+To:     airlied@linux.ie, daniel@ffwll.ch, robh+dt@kernel.org,
+        matthias.bgg@gmail.com, robert.foss@linaro.org,
+        laurent.pinchart@ideasonboard.com, xji@analogixsemi.com,
+        hsinyi@chromium.org, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>, arnd@arndb.de
+Subject: [PATCH v2 0/2] Revert vendor property from anx7625 bindings
+Date:   Tue,  8 Mar 2022 10:49:09 +0100
+Message-Id: <20220308094911.2680291-1-robert.foss@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 749dab40-c51a-47a5-cded-08da00e878a0
-X-MS-TrafficTypeDiagnostic: MWHPR0201MB3466:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR0201MB34667A44E2FDEAC58489E464C2099@MWHPR0201MB3466.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fNKNa9z8HV6YBUWkpop6tOK+6xLcbKSBcZrvXrFzpulb4/YDlRUo/yOe5B2HzH+qN6Tg1llhwZjhGMs+uwUMEg+sZIo9cU2nk2F4wyYkJY9/jkigFE2trX3CPj5Gx6VQLTpMtpK6uKGtW9wag0ADKdVtYu01/3mAOP2ZdMjJQNq24/x0XNrTVhzECTG2Rszdg32DLy+aTnnoX+iQh/i70rbO19a/GIfZCV1qPBO47dpGSiQAMtdSgeySZLAGLYDSoNtmMSsJCBopod4U+Y494qkuZfBnf7tsgmYKTlF+Z+yGUy1zeT7B27zbH2OR/7U6e/6yuiPTGdajeZtm9fvxOZNcVLmIkWg8fQkzUn+6SbM2tyxU7hCWh7Ir4FB+1vpMB0zzKUkYsvGE4rjR7eVC6cn1A6FEH5DowfAouZVjwLQSUW+3US35fjAMOz8Kbk+H6z4ie4anoDiX6dPu6ns1ocPvOTmoOGHVsSt1VOBNXindDnk58MPUQiSLbZmzIamrXj4M72jJjvOKeVWYuLCBzBVJc6gGUEf7nb8ue6YOqe6w6q5caJ6MM5LgK083qW5reQG3nOzVRtj+UoDxAvgiq6nJYx6gVM0zBP+mmGenp6MoFQpnRH0fd5lHL2A/zxenICKQZrF2i5907ypaRK1AiOvVqcG4ol7twdqQT0oetsoS4aah1ManqSYMMUKd1bynts4x071cMKrj0RZu7ejCvs7uFauC3fq/cKRUcSAg2yQ=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(7696005)(4326008)(47076005)(5660300002)(36860700001)(356005)(7636003)(8676002)(70206006)(70586007)(426003)(82310400004)(40460700003)(508600001)(336012)(6666004)(9786002)(2906002)(8936002)(36756003)(110136005)(1076003)(107886003)(2616005)(4744005)(83380400001)(186003)(26005)(316002)(102446001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:46:08.1626
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 749dab40-c51a-47a5-cded-08da00e878a0
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT021.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0201MB3466
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trivial fix.
+An issue[1] related to how the V4L2_FWNODE_BUS_TYPE_PARALLEL flag is mis-used
+was found in recent addition to the anx7625 driver.
 
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
----
- drivers/fpga/Makefile | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+As used currently CPI (camera parallel interface) and DPI
+(display parallel interface) would share the
+V4L2_FWNODE_BUS_TYPE_PARALLEL enum. I think that would be perfectly
+functional, but it is not what V4L2_FWNODE_BUS_TYPE_PARALLEL is
+documented to represent. As far as I can see it's only intended to
+represent CPI.
 
-diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index 0bff783d1b61..5935b3d0abd5 100644
---- a/drivers/fpga/Makefile
-+++ b/drivers/fpga/Makefile
-@@ -18,9 +18,9 @@ obj-$(CONFIG_FPGA_MGR_TS73XX)		+= ts73xx-fpga.o
- obj-$(CONFIG_FPGA_MGR_XILINX_SPI)	+= xilinx-spi.o
- obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
- obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
--obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)      += versal-fpga.o
--obj-$(CONFIG_ALTERA_PR_IP_CORE)         += altera-pr-ip-core.o
--obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)    += altera-pr-ip-core-plat.o
-+obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
-+obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
-+obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
- 
- # FPGA Bridge Drivers
- obj-$(CONFIG_FPGA_BRIDGE)		+= fpga-bridge.o
+Instead of having V4L2_FWNODE_BUS_TYPE_PARALLEL represent two
+standards, I think they should be split. And possibly
+V4L2_FWNODE_BUS_TYPE_PARALLEL should be renamed for CPI, but that is a
+separate story. This would provide for the neatest and most legible
+solution. If this solution is implemented, this range would be
+incorrect. Additionally the snippet reverted in 2/2 of this series
+would no longer be valid.
+
+As it stands V4L2_FWNODE_BUS_TYPE_PARALLEL was used to represent DPI
+due to not being caught in the review process.
+
+In order to not introduce this issue into the ABI, let's revert the changes
+to the anx7625 dt-binding related to this.
+
+[1] https://lore.kernel.org/all/YiTruiCIkyxs3jTC@pendragon.ideasonboard.com/
+
+Robert Foss (2):
+  dt-bindings: drm/bridge: anx7625: Revert DPI support
+  Revert "arm64: dts: mt8183: jacuzzi: Fix bus properties in anx's DSI
+    endpoint"
+
+ .../display/bridge/analogix,anx7625.yaml      | 19 +------------------
+ .../dts/mediatek/mt8183-kukui-jacuzzi.dtsi    |  2 --
+ 2 files changed, 1 insertion(+), 20 deletions(-)
+
 -- 
-2.25.1
+2.32.0
 
