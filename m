@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91882C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237824AbiCHRZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:25:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
+        id S1349136AbiCHRZT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 12:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349305AbiCHRW7 (ORCPT
+        with ESMTP id S1349372AbiCHRXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:22:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15B055743
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:21:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55001610A5
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D218DC340EF;
-        Tue,  8 Mar 2022 17:21:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646760067;
-        bh=HBG0QEqFPkobnElfezVfJiP5rXTwhi4PFEhGZ7aJJ9M=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=of6u8aJiy+Ddm/KXOLGXRkf4D4/NEXnkDfsrYRCX1tA1hAg4M8YILKSlnNhX+9Ivv
-         3g0ftwuMlkoJ+lgvUuOUU5tLuJ50DLlgTJEV/MieiWQJEd9tyStksVONO7E14uwFWz
-         JeKFi2aU8hn1IbThJJdnaNNdJTHH4ERUFo6CKQS8xI75WsqtASMwuidI5rMpza5q+d
-         oFGzh2SmtZCtv6F6H2DZMoogsqSkgzTAB6kYHVD5tOgni/XcVm3Wf5L/F9t5Z6M6Q7
-         jrA8TClViMalNOFpCtmW7I6RHoZg1QKOQO8wrmCl8Lh36uifyeBdbyOuEqK9K/Bh9N
-         6RFwn6CtrnZAw==
-From:   Mark Brown <broonie@kernel.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Shawn Guo <shawnguo@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        sound-open-firmware@alsa-project.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>
-In-Reply-To: <20220308023325.31702-1-linmq006@gmail.com>
-References: <20220308023325.31702-1-linmq006@gmail.com>
-Subject: Re: [PATCH] ASoC: SOF: Add missing of_node_put() in imx8m_probe
-Message-Id: <164676006354.54315.10445621693654106619.b4-ty@kernel.org>
-Date:   Tue, 08 Mar 2022 17:21:03 +0000
+        Tue, 8 Mar 2022 12:23:02 -0500
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.50.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D99955BDD
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:21:21 -0800 (PST)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 03A32400D1902
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 11:21:01 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id RdUBnP8Uidx86RdUBnWAX7; Tue, 08 Mar 2022 11:19:00 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=n+xx1pbdFLRmK4PKTak7SUu1MAbk2Q58/2NJuXtfPws=; b=qBNSIqNRUanAiK69b/cEFhaNKg
+        sUlZjAWYfo8JsSLMXrav708oXpIWuoB2I3awTEeCa1vhqavbpXqA6HPJBU0P/D58awtLsU1L+EFjc
+        NNh9pBpkChen0NTERIg0D7/YnzqQMxYUPIv8fdOFDj9GkuFKgYYCFFgBQx7acnrIEfpE7qOxdJa0/
+        xlKklU342vpmixczXd0Ew1eJ+EJW4/IDzVaDYTZ38lK0yMA5QMwNJg6WEt7WmqByDhnZewpYhmD8Z
+        m69e/PdyMIeyzLy0IGKCA5KfMrrAx5DlJOoqr/lCbptI36+LZFHRyy9erJv9iGOmtg9luR7+dl7OM
+        U05up4hA==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:58900 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRdUB-004MeX-97; Tue, 08 Mar 2022 17:18:59 +0000
+Date:   Tue, 8 Mar 2022 09:18:58 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     cgel.zte@gmail.com
+Cc:     jdelvare@suse.com, liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] drivers/hwmon: Use of_device_get_match_data()
+Message-ID: <20220308171858.GA2582095@roeck-us.net>
+References: <20220307033631.2075160-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307033631.2075160-1-chi.minghao@zte.com.cn>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRdUB-004MeX-97
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:58900
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 4
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 02:33:23 +0000, Miaoqian Lin wrote:
-> The device_node pointer is returned by of_parse_phandle()  with refcount
-> incremented. We should use of_node_put() on it when done.
+Hi,
+
+On Mon, Mar 07, 2022 at 03:36:31AM +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 > 
+> Use of_device_get_match_data() to simplify the code.
 > 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-Applied to
+This is not the first patch from issues reported by Zeal Robot
+with an inappropriate subject. "drivers/hwmon:" doesn't say anything.
+The subject should either be "<subsystem>: <driver>: <description>" or,
+as commonly used in hwmon, "hwmon: (driver) <description". I fixed
+the subject and applied the patch, but don't expect me to do this
+again in the future.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Guenter
 
-Thanks!
-
-[1/1] ASoC: SOF: Add missing of_node_put() in imx8m_probe
-      commit: 5575f7f49134c7386a684335c9007737c606d3b5
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+> ---
+>  drivers/hwmon/vexpress-hwmon.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/hwmon/vexpress-hwmon.c b/drivers/hwmon/vexpress-hwmon.c
+> index 44d798be3d59..2ac5fb96bba4 100644
+> --- a/drivers/hwmon/vexpress-hwmon.c
+> +++ b/drivers/hwmon/vexpress-hwmon.c
+> @@ -207,7 +207,6 @@ MODULE_DEVICE_TABLE(of, vexpress_hwmon_of_match);
+>  
+>  static int vexpress_hwmon_probe(struct platform_device *pdev)
+>  {
+> -	const struct of_device_id *match;
+>  	struct vexpress_hwmon_data *data;
+>  	const struct vexpress_hwmon_type *type;
+>  
+> @@ -216,10 +215,9 @@ static int vexpress_hwmon_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  	platform_set_drvdata(pdev, data);
+>  
+> -	match = of_match_device(vexpress_hwmon_of_match, &pdev->dev);
+> -	if (!match)
+> +	type = of_device_get_match_data(&pdev->dev);
+> +	if (!type)
+>  		return -ENODEV;
+> -	type = match->data;
+>  
+>  	data->reg = devm_regmap_init_vexpress_config(&pdev->dev);
+>  	if (IS_ERR(data->reg))
