@@ -2,83 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25794C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E9BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 16:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345576AbiCHQOr (ORCPT
+        id S1348248AbiCHQOv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
+        Tue, 8 Mar 2022 11:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234194AbiCHQOo (ORCPT
+        with ESMTP id S244605AbiCHQOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:14:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA774FC72;
-        Tue,  8 Mar 2022 08:13:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CFF0B81AEF;
-        Tue,  8 Mar 2022 16:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3347C340F9;
-        Tue,  8 Mar 2022 16:13:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646756025;
-        bh=jXBz2f9tChtMFtKyOyZ4Q3h2mhlA6Onv+Izw71UufzM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UnxR/RJqQQzmrMWTZA3iu/62twkicgqrZxqPlgt9nko9YFkMPdzqQdhKoUlmtE+sA
-         LsIrzYMHxXsjIhdqok6IGMj9Rq+1a6gWFNyB+Z+70KJtOOsqpOWNvFYljWZILzQJFj
-         LCxFHq/7Of/gQbIlyvcaL2wihl5o1JEWd4jIsnhVX/JV05yIIeslM8V9wzZWNaplmt
-         l79agZVVIiUMcMfcrko3HrLFLt+J5HqqOBuZ0IiRMIWFolhZ93VD/j8oJUDeiczv1Y
-         ubHFl6HiKUy6yf1IWu6VGT4SBvF3/AqCtwo8kPFLx0yRK8d3B/jrDwCqPJscQUbEO6
-         W1eCuj5HSAGvw==
-Received: by mail-ej1-f41.google.com with SMTP id bg10so40389719ejb.4;
-        Tue, 08 Mar 2022 08:13:45 -0800 (PST)
-X-Gm-Message-State: AOAM533hLAK4PyqjVZF7+/siNg2hWtL+qp6UE1B7reSgUdnfP5bZkGwz
-        oX30SPV1uZ+dQYJUPL2uh7Hde/7sPsfs6O+D4g==
-X-Google-Smtp-Source: ABdhPJwgjUirqReFAL6N3dmjsf1cllJkmUJ+TfjKooqF93ar8SLKSqqP4oME9QxeInU2UXWZqXn7edss5wrmTCZW8Po=
-X-Received: by 2002:a17:906:181a:b0:6d0:ebf5:c064 with SMTP id
- v26-20020a170906181a00b006d0ebf5c064mr13580319eje.82.1646756024055; Tue, 08
- Mar 2022 08:13:44 -0800 (PST)
+        Tue, 8 Mar 2022 11:14:47 -0500
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3CF5005E;
+        Tue,  8 Mar 2022 08:13:50 -0800 (PST)
+Received: by mail-io1-f45.google.com with SMTP id q11so6914226iod.6;
+        Tue, 08 Mar 2022 08:13:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OiqyeB0b6J0rfF+qZiyPdJHBNMRJKO0i7S5FsGcKn6U=;
+        b=XJlIo8W6fhvylzMQQVW/0LXUccx8jyc4J7GNCQgtZZwxwz/fIpARi5Q/TJ9B4PjNmA
+         lHNWLUR27jPmh+nQhqCiBxOrXcBHmVzKHPk+xPnjJ8xJVghPkeupdwte7e9LBbzIp4Zg
+         gH/B8cFATPT0HEjqOx4cA1hjbPmHbC/FXTfOH/dFGFBj6J5TbZYLP1zf4iBIl7ezH0z1
+         TTtJtubulvLvV9RmPuwK4dD57B2UMX++NuwJBb8FJyTJPYM151PleUYlrCbnTdHGdlei
+         ffd+HIVTp8RJGHGEk5kU9GQIEZuaBqRGl0R+JGGXH2oPQmNzFz82F/jVno3hvko4m6vk
+         UxcA==
+X-Gm-Message-State: AOAM533u0dVUwv0StUdcUTwsKgX95OrYq2UQZK633uQ8aoKm++zn0sFQ
+        6LP+5RTTplZKW1pGSwDfF7ax27T8yPk=
+X-Google-Smtp-Source: ABdhPJxytH+Vzy+XUhqK4aPlSOSdpfI/yqmuWdQLh4Blw4P30hNSOKPzT3mOi/OUY1LF78hwilclag==
+X-Received: by 2002:a05:6638:3012:b0:317:9a63:ecd3 with SMTP id r18-20020a056638301200b003179a63ecd3mr16838924jak.210.1646756028135;
+        Tue, 08 Mar 2022 08:13:48 -0800 (PST)
+Received: from fedora (216-241-34-136.static.forethought.net. [216.241.34.136])
+        by smtp.gmail.com with ESMTPSA id x7-20020a056e021ca700b002c5f9136a2dsm12453334ill.36.2022.03.08.08.13.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 08:13:47 -0800 (PST)
+Date:   Tue, 8 Mar 2022 11:13:44 -0500
+From:   Dennis Zhou <dennis@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org
+Subject: Re: [PATCH 2/3] mm: use vmalloc_array and vcalloc for array
+ allocations
+Message-ID: <YieAuCGMRrJjEHMR@fedora>
+References: <20220308105918.615575-1-pbonzini@redhat.com>
+ <20220308105918.615575-3-pbonzini@redhat.com>
 MIME-Version: 1.0
-References: <20220304095458.12409-1-angelogioacchino.delregno@collabora.com> <CAAOTY_8CTewRw2Le9RjXoCrqF8AyHD0_p01EMiJ2QQ63yf-HKQ@mail.gmail.com>
-In-Reply-To: <CAAOTY_8CTewRw2Le9RjXoCrqF8AyHD0_p01EMiJ2QQ63yf-HKQ@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 8 Mar 2022 10:13:31 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+qqCHvzg8uKx6xaD4cDJJq7hOUvJGME18V7cuLW5OPqQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+qqCHvzg8uKx6xaD4cDJJq7hOUvJGME18V7cuLW5OPqQ@mail.gmail.com>
-Subject: Re: [PATCH 0/3] Fix MediaTek display dt-bindings issues
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Jitao Shi <jitao.shi@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        David Airlie <airlied@linux.ie>,
-        Jason-JH Lin <jason-jh.lin@mediatek.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "moderated list:ARM/STM32 ARCHITECTURE" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308105918.615575-3-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 5:49 PM Chun-Kuang Hu <chunkuang.hu@kernel.org> wrote:
->
-> Hi, Rob:
->
-> Would you like to take this series into your tree, or I take this
-> series into my tree?
+Hello,
 
-I can't. I don't have the broken commits in my tree.
+On Tue, Mar 08, 2022 at 05:59:17AM -0500, Paolo Bonzini wrote:
+> Instead of using array_size or just a multiply, use a function that
+> takes care of both the multiplication and the overflow checks.
+> 
+> Cc: linux-mm@kvack.org
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  mm/percpu-stats.c | 2 +-
+>  mm/swap_cgroup.c  | 4 +---
+>  2 files changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/percpu-stats.c b/mm/percpu-stats.c
+> index c6bd092ff7a3..e71651cda2de 100644
+> --- a/mm/percpu-stats.c
+> +++ b/mm/percpu-stats.c
+> @@ -144,7 +144,7 @@ static int percpu_stats_show(struct seq_file *m, void *v)
+>  	spin_unlock_irq(&pcpu_lock);
+>  
+>  	/* there can be at most this many free and allocated fragments */
+> -	buffer = vmalloc(array_size(sizeof(int), (2 * max_nr_alloc + 1)));
+> +	buffer = vmalloc_array(2 * max_nr_alloc + 1, sizeof(int));
+>  	if (!buffer)
+>  		return -ENOMEM;
+>  
+> diff --git a/mm/swap_cgroup.c b/mm/swap_cgroup.c
+> index 7f34343c075a..5a9442979a18 100644
+> --- a/mm/swap_cgroup.c
+> +++ b/mm/swap_cgroup.c
+> @@ -167,14 +167,12 @@ unsigned short lookup_swap_cgroup_id(swp_entry_t ent)
+>  int swap_cgroup_swapon(int type, unsigned long max_pages)
+>  {
+>  	void *array;
+> -	unsigned long array_size;
+>  	unsigned long length;
+>  	struct swap_cgroup_ctrl *ctrl;
+>  
+>  	length = DIV_ROUND_UP(max_pages, SC_PER_PAGE);
+> -	array_size = length * sizeof(void *);
+>  
+> -	array = vzalloc(array_size);
+> +	array = vcalloc(length, sizeof(void *));
+>  	if (!array)
+>  		goto nomem;
+>  
+> -- 
+> 2.31.1
+> 
 
-Rob
+Acked-by: Dennis Zhou <dennis@kernel.org>
+
+Thanks,
+Dennis
