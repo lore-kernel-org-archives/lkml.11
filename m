@@ -2,128 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4120FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85427C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 13:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347311AbiCHN7z (ORCPT
+        id S1347329AbiCHOAK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 08:59:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
+        Tue, 8 Mar 2022 09:00:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347276AbiCHN7j (ORCPT
+        with ESMTP id S1347302AbiCHOAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 08:59:39 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2947B1A81A;
-        Tue,  8 Mar 2022 05:58:42 -0800 (PST)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KCcJz4l9mz9sS1;
-        Tue,  8 Mar 2022 21:54:59 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 21:58:40 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
- (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 8 Mar
- 2022 21:58:39 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-To:     Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Wu Bo <wubo40@huawei.com>, Zhiqiang Liu <liuzhiqiang26@huawei.com>,
-        <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
-Subject: [PATCH v2 3/3] scsi:libiscsi: teardown iscsi_cls_conn gracefully
-Date:   Tue, 8 Mar 2022 22:09:16 -0500
-Message-ID: <20220309030916.2932316-4-haowenchao@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220309030916.2932316-1-haowenchao@huawei.com>
-References: <20220309030916.2932316-1-haowenchao@huawei.com>
+        Tue, 8 Mar 2022 09:00:05 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2FB1A81A;
+        Tue,  8 Mar 2022 05:58:58 -0800 (PST)
+Date:   Tue, 08 Mar 2022 13:58:55 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646747936;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pMl034rKP4KtUY285VK2E6QJXRhnqapuqE6b3KEw77U=;
+        b=OuoNm45+FXMY2UTHFPsi1R/xlVnz5iCdQY7U55DRTAb/SZvD4Y52OpSydXmIHGblCCKMP+
+        KzmvRZvgRSSBFlj6qUV+fxVwdnC+bNSFIis38nSBmwEPIpnru1aIRksBx7Yzgi+SWYzMbS
+        q4mr81RLlvYjbRVv2V3UaNgZG4U/qrItwCJC/27LEGG6guGXRgDQhv47RXrgid51idaOXc
+        Ck37OqDPTmfTcfWfksEaWpW2iZAkO1AxpQlijNLAZjh3zGzYhe3C8kBBhlAsB7lFVlFznZ
+        592SoEy31cLmDralu3hQNlHq1SHUMlI2/0LPzcP8QWhnReZi2bIsS0xNgvTAyg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646747936;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pMl034rKP4KtUY285VK2E6QJXRhnqapuqE6b3KEw77U=;
+        b=1q4a2o1+w6yJb76iN1PLkJP0vJGIIqIhdm1LUBVZaJdNf1Zx7Cscd2Bvsab8NeQjTB0eBR
+        LtYAExP2CwTf2DCg==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/module: Fix the paravirt vs alternative order
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Miroslav Benes <mbenes@suse.cz>,
+        <stable@vger.kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220303112825.068773913@infradead.org>
+References: <20220303112825.068773913@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+Message-ID: <164674793535.16921.13542564445645377142.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 1b8d0300a3e9 ("scsi: libiscsi: Fix UAF in
-iscsi_conn_get_param()/iscsi_conn_teardown()") fixed an UAF in
-iscsi_conn_get_param() and introduced 2 tmp_xxx varibles, the
-implement looks ugly.
+The following commit has been merged into the x86/urgent branch of tip:
 
-We can fix this UAF with the help of device_del() gracefully.
-Call iscsi_remove_conn() at the beginning of iscsi_conn_teardown would
-make userspace unable to see iscsi_cls_conn any more, then we can free
-memory safely.
+Commit-ID:     5adf349439d29f92467e864f728dfc23180f3ef9
+Gitweb:        https://git.kernel.org/tip/5adf349439d29f92467e864f728dfc23180f3ef9
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Thu, 03 Mar 2022 12:23:23 +01:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Tue, 08 Mar 2022 14:15:25 +01:00
 
-Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
-Signed-off-by: Wu Bo <wubo40@huawei.com>
+x86/module: Fix the paravirt vs alternative order
+
+Ever since commit
+
+  4e6292114c74 ("x86/paravirt: Add new features for paravirt patching")
+
+there is an ordering dependency between patching paravirt ops and
+patching alternatives, the module loader still violates this.
+
+Fixes: 4e6292114c74 ("x86/paravirt: Add new features for paravirt patching")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220303112825.068773913@infradead.org
 ---
- drivers/scsi/libiscsi.c             | 8 ++++----
- drivers/scsi/scsi_transport_iscsi.c | 3 ++-
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ arch/x86/kernel/module.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
-index 43f903bce0b8..0d57521751dd 100644
---- a/drivers/scsi/libiscsi.c
-+++ b/drivers/scsi/libiscsi.c
-@@ -3109,8 +3109,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
- {
- 	struct iscsi_conn *conn = cls_conn->dd_data;
- 	struct iscsi_session *session = conn->session;
--	char *tmp_persistent_address = conn->persistent_address;
--	char *tmp_local_ipaddr = conn->local_ipaddr;
-+
-+	iscsi_remove_conn(cls_conn);
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index 95fa745..96d7c27 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -273,6 +273,14 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			retpolines = s;
+ 	}
  
- 	del_timer_sync(&conn->transport_timer);
++	/*
++	 * See alternative_instructions() for the ordering rules between the
++	 * various patching types.
++	 */
++	if (para) {
++		void *pseg = (void *)para->sh_addr;
++		apply_paravirt(pseg, pseg + para->sh_size);
++	}
+ 	if (retpolines) {
+ 		void *rseg = (void *)retpolines->sh_addr;
+ 		apply_retpolines(rseg, rseg + retpolines->sh_size);
+@@ -290,11 +298,6 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 					    tseg, tseg + text->sh_size);
+ 	}
  
-@@ -3132,6 +3132,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
- 	spin_lock_bh(&session->frwd_lock);
- 	free_pages((unsigned long) conn->data,
- 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
-+	kfree(conn->persistent_address);
-+	kfree(conn->local_ipaddr);
- 	/* regular RX path uses back_lock */
- 	spin_lock_bh(&session->back_lock);
- 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
-@@ -3143,8 +3145,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
- 	mutex_unlock(&session->eh_mutex);
+-	if (para) {
+-		void *pseg = (void *)para->sh_addr;
+-		apply_paravirt(pseg, pseg + para->sh_size);
+-	}
+-
+ 	/* make jump label nops */
+ 	jump_label_apply_nops(me);
  
- 	iscsi_destroy_conn(cls_conn);
--	kfree(tmp_persistent_address);
--	kfree(tmp_local_ipaddr);
- }
- EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
- 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index ca724eed4f4d..7b4d998708e7 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2165,6 +2165,7 @@ static int iscsi_iter_destroy_conn_fn(struct device *dev, void *data)
- {
- 	if (!iscsi_is_conn_dev(dev))
- 		return 0;
-+	iscsi_remove_conn(iscsi_dev_to_conn(dev));
- 	return iscsi_destroy_conn(iscsi_dev_to_conn(dev));
- }
- 
-@@ -2463,7 +2464,7 @@ int iscsi_destroy_conn(struct iscsi_cls_conn *conn)
- 
- 	transport_unregister_device(&conn->dev);
- 	ISCSI_DBG_TRANS_CONN(conn, "Completing conn destruction\n");
--	device_unregister(&conn->dev);
-+	iscsi_free_conn(conn);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iscsi_destroy_conn);
--- 
-2.32.0
-
