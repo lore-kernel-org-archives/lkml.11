@@ -2,85 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51745C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 00:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343993AbiCHAEs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 7 Mar 2022 19:04:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
+        id S243929AbiCHAFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 7 Mar 2022 19:05:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243897AbiCHAEl (ORCPT
+        with ESMTP id S243159AbiCHAFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 7 Mar 2022 19:04:41 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CC53466B
-        for <linux-kernel@vger.kernel.org>; Mon,  7 Mar 2022 16:03:45 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id q76-20020a25d94f000000b00628bdf8d1a9so13010522ybg.17
-        for <linux-kernel@vger.kernel.org>; Mon, 07 Mar 2022 16:03:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=+EaaN9rrO3ntvRkcqCnT36NX3bdOataMRNYTDOWB4Hc=;
-        b=lJQd7e3/lr+iipERF0USMu3L7FPdeoWWOBqyphwmo+CH34oFlfmCXIHP/OIgpx1gt9
-         xxdz51I6tg0FVaFbCNjDleQRCDPdoLwd2konWOj7y2nmel2vgFzt6+CVm2EfbVGC27dj
-         RoyUUoSQ85nVqnLq5Nvv+agVX9lrpJ8d1ByH8aQx4UnP+RnNcm7fnVl5UyjhGlkna3LF
-         UvC5VYj+gnG9JM1aWtLGrXUq4tvdnez56p2Ou0glohHnuPD74vQXZyj4fBXzjX31P/w/
-         TNjfFR+ePZ3ZPmyt4cb/qXx9iKkaR1OwUyGNIIgPLXYjp9HhZehMzOzTl50R0Qkrce//
-         FknA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=+EaaN9rrO3ntvRkcqCnT36NX3bdOataMRNYTDOWB4Hc=;
-        b=B44WdBSPsiLsCdMTt3BnSTt/lg6XtBiDZfdAC/IVzmtso8t3mIvvqzk52uwO2rRLwq
-         S0+6SYRGR1b6T7kq7eG9YXpXNHslOE33ObDQN3bH9A/7XNOZOLWdxOPqvnUJ6yD5EjtJ
-         3TxEAcyOE8d+27X1v4xhgDRs/qttG0V8lVAg9Irnj7pqdKlHJcVtE7fK2b+TClknGBf+
-         e46Rytsn3jT+zmMCt3NvHcG7iFyes+uK0N2Ai2c3KWFH0PkNCBdU4xDLKjhRgCdISMqP
-         hhMr+U0yTQcLqGLgUi2vYipdkBXQi9FVTbamWkRUC7GSUxhuJ7PiTNplzLUisETAQKwU
-         DsmQ==
-X-Gm-Message-State: AOAM531p9Fe7wBlBbM38i45wwjHOpeESnUvlsazjkOD7EX06i3ZcCiln
-        WrctdjQCwudHYFZ5G0O+GbcUX5U0HbY=
-X-Google-Smtp-Source: ABdhPJxOxCli3zIPDkGfJiqLTWAJLHb8P4M9PCUnTnb76hVlgOVnfnlLiDQDUTy18FLi5SiqTvhUuEmIeKQ=
-X-Received: from khazhy-linux.svl.corp.google.com ([2620:15c:2cd:202:9113:6b5:b00c:3d40])
- (user=khazhy job=sendgmr) by 2002:a25:e54a:0:b0:628:b77e:5352 with SMTP id
- c71-20020a25e54a000000b00628b77e5352mr9911259ybh.445.1646697824483; Mon, 07
- Mar 2022 16:03:44 -0800 (PST)
-Date:   Mon,  7 Mar 2022 16:02:53 -0800
-Message-Id: <20220308000253.645107-1-khazhy@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH] bfq: default slice_idle to 0 for SSD
-From:   Khazhismel Kumykov <khazhy@google.com>
-To:     Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Khazhismel Kumykov <khazhy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 7 Mar 2022 19:05:04 -0500
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371AF63B1;
+        Mon,  7 Mar 2022 16:04:09 -0800 (PST)
+Received: from relay3-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::223])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 671E0C4B3B;
+        Tue,  8 Mar 2022 00:04:07 +0000 (UTC)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 14C9560006;
+        Tue,  8 Mar 2022 00:04:00 +0000 (UTC)
+Message-ID: <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+Date:   Tue, 8 Mar 2022 01:04:00 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     i.maximets@ovn.org, Roi Dayan <roid@nvidia.com>,
+        dev@openvswitch.org, Toms Atteka <cpp.code.lv@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+ <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+ <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+ <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+ <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This improves performance on SSDs dramatically, and was default for CFQ
+On 3/7/22 23:46, Jakub Kicinski wrote:
+> On Mon, 7 Mar 2022 23:14:13 +0100 Ilya Maximets wrote:
+>> The main problem is that userspace uses the modified copy of the uapi header
+>> which looks like this:
+>>   https://github.com/openvswitch/ovs/blob/f77dbc1eb2da2523625cd36922c6fccfcb3f3eb7/datapath/linux/compat/include/linux/openvswitch.h#L357
+>>
+>> In short, the userspace view:
+>>
+>>   enum ovs_key_attr {
+>>       <common attrs>
+>>
+>>   #ifdef __KERNEL__
+>>       /* Only used within kernel data path. */
+>>   #endif
+>>
+>>   #ifndef __KERNEL__
+>>       /* Only used within userspace data path. */
+>>   #endif
+>>       __OVS_KEY_ATTR_MAX
+>> };
+>>
+>> And the kernel view:
+>>
+>>   enum ovs_key_attr {
+>>       <common attrs>
+>>
+>>   #ifdef __KERNEL__
+>>       /* Only used within kernel data path. */
+>>   #endif
+>>
+>>       __OVS_KEY_ATTR_MAX
+>>   };
+>>
+>> This happened before my time, but the commit where userspace made a wrong
+>> turn appears to be this one:
+>>   https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
+>> The attribute for userspace only was added to the common enum after the
+>> OVS_KEY_ATTR_TUNNEL_INFO.   I'm not sure how things didn't fall apart when
+>> OVS_KEY_ATTR_NSH was added later (no-one cared that NSH doesn't work, because
+>> OVS didn't support it yet?).
+>>
+>> In general, any addition of a new attribute into that enumeration leads to
+>> inevitable clash between userpsace-only attributes and new kernel attributes.
+>>
+>> After the kernel update, kernel provides new attributes to the userspace and
+>> userspace tries to parse them as one of the userspace-only attributes and
+>> fails.   In our current case userspace is trying to parse OVS_KEY_ATTR_IPV6_EXTHDR
+>> as userspace-only OVS_KEY_ATTR_PACKET_TYPE, because they have the same value in the
+>> enum, fails and discards the netlink message as malformed.  So, IPv6 is fully
+>> broken, because OVS_KEY_ATTR_IPV6_EXTHDR is supplied now with every IPv6 packet
+>> that goes to userspace.
+>>
+>> We need to unify the view of 'enum ovs_key_attr' between userspace and kernel
+>> before we can add any new values to it.
+>>
+>> One way to do that should be addition of both userspace-only attributes to the
+>> kernel header (and maybe exposing OVS_KEY_ATTR_TUNNEL_INFO too, just to keep
+>> it flat and avoid any possible problems in the future).  Any other suggestions
+>> are welcome.  But in any case this will require careful testing with existing
+>> OVS userspace to avoid any unexpected issues.
+>>
+>> Moving forward, I think, userspace OVS should find a way to not have userpsace-only
+>> attributes, or have them as a separate enumeration.  But I'm not sure how to do
+>> that right now.  Or we'll have to add userspace-only attributes to the kernel
+>> uapi before using them.
+> 
+> Thanks for the explanation, we can apply a revert if that'd help your
+> CI / ongoing development but sounds like the fix really is in user
+> space. Expecting netlink attribute lists not to grow is not fair.
 
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
----
- block/bfq-iosched.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I don't think it was intentional, just a careless mistake.  Unfortunately,
+all OVS binaries built during the last 5 years rely on that unwanted
+expectation (re-build will also not help as they are using a copy of the
+uAPI header and the clash will be there anyway).  If we want to keep them
+working, kernel uAPI has to be carefully updated with current userspace-only
+attributes before we add any new ones.  That is not great, but I don't see
+any other option right now that doesn't require code changes in userspace.
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 36a66e97e3c2..f3196036940c 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -7105,7 +7105,8 @@ static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
- 	bfqd->bfq_fifo_expire[1] = bfq_fifo_expire[1];
- 	bfqd->bfq_back_max = bfq_back_max;
- 	bfqd->bfq_back_penalty = bfq_back_penalty;
--	bfqd->bfq_slice_idle = bfq_slice_idle;
-+	/* Default to no idling for SSDs */
-+	bfqd->bfq_slice_idle = blk_queue_nonrot(q) ? 0 : bfq_slice_idle;
- 	bfqd->bfq_timeout = bfq_timeout;
- 
- 	bfqd->bfq_large_burst_thresh = 8;
--- 
-2.35.1.616.g0bdcbb4464-goog
+I'd say that we need to revert the current patch and re-introduce it
+later when the uAPI problem is sorted out.  This way we will avoid blocking
+the net-next testing and will also avoid problems in case the uAPI changes
+are not ready at the moment of the new kernel release.
 
+What do you think?
+
+> 
+> Since ovs uses genetlink you should be able to dump the policy from 
+> the kernel and at least validate that it doesn't overlap.
+
+That is interesting.  Indeed, this functionality can be used to detect
+problems or to define userspace-only attributes in runtime based on the
+kernel reply.  Thanks for the pointer!
+
+Best regards, Ilya Maximets.
