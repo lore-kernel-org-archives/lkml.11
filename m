@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 17:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349205AbiCHRZn (ORCPT
+        id S1349212AbiCHRZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 12:25:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54384 "EHLO
+        Tue, 8 Mar 2022 12:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349350AbiCHRXB (ORCPT
+        with ESMTP id S1349268AbiCHRW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 12:23:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933C35577D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:21:15 -0800 (PST)
+        Tue, 8 Mar 2022 12:22:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEED954BD0
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 09:21:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55CFE61259
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B21C340F5;
-        Tue,  8 Mar 2022 17:20:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF060B81BA8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:20:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D19F2C340EB;
+        Tue,  8 Mar 2022 17:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646760060;
-        bh=Yfasz//GbWj31pLz9SiA6bXz155z6fMe8IJXsB7WIpA=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=n11nMwb9nWqKWmlJcFE/z2Z68R6fKnmsJWDEAHmEpFDw337VEC8haxvHUhalJNyiI
-         +5F+ghpsKb6jSO1JHlwkbBDRDbB5Sq8X0ALp4G+KbYo6rnuJQNl+P6O8RjJkRarWDq
-         3uRrQC4Mcfg4TiaAxZplUtKr81kDfPu7OBmtkXU/nmGMTpzsr5G6QFdYxtKblq84uo
-         OjvWfZkATHmZFwuYsPoKrlGE2VJTu56KL4B/2ItejA2NfXwH51SBWfVIe5YQhvEIKJ
-         GqtTzEcS8UK2opqMwoRHmtnoETbF0xRFnWFd6sOeSBcx9S/5iHZN4inGGYeKmdyYny
-         B/IljWZjCscnw==
+        s=k20201202; t=1646760047;
+        bh=tvhfJPi0JmcP0R6mjk8i1krTBkEIDDxpDLNaiuGZXAg=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=A2CddHZy94LgbRB8wjPn4KVlKWYk1NDrVhKp0CIX/+QAwBncvNRbwmdNwaO+WHDZ+
+         fdKdOr8DXoDjh6w1EKb7IYzeAvtRsm7Fd+fv/ECFQTCMaKAoIWVnlLed8oh7X32hmz
+         YbBZFeXtJ/P9ISZfpeWhaRCQRcl3dDiTUoQYUAa+waYwvX0QQOKBHw4NQCW5kLRJ1n
+         NfihRcGXeY9tZI33DudkI+Otibn5UO5QtJASoERVTP3w7dAjVQRUp1epcd6cAN3Gjc
+         9BUkoP4b10ghjC0cJ9B6dXZhXdbdebwEDrkiiUy1Jg4v2w4jYRu87BAzyZBl3Zmq/O
+         8us52rkdvwiAA==
 From:   Mark Brown <broonie@kernel.org>
-To:     Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Florian Meier <florian.meier@koalo.de>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <20220308013949.20323-1-linmq006@gmail.com>
-References: <582c39ac-3099-d54f-5de3-d54a4ace0a04@microchip.com> <20220308013949.20323-1-linmq006@gmail.com>
-Subject: Re: [PATCH v2] ASoC: atmel: Fix error handling in snd_proto_probe
-Message-Id: <164676005819.54315.3431589094288420530.b4-ty@kernel.org>
-Date:   Tue, 08 Mar 2022 17:20:58 +0000
+To:     tiwai@suse.com, perex@perex.cz, tangmeng@uniontech.com,
+        YueHaibing <yuehaibing@huawei.com>, lgirdwood@gmail.com,
+        Vijendar.Mukunda@amd.com, pierre-louis.bossart@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org
+In-Reply-To: <20220305123705.3708-1-yuehaibing@huawei.com>
+References: <20220305123705.3708-1-yuehaibing@huawei.com>
+Subject: Re: [PATCH -next] ASoC: amd: acp5x-pcm-dma: Fix signedness bug
+Message-Id: <164676004557.54315.464423816098781060.b4-ty@kernel.org>
+Date:   Tue, 08 Mar 2022 17:20:45 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -56,15 +50,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 01:39:48 +0000, Miaoqian Lin wrote:
-> The device_node pointer is returned by of_parse_phandle()  with refcount
-> incremented. We should use of_node_put() on it when done.
+On Sat, 5 Mar 2022 20:37:05 +0800, YueHaibing wrote:
+> In acp5x_audio_probe() platform_get_irq() may return error, but i2s_irq now
+> is unsigned int so the error handling is never triggered.
 > 
-> This function only calls of_node_put() in the regular path.
-> And it will cause refcount leak in error paths.
-> Fix this by calling of_node_put() in error handling too.
 > 
-> [...]
 
 Applied to
 
@@ -72,8 +62,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: atmel: Fix error handling in snd_proto_probe
-      commit: b0bfaf0544d08d093d6211d7ef8816fb0b5b6c75
+[1/1] ASoC: amd: acp5x-pcm-dma: Fix signedness bug
+      commit: 954e615497cc95cd918bdfe6590abdfbaa068842
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
