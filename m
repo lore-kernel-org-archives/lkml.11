@@ -2,122 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 823D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 06:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F41DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 06:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240464AbiCHGqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 01:46:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
+        id S244684AbiCHGu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 01:50:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiCHGq3 (ORCPT
+        with ESMTP id S240464AbiCHGux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 01:46:29 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AD91DA7D;
-        Mon,  7 Mar 2022 22:45:33 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id p17so16197024plo.9;
-        Mon, 07 Mar 2022 22:45:33 -0800 (PST)
+        Tue, 8 Mar 2022 01:50:53 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E10F21E2C;
+        Mon,  7 Mar 2022 22:49:58 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id ge19-20020a17090b0e1300b001bcca16e2e7so1378729pjb.3;
+        Mon, 07 Mar 2022 22:49:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id;
-        bh=RxoMYSVWqmKdTJ9JtZxsMZajUTLQ4tBXg5YP/DDb4Qs=;
-        b=guDuy+HNA9f/hYhvPhgOheDOqUoGTyiT5QStRTuUBDVOD/VCQxwCZryvsnvfAmUuDD
-         x51C4wGk/Fj+Y5gHJsflrgngh8hNvAPCrWh4pQop9M6kDcj9kH9NEJR441CE7/Z2gnAY
-         f3sUUzQSbevw0XcClceiX1f0c7ENIWwtT32Lq5qWfk6kxq59mIHqO0klmg0b2wg0jK+j
-         mGmpm+LkiWFJPgBHuewHM8YWXLYu4O4tFd69+Py4kbnX0nT+lBb8iySdXhSLLjXkFKsE
-         Mb3FGRjKF6FXq6RURZyOpbYvFw+BZWnrIcYOlnOweIT6mVhcrjrv/IoWEIkcAedr3oE5
-         CROw==
+        bh=stuWRE0fpV+3ocvFzIL+5jqWnax7n9BxoKZw/kt5w9s=;
+        b=oxGaiEBcfwWHbVvp3IFQUeN7hyLS6AXjzlWejiDsHxawo0sP2VMBimKyr998lAGaVF
+         GoBjrG5hySVY79T043Vc5joODZYEPkRd8d/WOtNM4sFQkDDmQCPgzbNIZM9u2SfWxLCr
+         0jp8nyBJ/egmQYF5RFoY0ck/fHosVg2FNQ6Jq28tQiIlJNNLFKmz4TXd5ToQE2Iu7YUb
+         MAWw2ASjf3LY15lsQjmiSXO8rSR9yxfDuEb4TusIZAO/KyfFhKksibgsvconX32s56dj
+         Gb44QGPB3ryFKftZubJqss1awGVMnnZFhAllSPeDwZzmEMTFqVe5WFZua0vUC8k8WSgG
+         //8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RxoMYSVWqmKdTJ9JtZxsMZajUTLQ4tBXg5YP/DDb4Qs=;
-        b=Oxm5KrsLg4SAg4KgFU2yBltVwLLdkPk1fkUhGCw8eKsfvVpYRLZzSDiSHQ/B/MAWmW
-         hm6URMsamavE0tHAKFZtAKIKyCSU+pNbZHqVLMCg+9dluQ50NxoeztZ4yoyzMXOXku0d
-         oGIadsEzGumDX3bOToOXt0HOTHS/4G1P9391yW/I5/Eaa95uBVysN7w1xjfhwniQCBdZ
-         ft13+jdQ16k7Z1v4VLyFriA2rVlgDvDes5q84H6uURQmjGQ2WKN9TEvXB2zbHh05kzLi
-         u7XHflIWedeKpY7lElDrOtaFB8Z1i0UfUf0YL5dMCGbkcdrGnLsp5kVH7QU07KvXEgIo
-         QHhg==
-X-Gm-Message-State: AOAM531WSG6dsSgvEQuU0j1m+coPaOQnTuSXE5dbw0YcVJzgmw0fWbkn
-        Yr/J2BWyIobWBrrFWzQlBRA=
-X-Google-Smtp-Source: ABdhPJzfG6eeXFTCSWqiJrUR7GipPtdUYjT2+XZzYO/Bc+IA3X1B2aR1pueS3szetAYKMDMdo7sU6w==
-X-Received: by 2002:a17:90b:4a11:b0:1bf:7fbe:258d with SMTP id kk17-20020a17090b4a1100b001bf7fbe258dmr3122331pjb.79.1646721932468;
-        Mon, 07 Mar 2022 22:45:32 -0800 (PST)
+        bh=stuWRE0fpV+3ocvFzIL+5jqWnax7n9BxoKZw/kt5w9s=;
+        b=NKt7n9U4tWfj6OyZ/kbbxq00pU2fUWUIm/CAtWg/wK18TRPBht4dBH1M5E3CrWD91O
+         wXL4wQj0WYG7f9G6JEIevvHi2xAmlnQ1p/gw9clifL47h8kotPeq64OHVJ2PAva5R9nP
+         lGZrm4gRBeDZ/Qk9leuk4SPB5R0mlMU8CWcbgpCuX09L44uM/l6XmNrU0ERaVWROj36Z
+         9BTVlaoryX90ruIYBRg87ZhY+ajJ3Chwxvu6fKbEh0pqUhGOSFMAl2LDPzW6Zpk0DODU
+         NhalRnekz3+fMzGdQzHTcCMKXf1PUJc4xkuLQp2r/bb8LB8MwS7QcxtfZ2zkGXya9HlJ
+         RaOw==
+X-Gm-Message-State: AOAM531q+kfMiME7rvfpU6WJO0XOVdl4oU6zu2gZUtLTVwUBTtu0GenA
+        E3H89NaBd6X4XRWUzu4WsFk=
+X-Google-Smtp-Source: ABdhPJwKmhYpZGUB3BAzsBmM83UVCHwA6d9ECoD/UUlYxDz3NYGSljEOnbghv4mMyZkTHx+wvv8S1g==
+X-Received: by 2002:a17:903:40c3:b0:151:c8a2:1c46 with SMTP id t3-20020a17090340c300b00151c8a21c46mr16203301pld.141.1646722197624;
+        Mon, 07 Mar 2022 22:49:57 -0800 (PST)
 Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id d16-20020a17090ad99000b001bcbc4247a0sm1438111pjv.57.2022.03.07.22.45.30
+        by smtp.googlemail.com with ESMTPSA id 23-20020a17090a0d5700b001bc3c650e01sm2342391pju.1.2022.03.07.22.49.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 22:45:32 -0800 (PST)
+        Mon, 07 Mar 2022 22:49:57 -0800 (PST)
 From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Tobias Jordan <Tobias.Jordan@elektrobit.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+To:     Vinod Koul <vkoul@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Zidan Wang <zidan.wang@freescale.com>,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
 Cc:     linmq006@gmail.com
-Subject: [PATCH] remoteproc: qcom_q6v5_mss: Fix some leaks in q6v5_alloc_memory_region
-Date:   Tue,  8 Mar 2022 06:45:21 +0000
-Message-Id: <20220308064522.13804-1-linmq006@gmail.com>
+Subject: [PATCH] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
+Date:   Tue,  8 Mar 2022 06:49:51 +0000
+Message-Id: <20220308064952.15743-1-linmq006@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device_node pointer is returned by of_parse_phandle() or
-of_get_child_by_name() with refcount incremented.
-We should use of_node_put() on it when done.
+of_parse_phandle() returns NULL on errors, rather than error
+pointers. Using NULL check on grp_np to fix this.
 
-This function only call of_node_put(node) when of_address_to_resource
-succeeds, missing error cases.
-
-Fixes: 278d744c46fd ("remoteproc: qcom: Fix potential device node leaks")
-Fixes:  051fb70fd4ea ("remoteproc: qcom: Driver for the self-authenticating Hexagon v5")
+Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/remoteproc/qcom_q6v5_mss.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/dma/imx-sdma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
-index 43ea8455546c..cd220c64db92 100644
---- a/drivers/remoteproc/qcom_q6v5_mss.c
-+++ b/drivers/remoteproc/qcom_q6v5_mss.c
-@@ -1809,15 +1809,17 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
- 	if (!child)
- 		node = of_parse_phandle(qproc->dev->of_node,
- 					"memory-region", 0);
--	else
-+	else {
- 		node = of_parse_phandle(child, "memory-region", 0);
-+		of_node_put(child);
-+	}
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index 75ec0754d4ad..0be1171610af 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -1869,7 +1869,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	u32 reg, val, shift, num_map, i;
+ 	int ret = 0;
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret) {
- 		dev_err(qproc->dev, "unable to resolve mba region\n");
- 		return ret;
- 	}
--	of_node_put(node);
+-	if (IS_ERR(np) || IS_ERR(gpr_np))
++	if (IS_ERR(np) || !gpr_np)
+ 		goto out;
  
- 	qproc->mba_phys = r.start;
- 	qproc->mba_size = resource_size(&r);
-@@ -1828,14 +1830,15 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
- 	} else {
- 		child = of_get_child_by_name(qproc->dev->of_node, "mpss");
- 		node = of_parse_phandle(child, "memory-region", 0);
-+		of_node_put(child);
+ 	event_remap = of_find_property(np, propname, NULL);
+@@ -1917,7 +1917,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
  	}
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret) {
- 		dev_err(qproc->dev, "unable to resolve mpss region\n");
- 		return ret;
- 	}
--	of_node_put(node);
+ out:
+-	if (!IS_ERR(gpr_np))
++	if (gpr_np)
+ 		of_node_put(gpr_np);
  
- 	qproc->mpss_phys = qproc->mpss_reloc = r.start;
- 	qproc->mpss_size = resource_size(&r);
+ 	return ret;
 -- 
 2.17.1
 
