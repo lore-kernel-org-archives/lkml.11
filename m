@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D222DC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B17C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232814AbiCIQMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
+        id S234811AbiCIQMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235337AbiCIQIi (ORCPT
+        with ESMTP id S235357AbiCIQIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:38 -0500
+        Wed, 9 Mar 2022 11:08:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6CC18E3D1;
-        Wed,  9 Mar 2022 08:05:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF1C18E3E9;
+        Wed,  9 Mar 2022 08:05:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEC98B82231;
-        Wed,  9 Mar 2022 16:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6066EC340EF;
-        Wed,  9 Mar 2022 16:05:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4993B82224;
+        Wed,  9 Mar 2022 16:05:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D2C2C340E8;
+        Wed,  9 Mar 2022 16:05:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841936;
-        bh=WxwhphBYDTEtoXiz1Wh3kUHuvq885+/TfYmzRuOxkfg=;
+        s=korg; t=1646841939;
+        bh=4V4EDjYNF4xqOm3IhKKiac1VO/Sb5F21Yw8VdkksPQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/62nzlj4gIIN7TdKTZwBY+uqE3OcMeg7z+CPG1NGLU34Vo64ATnEu/8znCNPWwX5
-         oO9dqpQfBnhFGecHWJT7NTdu/D/Amsc/hEi4h3XqLw2kUn9Hq2o1TM0eomZCuVCbns
-         KgODFyKzRMv54DtL3vhGEBoBR7iRw8C6o7vc1nx8=
+        b=TmCLBuA14+PKgIITrqewu8tqaD02QWjeeSriQUAA851RgNksjD0jkK8I6izmM8Vgs
+         XKduJcKOPWDDP1JHATiR+QS/k9p9TcuXKtswTk3Mmfb69k34VzEEkotiN70oe5YgLF
+         nZjCU+rsQ3vXd61DvBftAreUjb2JTaAd9xKEeTYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 27/43] arm64: entry: Move the trampoline data page before the text page
-Date:   Wed,  9 Mar 2022 17:00:00 +0100
-Message-Id: <20220309155900.027548699@linuxfoundation.org>
+Subject: [PATCH 5.10 28/43] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+Date:   Wed,  9 Mar 2022 17:00:01 +0100
+Message-Id: <20220309155900.056241753@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -52,75 +52,66 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit c091fb6ae059cda563b2a4d93fdbc548ef34e1d6 upstream.
+commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
 
-The trampoline code has a data page that holds the address of the vectors,
-which is unmapped when running in user-space. This ensures that with
-CONFIG_RANDOMIZE_BASE, the randomised address of the kernel can't be
-discovered until after the kernel has been mapped.
+Systems using kpti enter and exit the kernel through a trampoline mapping
+that is always mapped, even when the kernel is not. tramp_valias is a macro
+to find the address of a symbol in the trampoline mapping.
 
-If the trampoline text page is extended to include multiple sets of
-vectors, it will be larger than a single page, making it tricky to
-find the data page without knowing the size of the trampoline text
-pages, which will vary with PAGE_SIZE.
+Adding extra sets of vectors will expand the size of the entry.tramp.text
+section to beyond 4K. tramp_valias will be unable to generate addresses
+for symbols beyond 4K as it uses the 12 bit immediate of the add
+instruction.
 
-Move the data page to appear before the text page. This allows the
-data page to be found without knowing the size of the trampoline text
-pages. 'tramp_vectors' is used to refer to the beginning of the
-.entry.tramp.text section, do that explicitly.
+As there are now two registers available when tramp_alias is called,
+use the extra register to avoid the 4K limit of the 12 bit immediate.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/fixmap.h |    2 +-
- arch/arm64/kernel/entry.S       |    9 +++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ arch/arm64/kernel/entry.S |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/include/asm/fixmap.h
-+++ b/arch/arm64/include/asm/fixmap.h
-@@ -62,8 +62,8 @@ enum fixed_addresses {
- #endif /* CONFIG_ACPI_APEI_GHES */
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	FIX_ENTRY_TRAMP_DATA,
- 	FIX_ENTRY_TRAMP_TEXT,
-+	FIX_ENTRY_TRAMP_DATA,
- #define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 	__end_of_permanent_fixed_addresses,
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -814,6 +814,11 @@ alternative_else_nop_endif
- 	 */
+@@ -128,9 +128,12 @@
+ .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
  	.endm
  
-+	.macro tramp_data_page	dst
-+	adr	\dst, .entry.tramp.text
-+	sub	\dst, \dst, PAGE_SIZE
-+	.endm
-+
- 	.macro tramp_ventry, regsize = 64
- 	.align	7
- 1:
-@@ -830,7 +835,7 @@ alternative_else_nop_endif
- 2:
- 	tramp_map_kernel	x30
- #ifdef CONFIG_RANDOMIZE_BASE
--	adr	x30, tramp_vectors + PAGE_SIZE
-+	tramp_data_page		x30
- alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
- 	ldr	x30, [x30]
- #else
-@@ -984,7 +989,7 @@ SYM_CODE_START(__sdei_asm_entry_trampoli
- 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
+-	.macro tramp_alias, dst, sym
++	.macro tramp_alias, dst, sym, tmp
+ 	mov_q	\dst, TRAMP_VALIAS
+-	add	\dst, \dst, #(\sym - .entry.tramp.text)
++	adr_l	\tmp, \sym
++	add	\dst, \dst, \tmp
++	adr_l	\tmp, .entry.tramp.text
++	sub	\dst, \dst, \tmp
+ 	.endm
  
- #ifdef CONFIG_RANDOMIZE_BASE
--	adr	x4, tramp_vectors + PAGE_SIZE
-+	tramp_data_page		x4
- 	add	x4, x4, #:lo12:__sdei_asm_trampoline_next_handler
- 	ldr	x4, [x4]
- #else
+ 	/*
+@@ -367,10 +370,10 @@ alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+ 	msr	far_el1, x29
+-	tramp_alias	x30, tramp_exit_native
++	tramp_alias	x30, tramp_exit_native, x29
+ 	br	x30
+ 4:
+-	tramp_alias	x30, tramp_exit_compat
++	tramp_alias	x30, tramp_exit_compat, x29
+ 	br	x30
+ #endif
+ 	.else
+@@ -1131,7 +1134,7 @@ alternative_if_not ARM64_UNMAP_KERNEL_AT
+ alternative_else_nop_endif
+ 
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline
++	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline, tmp=x3
+ 	br	x5
+ #endif
+ SYM_CODE_END(__sdei_asm_handler)
 
 
