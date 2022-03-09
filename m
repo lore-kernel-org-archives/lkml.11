@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235714AbiCIQfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:35:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        id S236456AbiCIQfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:35:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235849AbiCIQ2S (ORCPT
+        with ESMTP id S236584AbiCIQaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:28:18 -0500
+        Wed, 9 Mar 2022 11:30:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3135857B35;
-        Wed,  9 Mar 2022 08:22:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01D5B0A42;
+        Wed,  9 Mar 2022 08:23:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBE5EB82257;
-        Wed,  9 Mar 2022 16:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCD5C36AF6;
-        Wed,  9 Mar 2022 16:22:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 485F1B81EE7;
+        Wed,  9 Mar 2022 16:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876D1C36AE3;
+        Wed,  9 Mar 2022 16:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842968;
-        bh=VYVcfnVnx/Tdehb1QMOWLr7+5uCZw+26ot3WJBmmkec=;
+        s=k20201202; t=1646842995;
+        bh=74fUNjecR8fdqL28kcqYW3B5dHuRd/wXLz1YjF6Q8wE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiVgbPe4qYDBmPBf3HjVCPpugiTXCm5S8nIInblsB6znVX9NGHdHWmQ4uhC9GDMDO
-         ZaOFDN1GMWChJG4d5hvQPHnW+9yPNdPtN9CxVNz8B+Yi8CIqkssxA+EdDwMn+JRoM3
-         QGYlF752I6ak1j5wzE23lQCZ91KmKU6W6h36ySoNHLDpr/rGv4Q7MPpA/oEd147DoQ
-         MLeh/UPoEYNN+uETwdFp7S42OOTAplscZwXckIRsd0H5DJsKPknQh5aUPtAzvkobtQ
-         GuxNAo4OGP7NeDwagMmVDo9UQrPmp808mp8I4EGZUJxYbLtB/d/UMonN759eRiGeWt
-         463J08aRez2oA==
+        b=QSgeuGQjd3yJSpiHmgyoApfBNOzIxOm9i6kBXgWJvxDhw7EF7CTicGTzYuKFaTePQ
+         5DKqV4rza+yPFgMdPibnQ1oqebJd4gczxOw9w9q2LXDCHhWZKy9abpDO0rJk2kp3Ke
+         +6pNJS9Jb9oiqVq5Bk1ugJPSlIrPItxsejCso/IRpslUdfQq1vFKA1tSyE6DsIeAKs
+         CzvWe+DXbEs4L4a55z4FMHyVNrxYmv2J30WkBIwJcfWOrcOcXG3ZFrLf7MPTeQpfkJ
+         vSeDqJ80MyNLCGMEPjRLKdhm/pbq0ecSc4RYq1M7MGt8o8FYShPXkI2tWa8RURwG30
+         VQZwxHe5ic1rA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julian Braha <julianbraha@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, jarkko@kernel.org,
-        johannes.berg@intel.com, mcroce@microsoft.com, deller@gmx.de,
-        James.Bottomley@HansenPartnership.com, arnd@arndb.de
-Subject: [PATCH AUTOSEL 5.10 10/20] ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
-Date:   Wed,  9 Mar 2022 11:21:48 -0500
-Message-Id: <20220309162158.136467-10-sashal@kernel.org>
+Cc:     Manasi Navare <manasi.d.navare@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, dri-devel@lists.freedesktop.org,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
+Subject: [PATCH AUTOSEL 5.10 15/20] drm/vrr: Set VRR capable prop only if it is attached to connector
+Date:   Wed,  9 Mar 2022 11:21:53 -0500
+Message-Id: <20220309162158.136467-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
 References: <20220309162158.136467-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,48 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julian Braha <julianbraha@gmail.com>
+From: Manasi Navare <manasi.d.navare@intel.com>
 
-[ Upstream commit 11c57c3ba94da74c3446924260e34e0b1950b5d7 ]
+[ Upstream commit 62929726ef0ec72cbbe9440c5d125d4278b99894 ]
 
-Resending this to properly add it to the patch tracker - thanks for letting
-me know, Arnd :)
+VRR capable property is not attached by default to the connector
+It is attached only if VRR is supported.
+So if the driver tries to call drm core set prop function without
+it being attached that causes NULL dereference.
 
-When ARM is enabled, and BITREVERSE is disabled,
-Kbuild gives the following warning:
-
-WARNING: unmet direct dependencies detected for HAVE_ARCH_BITREVERSE
-  Depends on [n]: BITREVERSE [=n]
-  Selected by [y]:
-  - ARM [=y] && (CPU_32v7M [=n] || CPU_32v7 [=y]) && !CPU_32v6 [=n]
-
-This is because ARM selects HAVE_ARCH_BITREVERSE
-without selecting BITREVERSE, despite
-HAVE_ARCH_BITREVERSE depending on BITREVERSE.
-
-This unmet dependency bug was found by Kismet,
-a static analysis tool for Kconfig. Please advise if this
-is not the appropriate solution.
-
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Manasi Navare <manasi.d.navare@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220225013055.9282-1-manasi.d.navare@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/drm_connector.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/lib/Kconfig b/lib/Kconfig
-index b46a9fd122c8..9216e24e5164 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -45,7 +45,6 @@ config BITREVERSE
- config HAVE_ARCH_BITREVERSE
- 	bool
- 	default n
--	depends on BITREVERSE
- 	help
- 	  This option enables the use of hardware bit-reversal instructions on
- 	  architectures which support such operations.
+diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+index 717c4e7271b0..5163433ac561 100644
+--- a/drivers/gpu/drm/drm_connector.c
++++ b/drivers/gpu/drm/drm_connector.c
+@@ -2155,6 +2155,9 @@ EXPORT_SYMBOL(drm_connector_attach_max_bpc_property);
+ void drm_connector_set_vrr_capable_property(
+ 		struct drm_connector *connector, bool capable)
+ {
++	if (!connector->vrr_capable_property)
++		return;
++
+ 	drm_object_property_set_value(&connector->base,
+ 				      connector->vrr_capable_property,
+ 				      capable);
 -- 
 2.34.1
 
