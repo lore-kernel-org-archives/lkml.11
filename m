@@ -2,164 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71922C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD31C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235260AbiCIQRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:17:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        id S235390AbiCIQSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:18:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiCIQId (ORCPT
+        with ESMTP id S235413AbiCIQIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945F518CC27;
-        Wed,  9 Mar 2022 08:05:28 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACF518E418;
+        Wed,  9 Mar 2022 08:05:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77AACB82224;
-        Wed,  9 Mar 2022 16:04:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF674C340E8;
-        Wed,  9 Mar 2022 16:04:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 643B1617A7;
+        Wed,  9 Mar 2022 16:05:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C065C340EF;
+        Wed,  9 Mar 2022 16:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841880;
-        bh=/8uV9yEikEmQF3MC5ua1fmcyCCmHTfXQvbGHxstdiUg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tg9SQ/hBx/mWV/YjyWPMsAVaOj4RqWDFj4PWHHUkL1INr/lZUyhSpQqie57oCcL1j
-         vmnEg/NmdssMNzAUCqKu6267o/VEIJLBLdf8tpzV++3w3fk+u1k/pkSWUZx2GCKEIr
-         ZqjwBNNREJkOoRVUloJRlbr8ofBYwJnCPrLtdiKY=
+        s=korg; t=1646841950;
+        bh=yX+SwqC0qS9bi3l69qLS3vC4ItdYeNobtBQQvskQajI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RG3mCR70sNSDiYZSqbc8tuMhJ+aXSDlIh8eIiP77SO9TGeJtNjri3pLQcr/cZitZz
+         aV38CQIOfZtK1OsaA1d0DkeXr3CZng3qaQuNCiEXn3VxKDQazGGaA/TtBpSQ2A10eQ
+         vzcewKMZGq800noRGyiVM5e+GYlbv3T7NcvSScUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.4 00/18] 5.4.184-rc1 review
-Date:   Wed,  9 Mar 2022 16:59:49 +0100
-Message-Id: <20220309155856.552503355@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 32/43] arm64: entry: Allow the trampoline text to occupy multiple pages
+Date:   Wed,  9 Mar 2022 17:00:05 +0100
+Message-Id: <20220309155900.170191127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309155859.239810747@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.184-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.184-rc1
-X-KernelTest-Deadline: 2022-03-11T15:58+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.184 release.
-There are 18 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: James Morse <james.morse@arm.com>
 
-Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
-Anything received after that time might be too late.
+commit a9c406e6462ff14956d690de7bbe5131a5677dc9 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.184-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+Adding a second set of vectors to .entry.tramp.text will make it
+larger than a single 4K page.
 
-thanks,
+Allow the trampoline text to occupy up to three pages by adding two
+more fixmap slots. Previous changes to tramp_valias allowed it to reach
+beyond a single page.
 
-greg k-h
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/include/asm/fixmap.h   |    6 ++++--
+ arch/arm64/include/asm/sections.h |    5 +++++
+ arch/arm64/kernel/entry.S         |    2 +-
+ arch/arm64/kernel/vmlinux.lds.S   |    2 +-
+ arch/arm64/mm/mmu.c               |   12 +++++++++---
+ 5 files changed, 20 insertions(+), 7 deletions(-)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.184-rc1
-
-Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-    ARM: fix build error when BPF_SYSCALL is disabled
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: include unprivileged BPF status in Spectre V2 reporting
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: Spectre-BHB workaround
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: use LOADADDR() to get load address of sections
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: early traps initialisation
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: report Spectre v2 status through sysfs
-
-Mark Rutland <mark.rutland@arm.com>
-    arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
-
-Steven Price <steven.price@arm.com>
-    arm/arm64: Provide a wrapper for SMCCC 1.1 calls
-
-Josh Poimboeuf <jpoimboe@redhat.com>
-    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
-
-Josh Poimboeuf <jpoimboe@redhat.com>
-    x86/speculation: Warn about Spectre v2 LFENCE mitigation
-
-Kim Phillips <kim.phillips@amd.com>
-    x86/speculation: Update link to AMD speculation whitepaper
-
-Kim Phillips <kim.phillips@amd.com>
-    x86/speculation: Use generic retpoline by default on AMD
-
-Josh Poimboeuf <jpoimboe@redhat.com>
-    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-
-Peter Zijlstra <peterz@infradead.org>
-    Documentation/hw-vuln: Update spectre doc
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/speculation: Add eIBRS + Retpoline options
-
-Peter Zijlstra (Intel) <peterz@infradead.org>
-    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
-
-Peter Zijlstra <peterz@infradead.org>
-    x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
-
-Borislav Petkov <bp@suse.de>
-    x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
-
-
--------------
-
-Diffstat:
-
- Documentation/admin-guide/hw-vuln/spectre.rst   |  48 ++++--
- Documentation/admin-guide/kernel-parameters.txt |   8 +-
- Makefile                                        |   4 +-
- arch/arm/include/asm/assembler.h                |  10 ++
- arch/arm/include/asm/spectre.h                  |  32 ++++
- arch/arm/kernel/Makefile                        |   2 +
- arch/arm/kernel/entry-armv.S                    |  79 ++++++++-
- arch/arm/kernel/entry-common.S                  |  24 +++
- arch/arm/kernel/spectre.c                       |  71 ++++++++
- arch/arm/kernel/traps.c                         |  65 ++++++-
- arch/arm/kernel/vmlinux.lds.h                   |  35 +++-
- arch/arm/mm/Kconfig                             |  11 ++
- arch/arm/mm/proc-v7-bugs.c                      | 199 +++++++++++++++++++---
- arch/x86/include/asm/cpufeatures.h              |   2 +-
- arch/x86/include/asm/nospec-branch.h            |  16 +-
- arch/x86/kernel/cpu/bugs.c                      | 216 +++++++++++++++++-------
- drivers/firmware/psci/psci.c                    |  15 ++
- include/linux/arm-smccc.h                       |  74 ++++++++
- include/linux/bpf.h                             |  12 ++
- kernel/sysctl.c                                 |   8 +
- tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
- 21 files changed, 796 insertions(+), 137 deletions(-)
+--- a/arch/arm64/include/asm/fixmap.h
++++ b/arch/arm64/include/asm/fixmap.h
+@@ -62,9 +62,11 @@ enum fixed_addresses {
+ #endif /* CONFIG_ACPI_APEI_GHES */
+ 
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-	FIX_ENTRY_TRAMP_TEXT,
++	FIX_ENTRY_TRAMP_TEXT3,
++	FIX_ENTRY_TRAMP_TEXT2,
++	FIX_ENTRY_TRAMP_TEXT1,
+ 	FIX_ENTRY_TRAMP_DATA,
+-#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
++#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT1))
+ #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+ 	__end_of_permanent_fixed_addresses,
+ 
+--- a/arch/arm64/include/asm/sections.h
++++ b/arch/arm64/include/asm/sections.h
+@@ -19,4 +19,9 @@ extern char __irqentry_text_start[], __i
+ extern char __mmuoff_data_start[], __mmuoff_data_end[];
+ extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
+ 
++static inline size_t entry_tramp_text_size(void)
++{
++	return __entry_tramp_text_end - __entry_tramp_text_start;
++}
++
+ #endif /* __ASM_SECTIONS_H */
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -812,7 +812,7 @@ alternative_else_nop_endif
+ 	.endm
+ 
+ 	.macro tramp_data_page	dst
+-	adr	\dst, .entry.tramp.text
++	adr_l	\dst, .entry.tramp.text
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
+ 
+--- a/arch/arm64/kernel/vmlinux.lds.S
++++ b/arch/arm64/kernel/vmlinux.lds.S
+@@ -299,7 +299,7 @@ ASSERT(__hibernate_exit_text_end - (__hi
+ 	<= SZ_4K, "Hibernate exit text too big or misaligned")
+ #endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
++ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) <= 3*PAGE_SIZE,
+ 	"Entry trampoline text too big")
+ #endif
+ /*
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -592,6 +592,8 @@ early_param("rodata", parse_rodata);
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ static int __init map_entry_trampoline(void)
+ {
++	int i;
++
+ 	pgprot_t prot = rodata_enabled ? PAGE_KERNEL_ROX : PAGE_KERNEL_EXEC;
+ 	phys_addr_t pa_start = __pa_symbol(__entry_tramp_text_start);
+ 
+@@ -600,11 +602,15 @@ static int __init map_entry_trampoline(v
+ 
+ 	/* Map only the text into the trampoline page table */
+ 	memset(tramp_pg_dir, 0, PGD_SIZE);
+-	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS, PAGE_SIZE,
+-			     prot, __pgd_pgtable_alloc, 0);
++	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS,
++			     entry_tramp_text_size(), prot,
++			     __pgd_pgtable_alloc, NO_BLOCK_MAPPINGS);
+ 
+ 	/* Map both the text and data into the kernel page table */
+-	__set_fixmap(FIX_ENTRY_TRAMP_TEXT, pa_start, prot);
++	for (i = 0; i < DIV_ROUND_UP(entry_tramp_text_size(), PAGE_SIZE); i++)
++		__set_fixmap(FIX_ENTRY_TRAMP_TEXT1 - i,
++			     pa_start + i * PAGE_SIZE, prot);
++
+ 	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE)) {
+ 		extern char __entry_tramp_data_start[];
+ 
 
 
