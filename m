@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FF0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234208AbiCIQDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:03:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        id S234199AbiCIQDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234168AbiCIQCd (ORCPT
+        with ESMTP id S234126AbiCIQCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:02:33 -0500
+        Wed, 9 Mar 2022 11:02:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1C117B0C7;
-        Wed,  9 Mar 2022 08:01:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84956172E77;
+        Wed,  9 Mar 2022 08:01:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A25361670;
-        Wed,  9 Mar 2022 16:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81B62C340E8;
-        Wed,  9 Mar 2022 16:01:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0C4560A64;
+        Wed,  9 Mar 2022 16:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3BE5C340E8;
+        Wed,  9 Mar 2022 16:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841683;
-        bh=B8Kqgr1X+xDFQnu3Mxsih+Dcynf9OwVEriW613XzwTI=;
+        s=korg; t=1646841678;
+        bh=+mz+5eMq0OgWtr2QHJ4mrQIFSVCMwFfpozEZyqimju4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mS+5p8bwrI6zvpwxyYlOilJipNzBxNiQQwEjb5IsVxNq1FCTS8xY9cPkKeFqzG/rg
-         rSenwaIhDoQqvufkZ/uQSTmmJbzU85QAQ3eB3xUTgKJaUnMa2FwPJUUHVdk58MUCrH
-         5ygQD7m5giCgOVrIeVqxGwkiZdZpeEG50jb6fijY=
+        b=Zd3Pf8oqrzbt1+Rm6PiZ9TNGqGDR6DS5W1BDpAF9SCU1AqOrwsO6Oz6WMqE6Go9k+
+         OHkGhGaHs3Rn4ZmpuKcTxkHGvNGgdTJIfWTBHYLzFH8wsBHucfciaHrjoim54ugsiY
+         AqDlLNqX27PVeqnm8TAxhFkjj21CBiFaVe5L6vDU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         Frank van der Linden <fllinden@amazon.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 12/24] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Wed,  9 Mar 2022 16:59:25 +0100
-Message-Id: <20220309155856.661941717@linuxfoundation.org>
+Subject: [PATCH 4.9 09/24] x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+Date:   Wed,  9 Mar 2022 16:59:22 +0100
+Message-Id: <20220309155856.575012760@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.295480966@linuxfoundation.org>
 References: <20220309155856.295480966@linuxfoundation.org>
@@ -51,17 +52,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
 
-commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
+commit d45476d9832409371537013ebdd8dc1a7781f97a upstream.
 
-With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
-to Spectre v2 BHB-based attacks.
+The RETPOLINE_AMD name is unfortunate since it isn't necessarily
+AMD only, in fact Hygon also uses it. Furthermore it will likely be
+sufficient for some Intel processors. Therefore rename the thing to
+RETPOLINE_LFENCE to better describe what it is.
 
-When both are enabled, print a warning message and report it in the
-'spectre_v2' sysfs vulnerabilities file.
+Add the spectre_v2=retpoline,lfence option as an alias to
+spectre_v2=retpoline,amd to preserve existing setups. However, the output
+of /sys/devices/system/cpu/vulnerabilities/spectre_v2 will be changed.
 
+  [ bp: Fix typos, massage. ]
+
+Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 [fllinden@amazon.com: backported to 4.19]
@@ -70,133 +78,169 @@ Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
- include/linux/bpf.h        |   11 +++++++++++
- kernel/sysctl.c            |    8 ++++++++
- 3 files changed, 48 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/cpufeatures.h       |    2 +-
+ arch/x86/include/asm/nospec-branch.h     |   12 ++++++------
+ arch/x86/kernel/cpu/bugs.c               |   29 ++++++++++++++++++-----------
+ tools/arch/x86/include/asm/cpufeatures.h |    2 +-
+ 4 files changed, 26 insertions(+), 19 deletions(-)
 
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -195,7 +195,7 @@
+ #define X86_FEATURE_FENCE_SWAPGS_USER	( 7*32+10) /* "" LFENCE in user entry SWAPGS path */
+ #define X86_FEATURE_FENCE_SWAPGS_KERNEL	( 7*32+11) /* "" LFENCE in kernel entry SWAPGS path */
+ #define X86_FEATURE_RETPOLINE	( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD ( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
+ 
+ #define X86_FEATURE_MSR_SPEC_CTRL ( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+ #define X86_FEATURE_SSBD	( 7*32+17) /* Speculative Store Bypass Disable */
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -119,7 +119,7 @@
+ 	ANNOTATE_NOSPEC_ALTERNATIVE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *\reg),	\
+ 		__stringify(RETPOLINE_JMP \reg), X86_FEATURE_RETPOLINE,	\
+-		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_AMD
++		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	jmp	*\reg
+ #endif
+@@ -130,7 +130,7 @@
+ 	ANNOTATE_NOSPEC_ALTERNATIVE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; call *\reg),	\
+ 		__stringify(RETPOLINE_CALL \reg), X86_FEATURE_RETPOLINE,\
+-		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_AMD
++		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	call	*\reg
+ #endif
+@@ -181,7 +181,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
+ 
+ #else /* CONFIG_X86_32 */
+@@ -211,7 +211,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ 
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
+ #endif
+@@ -223,8 +223,8 @@
+ /* The Spectre V2 mitigation variants */
+ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_NONE,
+-	SPECTRE_V2_RETPOLINE_GENERIC,
+-	SPECTRE_V2_RETPOLINE_AMD,
++	SPECTRE_V2_RETPOLINE,
++	SPECTRE_V2_LFENCE,
+ 	SPECTRE_V2_IBRS_ENHANCED,
+ };
+ 
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -30,6 +30,7 @@
- #include <asm/cacheflush.h>
- #include <asm/intel-family.h>
- #include <asm/e820.h>
-+#include <linux/bpf.h>
+@@ -620,7 +620,7 @@ enum spectre_v2_mitigation_cmd {
+ 	SPECTRE_V2_CMD_FORCE,
+ 	SPECTRE_V2_CMD_RETPOLINE,
+ 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
+-	SPECTRE_V2_CMD_RETPOLINE_AMD,
++	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
+ };
  
- #include "cpu.h"
+ enum spectre_v2_user_cmd {
+@@ -780,8 +780,8 @@ set_mode:
  
-@@ -606,6 +607,16 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
+ static const char * const spectre_v2_strings[] = {
+ 	[SPECTRE_V2_NONE]			= "Vulnerable",
+-	[SPECTRE_V2_RETPOLINE_GENERIC]		= "Mitigation: Full generic retpoline",
+-	[SPECTRE_V2_RETPOLINE_AMD]		= "Mitigation: Full AMD retpoline",
++	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
++	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
+ 	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
+ };
  
-+#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
+@@ -793,7 +793,8 @@ static const struct {
+ 	{ "off",		SPECTRE_V2_CMD_NONE,		  false },
+ 	{ "on",			SPECTRE_V2_CMD_FORCE,		  true  },
+ 	{ "retpoline",		SPECTRE_V2_CMD_RETPOLINE,	  false },
+-	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_AMD,	  false },
++	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
++	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
+ 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
+ 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
+ };
+@@ -831,13 +832,19 @@ static enum spectre_v2_mitigation_cmd __
+ 	}
+ 
+ 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
+-	     cmd == SPECTRE_V2_CMD_RETPOLINE_AMD ||
++	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
+ 	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
+ 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
+ 		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
++	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
++	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
++		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
 +
-+#ifdef CONFIG_BPF_SYSCALL
-+void unpriv_ebpf_notify(int new_state)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+}
-+#endif
-+
- static inline bool match_option(const char *arg, int arglen, const char *opt)
- {
- 	int len = strlen(opt);
-@@ -949,6 +960,9 @@ static void __init spectre_v2_select_mit
+ 	spec_v2_print_cond(mitigation_options[i].option,
+ 			   mitigation_options[i].secure);
+ 	return cmd;
+@@ -872,9 +879,9 @@ static void __init spectre_v2_select_mit
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+ 			goto retpoline_auto;
  		break;
+-	case SPECTRE_V2_CMD_RETPOLINE_AMD:
++	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_amd;
++			goto retpoline_lfence;
+ 		break;
+ 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+@@ -890,17 +897,17 @@ static void __init spectre_v2_select_mit
+ 
+ retpoline_auto:
+ 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+-	retpoline_amd:
++	retpoline_lfence:
+ 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+ 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
+ 			goto retpoline_generic;
+ 		}
+-		mode = SPECTRE_V2_RETPOLINE_AMD;
+-		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
++		mode = SPECTRE_V2_LFENCE;
++		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+ 	} else {
+ 	retpoline_generic:
+-		mode = SPECTRE_V2_RETPOLINE_GENERIC;
++		mode = SPECTRE_V2_RETPOLINE;
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
  	}
  
-+	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
-@@ -1686,6 +1700,20 @@ static char *ibpb_state(void)
- 	return "";
- }
+--- a/tools/arch/x86/include/asm/cpufeatures.h
++++ b/tools/arch/x86/include/asm/cpufeatures.h
+@@ -194,7 +194,7 @@
+ #define X86_FEATURE_PROC_FEEDBACK ( 7*32+ 9) /* AMD ProcFeedbackInterface */
  
-+static ssize_t spectre_v2_show_state(char *buf)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
-+	return sprintf(buf, "%s%s%s%s%s%s\n",
-+		       spectre_v2_strings[spectre_v2_enabled],
-+		       ibpb_state(),
-+		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
-+		       stibp_state(),
-+		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
-+		       spectre_v2_module_string());
-+}
-+
- static ssize_t srbds_show_state(char *buf)
- {
- 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
-@@ -1708,12 +1736,7 @@ static ssize_t cpu_show_common(struct de
- 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
+ #define X86_FEATURE_RETPOLINE	( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD ( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
  
- 	case X86_BUG_SPECTRE_V2:
--		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
--			       ibpb_state(),
--			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
--			       stibp_state(),
--			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
--			       spectre_v2_module_string());
-+		return spectre_v2_show_state(buf);
- 
- 	case X86_BUG_SPEC_STORE_BYPASS:
- 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -295,6 +295,11 @@ static inline void bpf_long_memcpy(void
- 
- /* verify correctness of eBPF program */
- int bpf_check(struct bpf_prog **fp, union bpf_attr *attr);
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return !sysctl_unprivileged_bpf_disabled;
-+}
- #else
- static inline void bpf_register_prog_type(struct bpf_prog_type_list *tl)
- {
-@@ -322,6 +327,12 @@ static inline struct bpf_prog *bpf_prog_
- {
- 	return ERR_PTR(-EOPNOTSUPP);
- }
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_BPF_SYSCALL */
- 
- /* verifier prototypes for helper functions called from eBPF programs */
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -222,6 +222,11 @@ static int sysrq_sysctl_handler(struct c
- #endif
- 
- #ifdef CONFIG_BPF_SYSCALL
-+
-+void __weak unpriv_ebpf_notify(int new_state)
-+{
-+}
-+
- static int bpf_unpriv_handler(struct ctl_table *table, int write,
-                              void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -239,6 +244,9 @@ static int bpf_unpriv_handler(struct ctl
- 			return -EPERM;
- 		*(int *)table->data = unpriv_enable;
- 	}
-+
-+	unpriv_ebpf_notify(unpriv_enable);
-+
- 	return ret;
- }
- #endif
+ #define X86_FEATURE_MSR_SPEC_CTRL ( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+ #define X86_FEATURE_SSBD	( 7*32+17) /* Speculative Store Bypass Disable */
 
 
