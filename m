@@ -2,139 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA87C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C85EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbiCISti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:49:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
+        id S233793AbiCIStn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:49:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236844AbiCIStf (ORCPT
+        with ESMTP id S236849AbiCIStg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:49:35 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBC51A39EF;
-        Wed,  9 Mar 2022 10:48:35 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 229HcPMF011109;
-        Wed, 9 Mar 2022 18:43:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=ROvsIGGvRAK1ngLCXr//BxHvESKX42UqHkHp1VpPzEs=;
- b=V8eBVEVSOXpyBZ7oq/k6lE9+DV0H46qHo5twb9uvG0VbQ3InFYSYd9d3I2YKQ/8zdM7y
- xt3XyzvqHM9zGIW/CHPviBHeOyuhbL8SgrWVyMxEB21/NoVF7N1fz2HHMACfoCHA388D
- y6i/AigrOLIiiRHaBYhGTal4hxIbaAPDeGaS9V8Myh+ZySD0BW8N3AdfjbaM+XGMS07G
- 5QRWtTs08IWf4mg4oUcZ7PeXvyXHCx1rqw8zeeJcijjDWV690tTyKVJ46zjyd6lvPAT7
- oXWhqfeImoyle4SW+Jio3OzpFbqNZqkCRQhbieudIOSrmGIr2i36ZdxBbzE2wlcuDF4h Ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3enyw9jjem-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 18:43:15 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 229HR6Sb011473;
-        Wed, 9 Mar 2022 18:43:14 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3enyw9jjd1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 18:43:14 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 229IY9hC030218;
-        Wed, 9 Mar 2022 18:43:12 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3enqgnndwc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 18:43:12 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 229Ih82U30015788
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Mar 2022 18:43:08 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 95A1011C04C;
-        Wed,  9 Mar 2022 18:43:08 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AB61011C052;
-        Wed,  9 Mar 2022 18:43:06 +0000 (GMT)
-Received: from sig-9-65-73-171.ibm.com (unknown [9.65.73.171])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Mar 2022 18:43:06 +0000 (GMT)
-Message-ID: <f8390bfecbcbae7b9151e2ce65f0c8e5e4a34ce8.camel@linux.ibm.com>
-Subject: Re: [PATCH 0/4] Add CA enforcement in the machine keyring
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Eric Snowberg <eric.snowberg@oracle.com>, jarkko@kernel.org,
-        dhowells@redhat.com, dwmw2@infradead.org
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        jmorris@namei.org, serge@hallyn.com, stefanb@linux.ibm.com,
-        nayna@linux.ibm.com, mic@linux.microsoft.com,
-        konrad.wilk@oracle.com, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Date:   Wed, 09 Mar 2022 13:43:06 -0500
-In-Reply-To: <20220301173651.3435350-1-eric.snowberg@oracle.com>
-References: <20220301173651.3435350-1-eric.snowberg@oracle.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: DY9S9WFZUMag5c4wekPoVsmPBBCGet-M
-X-Proofpoint-ORIG-GUID: vo3l3WDrmSu29pD6Wr-nZ2C8WxFmXhf9
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 9 Mar 2022 13:49:36 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE99A1A39F0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:48:35 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so3102774pjl.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 10:48:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lvs4wUkEI3AtSweELbG0/fXXinq75WyLekwDxmjo0Pc=;
+        b=YlzjEPe1xEmK+sY/CImJXAlfj9ZDiWWMlWq/1+rmGwLnPSArxZVHBK74+hSNPw7JIw
+         yj2X8+VH0+WOt3SSXKiIVHVvKY7AaM6uDCBII9/qOl1vIP8SONFtgN0kx1abVQAIf1Rp
+         OVa7e+k9y4s6Kyk0dc3larGnr8KxDnThJvACaTM2HnhzIKtMjljD0HWjLh1eDYAhBhca
+         pohsGzEjrouJgnSjrPPT6wwOOqyphzaNYcZc7FzFJsBGOIvo+hbBEyMs+YFvPsoBIj9g
+         iZpCJNblczziVOJjA67euin7YRsHsZjTP0eLZQRKJ5ni0/8vGTgiC7RlMDof+sFZp31i
+         1AiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lvs4wUkEI3AtSweELbG0/fXXinq75WyLekwDxmjo0Pc=;
+        b=BlN+gk+29USrBuGX/9wnac3RDCRQdBfZL6xxjBLWa0ANwoFZ4zz8JlINjOVPL99qPf
+         n4YHFAskS5+LztEU28zhwhLAEYhs8JfPSReYl3868s7EDFEAIKru02bNPGa+Cbw0V5MD
+         2rH+MaFPpvqFHPV2t/0vpPtkipZXJG1Pnv57bDJc9QeH+PGzWLYdd/984HZMp4EaOiBr
+         Ta704pmzwDquRytIS63SHAqlT4JUw8N8BsP59NMr/25q6bCS4Bo5t0A42liYAxBAusxL
+         aWbs6TVukrQE9KWE4GgqiHsB2T/ncy+GChglonw5G/SXahPm9MBfPSLrayl5b4YTIz/r
+         m/DQ==
+X-Gm-Message-State: AOAM531XmjLRyIUtufb6rPuOUSRPf5TmqqU/lyhNmlsIAB3RvnSY2bT/
+        hSyf8hM0cm/hXmliTLtuWSLMmzEtvBeEQ3UdFxc=
+X-Google-Smtp-Source: ABdhPJwLizqpQx/dAQGBodHku7mkZHsuWBpMHCTfVyID0S6V6MXHIR++YHIHgjK1Wb/aVVol1fHbcw3tIJL86iV+msg=
+X-Received: by 2002:a17:903:124a:b0:151:99fe:1a10 with SMTP id
+ u10-20020a170903124a00b0015199fe1a10mr847964plh.87.1646851715266; Wed, 09 Mar
+ 2022 10:48:35 -0800 (PST)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-09_07,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 mlxscore=0 clxscore=1015 malwarescore=0 bulkscore=0
- impostorscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
- priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2203090101
+References: <20220131162940.210846-1-david@redhat.com> <20220131162940.210846-4-david@redhat.com>
+In-Reply-To: <20220131162940.210846-4-david@redhat.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 9 Mar 2022 10:48:23 -0800
+Message-ID: <CAHbLzkpoNeSPyzGV9arXK7BrVWpERy0yGRggn1ZaRam8RrHyRQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/9] mm: slightly clarify KSM logic in do_swap_page()
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-01 at 12:36 -0500, Eric Snowberg wrote:
+On Mon, Jan 31, 2022 at 8:33 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> Let's make it clearer that KSM might only have to copy a page
+> in case we have a page in the swapcache, not if we allocated a fresh
+> page and bypassed the swapcache. While at it, add a comment why this is
+> usually necessary and merge the two swapcache conditions.
+>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
+> ---
+>  mm/memory.c | 38 +++++++++++++++++++++++---------------
+>  1 file changed, 23 insertions(+), 15 deletions(-)
+>
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 923165b4c27e..3c91294cca98 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -3615,21 +3615,29 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
+>                 goto out_release;
+>         }
+>
+> -       /*
+> -        * Make sure try_to_free_swap or reuse_swap_page or swapoff did not
 
-I would begin by saying,
+We could remove the reference to "reuse_swap_page", right?
 
-The "Enroll kernel keys thru MOK" patch set introduced a new root of
-trust by defining a "machine" keyring, which is linked to the
-secondary_trusted_keyring.  All Machine Owner Keys (MOK) are loaded
-into the machine keyring.
-
-Then proceed with the IMA new root of trust requirements - root CA
-(self-signed CA) with keyUsage limited to keyCertSign.
-
-> A key added to the IMA keyring must be signed by a key contained in either the
-
-^A certificate ... must be signed
-
-> built-in trusted or secondary trusted keyring. IMA also requires these keys 
-> to be a CA. The only option for an end-user to add their own CA is to compile
-> it into the kernel themselves or to use the insert-sys-cert.  Many end-users 
-> do not want to compile their own kernels.  With the insert-sys-cert option, 
-> there are missing upstream changes. 
-> 
-> Currently, all Machine Owner Keys (MOK) load into the machine keyring.
-
-Moved to the beginning.
-
-
-> Add
-
-^Define
->  
-> a new Kconfig option to only allow CA keys into the machine keyring.  When 
-
-Add the other criteria here as well.
-
-> compiled with the new INTEGRITY_MACHINE_KEYRING_CA_ENFORCED Kconfig, non CA 
-> keys will load into the platform keyring instead. This will allow the end-
-> user to enroll their own CA key into the machine keyring for use with IMA.
-> 
-> These patches are based on Jarkko's linux-tpmdd tree.
-> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-
-thanks,
-
-Mimi
-
+> -        * release the swapcache from under us.  The page pin, and pte_same
+> -        * test below, are not enough to exclude that.  Even if it is still
+> -        * swapcache, we need to check that the page's swap has not changed.
+> -        */
+> -       if (unlikely((!PageSwapCache(page) ||
+> -                       page_private(page) != entry.val)) && swapcache)
+> -               goto out_page;
+> -
+> -       page = ksm_might_need_to_copy(page, vma, vmf->address);
+> -       if (unlikely(!page)) {
+> -               ret = VM_FAULT_OOM;
+> -               page = swapcache;
+> -               goto out_page;
+> +       if (swapcache) {
+> +               /*
+> +                * Make sure try_to_free_swap or reuse_swap_page or swapoff did
+> +                * not release the swapcache from under us.  The page pin, and
+> +                * pte_same test below, are not enough to exclude that.  Even if
+> +                * it is still swapcache, we need to check that the page's swap
+> +                * has not changed.
+> +                */
+> +               if (unlikely(!PageSwapCache(page) ||
+> +                            page_private(page) != entry.val))
+> +                       goto out_page;
+> +
+> +               /*
+> +                * KSM sometimes has to copy on read faults, for example, if
+> +                * page->index of !PageKSM() pages would be nonlinear inside the
+> +                * anon VMA -- PageKSM() is lost on actual swapout.
+> +                */
+> +               page = ksm_might_need_to_copy(page, vma, vmf->address);
+> +               if (unlikely(!page)) {
+> +                       ret = VM_FAULT_OOM;
+> +                       page = swapcache;
+> +                       goto out_page;
+> +               }
+>         }
+>
+>         cgroup_throttle_swaprate(page, GFP_KERNEL);
+> --
+> 2.34.1
+>
