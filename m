@@ -2,190 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 033C3C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237429AbiCIRFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54516 "EHLO
+        id S237543AbiCIRFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:05:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238781AbiCIREC (ORCPT
+        with ESMTP id S238844AbiCIREI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:04:02 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B921B50ED
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:52:32 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id o133-20020a25738b000000b0062872621d0eso2153711ybc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:52:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=b9rEV04bDQiBKY+clzVAAUwX0PEEzTz5v0uyyD6Ky9s=;
-        b=XPzsQHeRUNiY59+5nJm7mrBdRIxBkcExNssQMplqKGecYVGAuoWNOzfsQ/CRHGT3Eb
-         L8N78lNgsuxsZppqNYdkHimSfJaRLuWqSnEH8yK3GxU8bsscjb4ePNbipVnp6tCT8IVF
-         UaUIxl8y648Eqm5tHOyCh2213Fk/nnv9V9GWAOVVkJeRQIHfCE/FgeEvesm4pyz9OWp/
-         jT/gMhsLrbq/1Tv7Gt/fcrwf/RPUzCl8lb+iIaUhtm6WEF9fuNYOWUF4Z36cCRwe+NRS
-         IxH3+7RqukqcHYT+xGqH3TFqjhzJCVwErPB8Qpl0MdPoc7qtVg+T57NWV82loz0fFGAg
-         92Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=b9rEV04bDQiBKY+clzVAAUwX0PEEzTz5v0uyyD6Ky9s=;
-        b=59wjxpOqFd2YXKef857cp/7NHsEwmAUxubU2jkTxHQxI7HntMSYUNnbWY1mIYy2iTx
-         2dyfiKV7B6/X5HRRRU5sPkFNcHA8tUwUnoDoCDdAnKo54Zzt7o9rNGLkLkDMjXsol7mc
-         b/tdIDncR2ZwoAL412RLHYovz4NoLf4ZC6ou5iflckKil44VQkHU3hgKQ1y+fJc8w2cX
-         HWi9MAFrWSK/5POSaDnyTXZTZR68VpjJ/iqaRVF+1E/Uia9gwx2r3PHKUQG51o1jf7kI
-         R3qR48v72c6QbsRGoKV3vODJ+hwkw41nVQql7ICcPugTMtsrw5HvdkyifON4UpZA+E4I
-         J9gw==
-X-Gm-Message-State: AOAM532t6wl6DVYa7zSC0wfJ1AjdR87TXpIg7jVaQc6PJJulgYuGVZLS
-        uFm/Mdm5mtHNFmeW0egN5ge017MYapgrrbg=
-X-Google-Smtp-Source: ABdhPJwRyTuMCrRO/Vp1TWAVYo92UjVf5vBh6X32/4NRRO9jJMcVfdRLSkjJkXNfpEsU2vu7P7SPJtB45/CUe/4=
-X-Received: from tj2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:187])
- (user=tjmercier job=sendgmr) by 2002:a25:3494:0:b0:628:7de8:fe8c with SMTP id
- b142-20020a253494000000b006287de8fe8cmr566332yba.68.1646844747351; Wed, 09
- Mar 2022 08:52:27 -0800 (PST)
-Date:   Wed,  9 Mar 2022 16:52:10 +0000
-Message-Id: <20220309165222.2843651-1-tjmercier@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [RFC v3 0/8] Proposal for a GPU cgroup controller
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     kaleshsingh@google.com, Kenny.Ho@amd.com,
-        "T.J. Mercier" <tjmercier@google.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 9 Mar 2022 12:04:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3F39AD8A;
+        Wed,  9 Mar 2022 08:52:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C30E61B45;
+        Wed,  9 Mar 2022 16:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07F6CC340EC;
+        Wed,  9 Mar 2022 16:52:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646844755;
+        bh=wIeGbE6Q41oIhTY+lLUbah8qqKEMzvsX86DStRQLx9g=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ajZf+msEiuAWYsEHyAa1la9mmAEWm9CLYkJ001PCn+OQvcazGSJy3d9bN2D8B8QOl
+         5AmoJJMr61AzJpz/9+Ut/VwC1v4hD8jL5NrR+B7Tcg/own5k4BGYTnt/h4otdOlDEa
+         5nzPVdlP12f35p/OQIYWEAYEpd+EMx+VJpxJ9RwcIpFERATK2geEjU5UtMXmU3dMTt
+         8+VCsgjtIlQWdTx6ECnl08vIoCehsmH4HavcgIT1iTq9WjSopxA4kmJQ4PjDaBaak/
+         zxymJkFfufPzJLXiDgcXeJwV6wBNC7DrdpaFm2CX46qY7OsD49zaSn1Xoof0/8QlTi
+         63TkLPMr13Wtg==
+Message-ID: <4cbb2bb06eafb8f03135fc377ced779102004ea7.camel@kernel.org>
+Subject: Re: [PATCH v2 11/19] netfs: Change ->init_request() to return an
+ error code
+From:   Jeff Layton <jlayton@kernel.org>
+To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com
+Cc:     Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 09 Mar 2022 11:52:32 -0500
+In-Reply-To: <164678212401.1200972.16537041523832944934.stgit@warthog.procyon.org.uk>
+References: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
+         <164678212401.1200972.16537041523832944934.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series revisits the proposal for a GPU cgroup controller to
-track and limit memory allocations by various device/allocator
-subsystems. The patch series also contains a simple prototype to
-illustrate how Android intends to implement DMA-BUF allocator
-attribution using the GPU cgroup controller. The prototype does not
-include resource limit enforcements.
+On Tue, 2022-03-08 at 23:28 +0000, David Howells wrote:
+> Change the request initialisation function to return an error code so that
+> the network filesystem can return a failure (ENOMEM, for example).
+> 
+> This will also allow ceph to abort a ->readahead() op if the server refuses
+> to give it a cap allowing local caching from within the netfslib framework
+> (errors aren't passed back through ->readahead(), so returning, say,
+> -ENOBUFS will cause the op to be aborted).
+> 
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: linux-cachefs@redhat.com
+> ---
+> 
+>  fs/9p/vfs_addr.c       |    3 ++-
+>  fs/afs/file.c          |    3 ++-
+>  fs/netfs/objects.c     |   41 ++++++++++++++++++++++++-----------------
+>  fs/netfs/read_helper.c |   20 ++++++++++++--------
+>  include/linux/netfs.h  |    2 +-
+>  5 files changed, 41 insertions(+), 28 deletions(-)
+> 
+> diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+> index fdc1033a1546..91d3926c9559 100644
+> --- a/fs/9p/vfs_addr.c
+> +++ b/fs/9p/vfs_addr.c
+> @@ -56,12 +56,13 @@ static void v9fs_issue_read(struct netfs_io_subrequest *subreq)
+>   * @rreq: The read request
+>   * @file: The file being read from
+>   */
+> -static void v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
+> +static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
+>  {
+>  	struct p9_fid *fid = file->private_data;
+>  
+>  	refcount_inc(&fid->count);
+>  	rreq->netfs_priv = fid;
+> +	return 0;
+>  }
+>  
+>  /**
+> diff --git a/fs/afs/file.c b/fs/afs/file.c
+> index b19d635eed12..6469d7f98ef5 100644
+> --- a/fs/afs/file.c
+> +++ b/fs/afs/file.c
+> @@ -359,9 +359,10 @@ static int afs_symlink_readpage(struct file *file, struct page *page)
+>  	return ret;
+>  }
+>  
+> -static void afs_init_request(struct netfs_io_request *rreq, struct file *file)
+> +static int afs_init_request(struct netfs_io_request *rreq, struct file *file)
+>  {
+>  	rreq->netfs_priv = key_get(afs_file_key(file));
+> +	return 0;
+>  }
+>  
+>  static bool afs_is_cache_enabled(struct inode *inode)
+> diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
+> index 986d7a9d25dd..ae18827e156b 100644
+> --- a/fs/netfs/objects.c
+> +++ b/fs/netfs/objects.c
+> @@ -20,27 +20,34 @@ struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
+>  {
+>  	static atomic_t debug_ids;
+>  	struct netfs_io_request *rreq;
+> +	int ret;
+>  
+>  	rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
+> -	if (rreq) {
+> -		rreq->start	= start;
+> -		rreq->len	= len;
+> -		rreq->origin	= origin;
+> -		rreq->netfs_ops	= ops;
+> -		rreq->netfs_priv = netfs_priv;
+> -		rreq->mapping	= mapping;
+> -		rreq->inode	= file_inode(file);
+> -		rreq->i_size	= i_size_read(rreq->inode);
+> -		rreq->debug_id	= atomic_inc_return(&debug_ids);
+> -		INIT_LIST_HEAD(&rreq->subrequests);
+> -		INIT_WORK(&rreq->work, netfs_rreq_work);
+> -		refcount_set(&rreq->ref, 1);
+> -		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
+> -		if (ops->init_request)
+> -			ops->init_request(rreq, file);
+> -		netfs_stat(&netfs_n_rh_rreq);
+> +	if (!rreq)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	rreq->start	= start;
+> +	rreq->len	= len;
+> +	rreq->origin	= origin;
+> +	rreq->netfs_ops	= ops;
+> +	rreq->netfs_priv = netfs_priv;
+> +	rreq->mapping	= mapping;
+> +	rreq->inode	= file_inode(file);
+> +	rreq->i_size	= i_size_read(rreq->inode);
+> +	rreq->debug_id	= atomic_inc_return(&debug_ids);
+> +	INIT_LIST_HEAD(&rreq->subrequests);
+> +	INIT_WORK(&rreq->work, netfs_rreq_work);
+> +	refcount_set(&rreq->ref, 1);
+> +	__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
+> +	if (rreq->netfs_ops->init_request) {
+> +		ret = rreq->netfs_ops->init_request(rreq, file);
+> +		if (ret < 0) {
+> +			kfree(rreq);
+> +			return ERR_PTR(ret);
+> +		}
+>  	}
+>  
+> +	netfs_stat(&netfs_n_rh_rreq);
+>  	return rreq;
+>  }
+>  
+> diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
+> index dea085715286..b5176f4320f4 100644
+> --- a/fs/netfs/read_helper.c
+> +++ b/fs/netfs/read_helper.c
+> @@ -768,7 +768,7 @@ void netfs_readahead(struct readahead_control *ractl,
+>  				   readahead_pos(ractl),
+>  				   readahead_length(ractl),
+>  				   NETFS_READAHEAD);
+> -	if (!rreq)
+> +	if (IS_ERR(rreq))
+>  		goto cleanup;
+>  
+>  	if (ops->begin_cache_operation) {
+> @@ -842,11 +842,9 @@ int netfs_readpage(struct file *file,
+>  	rreq = netfs_alloc_request(folio->mapping, file, ops, netfs_priv,
+>  				   folio_file_pos(folio), folio_size(folio),
+>  				   NETFS_READPAGE);
+> -	if (!rreq) {
+> -		if (netfs_priv)
+> -			ops->cleanup(folio_file_mapping(folio), netfs_priv);
+> -		folio_unlock(folio);
+> -		return -ENOMEM;
+> +	if (IS_ERR(rreq)) {
+> +		ret = PTR_ERR(rreq);
+> +		goto alloc_error;
+>  	}
+>  
+>  	if (ops->begin_cache_operation) {
+> @@ -887,6 +885,11 @@ int netfs_readpage(struct file *file,
+>  out:
+>  	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
+>  	return ret;
+> +alloc_error:
+> +	if (netfs_priv)
+> +		ops->cleanup(folio_file_mapping(folio), netfs_priv);
+> +	folio_unlock(folio);
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL(netfs_readpage);
+>  
+> @@ -1007,12 +1010,13 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
+>  		goto have_folio_no_wait;
+>  	}
+>  
+> -	ret = -ENOMEM;
+>  	rreq = netfs_alloc_request(mapping, file, ops, netfs_priv,
+>  				   folio_file_pos(folio), folio_size(folio),
+>  				   NETFS_READ_FOR_WRITE);
+> -	if (!rreq)
+> +	if (IS_ERR(rreq)) {
+> +		ret = PTR_ERR(rreq);
+>  		goto error;
+> +	}
+>  	rreq->no_unlock_folio	= folio_index(folio);
+>  	__set_bit(NETFS_RREQ_NO_UNLOCK_FOLIO, &rreq->flags);
+>  	netfs_priv = NULL;
+> diff --git a/include/linux/netfs.h b/include/linux/netfs.h
+> index 7dc741d9b21b..4b99e38f73d9 100644
+> --- a/include/linux/netfs.h
+> +++ b/include/linux/netfs.h
+> @@ -193,7 +193,7 @@ struct netfs_io_request {
+>   */
+>  struct netfs_request_ops {
+>  	bool (*is_cache_enabled)(struct inode *inode);
+> -	void (*init_request)(struct netfs_io_request *rreq, struct file *file);
+> +	int (*init_request)(struct netfs_io_request *rreq, struct file *file);
+>  	int (*begin_cache_operation)(struct netfs_io_request *rreq);
+>  	void (*expand_readahead)(struct netfs_io_request *rreq);
+>  	bool (*clamp_length)(struct netfs_io_subrequest *subreq);
+> 
+> 
 
-Changelog:
-v3:
-Remove Upstreaming Plan from gpu-cgroup.rst per John Stultz
-
-Use more common dual author commit message format per John Stultz
-
-Remove android from binder changes title per Todd Kjos
-
-Add a kselftest for this new behavior per Greg Kroah-Hartman
-
-Include details on behavior for all combinations of kernel/userspace
-versions in changelog (thanks Suren Baghdasaryan) per Greg Kroah-Hartman.
-
-Fix pid and uid types in binder UAPI header
-
-v2:
-See the previous revision of this change submitted by Hridya Valsaraju
-at: https://lore.kernel.org/all/20220115010622.3185921-1-hridya@google.com/
-
-Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-heap to a single dma-buf function for all heaps per Daniel Vetter and
-Christian K=C3=B6nig. Pointers to struct gpucg and struct gpucg_device
-tracking the current associations were added to the dma_buf struct to
-achieve this.
-
-Fix incorrect Kconfig help section indentation per Randy Dunlap.
-
-History of the GPU cgroup controller
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-The GPU/DRM cgroup controller came into being when a consensus[1]
-was reached that the resources it tracked were unsuitable to be integrated
-into memcg. Originally, the proposed controller was specific to the DRM
-subsystem and was intended to track GEM buffers and GPU-specific
-resources[2]. In order to help establish a unified memory accounting model
-for all GPU and all related subsystems, Daniel Vetter put forth a
-suggestion to move it out of the DRM subsystem so that it can be used by
-other DMA-BUF exporters as well[3]. This RFC proposes an interface that
-does the same.
-
-[1]: https://patchwork.kernel.org/project/dri-devel/cover/20190501140438.95=
-06-1-brian.welty@intel.com/#22624705
-[2]: https://lore.kernel.org/amd-gfx/20210126214626.16260-1-brian.welty@int=
-el.com/
-[3]: https://lore.kernel.org/amd-gfx/YCVOl8%2F87bqRSQei@phenom.ffwll.local/
-
-Hridya Valsaraju (5):
-  gpu: rfc: Proposal for a GPU cgroup controller
-  cgroup: gpu: Add a cgroup controller for allocator attribution of GPU
-    memory
-  dmabuf: heaps: export system_heap buffers with GPU cgroup charging
-  dmabuf: Add gpu cgroup charge transfer function
-  binder: Add a buffer flag to relinquish ownership of fds
-
-T.J. Mercier (3):
-  dmabuf: Use the GPU cgroup charge/uncharge APIs
-  binder: use __kernel_pid_t and __kernel_uid_t for userspace
-  selftests: Add binder cgroup gpu memory transfer test
-
- Documentation/gpu/rfc/gpu-cgroup.rst          | 183 +++++++
- Documentation/gpu/rfc/index.rst               |   4 +
- drivers/android/binder.c                      |  26 +
- drivers/dma-buf/dma-buf.c                     | 100 ++++
- drivers/dma-buf/dma-heap.c                    |  27 +
- drivers/dma-buf/heaps/system_heap.c           |   3 +
- include/linux/cgroup_gpu.h                    | 127 +++++
- include/linux/cgroup_subsys.h                 |   4 +
- include/linux/dma-buf.h                       |  22 +-
- include/linux/dma-heap.h                      |  11 +
- include/uapi/linux/android/binder.h           |   5 +-
- init/Kconfig                                  |   7 +
- kernel/cgroup/Makefile                        |   1 +
- kernel/cgroup/gpu.c                           | 304 +++++++++++
- .../selftests/drivers/android/binder/Makefile |   8 +
- .../drivers/android/binder/binder_util.c      | 254 +++++++++
- .../drivers/android/binder/binder_util.h      |  32 ++
- .../selftests/drivers/android/binder/config   |   4 +
- .../binder/test_dmabuf_cgroup_transfer.c      | 480 ++++++++++++++++++
- 19 files changed, 1598 insertions(+), 4 deletions(-)
- create mode 100644 Documentation/gpu/rfc/gpu-cgroup.rst
- create mode 100644 include/linux/cgroup_gpu.h
- create mode 100644 kernel/cgroup/gpu.c
- create mode 100644 tools/testing/selftests/drivers/android/binder/Makefile
- create mode 100644 tools/testing/selftests/drivers/android/binder/binder_u=
-til.c
- create mode 100644 tools/testing/selftests/drivers/android/binder/binder_u=
-til.h
- create mode 100644 tools/testing/selftests/drivers/android/binder/config
- create mode 100644 tools/testing/selftests/drivers/android/binder/test_dma=
-buf_cgroup_transfer.c
-
---=20
-2.35.1.616.g0bdcbb4464-goog
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
