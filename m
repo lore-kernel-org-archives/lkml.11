@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52DA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF98C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234898AbiCIQOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
+        id S233461AbiCIQOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:14:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235799AbiCIQJM (ORCPT
+        with ESMTP id S235822AbiCIQJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:12 -0500
+        Wed, 9 Mar 2022 11:09:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8882C142359;
-        Wed,  9 Mar 2022 08:06:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947251903F0;
+        Wed,  9 Mar 2022 08:06:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C328961798;
-        Wed,  9 Mar 2022 16:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBF27C340E8;
-        Wed,  9 Mar 2022 16:06:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93DA5617B3;
+        Wed,  9 Mar 2022 16:06:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C27C340EF;
+        Wed,  9 Mar 2022 16:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842002;
-        bh=BjhNuDswWhutw0Va1gA9M+7Vl6Iaj6ZmKGq889IWLoA=;
+        s=korg; t=1646842005;
+        bh=CtdSGUhCx/XkfKoxOYRUMs1Huk9CIG095Jidwc20icI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DkNy1eKFDnUpWRAkpwFrUC5IqAIa7pryxQTwAtOU5Bpl6v1l6JfNWIayTQ0LQmjsf
-         invSdo/G1bVOtIwTh0rkEomejEvi+0IIiiNc0AXjAgDteAfyOL1cbsZNC5C3wP0zPK
-         s/uQB41ecVKF9LU2QCV0U7kuzPmd0sPDryGIq0Y0=
+        b=h178nRONu9Vdsm+uEURG3TXSP8C+BivncD3ACy2DCPzCWZbEt7eOwySHB7a6v1UBR
+         JE/rSHRHJ/HdVS39/il/3FyX3cDv4MZkH99Fwi/a5jiYxv2t4Mrd432OFM7K/YGmZu
+         7q3HJ3qryh5kb0RYWWzHn8Pf7PyyExN4osj08MGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>
-Subject: [PATCH 5.10 15/43] arm64: cputype: Add CPU implementor & types for the Apple M1 cores
-Date:   Wed,  9 Mar 2022 16:59:48 +0100
-Message-Id: <20220309155859.685364689@linuxfoundation.org>
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.10 06/43] x86/speculation: Use generic retpoline by default on AMD
+Date:   Wed,  9 Mar 2022 16:59:39 +0100
+Message-Id: <20220309155859.426620024@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -48,50 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit 11ecdad722daafcac09c4859dddf31b3d46449bc upstream.
+commit 244d00b5dd4755f8df892c86cab35fb2cfd4f14b upstream.
 
-The implementor will be used to condition the FIQ support quirk.
+AMD retpoline may be susceptible to speculation. The speculation
+execution window for an incorrect indirect branch prediction using
+LFENCE/JMP sequence may potentially be large enough to allow
+exploitation using Spectre V2.
 
-The specific CPU types are not used at the moment, but let's add them
-for documentation purposes.
+By default, don't use retpoline,lfence on AMD.  Instead, use the
+generic retpoline.
 
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cputype.h |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kernel/cpu/bugs.c |    9 ---------
+ 1 file changed, 9 deletions(-)
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -59,6 +59,7 @@
- #define ARM_CPU_IMP_NVIDIA		0x4E
- #define ARM_CPU_IMP_FUJITSU		0x46
- #define ARM_CPU_IMP_HISI		0x48
-+#define ARM_CPU_IMP_APPLE		0x61
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -904,15 +904,6 @@ static enum spectre_v2_mitigation __init
+ 		return SPECTRE_V2_NONE;
+ 	}
  
- #define ARM_CPU_PART_AEM_V8		0xD0F
- #define ARM_CPU_PART_FOUNDATION		0xD00
-@@ -99,6 +100,9 @@
+-	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+-	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+-			pr_err("LFENCE not serializing, switching to generic retpoline\n");
+-			return SPECTRE_V2_RETPOLINE;
+-		}
+-		return SPECTRE_V2_LFENCE;
+-	}
+-
+ 	return SPECTRE_V2_RETPOLINE;
+ }
  
- #define HISI_CPU_PART_TSV110		0xD01
- 
-+#define APPLE_CPU_PART_M1_ICESTORM	0x022
-+#define APPLE_CPU_PART_M1_FIRESTORM	0x023
-+
- #define MIDR_CORTEX_A53 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A53)
- #define MIDR_CORTEX_A57 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A57)
- #define MIDR_CORTEX_A72 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A72)
-@@ -127,6 +131,8 @@
- #define MIDR_NVIDIA_CARMEL MIDR_CPU_MODEL(ARM_CPU_IMP_NVIDIA, NVIDIA_CPU_PART_CARMEL)
- #define MIDR_FUJITSU_A64FX MIDR_CPU_MODEL(ARM_CPU_IMP_FUJITSU, FUJITSU_CPU_PART_A64FX)
- #define MIDR_HISI_TSV110 MIDR_CPU_MODEL(ARM_CPU_IMP_HISI, HISI_CPU_PART_TSV110)
-+#define MIDR_APPLE_M1_ICESTORM MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_ICESTORM)
-+#define MIDR_APPLE_M1_FIRESTORM MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_FIRESTORM)
- 
- /* Fujitsu Erratum 010001 affects A64FX 1.0 and 1.1, (v0r0 and v1r0) */
- #define MIDR_FUJITSU_ERRATUM_010001		MIDR_FUJITSU_A64FX
 
 
