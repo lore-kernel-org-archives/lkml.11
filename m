@@ -2,99 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE62AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbiCIOYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        id S233528AbiCIOZG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 09:25:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233502AbiCIOYF (ORCPT
+        with ESMTP id S230237AbiCIOZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:24:05 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050B1107DA0
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:23:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646835787; x=1678371787;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=RWKnNnTeEOjVqq7CWbHUR0BTNxJt/MW7KsU/tp//GhY=;
-  b=vDbWtlI0qMF0Z+71q2+iFj6temLkQIIGL1ANTCx22f+N+Akf7T6dLaK1
-   TTdmSOvClicnCFZ6FvPzszEhQ+CYfUGUlMCUQKw0biamce+oed3kvtSji
-   IZajmVRWoAs4yizrfD9dagiSS7QnlNHH0pKDzvSa4kE32bpHJFWFNIjzW
-   o=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Mar 2022 06:23:06 -0800
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 06:23:06 -0800
-Received: from hu-rbankapu-blr.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 9 Mar 2022 06:23:03 -0800
-From:   Raghu Bankapur <quic_rbankapu@quicinc.com>
-To:     Vinod Koul <vkoul@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        Raghu Bankapur <quic_rbankapu@quicinc.com>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>
-CC:     Krishna Jha <quic_kkishorj@quicinc.com>,
-        Raghu Bankapur <quic_rbankapu@quiinc.com>
-Subject: [PATCH V0 1/1] ASoC: msm: fix integer overflow for long duration offload playback
-Date:   Wed, 9 Mar 2022 19:52:28 +0530
-Message-ID: <b906dbaf772d0152a3af52d639b090d15fe8c362.1646835508.git.quic_rbankapu@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1646835508.git.quic_rbankapu@quicinc.com>
-References: <cover.1646835508.git.quic_rbankapu@quicinc.com>
+        Wed, 9 Mar 2022 09:25:01 -0500
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE54109A43;
+        Wed,  9 Mar 2022 06:24:02 -0800 (PST)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2dc585dbb02so24119337b3.13;
+        Wed, 09 Mar 2022 06:24:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bzLDZxZ/qA7oBqdjR4gt04U5cjegEAChsNJQDgPnbeI=;
+        b=xXGzU1bUNHKVGy5jTqQijYPV69tSG/GW9zvvFve7Pc05fc2nFTZXxLSwmmsIv8EC1u
+         tMAC2I5SWL6mgst98wyLq8+DG4NT6x80Qa1KilgrTMBwK1SUyi8vmJTqzwC6/Mqpi94+
+         YuhvOBjcgMIvDPO6kqSLV1AhwR1ey7XrRbBB1VR0/u4+xC97WQdEVXk+Fs4cGJHy6oL1
+         lP8aPvyiEgXybLsmWehFJRnr35J5dvj9cFb6OK1BM/bxEizClhm5pE0dZI+4iQyXM0k1
+         sOFT4UW/veWE+jIUBowtfFK5mneWTBcdgg8DuCY6cnb1MzbX4wBpwGWtiCpJsi382NEe
+         3NLw==
+X-Gm-Message-State: AOAM532B1U2U4rLclGl1b9dFwMBnafYYIYQNNqKY5YwaKb2CqjQxfPim
+        dfD2/Hzp6RCLm3tlAY806cLf3tnFBrQLd5Z2lS5YNxL5
+X-Google-Smtp-Source: ABdhPJzEo+x6H9cz5qQaPRDtTVk3UUOLYrOyAYAxUmRMwIQ8U7naTGpvVnWiOgM1zRuJ5jIR0dB4WHszf70PofcdmQE=
+X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
+ b145-20020a811b97000000b002db640f49d8mr16236809ywb.326.1646835841414; Wed, 09
+ Mar 2022 06:24:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+References: <98efd34d-db75-f3ce-8c47-a2d7fe4b96f6@linaro.org>
+In-Reply-To: <98efd34d-db75-f3ce-8c47-a2d7fe4b96f6@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 9 Mar 2022 15:23:50 +0100
+Message-ID: <CAJZ5v0g3A_czchg7pp8yNppkHB2z9Dpova5DyMN1K1X5JL1Wkg@mail.gmail.com>
+Subject: Re: [GIT PULL] thermal changes for v5.18-rc1
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM mailing list <linux-pm@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Romain Naour <romain.naour@smile.fr>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raghu Bankapur <quic_rbankapu@quiinc.com>
+On Tue, Mar 8, 2022 at 9:38 PM Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>
+>
+> Hi Rafael,
+>
+> please consider pulling,
+>
+> The following changes since commit 5838a14832d447990827d85e90afe17e6fb9c175:
+>
+>    thermal: core: Fix TZ_GET_TRIP NULL pointer dereference (2022-03-01
+> 16:11:38 +0100)
+>
+> are available in the Git repository at:
+>
+>    https://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git
+> tags/thermal-v5.18-rc1
+>
+> for you to fetch changes up to a7da8a0955cbe81433afecad229d2a2ba60c3f0a:
+>
+>    MAINTAINERS: thermal: samsung: update Krzysztof Kozlowski's email
+> (2022-03-08 21:26:09 +0100)
+>
+> Thanks
+>    -- Daniel
+>
+> ----------------------------------------------------------------
+> - Convert the DT bindings to yaml format for the Exynos platform
+>    and fix the MAINTAINERS file regarding this driver (Krzysztof
+>    Kozlowski)
+>
+> - Register the thermal zones as HWmon sensors for the QCom's
+>    Tsens driver (Dmitry Baryshkov)
+>
+> - Add the sm8150 platform support to LMh (Thara Gopinath)
+>
+> - Add the msm8953 compatible documentation in the bindings (Luca
+>    Weiss)
+>
+> - Register the thermal zones as HWmon sensors for the TI thermal
+>    platforms (Romain Naour)
+>
+> - Check the command result from the IPC command to the
+>    BPMP in the Tegra driver (Mikko Perttunen)
+>
+> - Silent the error for normal configuration where the interrupt
+>    is optionnal on the Broadcom thermal driver (Florian Fainelli)
+>
+> - Remove a remaining dead code from the TI thermal driver (Yue
+>    Haibing)
+>
+> - Update the email in MAINTAINERS file for the Exynos thermal
+>    driver (Krzysztof Kozlowski)
+>
+> ----------------------------------------------------------------
+> Dmitry Baryshkov (1):
+>        thermal/drivers/tsens: register thermal zones as hwmon sensors
+>
+> Florian Fainelli (1):
+>        thermal/drivers/brcmstb_thermal: Interrupt is optional
+>
+> Krzysztof Kozlowski (3):
+>        dt-bindings: thermal: samsung: Convert to dtschema
+>        MAINTAINERS: thermal: samsung: Drop obsolete properties
+>        MAINTAINERS: thermal: samsung: update Krzysztof Kozlowski's email
+>
+> Luca Weiss (1):
+>        dt-bindings: thermal: tsens: Add msm8953 compatible
+>
+> Mikko Perttunen (1):
+>        thermal: tegra-bpmp: Handle errors in BPMP response
+>
+> Romain Naour (1):
+>        drivers/thermal/ti-soc-thermal: Add hwmon support
+>
+> Thara Gopinath (2):
+>        thermal/drivers/qcom/lmh: Add support for sm8150
+>        dt-bindings: thermal: Add sm8150 compatible string for LMh
+>
+> YueHaibing (1):
+>        thermal/drivers/ti-soc-thermal: Remove unused function
+> ti_thermal_get_temp()
+>
+>   .../devicetree/bindings/thermal/exynos-thermal.txt | 106 ------------
+>   .../devicetree/bindings/thermal/qcom-lmh.yaml      |   1 +
+>   .../devicetree/bindings/thermal/qcom-tsens.yaml    |   1 +
+>   .../bindings/thermal/samsung,exynos-thermal.yaml   | 184
+> +++++++++++++++++++++
+>   MAINTAINERS                                        |   7 +-
+>   drivers/thermal/broadcom/brcmstb_thermal.c         |   2 +-
+>   drivers/thermal/qcom/lmh.c                         |  62 ++++---
+>   drivers/thermal/qcom/tsens.c                       |   5 +
+>   drivers/thermal/tegra/tegra-bpmp-thermal.c         |  13 +-
+>   drivers/thermal/ti-soc-thermal/ti-thermal-common.c |  12 +-
+>   10 files changed, 247 insertions(+), 146 deletions(-)
+>   delete mode 100644
+> Documentation/devicetree/bindings/thermal/exynos-thermal.txt
+>   create mode 100644
+> Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml
 
-32 bit variable is used for storing number of bytes copied to DSP,
-which can overflow when playback duration goes beyond 24 hours.
-Change data type for this variable to uint64_t to prevent overflow
-and related playback anomaly.
-
-Signed-off-by: Raghu Bankapur <quic_rbankapu@quicinc.com>
----
- include/uapi/sound/compress_offload.h | 2 +-
- sound/core/compress_offload.c         | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/sound/compress_offload.h b/include/uapi/sound/compress_offload.h
-index 9555f31c8425..57d24d89b2f4 100644
---- a/include/uapi/sound/compress_offload.h
-+++ b/include/uapi/sound/compress_offload.h
-@@ -67,7 +67,7 @@ struct snd_compr_params {
-  */
- struct snd_compr_tstamp {
- 	__u32 byte_offset;
--	__u32 copied_total;
-+	__u64 copied_total;
- 	__u32 pcm_frames;
- 	__u32 pcm_io_frames;
- 	__u32 sampling_rate;
-diff --git a/sound/core/compress_offload.c b/sound/core/compress_offload.c
-index de514ec8c83d..068376b586be 100644
---- a/sound/core/compress_offload.c
-+++ b/sound/core/compress_offload.c
-@@ -169,7 +169,7 @@ static int snd_compr_update_tstamp(struct snd_compr_stream *stream,
- 	if (!stream->ops->pointer)
- 		return -ENOTSUPP;
- 	stream->ops->pointer(stream, tstamp);
--	pr_debug("dsp consumed till %d total %d bytes\n",
-+	pr_debug("dsp consumed till %d total %llu bytes\n",
- 		tstamp->byte_offset, tstamp->copied_total);
- 	if (stream->direction == SND_COMPRESS_PLAYBACK)
- 		stream->runtime->total_bytes_transferred = tstamp->copied_total;
--- 
-2.17.1
-
+Now pulled and pushed out, thanks!
