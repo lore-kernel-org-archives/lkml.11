@@ -2,121 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3382C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbiCIJGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
+        id S231796AbiCIJH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiCIJGu (ORCPT
+        with ESMTP id S231779AbiCIJH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:06:50 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F1716AA6C;
-        Wed,  9 Mar 2022 01:05:51 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2298qWbu002023;
-        Wed, 9 Mar 2022 09:05:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=GQbuPmzwqFnOz9KKZhOipe3YMFQ//f3hjp/Mvlz4XPE=;
- b=NIXYfwBWtfadWrvvDSvGt9p/7J98t2q/5+S46L14MXjvWLic+yQaG5ke+ZLs64yQUBwo
- lIm01xLWpGFh6K2nJpH536ME6vSGFzr3ZgJ1+g3a5BlTklf0GQwYSid9LZJAUDSB58V/
- KmMAzaXE4YNZYXxOFVb52wodXkX5gbFZ67sHepexgAhYx2HFrmovkGBSTL0qLR3urbRK
- 4AtVoOK+YWdqPpfZARCRQF/KYouzDM76uBFSO4CYhpOmZNjkCuviVK/pcyhdTjfOiK2o
- ilO+X5WogYcMBtVwW4mZJLu4QEGmZTuHI83jIWVnQZQoODnpB6y+LN6HMp4yu9klDzF1 8A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ep0bdnvjn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:05:42 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2298usJ3017660;
-        Wed, 9 Mar 2022 09:05:42 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ep0bdnvj5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:05:41 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22993aFK027470;
-        Wed, 9 Mar 2022 09:05:40 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3ekyg9088v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:05:40 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22995a0M10027380
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Mar 2022 09:05:36 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ABE1A5205A;
-        Wed,  9 Mar 2022 09:05:36 +0000 (GMT)
-Received: from [9.171.87.105] (unknown [9.171.87.105])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3D92752050;
-        Wed,  9 Mar 2022 09:05:36 +0000 (GMT)
-Message-ID: <eab904c4-608f-d3e2-9aae-51a9b56994bb@linux.ibm.com>
-Date:   Wed, 9 Mar 2022 10:05:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RESEND v2 0/5] memop selftest for storage key checking
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Thomas Huth <thuth@redhat.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220308125841.3271721-1-scgl@linux.ibm.com>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <20220308125841.3271721-1-scgl@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ceGAY2aMWb4ygWPGLEQNDZDS-Y20EoqU
-X-Proofpoint-ORIG-GUID: IddzAA4Fi7KZGqKO1XD6ywxclvE71a49
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 9 Mar 2022 04:07:28 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C3B16AA6C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:06:29 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id qa43so3375065ejc.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:06:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQyR0zO7n2luNlcmsiExWGwlTndourCo+FKtAyqqPd0=;
+        b=RLyN0r6C5YbfWHtydEn0F2Yo1Ilq1I2Ep9wUVOiTvXKcyPLOAG36T4ueMr4NK7nYfY
+         3/FS81WFD1a9DbwGwq9PYX/AvewP3TUox3RAdeZmlB0Vj1V7LVblIbwPe8bu57lQUV2f
+         gSrXqDIrBCB90gRTOicbO3AUCZJnv1iN5uimZtdUM610+cPluso1wYLF/YX++EMKP6gv
+         8sJ3Du8s+FqwaqCQnydgPJTdyqSKSUqgBZOfjZff+Fw+4EWZFRyvc4v6SZyFzs0QTYw/
+         5vk/4RiWTMatEBjNZ731rQ9uKjojh6oGKnO62ZqnIcJjGakJciV8ZP7biuyafWr5nvAg
+         YjDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQyR0zO7n2luNlcmsiExWGwlTndourCo+FKtAyqqPd0=;
+        b=plFj6npJV/zW6zXPQG7y8TnbvqVk7n//ycl8DgJcF54l9dSJRb0VYMHmALNGbZRT0/
+         MnGOrEjKBWf92ASqEfQyWyf1nJu6dABYv/kRUIPgLNhmlj6Y0Fj/nhHvSSvZ5M1wueO0
+         KKqBG6P1so5Q/tNoG9B29QpVt0XCQv8P785P2U/i2D4x+rZrZRqlt0lowZ82TngtETv8
+         /HS+j4I038etbhw6I/ip1Nb4YPNucEnrCeMpiPwfooxmNAWJjaV9RrTfUtLhxt6MJuIa
+         SlgAlAPDG7cspIQFxv2hAPKoRBNjrxZIc41jgOx42B4jRf69LXiqxnYp+KqdWwo49sGB
+         TA0A==
+X-Gm-Message-State: AOAM5331ejugSQx2HnLq29+JjUU7CKlw9UPTgj1TkPL2RS/SEVPLu92z
+        B/8SlZlP9qAo3zELfxqbBvCbHNZfi0EJDOmx
+X-Google-Smtp-Source: ABdhPJzA1/r17MIq+cc28OgCL3kMF/cCpX6eBCNvn19IDLs+wIkx2Jvfu4iue8sdQlon7LYrctH4ZQ==
+X-Received: by 2002:a17:907:6296:b0:6da:745b:7b40 with SMTP id nd22-20020a170907629600b006da745b7b40mr16849584ejc.750.1646816788283;
+        Wed, 09 Mar 2022 01:06:28 -0800 (PST)
+Received: from localhost.localdomain ([102.126.147.138])
+        by smtp.gmail.com with ESMTPSA id w22-20020a05640234d600b004165de83109sm518067edc.48.2022.03.09.01.06.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 01:06:27 -0800 (PST)
+From:   Hatim Muhammed <hatimmohammed369@gmail.com>
+X-Google-Original-From: Hatim Muhammed
+To:     linux-kernel@vger.kernel.org, greg@kroah.com
+Cc:     abbotti@mev.co.uk, hsweeten@visionengravers.com,
+        Hatim Muhammed <hatimmohammed369@gmail.com>
+Subject: [PATCH 6/7] [Staging]: Removed an unnecessary #if
+Date:   Wed,  9 Mar 2022 11:06:24 +0200
+Message-Id: <20220309090624.12696-1-hatimmohammed369@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-09_04,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- priorityscore=1501 suspectscore=0 phishscore=0 lowpriorityscore=0
- malwarescore=0 mlxlogscore=929 spamscore=0 impostorscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203090049
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 08.03.22 um 13:58 schrieb Janis Schoetterl-Glausch:
-> Refactor memop selftest and add tests.
-> Add storage key tests, both for success as well as failure cases.
-> Similarly, test both vcpu and vm ioctls.
-> 
-> v1 -> v2
->   * restructure commits
->   * get rid of test_* wrapper functions that hid vm.vm
->   * minor changes
-> 
-> v0 -> v2
->   * complete rewrite
-> 
-> v1: https://lore.kernel.org/kvm/20220217145336.1794778-1-scgl@linux.ibm.com/
-> v0: https://lore.kernel.org/kvm/20220211182215.2730017-11-scgl@linux.ibm.com/
-> 
-> Janis Schoetterl-Glausch (5):
->    KVM: s390: selftests: Split memop tests
->    KVM: s390: selftests: Add macro as abstraction for MEM_OP
->    KVM: s390: selftests: Add named stages for memop test
->    KVM: s390: selftests: Add more copy memop tests
->    KVM: s390: selftests: Add error memop tests
-> 
->   tools/testing/selftests/kvm/s390x/memop.c | 735 ++++++++++++++++++----
->   1 file changed, 617 insertions(+), 118 deletions(-)
-> 
-> 
-> base-commit: ee6a569d3bf64c9676eee3eecb861fb01cc11311
+From: Hatim Muhammed <hatimmohammed369@gmail.com>
 
-applied (with minor whitespace fixes). Will queue for kvms390/next.
+This removed #if had 1 as its condition, hence it's body will always
+execute and its #else block will never
+
+Signed-off-by: Hatim Muhammed <hatimmohammed369@gmail.com>
+---
+ drivers/comedi/drivers/s526.c | 49 -----------------------------------
+ 1 file changed, 49 deletions(-)
+
+diff --git a/drivers/comedi/drivers/s526.c b/drivers/comedi/drivers/s526.c
+index 9245c679a3c4..df9d240518ef 100644
+--- a/drivers/comedi/drivers/s526.c
++++ b/drivers/comedi/drivers/s526.c
+@@ -229,7 +229,6 @@ static int s526_gpct_insn_config(struct comedi_device *dev,
+ 		 */
+ 		devpriv->gpct_config[chan] = data[0];
+ 
+-#if 1
+ 		/*  Set Counter Mode Register */
+ 		val = data[1] & 0xffff;
+ 		outw(val, dev->iobase + S526_GPCT_MODE_REG(chan));
+@@ -246,54 +245,6 @@ static int s526_gpct_insn_config(struct comedi_device *dev,
+ 			 *      dev->iobase + S526_GPCT_CTRL_REG(chan));
+ 			 */
+ 		}
+-#else
+-		val = S526_GPCT_MODE_CTDIR_CTRL_QUAD;
+-
+-		/*  data[1] contains GPCT_X1, GPCT_X2 or GPCT_X4 */
+-		if (data[1] == GPCT_X2)
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX2;
+-		else if (data[1] == GPCT_X4)
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX4;
+-		else
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX1;
+-
+-		/*  When to take into account the indexpulse: */
+-		/*
+-		 * if (data[2] == GPCT_IndexPhaseLowLow) {
+-		 * } else if (data[2] == GPCT_IndexPhaseLowHigh) {
+-		 * } else if (data[2] == GPCT_IndexPhaseHighLow) {
+-		 * } else if (data[2] == GPCT_IndexPhaseHighHigh) {
+-		 * }
+-		 */
+-		/*  Take into account the index pulse? */
+-		if (data[3] == GPCT_RESET_COUNTER_ON_INDEX) {
+-			/*  Auto load with INDEX^ */
+-			val |= S526_GPCT_MODE_AUTOLOAD_IXRISE;
+-		}
+-
+-		/*  Set Counter Mode Register */
+-		val = data[1] & 0xffff;
+-		outw(val, dev->iobase + S526_GPCT_MODE_REG(chan));
+-
+-		/*  Load the pre-load register */
+-		s526_gpct_write(dev, chan, data[2]);
+-
+-		/*  Write the Counter Control Register */
+-		if (data[3])
+-			outw(data[3] & 0xffff,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-
+-		/*  Reset the counter if it is software preload */
+-		if ((val & S526_GPCT_MODE_AUTOLOAD_MASK) ==
+-		    S526_GPCT_MODE_AUTOLOAD_NONE) {
+-			/*  Reset the counter */
+-			outw(S526_GPCT_CTRL_CT_RESET,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-			/*  Load the counter from PR0 */
+-			outw(S526_GPCT_CTRL_CT_LOAD,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-		}
+-#endif
+ 		break;
+ 
+ 	case INSN_CONFIG_GPCT_SINGLE_PULSE_GENERATOR:
+-- 
+2.35.1
+
