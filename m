@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4441C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4A5C3527B
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237681AbiCIQt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:49:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        id S237740AbiCIQtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:49:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237742AbiCIQbG (ORCPT
+        with ESMTP id S239188AbiCIQcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:06 -0500
+        Wed, 9 Mar 2022 11:32:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A04F18E3F3;
-        Wed,  9 Mar 2022 08:25:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D54E1A907C;
+        Wed,  9 Mar 2022 08:27:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D92D6B82020;
-        Wed,  9 Mar 2022 16:25:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB20C36AED;
-        Wed,  9 Mar 2022 16:24:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F143B82020;
+        Wed,  9 Mar 2022 16:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1E58C340EC;
+        Wed,  9 Mar 2022 16:26:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843099;
-        bh=bQKb/8DrWNMbBis+IalTjpk+vmrHXhZPKgQ8CXaTJww=;
+        s=k20201202; t=1646843215;
+        bh=dORWSbmUuQnkXIifjMZm1D83BGzCjw0RGmaor/Jk/98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GmIM56S1br4UuEkLIMU+RpBiin8/kU5cNGynnWz5HokzDZlzLekeT9q8VemzRikqR
-         7BJwaHXsKkrNytfUgLX1XxZtePgXfMLywxqLSxxi04q/VPR5F/gwf40bAo4POPev75
-         1KUevVIYsEUOyqRSRXP4mdMlDKiFlrrDgMewMBFDlFLF3fOuWDuV7hn7kSbpMOggBq
-         lKmUA0gyX2YHUqcRDVF4Nu4gtS/URNBb61pcr5g83vz4E+8NAM1q1aVZh9z9CPdtb4
-         Llg0xJ1xCLVYOL/5UIcGQ2dANv2dWF97uYntr4oMDydwql5VJGgDlG21ePTikIEWMs
-         LaQRiVBnWiBAw==
+        b=DDB2y88N5fXy9+BQG9j+TB+MhnvVshrgqSomuIJVK4VSr7zHDqkyQH8EofREwIdBr
+         jwKRb0eG3oPfSbu5IlAYMRC8GZfWiHZphWdxPIsQ2KbqHOzQ+1UEOwB2iSGg5x8K0/
+         X2PUVuFabxteA2+gE1NM1TsrJXgOOXegxggzpqPRRXhOYInkkegwaJ1Ex0HG2sy0GK
+         jniaCjG6w1xuXBjh/83eZ/WfECDCaqNoDpsgJT8csWDJZnYBNJLb272t5ydLe+3j1L
+         QtK647QwNKBEu2XXq8hAtCEA0JjZy6OpauSFIWY+pfEsqrlp3vpq+s2CPBIyoewnie
+         ra88AzXT9/J4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 17/19] sfc: extend the locking on mcdi->seqno
-Date:   Wed,  9 Mar 2022 11:23:34 -0500
-Message-Id: <20220309162337.136773-17-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 07/12] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Wed,  9 Mar 2022 11:26:12 -0500
+Message-Id: <20220309162618.137226-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
-References: <20220309162337.136773-1-sashal@kernel.org>
+In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
+References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,38 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-seqno could be read as a stale value outside of the lock. The lock is
-already acquired to protect the modification of seqno against a possible
-race condition. Place the reading of this value also inside this locking
-to protect it against a possible race condition.
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/mcdi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index 2713300343c7..ec551def5835 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -163,9 +163,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
- 	spin_lock_bh(&mcdi->iface_lock);
- 	++mcdi->seqno;
-+	seqno = mcdi->seqno & SEQ_MASK;
- 	spin_unlock_bh(&mcdi->iface_lock);
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index e7cffd0cc361..3557ff9ecd82 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1692,6 +1692,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
--	seqno = mcdi->seqno & SEQ_MASK;
- 	xflags = 0;
- 	if (mcdi->mode == MCDI_MODE_EVENTS)
- 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
+ 
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
