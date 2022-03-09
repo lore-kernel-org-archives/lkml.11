@@ -2,359 +2,453 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF93C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237960AbiCIXMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S238109AbiCIXOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:14:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238543AbiCIXMx (ORCPT
+        with ESMTP id S234634AbiCIXN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:12:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6256A122218;
-        Wed,  9 Mar 2022 15:11:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E317E61CAE;
-        Wed,  9 Mar 2022 23:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF600C340EE;
-        Wed,  9 Mar 2022 23:11:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646867512;
-        bh=0UFSIxJXi7mSJwqiqhrBgQB58a7eclLhkZkwGFPtQhY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V9a9x+857jMnAdT71woVB5DT+F72X4XKraOrTUR0am4P90f1mfXyk+d7oNfsmPdx0
-         Gfwv9IkdwZ+Re0CwEcfT5kuM+whT7Fkg7FwdHHLFrc/8ro0Owxlgb/BnBeV1Fj57cM
-         3tVZhxdK4BkH0TyKyeo6lIeQSz5aS3fBGLUjpOw51DFuFvDaudGR7T9R1mKUG59uN1
-         80a67NJPm2KKOWTCiar4Se5ty2jvP2h4mYbS1UC+KzyHSdD/S8U18nCYGqTaITeMY/
-         pU2RyeegFuUFmW7ARF/EOguyO1u2BLTttiqPpsPuTDQnluxeICqh7j6riG9Ltwk70r
-         heIPLT+YzBGMA==
-Date:   Thu, 10 Mar 2022 01:11:07 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v8 5/5] certs: Allow root user to append signed hashes to
- the blacklist keyring
-Message-ID: <Yik0C2t7G272YZ73@iki.fi>
-References: <20210712170313.884724-1-mic@digikod.net>
- <20210712170313.884724-6-mic@digikod.net>
- <YidDznCPSmFmfNwE@iki.fi>
- <995fc93b-531b-9840-1523-21ae2adbe4ba@digikod.net>
- <YidX3jqNJeFfr1G1@iki.fi>
- <218eb9dc-d9bd-0173-5343-f44b58545aef@digikod.net>
- <YijPdDULqQipqhjT@iki.fi>
- <ea866d6d-228e-1250-47d4-46519a1abd30@digikod.net>
+        Wed, 9 Mar 2022 18:13:58 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDC6AC052;
+        Wed,  9 Mar 2022 15:12:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646867578; x=1678403578;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=CzX5fUe04+qtC5qlUYHJQXA4ixSlBJF4w8Ltzpt2og8=;
+  b=L+Ass3wMt8EAaSXPeFSUOwLNoiSPcXEJsQx79wo8l1qvmFASQKBbwLbr
+   ETegseoGMrnDlWoNLsxuiPpQPHsZv6Yg19M7MY8P0WaO/Q6piaQgQTqbe
+   OL5U+U/DKwBsOyXg9c9Kd6I0lD4tspoXHuojGFjGw+fP0W2FEEuWPbF24
+   2kl8zOlWwZUPlqyltviL72mWGLKv39bPOALLCZjS8gvMe1wrafNklb8XB
+   UIl3uSeAMaREkSlksWtyGAm30bpL/ZJC2SGY3Wew/HIpzi0qGYSGgNGJn
+   rX3a4ax2G1fdNvxbJJkcITIpCu7nlaWzEUhxVEfKvO0dEKvVfZ6Ksw1vx
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255056297"
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="255056297"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 15:12:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="578570465"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga001.jf.intel.com with ESMTP; 09 Mar 2022 15:12:58 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Mar 2022 15:12:57 -0800
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Mar 2022 15:12:57 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Wed, 9 Mar 2022 15:12:57 -0800
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Wed, 9 Mar 2022 15:12:57 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hNnXS+eLvk6VM+9zYu59dcbjn3TB+XLGd0Al9rcqi5xVov12skSZQO6Y+GBRQ3slMwEfk+7+GAQWemtDkQHPgrui0hii37w1JBkpWfOfIx5LcAYrsmCwPZaA7q/DdQk+wqRFodzDMbOrkmcAsSRqTWB7FnvKRtSGCEtudzkwSQGr5bhMRfHoTNqny0UPaH4kvEzRKr7VwqAwfS1YkbiPmk0tsb/37qLUWGtuOaEckK3kb4rcYM8LVbm5Uh0HPBc7izPfedH/5Y0R9t4uh2qvPKfzbTXbL0sV4LezEbuqTGKFF3yGwiWSmUL9phbOhYR+32QIuo6jqQmIjD4NfLYHUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4Mi68G+cNmKqwgq8rsmxkWbSaXdKMHh1ZdNAcn0q1Uc=;
+ b=TCqb6XkdXnVxQ5P/eWVqU/kBB9HKs1sHn9mz5YFp5IBWHmjpUdwhCW/mn/caOFbI98bbWMGq7Di6KMo2X8IR8SjhwROVU2nq2VlgIYRAY/MaXi+PfnfJ6CrJjrWnfoJUg8ebGSvc7f0vklDR9WNYhgXi1tY2nOI/DN5CgGJBJYYxp0xqpLLIfvmS9OR31eTyNLL3YS+h94Aq432HlpU7tauZGhtm6f2EUG9FMQ3MDxBOPoEi7yt14PGrEwaevzbT36h2L1onf48fxURSGgLMQTKs345hR3HDfUv2leqf5cUhJ3D05MKMY1DE3YHaUcN+KlGaaQhzhVU+6KwtXDgsKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB4855.namprd11.prod.outlook.com (2603:10b6:510:41::12)
+ by CH2PR11MB4296.namprd11.prod.outlook.com (2603:10b6:610:3c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Wed, 9 Mar
+ 2022 23:12:54 +0000
+Received: from PH0PR11MB4855.namprd11.prod.outlook.com
+ ([fe80::c044:86e4:5f8:e345]) by PH0PR11MB4855.namprd11.prod.outlook.com
+ ([fe80::c044:86e4:5f8:e345%5]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
+ 23:12:54 +0000
+Message-ID: <c6a9632e-cdcb-cf05-183e-a124e9cec0e2@intel.com>
+Date:   Wed, 9 Mar 2022 15:12:51 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 1/2] x86/fpu: Add a helper to prepare AMX state for
+ low-power CPU idle
+Content-Language: en-CA
+To:     Dave Hansen <dave.hansen@intel.com>,
+        <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        <linux-pm@vger.kernel.org>
+CC:     <tglx@linutronix.de>, <dave.hansen@linux.intel.com>,
+        <peterz@infradead.org>, <bp@alien8.de>, <rafael@kernel.org>,
+        <ravi.v.shankar@intel.com>
+References: <20220309223431.26560-1-chang.seok.bae@intel.com>
+ <20220309223431.26560-2-chang.seok.bae@intel.com>
+ <bde83c5f-ffe9-d548-de08-de3e14738bf0@intel.com>
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+In-Reply-To: <bde83c5f-ffe9-d548-de08-de3e14738bf0@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PH0PR07CA0043.namprd07.prod.outlook.com
+ (2603:10b6:510:e::18) To PH0PR11MB4855.namprd11.prod.outlook.com
+ (2603:10b6:510:41::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ea866d6d-228e-1250-47d4-46519a1abd30@digikod.net>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b9e6a6a-3337-439e-4e2b-08da02225741
+X-MS-TrafficTypeDiagnostic: CH2PR11MB4296:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <CH2PR11MB42961514513197AF85E23E86D80A9@CH2PR11MB4296.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ezF14f2lWYfagAar8mNUpKfUjfxgEGbnDco+Nf6TwncvtNZoflITDvopZ/V5n6Olwzma6181VWEqQ2a3C0FoEEzoznAJUEEVNZKn5TXVG5siQka+UQOmYvVMWAEtSj6zsx97DLNg+mv0Px4vz6/JWLn+EYDoXIzRNf10nF9yvOZzptC+4odY+VeewbhYvYOHvsE87oArqOPAnGgRxWE0LwGKM7FNZKNa7PrOZLGqHRiCpdY1B2kBnmcAxzzqlMvpxHApJi6Xa0KCsnji8TOPcHqI8KExN23yx9M6XPXrP14BO1JExjxMXyESln9dv8PryXs5l9AL8yCxzlCybks5FIIehHJeQtQWMbH0YPXfVgIp77H57naJ7VwOwJo8v+Dmb3oFdQ+5GDUmbHN9MgNR7phaCkeQFJ9f/tUAVAbDZqb1UURrxK/gdkOZ9dC4EzpoSQcY+bCHenCh37TYgboWLPFNr2/q6e/CH6QgCj5x4poNb/qaFID0MbikXZKo7s5ffQQlaoLrb3N3EyfH2zKm7MTH3e+MOf3ePQtxFJGYQnSzdH2ychVVQcWsvWKVwGLeYD/qsHhVvWy7/pHEiqzuDbZVC9Ioom4JesQUuxtZGEuoxU31qUAWLUh5CRGCy5dAtI1w3L3a4Dbx0c35KbrpkEu36ogmZ52FVV1+Gty0N6YHh/qdkmfCs3Gbua52OpkzMqog632h+m87idzte4Z8hgpnsEzVSfuC7q/aM0qN4QDhEswNi5d6TZB6prZJJEahot31x0n2+YQsYxes7cWpOnEXsCy3QfRqo/9c9q8NuaICVit2sXzujWjcyH4vUlja0ILa+jIiG20cRcZ14WMiq3D562o+TCrF/qYudh3qkYQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4855.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(5660300002)(26005)(30864003)(6512007)(6666004)(6486002)(6506007)(31686004)(316002)(53546011)(83380400001)(4326008)(31696002)(8676002)(86362001)(508600001)(8936002)(66946007)(66476007)(66556008)(45080400002)(82960400001)(2906002)(2616005)(966005)(36756003)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MklhWGJTTUZrTEwvT2JOOG5Ba0lSWEFqdVVvVVlRL0tCN1M0cy9Pa1h4OCtB?=
+ =?utf-8?B?NG8wMGVOZWJtS3FvektUTEdOM1RQbWhPSzAwRzFQRXNSNDdKNDJ4ZHdCd2h3?=
+ =?utf-8?B?VU1nUW1ycGhFNTA4SzQ4V3JzV3d5NVJJTDF0cUpSdUFzc1dQNHRjQ3VJR3hj?=
+ =?utf-8?B?RXp1OUx2aDBKMDIrZzNTaUFSU3N0anVFSVRTZmdUSU44enY3Wk1ZMDB2VUFs?=
+ =?utf-8?B?UmtLemxjQzh1eFNLQnpMQzZrQ1J2SW9ORmpsVElBNjNuRGJrNllLL0xuSTRW?=
+ =?utf-8?B?R0loYktuVEhUZzgwWFEwZDNYSitFQk1nL3hsTEpCKzhnejN6UUpRS1RTbFFl?=
+ =?utf-8?B?K2xOUEFRMVg5UHZWZDhOeWE4VGllam03TlE3N3ZjOGFlZTZsMW1paGlnWDFR?=
+ =?utf-8?B?Vm41RHY1TEI3WFhVTVJzZGNKMi9hdWxYVTRQVTIrUDVXd3psUUdVS2ppZndG?=
+ =?utf-8?B?U1k0WDJnVWhZd3Foa1BmR2ZHSUxmdHBqUXRIQ0ZPOGNvNlp1RHlqMW16MHht?=
+ =?utf-8?B?T0Njakl0VlR1cGdBOGIwcXBUaGpRbUpmc1FUQk9LeGJuM3kyeHVIRUhRamJH?=
+ =?utf-8?B?cHViUGQzL3JvUWRGWVRCb1haR3k3WS9NUGUzUzRvTGVxV3FhaU9xajV6QTE5?=
+ =?utf-8?B?bHR3d2UzQXY0UE52a21oYm4zZXV0N2MvbFQ3T3FadEFtci9yYjFXM0xhbUNS?=
+ =?utf-8?B?OGFJdUpEWGxYN2hVdldFbzhwRVdYTmRqREo5NWJyNy9OOTAzWURqaHFtUXVL?=
+ =?utf-8?B?bGg2Ky8rY0RveTMrRjdOc0h0YlIxOWdCZkJuUEpNRnF4N05yek9keUU2N25x?=
+ =?utf-8?B?a0VDREdrVGZWWWhLSDdjZFVCV3BFV3VrQmtEOFczTWlCcGsrcGY3M1ZUb3FV?=
+ =?utf-8?B?djgzN091NE1PcXcxSSs1dHd1dFBLQzlSUG81MlFUaDE1WGF1ZG95ZlA5eEU2?=
+ =?utf-8?B?cjBnaWU4dEEzYURPQlRyaGxtdkkrSFp2YTE2NjEzNGRaWU1sQm10TERDaXRE?=
+ =?utf-8?B?c1ZEZkJDU1VXNnhmc3NTaDdiVStMNFJLcjFUbURXYUI1aXlib01ia1ZZYlJ2?=
+ =?utf-8?B?UisrRitsKy95NnJMZ1d2eExNS005R21RdDV1Q21sd2RPMjBQU0wyK2JSRG0w?=
+ =?utf-8?B?TjhEeHhpU1VuSHVJdzllRklNRCtCZmJLV2lsak1YdGJjSXJqQ1d6Nkg2WUxy?=
+ =?utf-8?B?cSttNWdseXUrSzZGSEZxNy8xSXJqVzlILzhQMkpucFUwMW5kdVhvbHNSMEli?=
+ =?utf-8?B?L0hWMCtQZ0RIbVYyVnl5ckZMcFF2U05XbFBueFdkQmY0L3V1K2Fsa2t5T25T?=
+ =?utf-8?B?c044TDVvVW42T3RxREpFZXRMV1FzZTNLRTlBblV3TXZrazR1bWtrMmF6eFRl?=
+ =?utf-8?B?c25BT3dlRlMxdE9HUFJMZURWZnhpVktjL25LZ2hueUdMNHlma2c2VHAxZmJa?=
+ =?utf-8?B?YUpwQmFFUE4yUmJpQkQzekZzdGFFdS9ubmRvZE1UbnhtbjZqWktHUFRiZlVu?=
+ =?utf-8?B?QmY0QmpwcjZwdllQNG0vS0duNW80S3Eyb3MxaTFRbWVxbDFKUlh4aEw5ZGR0?=
+ =?utf-8?B?d0lTcnYrRGVDa282WUhuN045Z0VqdXNtRFBNOWljdmZzbDNuSnNieElTNjBp?=
+ =?utf-8?B?VjI1QklGSWMyQy9zaVhPai9hZWlnUFB2QTdPczZjVTVsYVBjZUpjbnpsdjNa?=
+ =?utf-8?B?SFFWdGV1U3c2SGJPQXg3MWVFSkZKMkRvelZyTUMxMzRyOFM5MUxyWFVISmlB?=
+ =?utf-8?B?R0hGS1czSmRlbjVXblNpR3BBWFZNRHF3Y1ZzeU5MMk5XY2tOU2dPdjdKa3Fw?=
+ =?utf-8?B?UDRXWlZydDB5L1h6Z1lwTWlUQWNvZUo2RVZIaGRqUlU3dTl6NGhlL0N4Rk51?=
+ =?utf-8?B?QU1PQ0g2dC96emRtRWU1K21MR1FBbUxBdjczQnJGazZ5ZERlanBtenNvUkNO?=
+ =?utf-8?B?TGFQQ2ppQTBKcFpNUzg2WjF3ZVpZNGo3aXBtTHBDTk5RZXQwK0hsNWh6VUZt?=
+ =?utf-8?B?ejNpMGcvK3FSeDJ6RE02T0VTU093SjA1elJvdlRUUjRVaXQzM0gwOTNNZ2dN?=
+ =?utf-8?B?alR3VDVDcnhZT0V6U05pbDR3VzkwRmdKYTZ4MC9BczhNY2g2a3dIRlJkWS9Z?=
+ =?utf-8?B?QXZRMXl3bTFSVzR4aXZFTkp5dVc5cjFuOXdZaWNzSjlzNlFzSjJNWk5yV2Rz?=
+ =?utf-8?B?bTYzWWZkTlllOXhPNVFMbmlqb09yRUpSQ29iTXdCMmJMNUhVeDBzaVFBMmp4?=
+ =?utf-8?Q?0Kc2+rB/ozKPtyL1XwGIZD2R3WPy8ANFDbd2JjE1ao=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b9e6a6a-3337-439e-4e2b-08da02225741
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4855.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 23:12:54.3481
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: w9/c77W4OJKGQ10EFFVcw5FJMzlOWbiDqR5e3HrC62Ss/aCyqjtJWzkMgjQ4vGhDgCXEXj3mNStmv+tgEtHg0EXCrsM3TCM+xr7cfsdimws=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR11MB4296
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 07:36:50PM +0100, Mickaël Salaün wrote:
+On 3/9/2022 2:46 PM, Dave Hansen wrote:
+> On 3/9/22 14:34, Chang S. Bae wrote:
+>> +/*
+>> + * Initialize register state that may prevent from entering low-power idle.
+>> + * This function will be invoked from the cpuidle driver only when needed.
+>> + */
+>> +void fpu_idle_fpregs(void)
+>> +{
+>> +	if (!fpu_state_size_dynamic())
+>> +		return;
 > 
-> On 09/03/2022 17:01, Jarkko Sakkinen wrote:
-> > On Tue, Mar 08, 2022 at 05:02:23PM +0100, Mickaël Salaün wrote:
-> > > 
-> > > On 08/03/2022 14:19, Jarkko Sakkinen wrote:
-> > > > On Tue, Mar 08, 2022 at 01:18:28PM +0100, Mickaël Salaün wrote:
-> > > > > 
-> > > > > On 08/03/2022 12:53, Jarkko Sakkinen wrote:
-> > > > > > On Mon, Jul 12, 2021 at 07:03:13PM +0200, Mickaël Salaün wrote:
-> > > > > > > From: Mickaël Salaün <mic@linux.microsoft.com>
-> > > > > > > 
-> > > > > > > Add a kernel option SYSTEM_BLACKLIST_AUTH_UPDATE to enable the root user
-> > > > > > > to dynamically add new keys to the blacklist keyring.  This enables to
-> > > > > > > invalidate new certificates, either from being loaded in a keyring, or
-> > > > > > > from being trusted in a PKCS#7 certificate chain.  This also enables to
-> > > > > > > add new file hashes to be denied by the integrity infrastructure.
-> > > > > > > 
-> > > > > > > Being able to untrust a certificate which could have normaly been
-> > > > > > > trusted is a sensitive operation.  This is why adding new hashes to the
-> > > > > > > blacklist keyring is only allowed when these hashes are signed and
-> > > > > > > vouched by the builtin trusted keyring.  A blacklist hash is stored as a
-> > > > > > > key description.  The PKCS#7 signature of this description must be
-> > > > > > > provided as the key payload.
-> > > > > > > 
-> > > > > > > Marking a certificate as untrusted should be enforced while the system
-> > > > > > > is running.  It is then forbiden to remove such blacklist keys.
-> > > > > > > 
-> > > > > > > Update blacklist keyring, blacklist key and revoked certificate access rights:
-> > > > > > > * allows the root user to search for a specific blacklisted hash, which
-> > > > > > >      make sense because the descriptions are already viewable;
-> > > > > > > * forbids key update (blacklist and asymmetric ones);
-> > > > > > > * restricts kernel rights on the blacklist keyring to align with the
-> > > > > > >      root user rights.
-> > > > > > > 
-> > > > > > > See help in tools/certs/print-cert-tbs-hash.sh .
-> > > > > > > 
-> > > > > > > Cc: David Howells <dhowells@redhat.com>
-> > > > > > > Cc: David Woodhouse <dwmw2@infradead.org>
-> > > > > > > Cc: Eric Snowberg <eric.snowberg@oracle.com>
-> > > > > > > Cc: Jarkko Sakkinen <jarkko@kernel.org>
-> > > > > > > Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
-> > > > > > > Link: https://lore.kernel.org/r/20210712170313.884724-6-mic@digikod.net
-> > > > > > > ---
-> > > > > > > 
-> > > > > > > Changes since v6:
-> > > > > > > * Rebase on keys-cve-2020-26541-v3: commit ebd9c2ae369a ("integrity:
-> > > > > > >      Load mokx variables into the blacklist keyring").
-> > > > > > > 
-> > > > > > > Changes since v5:
-> > > > > > > * Rebase on keys-next, fix Kconfig conflict, and update the asymmetric
-> > > > > > >      key rights added to the blacklist keyring by the new
-> > > > > > >      add_key_to_revocation_list(): align with blacklist key rights by
-> > > > > > >      removing KEY_POS_WRITE as a safeguard, and add
-> > > > > > >      KEY_ALLOC_BYPASS_RESTRICTION to not be subject to
-> > > > > > >      restrict_link_for_blacklist() that only allows blacklist key types to
-> > > > > > >      be added to the keyring.
-> > > > > > > * Change the return code for restrict_link_for_blacklist() from -EPERM
-> > > > > > >      to -EOPNOTSUPP to align with asymmetric key keyrings.
-> > > > > > > 
-> > > > > > > Changes since v3:
-> > > > > > > * Update commit message for print-cert-tbs-hash.sh .
-> > > > > > > 
-> > > > > > > Changes since v2:
-> > > > > > > * Add comment for blacklist_key_instantiate().
-> > > > > > > ---
-> > > > > > >     certs/Kconfig     | 10 +++++
-> > > > > > >     certs/blacklist.c | 96 ++++++++++++++++++++++++++++++++++++-----------
-> > > > > > >     2 files changed, 85 insertions(+), 21 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/certs/Kconfig b/certs/Kconfig
-> > > > > > > index 0fbe184ceca5..e0e524b7eff9 100644
-> > > > > > > --- a/certs/Kconfig
-> > > > > > > +++ b/certs/Kconfig
-> > > > > > > @@ -103,4 +103,14 @@ config SYSTEM_REVOCATION_KEYS
-> > > > > > >     	  containing X.509 certificates to be included in the default blacklist
-> > > > > > >     	  keyring.
-> > > > > > > +config SYSTEM_BLACKLIST_AUTH_UPDATE
-> > > > > > > +	bool "Allow root to add signed blacklist keys"
-> > > > > > > +	depends on SYSTEM_BLACKLIST_KEYRING
-> > > > > > > +	depends on SYSTEM_DATA_VERIFICATION
-> > > > > > > +	help
-> > > > > > > +	  If set, provide the ability to load new blacklist keys at run time if
-> > > > > > > +	  they are signed and vouched by a certificate from the builtin trusted
-> > > > > > > +	  keyring.  The PKCS#7 signature of the description is set in the key
-> > > > > > > +	  payload.  Blacklist keys cannot be removed.
-> > > > > > > +
-> > > > > > >     endmenu
-> > > > > > > diff --git a/certs/blacklist.c b/certs/blacklist.c
-> > > > > > > index b254c87ceb3a..486ce0dd8e9c 100644
-> > > > > > > --- a/certs/blacklist.c
-> > > > > > > +++ b/certs/blacklist.c
-> > > > > > > @@ -15,6 +15,7 @@
-> > > > > > >     #include <linux/err.h>
-> > > > > > >     #include <linux/seq_file.h>
-> > > > > > >     #include <linux/uidgid.h>
-> > > > > > > +#include <linux/verification.h>
-> > > > > > >     #include <keys/system_keyring.h>
-> > > > > > >     #include "blacklist.h"
-> > > > > > >     #include "common.h"
-> > > > > > > @@ -26,6 +27,9 @@
-> > > > > > >      */
-> > > > > > >     #define MAX_HASH_LEN	128
-> > > > > > > +#define BLACKLIST_KEY_PERM (KEY_POS_SEARCH | KEY_POS_VIEW | \
-> > > > > > > +			    KEY_USR_SEARCH | KEY_USR_VIEW)
-> > > > > > > +
-> > > > > > >     static const char tbs_prefix[] = "tbs";
-> > > > > > >     static const char bin_prefix[] = "bin";
-> > > > > > > @@ -80,19 +84,51 @@ static int blacklist_vet_description(const char *desc)
-> > > > > > >     	return 0;
-> > > > > > >     }
-> > > > > > > -/*
-> > > > > > > - * The hash to be blacklisted is expected to be in the description.  There will
-> > > > > > > - * be no payload.
-> > > > > > > - */
-> > > > > > > -static int blacklist_preparse(struct key_preparsed_payload *prep)
-> > > > > > > +static int blacklist_key_instantiate(struct key *key,
-> > > > > > > +		struct key_preparsed_payload *prep)
-> > > > > > >     {
-> > > > > > > -	if (prep->datalen > 0)
-> > > > > > > -		return -EINVAL;
-> > > > > > > -	return 0;
-> > > > > > > +#ifdef CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE
-> > > > > > > +	int err;
-> > > > > > > +#endif
-> > > > > > > +
-> > > > > > > +	/* Sets safe default permissions for keys loaded by user space. */
-> > > > > > > +	key->perm = BLACKLIST_KEY_PERM;
-> > > > > > > +
-> > > > > > > +	/*
-> > > > > > > +	 * Skips the authentication step for builtin hashes, they are not
-> > > > > > > +	 * signed but still trusted.
-> > > > > > > +	 */
-> > > > > > > +	if (key->flags & (1 << KEY_FLAG_BUILTIN))
-> > > > > > > +		goto out;
-> > > > > > > +
-> > > > > > > +#ifdef CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE
-> > > > > > > +	/*
-> > > > > > > +	 * Verifies the description's PKCS#7 signature against the builtin
-> > > > > > > +	 * trusted keyring.
-> > > > > > > +	 */
-> > > > > > > +	err = verify_pkcs7_signature(key->description,
-> > > > > > > +			strlen(key->description), prep->data, prep->datalen,
-> > > > > > > +			NULL, VERIFYING_UNSPECIFIED_SIGNATURE, NULL, NULL);
-> > > > > > > +	if (err)
-> > > > > > > +		return err;
-> > > > > > > +#else
-> > > > > > > +	/*
-> > > > > > > +	 * It should not be possible to come here because the keyring doesn't
-> > > > > > > +	 * have KEY_USR_WRITE and the only other way to call this function is
-> > > > > > > +	 * for builtin hashes.
-> > > > > > > +	 */
-> > > > > > > +	WARN_ON_ONCE(1);
-> > > > > > > +	return -EPERM;
-> > > > > > > +#endif
-> > > > > > > +
-> > > > > > > +out:
-> > > > > > > +	return generic_key_instantiate(key, prep);
-> > > > > > >     }
-> > > > > > > -static void blacklist_free_preparse(struct key_preparsed_payload *prep)
-> > > > > > > +static int blacklist_key_update(struct key *key,
-> > > > > > > +		struct key_preparsed_payload *prep)
-> > > > > > >     {
-> > > > > > > +	return -EPERM;
-> > > > > > >     }
-> > > > > > >     static void blacklist_describe(const struct key *key, struct seq_file *m)
-> > > > > > > @@ -103,9 +139,8 @@ static void blacklist_describe(const struct key *key, struct seq_file *m)
-> > > > > > >     static struct key_type key_type_blacklist = {
-> > > > > > >     	.name			= "blacklist",
-> > > > > > >     	.vet_description	= blacklist_vet_description,
-> > > > > > > -	.preparse		= blacklist_preparse,
-> > > > > > > -	.free_preparse		= blacklist_free_preparse,
-> > > > > > > -	.instantiate		= generic_key_instantiate,
-> > > > > > > +	.instantiate		= blacklist_key_instantiate,
-> > > > > > > +	.update			= blacklist_key_update,
-> > > > > > >     	.describe		= blacklist_describe,
-> > > > > > >     };
-> > > > > > > @@ -154,8 +189,7 @@ static int mark_raw_hash_blacklisted(const char *hash)
-> > > > > > >     				   hash,
-> > > > > > >     				   NULL,
-> > > > > > >     				   0,
-> > > > > > > -				   ((KEY_POS_ALL & ~KEY_POS_SETATTR) |
-> > > > > > > -				    KEY_USR_VIEW),
-> > > > > > > +				   BLACKLIST_KEY_PERM,
-> > > > > > >     				   KEY_ALLOC_NOT_IN_QUOTA |
-> > > > > > >     				   KEY_ALLOC_BUILT_IN);
-> > > > > > >     	if (IS_ERR(key)) {
-> > > > > > > @@ -232,8 +266,10 @@ int add_key_to_revocation_list(const char *data, size_t size)
-> > > > > > >     				   NULL,
-> > > > > > >     				   data,
-> > > > > > >     				   size,
-> > > > > > > -				   ((KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW),
-> > > > > > > -				   KEY_ALLOC_NOT_IN_QUOTA | KEY_ALLOC_BUILT_IN);
-> > > > > > > +				   KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH
-> > > > > > > +				   | KEY_USR_VIEW,
-> > > > > > > +				   KEY_ALLOC_NOT_IN_QUOTA | KEY_ALLOC_BUILT_IN
-> > > > > > > +				   | KEY_ALLOC_BYPASS_RESTRICTION);
-> > > > > > >     	if (IS_ERR(key)) {
-> > > > > > >     		pr_err("Problem with revocation key (%ld)\n", PTR_ERR(key));
-> > > > > > > @@ -260,25 +296,43 @@ int is_key_on_revocation_list(struct pkcs7_message *pkcs7)
-> > > > > > >     }
-> > > > > > >     #endif
-> > > > > > > +static int restrict_link_for_blacklist(struct key *dest_keyring,
-> > > > > > > +		const struct key_type *type, const union key_payload *payload,
-> > > > > > > +		struct key *restrict_key)
-> > > > > > > +{
-> > > > > > > +	if (type == &key_type_blacklist)
-> > > > > > > +		return 0;
-> > > > > > > +	return -EOPNOTSUPP;
-> > > > > > > +}
-> > > > > > > +
-> > > > > > >     /*
-> > > > > > >      * Initialise the blacklist
-> > > > > > >      */
-> > > > > > >     static int __init blacklist_init(void)
-> > > > > > >     {
-> > > > > > >     	const char *const *bl;
-> > > > > > > +	struct key_restriction *restriction;
-> > > > > > >     	if (register_key_type(&key_type_blacklist) < 0)
-> > > > > > >     		panic("Can't allocate system blacklist key type\n");
-> > > > > > > +	restriction = kzalloc(sizeof(*restriction), GFP_KERNEL);
-> > > > > > > +	if (!restriction)
-> > > > > > > +		panic("Can't allocate blacklist keyring restriction\n");
-> > > > > > 
-> > > > > > 
-> > > > > > This prevents me from taking this to my pull request. In moderns standards,
-> > > > > > no new BUG_ON(), panic() etc. should never added to the kernel.
-> > > > > > 
-> > > > > > I missed this in my review.
-> > > > > > 
-> > > > > > This should rather be e.g.
-> > > > > > 
-> > > > > >            restriction = kzalloc(sizeof(*restriction), GFP_KERNEL);
-> > > > > > 	if (!restriction) {
-> > > > > > 		pr_err("Can't allocate blacklist keyring restriction\n");
-> > > > > >                    return 0;
-> > > > > >            }
-> > > > > > 
-> > > > > > Unfortunately I need to drop this patch set, because adding new panic()
-> > > > > > is simply a no-go.
-> > > > > 
-> > > > > I agree that panic() is not great in general, but I followed the other part
-> > > > > of the code (just above) that do the same. This part of the kernel should
-> > > > > failed if critical memory allocation failed at boot time (only). It doesn't
-> > > > > impact the kernel once it is running. I don't think that just ignoring this
-> > > > > error with return 0 is fine, after all it's a critical error right?
-> > > > 
-> > > > It's not good reason enough to crash the whole kernel, even if it is a
-> > > > critical error (e.g. run-time foresincs). Even WARN() is not recommended
-> > > > these days [*].
-> > > 
-> > > I think that what Greg said in this email is that WARN*() should only be
-> > > used for cases that should never happen, it is definitely not deprecated,
-> > > but WARN_ON_ONCE() may be a better idea though. WARN*() helps detect such
-> > > thought-to-be-impossible cases, that can happen e.g. with code refactoring.
-> > > 
-> > > A lot of initialization/boot code (e.g. without user space nor external
-> > > interactions, mostly __init functions) do panic if there is unexpected and
-> > > unrecoverable errors like failed memory allocations. I think handling such
-> > > errors otherwise would be more complex for no benefit. Moreover, delegating
-> > > such error handling to user space could create new (silent) issues.
-> > 
-> > To crash the whole kernel, you should be able to clearly explain why it
-> > makes sense in the situation.
-> 
-> If there is no enough memory to allocate 24 bytes (struct key_restriction)
-> during early boot, I really doubt the kernel can do much.
-> 
-> > 
-> > > > 
-> > > > For the existing panic()-statements: I'm happy to review patches that
-> > > > render them out. >
-> > > > Not sure tho, if this fails should it be then "everything blacklisted".
-> > > > Just one thing to consider.
-> > > 
-> > > Well, if it fail it will be "nothing will work afterwards". Do you have a
-> > > working and useful scenario for this kind of error?
-> > 
-> > So you have zero chances to get a shell without blacklist just to do
-> > kernel forensics?
-> 
-> Right, I don't think the kernel can launch any process (nor continue early
-> boot) if it cannot allocate 24 bytes.
+> Is this check just an optimization?  
 
-initcall is just wrong layer to choose to crash the kernel. It should be
-either do_initcall_level() or do_one_initcall() that should care about
-this (or not care). You can print error message and return -ENODEV;
+No. 0day reported the splat [3] with the earlier code in v1 [1]:
 
-BR, Jarkko
+if (fpu_state_size_dynamic() && (xfeatures_in_use() & 
+XFEATURE_MASK_XTILE)) { ... }
+
+It looks like GCC-9 reordered to hit XGETBV without checking 
+fpu_state_size_dynamic(). So this line was separated to avoid that.
+
+> I'm having trouble imagining a situation where we would have:
+> 
+> 	(xfeatures_in_use() & XFEATURE_MASK_XTILE) == true
+> but
+> 	fpu_state_size_dynamic() == false
+
+Yes, I don't think we have such situation in practice.
+
+> 
+>> +	if (xfeatures_in_use() & XFEATURE_MASK_XTILE) {
+>> +		tile_release();
+>> +		fpregs_deactivate(&current->thread.fpu);
+>> +	}
+>> +}
+> 
+> xfeatures_in_use() isn't exactly expensive either.
+
+True.
+
+Thanks,
+Chang
+
+[1] 
+https://lore.kernel.org/lkml/20211104225226.5031-3-chang.seok.bae@intel.com/
+
+[2] 
+https://lore.kernel.org/lkml/20211104225226.5031-4-chang.seok.bae@intel.com/
+
+[3] 0-day report:
+
+FYI, we noticed the following commit (built with gcc-9):
+
+commit: 66951fd5ad7a2aabae7dc54be46a4eac667a082c ("x86/fpu: Prepare AMX 
+state for CPU idle") internal-devel devel-hourly-20220113-144327
+
+[chang: this refers to [2]. ]
+...
+
+on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 
+-m 16G
+
+caused below changes (please refer to attached dmesg/kmsg for entire 
+log/backtrace):
+
+[    1.767825][    T1] x86: Booting SMP configuration:
+[    1.768363][    T1] .... node  #0, CPUs:      #1
+[    0.113687][    T0] kvm-clock: cpu 1, msr 38a24a041, secondary cpu clock
+[    0.113687][    T0] masked ExtINT on CPU#1
+[    0.113687][    T0] smpboot: CPU 1 Converting physical 0 to logical die 1
+[    1.780411][    T0] general protection fault, maybe for address 0x1: 
+0000 [#1] SMP KASAN PTI
+[    1.781350][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 
+5.16.0-00004-g66951fd5ad7a #1
+[    1.781350][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 
+1996), BIOS 1.12.0-1 04/01/2014
+[ 1.781350][ T0] RIP: 0010:fpu_idle_fpregs 
+(kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:12 
+kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:32 
+kbuild/src/consumer/arch/x86/kernel/fpu/core.c:772)
+[ 1.781350][ T0] Code: 89 74 24 04 e8 d4 6e 82 00 8b 74 24 04 e9 f8 fe 
+ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 eb 01 c3 b9 01 00 
+00 00 <0f> 01 d0 a9 00 00 06 00 75 01 c3 55 53 c4 e2 78 49 c0 65 48 8b 
+2c All code ========
+    0:   89 74 24 04              mov    %esi,0x4(%rsp)
+    4:   e8 d4 6e 82 00           callq  0x826edd
+    9:   8b 74 24 04              mov    0x4(%rsp),%esi
+    d:   e9 f8 fe ff ff           jmpq   0xffffffffffffff0a
+   12:   66 66 2e 0f 1f 84 00     data16 nopw %cs:0x0(%rax,%rax,1)
+   19:   00 00 00 00
+   1d:   0f 1f 44 00 00           nopl   0x0(%rax,%rax,1)
+   22:   eb 01                    jmp    0x25
+   24:   c3                       retq
+   25:   b9 01 00 00 00           mov    $0x1,%ecx
+   2a:*  0f 01 d0                 xgetbv           <-- trapping instruction
+   2d:   a9 00 00 06 00           test   $0x60000,%eax
+   32:   75 01                    jne    0x35
+   34:   c3                       retq
+   35:   55                       push   %rbp
+   36:   53                       push   %rbx
+   37:   c4 e2 78 49              (bad)
+   3b:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   3f:   2c                       .byte 0x2c
+
+Code starting with the faulting instruction 
+===========================================
+    0:   0f 01 d0                 xgetbv
+    3:   a9 00 00 06 00           test   $0x60000,%eax
+    8:   75 01                    jne    0xb
+    a:   c3                       retq
+    b:   55                       push   %rbp
+    c:   53                       push   %rbx
+    d:   c4 e2 78 49              (bad)
+   11:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   15:   2c                       .byte 0x2c
+[    1.781350][    T0] RSP: 0000:ffffffff96007e50 EFLAGS: 00010047
+[    1.781350][    T0] RAX: 0000000000000001 RBX: ffffffff96022280 RCX: 
+0000000000000001
+[    1.781350][    T0] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 
+ffffffff96db7da0
+[    1.781350][    T0] RBP: 0000000000000000 R08: 0000000000000001 R09: 
+fffffbfff2db6fb5
+[    1.781350][    T0] R10: ffffffff96db7da7 R11: fffffbfff2db6fb4 R12: 
+fffffbfff2c04450
+[    1.781350][    T0] R13: ffffffff96db7da0 R14: dffffc0000000000 R15: 
+0000000000000000
+[    1.781350][    T0] FS:  0000000000000000(0000) 
+GS:ffff88839d600000(0000) knlGS:0000000000000000
+[    1.781350][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    1.781350][    T0] CR2: ffff88843ffff000 CR3: 0000000388a14000 CR4: 
+00000000000406f0
+[    1.781350][    T0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+0000000000000000
+[    1.781350][    T0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
+0000000000000400
+[    1.781350][    T0] Call Trace:
+[    1.781350][    T0]  <TASK>
+[ 1.781350][ T0] ? arch_cpu_idle_enter 
+(kbuild/src/consumer/arch/x86/kernel/process.c:712)
+[ 1.781350][ T0] ? do_idle (kbuild/src/consumer/kernel/sched/idle.c:294)
+[ 1.781350][ T0] ? _raw_read_unlock_irqrestore 
+(kbuild/src/consumer/kernel/locking/spinlock.c:161)
+[ 1.781350][ T0] ? arch_cpu_idle_exit+0xc0/0xc0 [ 1.781350][ T0] ? 
+schedule (kbuild/src/consumer/arch/x86/include/asm/bitops.h:207 
+(discriminator 1) 
+kbuild/src/consumer/include/asm-generic/bitops/instrumented-non-atomic.h:135 
+(discriminator 1) kbuild/src/consumer/include/linux/thread_info.h:118 
+(discriminator 1) kbuild/src/consumer/include/linux/sched.h:2120 
+(discriminator 1) kbuild/src/consumer/kernel/sched/core.c:6328 
+(discriminator 1)) [ 1.781350][ T0] ? cpu_startup_entry 
+(kbuild/src/consumer/kernel/sched/idle.c:402 (discriminator 1)) [ 
+1.781350][ T0] ? start_kernel (kbuild/src/consumer/init/main.c:1137)
+[ 1.781350][ T0] ? secondary_startup_64_no_verify 
+(kbuild/src/consumer/arch/x86/kernel/head_64.S:283)
+[    1.781350][    T0]  </TASK>
+[    1.781350][    T0] Modules linked in:
+[    1.781350][    T0] ---[ end trace 2bef003d678c9f1a ]---
+[    1.781350][    T0] general protection fault, maybe for address 0x1: 
+0000 [#2] SMP KASAN PTI
+[    1.781350][    T0] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G      D 
+          5.16.0-00004-g66951fd5ad7a #1
+[ 1.781350][ T0] RIP: 0010:fpu_idle_fpregs 
+(kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:12 
+kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:32 
+kbuild/src/consumer/arch/x86/kernel/fpu/core.c:772)
+[    1.781350][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 
+1996), BIOS 1.12.0-1 04/01/2014
+[ 1.781350][ T0] Code: 89 74 24 04 e8 d4 6e 82 00 8b 74 24 04 e9 f8 fe 
+ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 eb 01 c3 b9 01 00 
+00 00 <0f> 01 d0 a9 00 00 06 00 75 01 c3 55 53 c4 e2 78 49 c0 65 48 8b 
+2c All code ========
+    0:   89 74 24 04              mov    %esi,0x4(%rsp)
+    4:   e8 d4 6e 82 00           callq  0x826edd
+    9:   8b 74 24 04              mov    0x4(%rsp),%esi
+    d:   e9 f8 fe ff ff           jmpq   0xffffffffffffff0a
+   12:   66 66 2e 0f 1f 84 00     data16 nopw %cs:0x0(%rax,%rax,1)
+   19:   00 00 00 00
+   1d:   0f 1f 44 00 00           nopl   0x0(%rax,%rax,1)
+   22:   eb 01                    jmp    0x25
+   24:   c3                       retq
+   25:   b9 01 00 00 00           mov    $0x1,%ecx
+   2a:*  0f 01 d0                 xgetbv           <-- trapping instruction
+   2d:   a9 00 00 06 00           test   $0x60000,%eax
+   32:   75 01                    jne    0x35
+   34:   c3                       retq
+   35:   55                       push   %rbp
+   36:   53                       push   %rbx
+   37:   c4 e2 78 49              (bad)
+   3b:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   3f:   2c                       .byte 0x2c
+
+Code starting with the faulting instruction 
+===========================================
+    0:   0f 01 d0                 xgetbv
+    3:   a9 00 00 06 00           test   $0x60000,%eax
+    8:   75 01                    jne    0xb
+    a:   c3                       retq
+    b:   55                       push   %rbp
+    c:   53                       push   %rbx
+    d:   c4 e2 78 49              (bad)
+   11:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   15:   2c                       .byte 0x2c
+[ 1.781350][ T0] RIP: 0010:fpu_idle_fpregs 
+(kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:12 
+kbuild/src/consumer/arch/x86/include/asm/fpu/xcr.h:32 
+kbuild/src/consumer/arch/x86/kernel/fpu/core.c:772)
+[    1.781350][    T0] RSP: 0000:ffffffff96007e50 EFLAGS: 00010047
+[ 1.781350][ T0] Code: 89 74 24 04 e8 d4 6e 82 00 8b 74 24 04 e9 f8 fe 
+ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 eb 01 c3 b9 01 00 
+00 00 <0f> 01 d0 a9 00 00 06 00 75 01 c3 55 53 c4 e2 78 49 c0 65 48 8b 
+2c All code ========
+    0:   89 74 24 04              mov    %esi,0x4(%rsp)
+    4:   e8 d4 6e 82 00           callq  0x826edd
+    9:   8b 74 24 04              mov    0x4(%rsp),%esi
+    d:   e9 f8 fe ff ff           jmpq   0xffffffffffffff0a
+   12:   66 66 2e 0f 1f 84 00     data16 nopw %cs:0x0(%rax,%rax,1)
+   19:   00 00 00 00
+   1d:   0f 1f 44 00 00           nopl   0x0(%rax,%rax,1)
+   22:   eb 01                    jmp    0x25
+   24:   c3                       retq
+   25:   b9 01 00 00 00           mov    $0x1,%ecx
+   2a:*  0f 01 d0                 xgetbv           <-- trapping instruction
+   2d:   a9 00 00 06 00           test   $0x60000,%eax
+   32:   75 01                    jne    0x35
+   34:   c3                       retq
+   35:   55                       push   %rbp
+   36:   53                       push   %rbx
+   37:   c4 e2 78 49              (bad)
+   3b:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   3f:   2c                       .byte 0x2c
+
+Code starting with the faulting instruction 
+===========================================
+    0:   0f 01 d0                 xgetbv
+    3:   a9 00 00 06 00           test   $0x60000,%eax
+    8:   75 01                    jne    0xb
+    a:   c3                       retq
+    b:   55                       push   %rbp
+    c:   53                       push   %rbx
+    d:   c4 e2 78 49              (bad)
+   11:   c0 65 48 8b              shlb   $0x8b,0x48(%rbp)
+   15:   2c                       .byte 0x2c
+[    1.781350][    T0]
+[    1.781350][    T0] RSP: 0000:ffffc9000010fdf8 EFLAGS: 00010047
+[    1.781350][    T0] RAX: 0000000000000001 RBX: ffffffff96022280 RCX: 
+0000000000000001
+[    1.781350][    T0]
+[    1.781350][    T0] RAX: 0000000000000001 RBX: ffff8881003e0000 RCX: 
+0000000000000001
+[    1.781350][    T0] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 
+ffffffff96db7da0
+[    1.781350][    T0] RBP: 0000000000000000 R08: 0000000000000001 R09: 
+fffffbfff2db6fb5
+[    1.781350][    T0] RBP: 0000000000000001 R08: 0000000000000001 R09: 
+fffffbfff2db6fb5
+[    1.781350][    T0] R10: ffffffff96db7da7 R11: fffffbfff2db6fb4 R12: 
+fffffbfff2c04450
+[    1.781350][    T0] R10: ffffffff96db7da7 R11: fffffbfff2db6fb4 R12: 
+ffffed102007c000
+[    1.781350][    T0] R13: ffffffff96db7da0 R14: dffffc0000000000 R15: 
+0000000000000000
+[    1.781350][    T0] FS:  0000000000000000(0000) 
+GS:ffff88839d600000(0000) knlGS:0000000000000000
+[    1.781350][    T0] FS:  0000000000000000(0000) 
+GS:ffff88839d700000(0000) knlGS:0000000000000000
+[    1.781350][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    1.781350][    T0] CR2: ffff88843ffff000 CR3: 0000000388a14000 CR4: 
+00000000000406f0
+[    1.781350][    T0] CR2: 0000000000000000 CR3: 0000000388a14000 CR4: 
+00000000000406e0
+[    1.781350][    T0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+0000000000000000
+[    1.781350][    T0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
+0000000000000400
+[    1.781350][    T0] Kernel panic - not syncing: Fatal exception
+[    1.781350][    T0] Call Trace:
+[    1.781350][    T0]  <TASK>
+[ 1.781350][ T0] ? arch_cpu_idle_enter 
+(kbuild/src/consumer/arch/x86/kernel/process.c:712)
+[ 1.781350][ T0] ? do_idle (kbuild/src/consumer/kernel/sched/idle.c:294)
+[ 1.781350][ T0] ? _raw_spin_lock_irqsave 
+(kbuild/src/consumer/arch/x86/include/asm/atomic.h:202 
+kbuild/src/consumer/include/linux/atomic/atomic-instrumented.h:513 
+kbuild/src/consumer/include/asm-generic/qspinlock.h:82 
+kbuild/src/consumer/include/linux/spinlock.h:185 
+kbuild/src/consumer/include/linux/spinlock_api_smp.h:111 
+kbuild/src/consumer/kernel/locking/spinlock.c:162)
+[ 1.781350][ T0] ? arch_cpu_idle_exit+0xc0/0xc0
+
