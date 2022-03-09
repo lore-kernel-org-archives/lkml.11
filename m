@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E23C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AF8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbiCIQOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S230013AbiCIQOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:14:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235760AbiCIQJJ (ORCPT
+        with ESMTP id S235784AbiCIQJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D05141FC3;
-        Wed,  9 Mar 2022 08:06:39 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA670141FEF;
+        Wed,  9 Mar 2022 08:06:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9534EB82220;
-        Wed,  9 Mar 2022 16:06:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF1A4C340EF;
-        Wed,  9 Mar 2022 16:06:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3207E615FA;
+        Wed,  9 Mar 2022 16:06:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C28BC340EF;
+        Wed,  9 Mar 2022 16:06:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841970;
-        bh=J6wXw2OY/SEj7WgYtzb95YfVux64kBMGaFrb3rNLZiI=;
+        s=korg; t=1646841978;
+        bh=dUq87xpJ+d6NqExqnKaLDlps4HA8AtfE6Mg9Q3ce9NY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zXMlypdHVoHEUkTBxgztx+jIjULf7Wx0EZuU30I0KBagqWKbuW2X+3LKVM9Xl7VJ
-         mMgCgE8BpShLRnDr1YAsJOohZyZTh0wz7yVk374nUWvuFieFf8bhl4Id/CMl/zkAjN
-         /5iezSQk8aokciKZO9K/dY4CrUZwvA7Ovem1WQfE=
+        b=br88BHMbI8MVTphZel/JPiSWSvLXdCML7DDpC87yM6zq5P+fhDaL+If707+HvuJEc
+         fI3RnNY57jWpx7IpUgSA3Iy9J0ZPIA+JlMkohKNwOsS6b07/tCMbzWdy4HCMCZaJcq
+         xrOXNz4ThX0hIasD+QXoK7MUmaIsWLONgus+8BEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 38/43] KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
-Date:   Wed,  9 Mar 2022 17:00:11 +0100
-Message-Id: <20220309155900.341144934@linuxfoundation.org>
+Subject: [PATCH 5.10 41/43] arm64: Use the clearbhb instruction in mitigations
+Date:   Wed,  9 Mar 2022 17:00:14 +0100
+Message-Id: <20220309155900.428855663@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -50,252 +52,245 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 5bdf3437603d4af87f9c7f424b0c8aeed2420745 upstream.
+commit 228a26b912287934789023b4132ba76065d9491c upstream.
 
-CPUs vulnerable to Spectre-BHB either need to make an SMC-CC firmware
-call from the vectors, or run a sequence of branches. This gets added
-to the hyp vectors. If there is no support for arch-workaround-1 in
-firmware, the indirect vector will be used.
+Future CPUs may implement a clearbhb instruction that is sufficient
+to mitigate SpectreBHB. CPUs that implement this instruction, but
+not CSV2.3 must be affected by Spectre-BHB.
 
-kvm_init_vector_slots() only initialises the two indirect slots if
-the platform is vulnerable to Spectre-v3a. pKVM's hyp_map_vectors()
-only initialises __hyp_bp_vect_base if the platform is vulnerable to
-Spectre-v3a.
+Add support to use this instruction as the BHB mitigation on CPUs
+that support it. The instruction is in the hint space, so it will
+be treated by a NOP as older CPUs.
 
-As there are about to more users of the indirect vectors, ensure
-their entries in hyp_spectre_vector_selector[] are always initialised,
-and __hyp_bp_vect_base defaults to the regular VA mapping.
-
-The Spectre-v3a check is moved to a helper
-kvm_system_needs_idmapped_vectors(), and merged with the code
-that creates the hyp mappings.
-
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ modified for stable: Use a KVM vector template instead of alternatives,
+  removed bitmap of mitigations ]
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cpucaps.h |    3 +
- arch/arm64/include/asm/kvm_asm.h |    6 +++
- arch/arm64/include/asm/kvm_mmu.h |    3 +
- arch/arm64/include/asm/mmu.h     |    6 +++
- arch/arm64/kernel/proton-pack.c  |   47 +++++++++++++++++++++++++++
- arch/arm64/kvm/arm.c             |    3 +
- arch/arm64/kvm/hyp/smccc_wa.S    |   66 +++++++++++++++++++++++++++++++++++++++
- 7 files changed, 130 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/assembler.h  |    7 +++++++
+ arch/arm64/include/asm/cpufeature.h |   13 +++++++++++++
+ arch/arm64/include/asm/insn.h       |    1 +
+ arch/arm64/include/asm/kvm_asm.h    |    2 ++
+ arch/arm64/include/asm/sysreg.h     |    1 +
+ arch/arm64/include/asm/vectors.h    |    7 +++++++
+ arch/arm64/kernel/cpufeature.c      |    1 +
+ arch/arm64/kernel/entry.S           |    8 ++++++++
+ arch/arm64/kernel/proton-pack.c     |   12 ++++++++++++
+ arch/arm64/kvm/hyp/smccc_wa.S       |    9 +++++++++
+ 10 files changed, 61 insertions(+)
 
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -66,7 +66,8 @@
- #define ARM64_HAS_TLB_RANGE			56
- #define ARM64_MTE				57
- #define ARM64_WORKAROUND_1508412		58
-+#define ARM64_SPECTRE_BHB			59
+--- a/arch/arm64/include/asm/assembler.h
++++ b/arch/arm64/include/asm/assembler.h
+@@ -98,6 +98,13 @@
+ 	.endm
  
--#define ARM64_NCAPS				59
-+#define ARM64_NCAPS				60
+ /*
++ * Clear Branch History instruction
++ */
++	.macro clearbhb
++	hint	#22
++	.endm
++
++/*
+  * Speculation barrier
+  */
+ 	.macro	sb
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -621,6 +621,19 @@ static inline bool supports_csv2p3(int s
+ 	return csv2_val == 3;
+ }
  
- #endif /* __ASM_CPUCAPS_H */
++static inline bool supports_clearbhb(int scope)
++{
++	u64 isar2;
++
++	if (scope == SCOPE_LOCAL_CPU)
++		isar2 = read_sysreg_s(SYS_ID_AA64ISAR2_EL1);
++	else
++		isar2 = read_sanitised_ftr_reg(SYS_ID_AA64ISAR2_EL1);
++
++	return cpuid_feature_extract_unsigned_field(isar2,
++						    ID_AA64ISAR2_CLEARBHB_SHIFT);
++}
++
+ static inline bool system_supports_32bit_el0(void)
+ {
+ 	return cpus_have_const_cap(ARM64_HAS_32BIT_EL0);
+--- a/arch/arm64/include/asm/insn.h
++++ b/arch/arm64/include/asm/insn.h
+@@ -65,6 +65,7 @@ enum aarch64_insn_hint_cr_op {
+ 	AARCH64_INSN_HINT_PSB  = 0x11 << 5,
+ 	AARCH64_INSN_HINT_TSB  = 0x12 << 5,
+ 	AARCH64_INSN_HINT_CSDB = 0x14 << 5,
++	AARCH64_INSN_HINT_CLEARBHB = 0x16 << 5,
+ 
+ 	AARCH64_INSN_HINT_BTI   = 0x20 << 5,
+ 	AARCH64_INSN_HINT_BTIC  = 0x22 << 5,
 --- a/arch/arm64/include/asm/kvm_asm.h
 +++ b/arch/arm64/include/asm/kvm_asm.h
-@@ -35,6 +35,8 @@
- #define KVM_VECTOR_PREAMBLE	(2 * AARCH64_INSN_SIZE)
- 
+@@ -37,6 +37,7 @@
  #define __SMCCC_WORKAROUND_1_SMC_SZ 36
-+#define __SMCCC_WORKAROUND_3_SMC_SZ 36
-+#define __SPECTRE_BHB_LOOP_SZ       44
+ #define __SMCCC_WORKAROUND_3_SMC_SZ 36
+ #define __SPECTRE_BHB_LOOP_SZ       44
++#define __SPECTRE_BHB_CLEARBHB_SZ   12
  
  #define KVM_HOST_SMCCC_ID(id)						\
  	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-@@ -199,6 +201,10 @@ extern void __vgic_v3_init_lrs(void);
- extern u32 __kvm_get_mdcr_el2(void);
- 
- extern char __smccc_workaround_1_smc[__SMCCC_WORKAROUND_1_SMC_SZ];
-+extern char __smccc_workaround_3_smc[__SMCCC_WORKAROUND_3_SMC_SZ];
-+extern char __spectre_bhb_loop_k8[__SPECTRE_BHB_LOOP_SZ];
-+extern char __spectre_bhb_loop_k24[__SPECTRE_BHB_LOOP_SZ];
-+extern char __spectre_bhb_loop_k32[__SPECTRE_BHB_LOOP_SZ];
+@@ -205,6 +206,7 @@ extern char __smccc_workaround_3_smc[__S
+ extern char __spectre_bhb_loop_k8[__SPECTRE_BHB_LOOP_SZ];
+ extern char __spectre_bhb_loop_k24[__SPECTRE_BHB_LOOP_SZ];
+ extern char __spectre_bhb_loop_k32[__SPECTRE_BHB_LOOP_SZ];
++extern char __spectre_bhb_clearbhb[__SPECTRE_BHB_LOOP_SZ];
  
  /*
   * Obtain the PC-relative address of a kernel symbol
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -237,7 +237,8 @@ static inline void *kvm_get_hyp_vector(v
- 	void *vect = kern_hyp_va(kvm_ksym_ref(__kvm_hyp_vector));
- 	int slot = -1;
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -689,6 +689,7 @@
+ #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
  
--	if (cpus_have_const_cap(ARM64_SPECTRE_V2) && data->fn) {
-+	if ((cpus_have_const_cap(ARM64_SPECTRE_V2) ||
-+	     cpus_have_const_cap(ARM64_SPECTRE_BHB)) && data->template_start) {
- 		vect = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs));
- 		slot = data->hyp_vectors_slot;
- 	}
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -67,6 +67,12 @@ typedef void (*bp_hardening_cb_t)(void);
- struct bp_hardening_data {
- 	int			hyp_vectors_slot;
- 	bp_hardening_cb_t	fn;
+ /* id_aa64isar2 */
++#define ID_AA64ISAR2_CLEARBHB_SHIFT	28
+ #define ID_AA64ISAR2_RPRES_SHIFT	4
+ #define ID_AA64ISAR2_WFXT_SHIFT		0
+ 
+--- a/arch/arm64/include/asm/vectors.h
++++ b/arch/arm64/include/asm/vectors.h
+@@ -32,6 +32,12 @@ enum arm64_bp_harden_el1_vectors {
+ 	 * canonical vectors.
+ 	 */
+ 	EL1_VECTOR_BHB_FW,
 +
 +	/*
-+	 * template_start is only used by the BHB mitigation to identify the
-+	 * hyp_vectors_slot sequence.
++	 * Use the ClearBHB instruction, before branching to the canonical
++	 * vectors.
 +	 */
-+	const char *template_start;
++	EL1_VECTOR_BHB_CLEAR_INSN,
+ #endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
+ 
+ 	/*
+@@ -43,6 +49,7 @@ enum arm64_bp_harden_el1_vectors {
+ #ifndef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+ #define EL1_VECTOR_BHB_LOOP		-1
+ #define EL1_VECTOR_BHB_FW		-1
++#define EL1_VECTOR_BHB_CLEAR_INSN	-1
+ #endif /* !CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
+ 
+ /* The vectors to use on return from EL0. e.g. to remap the kernel */
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -211,6 +211,7 @@ static const struct arm64_ftr_bits ftr_i
  };
  
- DECLARE_PER_CPU_READ_MOSTLY(struct bp_hardening_data, bp_hardening_data);
+ static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
++	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_HIGHER_SAFE, ID_AA64ISAR2_CLEARBHB_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_VISIBLE, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64ISAR2_RPRES_SHIFT, 4, 0),
+ 	ARM64_FTR_END,
+ };
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -827,6 +827,7 @@ alternative_else_nop_endif
+ #define BHB_MITIGATION_NONE	0
+ #define BHB_MITIGATION_LOOP	1
+ #define BHB_MITIGATION_FW	2
++#define BHB_MITIGATION_INSN	3
+ 
+ 	.macro tramp_ventry, vector_start, regsize, kpti, bhb
+ 	.align	7
+@@ -843,6 +844,11 @@ alternative_else_nop_endif
+ 	__mitigate_spectre_bhb_loop	x30
+ 	.endif // \bhb == BHB_MITIGATION_LOOP
+ 
++	.if	\bhb == BHB_MITIGATION_INSN
++	clearbhb
++	isb
++	.endif // \bhb == BHB_MITIGATION_INSN
++
+ 	.if	\kpti == 1
+ 	/*
+ 	 * Defend against branch aliasing attacks by pushing a dummy
+@@ -919,6 +925,7 @@ SYM_CODE_START_NOALIGN(tramp_vectors)
+ #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+ 	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_LOOP
+ 	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_FW
++	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_INSN
+ #endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
+ 	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_NONE
+ SYM_CODE_END(tramp_vectors)
+@@ -981,6 +988,7 @@ SYM_CODE_START(__bp_harden_el1_vectors)
+ #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+ 	generate_el1_vector	bhb=BHB_MITIGATION_LOOP
+ 	generate_el1_vector	bhb=BHB_MITIGATION_FW
++	generate_el1_vector	bhb=BHB_MITIGATION_INSN
+ #endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
+ SYM_CODE_END(__bp_harden_el1_vectors)
+ 	.popsection
 --- a/arch/arm64/kernel/proton-pack.c
 +++ b/arch/arm64/kernel/proton-pack.c
-@@ -220,9 +220,9 @@ static void __copy_hyp_vect_bpi(int slot
- 	__flush_icache_range((uintptr_t)dst, (uintptr_t)dst + SZ_2K);
- }
+@@ -824,6 +824,7 @@ int arch_prctl_spec_ctrl_get(struct task
+  * - Mitigated by a branchy loop a CPU specific number of times, and listed
+  *   in our "loop mitigated list".
+  * - Mitigated in software by the firmware Spectre v2 call.
++ * - Has the ClearBHB instruction to perform the mitigation.
+  * - Has the 'Exception Clears Branch History Buffer' (ECBHB) feature, so no
+  *   software mitigation in the vectors is needed.
+  * - Has CSV2.3, so is unaffected.
+@@ -949,6 +950,9 @@ bool is_spectre_bhb_affected(const struc
+ 	if (supports_csv2p3(scope))
+ 		return false;
  
-+static DEFINE_RAW_SPINLOCK(bp_lock);
- static void install_bp_hardening_cb(bp_hardening_cb_t fn)
- {
--	static DEFINE_RAW_SPINLOCK(bp_lock);
- 	int cpu, slot = -1;
- 	const char *hyp_vecs_start = __smccc_workaround_1_smc;
- 	const char *hyp_vecs_end = __smccc_workaround_1_smc +
-@@ -253,6 +253,7 @@ static void install_bp_hardening_cb(bp_h
++	if (supports_clearbhb(scope))
++		return true;
++
+ 	if (spectre_bhb_loop_affected(scope))
+ 		return true;
  
- 	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
- 	__this_cpu_write(bp_hardening_data.fn, fn);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
- 	raw_spin_unlock(&bp_lock);
+@@ -987,6 +991,8 @@ static int kvm_bhb_get_vecs_size(const c
+ 		 start == __spectre_bhb_loop_k24 ||
+ 		 start == __spectre_bhb_loop_k32)
+ 		return __SPECTRE_BHB_LOOP_SZ;
++	else if (start == __spectre_bhb_clearbhb)
++		return __SPECTRE_BHB_CLEARBHB_SZ;
+ 
+ 	return 0;
  }
- #else
-@@ -819,3 +820,47 @@ enum mitigation_state arm64_get_spectre_
- {
- 	return spectre_bhb_state;
- }
+@@ -1027,6 +1033,7 @@ static void kvm_setup_bhb_slot(const cha
+ #define __spectre_bhb_loop_k8 NULL
+ #define __spectre_bhb_loop_k24 NULL
+ #define __spectre_bhb_loop_k32 NULL
++#define __spectre_bhb_clearbhb NULL
+ 
+ static void kvm_setup_bhb_slot(const char *hyp_vecs_start) { }
+ #endif /* CONFIG_KVM */
+@@ -1046,6 +1053,11 @@ void spectre_bhb_enable_mitigation(const
+ 		pr_info_once("spectre-bhb mitigation disabled by command line option\n");
+ 	} else if (supports_ecbhb(SCOPE_LOCAL_CPU)) {
+ 		state = SPECTRE_MITIGATED;
++	} else if (supports_clearbhb(SCOPE_LOCAL_CPU)) {
++		kvm_setup_bhb_slot(__spectre_bhb_clearbhb);
++		this_cpu_set_vectors(EL1_VECTOR_BHB_CLEAR_INSN);
 +
-+static int kvm_bhb_get_vecs_size(const char *start)
-+{
-+	if (start == __smccc_workaround_3_smc)
-+		return __SMCCC_WORKAROUND_3_SMC_SZ;
-+	else if (start == __spectre_bhb_loop_k8 ||
-+		 start == __spectre_bhb_loop_k24 ||
-+		 start == __spectre_bhb_loop_k32)
-+		return __SPECTRE_BHB_LOOP_SZ;
-+
-+	return 0;
-+}
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start)
-+{
-+	int cpu, slot = -1, size;
-+	const char *hyp_vecs_end;
-+
-+	if (!IS_ENABLED(CONFIG_KVM) || !is_hyp_mode_available())
-+		return;
-+
-+	size = kvm_bhb_get_vecs_size(hyp_vecs_start);
-+	if (WARN_ON_ONCE(!hyp_vecs_start || !size))
-+		return;
-+	hyp_vecs_end = hyp_vecs_start + size;
-+
-+	raw_spin_lock(&bp_lock);
-+	for_each_possible_cpu(cpu) {
-+		if (per_cpu(bp_hardening_data.template_start, cpu) == hyp_vecs_start) {
-+			slot = per_cpu(bp_hardening_data.hyp_vectors_slot, cpu);
-+			break;
-+		}
-+	}
-+
-+	if (slot == -1) {
-+		slot = atomic_inc_return(&arm64_el2_vector_last_slot);
-+		BUG_ON(slot >= BP_HARDEN_EL2_SLOTS);
-+		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
-+	}
-+
-+	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
-+	raw_spin_unlock(&bp_lock);
-+}
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -1337,7 +1337,8 @@ static int kvm_map_vectors(void)
- 	 * !SV2 +  HEL2 -> allocate one vector slot and use exec mapping
- 	 *  SV2 +  HEL2 -> use hardened vectors and use exec mapping
- 	 */
--	if (cpus_have_const_cap(ARM64_SPECTRE_V2)) {
-+	if (cpus_have_const_cap(ARM64_SPECTRE_V2) ||
-+	    cpus_have_const_cap(ARM64_SPECTRE_BHB)) {
- 		__kvm_bp_vect_base = kvm_ksym_ref(__bp_harden_hyp_vecs);
- 		__kvm_bp_vect_base = kern_hyp_va(__kvm_bp_vect_base);
- 	}
++		state = SPECTRE_MITIGATED;
+ 	} else if (spectre_bhb_loop_affected(SCOPE_LOCAL_CPU)) {
+ 		switch (spectre_bhb_loop_affected(SCOPE_SYSTEM)) {
+ 		case 8:
 --- a/arch/arm64/kvm/hyp/smccc_wa.S
 +++ b/arch/arm64/kvm/hyp/smccc_wa.S
-@@ -30,3 +30,69 @@ SYM_DATA_START(__smccc_workaround_1_smc)
- 1:	.org __smccc_workaround_1_smc + __SMCCC_WORKAROUND_1_SMC_SZ
+@@ -96,3 +96,12 @@ SYM_DATA_START(__spectre_bhb_loop_k32)
+ 1:	.org __spectre_bhb_loop_k32 + __SPECTRE_BHB_LOOP_SZ
  	.org 1b
- SYM_DATA_END(__smccc_workaround_1_smc)
+ SYM_DATA_END(__spectre_bhb_loop_k32)
 +
-+	.global		__smccc_workaround_3_smc
-+SYM_DATA_START(__smccc_workaround_3_smc)
++	.global	__spectre_bhb_clearbhb
++SYM_DATA_START(__spectre_bhb_clearbhb)
 +	esb
-+	sub	sp, sp, #(8 * 4)
-+	stp	x2, x3, [sp, #(8 * 0)]
-+	stp	x0, x1, [sp, #(8 * 2)]
-+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+	smc	#0
-+	ldp	x2, x3, [sp, #(8 * 0)]
-+	ldp	x0, x1, [sp, #(8 * 2)]
-+	add	sp, sp, #(8 * 4)
-+1:	.org __smccc_workaround_3_smc + __SMCCC_WORKAROUND_3_SMC_SZ
-+	.org 1b
-+SYM_DATA_END(__smccc_workaround_3_smc)
-+
-+	.global	__spectre_bhb_loop_k8
-+SYM_DATA_START(__spectre_bhb_loop_k8)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov	x0, #8
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
++	clearbhb
 +	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+1:	.org __spectre_bhb_loop_k8 + __SPECTRE_BHB_LOOP_SZ
++1:	.org __spectre_bhb_clearbhb + __SPECTRE_BHB_CLEARBHB_SZ
 +	.org 1b
-+SYM_DATA_END(__spectre_bhb_loop_k8)
-+
-+	.global	__spectre_bhb_loop_k24
-+SYM_DATA_START(__spectre_bhb_loop_k24)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov	x0, #8
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
-+	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+1:	.org __spectre_bhb_loop_k24 + __SPECTRE_BHB_LOOP_SZ
-+	.org 1b
-+SYM_DATA_END(__spectre_bhb_loop_k24)
-+
-+	.global	__spectre_bhb_loop_k32
-+SYM_DATA_START(__spectre_bhb_loop_k32)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov	x0, #8
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
-+	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+1:	.org __spectre_bhb_loop_k32 + __SPECTRE_BHB_LOOP_SZ
-+	.org 1b
-+SYM_DATA_END(__spectre_bhb_loop_k32)
++SYM_DATA_END(__spectre_bhb_clearbhb)
 
 
