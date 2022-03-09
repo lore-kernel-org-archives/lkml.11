@@ -2,74 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5449C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 21:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B013EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 21:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238398AbiCIVOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 16:14:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
+        id S237969AbiCIVPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 16:15:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237777AbiCIVN5 (ORCPT
+        with ESMTP id S231465AbiCIVPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 16:13:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921001705F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:12:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47879B82234
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 21:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66022C340F5;
-        Wed,  9 Mar 2022 21:12:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646860374;
-        bh=Aq2cE5bVYMPYuQs4z0VI/ELJ+mN0tJzboPpC/8+mX+A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lPwnwg6NN61z8/UG6/RtCRhDOPLLqK4GqqeJxYaLQ3Y9SS3jE3AB7kf0uGS61QGkc
-         GD4QPwmVTYxJn83VaCgYjqZN1PDf0uLK8XRoZ0xBc2i948Bzk83gXjm7UrEoRW+Kk1
-         pFtah/Ve2eGgNx3cYp4m8stHKAx5Ml083B+waIhy/MrQ+lgHlBkrl07OcSrJD1qgDJ
-         N3NtjvIYLc4K8YH1VRjCPOqw+DMj24rTod8r1Op+hxpMIi/8RVGSXavvBkHYHzx63B
-         wpw2xF7H/kaCBx6c6bbKXT7Q6gkiQih+vCU6DmBKleJXZj5hYeusI9IMqZGYsNUX3+
-         Su1oTKrBfTNMw==
-Date:   Wed, 9 Mar 2022 22:12:51 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [PATCH 06/19] context_tracking: Take idle eqs entrypoints over
- RCU
-Message-ID: <20220309211251.GC68899@lothringen>
-References: <20220302154810.42308-1-frederic@kernel.org>
- <20220302154810.42308-7-frederic@kernel.org>
- <20220305140526.GX11184@worktop.programming.kicks-ass.net>
+        Wed, 9 Mar 2022 16:15:04 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DF633EB1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:14:04 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id t1so4282879edc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 13:14:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=f5IgrytsM1z255q0jxMkzG+bK0OqR/xpVoDKIJj7gWE=;
+        b=PYjTxrITXZ0P+IIMJ2kYz5DT9QrptbeaV2LKhBofyf71eguq7QgW7V5r55c2zIOHaS
+         bdQu7SYcWDdfxmOATNbUyNqofGYjskiLDE5mb5EQytDi7VaPpuH7uhahKYYeBdR6aitf
+         6ar3PhX5Q/Abm/7jZDVvuhDmRGNPaSzCbQkH/Eo3n0sjMIr4A/se2Z2gwla0M9UtXZ7y
+         YQ6v4zjuFxRqAqbegiErhyofxGDo0Mes3amvz6Vomx6gLQ0lSJFMWAQjL9z2wUKI9ARZ
+         UypFFga/ES+fy/rSYHqYGJ/mc76WQ6B3xNGL1rgmmU55h4twBjPewdS5OoV+LHlNDugf
+         ebtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=f5IgrytsM1z255q0jxMkzG+bK0OqR/xpVoDKIJj7gWE=;
+        b=RcBUUG/HJHB9oAW1oE9lgTqcDshjhwCbWA6lgzKJgudBCaCRojkahTinmuFMqIQO0t
+         8CyDHfGkGmNnJwJE4HQgk3ccToC5maLO+iN2MjnO5OId3xToKzZQFugjTGfd0/+Oc1tX
+         WCQ60O95HTGpP7uK05k/HWXXmKQ0YzxdJFk2PJmsu/T5AGQ3TsIi2QWunJRpqa64MjUJ
+         sYS2RbO9HWQLQ3YRREAYBQjh4K2k9qsegvHEwreeCUMBmeIwG028LmV9tSOspDRc8akt
+         DPYzQKb6NpCatjplDN9hV/mQJQVnXgbji86jbMOV7zsLZomeDZhMmE8dFO4xMUg9fUmJ
+         AZOQ==
+X-Gm-Message-State: AOAM5307Mju7aGb1JuUFkn/qlqREgHUwGIGyUTP+BOV8CxNf5d0w9h+z
+        sFOBdaEcCllSqkpKQBQUessTD3nNHHOrjPZs476Y
+X-Google-Smtp-Source: ABdhPJz4X98bQukjGwDFGAtygl26ij7BEag5McvZShhItQgyA0woPa848QS4nTdGZ1blYK7nPYrORSPSOQ3IdP7Aeno=
+X-Received: by 2002:aa7:d494:0:b0:415:a309:7815 with SMTP id
+ b20-20020aa7d494000000b00415a3097815mr1355507edr.340.1646860443242; Wed, 09
+ Mar 2022 13:14:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220305140526.GX11184@worktop.programming.kicks-ass.net>
+References: <20211117015806.2192263-1-dvander@google.com> <CAOQ4uxjjapFeOAFGLmsXObdgFVYLfNer-rnnee1RR+joxK3xYg@mail.gmail.com>
+ <Yao51m9EXszPsxNN@redhat.com> <CAOQ4uxjk4piLyx67Ena-FfypDVWzRqVN0xmFUXXPYa+SC4Q-vQ@mail.gmail.com>
+ <YapjNRrjpDu2a5qQ@redhat.com> <CAHC9VhQTUgBRBEz_wFX8daSA70nGJCJLXj8Yvcqr5+DHcfDmwA@mail.gmail.com>
+ <CA+FmFJA-r+JgMqObNCvE_X+L6jxWtDrczM9Jh0L38Fq-6mnbbA@mail.gmail.com>
+In-Reply-To: <CA+FmFJA-r+JgMqObNCvE_X+L6jxWtDrczM9Jh0L38Fq-6mnbbA@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 9 Mar 2022 16:13:52 -0500
+Message-ID: <CAHC9VhRer7UWdZyizWO4VuxrgQDnLCOyj8LO7P6T5BGjd=s9zQ@mail.gmail.com>
+Subject: Re: [PATCH v19 0/4] overlayfs override_creds=off & nested get xattr fix
+To:     David Anderson <dvander@google.com>
+Cc:     Vivek Goyal <vgoyal@redhat.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Mark Salyzyn <salyzyn@android.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        overlayfs <linux-unionfs@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>, selinux@vger.kernel.org,
+        paulmoore@microsoft.com, luca.boccassi@microsoft.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 03:05:26PM +0100, Peter Zijlstra wrote:
-> On Wed, Mar 02, 2022 at 04:47:57PM +0100, Frederic Weisbecker wrote:
-> > The RCU dynticks counter is going to be merged into the context tracking
-> > subsystem. Start with moving the idle extended quiescent states
-> > entrypoints to RCU. For now those are dumb redirection to existing RCU
-> > calls.
-> 
-> s/to/from/ right? You're taking them away from RCU and moving them to
-> ct.
+On Tue, Mar 1, 2022 at 12:05 AM David Anderson <dvander@google.com> wrote:
+> On Mon, Feb 28, 2022 at 5:09 PM Paul Moore <paul@paul-moore.com> wrote:
+>>
+>> I wanted to try and bring this thread back from the dead (?) as I
+>> believe the use-case is still valid and worth supporting.  Some more
+>> brief comments below ...
+>>
+>> On Fri, Dec 3, 2021 at 1:34 PM Vivek Goyal <vgoyal@redhat.com> wrote:
+>> > I am not sure. In the early version of patches I think argument was
+>> > that do not switch to mounter's creds and use caller's creds on
+>> > underlying filesystem as well. And each caller will be privileged
+>> > enough to be able to perform the operation.
+>
+> Indeed that was the argument - though, "userxattr" eliminated the need fo=
+r patches 1 & 2 completely for us, which is great. We're no longer carrying=
+ those in our 5.15 tree.
+>
+>> Unfortunately, this idea falls apart when we attempt to use overlayfs
+>> due to the clever/usual way it caches the mounting processes
+>> credentials and uses that in place of the current process' credentials
+>> when accessing certain parts of the underlying filesystems.  The
+>> current overlayfs implementation assumes that the mounter will always
+>> be more privileged than the processes accessing the filesystem, it
+>> would be nice if we could build a mechanism that didn't have this
+>> assumption baked into the implementation.
+>>
+>> This patchset may not have been The Answer, but surely there is
+>> something we can do to support this use-case.
+>
+> Yup exactly, and we still need patches 3 & 4 to deal with this. My curren=
+t plan is to try and rework our sepolicy (we have some ideas on how it coul=
+d be made compatible with how overlayfs works). If that doesn't pan out we'=
+ll revisit these patches and think harder about how to deal with the cohere=
+ncy issues.
 
-Right!
+Can you elaborate a bit more on the coherency issues?  Is this the dir
+cache issue that is alluded to in the patchset?  Anything else that
+has come up on review?
+
+Before I start looking at the dir cache in any detail, did you have
+any thoughts on how to resolve the problems that have arisen?
+
+--=20
+paul-moore.com
