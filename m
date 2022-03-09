@@ -2,85 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96563C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237916AbiCIThd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:37:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
+        id S237982AbiCITht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:37:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237898AbiCIThb (ORCPT
+        with ESMTP id S234808AbiCIThr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:37:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10C21A4;
-        Wed,  9 Mar 2022 11:36:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36510B82398;
-        Wed,  9 Mar 2022 19:36:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E13C340E8;
-        Wed,  9 Mar 2022 19:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646854289;
-        bh=bbCEaeZ6kj/X8f+p8As796Wn0k/8aBP9PNr1a78uZNA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lM4+beyoJs2qor9r9JVwhzgyyugqlkR/2q5Y97uShJ9WcvQosx9cmiBjHf6KMCnsu
-         QLbGWvruJxIG8YEyRhpKJaucuifcytA9/a+z4WCRnLBa6ws8VexY80WlZ+FL284/4z
-         nISI5Al8Cu67rJxNGt1VgmQZh9t2dlUnoheZi3m3z5B+1IhjTaPTk5u3zh4JxFB60w
-         H1b/YupgF5NKQi+a03frHhjSxvgQnATcLqCJGBphIcWpkn1TQ2ULrM9QsJsydwBwbe
-         cakvh71vbcL3J9AbusKlsi5r+WvGWqyMZ8L5seRXK8Kj9LqbckuE7mipJ58FvcnPKu
-         Xdrx9vOTE4gHA==
-Date:   Wed, 9 Mar 2022 11:31:26 -0800
-From:   Keith Busch <kbusch@kernel.org>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
-        martin.petersen@oracle.com
-Subject: Re: [PATCHv4 6/8] crypto: add rocksoft 64b crc guard tag framework
-Message-ID: <20220309193126.GA3950874@dhcp-10-100-145-180.wdc.com>
-References: <20220303201312.3255347-1-kbusch@kernel.org>
- <20220303201312.3255347-7-kbusch@kernel.org>
- <your-ad-here.call-01646770901-ext-3299@work.hours>
- <20220308202747.GA3502158@dhcp-10-100-145-180.wdc.com>
- <YigzoKRJ1EHFRZY9@sol.localdomain>
+        Wed, 9 Mar 2022 14:37:47 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAD7113E;
+        Wed,  9 Mar 2022 11:36:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KbNjVleHzXmiuPoSqakRW+gnUx6PldItakYIGnlJGzM=; b=pLDg+9RL+WDjMvY7+mptTatP+q
+        SlgUqA3mrISRsnfRsmP1RD3HbwEtUak+3gZdYWPcrZMCW1D29npvVSr4cwa/aJWzzkCRXHCRk0ozp
+        3ZagA54NNjE9P7UyMCLBMhRnropGKsn/3sQEtVh8LLBmJU+Sp6fUNIwMBwwZU7BN7EZ6xKHLOxpX8
+        VbCEK9/hMULRQRyrrMYQa9mMPpoJIA+0m/BBJ1nONhr/2CY4kQE/iRJboF4dgJL2vTgljw02WUQLZ
+        Yyoht0Bh3WP7v3BpFLB5onIrVkNssSSXzJxHEk5xVCvyAU0i7obYjXEGGLR25SIaHZR4e9PCF56nI
+        RhwD827w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57756)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nS270-0000Gm-FA; Wed, 09 Mar 2022 19:36:42 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nS26y-0008Do-85; Wed, 09 Mar 2022 19:36:40 +0000
+Date:   Wed, 9 Mar 2022 19:36:40 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [next] arm: Internal error: Oops: 5 PC is at
+ __read_once_word_nocheck
+Message-ID: <YikByJteDEtKi4Xv@shell.armlinux.org.uk>
+References: <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
+ <CA+G9fYvCvBBi+dZ+CnUy=ZK6GhCFhBw72_==Cav=Q8QP5T1r5w@mail.gmail.com>
+ <CA+G9fYt73AYs=z-BeZh22RBp==sf73pKky6m4iPSH7a4FssK7w@mail.gmail.com>
+ <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
+ <YijCkHHhpleeADAO@shell.armlinux.org.uk>
+ <CA+G9fYtjrAMg8TykZdRyZEfRthyqom_73x87F-60C_QFeEL8Bg@mail.gmail.com>
+ <YijfzAhWAgfGGqCO@shell.armlinux.org.uk>
+ <CAMj1kXFvjawvOzeTb2m1H=P-_aXgW-ozvaOK1FtjBv7G0sCDFA@mail.gmail.com>
+ <Yij2cZVKwPexGsTf@shell.armlinux.org.uk>
+ <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YigzoKRJ1EHFRZY9@sol.localdomain>
+In-Reply-To: <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 08:57:04PM -0800, Eric Biggers wrote:
-> On Tue, Mar 08, 2022 at 12:27:47PM -0800, Keith Busch wrote:
-> > On Tue, Mar 08, 2022 at 09:21:41PM +0100, Vasily Gorbik wrote:
-> > > On Thu, Mar 03, 2022 at 12:13:10PM -0800, Keith Busch wrote:
-> > > > Hardware specific features may be able to calculate a crc64, so provide
-> > > > a framework for drivers to register their implementation. If nothing is
-> > > > registered, fallback to the generic table lookup implementation. The
-> > > > implementation is modeled after the crct10dif equivalent.
-> > > 
-> > > Hi Keith,
-> > > 
-> > > this is failing on big-endian systems. I get the following on s390:
-> > 
-> > Oh, I see the put_unaligned_le64() in chksum_final() was not the correct
-> > action. I'll send an update, thank you for the report.
+On Wed, Mar 09, 2022 at 08:14:30PM +0100, Ard Biesheuvel wrote:
+> On Wed, 9 Mar 2022 at 19:48, Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Wed, Mar 09, 2022 at 06:43:42PM +0100, Ard Biesheuvel wrote:
+> > > On Wed, 9 Mar 2022 at 18:11, Russell King (Oracle)
+> > > <linux@armlinux.org.uk> wrote:
+> > > >
+> > > > On Wed, Mar 09, 2022 at 10:08:25PM +0530, Naresh Kamboju wrote:
+> > > > > Hi Russell,
+> > > > >
+> > > > > On Wed, 9 Mar 2022 at 20:37, Russell King (Oracle)
+> > > > > <linux@armlinux.org.uk> wrote:
+> > > > > >
+> > > > > > On Wed, Mar 09, 2022 at 03:57:32PM +0100, Ard Biesheuvel wrote:
+> > > > > > > On Wed, 9 Mar 2022 at 15:44, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > > > > > > >
+> > > > > <trim>
+> > > > > > Well, we unwound until:
+> > > > > >
+> > > > > >  __irq_svc from migrate_disable+0x0/0x70
+> > > > > >
+> > > > > > and then crashed - and the key thing there is that we're at the start
+> > > > > > of migrate_disable() when we took an interrupt.
+> > > > > >
+> > > > > > For some reason, this triggers an access to address 0x10, which faults.
+> > > > > > We then try unwinding again, and successfully unwind all the way back
+> > > > > > to the same point (the line above) which then causes the unwinder to
+> > > > > > again access address 0x10, and the cycle repeats with the stack
+> > > > > > growing bigger and bigger.
+> > > > > >
+> > > > > > I'd suggest also testing without the revert but with my patch.
+> > > > >
+> > > > > I have tested your patch on top of linux next-20220309 and still see kernel
+> > > > > crash as below [1]. build link [2].
+> > > > >
+> > > > > [   26.812060] 8<--- cut here ---
+> > > > > [   26.813459] Unhandled fault: page domain fault (0x01b) at 0xb6a3ab70
+> > > > > [   26.816139] [b6a3ab70] *pgd=fb28a835
+> > > > > [   26.817770] Internal error: : 1b [#1] SMP ARM
+> > > > > [   26.819636] Modules linked in:
+> > > > > [   26.820956] CPU: 0 PID: 211 Comm: haveged Not tainted
+> > > > > 5.17.0-rc7-next-20220309 #1
+> > > > > [   26.824519] Hardware name: Generic DT based system
+> > > > > [   26.827148] PC is at __read_once_word_nocheck+0x0/0x8
+> > > > > [   26.829856] LR is at unwind_frame+0x7dc/0xab4
+> > > > >
+> > > > > - Naresh
+> > > > >
+> > > > > [1] https://lkft.validation.linaro.org/scheduler/job/4688599#L596
+> > > > > [2] https://builds.tuxbuild.com/269gYLGuAdmltuLhIUDAjS2fg1Q/
+> > > >
+> > > > I think the problem has just moved:
+> > > >
+> > > > [   27.113085]  __irq_svc from __copy_to_user_std+0x24/0x378
+> > > >
+> > > > The code at the start of __copy_to_user_std is:
+> > > >
+> > > >    0:   e3a034bf        mov     r3, #-1090519040        ; 0xbf000000
+> > > >    4:   e243c001        sub     ip, r3, #1
+> > > >    8:   e05cc000        subs    ip, ip, r0
+> > > >    c:   228cc001        addcs   ip, ip, #1
+> > > >   10:   205cc002        subscs  ip, ip, r2
+> > > >   14:   33a00000        movcc   r0, #0
+> > > >   18:   e320f014        csdb
+> > > >   1c:   e3a03000        mov     r3, #0
+> > > >   20:   e92d481d        push    {r0, r2, r3, r4, fp, lr}
+> > > >   24:   e1a0b00d        mov     fp, sp
+> > > >
+> > > > and the unwind information will be:
+> > > >
+> > > > 0xc056f14c <arm_copy_to_user+0x1c>: @0xc0b89b84
+> > > >   Compact model index: 1
+> > > >   0x9b      vsp = r11
+> > > >   0xb1 0x0d pop {r0, r2, r3}
+> > > >   0x84 0x81 pop {r4, r11, r14}
+> > > >   0xb0      finish
+> > > >
+> > > > The problem is that the unwind information says "starting at offset
+> > > > 0x1c, to unwind do the following operations". The first of which is
+> > > > to move r11 (fp) to the stack pointer. However, r11 isn't setup
+> > > > until function offset 0x24. You've hit that instruction, which hasn't
+> > > > executed yet, but the stack has been modified by pushing r0, r2-r4,
+> > > > fp and lr onto it.
+> > > >
+> > > > Given this, there is no way that the unwinder (as it currently stands)
+> > > > can do its job properly between 0x1c and 0x24.
+> > > >
+> > > > I don't think this is specifically caused by Ard's patches, but by
+> > > > the addition of KASAN, which has the effect of calling the unwinder
+> > > > at random points in the kernel (when an interrupt happens) and it's
+> > > > clear from the above that there are windows in the code where, if
+> > > > we attempt to unwind using the unwind information, we faill fail
+> > > > because the program state is not consistent with the unwind
+> > > > information.
+> > > >
+> > > > Ard's patch that changes:
+> > > >
+> > > >         ctrl->vrs[reg] = READ_ONCE_NOCHECK(*(*vsp));
+> > > >
+> > > > to use get_kernel_nofault() should have the effect of protecting
+> > > > against the oops, but the side effect is that it is fundamentally not
+> > > > possible with the way these things are to unwind at these points -
+> > > > which means its not possible to get a stacktrace there.
+> > > >
+> > > > So, I don't think this is a "new" problem, but a weakness of using
+> > > > the unwinder to get a backtrace for KASAN.
+> > > >
+> > >
+> > > It essentially means that we cannot unwind through asynchronous
+> > > exceptions, and so we should probably make the svc_entry macro
+> > > .nounwind, instead of pretending that we can reliably unwind through
+> > > it.
+> >
+> > Doesn't that impact the ability to debug the kernel over things like
+> > oopses and the like?
+> >
 > 
-> Or you could make the digests in your test vectors have have a consistent byte
-> order, probably little endian.  That's how "shash" algorithms in the crypto API
-> normally work, including crc32 and crc32c; they produce bytes as output.  I see
-> that crct10dif violates that convention, and I assume you copied it from there.
-> I'm not sure you should do that; crct10dif might be more of a one-off quirk.
+> The backtrace dumped by __die() uses the pt_regs from the exception
+> context as the starting point, so the exception entry code that deals
+> with the condition that triggered the oops is omitted, and does not
+> have to be unwound.
 
-Right, I started with the t10dif implementation. I changed it to the
-unaligned accessor since you indicated the output buffer doesn't have an
-alignment guarantee.
+That is true, but that's not really the case I was thinking about.
+I was thinking more about cases such as RCU stalls, soft lockups,
+etc.
 
-Perhaps I'm missing something, but it looks easier to just use the CPU
-native endianess here. The only users for t10 and rocksoft transform to
-big-endian for the wire protocol at the end, but there's no need to
-maintain a specific byte order before setting the payload.
+For example:
+
+https://www.linuxquestions.org/questions/linux-kernel-70/kenel-v4-4-60-panic-in-igmp6_send-and-and-__neigh_create-4175704721/
+
+In that stack trace, the interesting bits are not the beginning of
+the stack trace down to __irq_svc, but everything beyond __irq_svc,
+since the lockup is probably caused by being stuck in
+_raw_write_lock_bh().
+
+It's these situations that we will totally destroy debuggability for,
+and the only way around that would be to force frame pointers and
+ARM builds (not Thumb-2 as that requires the unwinder... which means
+a Thumb-2 kernel soft lockup would be undebuggable.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
