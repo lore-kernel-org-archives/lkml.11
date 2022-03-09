@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6310FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiCIQn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48624 "EHLO
+        id S235280AbiCIQoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:44:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237681AbiCIQbE (ORCPT
+        with ESMTP id S237880AbiCIQbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:04 -0500
+        Wed, 9 Mar 2022 11:31:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D696918DAAD;
-        Wed,  9 Mar 2022 08:24:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785D1190C06;
+        Wed,  9 Mar 2022 08:25:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D0BF6195B;
-        Wed,  9 Mar 2022 16:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11CFC340EC;
-        Wed,  9 Mar 2022 16:24:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9905A6187D;
+        Wed,  9 Mar 2022 16:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0B8C340F6;
+        Wed,  9 Mar 2022 16:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843075;
-        bh=W2DYh/V6ODjkXeMpzuzD5sehvu38aMyPEf4Kpt2YQJI=;
+        s=k20201202; t=1646843107;
+        bh=UR70ayxhFp+l6h9jOgA2GAaST2YfS64RXHquF81m+LE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUj88SXRx8ZsLAGLMtENGLSlZ0pMUVgKvNtVK2WNcvV4ew2hYciOHVPLALCds+urr
-         0+4/VpIkmTnx0HLtQ/BpfhfGIsK1V3sxolDf66CAiomSOsO13xmUbMiO5aXMMG964a
-         m0KHLhAMxYvzIooY4hbH7W297BTUfBg2eC0y46OX2Q2IkKQeZdawb23xc8qSB14xFB
-         vqOSF//dmF1VHFrV2AWzQ+rhH5ZnNSYrZ16EDvlsMC8o/6HgDyyURd2kR1+8aeWGtg
-         b+05jyWgXgy74jbFRYy0yYSViyEvf/MtkPvaOEx3iTUgjJniO1mxMhqoPGHeX3RNJx
-         63/TqWuIlTFKg==
+        b=bJWIeYJjuPYKIfBJjtv/V/IU5yfu7SOHlFTZGZtmHnY8QnY27iik3ick4812Gx4K5
+         EbrTCnIRDkXTjiF+rWm1E3aQaHPF0GcQk9jcuiPMGh4P+h3rorT9COBjGSS7vW0wjw
+         wNivFCxMd6a5BCkv4vdRW+jEjuRZVlXVaTynn8ahtwDU1Dn2a60yt6f+v485KLO9XJ
+         bve1W5IwCz6DrLFnK2u3qZ5AEecINIpmZtNASN8+e9nWTAj7GO/bXkq2pK0LPKYxP9
+         JHoTHvyxS1DPCKyQ+/l2PfMTDGLu14OIzldrJzAXaBx3uRC2HTTtCBdiVpa9eE9Tes
+         u+fYMy3kUbFGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/19] atm: firestream: check the return value of ioremap() in fs_init()
-Date:   Wed,  9 Mar 2022 11:23:29 -0500
-Message-Id: <20220309162337.136773-12-sashal@kernel.org>
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 19/19] kselftest/vm: fix tests build with old libc
+Date:   Wed,  9 Mar 2022 11:23:36 -0500
+Message-Id: <20220309162337.136773-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
 References: <20220309162337.136773-1-sashal@kernel.org>
@@ -53,34 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
+[ Upstream commit b773827e361952b3f53ac6fa4c4e39ccd632102e ]
 
-The function ioremap() in fs_init() can fail, so its return value should
-be checked.
+The error message when I build vm tests on debian10 (GLIBC 2.28):
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    userfaultfd.c: In function `userfaultfd_pagemap_test':
+    userfaultfd.c:1393:37: error: `MADV_PAGEOUT' undeclared (first use
+    in this function); did you mean `MADV_RANDOM'?
+      if (madvise(area_dst, test_pgsize, MADV_PAGEOUT))
+                                         ^~~~~~~~~~~~
+                                         MADV_RANDOM
+
+This patch includes these newer definitions from UAPI linux/mman.h, is
+useful to fix tests build on systems without these definitions in glibc
+sys/mman.h.
+
+Link: https://lkml.kernel.org/r/20220227055330.43087-2-zhouchengming@bytedance.com
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/firestream.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/vm/userfaultfd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 5acb45985675..8995c39330fa 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1677,6 +1677,8 @@ static int fs_init(struct fs_dev *dev)
- 	dev->hw_base = pci_resource_start(pci_dev, 0);
- 
- 	dev->base = ioremap(dev->hw_base, 0x1000);
-+	if (!dev->base)
-+		return 1;
- 
- 	reset_chip (dev);
-   
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index 9ba7feffe344..9814a0a15ba7 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -46,6 +46,7 @@
+ #include <signal.h>
+ #include <poll.h>
+ #include <string.h>
++#include <linux/mman.h>
+ #include <sys/mman.h>
+ #include <sys/syscall.h>
+ #include <sys/ioctl.h>
 -- 
 2.34.1
 
