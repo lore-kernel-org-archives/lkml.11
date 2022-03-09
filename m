@@ -2,103 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF62C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 722AFC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiCIRCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:02:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        id S236972AbiCIRFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236969AbiCIRBz (ORCPT
+        with ESMTP id S235748AbiCIRCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:01:55 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59FF1704FE
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:50:31 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DAE5440333
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:50:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646844629;
-        bh=n3bsDkHLKbob4SpB/QLI8yY+wMazsO7AAgENM4v1TGo=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-         In-Reply-To:Content-Type;
-        b=KXXsZ0AcVSloMHe6po2JnxoCCM+ARj/ln8gRf73H39QXi47/W8aaW+jRSA697Auaw
-         2EptHfFIEAiNKTS7rGAJni8n5z0BjZ5A9n5U15odtrdOrnItqL51uAJMqkGgxeFD7l
-         YyPQQ9fsF3bMmnbBTFe12E1leAzk0iHjxdaf67DJsJWwiHoXWd+1fDTBZO9MKfPRd/
-         9osbubKsqZ5x9GJedJOwTlENgxt9sTvwLn7THPAljYxfgk3FkIb40H35m8HP+ErZUu
-         IOKBAy+1/bjGgi+2ZttHTDTGJJ0WosWEGGB2B2uaIt97pVj7wN3F5AdO+PEJIzvYoY
-         r+M1SjbK9KFAw==
-Received: by mail-ed1-f71.google.com with SMTP id i5-20020a056402054500b00415ce7443f4so1598848edx.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:50:29 -0800 (PST)
+        Wed, 9 Mar 2022 12:02:41 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99973192C96
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:50:50 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso1853609wmr.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:50:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZgHou8MqoXhRtzbJoo/yhan8iXTUzQE6PBiS2FKYRVk=;
+        b=ApCIZr+MN6aee2cgqpPw+PV2CFMmrVy6Tba9Ix98g0JMbS/aPhT2nRYGytV5+Ew1dK
+         z0tHBjwNiHk8ULLoDS6I4IZtOD1vgXLJ6jKahOF+IevRmjrWjq4mt6e2HLiiL22auFD7
+         MnRfKwypFDEgPWQJnHfOysoynPTsTdtaTl0uYlV7qZCkg7zwXRBiAvgulaFHIPHCW0x5
+         Hnuu1IVwWai8BPnp6D9ccORnN9fLNaPf57yibDLFRvp1pBm3n06ltkKX9Je5tohqyKmH
+         OCBB1atg/D7hEWIqw31e2vKDb8speQ438g9RZRyONaVt0go3FMRBOFD7EDZjPJEfAe+j
+         YQcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=n3bsDkHLKbob4SpB/QLI8yY+wMazsO7AAgENM4v1TGo=;
-        b=sNrMFGVnDtSLmtHsk0I8BJYqnjojRbo7EN2Jsxxk5qrjIrKjADMT20lCZDDD9P8Kmx
-         WKNWRcgQPLyvukBf2OX2ToRC64NGvwXiFZpLPLkoCwFx6/gcOQWN7jJ2hD4D8u4pyktu
-         SLiDXz5p1qS1smWzihF9O6MvOAGPg3nD5x9Oxz8k0mF53hnlusMbk4No1TuRczCmzLzG
-         8ThpJ6TZrgRnBvCAHhDiwl1L0f5V1cr5f9XstAiDViCchQ7iv6jIrTtOv/fEWkRWXnsP
-         H29CbdYCugcZGxoswhq0TVyBKZ0NSOZBHaQ6TnqBuJyQLwVrKKpRFWWOcGwjUg4isibC
-         qRUQ==
-X-Gm-Message-State: AOAM5313ynEmb5LkX2oL4ZQfzG3IBLOV8lN4IUt9/JYM8ewa46V2iDQM
-        HZkLMQVqtC59YLoR7Wl3JTMg1gzcpG5X3AaTzMJTjuPbPwBQw7CxvYj865YUUk3chOa5q4sGsGg
-        i2cPry5jsUVKu7CAhwFkoOIADVoXA1bxsO+c6j7ULVg==
-X-Received: by 2002:a17:907:7205:b0:6db:706e:9453 with SMTP id dr5-20020a170907720500b006db706e9453mr639837ejc.406.1646844629563;
-        Wed, 09 Mar 2022 08:50:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxCxaTei6vOMnlujVwxaQYI8z9747SILBVem6r7T6w8d5qi1Y8LIsUHSSxKjRH2289mhNKSEw==
-X-Received: by 2002:a17:907:7205:b0:6db:706e:9453 with SMTP id dr5-20020a170907720500b006db706e9453mr639816ejc.406.1646844629326;
-        Wed, 09 Mar 2022 08:50:29 -0800 (PST)
-Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id w15-20020a056402268f00b00416474fbb42sm1032819edd.19.2022.03.09.08.50.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 08:50:28 -0800 (PST)
-Message-ID: <3eed8d0c-e009-2daa-ba66-899fe8f48a90@canonical.com>
-Date:   Wed, 9 Mar 2022 17:50:25 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZgHou8MqoXhRtzbJoo/yhan8iXTUzQE6PBiS2FKYRVk=;
+        b=1YVNKkZVL1RiUD/d9Mk5HCkB3CcXUS1oPF+6Fnq2MFg9J9UPGZIrqT83nY6LooY+Yr
+         TE04FZvznh514Kgmz4oCIWH4+tW00K3OIr7Odo/yBEokv5cnyFkAG8uDXHV/3dzmSi++
+         WscuEshIN221ptPL0AwqUT3xKa9SrMoBw8RXHoDEEfzhHKSeEWtAnlF8wyL7fs479Xpy
+         GyFqTm+TvdjAD2vnGsPVpJ49iApNldMOnO9VYVjf8UOst7XPZ7zjhMUyabLLaXlmFUAY
+         KvsCyVhtNEe11aGOu3UTokMjUq1C6BTtZoLxt1wC81Vi3YYSL7ke+JQBoye7dcOvUOBl
+         cRZQ==
+X-Gm-Message-State: AOAM5314EcS3mWIKt/VCfjQA7fOUTHJOy8N+bEk18fcwd4wwxbPEilo5
+        JWlaKG6F96SiHEntGSDa8n6mrw==
+X-Google-Smtp-Source: ABdhPJxsfLI0wVXG0HYqp8aGshE147e4FbNfGYA0n96plE+EG/lqB6ihUwJsiKwXUPa03ZDRH3qAhA==
+X-Received: by 2002:a05:600c:3b1c:b0:389:8677:6c73 with SMTP id m28-20020a05600c3b1c00b0038986776c73mr210606wms.192.1646844648795;
+        Wed, 09 Mar 2022 08:50:48 -0800 (PST)
+Received: from google.com ([2a00:79e0:d:210:24bb:c5c7:5788:287d])
+        by smtp.gmail.com with ESMTPSA id v20-20020a7bcb54000000b0037fa63db8aasm5972989wmj.5.2022.03.09.08.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 08:50:48 -0800 (PST)
+Date:   Wed, 9 Mar 2022 16:50:45 +0000
+From:   Quentin Perret <qperret@google.com>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Fuad Tabba <tabba@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 1/8] KVM: arm64: Introduce hyp_alloc_private_va_range()
+Message-ID: <Yija5cY6j/B25Psw@google.com>
+References: <20220307184935.1704614-1-kaleshsingh@google.com>
+ <20220307184935.1704614-2-kaleshsingh@google.com>
+ <CAE-0n52LmVRkrSNN=eJf+TYYnmesVjFv99nnetYvRWshm82rOg@mail.gmail.com>
+ <CAC_TJvc6LYp95BXQc0DSBBBAZpYpixa+NyHKMLFWsBADD5Ubhg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] phy: samsung: Fix missing of_node_put() in
- exynos_sata_phy_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Girish K S <ks.giri@samsung.com>,
-        Vasanth Ananthan <vasanth.a@samsung.com>,
-        Yuvaraj Kumar C D <yuvaraj.cd@gmail.com>,
-        linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220309124856.32632-1-linmq006@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220309124856.32632-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAC_TJvc6LYp95BXQc0DSBBBAZpYpixa+NyHKMLFWsBADD5Ubhg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/2022 13:48, Miaoqian Lin wrote:
-> The device_node pointer is returned by of_parse_phandle() with refcount
-> incremented. We should use of_node_put() on it when done.
+On Tuesday 08 Mar 2022 at 15:09:18 (-0800), Kalesh Singh wrote:
+> On Tue, Mar 8, 2022 at 12:21 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> > It looks odd to use an error pointer casted to unsigned long to return
+> > from an address allocation function. Why not pass a pointer for base
+> > like the function was written before and return an int from this
+> > function with 0 for success and negative error value?Otherwise some
+> > sort of define should made like DMA_MAPPING_ERROR and that can be used
+> > to indicate to the caller that the allocation failed, or a simple zero
+> > may work?
 > 
-> Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
+> I wanted to keep consistent between the pkvm and traditional nvhe
+> code. I will refactor both *alloc_private_va_range() functions to take
+> a pointer and return an int error if that's preferred. There would
+> still be a case of this kind of cast in
+> __pkvm_create_private_mapping() which does return an unsigned long
+> address or ERR_PTR(...). It looks like it was made to return the
+> address to facilitate use as a hypercall (@Quentin CMIW).
 
+Yep, passing everything by value was much easier to cross the EL1/EL2
+boundary as that avoids having the hypervisor map kernel memory and all
+that fun. But Stephen's point is fair, so no objection from to keep this
+little dance confined to the hypercall wrapper and make the function
+signature nicer and easier to use for the rest of the code.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-
-
-Best regards,
-Krzysztof
+Cheers,
+Quentin
