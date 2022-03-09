@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B02B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF516C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233541AbiCIQOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
+        id S233635AbiCIQOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:14:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234888AbiCIQIM (ORCPT
+        with ESMTP id S235841AbiCIQJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288EF123434;
-        Wed,  9 Mar 2022 08:04:39 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A045190B40;
+        Wed,  9 Mar 2022 08:06:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACDB8B82226;
-        Wed,  9 Mar 2022 16:04:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19A9CC340E8;
-        Wed,  9 Mar 2022 16:04:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 544E661666;
+        Wed,  9 Mar 2022 16:06:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627E5C340EF;
+        Wed,  9 Mar 2022 16:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841877;
-        bh=6ZUZk/4wbx82Pve13fPW/pPb9Ysl0rgYv9e7dSH/l5M=;
+        s=korg; t=1646841990;
+        bh=C+Kjyydpel09kWKlp+dh4V69PO5a/M+1eW27lj06JFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GkYOBd6zWDZ6Ym62NjRrmy6PeLwMSC1LZEOyaZ83lwJOMtEjr0kP2VVPTWzSLRqdB
-         myeJ0BccvOTbAcwt5Zlypgn+5RbKr/xhe2fqZkAZAfEPlJhk+4gbxxy9EM5bv9bwIT
-         Rnh+deIw6lnwKcpXDu5cvMsqBz9RkDRl95RFREV8=
+        b=MKwK4McHN+37vdihCoKgdE7whSGNdreEQ9NxHG/P/MLJ0nruzH+jOorvf4ulQ1j7J
+         oZzztq/kInA/VbQ9i7thwpa/li3jV5GiejAP4q97uV4pBUF4PFh9Dpch8hVSQUE164
+         YN9bvQJX7L6JxBuuuqSTm98WT/z6sr2gqKhsYRK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.4 09/18] x86/speculation: Warn about Spectre v2 LFENCE mitigation
-Date:   Wed,  9 Mar 2022 16:59:58 +0100
-Message-Id: <20220309155856.829049784@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.10 11/43] ARM: early traps initialisation
+Date:   Wed,  9 Mar 2022 16:59:44 +0100
+Message-Id: <20220309155859.570655431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155856.552503355@linuxfoundation.org>
-References: <20220309155856.552503355@linuxfoundation.org>
+In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309155859.239810747@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,62 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
+commit 04e91b7324760a377a725e218b5ee783826d30f5 upstream.
 
-With:
+Provide a couple of helpers to copy the vectors and stubs, and also
+to flush the copied vectors and stubs.
 
-  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
-
-it became possible to enable the LFENCE "retpoline" on Intel. However,
-Intel doesn't recommend it, as it has some weaknesses compared to
-retpoline.
-
-Now AMD doesn't recommend it either.
-
-It can still be left available as a cmdline option. It's faster than
-retpoline but is weaker in certain scenarios -- particularly SMT, but
-even non-SMT may be vulnerable in some cases.
-
-So just unconditionally warn if the user requests it on the cmdline.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/kernel/traps.c |   27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -608,6 +608,7 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
+--- a/arch/arm/kernel/traps.c
++++ b/arch/arm/kernel/traps.c
+@@ -806,10 +806,22 @@ static inline void __init kuser_init(voi
+ }
  #endif
  
-+#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
- 
- #ifdef CONFIG_BPF_SYSCALL
-@@ -929,6 +930,7 @@ static void __init spectre_v2_select_mit
- 		break;
- 
- 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
-+		pr_err(SPECTRE_V2_LFENCE_MSG);
- 		mode = SPECTRE_V2_LFENCE;
- 		break;
- 
-@@ -1705,6 +1707,9 @@ static char *ibpb_state(void)
- 
- static ssize_t spectre_v2_show_state(char *buf)
- {
-+	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-+		return sprintf(buf, "Vulnerable: LFENCE\n");
++#ifndef CONFIG_CPU_V7M
++static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
++{
++	memcpy(vma, lma_start, lma_end - lma_start);
++}
 +
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++static void flush_vectors(void *vma, size_t offset, size_t size)
++{
++	unsigned long start = (unsigned long)vma + offset;
++	unsigned long end = start + size;
++
++	flush_icache_range(start, end);
++}
++
+ void __init early_trap_init(void *vectors_base)
+ {
+-#ifndef CONFIG_CPU_V7M
+-	unsigned long vectors = (unsigned long)vectors_base;
+ 	extern char __stubs_start[], __stubs_end[];
+ 	extern char __vectors_start[], __vectors_end[];
+ 	unsigned i;
+@@ -830,17 +842,20 @@ void __init early_trap_init(void *vector
+ 	 * into the vector page, mapped at 0xffff0000, and ensure these
+ 	 * are visible to the instruction stream.
+ 	 */
+-	memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);
+-	memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
++	copy_from_lma(vectors_base, __vectors_start, __vectors_end);
++	copy_from_lma(vectors_base + 0x1000, __stubs_start, __stubs_end);
  
+ 	kuser_init(vectors_base);
+ 
+-	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
++	flush_vectors(vectors_base, 0, PAGE_SIZE * 2);
++}
+ #else /* ifndef CONFIG_CPU_V7M */
++void __init early_trap_init(void *vectors_base)
++{
+ 	/*
+ 	 * on V7-M there is no need to copy the vector table to a dedicated
+ 	 * memory area. The address is configurable and so a table in the kernel
+ 	 * image can be used.
+ 	 */
+-#endif
+ }
++#endif
 
 
