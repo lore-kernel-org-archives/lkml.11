@@ -2,100 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 049DFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4165CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbiCIMlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        id S232760AbiCIMl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232192AbiCIMla (ORCPT
+        with ESMTP id S231299AbiCIMlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:41:30 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237B91768EF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:40:31 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id n33-20020a05600c3ba100b003832caf7f3aso2874256wms.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:40:31 -0800 (PST)
+        Wed, 9 Mar 2022 07:41:55 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970361768F1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:40:56 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id dr20so4665583ejc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:40:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4s6Mt6bV9KJzPwA3PnUDcbbpV/tJaB+XPizE0569IJQ=;
-        b=dg3XnY4EVcBQh9xXHjE9FppjdwOVIl6rowvTrGYTub1VkRFmyyQ6tq4YJd3dJcj2EY
-         W7uNuYxLhoVsZB8/pO+GdxPGon0+hVzwUlJUEflr9H1ypGgj6oY0MpHSjsazFYUOQQ82
-         nsQyOjDpy+bZq2XKgK38/tmfd1ReOOG/y50t4DXRDQ5L7nkg7JSJwPip3SgAw47nLimP
-         XVVbOF+eQcbSShM0H8BDcUEPR1TAebQmjP8ko/gQlCsYUJBXrxxpUr/uEpaYrrAaVrMH
-         1U1zmhDyEFi7VKyM8/MpdXjioOwTW6IsgYj2FP+h4rViKb94BEMs721OUlCtJSurAi3z
-         lKzg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=4viH4UeuEG9C8oJaPt+fge86MkXEHZypQjP8U/5N0lo=;
+        b=egElFP2MIu29GTJ6QTaE6Ijq5SKRKgUQaLHfnVbn2UpmpO7dK6LFmaQLx72mvOOttK
+         iX+t4ZCjNEpd1aGPY9W90zKvP+O0xlT3zzN/+GVassM+JgxoobFnfIRzwUIIiFdqz4w6
+         2qyXFP17YP499ckFsUQ3fPMJLBOuomQrP24NXa7qw1lVbB3QV3LZ/tVXkA9mJ8WBuDZw
+         mJpP+UaoRxEgZBoVGYABo9u042LhLYBvVzpwy3c0TNI8Q1B7IrEqfCYM2CcYmMWkZ6n9
+         AuL1Z7ujg+Zeo2kq4K48Wg/GZy7zQN0Tw5G3nLUSdY1ZLFgnOgKkFRRSRJF3h5iOmOYK
+         GZyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=4s6Mt6bV9KJzPwA3PnUDcbbpV/tJaB+XPizE0569IJQ=;
-        b=KAx7P9clmLR9uB8h4V50li6/RZgdDdtTMnffhMyu/dQcT8JOdMHmuoWz9R+zQnCg8o
-         3kMJEuznHLGSnLk8KnwZYoqiDkmY5mhoghQUsj85id/77JCzToqXGjKJBTk1Iv+AaVLp
-         /9RV5iAwqNxewiJFROfVhka6k02YIW0qH66FB/+/fZ8CpaGXJ+8I3DkimNa9bg0UaYy/
-         F9uo62fPGwdi8OFzD13GTfnxiLOgyrXDvf/ABB6dlpPuQ4REwTdQNec2DF2ID6PhMUzN
-         CTGXAGZCyFqGkFnpcjWKjiXQI5AaE/LEsWe7vqfe/g2hc6QwL/EB9k4vMH2fJB5tI2wC
-         tURw==
-X-Gm-Message-State: AOAM530DdiUurDtiE6gaJGBgXSdWWhOK0qNacyQRosmHFDuaSuOjmTqE
-        s9TSwyz0ejnJOTWJ9oMRdRYbAg==
-X-Google-Smtp-Source: ABdhPJwpo9Iy8u1qG3DrI51vHYFtmGEESb2kVdFOe9UpA5tbOD1050hXgpLahBisUU+9Y5lHnSJC5w==
-X-Received: by 2002:a7b:cf30:0:b0:389:89bd:6d32 with SMTP id m16-20020a7bcf30000000b0038989bd6d32mr3236341wmg.12.1646829629570;
-        Wed, 09 Mar 2022 04:40:29 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:1ffc:39b4:7538:de29? ([2a01:e34:ed2f:f020:1ffc:39b4:7538:de29])
-        by smtp.googlemail.com with ESMTPSA id m13-20020a05600c4f4d00b00386744cb31bsm5186444wmq.35.2022.03.09.04.40.28
+        bh=4viH4UeuEG9C8oJaPt+fge86MkXEHZypQjP8U/5N0lo=;
+        b=5h/jgXQBiAsYBWhx9s8vROLIfR6yGM2B+ivjlAI0cOfVLeyRfoi0WSAVVEvw3JL77P
+         iFBZJH5Dv0ne/PiS1mGrGC8P/LnaGqWJXPsSIYdUZzLQJ6pFMz0RGEr5rOIPP6QpSBWL
+         eqgTiXXpEZFOdKcMguC/wfmUcrUI/x/KSx8LISr7yhbk+93IenKz8xXSXeYmLjaZlOr7
+         3+eYjmdCYgLzVmhhU1vKKGqWXL55da8B8GB7bi/mliQ9F6N4I56+eOg/7GMkbQ+ctgWE
+         KYjwxrHbNzBeZ1jamKOSrPoYoRnsmh/2u3X3T/hIvspX8HaVUpYslk8LJH6Io/4Dbz29
+         3RNA==
+X-Gm-Message-State: AOAM530iHZyvezlC3ph3e1ZY6SaBZAGP+M25Ub8V9CnbVzjzeor7/eHQ
+        wQSsMDMSdaoX8d2fXLvqG5s=
+X-Google-Smtp-Source: ABdhPJw90fsBED+a4LydG8qPyRvElSIweo299ISkYDvbvR4gHLYtshtVun2fyc1hGMrLUEQU2zkRgg==
+X-Received: by 2002:a17:906:c116:b0:6d6:f8b3:cd47 with SMTP id do22-20020a170906c11600b006d6f8b3cd47mr18180007ejc.501.1646829655019;
+        Wed, 09 Mar 2022 04:40:55 -0800 (PST)
+Received: from [192.168.1.218] ([31.179.128.178])
+        by smtp.gmail.com with ESMTPSA id v10-20020a170906380a00b006a68610908asm701731ejc.24.2022.03.09.04.40.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 04:40:28 -0800 (PST)
-Message-ID: <073f3d21-f544-4c75-d20b-ec7ef533e5fc@linaro.org>
-Date:   Wed, 9 Mar 2022 13:40:27 +0100
+        Wed, 09 Mar 2022 04:40:54 -0800 (PST)
+Message-ID: <f671c80f-f97d-b3a2-0253-2eec21e2c748@gmail.com>
+Date:   Wed, 9 Mar 2022 13:42:57 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4] thermal: rcar_thermal: Use platform_get_irq_optional()
- to get the interrupt
+ Thunderbird/91.6.2
+Subject: Re: VDSO is randomized even when ASLR is disabled
 Content-Language: en-US
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220110144039.5810-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CA+V-a8uTtUjj2ccHDqB0TKfKw5KO-joPv0umw1fDP4cz6sUj2Q@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CA+V-a8uTtUjj2ccHDqB0TKfKw5KO-joPv0umw1fDP4cz6sUj2Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From:   =?UTF-8?Q?Borys_Pop=c5=82awski?= <poplawski.borys@gmail.com>
+To:     luto@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <9b82908f-eed1-b6b7-62aa-ecbba7bf048b@gmail.com>
+In-Reply-To: <9b82908f-eed1-b6b7-62aa-ecbba7bf048b@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/2022 12:59, Lad, Prabhakar wrote:
+Hello,
+I would like to get some feedback on this issue. Would such fix be accepted? Should I send a patch?
 
-[ ... ]
-
->> ---
->>   drivers/thermal/rcar_thermal.c | 17 ++++++++++++-----
->>   1 file changed, 12 insertions(+), 5 deletions(-)
->>
-> This patch is not in -next yet. In which release v5.18/19 do you plan
-> to merge this in?
-Right, I missed it, I'll try to catch it up for v5.18-rc1, may be with a 
-second PR.
-
-It is in the linux-next branch now and will land in linux-next tree
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Best regards,
+Borys
