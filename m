@@ -2,112 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B49C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiCIFt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 00:49:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44502 "EHLO
+        id S229769AbiCIFu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 00:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiCIFtv (ORCPT
+        with ESMTP id S229461AbiCIFuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 00:49:51 -0500
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A035140C8;
-        Tue,  8 Mar 2022 21:48:53 -0800 (PST)
-Received: by mail-wm1-f43.google.com with SMTP id i66so693109wma.5;
-        Tue, 08 Mar 2022 21:48:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=L/2hLME7wbG3iYnMiEc+NU9UJToaXXdZRluS6g6KT3U=;
-        b=s4pJMRiD/XjJ6QgGW9miRxfJw6S9FL9smGmxh8vqjh5BqZspsG3BVZN2Sse9uMeCVV
-         joYsmUKXFNKNJB7YpCXYEw1fb07CooBKlW4kTP/qTsaesjfHzgF6FJENUbW3HR1NeebT
-         88QS61oRmyAlUYY04+c4V8bPgCrq7dNgQ3od1BPgV4om9G8E6leS9LB1psW3AMQ+npUa
-         DXZ05AiCyvG7+W3jtgrG3hfUaJJOlxdpPB+yX4HqaMEA1e77zkKTvMbHrH7N0os0QsC2
-         73hXte98Vj0xV4UGwwFO7VtpNUF5dG4/TPsL1EIyhKKvLdI1AJOAPA36iV63Xwe949+Y
-         McUQ==
-X-Gm-Message-State: AOAM531vqdv8ou+4foDV2k5jnEU7KXQ4/l4NpyHWKl8SBWJdatb0XWjW
-        sSRFQd3iyAa9ZT2gnFy2Qjm+VcAOH78=
-X-Google-Smtp-Source: ABdhPJyr+zRDrqPwGQ9WMZPFvipbWpPfP0XxBgmuP68pwUNHCELlQIQESYkX7Pxrx0w2KNGD8YojUg==
-X-Received: by 2002:a1c:4404:0:b0:382:a672:987b with SMTP id r4-20020a1c4404000000b00382a672987bmr6233389wma.115.1646804931467;
-        Tue, 08 Mar 2022 21:48:51 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id i8-20020a7bc948000000b003898dfd7990sm678289wml.29.2022.03.08.21.48.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 21:48:50 -0800 (PST)
-Message-ID: <d2a09bf3-9bd3-588a-99a1-598281d08678@kernel.org>
-Date:   Wed, 9 Mar 2022 06:48:49 +0100
+        Wed, 9 Mar 2022 00:50:54 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F66C4B49
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:49:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646804996; x=1678340996;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zvQZ5nPQCTC5UYnCj2+lFrGh0evpkgZTD7/DaQxXUcs=;
+  b=DZZQ4y4nCKK9lPMo/ZaDlUfUThUYHBOOk8G99iQWaIhKOoE6j2J3w9kF
+   OD5YFMXVrKclq5Q738y98LOClIk7hG0W4tbcGxVNfR5BsifdDJM2Lcs7L
+   mYpIek3pdT3HZ9QuBN39XH/sSA0D4twe2OeZwFHIEtaS37zxZlkrGmbyn
+   cWoU7tL6mo2y2htyWMDB4Vvjqf4JsO8YA5PPElHY1hjM+AbBwa4GxGBPP
+   h6Hmwt8nqjYpmQ57TWGHmNVM15u8FfoUGmr9hYB14dZNPcMgney/WWkBB
+   echmY7mW/zX5yDhz43mQCMaedyDjCs8U/JfZzii119kxulb88cJvSdoBg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="235502718"
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="235502718"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 21:49:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="780976621"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 08 Mar 2022 21:49:54 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRpCr-0002gL-UP; Wed, 09 Mar 2022 05:49:53 +0000
+Date:   Wed, 9 Mar 2022 13:48:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [andersson:tuxsuite 29/42] drivers/soc/qcom/pmic_glink.c:200:34:
+ warning: unused variable 'pmic_glink_of_match'
+Message-ID: <202203091303.wDvLl30f-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: hppa vDSO and compiler (non-)support
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        linux-parisc@vger.kernel.org,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Andreas Schwab <schwab@linux-m68k.org>
-References: <d2713ae1-0ca5-9e5a-b7d2-b7d0f1f5614a@kernel.org>
- <2e1f3e41-7097-e68d-d312-9319ad62565c@gmx.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <2e1f3e41-7097-e68d-d312-9319ad62565c@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/andersson/kernel tuxsuite
+head:   d1c9502cfe160da3c09a0f379147f16d559e4ab7
+commit: eb61d6c02e912eee3c26927b311b643f262b4036 [29/42] soc: qcom: pmic_glink: Introduce base PMIC GLINK driver
+config: arm64-randconfig-r016-20220307 (https://download.01.org/0day-ci/archive/20220309/202203091303.wDvLl30f-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/andersson/kernel/commit/eb61d6c02e912eee3c26927b311b643f262b4036
+        git remote add andersson https://github.com/andersson/kernel
+        git fetch --no-tags andersson tuxsuite
+        git checkout eb61d6c02e912eee3c26927b311b643f262b4036
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/soc/qcom/
 
-On 08. 03. 22, 15:51, Helge Deller wrote:
-> Hi Jiri,
-> 
-> Thanks for testing on parisc!
-> 
-> On 3/8/22 12:06, Jiri Slaby wrote:
->> since the "parisc: Add vDSO support" commit, I can no longer cross-build a hppa kernel. I see two issues:
->>
->> 1) CROSS32_COMPILE detection doesn't work here, as openSUSE provides hppa-suse-linux-* binaries. It's easy to overcome by "CROSS32_COMPILE=hppa-suse-linux-"
-> 
-> How is it handled for other platforms like s390x?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-s390 simply uses CC for vdso32:
-cmd_vdso32cc = $(CC) $(c_flags) -c -o $@ $<
+All warnings (new ones prefixed by >>):
 
-> Would it make sense to add the detection for SUSE too?
+>> drivers/soc/qcom/pmic_glink.c:200:34: warning: unused variable 'pmic_glink_of_match' [-Wunused-const-variable]
+   static const struct of_device_id pmic_glink_of_match[] = {
+                                    ^
+   1 warning generated.
 
-Maybe.
 
->> 2) openSUSE doesn't provide any libc for hppa. So gcc doesn't provide libgcc.a and the build of vDSO fails.
-> 
-> libgcc.a comes with the compiler, I don't think you need libc for that.
+vim +/pmic_glink_of_match +200 drivers/soc/qcom/pmic_glink.c
 
-I was told glibc is needed to build libgcc.a.
+   199	
+ > 200	static const struct of_device_id pmic_glink_of_match[] = {
+   201		{ .compatible = "qcom,pmic-glink", },
+   202		{}
+   203	};
+   204	MODULE_DEVICE_TABLE(of, pmic_glink_of_match);
+   205	
 
-> I'm currently installing opensuse to try myself though...
-> 
->> So could vDSO be optional on hppa via KConfig?
-> The vDSO is one of the first things which is built during kernel build process.
-> This is why you fail.
-> Making it optional doesn't make sense, because then the kernel wouldn't be able
-> to start the user space processes.
-> 
->> I used to use the cross compiler to at least compile-check the following  tty drivers:
->> arch/parisc/kernel/pdc_cons.o
->> drivers/tty/serial/mux.o
->> drivers/tty/serial/8250/8250_gsc.o
-> 
-> I assume you never built a full kernel, but stopped when building those modules?
-> Without libgcc.a the kernel itself wouldn't have linked before either.
-
-Correct, I am only build-testing parisc-only drivers when doing global 
-tty changes.
-
-thanks,
--- 
-js
-suse labs
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
