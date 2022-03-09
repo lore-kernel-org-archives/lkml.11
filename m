@@ -2,93 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB03C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A775FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238255AbiCIWGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:06:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
+        id S236090AbiCIWHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236486AbiCIWGP (ORCPT
+        with ESMTP id S231359AbiCIWH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:06:15 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8F811EF2A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:05:15 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso3505226pjo.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:05:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ol07yB2pc4Hx2YpjxX8IDkmGa1Ut0RXCUKHI0BlLywM=;
-        b=N5JXehWwWuC4FwbhbSiMdnv1JqdJYcNh+IKME6/AwQDzvtCfK61grGuRwv3x+0S504
-         OZfzislLftIUuu+eTY0ij+1lpxA96FHcWXljVoqByHuVKUNSJO6hendZ8xihqIDFaALK
-         IitMl2Rq4/Oj2paqCMYhmSF5W893FOI5l0cPs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ol07yB2pc4Hx2YpjxX8IDkmGa1Ut0RXCUKHI0BlLywM=;
-        b=tLxGrlLUWpRAvCnNu6/JvOHhlcqTahJ9Pnb+nv/W5dXS+qtITShP6hMxpHkli06v5q
-         mcFot6l/BLCq+tBsV93ftLY3EH7U+bwm3qhlj0pvTXNkUWjoHrFLrKT0ks6gYHaS4qXW
-         k8twSex5T40LubuV2wrXlzN1PWenAVyKy0l2l670mqPYJbiRfQCrWn/a3/xzuZXY7OKZ
-         OhvB/qGfM4DROiE2LlKX3WL28pUVBU1tDzoq7ROUJdZjTkb7OYLWtz6OoJ1xK1YKbP73
-         bPO7GQQinWMlvRy5rJZBWhKIQSYU/eOWVZctv/PMLnJKmVpgSEVC4aeNrx8vf5z/bzcu
-         jURQ==
-X-Gm-Message-State: AOAM531SeaKWktJwlcK5rld7Ib2RZNUslxFR5Y5r5Cq9EbsHsz8f/aGv
-        lz7u5fIMWgCqoQF4UJSb3nZAPxVsT2o+QQ==
-X-Google-Smtp-Source: ABdhPJyGPublwuLOMOVGGkAn+uCqEykbtEDrUSKkIin3o3/MXyEy6lr28SGfex4fbL3/1BVSE2KwoA==
-X-Received: by 2002:a17:902:c745:b0:153:b0e:8586 with SMTP id q5-20020a170902c74500b001530b0e8586mr1643074plq.9.1646863515178;
-        Wed, 09 Mar 2022 14:05:15 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id i11-20020a056a00004b00b004f6907b2cd3sm4173818pfk.122.2022.03.09.14.05.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 14:05:14 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?q?M=C3=A5ns=20Rullg=C3=A5rd?= <mans@mansr.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Michael Cree <mcree@orcon.net.nz>, linux-arch@vger.kernel.org,
-        Richard Henderson <rth@twiddle.net>,
-        linux-m68k@lists.linux-m68k.org, Borislav Petkov <bp@alien8.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        X86 ML <x86@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] a.out: Stop building a.out/osf1 support on alpha and m68k
-Date:   Wed,  9 Mar 2022 14:04:59 -0800
-Message-Id: <164686349541.391760.11942525130947458475.b4-ty@chromium.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <87ilsmdhb5.fsf_-_@email.froward.int.ebiederm.org>
-References: <20220113160115.5375-1-bp@alien8.de> <YeBzxuO0wLn/B2Ew@mit.edu> <YeCuNapJLK4M5sat@zn.tnic> <CAMuHMdUbTNNr16YY1TFe=-uRLjg6yGzgw_RqtAFpyhnOMM5Pvw@mail.gmail.com> <YeHLIDsjGB944GSP@zn.tnic> <CAMuHMdUBr+gpF6Z5nPadjHFYJwgGd+LGoNTV=Sxty+yaY5EWxg@mail.gmail.com> <YeHQmbMYyy92AbBp@zn.tnic> <YeKyBP5rac8sVvWw@zn.tnic> <b40d1377-51d5-4ba3-ab3f-b40626c229ad@physik.fu-berlin.de> <87ilsmdhb5.fsf_-_@email.froward.int.ebiederm.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Wed, 9 Mar 2022 17:07:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E1C101F06
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:06:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF04561B20
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 196FFC340E8;
+        Wed,  9 Mar 2022 22:06:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1646863588;
+        bh=tCTg9iZ+l1L+YIDqIMzEn+ib+sAI8kfh/KLRU9a8GdY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DnDofeAkAHu7ywYFNpGq2nl3tLnncdXVE9rvFsKyBSNOIOJOafkOL8QwbSS0koDnB
+         EQNB30prTqIQk3+HpHzIGRuDWGKWvLTwoQxbJSjYnMpd7r+DUF6ObJafeblDamGT+/
+         WS9QaikU/SW99qMzNydh5dTfD6RU571d84XqAqYY=
+Date:   Wed, 9 Mar 2022 14:06:27 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     linux-mm <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Chris Goldsworthy <cgoldswo@codeaurora.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        John Dias <joaodias@google.com>
+Subject: Re: [PATCH] mm: fs: fix lru_cache_disabled race in bh_lru
+Message-Id: <20220309140627.eeaa069daa921dbef64f8970@linux-foundation.org>
+In-Reply-To: <20220308180709.2017638-1-minchan@kernel.org>
+References: <20220308180709.2017638-1-minchan@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Mar 2022 14:03:42 -0600, Eric W. Biederman wrote:
-> There has been repeated discussion on removing a.out support, the most
-> recent was[1].  Having read through a bunch of the discussion it looks
-> like no one has see any reason why we need to keep a.out support.
+On Tue,  8 Mar 2022 10:07:09 -0800 Minchan Kim <minchan@kernel.org> wrote:
+
+> Check lru_cache_disabled under bh_lru_lock. Otherwise, it could
+> introduce race below and it fails to migrate pages containing
+> buffer_head.
 > 
-> The m68k maintainer has even come out in favor of removing a.out
-> support[2].
+>    CPU 0					CPU 1
 > 
-> [...]
+> bh_lru_install
+>                                        lru_cache_disable
+>   lru_cache_disabled = false
+>                                        atomic_inc(&lru_disable_count);
+> 				       invalidate_bh_lrus_cpu of CPU 0
+> 				       bh_lru_lock
+> 				       __invalidate_bh_lrus
+> 				       bh_lru_unlock
+>   bh_lru_lock
+>   install the bh
+>   bh_lru_unlock
 
-Applied to for-next/execve, thanks!
+What are the user-visible runtime effects of this bug?
 
-[1/1] a.out: Stop building a.out/osf1 support on alpha and m68k
-      https://git.kernel.org/kees/c/f451569b9da8
+Is a cc:stable needed?
 
--- 
-Kees Cook
+Should there be a reported-by?
+
+Thanks.
 
