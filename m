@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233803AbiCIQFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:05:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
+        id S234355AbiCIQFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234263AbiCIQDm (ORCPT
+        with ESMTP id S234291AbiCIQDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:03:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562D717AEF4;
-        Wed,  9 Mar 2022 08:02:23 -0800 (PST)
+        Wed, 9 Mar 2022 11:03:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089D826F7;
+        Wed,  9 Mar 2022 08:02:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C146164F;
-        Wed,  9 Mar 2022 16:02:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FB2C340E8;
-        Wed,  9 Mar 2022 16:02:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A436164F;
+        Wed,  9 Mar 2022 16:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6D12C340E8;
+        Wed,  9 Mar 2022 16:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841742;
-        bh=t90dGtTlu58wGFqCJrCN/qqsFFd1J3vj25avuu3WrE4=;
+        s=korg; t=1646841745;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kz90eTCiJp/OWK/46nOjilqBgrDPwKhiE/kAgcqRRgjmA3KPZz5bLvvaM4xz9Er+t
-         53OVq6gg9dyiqf+wREE4znQzw5cDqz8e1MTcSPqHPuPYrm+K5ozgAYIWhQ2zFq6qSb
-         04FFrwhi8KtEojdq7j677hH1GoNn6fEU4ERvnQVk=
+        b=gLVa6vT8DazhK1C/KW8mNR5GVgd+KvaFIz4pPPx3FeS6cnXLxND3h1XjZKbtO/uBN
+         yOA2EUm6lBZQjwtYDpOUmByoX1CsR3uUz2QtQhPnKMY2ukDS3LSJadoG2MHETmOs1J
+         jHq+9Mqf3cjW2TVsfKm9xFVCdFIy/aNQoYfGbU0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.14 16/18] ARM: Spectre-BHB workaround
-Date:   Wed,  9 Mar 2022 16:59:46 +0100
-Message-Id: <20220309155856.573977989@linuxfoundation.org>
+Subject: [PATCH 4.14 17/18] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Wed,  9 Mar 2022 16:59:47 +0100
+Message-Id: <20220309155856.603915543@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.090281301@linuxfoundation.org>
 References: <20220309155856.090281301@linuxfoundation.org>
@@ -48,463 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-comomit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
-Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
-well to be safe, which is affected by Spectre V2 in the same ways as
-Cortex-A15.
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
+
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-[changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/assembler.h  |   10 ++++
- arch/arm/include/asm/spectre.h    |    4 +
- arch/arm/kernel/entry-armv.S      |   79 +++++++++++++++++++++++++++++++++++---
- arch/arm/kernel/entry-common.S    |   24 +++++++++++
- arch/arm/kernel/spectre.c         |    4 +
- arch/arm/kernel/traps.c           |   38 ++++++++++++++++++
- arch/arm/kernel/vmlinux-xip.lds.S |   18 +++++++-
- arch/arm/kernel/vmlinux.lds.S     |   18 +++++++-
- arch/arm/mm/Kconfig               |   10 ++++
- arch/arm/mm/proc-v7-bugs.c        |   76 ++++++++++++++++++++++++++++++++++++
- 10 files changed, 269 insertions(+), 12 deletions(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -110,6 +110,16 @@
- 	.endm
- #endif
- 
-+#if __LINUX_ARM_ARCH__ < 7
-+	.macro	dsb, args
-+	mcr	p15, 0, r0, c7, c10, 4
-+	.endm
-+
-+	.macro	isb, args
-+	mcr	p15, 0, r0, c7, r5, 4
-+	.endm
-+#endif
-+
- 	.macro asm_trace_hardirqs_off, save=1
- #if defined(CONFIG_TRACE_IRQFLAGS)
- 	.if \save
---- a/arch/arm/include/asm/spectre.h
-+++ b/arch/arm/include/asm/spectre.h
-@@ -14,6 +14,7 @@ enum {
- 	__SPECTRE_V2_METHOD_ICIALLU,
- 	__SPECTRE_V2_METHOD_SMC,
- 	__SPECTRE_V2_METHOD_HVC,
-+	__SPECTRE_V2_METHOD_LOOP8,
- };
- 
- enum {
-@@ -21,8 +22,11 @@ enum {
- 	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
- 	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
- 	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
-+	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
- };
- 
- void spectre_v2_update_state(unsigned int state, unsigned int methods);
- 
-+int spectre_bhb_update_vectors(unsigned int method);
-+
- #endif
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1033,12 +1033,11 @@ vector_\name:
- 	sub	lr, lr, #\correction
- 	.endif
- 
--	@
--	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
--	@ (parent CPSR)
--	@
-+	@ Save r0, lr_<exception> (parent PC)
- 	stmia	sp, {r0, lr}		@ save r0, lr
--	mrs	lr, spsr
-+
-+	@ Save spsr_<exception> (parent CPSR)
-+2:	mrs	lr, spsr
- 	str	lr, [sp, #8]		@ save spsr
- 
- 	@
-@@ -1059,6 +1058,44 @@ vector_\name:
- 	movs	pc, lr			@ branch to handler in SVC mode
- ENDPROC(vector_\name)
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.subsection 1
-+	.align 5
-+vector_bhb_loop8_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mov	r0, #8
-+1:	b	. + 4
-+	subs	r0, r0, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	2b
-+ENDPROC(vector_bhb_loop8_\name)
-+
-+vector_bhb_bpiall_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
-+	@ isb not needed due to "movs pc, lr" in the vector stub
-+	@ which gives a "context synchronisation".
-+	b	2b
-+ENDPROC(vector_bhb_bpiall_\name)
-+	.previous
-+#endif
-+
- 	.align	2
- 	@ handler addresses follow this label
- 1:
-@@ -1067,6 +1104,10 @@ ENDPROC(vector_\name)
- 	.section .stubs, "ax", %progbits
- 	@ This must be the first word
- 	.word	vector_swi
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.word	vector_bhb_loop8_swi
-+	.word	vector_bhb_bpiall_swi
-+#endif
- 
- vector_rst:
-  ARM(	swi	SYS_ERROR0	)
-@@ -1181,8 +1222,10 @@ vector_addrexcptn:
-  * FIQ "NMI" handler
-  *-----------------------------------------------------------------------------
-  * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
-- * systems.
-+ * systems. This must be the last vector stub, so lets place it in its own
-+ * subsection.
-  */
-+	.subsection 2
- 	vector_stub	fiq, FIQ_MODE, 4
- 
- 	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-@@ -1215,6 +1258,30 @@ vector_addrexcptn:
- 	W(b)	vector_irq
- 	W(b)	vector_fiq
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.section .vectors.bhb.loop8, "ax", %progbits
-+.L__vectors_bhb_loop8_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_loop8_und
-+	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+	W(b)	vector_bhb_loop8_pabt
-+	W(b)	vector_bhb_loop8_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_loop8_irq
-+	W(b)	vector_bhb_loop8_fiq
-+
-+	.section .vectors.bhb.bpiall, "ax", %progbits
-+.L__vectors_bhb_bpiall_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_bpiall_und
-+	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+	W(b)	vector_bhb_bpiall_pabt
-+	W(b)	vector_bhb_bpiall_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_bpiall_irq
-+	W(b)	vector_bhb_bpiall_fiq
-+#endif
-+
- 	.data
- 	.align	2
- 
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -152,12 +152,36 @@ ENDPROC(ret_from_fork)
-  */
- 
- 	.align	5
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+ENTRY(vector_bhb_loop8_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mov	r8, #8
-+1:	b	2f
-+2:	subs	r8, r8, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_loop8_swi)
-+
-+	.align	5
-+ENTRY(vector_bhb_bpiall_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mcr	p15, 0, r8, c7, c5, 6	@ BPIALL
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_bpiall_swi)
-+#endif
-+	.align	5
- ENTRY(vector_swi)
- #ifdef CONFIG_CPU_V7M
- 	v7m_exception_entry
- #else
- 	sub	sp, sp, #PT_REGS_SIZE
- 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
-+3:
-  ARM(	add	r8, sp, #S_PC		)
-  ARM(	stmdb	r8, {sp, lr}^		)	@ Calling sp, lr
-  THUMB(	mov	r8, sp			)
 --- a/arch/arm/kernel/spectre.c
 +++ b/arch/arm/kernel/spectre.c
-@@ -45,6 +45,10 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		method = "Firmware call";
- 		break;
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
  
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		method = "History overwrite";
-+		break;
-+
- 	default:
- 		method = "Multiple mitigations";
- 		break;
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -33,6 +33,7 @@
- #include <linux/atomic.h>
- #include <asm/cacheflush.h>
- #include <asm/exception.h>
-+#include <asm/spectre.h>
- #include <asm/unistd.h>
- #include <asm/traps.h>
- #include <asm/ptrace.h>
-@@ -834,6 +835,43 @@ static void flush_vectors(void *vma, siz
- 	flush_icache_range(start, end);
- }
+ #include <asm/spectre.h>
  
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+int spectre_bhb_update_vectors(unsigned int method)
++static bool _unprivileged_ebpf_enabled(void)
 +{
-+	extern char __vectors_bhb_bpiall_start[], __vectors_bhb_bpiall_end[];
-+	extern char __vectors_bhb_loop8_start[], __vectors_bhb_loop8_end[];
-+	void *vec_start, *vec_end;
-+
-+	if (system_state > SYSTEM_SCHEDULING) {
-+		pr_err("CPU%u: Spectre BHB workaround too late - system vulnerable\n",
-+		       smp_processor_id());
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		vec_start = __vectors_bhb_loop8_start;
-+		vec_end = __vectors_bhb_loop8_end;
-+		break;
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		vec_start = __vectors_bhb_bpiall_start;
-+		vec_end = __vectors_bhb_bpiall_end;
-+		break;
-+
-+	default:
-+		pr_err("CPU%u: unknown Spectre BHB state %d\n",
-+		       smp_processor_id(), method);
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	copy_from_lma(vectors_page, vec_start, vec_end);
-+	flush_vectors(vectors_page, 0, vec_end - vec_start);
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#endif
-+
- void __init early_trap_init(void *vectors_base)
- {
- 	extern char __stubs_start[], __stubs_end[];
---- a/arch/arm/kernel/vmlinux-xip.lds.S
-+++ b/arch/arm/kernel/vmlinux-xip.lds.S
-@@ -155,11 +155,23 @@ SECTIONS
- 	 * only thing that matters is their relative offsets
- 	 */
- 	__vectors_lma = .;
--	.vectors 0xffff0000 : AT(__vectors_start) {
--		*(.vectors)
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
-+		.vectors {
-+			*(.vectors)
-+		}
-+		.vectors.bhb.loop8 {
-+			*(.vectors.bhb.loop8)
-+		}
-+		.vectors.bhb.bpiall {
-+			*(.vectors.bhb.bpiall)
-+		}
- 	}
- 	ARM_LMA(__vectors, .vectors);
--	. = __vectors_lma + SIZEOF(.vectors);
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
-+	. = __vectors_lma + SIZEOF(.vectors) +
-+		SIZEOF(.vectors.bhb.loop8) +
-+		SIZEOF(.vectors.bhb.bpiall);
- 
- 	__stubs_lma = .;
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
---- a/arch/arm/kernel/vmlinux.lds.S
-+++ b/arch/arm/kernel/vmlinux.lds.S
-@@ -176,11 +176,23 @@ SECTIONS
- 	 * only thing that matters is their relative offsets
- 	 */
- 	__vectors_lma = .;
--	.vectors 0xffff0000 : AT(__vectors_start) {
--		*(.vectors)
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
-+		.vectors {
-+			*(.vectors)
-+		}
-+		.vectors.bhb.loop8 {
-+			*(.vectors.bhb.loop8)
-+		}
-+		.vectors.bhb.bpiall {
-+			*(.vectors.bhb.bpiall)
-+		}
- 	}
- 	ARM_LMA(__vectors, .vectors);
--	. = __vectors_lma + SIZEOF(.vectors);
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
-+	. = __vectors_lma + SIZEOF(.vectors) +
-+		SIZEOF(.vectors.bhb.loop8) +
-+		SIZEOF(.vectors.bhb.bpiall);
- 
- 	__stubs_lma = .;
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -850,6 +850,16 @@ config HARDEN_BRANCH_PREDICTOR
- 
- 	   If unsure, say Y.
- 
-+config HARDEN_BRANCH_HISTORY
-+	bool "Harden Spectre style attacks against branch history" if EXPERT
-+	depends on CPU_SPECTRE
-+	default y
-+	help
-+	  Speculation attacks against some high-performance processors can
-+	  make use of branch history to influence future speculation. When
-+	  taking an exception, a sequence of branches overwrites the branch
-+	  history, or branch history is invalidated.
-+
- config TLS_REG_EMUL
- 	bool
- 	select NEED_KUSER_HELPERS
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -186,6 +186,81 @@ static void cpu_v7_spectre_v2_init(void)
- 	spectre_v2_update_state(state, method);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+static int spectre_bhb_method;
-+
-+static const char *spectre_bhb_method_name(int method)
-+{
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		return "loop";
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		return "BPIALL";
-+
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	if (spectre_bhb_method != method) {
-+		if (spectre_bhb_method) {
-+			pr_err("CPU%u: Spectre BHB: method disagreement, system vulnerable\n",
-+			       smp_processor_id());
-+
-+			return SPECTRE_VULNERABLE;
-+		}
-+
-+		if (spectre_bhb_update_vectors(method) == SPECTRE_VULNERABLE)
-+			return SPECTRE_VULNERABLE;
-+
-+		spectre_bhb_method = method;
-+	}
-+
-+	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
-+		smp_processor_id(), spectre_bhb_method_name(method));
-+
-+	return SPECTRE_MITIGATED;
-+}
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
 +#else
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	return SPECTRE_VULNERABLE;
-+}
++	return false
 +#endif
-+
-+static void cpu_v7_spectre_bhb_init(void)
-+{
-+	unsigned int state, method = 0;
-+
-+	switch (read_cpuid_part()) {
-+	case ARM_CPU_PART_CORTEX_A15:
-+	case ARM_CPU_PART_BRAHMA_B15:
-+	case ARM_CPU_PART_CORTEX_A57:
-+	case ARM_CPU_PART_CORTEX_A72:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_LOOP8;
-+		break;
-+
-+	case ARM_CPU_PART_CORTEX_A73:
-+	case ARM_CPU_PART_CORTEX_A75:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_BPIALL;
-+		break;
-+
-+	default:
-+		state = SPECTRE_UNAFFECTED;
-+		break;
-+	}
-+
-+	if (state == SPECTRE_MITIGATED)
-+		state = spectre_bhb_install_workaround(method);
-+
-+	spectre_v2_update_state(state, method);
 +}
 +
- static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
- 						  u32 mask, const char *msg)
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
  {
-@@ -226,4 +301,5 @@ void cpu_v7_ca15_ibe(void)
- void cpu_v7_bugs_init(void)
- {
- 	cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
- }
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
+ 
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
