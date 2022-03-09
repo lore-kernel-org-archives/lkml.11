@@ -2,76 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A78C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235017AbiCISO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
+        id S235082AbiCISPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:15:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232226AbiCISOX (ORCPT
+        with ESMTP id S233620AbiCISPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:14:23 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8B254FB8
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:13:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646849604; x=1678385604;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fjotJj0Le6vZ9kuI41XD/CE8Rc5Fx1t7WC73S1YJXWI=;
-  b=FyER5XKQm8WzV5ItEHndtrvgNoVGvAmmNZ6pUrU9Aygbc8fdI5UqFAUU
-   d4+XmGtnwDWAfSvVCR0Z38MXh8R/YxZjSUbhEyZiuyjog+dOyCFHlISbH
-   uiYkiHX4Dfhp0ghGslFqsYJLltOV76t0tGcyAt4R25B0NhUKoxXcfvLFm
-   79YO+Elxd8Md9V7IwVXU+pjOQXhxFuocLziVky/QLlBnSOVIduEO3UGbx
-   cjyrol1gKkjGPErbgO00L5fEyaGTIagZ7FDfIm/Mg7NAVIrlFbohJZ3Hf
-   AHklMV2Njj65CB1rvfO0WweU9snTI/kin3CxlytF6L2LgQjBLYP9BezHx
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255241917"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="255241917"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 10:13:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="538108190"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 09 Mar 2022 10:13:21 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nS0oL-0003ft-8h; Wed, 09 Mar 2022 18:13:21 +0000
-Date:   Thu, 10 Mar 2022 02:12:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Lawrence <paullawrence@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 9996/9999] fs/fuse/dir.c:557:43-44: Unneeded semicolon
-Message-ID: <202203100238.1ZdkujYi-lkp@intel.com>
+        Wed, 9 Mar 2022 13:15:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32552BF97C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:14:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646849654;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BiL4ATUz1KNDAzAGSlQ9x7yx5LofUJYOal186YuSgkA=;
+        b=AeHqrKBfvQz7jpm5z30vXkwo67X3EIH9znaeRkQuIRm0fXAbUrpp7FSaL8r9mJPJMUAqtx
+        n+3Minzq0+FeoDPGLY7LtQIupjKuL9GduErbEeHeJ6YPh//pikiHDV3wbZqj1FYqBJ95d1
+        ODLepm2Xyp7ggIUrA0dDo1jso7N9+nI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-RyZsAxO9PRiLijzr435wWA-1; Wed, 09 Mar 2022 13:14:09 -0500
+X-MC-Unique: RyZsAxO9PRiLijzr435wWA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EED8880205C;
+        Wed,  9 Mar 2022 18:14:06 +0000 (UTC)
+Received: from starship (unknown [10.40.192.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B98FF7F0DB;
+        Wed,  9 Mar 2022 18:14:01 +0000 (UTC)
+Message-ID: <ff76ebe610fd46c1e6d7f3eee436426056961747.camel@redhat.com>
+Subject: Re: [PATCH v3 7/7] KVM: x86: SVM: allow AVIC to co-exist with a
+ nested guest running
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>
+Date:   Wed, 09 Mar 2022 20:14:00 +0200
+In-Reply-To: <bdb527f3-9281-1f25-c6c7-a8538455bfa3@redhat.com>
+References: <20220301143650.143749-1-mlevitsk@redhat.com>
+         <20220301143650.143749-8-mlevitsk@redhat.com>
+         <bdb527f3-9281-1f25-c6c7-a8538455bfa3@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   681ba23265bee4f2f0bd461df7d0025f4df17f09
-commit: 8efdff35e3052e44d519ccfb9d50594f5df0240b [9996/9999] ANDROID: fuse-bpf: Move fd operations to be synchronous
-config: arm-randconfig-c004-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100238.1ZdkujYi-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+On Wed, 2022-03-09 at 14:50 +0100, Paolo Bonzini wrote:
+> On 3/1/22 15:36, Maxim Levitsky wrote:
+> >   	bool activate;
+> > @@ -9690,7 +9695,9 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
+> >   
+> >   	down_read(&vcpu->kvm->arch.apicv_update_lock);
+> >   
+> > -	activate = kvm_apicv_activated(vcpu->kvm);
+> > +	activate = kvm_apicv_activated(vcpu->kvm) &&
+> > +		   !vcpu_has_apicv_inhibit_condition(vcpu);
+> > +
+> >   	if (vcpu->arch.apicv_active == activate)
+> >   		goto out;
+> >   
+> 
+> Perhaps the callback could be named vcpu_apicv_inhibit_reasons, and it would
+> return APICV_INHIBIT_REASON_NESTED?  Then instead of the new function
+> vcpu_has_apicv_inhibit_condition(), you would have
+> 
+> bool kvm_vcpu_apicv_activated(struct vcpu_kvm *kvm)
+> {
+> 	ulong vm_reasons = READ_ONCE(vcpu->kvm->arch.apicv_inhibit_reasons);
+> 	ulong vcpu_reasons = static_call(kvm_x86_vcpu_apicv_inhibit_reasons)(vcpu);
+>          return (vm_reasons | vcpu_reasons) == 0;
+> }
+> EXPORT_SYMBOL_GPL(kvm_cpu_apicv_activated);
+> 
+> It's mostly aesthetics, but it would also be a bit more self explanatory I think.
+> 
+> Paolo
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This is a great idea, I will do it in next version.
+Thanks!
 
+Best regards,
+	Maxim Levitsky
 
-cocci warnings: (new ones prefixed by >>)
->> fs/fuse/dir.c:557:43-44: Unneeded semicolon
-
-Please review and possibly fold the followup patch.
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
