@@ -2,63 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B411C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238738AbiCIWgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
+        id S238750AbiCIWgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:36:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232562AbiCIWgT (ORCPT
+        with ESMTP id S232562AbiCIWgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:36:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96B31216A8;
-        Wed,  9 Mar 2022 14:35:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 9 Mar 2022 17:36:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CAF51216B1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:35:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646865330;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7BCptgTn0msFj3Lu2nO08V4lR03WYPl53I+vGTYn7fk=;
+        b=fbYiabUp/uDUIUaecCQsduAEt0GMWW8Nhms468tDLVhY0Q2p540/ki9Plzi/9WO3Iadn/d
+        guLnaCfjL84lGTiIyOGdjYWZuSF7eglkDUHw4ow/9WiqIkLPOblYWV6oyzgM9RfgMotD+y
+        Mnm3hZR5DWk/ObMPHxV5vLVybN2fb8E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-578-P-IsmW0HMkWz7wctcP4Pcg-1; Wed, 09 Mar 2022 17:35:27 -0500
+X-MC-Unique: P-IsmW0HMkWz7wctcP4Pcg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51D0BB8240E;
-        Wed,  9 Mar 2022 22:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073C8C340E8;
-        Wed,  9 Mar 2022 22:35:15 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Will Deacon <will@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        James Morse <james.morse@arm.com>,
-        Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH] arm64: Do not include __READ_ONCE() block in assembly files
-Date:   Wed,  9 Mar 2022 22:35:13 +0000
-Message-Id: <164686530868.2021143.5226596562469342998.b4-ty@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220309191633.2307110-1-nathan@kernel.org>
-References: <20220309191633.2307110-1-nathan@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE0D7835DE0;
+        Wed,  9 Mar 2022 22:35:23 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 954F945302;
+        Wed,  9 Mar 2022 22:35:02 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <92ebc9fbdda967c14274f2b246ef3f77a1f21224.camel@kernel.org>
+References: <92ebc9fbdda967c14274f2b246ef3f77a1f21224.camel@kernel.org> <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk> <164678220204.1200972.17408022517463940584.stgit@warthog.procyon.org.uk>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        linux-afs@lists.infradead.org,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-nfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+        ceph-devel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 19/19] afs: Maintain netfs_i_context::remote_i_size
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1842057.1646865301.1@warthog.procyon.org.uk>
+Date:   Wed, 09 Mar 2022 22:35:01 +0000
+Message-ID: <1842058.1646865301@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 12:16:34 -0700, Nathan Chancellor wrote:
-> When building arm64 defconfig + CONFIG_LTO_CLANG_{FULL,THIN}=y after
-> commit 558c303c9734 ("arm64: Mitigate spectre style branch history side
-> channels"), the following error occurs:
+Jeff Layton <jlayton@kernel.org> wrote:
+
+> > -	op->store.i_size = max(pos + size, i_size);
+> > +	op->store.i_size = max(pos + size, ictx->remote_i_size);
 > 
->   <instantiation>:4:2: error: invalid fixup for movz/movk instruction
->    mov w0, #ARM_SMCCC_ARCH_WORKAROUND_3
->    ^
-> 
-> [...]
+> Ahh ok, so if i_size is larger than is represented by this write, you'll
+> have a zeroed out region until writeback catches up. Makes sense.
 
-Applied to arm64 (for-next/spectre-bhb), thanks!
+That's the way it was working.  With this change, we track the server's idea
+of the file size separately from our local inode->i_size (which is updated by
+the modifications into the pagecache) and only expand the server's setting to
+the end of the data we're storing, not to our local i_size.  I'm trying to
+avoid zeroed-out regions appearing in the file.
 
-[1/1] arm64: Do not include __READ_ONCE() block in assembly files
-      https://git.kernel.org/arm64/c/52c9f93a9c48
+Forcible expansion by truncate is a different matter.
 
--- 
-Catalin
+David
 
