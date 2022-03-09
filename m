@@ -2,146 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA14C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10307C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbiCIDxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 22:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
+        id S231818AbiCIDzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:55:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbiCIDx3 (ORCPT
+        with ESMTP id S231757AbiCIDzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 22:53:29 -0500
-X-Greylist: delayed 344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 19:52:29 PST
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3105F93;
-        Tue,  8 Mar 2022 19:52:28 -0800 (PST)
-Received: from mxde.zte.com.cn (unknown [10.35.8.63])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4KCymf24yFz1FH2k;
-        Wed,  9 Mar 2022 11:46:42 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4KCymL6cn9z9vxpP;
-        Wed,  9 Mar 2022 11:46:26 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4KCymH2jSgzdmX8h;
-        Wed,  9 Mar 2022 11:46:23 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4KCymC4rBbzCBHnN;
-        Wed,  9 Mar 2022 11:46:19 +0800 (CST)
-Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
-        by mse-fl1.zte.com.cn with SMTP id 2293kAWN075179;
-        Wed, 9 Mar 2022 11:46:10 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-cloudhost8.localdomain (unknown [10.234.72.110])
-        by smtp (Zmail) with SMTP;
-        Wed, 9 Mar 2022 11:46:10 +0800
-X-Zmail-TransId: 3e8162282301005-d1ec4
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     pbonzini@redhat.com
-Cc:     seanjc@google.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.yi59@zte.com.cn, up2wing@gmail.com, wang.liang82@zte.com.cn,
-        Yi Liu <liu.yi24@zte.com.cn>
-Subject: [PATCH] KVM: SVM: fix panic on out-of-bounds guest IRQ
-Date:   Wed,  9 Mar 2022 19:30:25 +0800
-Message-Id: <20220309113025.44469-1-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 2.33.0.rc0.dirty
+        Tue, 8 Mar 2022 22:55:44 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A116615C655;
+        Tue,  8 Mar 2022 19:54:46 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id h5so937869qtb.7;
+        Tue, 08 Mar 2022 19:54:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3AnU9Aw0S8nKPjVhQO3Ey4h6OxbAyzguVs1GxMYrKEo=;
+        b=odF4RdsRy6igp0d9euwQqk3rSPZztSUITDfjRv59le4QxaHB0XZaBCjhG66ViG/g2U
+         l/LKZFPYdC4xe7nDmpacqpM7D525VnvJYBXQ5PT9MO8UKYpw1HYguupVymWYcDocT2dc
+         7OwKvlrvceg1MiD21KwHBQWtoaANL3sRFu3OfWUNs0BUp5eRTHvmf9AyfuwGkMd6mvr8
+         yboyXL4jiQkikv7OvS4PLv9AkgYkCmMTBOObp8KhGOnRDLRKj2rhoTLRiHO439/lFP3p
+         iqcYR69fvG0QDjZfI1SSs//x7FNqZz4KqojD7KXg3kMKyoVtI+0HYyYf3JbsQNHP+TXv
+         K7fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3AnU9Aw0S8nKPjVhQO3Ey4h6OxbAyzguVs1GxMYrKEo=;
+        b=KoHu7BPq2WwVLNXTzr1Le94A5XtlZcbZ0wMcseh3qruKsnsx8a4+vhTS2rE9bZ2QPy
+         mRJJs1tkkNnnCXq6q5VqSb7jEVdkHrWYTPWCUSU7VBxFGHfvOCxTRGlA3Qhzs9fcpotw
+         3uA0Jk9DswPFn3zznWSNtEnQBBPPYhD6TAta9W/9NFgtGbQhGV/U9o9xu/khHBjZEpnE
+         iCLYKXW2g6jcYWzVeLaC5hSJw1+o6F7jdRrMxBOrHRw5mwTgYcmnDYVRbWoyvd8OAbO1
+         iY5QgBZuqlDfdC+K+68RAYFS1vBsmN83i4Qo9LfSrHgFFTea/+yuDzIy+nF3NhSa+fnF
+         1Wag==
+X-Gm-Message-State: AOAM530jgqXsAWOi3YGYn/ftT00QU3h7MlzCrTWXK/j5nT+ML35O8SI4
+        hk0jjMbMiznt8T8z7Z6HkS5dQ3Hr79Y=
+X-Google-Smtp-Source: ABdhPJyZbVpcvjzZsCMysqXw+UtrwFpIexJhyM6RUbX4sFZ7XpihRdm+vrTOYgy6nWX6ddF7zWU1Ww==
+X-Received: by 2002:ac8:7d8b:0:b0:2de:622:59b2 with SMTP id c11-20020ac87d8b000000b002de062259b2mr16805029qtd.484.1646798085839;
+        Tue, 08 Mar 2022 19:54:45 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id b202-20020ae9ebd3000000b0067b11d53365sm413052qkg.47.2022.03.08.19.54.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 19:54:44 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     sebastian.hesselbarth@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net:mv643xx_eth: use platform_get_irq() instead of platform_get_resource()
+Date:   Wed,  9 Mar 2022 03:54:38 +0000
+Message-Id: <20220309035438.2080808-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 2293kAWN075179
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 62282321.000 by FangMail milter!
-X-FangMail-Envelope: 1646797602/4KCymf24yFz1FH2k/62282321.000/10.35.8.63/[10.35.8.63]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 62282321.000/4KCymf24yFz1FH2k
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As guest_irq is coming from KVM_IRQFD API call, it may trigger
-crash in svm_update_pi_irte() due to out-of-bounds:
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-crash> bt
-PID: 22218  TASK: ffff951a6ad74980  CPU: 73  COMMAND: "vcpu8"
- #0 [ffffb1ba6707fa40] machine_kexec at ffffffff8565b397
- #1 [ffffb1ba6707fa90] __crash_kexec at ffffffff85788a6d
- #2 [ffffb1ba6707fb58] crash_kexec at ffffffff8578995d
- #3 [ffffb1ba6707fb70] oops_end at ffffffff85623c0d
- #4 [ffffb1ba6707fb90] no_context at ffffffff856692c9
- #5 [ffffb1ba6707fbf8] exc_page_fault at ffffffff85f95b51
- #6 [ffffb1ba6707fc50] asm_exc_page_fault at ffffffff86000ace
-    [exception RIP: svm_update_pi_irte+227]
-    RIP: ffffffffc0761b53  RSP: ffffb1ba6707fd08  RFLAGS: 00010086
-    RAX: ffffb1ba6707fd78  RBX: ffffb1ba66d91000  RCX: 0000000000000001
-    RDX: 00003c803f63f1c0  RSI: 000000000000019a  RDI: ffffb1ba66db2ab8
-    RBP: 000000000000019a   R8: 0000000000000040   R9: ffff94ca41b82200
-    R10: ffffffffffffffcf  R11: 0000000000000001  R12: 0000000000000001
-    R13: 0000000000000001  R14: ffffffffffffffcf  R15: 000000000000005f
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #7 [ffffb1ba6707fdb8] kvm_irq_routing_update at ffffffffc09f19a1 [kvm]
- #8 [ffffb1ba6707fde0] kvm_set_irq_routing at ffffffffc09f2133 [kvm]
- #9 [ffffb1ba6707fe18] kvm_vm_ioctl at ffffffffc09ef544 [kvm]
-#10 [ffffb1ba6707ff10] __x64_sys_ioctl at ffffffff85935474
-#11 [ffffb1ba6707ff40] do_syscall_64 at ffffffff85f921d3
-#12 [ffffb1ba6707ff50] entry_SYSCALL_64_after_hwframe at ffffffff8600007c
-    RIP: 00007f143c36488b  RSP: 00007f143a4e04b8  RFLAGS: 00000246
-    RAX: ffffffffffffffda  RBX: 00007f05780041d0  RCX: 00007f143c36488b
-    RDX: 00007f05780041d0  RSI: 000000004008ae6a  RDI: 0000000000000020
-    RBP: 00000000000004e8   R8: 0000000000000008   R9: 00007f05780041e0
-    R10: 00007f0578004560  R11: 0000000000000246  R12: 00000000000004e0
-    R13: 000000000000001a  R14: 00007f1424001c60  R15: 00007f0578003bc0
-    ORIG_RAX: 0000000000000010  CS: 0033  SS: 002b
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
-Vmx have been fix this in commit 3a8b0677fc61 (KVM: VMX: Do not BUG() on
-out-of-bounds guest IRQ), so we can just copy source from that to fix
-this.
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
 
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Signed-off-by: Yi Liu <liu.yi24@zte.com.cn>
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 ---
- arch/x86/kvm/svm/avic.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index fb3e20791338..f59b93d8e95a 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -783,7 +783,7 @@ int svm_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
- {
- 	struct kvm_kernel_irq_routing_entry *e;
- 	struct kvm_irq_routing_table *irq_rt;
--	int idx, ret = -EINVAL;
-+	int idx, ret = 0;
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index 143ca8be5eb5..125d18430296 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -3092,8 +3092,7 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
+ 	struct mv643xx_eth_private *mp;
+ 	struct net_device *dev;
+ 	struct phy_device *phydev = NULL;
+-	struct resource *res;
+-	int err;
++	int err, irq;
  
- 	if (!kvm_arch_has_assigned_device(kvm) ||
- 	    !irq_remapping_cap(IRQ_POSTING_CAP))
-@@ -794,7 +794,13 @@ int svm_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+ 	pd = dev_get_platdata(&pdev->dev);
+ 	if (pd == NULL) {
+@@ -3189,9 +3188,9 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
+ 	timer_setup(&mp->rx_oom, oom_timer_wrapper, 0);
  
- 	idx = srcu_read_lock(&kvm->irq_srcu);
- 	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
--	WARN_ON(guest_irq >= irq_rt->nr_rt_entries);
-+
-+	if (guest_irq >= irq_rt->nr_rt_entries ||
-+		hlist_empty(&irq_rt->map[guest_irq])) {
-+		pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
-+			     guest_irq, irq_rt->nr_rt_entries);
-+		goto out;
-+	}
  
- 	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
- 		struct vcpu_data vcpu_info;
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	BUG_ON(!res);
+-	dev->irq = res->start;
++	irq = platform_get_irq(pdev, 0);
++	BUG_ON(irq < 0);
++	dev->irq = irq;
+ 
+ 	dev->netdev_ops = &mv643xx_eth_netdev_ops;
+ 
 -- 
-2.33.0.rc0.dirty
+2.25.1
+
