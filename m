@@ -2,131 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 06:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 06:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbiCIGWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 01:22:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41550 "EHLO
+        id S230015AbiCIGZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 01:25:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiCIGVz (ORCPT
+        with ESMTP id S229729AbiCIGZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 01:21:55 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2BAB0A67
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 22:20:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646806857; x=1678342857;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=AGelnWNx33elTHtzU72mTSiAVp5OzAboKXYgtQ8XC9Q=;
-  b=hAOVmYsiQL71vCAXKck9iqeJB+kuHNWSImpvvlCgg8itL+Cv5ODmY122
-   xTtiCUtftR8UyHmXNijCKvWvcUjgyrUt2JWRJbqJuWhxv+meI04bhOrza
-   98aiDhO86hgdejRW+DjP/YZn0nyJkUm/N5n6shTE7ys6SqjyXIRtDWmMS
-   x+Dk45n19AckzAK/Dxa0flotstMm9UWB0DyDaER/c4ZQwlzbx45Vw3j2K
-   QEhMoWhG0wR3kOX02WjgYWZFx6JRM8hln1BJMM9n6n8dsQbr3he+IY7wm
-   Bvqca2zn4hbw1RN3K+Dyxeet/kTjjPHDpsXi1YHwSS3/FYu9IlNMhdAC0
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254629184"
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="254629184"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 22:20:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="547527267"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Mar 2022 22:20:55 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRpgs-0002jP-OB; Wed, 09 Mar 2022 06:20:54 +0000
-Date:   Wed, 9 Mar 2022 14:20:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in
- initializer (different address spaces)
-Message-ID: <202203091427.Dx5HvkDO-lkp@intel.com>
+        Wed, 9 Mar 2022 01:25:47 -0500
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23B71617C4
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 22:24:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1646807089; x=1678343089;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=402p/cC9Q8pxSjYD8AYMP1zGXs05qRwp767H72pcxjQ=;
+  b=l/xpOozDnXY/7RbFFbYh6uqFpT2F3cUFbnRhTCb+SWDTc9/nUvzVGES7
+   VenN8MucP2z35i41j4Tc5V46H3F3B0Sl9qbw2UdlQPCQXli6Klv8xBUHk
+   TTr1z+62gADCCfiYMslesC2cxSqdh0c+5cg8oH5/+66CuRH5wKDepehHD
+   xqK+2gJsjcld8VstHeWIf6cfJ4LIYOjRg4LxR/EJQ3y5BYSE4j6FkcuK7
+   R3O7o9mWsHM6jpu0HgMP5gToYgJvKfL4LYFZEdCvtyVQbDxjXawTJ9HvK
+   tyDMevlx9229oVFLL9QqtLlTBymLBq2IRaxKanKb43WtS34zZwwOovk48
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,166,1643644800"; 
+   d="scan'208";a="194835490"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 09 Mar 2022 14:24:47 +0800
+IronPort-SDR: hi1wrQg37QUKnzkRtFzjsD9ac9yU5vMn5NMsXexGGKUCCCWDOesNxnehqrUDu/iFJ+tSNBlBWr
+ dIMY5+62z3DfWdA5+lqK8tgzx8CQxO2TMi4d71FLxLtwaUKR5YCM4oCVgpzZD2cmpykHVY9wA6
+ uHu48QkBaCrP+Dc1yIrBRto/7WxBIJZAVM1OwAQIQ1n05R2ZKR92uG8EcLS9SULIuAZOtk7Ccb
+ wmMqO56jC3jhHXC2V1wfIdsdckuPo8oQvXRUeGXrZD+I/2RV4cQe4tm4CeZmnNFEYrS+8N8qMr
+ /0W7825IwD/2d3cdhgujdIZL
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 21:56:02 -0800
+IronPort-SDR: z4UmIkQZG0GHxC+4UCK3+MgcwyLeS0REdWwsxrEj9ItGXHtGtmZasSjqwsh31amQo+g8/Z8yKI
+ TTHJX9gZLGqBXWL9Sq9T4px5+PeTHrYsxzLqCDv8qt27kmd/MUUUc9cm8H5Bc/jctXpEJ26HAb
+ ounatoab1V2qgxJ09IiRRdeq5RfGbSphHC2sZqQ/fUlTgNfc+0aEkWlDkElMidKdWYARj2qusQ
+ Rjcxk2PZCJ3a3y/2758cnkjU4DtfuhGveBF66/81us05OnqBNZIXe8FZVytylH0kv/fwYwQqRH
+ Ogw=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 22:24:47 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KD2H21wx8z1SVp1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 22:24:46 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1646807085; x=1649399086; bh=402p/cC9Q8pxSjYD8AYMP1zGXs05qRwp767
+        H72pcxjQ=; b=GIbZe5xGcclBgP/H4XXqchA/E/u8VrKvMhqFi2IPrY+aHQDCxgF
+        C5DSl7EAttB/zyYmCGWUgRAfwzt6hyAht4Qyub4jWTLgGPryGlS526bSOk14Zu9m
+        2zrLN7w3g6/1IsO3cZv4lAWqkidlc7ljK9+0fA7iu56/JQELqdm0Qqa+P0t0Xt+/
+        BJ6sUnT5Hqhu35E+RJIArqZ7eKBThbZgh48qDk966Bq+z1GUevOcKLUvcg90KkPY
+        0NLYbuIKxhxtYR61uf1LW0Nf9D7c7BSsf9YiG/nlMqyoP0ldXgnEGvz2rNBsZ6p+
+        2uYKRGaJ9K9sa6PL8D+lvV9GFB8qULjCr4g==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id IXlk4QAGHfzh for <linux-kernel@vger.kernel.org>;
+        Tue,  8 Mar 2022 22:24:45 -0800 (PST)
+Received: from [10.225.163.91] (unknown [10.225.163.91])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KD2H056grz1Rvlx;
+        Tue,  8 Mar 2022 22:24:44 -0800 (PST)
+Message-ID: <d1dfb244-eda3-b5c6-c6bd-c0294a9a4a94@opensource.wdc.com>
+Date:   Wed, 9 Mar 2022 15:24:43 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V2] ata: pata_pxa: Use platform_get_irq() to get the
+ interrupt
+Content-Language: en-US
+To:     cgel.zte@gmail.com, s.shtylyov@omp.ru
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220309055038.2081317-1-chi.minghao@zte.com.cn>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220309055038.2081317-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   330f4c53d3c2d8b11d86ec03a964b86dc81452f5
-commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
-date:   7 months ago
-config: arc-allmodconfig (https://download.01.org/0day-ci/archive/20220309/202203091427.Dx5HvkDO-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e188f3330a13df904d77003846eafd3edf99009d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash net/ipv4/
+On 3/9/22 14:50, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> allocation of IRQ resources in DT core code, this causes an issue
+> when using hierarchical interrupt domains using "interrupts" property
+> in the node as this bypasses the hierarchical setup and messes up the
+> irq chaining.
+> 
+> In preparation for removal of static setup of IRQ resource from DT core
+> code use platform_get_irq().
+> 
+> v1->v2:
+> 	- Use more specific in the subject: ata: pata_pxa:
+> 	- Switch to returning 'irq'
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/ata/pata_pxa.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/ata/pata_pxa.c b/drivers/ata/pata_pxa.c
+> index 41430f79663c..340b274d0cad 100644
+> --- a/drivers/ata/pata_pxa.c
+> +++ b/drivers/ata/pata_pxa.c
+> @@ -164,10 +164,10 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	struct resource *cmd_res;
+>  	struct resource *ctl_res;
+>  	struct resource *dma_res;
+> -	struct resource *irq_res;
+>  	struct pata_pxa_pdata *pdata = dev_get_platdata(&pdev->dev);
+>  	struct dma_slave_config	config;
+>  	int ret = 0;
+> +	int irq;
+>  
+>  	/*
+>  	 * Resource validation, three resources are needed:
+> @@ -205,9 +205,9 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	/*
+>  	 * IRQ pin
+>  	 */
+> -	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -	if (unlikely(irq_res == NULL))
+> -		return -EINVAL;
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (unlikely(irq < 0))
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Please drop the unlikely() here. Not needed. This is not the hot path.
+
+> +		return irq;
+>  
+>  	/*
+>  	 * Allocate the host
+> @@ -287,7 +287,7 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	/*
+>  	 * Activate the ATA host
+>  	 */
+> -	ret = ata_host_activate(host, irq_res->start, ata_sff_interrupt,
+> +	ret = ata_host_activate(host, irq, ata_sff_interrupt,
+>  				pdata->irq_flags, &pxa_ata_sht);
+>  	if (ret)
+>  		dma_release_channel(data->dma_chan);
 
 
-sparse warnings: (new ones prefixed by >>)
->> net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct tcp_congestion_ops const [noderef] __rcu *_val_ @@     got struct tcp_congestion_ops *[assigned] ca @@
-   net/ipv4/tcp_cong.c:238:24: sparse:     expected struct tcp_congestion_ops const [noderef] __rcu *_val_
-   net/ipv4/tcp_cong.c:238:24: sparse:     got struct tcp_congestion_ops *[assigned] ca
-   net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct tcp_congestion_ops const *prev @@     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_ @@
-   net/ipv4/tcp_cong.c:238:22: sparse:     expected struct tcp_congestion_ops const *prev
-   net/ipv4/tcp_cong.c:238:22: sparse:     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_
-
-vim +238 net/ipv4/tcp_cong.c
-
-317a76f9a44b43 Stephen Hemminger 2005-06-23  219  
-317a76f9a44b43 Stephen Hemminger 2005-06-23  220  /* Used by sysctl to change default congestion control */
-6670e152447732 Stephen Hemminger 2017-11-14  221  int tcp_set_default_congestion_control(struct net *net, const char *name)
-317a76f9a44b43 Stephen Hemminger 2005-06-23  222  {
-317a76f9a44b43 Stephen Hemminger 2005-06-23  223  	struct tcp_congestion_ops *ca;
-6670e152447732 Stephen Hemminger 2017-11-14  224  	const struct tcp_congestion_ops *prev;
-6670e152447732 Stephen Hemminger 2017-11-14  225  	int ret;
-317a76f9a44b43 Stephen Hemminger 2005-06-23  226  
-6670e152447732 Stephen Hemminger 2017-11-14  227  	rcu_read_lock();
-6670e152447732 Stephen Hemminger 2017-11-14  228  	ca = tcp_ca_find_autoload(net, name);
-6670e152447732 Stephen Hemminger 2017-11-14  229  	if (!ca) {
-6670e152447732 Stephen Hemminger 2017-11-14  230  		ret = -ENOENT;
-0baf26b0fcd74b Martin KaFai Lau  2020-01-08  231  	} else if (!bpf_try_module_get(ca, ca->owner)) {
-6670e152447732 Stephen Hemminger 2017-11-14  232  		ret = -EBUSY;
-8d432592f30fcc Jonathon Reinhart 2021-05-01  233  	} else if (!net_eq(net, &init_net) &&
-8d432592f30fcc Jonathon Reinhart 2021-05-01  234  			!(ca->flags & TCP_CONG_NON_RESTRICTED)) {
-8d432592f30fcc Jonathon Reinhart 2021-05-01  235  		/* Only init netns can set default to a restricted algorithm */
-8d432592f30fcc Jonathon Reinhart 2021-05-01  236  		ret = -EPERM;
-6670e152447732 Stephen Hemminger 2017-11-14  237  	} else {
-6670e152447732 Stephen Hemminger 2017-11-14 @238  		prev = xchg(&net->ipv4.tcp_congestion_control, ca);
-6670e152447732 Stephen Hemminger 2017-11-14  239  		if (prev)
-0baf26b0fcd74b Martin KaFai Lau  2020-01-08  240  			bpf_module_put(prev, prev->owner);
-317a76f9a44b43 Stephen Hemminger 2005-06-23  241  
-6670e152447732 Stephen Hemminger 2017-11-14  242  		ca->flags |= TCP_CONG_NON_RESTRICTED;
-317a76f9a44b43 Stephen Hemminger 2005-06-23  243  		ret = 0;
-317a76f9a44b43 Stephen Hemminger 2005-06-23  244  	}
-6670e152447732 Stephen Hemminger 2017-11-14  245  	rcu_read_unlock();
-317a76f9a44b43 Stephen Hemminger 2005-06-23  246  
-317a76f9a44b43 Stephen Hemminger 2005-06-23  247  	return ret;
-317a76f9a44b43 Stephen Hemminger 2005-06-23  248  }
-317a76f9a44b43 Stephen Hemminger 2005-06-23  249  
-
-:::::: The code at line 238 was first introduced by commit
-:::::: 6670e152447732ba90626f36dfc015a13fbf150e tcp: Namespace-ify sysctl_tcp_default_congestion_control
-
-:::::: TO: Stephen Hemminger <stephen@networkplumber.org>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Damien Le Moal
+Western Digital Research
