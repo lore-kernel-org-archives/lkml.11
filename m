@@ -2,97 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8524CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 02:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 02:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiCIC7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 21:59:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
+        id S231574AbiCIDAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231497AbiCIC7E (ORCPT
+        with ESMTP id S231533AbiCIDAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 21:59:04 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F24127D44;
-        Tue,  8 Mar 2022 18:58:06 -0800 (PST)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KCxZz6tFZz1GBxv;
-        Wed,  9 Mar 2022 10:53:15 +0800 (CST)
-Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
- kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 9 Mar 2022 10:58:04 +0800
-Received: from huawei.com (10.67.165.24) by kwepemm600005.china.huawei.com
- (7.193.23.191) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
- 2022 10:58:03 +0800
-From:   Longfang Liu <liulongfang@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <alex.williamson@redhat.com>,
-        <shameerali.kolothum.thodi@huawei.com>, <liulongfang@huawei.com>
-Subject: [PATCH] MAINTAINERS: update HPRE/SEC2/TRNG driver maintainers list
-Date:   Wed, 9 Mar 2022 10:52:44 +0800
-Message-ID: <20220309025244.25838-1-liulongfang@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Tue, 8 Mar 2022 22:00:01 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036D8134DE1
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 18:59:04 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id n15so813919plh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 18:59:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=spacecubics-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g5MHqhyRAvMJEIygnpqs4s9C8dwI28dlr5hbuf+tGdY=;
+        b=w45iZX907cG/aaBaR/56rFZNCTIi99WnfB+0ACkYqOiNvywwJF0JgdbOQg7Z6KsLfe
+         Z8b2IizBvB0OE3LcnE+yNWFkrk7zhyHvs936KLO1kk6KR+rXPDmWHrtIIwCBkkmp0Kou
+         f4NOP7/Utuq9x75690VJOtL7Q4s9uTpYESLYsH6tBUHxf/oUQas1IcJUPnPJZ9tXwMJZ
+         n8GoQDnEn0P7Xj1vXaffjsouIqStgDoeO1p1D2aNn/18QlE3OiGes5uZzPBU6UWWDiNr
+         BZPZzzIsVgzpEpY8bmDff8kIQrc+VRAjSBbbnIZizwfrC80r0SVVotYm4tpSLVABtbvu
+         bKUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g5MHqhyRAvMJEIygnpqs4s9C8dwI28dlr5hbuf+tGdY=;
+        b=XDo5aREJnCpFKpRt41p7xqGAs+1UBOMvP7E7e0SFZI3QF9PkrqxWaWVrhDX/C0p2PO
+         xx4f9H8wB++ogYgRL/FUroSS8hISnQeebwjjKn0asTiD/vqalIxD3DH/TrHb0K0b6ilh
+         YxIlWdjiDL9LxDoNoQ7Z9STpo2y+Eyc53PIZr1IcqahxqHISNGmCtMcGCpsuNXrc1ygY
+         2ZM8D3p3ERqI5aAFlnTJF8dhB3Mvmp99XQDeYjLB8+r9PoANiXDncK/y+HMlodNDmhVn
+         dP4xb21mXTtMhdEe/cPlq6x1duzpeqtaRa9g7XEolXYbsbTu/y1F/VdQpTzSnmRCW0m5
+         Y6aA==
+X-Gm-Message-State: AOAM531/bafRaJn7geHzfyhnvzvDOQwoX3m424w/+NeOvl1ZeQ3eve5d
+        pDBpOCX93TYxHZLKbIqMfrPRhC4bIHKQu+05W+p9zg==
+X-Google-Smtp-Source: ABdhPJx6gIuB0ETKC5IdKG3N0AifUmdKV55gnSE4Xr4Buukiwf3ar64hKVfVW22ZPivJHacPqRfEJMAPvffMOT9QvXI=
+X-Received: by 2002:a17:903:2c7:b0:14f:fc47:5a2f with SMTP id
+ s7-20020a17090302c700b0014ffc475a2fmr20654160plk.112.1646794743333; Tue, 08
+ Mar 2022 18:59:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600005.china.huawei.com (7.193.23.191)
-X-CFilter-Loop: Reflected
+References: <20220307185314.11228-1-paskripkin@gmail.com> <CAMZ6RqKEALqGSh-tr_jTbQWca0wHK7t96yR3N-r625pbM4cUSw@mail.gmail.com>
+ <52da93cd-6a78-1b77-6a86-c338c7cb11e9@gmail.com>
+In-Reply-To: <52da93cd-6a78-1b77-6a86-c338c7cb11e9@gmail.com>
+From:   Yasushi SHOJI <yashi@spacecubics.com>
+Date:   Wed, 9 Mar 2022 11:58:52 +0900
+Message-ID: <CAGLTpn+p=bJUe14qpP664JMY9_xKTr5UQ3bEmpiOXFvK5S3prg@mail.gmail.com>
+Subject: Re: [PATCH RFT] can: mcba_usb: properly check endpoint type
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-can <linux-can@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zaibo moved projects and is not looking into crypto stuff.
-I am responsible for checking the patches of these modules.
-so the maintainers list needs to be updated.
+Hi Pavel,
 
-I take care of HPRE, Qian Weili take care of TRNG,
-Ye Kai and me take care of SEC2.
+On Tue, Mar 8, 2022 at 5:06 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+> On 3/8/22 03:23, Vincent MAILHOL wrote:
+> >> [PATCH RFT] can: mcba_usb: properly check endpoint type
+> > It is RFC, not RFT :)
+> > I guess you went on some manual editing. Next time, you can just let
+> > git add the tag for you by doing:
+> > | git format-patch --rfc ...
+> >
+>
+> I marked it as RFT, because I wanted someone to test it. But indeed with
+> my lack of usb knowledge it should have been RFC :)
 
-Signed-off-by: Longfang Liu <liulongfang@huawei.com>
-Signed-off-by: Kai Ye <yekai12@huawei.com>
-Signed-off-by: Weili Qian <qianweili@huawei.com>
-Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
----
- MAINTAINERS | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+l didn't know RFT to mean "Request for Testing" :D
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6ee244105f5f..e4400d4346bb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8635,7 +8635,7 @@ S:	Maintained
- F:	drivers/gpio/gpio-hisi.c
- 
- HISILICON HIGH PERFORMANCE RSA ENGINE DRIVER (HPRE)
--M:	Zaibo Xu <xuzaibo@huawei.com>
-+M:	Longfang Liu <liulongfang@huawei.com>
- L:	linux-crypto@vger.kernel.org
- S:	Maintained
- F:	Documentation/ABI/testing/debugfs-hisi-hpre
-@@ -8715,8 +8715,8 @@ F:	Documentation/devicetree/bindings/scsi/hisilicon-sas.txt
- F:	drivers/scsi/hisi_sas/
- 
- HISILICON SECURITY ENGINE V2 DRIVER (SEC2)
--M:	Zaibo Xu <xuzaibo@huawei.com>
- M:	Kai Ye <yekai13@huawei.com>
-+M:	Longfang Liu <liulongfang@huawei.com>
- L:	linux-crypto@vger.kernel.org
- S:	Maintained
- F:	Documentation/ABI/testing/debugfs-hisi-sec
-@@ -8747,7 +8747,7 @@ F:	Documentation/devicetree/bindings/mfd/hisilicon,hi6421-spmi-pmic.yaml
- F:	drivers/mfd/hi6421-spmi-pmic.c
- 
- HISILICON TRUE RANDOM NUMBER GENERATOR V2 SUPPORT
--M:	Zaibo Xu <xuzaibo@huawei.com>
-+M:	Weili Qian <qianweili@huawei.com>
- S:	Maintained
- F:	drivers/crypto/hisilicon/trng/trng.c
- 
+I have the device and do testing.  Do you have test code I can run?
+
+Best Regards,
 -- 
-2.33.0
-
+              yashi
