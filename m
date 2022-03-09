@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC87C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235160AbiCIQQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:16:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
+        id S234803AbiCIQQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236233AbiCIQJn (ORCPT
+        with ESMTP id S236061AbiCIQJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:43 -0500
+        Wed, 9 Mar 2022 11:09:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61E7141E12;
-        Wed,  9 Mar 2022 08:08:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0780B1470C4;
+        Wed,  9 Mar 2022 08:07:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A650B82224;
-        Wed,  9 Mar 2022 16:08:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADF51C340E8;
-        Wed,  9 Mar 2022 16:08:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00480B82224;
+        Wed,  9 Mar 2022 16:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AC6C36AE2;
+        Wed,  9 Mar 2022 16:07:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842109;
-        bh=jfh93942woBVQK5LVBaPe5OgFH0pMKYT8YE3uAVPrtQ=;
+        s=korg; t=1646842027;
+        bh=QdtSi/Doybz5un3fgzCVDkxmY7jN+aTKxr9KnUbl8UY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lOsoNQYerzdLzqGmb5nr3aV6NZZ0O2TIWzC6PluTa19MjndOAQVjREiiNJlctWOoW
-         VKKcQPqWAnurlw4BYnhMMDjqu4j8ldmBi5CF14+L/USaFqXj/MQfMT8nZjBGlMjkM0
-         jvEqPhCjcVnhI2/LaRcymu3sMtVVPCHo/RDvo7B8=
+        b=cDlfLmGtL0/Af7Ve/qaPJ+WOkF4zkTtFHcJrZLL2fVdD3QeJp5pi9crXAIKlg4vLL
+         iwlz1AFTb+wdzKh4VYKYYz3t3cZIei+kbu7u4OSp5Cq6N2a19OUjwOcSeO2JKr1ksd
+         A8vud6fmXp98Cps2ld7jGuujtS2R5hsIvisklpTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 31/43] arm64: entry: Allow the trampoline text to occupy multiple pages
-Date:   Wed,  9 Mar 2022 17:00:15 +0100
-Message-Id: <20220309155900.636768996@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 16/43] arm64: Add HWCAP for self-synchronising virtual counter
+Date:   Wed,  9 Mar 2022 17:00:00 +0100
+Message-Id: <20220309155900.208244845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -48,107 +48,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit a9c406e6462ff14956d690de7bbe5131a5677dc9 upstream.
+commit fee29f008aa3f2aff01117f28b57b1145d92cb9b upstream.
 
-Adding a second set of vectors to .entry.tramp.text will make it
-larger than a single 4K page.
+Since userspace can make use of the CNTVSS_EL0 instruction, expose
+it via a HWCAP.
 
-Allow the trampoline text to occupy up to three pages by adding two
-more fixmap slots. Previous changes to tramp_valias allowed it to reach
-beyond a single page.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Suggested-by: Will Deacon <will@kernel.org>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211017124225.3018098-18-maz@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/fixmap.h   |    6 ++++--
- arch/arm64/include/asm/sections.h |    5 +++++
- arch/arm64/kernel/entry.S         |    2 +-
- arch/arm64/kernel/vmlinux.lds.S   |    2 +-
- arch/arm64/mm/mmu.c               |   12 +++++++++---
- 5 files changed, 20 insertions(+), 7 deletions(-)
+ Documentation/arm64/cpu-feature-registers.rst |   12 ++++++++++--
+ Documentation/arm64/elf_hwcaps.rst            |    4 ++++
+ arch/arm64/include/asm/hwcap.h                |    1 +
+ arch/arm64/include/uapi/asm/hwcap.h           |    1 +
+ arch/arm64/kernel/cpufeature.c                |    3 ++-
+ arch/arm64/kernel/cpuinfo.c                   |    1 +
+ 6 files changed, 19 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/include/asm/fixmap.h
-+++ b/arch/arm64/include/asm/fixmap.h
-@@ -62,9 +62,11 @@ enum fixed_addresses {
- #endif /* CONFIG_ACPI_APEI_GHES */
+--- a/Documentation/arm64/cpu-feature-registers.rst
++++ b/Documentation/arm64/cpu-feature-registers.rst
+@@ -235,7 +235,15 @@ infrastructure:
+      | DPB                          | [3-0]   |    y    |
+      +------------------------------+---------+---------+
  
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	FIX_ENTRY_TRAMP_TEXT,
-+	FIX_ENTRY_TRAMP_TEXT3,
-+	FIX_ENTRY_TRAMP_TEXT2,
-+	FIX_ENTRY_TRAMP_TEXT1,
- 	FIX_ENTRY_TRAMP_DATA,
--#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
-+#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT1))
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 	__end_of_permanent_fixed_addresses,
- 
---- a/arch/arm64/include/asm/sections.h
-+++ b/arch/arm64/include/asm/sections.h
-@@ -22,4 +22,9 @@ extern char __irqentry_text_start[], __i
- extern char __mmuoff_data_start[], __mmuoff_data_end[];
- extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
- 
-+static inline size_t entry_tramp_text_size(void)
-+{
-+	return __entry_tramp_text_end - __entry_tramp_text_start;
-+}
+-  6) ID_AA64MMFR2_EL1 - Memory model feature register 2
++  6) ID_AA64MMFR0_EL1 - Memory model feature register 0
 +
- #endif /* __ASM_SECTIONS_H */
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -642,7 +642,7 @@ alternative_else_nop_endif
- 	.endm
- 
- 	.macro tramp_data_page	dst
--	adr	\dst, .entry.tramp.text
-+	adr_l	\dst, .entry.tramp.text
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
---- a/arch/arm64/kernel/vmlinux.lds.S
-+++ b/arch/arm64/kernel/vmlinux.lds.S
-@@ -330,7 +330,7 @@ ASSERT(__hibernate_exit_text_end - (__hi
- 	<= SZ_4K, "Hibernate exit text too big or misaligned")
- #endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
-+ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) <= 3*PAGE_SIZE,
- 	"Entry trampoline text too big")
- #endif
- #ifdef CONFIG_KVM
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -616,6 +616,8 @@ early_param("rodata", parse_rodata);
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- static int __init map_entry_trampoline(void)
- {
-+	int i;
++     +------------------------------+---------+---------+
++     | Name                         |  bits   | visible |
++     +------------------------------+---------+---------+
++     | ECV                          | [63-60] |    y    |
++     +------------------------------+---------+---------+
 +
- 	pgprot_t prot = rodata_enabled ? PAGE_KERNEL_ROX : PAGE_KERNEL_EXEC;
- 	phys_addr_t pa_start = __pa_symbol(__entry_tramp_text_start);
++  7) ID_AA64MMFR2_EL1 - Memory model feature register 2
  
-@@ -624,11 +626,15 @@ static int __init map_entry_trampoline(v
+      +------------------------------+---------+---------+
+      | Name                         |  bits   | visible |
+@@ -243,7 +251,7 @@ infrastructure:
+      | AT                           | [35-32] |    y    |
+      +------------------------------+---------+---------+
  
- 	/* Map only the text into the trampoline page table */
- 	memset(tramp_pg_dir, 0, PGD_SIZE);
--	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS, PAGE_SIZE,
--			     prot, __pgd_pgtable_alloc, 0);
-+	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS,
-+			     entry_tramp_text_size(), prot,
-+			     __pgd_pgtable_alloc, NO_BLOCK_MAPPINGS);
+-  7) ID_AA64ZFR0_EL1 - SVE feature ID register 0
++  8) ID_AA64ZFR0_EL1 - SVE feature ID register 0
  
- 	/* Map both the text and data into the kernel page table */
--	__set_fixmap(FIX_ENTRY_TRAMP_TEXT, pa_start, prot);
-+	for (i = 0; i < DIV_ROUND_UP(entry_tramp_text_size(), PAGE_SIZE); i++)
-+		__set_fixmap(FIX_ENTRY_TRAMP_TEXT1 - i,
-+			     pa_start + i * PAGE_SIZE, prot);
+      +------------------------------+---------+---------+
+      | Name                         |  bits   | visible |
+--- a/Documentation/arm64/elf_hwcaps.rst
++++ b/Documentation/arm64/elf_hwcaps.rst
+@@ -247,6 +247,10 @@ HWCAP2_MTE
+     Functionality implied by ID_AA64PFR1_EL1.MTE == 0b0010, as described
+     by Documentation/arm64/memory-tagging-extension.rst.
+ 
++HWCAP2_ECV
 +
- 	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE)) {
- 		extern char __entry_tramp_data_start[];
++    Functionality implied by ID_AA64MMFR0_EL1.ECV == 0b0001.
++
+ 4. Unused AT_HWCAP bits
+ -----------------------
  
+--- a/arch/arm64/include/asm/hwcap.h
++++ b/arch/arm64/include/asm/hwcap.h
+@@ -105,6 +105,7 @@
+ #define KERNEL_HWCAP_RNG		__khwcap2_feature(RNG)
+ #define KERNEL_HWCAP_BTI		__khwcap2_feature(BTI)
+ #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
++#define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
+ 
+ /*
+  * This yields a mask that user programs can use to figure out what
+--- a/arch/arm64/include/uapi/asm/hwcap.h
++++ b/arch/arm64/include/uapi/asm/hwcap.h
+@@ -75,5 +75,6 @@
+ #define HWCAP2_RNG		(1 << 16)
+ #define HWCAP2_BTI		(1 << 17)
+ #define HWCAP2_MTE		(1 << 18)
++#define HWCAP2_ECV		(1 << 19)
+ 
+ #endif /* _UAPI__ASM_HWCAP_H */
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -279,7 +279,7 @@ static const struct arm64_ftr_bits ftr_i
+ };
+ 
+ static const struct arm64_ftr_bits ftr_id_aa64mmfr0[] = {
+-	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_ECV_SHIFT, 4, 0),
++	ARM64_FTR_BITS(FTR_VISIBLE, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_ECV_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_FGT_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_EXS_SHIFT, 4, 0),
+ 	/*
+@@ -2455,6 +2455,7 @@ static const struct arm64_cpu_capabiliti
+ #ifdef CONFIG_ARM64_MTE
+ 	HWCAP_CAP(SYS_ID_AA64PFR1_EL1, ID_AA64PFR1_MTE_SHIFT, FTR_UNSIGNED, ID_AA64PFR1_MTE, CAP_HWCAP, KERNEL_HWCAP_MTE),
+ #endif /* CONFIG_ARM64_MTE */
++	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
+ 	{},
+ };
+ 
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -94,6 +94,7 @@ static const char *const hwcap_str[] = {
+ 	[KERNEL_HWCAP_RNG]		= "rng",
+ 	[KERNEL_HWCAP_BTI]		= "bti",
+ 	[KERNEL_HWCAP_MTE]		= "mte",
++	[KERNEL_HWCAP_ECV]		= "ecv",
+ };
+ 
+ #ifdef CONFIG_COMPAT
 
 
