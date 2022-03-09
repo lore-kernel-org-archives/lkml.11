@@ -2,80 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B27C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C74FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiCIMVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:21:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S232246AbiCIMVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:21:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiCIMVN (ORCPT
+        with ESMTP id S231534AbiCIMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:21:13 -0500
+        Wed, 9 Mar 2022 07:21:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D0E17582D;
-        Wed,  9 Mar 2022 04:20:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1D317584B;
+        Wed,  9 Mar 2022 04:20:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85401B8213E;
-        Wed,  9 Mar 2022 12:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0D187C36AE5;
-        Wed,  9 Mar 2022 12:20:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFC03B8213D;
+        Wed,  9 Mar 2022 12:20:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DBD6C340E8;
+        Wed,  9 Mar 2022 12:20:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646828411;
-        bh=0XEpp0FKMngNskFh6CWjMaR6cEtFFazS3Zu9FWMFrr8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Yx0chSj/eaoPC2hfCTW9G2AbAymR32XIPGvqchO7pJF5R+ieU5dM/kulsyOWH+37V
-         M63w1SclaePNUN1Kdh2I376zjBZXZ/Kb9xkOLrnadijLyVDP4txMAYEgVWUhIVOYmU
-         u0Y2oMAz5SELKxM27fmT5udU3E1wzmbGu9iwX8Xs90flvA9yzalBK23M8I7kHzRgnM
-         +MTqQlejdviioAoSbPzctg+wWahhROPqD1eDlnxyQ6E+wsOX4F+cyj+PCPggvhQQtg
-         WQhXphK424hos5ObDXLGkIm68PRKGT6JMR2yWUu9qntDS0Qz9a+SLPGr49maqvo0Hv
-         4juoLWGrKXsZA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E9ECDF0383C;
-        Wed,  9 Mar 2022 12:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646828424;
+        bh=RaV6K88b3L+HXsuscECSUuHuH+07EtXgyzZft0gRdcc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GoREBFOUl14/i+Qq2IVSd9fjFkfETF6Sg34FaN5hBlxaLwgP2vPL6yKjLMEj8m5fI
+         tpfuEu0LfOhinnCcz1cwVyiCjB+EAS74dTpu9zvm1dIaEsonqHzUaTswDLdoA8s+vP
+         l2y1Nh+N9j5GySqkWrWPJCOSewK9s0gRKmHsmRJpu6Uo0fC78vNxdpiZPO3U9o6yEN
+         Z2xvzdY61aF9egf64Ve0ObbjG/k8a8E4CAAnV5eWXbG7mvQQIqYJUvzjRhXGQoPV+q
+         S4IBqoxKjyCcgfVVPmCam9iaO7PmYPTcU/7r5PuIziHDce7fViqdecfV0tg24IVhTd
+         d9crahvyQ3dng==
+Date:   Wed, 9 Mar 2022 12:20:20 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: Re: linux-next: manual merge of the arm64 tree with Linus' tree
+Message-ID: <20220309122019.GD397@willie-the-truck>
+References: <20220309094235.146df5bd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net:mcf8390: Use platform_get_irq() to get the interrupt
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164682841095.19405.17387917087764965957.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Mar 2022 12:20:10 +0000
-References: <20220308064309.2078172-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220308064309.2078172-1-chi.minghao@zte.com.cn>
-To:     Lv Ruyi <cgel.zte@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chi.minghao@zte.com.cn,
-        zealci@zte.com.cn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309094235.146df5bd@canb.auug.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Tue,  8 Mar 2022 06:43:09 +0000 you wrote:
-> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+On Wed, Mar 09, 2022 at 09:42:35AM +1100, Stephen Rothwell wrote:
+> Hi all,
 > 
-> It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-> for requesting IRQ's resources any more, as they can be not ready yet in
-> case of DT-booting.
+> Today's linux-next merge of the arm64 tree got a conflict in:
 > 
-> platform_get_irq() instead is a recommended way for getting IRQ even if
-> it was not retrieved earlier.
+>   arch/arm64/kernel/cpufeature.c
 > 
-> [...]
+> between commit:
+> 
+>   228a26b91228 ("arm64: Use the clearbhb instruction in mitigations")
+> 
+> from Linus' tree and commit:
+> 
+>   def8c222f054 ("arm64: Add support of PAuth QARMA3 architected algorithm")
+> 
+> from the arm64 tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc arch/arm64/kernel/cpufeature.c
+> index d33687673f6b,32aa0eb3ed68..000000000000
+> --- a/arch/arm64/kernel/cpufeature.c
+> +++ b/arch/arm64/kernel/cpufeature.c
+> @@@ -231,7 -226,10 +231,11 @@@ static const struct arm64_ftr_bits ftr_
+>   };
+>   
+>   static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
+>  +	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_HIGHER_SAFE, ID_AA64ISAR2_CLEARBHB_SHIFT, 4, 0),
+> + 	ARM64_FTR_BITS(FTR_VISIBLE_IF_IS_ENABLED(CONFIG_ARM64_PTR_AUTH),
+> + 		       FTR_STRICT, FTR_EXACT, ID_AA64ISAR2_APA3_SHIFT, 4, 0),
+> + 	ARM64_FTR_BITS(FTR_VISIBLE_IF_IS_ENABLED(CONFIG_ARM64_PTR_AUTH),
+> + 		       FTR_STRICT, FTR_LOWER_SAFE, ID_AA64ISAR2_GPA3_SHIFT, 4, 0),
+>   	ARM64_FTR_BITS(FTR_VISIBLE, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64ISAR2_RPRES_SHIFT, 4, 0),
+>   	ARM64_FTR_END,
+>   };
 
-Here is the summary with links:
-  - net:mcf8390: Use platform_get_irq() to get the interrupt
-    https://git.kernel.org/netdev/net/c/2a760554dcba
+This (and https://lore.kernel.org/r/20220309093832.01585172@canb.auug.org.au)
+are due to the surprise spectre mitigations which landed yesterday. Now
+that's all public, I'll merge those changes into our for-next/core branch
+and these conflicts should all disappear.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
 
-
+Will
