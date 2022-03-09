@@ -2,119 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76158C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbiCIJUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
+        id S231972AbiCIJU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:20:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiCIJUS (ORCPT
+        with ESMTP id S230166AbiCIJU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:20:18 -0500
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17318D687;
-        Wed,  9 Mar 2022 01:19:19 -0800 (PST)
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 2299J1WV016568;
-        Wed, 9 Mar 2022 18:19:02 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 2299J1WV016568
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646817542;
-        bh=7ptQH0F5J9d2jeE9K6DKb/RLQ+CHx4kcW97GHNeRP3w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=T4cDgIb4RLnxUgURlNEoy0XiX1b5w5wP2ymh2l/tihLJRfcawn5UOwTbwaVfKs1yf
-         aO99wh2upm1yiFpMTxZGcKNWgFABdA1wCh0JyKUAZb/PIr3+oGT0WiftG83z4HoPiI
-         FGMn93hKKPNrbI/TqTrNaYBditOy1DVm+OePsWFHJMQPsXI62RVZDIlBdOEBxJYMYS
-         NIWtDcZ48+ImDxwwS7Twmm3re4d81/zF+XFxhGFycArjgmFFOjEV5e+4z5lHawCVHm
-         2x997056suRTIM1eJyIrFhucXQV4KLMY/SdNN0iETtyXXmbk/KC2hxnNa/adUWVqw1
-         0m+Pp7O78Tdqw==
-X-Nifty-SrcIP: [209.85.210.179]
-Received: by mail-pf1-f179.google.com with SMTP id g1so1734531pfv.1;
-        Wed, 09 Mar 2022 01:19:02 -0800 (PST)
-X-Gm-Message-State: AOAM5328vrmA8ZwzRnp5HBFfA83O2fvErvNrW2xFgV3kP/503Y6571b0
-        JAidGLWR2mwlLgClf2NgFOzw0giRXWgrq6IUYn4=
-X-Google-Smtp-Source: ABdhPJy5QRSZE5cwpNSu1+QJNGk0tz8koEoXrMBDbCx6hK3tNuVOPYULhzCSvBtKznnLBYsWpukwoAxtPjMqBOgCDqk=
-X-Received: by 2002:a63:1d44:0:b0:373:5612:629b with SMTP id
- d4-20020a631d44000000b003735612629bmr17462393pgm.352.1646817541465; Wed, 09
- Mar 2022 01:19:01 -0800 (PST)
-MIME-Version: 1.0
-References: <20220308215615.14183-1-arnd@kernel.org> <CAHk-=wjsCrVxToP0Zx+cUAVZmSKi=Y6NP1+VnBcoPyPPEBfonQ@mail.gmail.com>
- <CAK7LNAQoFFVLfkhA7FC9vDbvc4wdLginYeRHL0xHVAumu6p=uw@mail.gmail.com>
-In-Reply-To: <CAK7LNAQoFFVLfkhA7FC9vDbvc4wdLginYeRHL0xHVAumu6p=uw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 9 Mar 2022 18:18:18 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASuy5hSOU7Y7Tr8_6Ks1ZqEeUKv_-c6fDjMubq0_ENRaw@mail.gmail.com>
-Message-ID: <CAK7LNASuy5hSOU7Y7Tr8_6Ks1ZqEeUKv_-c6fDjMubq0_ENRaw@mail.gmail.com>
-Subject: Re: [PATCH 0/4] [v4] Kbuild: std=gnu11 changes
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Alex Shi <alexs@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, David Sterba <dsterba@suse.com>,
-        Marco Elver <elver@google.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev, Mark Rutland <mark.rutland@arm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 9 Mar 2022 04:20:57 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B00814D26C;
+        Wed,  9 Mar 2022 01:19:59 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id t5so1719069pfg.4;
+        Wed, 09 Mar 2022 01:19:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=bEfAhcbqdZYeRPwL35nsLH5O9/gJamZgyeCS3FefDNw=;
+        b=BsoKPHGooVGX5YiMJYd3QMKPcI1SY0zHSNffkRhDtqHmSki7knDnJM3+Bh6oOky7NN
+         zPjSxKAQ7RGDiJzONdOBMO4dgnSI2QdLCxwDTnGOevdEvLdkuMCthRygXJlJKnRGj/pX
+         pCNPjcrtedFH4PyMzq0YY1+g6c56R+l9+G7wKhprjCKFBIVxbJjmymVwFyB1xdkJ6nO6
+         34UIDl3yWMtHys6p0eK1K3RbZkEOMIl5TNKrFjhJhQV4EvzJUlLazm96GegfmlUN8/oQ
+         wVuWvn29XcBbEAgyH5hHixV2OcDAQ1Ajf4wf42IHmAMSaUJfsgJBxadnTJi6NFYpWNmP
+         HQKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bEfAhcbqdZYeRPwL35nsLH5O9/gJamZgyeCS3FefDNw=;
+        b=GcHp4srYW4QtCjWlfFqL5T4qunqcCguhIRx2Xg19oNmCG4N3s4p6h7VhL7zNxGSIuI
+         0we0KLxqYMpmHjSwfyY9SODQYzOqo8fHYOgoeVo6HuAe6XFyxcSLq3tXB3RyVF542oQ8
+         LObWO/IAimeSsrkDy9W1fz7JpA/YKoGKc37g5JTIg7D7Hx6Gb6ONjSK30TW24IslFAG3
+         kWE+beqWG27YtuR8+sw7qkGeMcpVbp3n0nUeOHMLjtlWgYUFopYTaPz6I2ZSHNhGA8vO
+         vOKLuLibEQCzXbgUuTiPtnmoREyJr6uexViaC0KZgF8GU8acqdkquuZvUOAHEmxKOxGR
+         TYRQ==
+X-Gm-Message-State: AOAM532Oo6oYuOnhiYQObVxBAHp99hKZp0RcOx4PoqLgcFRxBQsonIBk
+        QL6iOqAwXl9aG0txTCKX+bc=
+X-Google-Smtp-Source: ABdhPJz154842HCAn71vp+FZHXMEdU/ZMNx3OLEChgK28OxSn1qfQPpKo19ta6GkpOADMhYbIb7XJA==
+X-Received: by 2002:a05:6a00:8ca:b0:4e0:2ed3:5630 with SMTP id s10-20020a056a0008ca00b004e02ed35630mr22900242pfu.3.1646817599116;
+        Wed, 09 Mar 2022 01:19:59 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id 78-20020a621451000000b004f6e8a033b5sm2071595pfu.142.2022.03.09.01.19.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 01:19:58 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chuanjia Liu <chuanjia.liu@mediatek.com>,
+        linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] PCI: mediatek: Fix refcount leak in mtk_pcie_subsys_powerup
+Date:   Wed,  9 Mar 2022 09:19:52 +0000
+Message-Id: <20220309091953.5630-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 11:16 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Wed, Mar 9, 2022 at 9:09 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > On Tue, Mar 8, 2022 at 1:56 PM Arnd Bergmann <arnd@kernel.org> wrote:
-> > >
-> > > From: Arnd Bergmann <arnd@arndb.de>
-> > >
-> > > I've incorporated the feedback from Masahiro Yamada in this
-> > > version, splitting out one more patch, rebasing on top of
-> > > the kbuild tree, and changing the order of the patches.
-> > >
-> > > Please apply to the kbuild tree.
-> >
-> > I'd actually like to see this as a separate branch, so that I can
-> > merge it early - or other peoples git branches end up depending on it.
->
->
-> OK, I can apply this to a separate branch, kbuild-gnu11.
-> (and I will queue this up shortly because it is already -rc7)
->
-> Then, I will send two pull reqs in the next MW,
-> but please note they will conflict with each other,
-> between this gnu11 patch set and the following
-> one in my usual kbuild branch:
->
-> https://patchwork.kernel.org/project/linux-kbuild/patch/20220201213542.2808035-1-quic_eberman@quicinc.com/
->
->
-> I hope this is not a complex conflict, but please let me know
-> if you have any requests to me.
->
->
->
->
->
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
+Fixes: 87e8657ba99c ("PCI: mediatek: Add new method to get shared pcie-cfg base address")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/pci/controller/pcie-mediatek.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-All, applied to linux-kbuild/kbuild-gnu11.
-
-If somebody wants to give Reviewed-by, Acked-by, Tested-by, please.
-
-I will append them later.
-
-
-
-
-
-
-
-
+diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
+index ddfbd4aebdec..be8bd919cb88 100644
+--- a/drivers/pci/controller/pcie-mediatek.c
++++ b/drivers/pci/controller/pcie-mediatek.c
+@@ -1008,6 +1008,7 @@ static int mtk_pcie_subsys_powerup(struct mtk_pcie *pcie)
+ 					   "mediatek,generic-pciecfg");
+ 	if (cfg_node) {
+ 		pcie->cfg = syscon_node_to_regmap(cfg_node);
++		of_node_put(cfg_node);
+ 		if (IS_ERR(pcie->cfg))
+ 			return PTR_ERR(pcie->cfg);
+ 	}
 -- 
-Best Regards
-Masahiro Yamada
+2.17.1
+
