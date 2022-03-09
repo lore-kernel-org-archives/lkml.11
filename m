@@ -2,138 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C131C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbiCIBrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:47:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        id S231147AbiCIBrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:47:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbiCIBrG (ORCPT
+        with ESMTP id S230473AbiCIBrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:47:06 -0500
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.149.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18DBEFF90
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:46:05 -0800 (PST)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 007897DFA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 18:54:38 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id Rka7nJUO7b6UBRka7nueMj; Tue, 08 Mar 2022 18:53:35 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=S82LfQ71+WjBONrEJUzmyZUddwy8tJcD58qdpxREMc0=; b=U5838IEnPnOKYA2dB093kbhq52
-        6Jwk9mLMlXcyLPo3TS2GspleF6Kd3fvzmE10ceett6rn5xoUDep5MG5ORQkchGbacZZMvQWVKCs1A
-        RVpWrdU5lB/tIdTsM2G1PkTFtw9Y7mv0TAXCky3CKfWFwKaUiGOYJRsmWtH7MshreeCAaPRasx6WU
-        glKl8vTy1wt4XGnE96sQxgKTIFcA1R/cq+GlO3M429NXAfqKsFzKmHvbmkYkHkSWLHeRy7tA/kOwP
-        OcjvBNc6y7Qr7V49Dw95cgZDb070bEJ+2NWEV8rASmeaDk5kEuG0AafB6PLd/MPxZSwjvX/PskA3H
-        uzWH0HHg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38112)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nRka6-0015kr-PK; Wed, 09 Mar 2022 00:53:34 +0000
-Message-ID: <8f97b76e-fe64-ad9e-fa46-9874df61c35d@roeck-us.net>
-Date:   Tue, 8 Mar 2022 16:53:32 -0800
+        Tue, 8 Mar 2022 20:47:49 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A260847AD1;
+        Tue,  8 Mar 2022 17:46:51 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id a5so963833pfv.2;
+        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
+        b=nwj7tvDCQhT1tTSZYmeFh97v6ljyhYUeGt5xJaI5O+5JHeo06oneSZyrrLp9BGAYNI
+         pMlEUKTuDpYeL6nlBXoq5WGC1p86052RqBGBeaop9vmCRbk8j+OE7kmswBlOQcWUZYqC
+         ozkE/n0IsZrz/0oiZ1k+8RlL1lvSozFFqulT9DKNgIa3kEZU610qd8SVTBLtq01v3rmq
+         Ces/SsF7xuWX4HjoBhGvS8jbozk85pviU83o6Yw1emBgHCO6Kw0O3HDB//5i7xHSKBRF
+         vUQzWla11q3n6eixTOIm4NrDY5rPuED+sdh3H9ZqRREY9VP0fdsNZEEJtJH3avwR9DQA
+         XYeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
+        b=v0DdGmYv5HUPYgrQ987JVZi1+VnecA/G3OPbP8+uP9WcXUqv4e+a/cF+NaLNg7FoXu
+         HgkAlND6stJBLAM0fJ31vPpU0mV3A74G39Zu/Pzt9mM7tS/RD+EoMjgy3BYPta9KSmVy
+         OBH9nFNeFWPrU77mhop8SbvPgbnvfiWM1jwaHaQU6i2aM1Ir/ZlrZs9d/rzsiAzrxxsC
+         uNqkNuDD7llikinHJ+97sf/hcel0zK5wra+m/WS2v604aMWej+cDSCKeK0FUBQV/CilI
+         OQAzkT30M0jzu8BJbEB7btyLbccoxK1P4re03C3+0Yz0C6ZfaIn2W73F5ccgp8XsdqCs
+         mffw==
+X-Gm-Message-State: AOAM533SasUcdPKCjpC1idsAGoxqEi0E9ylJ46lj10meD4XRj6hpIuxS
+        FrChO2X6eftg9M2RyqnKQl+//7PABbk=
+X-Google-Smtp-Source: ABdhPJzjVo7e2qrmUbNkeL2htyp8gE3ptwnN+rocneGeMxNszSiqfQmZvPVecIgxWwjPCwx68Brb+g==
+X-Received: by 2002:a63:2bc1:0:b0:35e:c54b:3be0 with SMTP id r184-20020a632bc1000000b0035ec54b3be0mr16632074pgr.105.1646790411123;
+        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id o185-20020a6341c2000000b0036fb987b25fsm358271pga.38.2022.03.08.17.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 17:46:50 -0800 (PST)
+Date:   Tue, 8 Mar 2022 17:46:47 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Divya.Koppera@microchip.com, netdev@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220309014647.GB24366@hoboy.vegasvil.org>
+References: <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
-Content-Language: en-US
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Huang Pei <huangpei@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-References: <20220307162207.188028559@linuxfoundation.org>
- <Yid4BNbLm3mStBi2@debian>
- <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
- <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com>
- <YifFMPFMp9gPnjPc@kroah.com>
- <CADVatmMs_+YN3YAajL95fy98iEgoeb-7qXA_ZJ7K3QsdHGG=oA@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <CADVatmMs_+YN3YAajL95fy98iEgoeb-7qXA_ZJ7K3QsdHGG=oA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nRka6-0015kr-PK
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38112
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 11
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YifoltDp4/Fs+9op@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 14:27, Sudip Mukherjee wrote:
-> On Tue, Mar 8, 2022 at 9:05 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->>
->> On Tue, Mar 08, 2022 at 11:08:10PM +0530, Naresh Kamboju wrote:
->>> Hi Greg,
->>>
->>> On Tue, 8 Mar 2022 at 21:40, Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
->>>>
->>>> On Tue, Mar 8, 2022 at 3:36 PM Sudip Mukherjee
->>>> <sudipm.mukherjee@gmail.com> wrote:
->>>>>
->>>>> Hi Greg,
->>>>>
->>>>> On Mon, Mar 07, 2022 at 05:28:50PM +0100, Greg Kroah-Hartman wrote:
->>>>>> This is the start of the stable review cycle for the 5.15.27 release.
->>>>>> There are 256 patches in this series, all will be posted as a response
->>>>>> to this one.  If anyone has any issues with these being applied, please
->>>>>> let me know.
->>>>>>
->>>>
->>>> <snip>
->>>>
->>>>>
->>>>> Mips failures,
->>>>>
->>>>> allmodconfig, gpr_defconfig and mtx1_defconfig fails with:
->>>
-> 
-> <snip>
-> 
->>
->> Ah, I'll queue up the revert for that in the morning, thanks for finding
->> it.  Odd it doesn't trigger the same issue in 5.16.y.
-> 
-> ohh.. thats odd. I don't build v5.16.y, so never thought of it.
-> Just checked a little now, and I was expecting it to be fixed by:
-> e5b40668e930 ("slip: fix macro redefine warning")
-> but it still has the build error. I will check tomorrow morning what
-> is missing in v5.15.y
-> Please delay the revert till tomorrow afternoon.
-> 
+On Wed, Mar 09, 2022 at 12:36:54AM +0100, Andrew Lunn wrote:
 
-In case you did not get my other e-mail: You also need commit
-b81e0c2372e ("block: drop unused includes in <linux/genhd.h>").
+> I'm assuming the ptp protocol does not try to measure the cable delay,
+> since if it did, there would be no need to know the RJ45-PHY delay, it
+> would be part of that.
 
-Guenter
+The PTP does indeed measure the cable delay.  With a well tuned
+system, you can tell the copper cable length directly from the
+measured delay.
+
+The problem with uncorrected PHY time stamps is that they affect the
+boundary point between the node and the network.  A static error there
+will create a path asymmetry that can neither be measured nor
+corrected by the PTP, and a variable error degrades the time signal.
+
+
+Thanks,
+Richard
