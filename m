@@ -2,189 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135AAC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E756BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234857AbiCIQMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:12:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        id S234755AbiCIQMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:12:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235170AbiCIQI1 (ORCPT
+        with ESMTP id S235260AbiCIQIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B918BA47;
-        Wed,  9 Mar 2022 08:05:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A2B2B82221;
-        Wed,  9 Mar 2022 16:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0306C340E8;
-        Wed,  9 Mar 2022 16:05:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841914;
-        bh=l8kb+JyFkCFG12lhe+TB8NG8sV6PXySdPd9O6zdBpGk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ixpMLcAj/j79MxywwMhmowVLcjlT55c8tiRKLLnjwLM7Z4dtqII8PzXgOeV7Tk2mU
-         U/37yDp4L9fs8quZQVdJxNS7pg+cIMcox0W99jQLnKeuaTi8BEsAfwsi7aZ96RiUzv
-         QR9EVe3ndzl78xiDVwswbcQ9pB/5q62eXwIMdVjw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.10 20/43] arm64: add ID_AA64ISAR2_EL1 sys register
-Date:   Wed,  9 Mar 2022 16:59:53 +0100
-Message-Id: <20220309155859.829268867@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
-References: <20220309155859.239810747@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 9 Mar 2022 11:08:35 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75AB18CC77;
+        Wed,  9 Mar 2022 08:05:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=qzB5SkChcUpXXTILPYEoiZsWblCS3kRjEhEA4tvWFBA=; b=JjBfU4RcbAJyJTf1dScNeR/9Ho
+        AlZkTmpj9SsK1oDq6UTB/AcWUopsbiSLBGR6rZ2kBCw7j4vNo2VJRBUq8/KFhsm1GawDk4dDcSTB0
+        CAcF6dfoPaEs0Gfz8X8csw4+TvxgiPIlR30lPYJvaOwQCM8VvYdi8Wsr4XICpNu/Qaygh0PysniQO
+        SyyGMm6lUhw5iTcltD/IOCdeqX++6/j+K96Pdx2bmwdewbe3c6YDhA7DoYvB3PWynCjiFTZ95BR6a
+        cfwFLvgkagvPcfT8tRBkxAXjKWBSrNNRFeT2Lc3lff5pJIccLtnRTXiKaaapODICmEkZ+Gvc9/379
+        brxt0HAQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRyoJ-00HGIW-9U; Wed, 09 Mar 2022 16:05:11 +0000
+Message-ID: <faadb494-2ed9-f894-257d-9a70398a02b6@infradead.org>
+Date:   Wed, 9 Mar 2022 08:05:05 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] docs/kernel-parameters: update description of mem=
+Content-Language: en-US
+To:     Mike Rapoport <rppt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220309122446.1118738-1-rppt@kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220309122446.1118738-1-rppt@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+Hi Mike,
 
-commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
+On 3/9/22 04:24, Mike Rapoport wrote:
+> From: Mike Rapoport <rppt@linux.ibm.com>
+> 
+> The existing description of mem= does not cover all the cases and
+> differences between how architectures treat it.
+> 
+> Extend the description to match the code.
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> ---
+> 
+> This is in a way a followup for the discussion of mem= usage on MIPS:
+> 
+> https://lore.kernel.org/all/1646461289-31992-1-git-send-email-yangtiezhu@loongson.cn
+> 
+>  .../admin-guide/kernel-parameters.txt         | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..f3597841a031 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -2834,6 +2834,15 @@
+>  			2 when the kernel is not able to see the whole system memory;
+>  			3 memory that lies after 'mem=' boundary is excluded from
+>  			 the hypervisor, then assigned to KVM guests.
+> +			4 to limit the memory available for kdump kernel.
+> +
+> +			[ARC,MICROBLAZE] - the limit applies only to low memory,
+> +			high memory is not affected.
+> +
+> +			[ARM64] - only limits memory covered by the linear
+> +			mapping. The NOMAP regions are not affected.
+> +
+> +			[HEXAGON] - must be use to set the memory size, there is
 
-This is a new ID register, introduced in 8.7.
+Above line seems to be missing something?
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Cc: Alexandru Elisei <alexandru.elisei@arm.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Reiji Watanabe <reijiw@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cpu.h    |    1 +
- arch/arm64/include/asm/sysreg.h |   15 +++++++++++++++
- arch/arm64/kernel/cpufeature.c  |    9 +++++++++
- arch/arm64/kernel/cpuinfo.c     |    1 +
- arch/arm64/kvm/sys_regs.c       |    2 +-
- 5 files changed, 27 insertions(+), 1 deletion(-)
+Otherwise looks good AFAIK.
 
---- a/arch/arm64/include/asm/cpu.h
-+++ b/arch/arm64/include/asm/cpu.h
-@@ -25,6 +25,7 @@ struct cpuinfo_arm64 {
- 	u64		reg_id_aa64dfr1;
- 	u64		reg_id_aa64isar0;
- 	u64		reg_id_aa64isar1;
-+	u64		reg_id_aa64isar2;
- 	u64		reg_id_aa64mmfr0;
- 	u64		reg_id_aa64mmfr1;
- 	u64		reg_id_aa64mmfr2;
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -175,6 +175,7 @@
- 
- #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
- #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
-+#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
- 
- #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
- #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
-@@ -687,6 +688,20 @@
- #define ID_AA64ISAR1_GPI_NI			0x0
- #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
- 
-+/* id_aa64isar2 */
-+#define ID_AA64ISAR2_RPRES_SHIFT	4
-+#define ID_AA64ISAR2_WFXT_SHIFT		0
-+
-+#define ID_AA64ISAR2_RPRES_8BIT		0x0
-+#define ID_AA64ISAR2_RPRES_12BIT	0x1
-+/*
-+ * Value 0x1 has been removed from the architecture, and is
-+ * reserved, but has not yet been removed from the ARM ARM
-+ * as of ARM DDI 0487G.b.
-+ */
-+#define ID_AA64ISAR2_WFXT_NI		0x0
-+#define ID_AA64ISAR2_WFXT_SUPPORTED	0x2
-+
- /* id_aa64pfr0 */
- #define ID_AA64PFR0_CSV3_SHIFT		60
- #define ID_AA64PFR0_CSV2_SHIFT		56
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -205,6 +205,10 @@ static const struct arm64_ftr_bits ftr_i
- 	ARM64_FTR_END,
- };
- 
-+static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
-+	ARM64_FTR_END,
-+};
-+
- static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
-@@ -596,6 +600,7 @@ static const struct __ftr_reg_entry {
- 	/* Op1 = 0, CRn = 0, CRm = 6 */
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
-+	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
- 
- 	/* Op1 = 0, CRn = 0, CRm = 7 */
- 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
-@@ -830,6 +835,7 @@ void __init init_cpu_features(struct cpu
- 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
-+	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
-@@ -1058,6 +1064,8 @@ void update_cpu_features(int cpu,
- 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
- 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
- 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
-+	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
-+				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
- 
- 	/*
- 	 * Differing PARange support is fine as long as all peripherals and
-@@ -1157,6 +1165,7 @@ static u64 __read_sysreg_by_encoding(u32
- 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
-+	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
- 
- 	read_sysreg_case(SYS_CNTFRQ_EL0);
- 	read_sysreg_case(SYS_CTR_EL0);
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -365,6 +365,7 @@ static void __cpuinfo_store_cpu(struct c
- 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
- 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
- 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
-+	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
- 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
- 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
- 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
---- a/arch/arm64/kvm/sys_regs.c
-+++ b/arch/arm64/kvm/sys_regs.c
-@@ -1517,7 +1517,7 @@ static const struct sys_reg_desc sys_reg
- 	/* CRm=6 */
- 	ID_SANITISED(ID_AA64ISAR0_EL1),
- 	ID_SANITISED(ID_AA64ISAR1_EL1),
--	ID_UNALLOCATED(6,2),
-+	ID_SANITISED(ID_AA64ISAR2_EL1),
- 	ID_UNALLOCATED(6,3),
- 	ID_UNALLOCATED(6,4),
- 	ID_UNALLOCATED(6,5),
+>  
+>  			[X86] Work as limiting max address. Use together
+>  			with memmap= to avoid physical address space collisions.
+> @@ -2844,6 +2853,17 @@
+>  			in above case 3, memory may need be hot added after boot
+>  			if system memory of hypervisor is not sufficient.
+>  
+> +	mem=nn[KMG]@ss[KMG]
+> +			[ARM,MIPS] - override the memory layout reported by
+> +			firmware.
+> +			Define a memory region of size nn[KMG] starting at
+> +			ss[KMG].
+> +			Multiple different regions can be specified with
+> +			multiple mem= parameters on the command line.
+> +
+> +	mem=nn[KMG]	[HEXAGON] Set the memory size.
+> +			Must be specified, otherwise memory size will be 0.
+> +
+>  	mem=nopentium	[BUGS=X86-32] Disable usage of 4MB pages for kernel
+>  			memory.
+>  
 
-
+-- 
+~Randy
