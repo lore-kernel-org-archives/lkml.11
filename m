@@ -2,105 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA870C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiCIBKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:10:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
+        id S229996AbiCIBKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230140AbiCIBJO (ORCPT
+        with ESMTP id S230170AbiCIBJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:09:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FC97C7E54
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:50:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646787057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sfZ5PwvLnI4LLU34fgHb1e9AhJAkBykiEyb2Klxh090=;
-        b=DSPxgnwtOTO14S3vCCucAmhRnhnNzjro6Fu3zG3H3Uvhm1z2FHXtecKXxwzBagZlODJxOG
-        JZWOeMbVFQDum4o/jIFsjprf5/4U1oqN+P3yAcySkEsUit1taGSbOFCJmNHYdbcITZzRd5
-        0DHbPtdaiNVbErJuQGuKRUfUQIi44+Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-175-dNiZfsEjOdapE2gi6wjFvg-1; Tue, 08 Mar 2022 19:50:54 -0500
-X-MC-Unique: dNiZfsEjOdapE2gi6wjFvg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 8 Mar 2022 20:09:15 -0500
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E28710BBE0;
+        Tue,  8 Mar 2022 16:51:00 -0800 (PST)
+Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5C41B1006AA6;
-        Wed,  9 Mar 2022 00:50:53 +0000 (UTC)
-Received: from [10.22.11.135] (unknown [10.22.11.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B38D72427;
-        Wed,  9 Mar 2022 00:50:52 +0000 (UTC)
-Message-ID: <34bc9788-0459-9126-8aa9-e0d10e9f5b5f@redhat.com>
-Date:   Tue, 8 Mar 2022 19:50:51 -0500
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 0A43EB23;
+        Tue,  8 Mar 2022 16:51:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1646787060;
+        bh=YIZv9+SIesyx8doHGzmEElUtCe6o5nXvWYN+qH+1//E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iwypJDTSxCkHuV1nER7CiajiD6Alq/GrJXuHyvXRcN+KMWkM3MruZFHFKkcKnqnHc
+         zU1+Vg1rQ18Wvw4NAAA4M1CZ9nhhcnji7Gmk8vQoD4XgH4ZSHNj6sx9LBh1kMCpj8f
+         Gzy5hJNSq/zhSsaX4wJU5zEdz+DuAW62hw5T19Bk=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Cc:     Zev Weiss <zev@bewilderbeest.net>, Renze Nicolai <renze@rnplus.nl>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4/6] hwmon: (nct6775) Add read-only mode
+Date:   Tue,  8 Mar 2022 16:50:45 -0800
+Message-Id: <20220309005047.5107-5-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309005047.5107-1-zev@bewilderbeest.net>
+References: <20220309005047.5107-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] mm/list_lru: Optimize memcg_drain_list_lru_node()
-Content-Language: en-US
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-References: <20220308033009.1400464-1-longman@redhat.com>
- <YibeERR3Nmh7+9ZA@carbon.dhcp.thefacebook.com>
- <3faa2be7-3a08-ee6d-35e8-c4a35e825c77@redhat.com>
- <YifyG3ak3oNOjELK@carbon.dhcp.thefacebook.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YifyG3ak3oNOjELK@carbon.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 19:17, Roman Gushchin wrote:
-> On Tue, Mar 08, 2022 at 10:41:38AM -0500, Waiman Long wrote:
->> On 3/7/22 23:39, Roman Gushchin wrote:
->>> On Mon, Mar 07, 2022 at 10:30:09PM -0500, Waiman Long wrote:
->>>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
->>>> to be race free"), we are tracking the total number of lru
->>>> entries in a list_lru_node in its nr_items field.  In the case of
->>>> memcg_drain_list_lru_node(), there is nothing to be done if nr_items
->>>> is 0.  We don't even need to take the nlru->lock as no new lru entry
->>>> could be added by a racing list_lru_add() to the draining src_idx memcg
->>>> at this point.
->>>>
->>>> Signed-off-by: Waiman Long <longman@redhat.com>
->>> Hi Waiman!
->>>
->>> The patch makes total sense to me, however it needs to be rebased at least
->>> on top of "mm: list_lru: rename memcg_drain_all_list_lrus to memcg_reparent_list_lrus".
->>>
->>> Thanks!
->>>
->>>
->> This patch was based on the current linux-next tree which includes commit
->> ff221bc26bdd ("mm: list_lru: rename memcg_drain_all_list_lrus to
->> memcg_reparent_list_lrus"). I do remember to double-check linux-next before
->> sending this patch out. In fact, the same patch can be applied to both linux
->> and linux-next tree without problem.
-> I'm looking at the mm tree (https://github.com/hnaz/linux-mm.git) and clearly
-> see that commit "mm: list_lru: rename memcg_drain_all_list_lrus to
-> memcg_reparent_list_lrus" eliminated the function with the name
-> memcg_drain_list_lru_node(), which your patch is touching.
-> Currently the function is located in list_lru.c and is named
-> memcg_reparent_list_lru_node().
->
-> linux-next is sometimes a bit behind the mm tree.
+When enabled, all write bits are removed from the modes of all sysfs
+attribute files.  This provides a bit of infrastructure for the
+upcoming i2c version of this driver, which should generally avoid
+writes to device registers so as not to interfere with simultaneous
+use of the device via the LPC interface.
 
-Oh, you are right. I will rebase the patch based on linux-mm.
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+---
+ drivers/hwmon/nct6775.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Thanks for the suggestion.
-
-Cheers,
-Longman
+diff --git a/drivers/hwmon/nct6775.c b/drivers/hwmon/nct6775.c
+index 36bdbb176601..99b4e308a053 100644
+--- a/drivers/hwmon/nct6775.c
++++ b/drivers/hwmon/nct6775.c
+@@ -1348,6 +1348,7 @@ struct nct6775_data {
+ 	u8 sio_reg_enable;
+ 
+ 	struct regmap *regmap;
++	bool read_only;
+ };
+ 
+ struct sensor_device_template {
+@@ -1405,6 +1406,11 @@ struct sensor_template_group {
+ 	int base;
+ };
+ 
++static inline umode_t nct6775_attr_mode(struct nct6775_data *data, struct attribute *attr)
++{
++	return data->read_only ? (attr->mode & ~0222) : attr->mode;
++}
++
+ static int nct6775_add_attr_group(struct nct6775_data *data, const struct attribute_group *group)
+ {
+ 	/* Need to leave a NULL terminator at the end of data->groups */
+@@ -2371,7 +2377,7 @@ static umode_t nct6775_in_is_visible(struct kobject *kobj,
+ 	if (!(data->have_in & BIT(in)))
+ 		return 0;
+ 
+-	return attr->mode;
++	return nct6775_attr_mode(data, attr);
+ }
+ 
+ SENSOR_TEMPLATE_2(in_input, "in%d_input", S_IRUGO, show_in_reg, NULL, 0, 0);
+@@ -2607,7 +2613,7 @@ static umode_t nct6775_fan_is_visible(struct kobject *kobj,
+ 	if (nr == 5 && data->kind != nct6775)
+ 		return 0;
+ 
+-	return attr->mode;
++	return nct6775_attr_mode(data, attr);
+ }
+ 
+ SENSOR_TEMPLATE(fan_input, "fan%d_input", S_IRUGO, show_fan, NULL, 0);
+@@ -2834,7 +2840,7 @@ static umode_t nct6775_temp_is_visible(struct kobject *kobj,
+ 	if (nr > 7 && !(data->have_temp_fixed & BIT(temp)))
+ 		return 0;
+ 
+-	return attr->mode;
++	return nct6775_attr_mode(data, attr);
+ }
+ 
+ SENSOR_TEMPLATE_2(temp_input, "temp%d_input", S_IRUGO, show_temp, NULL, 0, 0);
+@@ -2908,7 +2914,7 @@ static umode_t nct6775_tsi_temp_is_visible(struct kobject *kobj, struct attribut
+ 	struct nct6775_data *data = dev_get_drvdata(dev);
+ 	int temp = index / 2;
+ 
+-	return (data->have_tsi_temp & BIT(temp)) ? attr->mode : 0;
++	return (data->have_tsi_temp & BIT(temp)) ? nct6775_attr_mode(data, attr) : 0;
+ }
+ 
+ /*
+@@ -3766,7 +3772,7 @@ static umode_t nct6775_pwm_is_visible(struct kobject *kobj,
+ 		if (api > data->auto_pwm_num)
+ 			return 0;
+ 	}
+-	return attr->mode;
++	return nct6775_attr_mode(data, attr);
+ }
+ 
+ SENSOR_TEMPLATE_2(pwm_stop_time, "pwm%d_stop_time", S_IWUSR | S_IRUGO,
+@@ -3961,7 +3967,7 @@ static umode_t nct6775_other_is_visible(struct kobject *kobj,
+ 			return 0;
+ 	}
+ 
+-	return attr->mode;
++	return nct6775_attr_mode(data, attr);
+ }
+ 
+ /*
+-- 
+2.35.1
 
