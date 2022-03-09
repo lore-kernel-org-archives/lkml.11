@@ -2,147 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D44C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  8 Mar 2022 22:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350763AbiCHW0k (ORCPT
+        id S1350764AbiCHW1H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 17:26:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
+        Tue, 8 Mar 2022 17:27:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350729AbiCHW0X (ORCPT
+        with ESMTP id S1350773AbiCHW1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 17:26:23 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D34583B8;
-        Tue,  8 Mar 2022 14:25:26 -0800 (PST)
-Date:   Tue, 08 Mar 2022 22:25:23 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646778325;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bbuZJRANWRttBApNafCE2xDUdDf+IGSekYoAaklxqVI=;
-        b=q4/ydDLeZivDwQG8us9T7amvz2C2q7u4afrCWR7HimWKLSwYzujJU4zoX7+IdR19mWDzo2
-        hMWcXHhAzsEzzjGyy961mBi7Kv2H5CFDC9exm5hZH+P+CE7Ey3ly3WiciNffyfrYmTt56m
-        U93pn9NBp+KBVaECkKdxN4DqAtJtYpeQWMGR9v1599MGcyx757Gdj586eAaJtOfeS4JSB1
-        XjcaKZLbIuQ0V/szFw/xRehNxp+tdcZuKm3QLy1osBBSaC95+Xxx4wBYLoI7KUht7oWOlL
-        md1TFOphziJPgsVEIsmz+AxKD2bvMpVC8QYti+W1y9f66ireiR42hsMhXvewDw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646778325;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bbuZJRANWRttBApNafCE2xDUdDf+IGSekYoAaklxqVI=;
-        b=8qJKZ7XJk3TMULsQ5d/rAZ2lE165UQSG4vLmfY6bcW99rILI57F5gw/Ae2nY5cHe8U7rEE
-        MIUsuyZTKp/A9aAQ==
-From:   "tip-bot2 for Dietmar Eggemann" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/deadline: Remove unused def_dl_bandwidth
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220302183433.333029-2-dietmar.eggemann@arm.com>
-References: <20220302183433.333029-2-dietmar.eggemann@arm.com>
+        Tue, 8 Mar 2022 17:27:03 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2133.outbound.protection.outlook.com [40.107.223.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7E758E58;
+        Tue,  8 Mar 2022 14:25:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JyowduxBizJPgD/fQDNg/2c0HDDN/W9dmF3iHF3cJDk3w+dxc37qf3ZYDPHqS3x59agEW84DVuU3CaQ2x14gXZbt9E4S7MzqFZHatAq9klP18KEVABq92UwAh401fEyWXJa4bFxG8fROXLwG5slE74/Tlhr/BwFUH8An+YARMJALAashaTiddk4a5tLzAftpVJfQ92YRbuQZjLIhftN6U+9KE/tZ1L4N5TLeopp6KNZ7Jgt9DiLWQmv+9mECl27rMBjhrVdmAEuJEy1fI9lPr0v/vZyoD9ZGlFViOy4SMvRapxbGSdA0j7VRQcER7yH3T4VbyuIpQ2GsiRjcRF8ElQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Cv5AdWhDmo6e2NqYtP2bMWkU11grLP43B5MDY+DO5pQ=;
+ b=BVIC2FF57PVEm+4GGAP1NaneOnbzhybtDJCP7jMckK86El/xYaogTVH7eQwlrBIyP3hjpoSnwCvgVZ2B+dH1XE5AAQ/U54ktBKj+jzPE627awCXuPYPZO0VKE5QDfoApCmj/Pgo5cLO3n1mWYEmdb7MjeeLd+MCik+i7u+1qJjAq8meyO9Lz/DQvAAVhnEJ4lhAyJhsjJEPkcoQPB+iRtRkU8YpnurqYdxgVLfkYCllKGCuJgf/2PGGym67tY2daY7JMzgjvcOPgdURSfC1a24vOBUibAEFfSJJpADEvEhej73Ox9tgoQvdfyB1YJRTyIwo69GZZjnfuVLeTAVWT4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Cv5AdWhDmo6e2NqYtP2bMWkU11grLP43B5MDY+DO5pQ=;
+ b=xxq57jit3Jt0sGXiw4S92ZKP1ww2RYfK0jPL1hYA/yCULDrY37GeBM6AEy5YiRvor9ndaVu2noPpzLpei2c5itvlDxu9C+rulXMzONwLABDk5tfdrZ4hkDyrgqdxd3miQ+j//cGuIhRNQreHLLONByejlMjqxNrlNeAPTIHgjnA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB3114.namprd10.prod.outlook.com
+ (2603:10b6:5:1a1::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
+ 2022 22:25:56 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
+ 22:25:56 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH] net: phy: correct spelling error of media in documentation
+Date:   Tue,  8 Mar 2022 22:25:44 -0800
+Message-Id: <20220309062544.3073-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MW2PR16CA0058.namprd16.prod.outlook.com
+ (2603:10b6:907:1::35) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Message-ID: <164677832389.16921.264306598144344142.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6d8b2631-7c33-4f4f-7333-08da01529d40
+X-MS-TrafficTypeDiagnostic: DM6PR10MB3114:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB3114BEE905496026C089586FA4099@DM6PR10MB3114.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ol7GC5q8hs2uQ9/XQ7Appnk1Sgts3Nf25yjS7CzRprNWbSXe0MCoHHkQGdYKjFnsTJ1LZoI7MHAT2WEoSoqWB2C6ld3jkL8frlj823GB8P6OGaGhKO5gBHpYNzuPWmQyGu7vE7A884BP808AD2WYKIP79RNTY4p3x1V5h0hsZ8A0BndAFXzTPN4q00n6OXnXWlzgzVpUhMuagigg6iEZ8STV7oYOhQZAeNisvGVpSja6+pTIPQDnDPB54teStik9z6L20Rr6+xr5yNtvwrM23BnIrLXFidCuTTrzqKiQZcH/ekvEYgmdcGgIEFzVcBI7VjygxE02mfLVLLNZZFaHMrkhu2mDVgkzNXjCV4KX85Ai+D665hJAot0mhJ931yVqdDEDLGSnyQAgOJgO22/lzh94/BohtETcYsjlQm/dqSNxwPjLd4dBwmWJUwVW0ZVQxt8IVuVZerp2K8pkJnamHSvgKABZ/UuWwmQmH7gPl+iVuTBFu5hIYEqyO6s9ubF3C+8jF3untzMSwEh+qx7Pt/6FIDibRUwhm/7/C3duIXt2AEggvdCGVPq/KmClCLjYDqElDcnAELhmhe9vUTnHSADfnQ7PtFnV08V+D/rkeFwFOexIA74bwgktOrxpBTWu8M++g986e4yR603FUbp9d1WwomnzF3f2/QAGELIsR4SoCJo0DFtLMfEu+OLu+pYLoc+1dJM14FgmmCYQw/T2yQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(42606007)(39830400003)(376002)(136003)(396003)(366004)(346002)(8676002)(38100700002)(66946007)(38350700002)(2906002)(66476007)(66556008)(4326008)(54906003)(44832011)(8936002)(5660300002)(86362001)(6486002)(316002)(508600001)(52116002)(6506007)(186003)(26005)(36756003)(6512007)(83380400001)(6666004)(1076003)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OOZ/CjE+I0RHLQZQawOc8jQa4K+gnKGLNWQkitjw8j6g5J3QDWVedkZ5b6r/?=
+ =?us-ascii?Q?eCSPxxq2/D7C66MIgDtCADPgzaOuMghL/5lIa8s0S6RE7IlHvldbgOxbyCQa?=
+ =?us-ascii?Q?pSUpSdgGN5Inr3AknTVwb8M+P/QqNzSyZaWulAcnfuCMF6R5t6fpk/wj8UIU?=
+ =?us-ascii?Q?7YioF/VJ32J+sS92x+SfnxPtRLusWvQRtAS8JT+F3dH4VP6WN/qid2MKRclz?=
+ =?us-ascii?Q?+GecshvN+qKF+vGVtjkVnqY9Xp4Ums1S4FCxPJVE2q2ToZKETKvFPB4GNRlt?=
+ =?us-ascii?Q?teijj/hSlMW9+T8Wg92ttTA3T3d2OcVBTbpKH/qKfB7KMggvq/3vMDX9MCmc?=
+ =?us-ascii?Q?CCWkfA4lVo8Zi0lQdaslXqtN1HB60gBtdwL62fMoLQ5JaHkxgOmJQ295kocs?=
+ =?us-ascii?Q?9bEr9snWqywBTmnkGfF2Eqt3Wd+83RlihW4eWlamoiSwPHVdpSdSa1mrJBBO?=
+ =?us-ascii?Q?DdqVXZDn3PPhBHUshOFXGVHNYu5HfwIzqSUG6C7T3zUNx8PbIsPMeI+iSe5G?=
+ =?us-ascii?Q?EFHNpmz1a28bvXRtIWWJ75VDWWmEoCCuMga3TgchEOEFYZWUlzjYQm40o+Te?=
+ =?us-ascii?Q?AFwGiAJRq4Vr8SWmISmMM3F5xCzAY/boJ+S5ZgsUBJMSsB1DTWDk6hfaOy29?=
+ =?us-ascii?Q?o+Z0/ndpqJfyhZzAFErE2FNymmZ+PRL76uFXeYxyf176JB3j7rjYpzrie7Es?=
+ =?us-ascii?Q?o8qa17Fxip5XRPeknr1Osg5QEgmZYsTz1fxZHWtM+l/uV34OPI16bHhQL9gE?=
+ =?us-ascii?Q?Lx33WiOgeqDgPEZUxy7FhVwhHMLl0ESuCBiJrzLu/TogfOkQuo91pyx3PMr7?=
+ =?us-ascii?Q?k5tbhzmHU+oQocenuwaWCfiI0UO3W9W15cufQiBIqoiA7cLvrJZDSCmQ2UMR?=
+ =?us-ascii?Q?DscHKaS+ESon0Z0kwWYImvDHDf8c96o3oWELv2KDTRKhdcDDeeDz1sThf/Zq?=
+ =?us-ascii?Q?qUf7k2kOBxMUA5ErFndJi1MiUO169sQ0ZlXU8juoFwmtWsjeC0uCP5T8UZHm?=
+ =?us-ascii?Q?p/FtjUziz2HOa8EUN1aBeI8tHkTQJFbI6Sc2rrVLetMed7H6Cev4Z9Ri1fgo?=
+ =?us-ascii?Q?KVei3OdJnEIXlvgbKqd9NlEofed8roioyxT7nG2Izll8x3gy8bV7VTYuclCr?=
+ =?us-ascii?Q?gjE3RYR39ddmrdZMxn8H7R2GrD4aBcI4ArwxYghDY4uwECZvJ9wQFJ3NRThX?=
+ =?us-ascii?Q?CBRqOpzUAhmsue2rNBMg8dhJWI1DfELPVE+YFt1mOwhyC9ekdZvELqu1/VG+?=
+ =?us-ascii?Q?DamaeXe41VmInQxbkpFPem2dhpgtWfNSuJpKo73g6uoqmv7QLX54VYa7DexQ?=
+ =?us-ascii?Q?79N5iUCwCAMzoyw+mO9gBAyxQRi7t2XL61noWGtOfF8jIPtgh6qdaeajI2Of?=
+ =?us-ascii?Q?+stg9zHGrwPfIhsCveo76fPYybLLePRwfh9y+F0VtNgWUR11D4ZxCH6FSxEe?=
+ =?us-ascii?Q?CdolpwFKy7KHN1ute8JtKlzHvTBeUJ33CuT1VJN/oaL/UX0w9J22DZ8LwIHK?=
+ =?us-ascii?Q?K82BtOwchBo4fYby6RQU79RARII1qNJgKjgCguhJvvZ9aV0nYMoayi/sk5dy?=
+ =?us-ascii?Q?Y9zly3t2xwMUO7j1bGHbBVsOXLFHgRv4eyFssRhxtfi0Htu6+oVXs8o6OBEq?=
+ =?us-ascii?Q?TgxtXZBGzhm7mxs3YrhnmQpM95CGTgkOGHRtOCGlXpcZ+DQmZxAVo8KKEddi?=
+ =?us-ascii?Q?GcuMVLtAZNqvT1RKJoejW7nVujg=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d8b2631-7c33-4f4f-7333-08da01529d40
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 22:25:56.7288
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T+omy/BIS75i0oQIrR4XMotqDL0kzY2o2yUSBPDMFgss+TZDSPaPvW4kY2ze592r8xwPcwtfDS1EfakqdPZWkGUk6YKcUX+wSHbXDv/kOoM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3114
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+The header file incorrectly referenced "median-independant interface"
+instead of media. Correct this typo.
 
-Commit-ID:     eb77cf1c151c4a1c2147cbf24d84bcf0ba504e7c
-Gitweb:        https://git.kernel.org/tip/eb77cf1c151c4a1c2147cbf24d84bcf0ba504e7c
-Author:        Dietmar Eggemann <dietmar.eggemann@arm.com>
-AuthorDate:    Wed, 02 Mar 2022 19:34:28 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 16:08:38 +01:00
-
-sched/deadline: Remove unused def_dl_bandwidth
-
-Since commit 1724813d9f2c ("sched/deadline: Remove the sysctl_sched_dl
-knobs") the default deadline bandwidth control structure has no purpose.
-Remove it.
-
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Juri Lelli <juri.lelli@redhat.com>
-Link: https://lore.kernel.org/r/20220302183433.333029-2-dietmar.eggemann@arm.com
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Fixes: 4069a572d423 ("net: phy: Document core PHY structures")
 ---
- kernel/sched/core.c     | 1 -
- kernel/sched/deadline.c | 7 -------
- kernel/sched/sched.h    | 1 -
- 3 files changed, 9 deletions(-)
+ include/linux/phy.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 3aafc15..d342c4c 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9420,7 +9420,6 @@ void __init sched_init(void)
- #endif /* CONFIG_CPUMASK_OFFSTACK */
- 
- 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
--	init_dl_bandwidth(&def_dl_bandwidth, global_rt_period(), global_rt_runtime());
- 
- #ifdef CONFIG_SMP
- 	init_defrootdomain();
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index 62f0cf8..ed4251f 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -18,8 +18,6 @@
- #include "sched.h"
- #include "pelt.h"
- 
--struct dl_bandwidth def_dl_bandwidth;
--
- static inline struct task_struct *dl_task_of(struct sched_dl_entity *dl_se)
- {
- 	return container_of(dl_se, struct task_struct, dl);
-@@ -423,12 +421,10 @@ void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime)
- void init_dl_bw(struct dl_bw *dl_b)
- {
- 	raw_spin_lock_init(&dl_b->lock);
--	raw_spin_lock(&def_dl_bandwidth.dl_runtime_lock);
- 	if (global_rt_runtime() == RUNTIME_INF)
- 		dl_b->bw = -1;
- 	else
- 		dl_b->bw = to_ratio(global_rt_period(), global_rt_runtime());
--	raw_spin_unlock(&def_dl_bandwidth.dl_runtime_lock);
- 	dl_b->total_bw = 0;
- }
- 
-@@ -2731,9 +2727,6 @@ void sched_dl_do_global(void)
- 	int cpu;
- 	unsigned long flags;
- 
--	def_dl_bandwidth.dl_period = global_rt_period();
--	def_dl_bandwidth.dl_runtime = global_rt_runtime();
--
- 	if (global_rt_runtime() != RUNTIME_INF)
- 		new_bw = to_ratio(global_rt_period(), global_rt_runtime());
- 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 3da5718..a8b8516 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2333,7 +2333,6 @@ extern void resched_cpu(int cpu);
- extern struct rt_bandwidth def_rt_bandwidth;
- extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
- 
--extern struct dl_bandwidth def_dl_bandwidth;
- extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
- extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
- extern void init_dl_inactive_task_timer(struct sched_dl_entity *dl_se);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index cd08cf1a8b0d..1a0ac0bcb65f 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -87,8 +87,8 @@ extern const int phy_10gbit_features_array[1];
+  *
+  * @PHY_INTERFACE_MODE_NA: Not Applicable - don't touch
+  * @PHY_INTERFACE_MODE_INTERNAL: No interface, MAC and PHY combined
+- * @PHY_INTERFACE_MODE_MII: Median-independent interface
+- * @PHY_INTERFACE_MODE_GMII: Gigabit median-independent interface
++ * @PHY_INTERFACE_MODE_MII: Media-independent interface
++ * @PHY_INTERFACE_MODE_GMII: Gigabit media-independent interface
+  * @PHY_INTERFACE_MODE_SGMII: Serial gigabit media-independent interface
+  * @PHY_INTERFACE_MODE_TBI: Ten Bit Interface
+  * @PHY_INTERFACE_MODE_REVMII: Reverse Media Independent Interface
+-- 
+2.25.1
+
