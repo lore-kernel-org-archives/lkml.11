@@ -2,174 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC29C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbiCIH7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:59:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57696 "EHLO
+        id S231702AbiCIH6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:58:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231907AbiCIH6W (ORCPT
+        with ESMTP id S231146AbiCIH4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:58:22 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547E4163072;
-        Tue,  8 Mar 2022 23:57:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1646812630; x=1678348630;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aZlR3V5nWOBvDPK9gJV01W4WbYt70nLP2OxZKb/+mUw=;
-  b=aLwECnsk1po3RyCbI/+Tz44Cvkd4nMxa/x5h6PA53lwFJV8viWTjfOCm
-   u1dz6q/AY1hFSgEnZD2z6fUDtt/qXGTKX3Z51KTOM/nriQS+097N0Xgb3
-   1uysEH8FyZI3B871S+XyoRM6bkCFBOvIc0MfoBzepEWOiO/qd6+3gJcuL
-   vQ3tbOsCxTTxmMz/8Gu+DU5ALNAqLYgk2cFgv+Oc0ZB1qOm0fuF3ewn0V
-   akZtnQtK78jpG1Xw0UCOKV9NRgPk0wIzM7ulcptqqjCppjeJPS1kJVGIA
-   Ngfjagxl+LZUh6/rIakdcaI/EXQsqeyVDD4aEzKitgs3u62rDDWLXh2kx
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643670000"; 
-   d="scan'208";a="22544451"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 09 Mar 2022 08:57:08 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 09 Mar 2022 08:57:08 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 09 Mar 2022 08:57:08 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1646812628; x=1678348628;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aZlR3V5nWOBvDPK9gJV01W4WbYt70nLP2OxZKb/+mUw=;
-  b=Iz9GJDsFsbHvUMh0pLrQbbDH4q1lirwAkZfxoRvmzTYSudDzWtv/gnjt
-   D1tRHMQmtslkIAiGxZBaqfc6Ef4iDrbTVXgBt8YQJYw8JFBvFB2mCNg73
-   tjxm5gMjNriaxCrAkHIEU0punMESwZL73/LHdppF8ey2sd/kFW9Z3COrA
-   d9l1YxTwrLbJfO0j19hAqbsW5ZPReevArZpaAYAPHYV2Tmb/SCtRJzGXy
-   DH6HiaGRwvc7vOeRrkUSt/v4Vf7WA4MuiH2X9r4ECsLItFnda5W1Yhu1M
-   0laeu1Rpqya6wYytNdBpEw3G+R/BDxOcEPanCOPBx55zrYN7Po1Ya2iKP
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643670000"; 
-   d="scan'208";a="22544450"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 09 Mar 2022 08:57:08 +0100
-Received: from steina-w.localnet (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 26BAC280065;
-        Wed,  9 Mar 2022 08:57:08 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: Re: (EXT) [PATCH v2 0/7] Add the iMX8MP PCIe support
-Date:   Wed, 09 Mar 2022 08:57:05 +0100
-Message-ID: <4743587.31r3eYUQgx@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
+        Wed, 9 Mar 2022 02:56:36 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537261662FA;
+        Tue,  8 Mar 2022 23:55:14 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:55:11 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646812512;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=67vwANpJTkFM+VKLfcSYbwEQmBFZeQvy69Ixfm0A92U=;
+        b=h2u+zWXHw3LBNesOmzb4awSqp1HUNyP7MQFidaRMraC1cO2sBbPbeEh4ll+0OgqM3rzO0U
+        j8BE/mZjPhSDgqxv+laGURAb8i8HKzfVPtvpFZHFTeW0wUn7G3Iw+tuMfNYhAnXVvBVvCj
+        R9Jakn2x6ICufTL1XtT3Te6SM+3VtvukIPk/PicIwxqVIsA/R/XL4cjm1UKTFg+98Fh0Vx
+        kxZ1y6Z7LS4fMD+uBEuh9bNt1wS3p3ZsIYAK25HMQYaELWGqkYlQlD4/kf9/Dgj0l0epkj
+        balQJ1yOm6Zwknw0b3gF8jE2aUh6rcVymm7Yp3iBdRJFVOHxJ5BalzSS+tiGFA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646812512;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=67vwANpJTkFM+VKLfcSYbwEQmBFZeQvy69Ixfm0A92U=;
+        b=Yfl/4WunnGbkmnTr+NYwOs+CcFFaFk/1u9PmD1gg6H7395WqXOLJz3FJfVb3hI0+662cW1
+        yVCmkSs9RuOhTWBA==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/core] x86/ibt: Add ANNOTATE_NOENDBR
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220308154317.578968224@infradead.org>
+References: <20220308154317.578968224@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Message-ID: <164681251179.16921.1282256563704890213.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Richard,
+The following commit has been merged into the x86/core branch of tip:
 
-Am Montag, 7. M=E4rz 2022, 10:07:27 CET schrieb Richard Zhu:
-> Based on the i.MX8MP GPC and blk-ctrl patch-set[1] issued by Lucas and the
-> following commits.
->   - one codes refine patch-set[5].
->   - two Fixes[2],[3].
->   - one binding commit[4].
->   - some dts changes in Shawn's git if you want to test PCIe on i.MX8MM E=
-VK.
-> b4d36c10bf17 arm64: dts: imx8mm-evk: Add the pcie support on imx8mm evk
-> board aaeba6a8e226 arm64: dts: imx8mm: Add the pcie support
->     cfc5078432ca arm64: dts: imx8mm: Add the pcie phy support
->=20
-> Sorry about that there may be some conflictions when do the codes merge.
-> I'm waiting for the ack now, and will re-base them in a proper sequence
-> later.
+Commit-ID:     34963d5e9be5911d93d4a543aa1d07e719599371
+Gitweb:        https://git.kernel.org/tip/34963d5e9be5911d93d4a543aa1d07e719599371
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Tue, 08 Mar 2022 16:30:18 +01:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 08 Mar 2022 23:53:28 +01:00
 
-Thanks for providing the dependency list. Unfortunately they did not apply=
-=20
-without error on my local tree, but this is caused by other patches I track.
-I managed to fix the conflicts, I think.
-Eventually I was able to get a PCIe M.2 ethernet interface working on my=20
-TQMa8MPxL based board. iperf showed >900MBit/s Tx and > 700 MBit/s Rx.
-Thanks for your effort. Once the depenencies and reviews are settled, you'l=
-l=20
-get my tested-by.
+x86/ibt: Add ANNOTATE_NOENDBR
 
-Thanks again and regards
-Alexander
+In order to have objtool warn about code references to !ENDBR
+instruction, we need an annotation to allow this for non-control-flow
+instances -- consider text range checks, text patching, or return
+trampolines etc.
 
-> This series patches add the i.MX8MP PCIe support and tested on i.MX8MM EVK
-> and i.MX8MP EVk boards. The PCIe NVME works fine on both boards.
->=20
-> - i.MX8MP PCIe PHY has two resets refer to the i.MX8MM PCIe PHY.
->   Add one more PHY reset for i.MX8MP PCIe PHY accordingly.
-> - Add the i.MX8MP PCIe PHY support in the i.MX8M PCIe PHY driver.
->   And share as much as possible codes with i.MX8MM PCIe PHY.
-> - Add the i.MX8MP PCIe support in binding document, DTS files, and PCIe
->   driver.
->=20
-> Main changes v1-->v2:
-> - It's my fault forget including Vinod, re-send v2 after include Vinod
->   and linux-phy@lists.infradead.org.
-> - List the basements of this patch-set. The branch, codes changes and so =
-on.
-> - Clean up some useless register and bit definitions in #3 patch.
->=20
-> [1]https://patchwork.kernel.org/project/linux-arm-kernel/cover/2022022820=
-173
-> 1.3330192-1-l.stach@pengutronix.de/
-> [2]https://patchwork.ozlabs.org/project/linux-pci/patch/1646289275-17813-=
-1-> git-send-email-hongxing.zhu@nxp.com/
-> [3]https://patchwork.ozlabs.org/project/linux-pci/patch/1645672013-8949-1=
-=2Dg
-> it-send-email-hongxing.zhu@nxp.com/
-> [4]https://patchwork.ozlabs.org/project/linux-pci/patch/1646293805-18248-=
-1-> git-send-email-hongxing.zhu@nxp.com/
-> [5]https://patchwork.ozlabs.org/project/linux-pci/cover/1645760667-10510-=
-1-> git-send-email-hongxing.zhu@nxp.com/
->=20
-> NOTE:
-> Based git <git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.g=
-it>
-> Based branch <pci/imx6>
->=20
-> Documentation/devicetree/bindings/pci/fsl,imx6q-pcie.yaml    |   1 +
-> Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml |   4 +-
-> arch/arm64/boot/dts/freescale/imx8mp-evk.dts                 |  55
-> ++++++++++++++++++++++ arch/arm64/boot/dts/freescale/imx8mp.dtsi         =
- =20
->         |  46 ++++++++++++++++++- drivers/pci/controller/dwc/pci-imx6.c  =
- =20
->                    |  19 +++++++-
-> drivers/phy/freescale/phy-fsl-imx8m-pcie.c                   | 205
-> +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------=
-=2D-
-> ------- drivers/reset/reset-imx7.c                                   |   =
-1 +
-> 7 files changed, 286 insertions(+), 45 deletions(-)
->=20
-> [PATCH v2 1/7] reset: imx7: Add the iMX8MP PCIe PHY PERST support
-> [PATCH v2 2/7] dt-binding: phy: Add iMX8MP PCIe PHY binding
-> [PATCH v2 3/7] phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY
-> [PATCH v2 4/7] dt-bindings: imx6q-pcie: Add iMX8MP PCIe compatible
-> [PATCH v2 5/7] arm64: dts: imx8mp: add the iMX8MP PCIe support
-> [PATCH v2 6/7] arm64: dts: imx8mp-evk: Add PCIe support
-> [PATCH v2 7/7] PCI: imx6: Add the iMX8MP PCIe support
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220308154317.578968224@infradead.org
+---
+ include/linux/objtool.h       | 16 ++++++++++++++++
+ tools/include/linux/objtool.h | 16 ++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-
-
-
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index aca52db..f797368 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
+ 
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
++
+ #else /* __ASSEMBLY__ */
+ 
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index aca52db..f797368 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
+ 
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
++
+ #else /* __ASSEMBLY__ */
+ 
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
