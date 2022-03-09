@@ -2,64 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7875C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 10:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A18D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 10:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbiCIKsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 05:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
+        id S231452AbiCIKtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 05:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231469AbiCIKsV (ORCPT
+        with ESMTP id S230327AbiCIKt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 05:48:21 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7E7A94CC
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 02:47:22 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BA5E9201254;
-        Wed,  9 Mar 2022 11:47:20 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 820E420090D;
-        Wed,  9 Mar 2022 11:47:20 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id F2A26183ACDE;
-        Wed,  9 Mar 2022 18:47:18 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: fsl_rpmsg: Remove SET_SYSTEM_SLEEP_PM_OPS callback
-Date:   Wed,  9 Mar 2022 18:38:13 +0800
-Message-Id: <1646822293-26965-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 9 Mar 2022 05:49:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121B3289AC;
+        Wed,  9 Mar 2022 02:48:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 034EF617B1;
+        Wed,  9 Mar 2022 10:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CECB5C340EE;
+        Wed,  9 Mar 2022 10:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646822907;
+        bh=nszSjITz7rc7Q6JPajiseDT3RQeb+PqXIqoDG287umc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XAy5RrXMWqdY/7u9anICI2tCq8ALHSmRv4LahQG9SqlzIf0xs5/HYTP0qiW8jA2WC
+         NtQwdYdzfUFXT2Yty8EEg6nrH20qkmE00mPfQ9b4Z5iUwxBA0y30wlXZBf7eehYKt8
+         tjaeRYkiDUjZFrw43J07xlWBTGwWPJi1VPuUAdC0=
+Date:   Wed, 9 Mar 2022 11:48:23 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jonathan McDowell <noodles@fb.com>
+Cc:     Dmitrii Okunev <xaionaro@fb.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Qiaowei Ren <qiaowei.ren@intel.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Xiaoyan Zhang <xiaoyan.zhang@intel.com>,
+        Pavel Machek <pavel@denx.de>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>
+Subject: Re: [RFC PATCH] platform/x86: Add sysfs interface for Intel TXT
+ status
+Message-ID: <YiiF9wfx3V+K1J33@kroah.com>
+References: <1368465884-14779-1-git-send-email-qiaowei.ren@intel.com>
+ <1368465884-14779-3-git-send-email-qiaowei.ren@intel.com>
+ <20130516160311.GA12299@amd.pavel.ucw.cz>
+ <4febd50da7e5007a2797e0f4c969fa5edd0bf725.camel@fb.com>
+ <Yg5A4Mupue0V9diu@kroah.com>
+ <20220217123753.GA21849@duo.ucw.cz>
+ <0cf678e0b01bf421f3db6693a15ac4060501a80a.camel@fb.com>
+ <20220222093101.GA23654@amd>
+ <YiiD3WM76L3jbMyW@noodles-fedora-PC23Y6EG.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiiD3WM76L3jbMyW@noodles-fedora-PC23Y6EG.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For sound need to be continuously output at suspend with rpmsg
-sound card, so need to keep the clock always on at suspend,
-then suspend & resume callback is not needed.
+On Wed, Mar 09, 2022 at 10:40:03AM +0000, Jonathan McDowell wrote:
+> (This is an RFC to see if the approach is generally acceptable; unlike
+> the previous driver this exposes the information purely as read-only
+> status information, so userspace can make an informed decision about the
+> system state without having to poke about in /dev/mem. There are still a
+> few extra registers I'm trying to dig up information for before a proper
+> submission.)
+> 
+> This module provides read-only access to the Intel TXT (Trusted
+> Execution Technology) status registers, allowing userspace to determine
+> the status of measured boot and whether the dynamic root of trust for
+> measurement (DRTM) has been fully enabled.
+> 
+> Tools such as txt-stat from tboot
+> <https://sourceforge.net/projects/tboot/> can make use of this driver to
+> display state rather than relying on access to /dev/mem.
+> 
+> See Documentation/x86/intel_txt.rst for more information about Intel
+> TXT.
+> 
+> Signed-off-by: Jonathan McDowell <noodles@fb.com>
+> ---
+>  arch/x86/include/asm/txt.h             |  34 +++++
+>  drivers/platform/x86/intel/Kconfig     |  14 ++
+>  drivers/platform/x86/intel/Makefile    |   2 +
+>  drivers/platform/x86/intel/txt_sysfs.c | 185 +++++++++++++++++++++++++
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_rpmsg.c | 2 --
- 1 file changed, 2 deletions(-)
+No Documentation/ABI/ entry for your new sysfs entry?  How can we
+evaluate if this is a good api then?
 
-diff --git a/sound/soc/fsl/fsl_rpmsg.c b/sound/soc/fsl/fsl_rpmsg.c
-index 8508bc7f239d..19fd31250883 100644
---- a/sound/soc/fsl/fsl_rpmsg.c
-+++ b/sound/soc/fsl/fsl_rpmsg.c
-@@ -297,8 +297,6 @@ static const struct dev_pm_ops fsl_rpmsg_pm_ops = {
- 	SET_RUNTIME_PM_OPS(fsl_rpmsg_runtime_suspend,
- 			   fsl_rpmsg_runtime_resume,
- 			   NULL)
--	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
--				pm_runtime_force_resume)
- };
- 
- static struct platform_driver fsl_rpmsg_driver = {
--- 
-2.17.1
+Wait, I don't see any sysfs code in here, are you sure you sent a viable
+patch?
 
+confused,
+
+greg k-h
