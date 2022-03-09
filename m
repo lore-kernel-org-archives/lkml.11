@@ -2,102 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BF1C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7571DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235409AbiCIQX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:23:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S232516AbiCIQYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237900AbiCIQVI (ORCPT
+        with ESMTP id S237979AbiCIQVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6B81451E9;
-        Wed,  9 Mar 2022 08:17:23 -0800 (PST)
+        Wed, 9 Mar 2022 11:21:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805C3E10
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:17:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 389296194C;
-        Wed,  9 Mar 2022 16:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACAEC340E8;
-        Wed,  9 Mar 2022 16:17:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 516DEB82221
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E277C340F7
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842641;
-        bh=Uy23ZolzuI1RPojDcKbOT+RVaAD15FgdKsEPlpak3Ic=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eu0cq5nKT9mDIwdLPyvYdQTNAswY1B78OWx2tcL6BIfIwnHkxuSvqApH3+DxXfxJ0
-         TZMrrNRknAoVmgLlpOfD9jnFaa77aQonVMrFsRZno/6vjlyimcwiJKnC2ljQ9fcRr2
-         u0RaBwM4N8JxJKo5RKIlG/lKrcE06LIKurW2lnmVZPhimcl6z8QAAEJFtnrIZMmLrs
-         IEpI9pUDr0YTEgiRksdRgRAroOx4BdBSwcC9u777Cxtk/Ib8YHCs/eENePFztwzbEg
-         GuHclo8r7fzDf8D+4mvKHqJYIlz2GgL80h8hud/Qtjr0IcpDH0Drad27SmhUE5OBkt
-         YHjLzCzzBiGFA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        pgwipeout@gmail.com, cl@rock-chips.com,
-        michael.riesch@wolfvision.net, frattaroli.nicolas@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 01/27] arm64: dts: rockchip: fix dma-controller node names on rk356x
-Date:   Wed,  9 Mar 2022 11:16:38 -0500
-Message-Id: <20220309161711.135679-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        s=k20201202; t=1646842659;
+        bh=wcHvu5yCe5RwLv3/dGOPzc0JNrj+q5a53qp5+a2m21I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=P4s8nVLyAwUaVuySt4MjswdVCrghJHdXHJWl11pfoO8oNuQowU/27mk//j2znrI15
+         UcX2Je00Fe/yWxKR36XA4BnsbGm5126STh4cbCeThPI6pcewwFDovbVCUQxSuZFSeE
+         a8RtKl26PRJwVSKhnFXti3dFCNR+KMcLAr5MlcdNZeRazqr2mz5wlHtfhTqYwG0hhV
+         0mz9aI8sjFa4CvY17I2byucqi+P/AHz971xcGi9GiGmkdhw4FJs/kdiweashl0IunM
+         BLAhn2BGxtOPYxNQCuoeoSxbDvtJWx1R7q0Qb0dLEa936LWi4IyCFjUskUwZP2T4IT
+         dms7AHozZ9kDg==
+Received: by mail-wr1-f52.google.com with SMTP id u1so3825250wrg.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:17:39 -0800 (PST)
+X-Gm-Message-State: AOAM531IqslL4RBccobkVyYvMAhj8tSsL1QZUuG5oRDPPza9BPa7WA8u
+        NvDhdrBAk5rWITHQzlo45uBCxuKeGEhcI2tEF2Q=
+X-Google-Smtp-Source: ABdhPJxGoyWxihc52YXH4rfuLZkMFEs/nxgBgrYnRqvXSt4UGzbMzOAuUKsccPsfh8OGvNhkES6t/rUrJkFkhtYrkP0=
+X-Received: by 2002:a5d:6810:0:b0:203:7cbb:20be with SMTP id
+ w16-20020a5d6810000000b002037cbb20bemr283536wru.219.1646842657281; Wed, 09
+ Mar 2022 08:17:37 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220309144138.360482-1-arnd@kernel.org> <20220309144138.360482-2-arnd@kernel.org>
+ <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com>
+In-Reply-To: <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 9 Mar 2022 17:17:21 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+Message-ID: <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Vladimir Murzin <vladimir.murzin@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+On Wed, Mar 9, 2022 at 4:48 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2022-03-09 14:40, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > It is possible to build MMU-less kernels for Cortex-M base
+> > microcrontrollers as well as a couple of older platforms that
+> > have not been converted to CONFIG_ARCH_MULTIPLATFORM,
+> > specifically ep93xx, footbridge, dove, sa1100 and s3c24xx.
+> >
+> > It seems unlikely that anybody has tested those configurations
+> > in recent years, as even building them is frequently broken.
+> > A patch I submitted caused another build time regression
+> > in this configuration. I sent a patch for that, but it seems
+> > better to also remove the option entirely, leaving ARMv7-M
+> > as the only supported Arm NOMMU target for simplicity.
+>
+> In that case, it would probably make sense to garbage-collect all the
+> configs, setup code and other stuff relating to older MMU-less CPU cores
+> like ARM1156, ARM940, etc. at the same time.
 
-[ Upstream commit 2ddd96aadbd0412040ef49eda94549c32de6c92c ]
+Right, good idea. These are only selected by CONFIG_ARCH_INTEGRATOR,
+but that in turn doesn't build for CONFIG_MMU=n because it depends on
+ARCH_MULTIPLATFORM. I'll send a patch for these.
 
-DMA-Cotrollers defined in rk356x.dtsi do not match the pattern in bindings.
+I also went back and forth between removing the #ifdefs in
+arch/arm/mm/proc-*.S for this patch, though I did not do that in the end.
+We may still want them at least for proc-v7.S because that is a small
+chance that someone will want to support Cortex-R.
 
-arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
-  dmac@fe530000: $nodename:0: 'dmac@fe530000' does not match '^dma-controller(@.*)?$'
-	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
-arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
-  dmac@fe550000: $nodename:0: 'dmac@fe550000' does not match '^dma-controller(@.*)?$'
-	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
-
-This Patch fixes it.
-
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Link: https://lore.kernel.org/r/20220123133615.135789-1-linux@fw-web.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index 46d9552f6028..688e3585525a 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -647,7 +647,7 @@ &i2s1m0_sdo0   &i2s1m0_sdo1
- 		status = "disabled";
- 	};
- 
--	dmac0: dmac@fe530000 {
-+	dmac0: dma-controller@fe530000 {
- 		compatible = "arm,pl330", "arm,primecell";
- 		reg = <0x0 0xfe530000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-@@ -658,7 +658,7 @@ dmac0: dmac@fe530000 {
- 		#dma-cells = <1>;
- 	};
- 
--	dmac1: dmac@fe550000 {
-+	dmac1: dma-controller@fe550000 {
- 		compatible = "arm,pl330", "arm,primecell";
- 		reg = <0x0 0xfe550000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
--- 
-2.34.1
-
+        Arnd
