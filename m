@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE65C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9693AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbiCIQ1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:27:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
+        id S235325AbiCIQ13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:27:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238171AbiCIQVa (ORCPT
+        with ESMTP id S238111AbiCIQVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:30 -0500
+        Wed, 9 Mar 2022 11:21:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC89148930;
-        Wed,  9 Mar 2022 08:20:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC221520D3;
+        Wed,  9 Mar 2022 08:18:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D5B0B82221;
-        Wed,  9 Mar 2022 16:20:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 079E0C340F4;
-        Wed,  9 Mar 2022 16:19:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 098EAB82020;
+        Wed,  9 Mar 2022 16:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4BBDC340E8;
+        Wed,  9 Mar 2022 16:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842801;
-        bh=UqwiPp2qBmb+7tKFdE0+ShqjTMU9taITEwrPGtd63H8=;
+        s=k20201202; t=1646842727;
+        bh=moiyWWCvlKZ5DvlGhseaEz8RqE7nWQEU8CCZWeccmlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DDGcuyCE5ZhPqxGu8+Ob3cYd37b7gDEYOvj4+XyN4PsSb1wyMEkvwztcKeRFxvDf/
-         MGPcu8yWVNMuijaOzxhearyZn/uczWWfHycf775w96N5rZ4m5/UPKjTWtFSjfiT01A
-         wH+O1xkeR/KRiHkN27kNSTl5/Gvnj1G8PgSfWmLH4g6MWhxqJRrZqpsEc1ZhI/VhTp
-         PuDZCDbuG7hpr7JkXQtjFZeVmnC1U889fnlWTPhNnlu+lBWtXbUta8u0OLFSb7rH1Z
-         5vKlQs1Uh0AKgHgXVYmaGWxElUJbF1YUnpN2b8uOnbUVlmPLGf/6PbxVVEQgdrSu9x
-         eWQYBRKqR/m4w==
+        b=kq2vsmMDgjgy6pUZTBjbLkGXyb8N46iavvCJuwBHex0W/AoOhncAtbHMleeWB6vQo
+         G9VN5wxRGtTyYjNoRyaFz++u1fZQ7zswFICVptCT4GncK1q4iocr/gvHukKs5NlwVu
+         H9iPvagPy11xRbKp8amosi8sEJZEsY0UZuix7+LeqpUpPSU2BFX/yRNbqhhg9FC+39
+         nEImSK1Blf7KpACYxQix5OAE09VOucVqMiYFS1FevUh5dBBkqe8R9PyRkqVKwWQSuA
+         CvgfTNAKB6H2O3IviRiGFZtAv8HLb8YuoF/BIOaXO52GUoCEkZzzwZbCpUAU9bnR/s
+         5dCX1lresDl3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yan Yan <evitayan@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/24] xfrm: Fix xfrm migrate issues when address family changes
-Date:   Wed,  9 Mar 2022 11:19:22 -0500
-Message-Id: <20220309161946.136122-3-sashal@kernel.org>
+Cc:     Casper Andersson <casper.casan@gmail.com>,
+        Joacim Zetterling <joacim.zetterling@westermo.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 16/27] net: sparx5: Add #include to remove warning
+Date:   Wed,  9 Mar 2022 11:16:53 -0500
+Message-Id: <20220309161711.135679-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
+References: <20220309161711.135679-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,56 +55,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Yan <evitayan@google.com>
+From: Casper Andersson <casper.casan@gmail.com>
 
-[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
+[ Upstream commit 90d4025285748448809701a44cf466a3f5443eaa ]
 
-xfrm_migrate cannot handle address family change of an xfrm_state.
-The symptons are the xfrm_state will be migrated to a wrong address,
-and sending as well as receiving packets wil be broken.
+main.h uses NUM_TARGETS from main_regs.h, but
+the missing include never causes any errors
+because everywhere main.h is (currently)
+included, main_regs.h is included before.
+But since it is dependent on main_regs.h
+it should always be included.
 
-This commit fixes it by breaking the original xfrm_state_clone
-method into two steps so as to update the props.family before
-running xfrm_init_state. As the result, xfrm_state's inner mode,
-outer mode, type and IP header length in xfrm_state_migrate can
-be updated with the new address family.
-
-Tested with additions to Android's kernel unit test suite:
-https://android-review.googlesource.com/c/kernel/tests/+/1885354
-
-Signed-off-by: Yan Yan <evitayan@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+Reviewed-by: Joacim Zetterling <joacim.zetterling@westermo.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_state.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_main.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 291236d7676f..f7bfa1916968 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1578,9 +1578,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
- 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+index a1acc9b461f2..d40e18ce3293 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+@@ -16,6 +16,8 @@
+ #include <linux/phylink.h>
+ #include <linux/hrtimer.h>
  
--	if (xfrm_init_state(x) < 0)
--		goto error;
--
- 	x->props.flags = orig->props.flags;
- 	x->props.extra_flags = orig->props.extra_flags;
- 
-@@ -1667,6 +1664,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- 	if (!xc)
- 		return NULL;
- 
-+	xc->props.family = m->new_family;
++#include "sparx5_main_regs.h"
 +
-+	if (xfrm_init_state(xc) < 0)
-+		goto error;
-+
- 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
- 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
- 
+ /* Target chip type */
+ enum spx5_target_chiptype {
+ 	SPX5_TARGET_CT_7546    = 0x7546,  /* SparX-5-64  Enterprise */
 -- 
 2.34.1
 
