@@ -2,143 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87352C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CADEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231898AbiCIDi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 22:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        id S231771AbiCIDkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:40:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231908AbiCIDi4 (ORCPT
+        with ESMTP id S231776AbiCIDkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 22:38:56 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34CFE36B77;
-        Tue,  8 Mar 2022 19:37:54 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 974DC1650;
-        Tue,  8 Mar 2022 19:37:54 -0800 (PST)
-Received: from a077893.arm.com (unknown [10.163.52.241])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 27F323FA4D;
-        Tue,  8 Mar 2022 19:37:48 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        peterz@infradead.org, acme@kernel.org
-Cc:     james.clark@arm.com, suzuki.poulose@arm.com,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH V2 8/8] perf/tools: Add branch privilege information request flag
-Date:   Wed,  9 Mar 2022 09:06:42 +0530
-Message-Id: <20220309033642.144769-9-anshuman.khandual@arm.com>
+        Tue, 8 Mar 2022 22:40:02 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FE215F098;
+        Tue,  8 Mar 2022 19:39:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646797144; x=1678333144;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MllVgczf0c1TNdA75U5Rm2oYU7fpnZ5DVIRsDr6nA24=;
+  b=afi5f697LvRx9RyXCoHwm++1tcWhIA635AUwpP7pE6LgYP215GF2k5Dr
+   aZjPgcENKRZIcNu8V5h6o6wNWiCNucgf4Olv/JxD3bMVDePK3x45oq/bE
+   1aZ/Au2VZgb0G8tayRtH3ODw2GLLRAgwEKF8YBAaZWX+7qee70qe2zIzG
+   J9EY3SHvM+0vGd5hYrXVIPI4IsraiEaz5MzmzR2ICXCZMj7KN65J+/Eah
+   CNA+S+QYXdTWt3sKIIaqMOaGRTtRxwaQz4u4HAx2OJQDEnLEMUn3eE0Hb
+   umuS1ZLqVEUItlgwKSVScNEN21a64ydMEMwFkXPSWHRzKzmkJ1LYWslCT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="253706486"
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="253706486"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 19:39:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="510345506"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga002.jf.intel.com with ESMTP; 08 Mar 2022 19:38:57 -0800
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH net-next 1/1] stmmac: intel: Add ADL-N PCI ID
+Date:   Wed,  9 Mar 2022 11:34:15 +0800
+Message-Id: <20220309033415.3370250-1-michael.wei.hong.sit@intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220309033642.144769-1-anshuman.khandual@arm.com>
-References: <20220309033642.144769-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This updates the perf tools with branch privilege information request flag
-i.e PERF_SAMPLE_BRANCH_PRIV_SAVE that has been added earlier in the kernel.
-This also updates 'perf record' documentation, branch_modes[], and generic
-branch privilege level enumeration as added earlier in the kernel.
+Add PCI ID for Ethernet TSN Controller on ADL-N.
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-perf-users@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 ---
- tools/include/uapi/linux/perf_event.h    | 13 ++++++++++++-
- tools/perf/Documentation/perf-record.txt |  1 +
- tools/perf/util/parse-branch-options.c   |  1 +
- 3 files changed, 14 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-index d29280adc3c4..0e96e2017f68 100644
---- a/tools/include/uapi/linux/perf_event.h
-+++ b/tools/include/uapi/linux/perf_event.h
-@@ -204,6 +204,8 @@ enum perf_branch_sample_type_shift {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 32ef3df4e266..63754a9c4ba7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -1159,6 +1159,7 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
+ #define PCI_DEVICE_ID_INTEL_TGL_SGMII1G		0xa0ac
+ #define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_0	0x7aac
+ #define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_1	0x7aad
++#define PCI_DEVICE_ID_INTEL_ADLN_SGMII1G	0x54ac
  
- 	PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT	= 17, /* save low level index of raw branch records */
- 
-+	PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT	= 18, /* save privillege mode */
-+
- 	PERF_SAMPLE_BRANCH_MAX_SHIFT		/* non-ABI */
+ static const struct pci_device_id intel_eth_pci_id_table[] = {
+ 	{ PCI_DEVICE_DATA(INTEL, QUARK, &quark_info) },
+@@ -1176,6 +1177,7 @@ static const struct pci_device_id intel_eth_pci_id_table[] = {
+ 	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1, &tgl_sgmii1g_phy1_info) },
+ 	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0, &adls_sgmii1g_phy0_info) },
+ 	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1, &adls_sgmii1g_phy1_info) },
++	{ PCI_DEVICE_DATA(INTEL, ADLN_SGMII1G, &tgl_sgmii1g_phy0_info) },
+ 	{}
  };
- 
-@@ -233,6 +235,8 @@ enum perf_branch_sample_type {
- 
- 	PERF_SAMPLE_BRANCH_HW_INDEX	= 1U << PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT,
- 
-+	PERF_SAMPLE_BRANCH_PRIV_SAVE	= 1U << PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT,
-+
- 	PERF_SAMPLE_BRANCH_MAX		= 1U << PERF_SAMPLE_BRANCH_MAX_SHIFT,
- };
- 
-@@ -271,6 +275,12 @@ enum {
- 	PERF_BR_NEW_MAX,
- };
- 
-+enum {
-+	PERF_BR_USER	= 0,
-+	PERF_BR_KERNEL	= 1,
-+	PERF_BR_HV	= 2,
-+};
-+
- #define PERF_SAMPLE_BRANCH_PLM_ALL \
- 	(PERF_SAMPLE_BRANCH_USER|\
- 	 PERF_SAMPLE_BRANCH_KERNEL|\
-@@ -1386,7 +1396,8 @@ struct perf_branch_entry {
- 		cycles:16,  /* cycle count to last branch */
- 		type:4,     /* branch type */
- 		new_type:4, /* additional branch type */
--		reserved:36;
-+		priv:2,     /* privilege level */
-+		reserved:34;
- };
- 
- union perf_sample_weight {
-diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
-index 9ccc75935bc5..3e33686977a1 100644
---- a/tools/perf/Documentation/perf-record.txt
-+++ b/tools/perf/Documentation/perf-record.txt
-@@ -387,6 +387,7 @@ following filters are defined:
- 	- abort_tx: only when the target is a hardware transaction abort
- 	- cond: conditional branches
- 	- save_type: save branch type during sampling in case binary is not available later
-+	- priv: save privilege state during sampling in case binary is not available later
- 
- +
- The option requires at least one branch type among any, any_call, any_ret, ind_call, cond.
-diff --git a/tools/perf/util/parse-branch-options.c b/tools/perf/util/parse-branch-options.c
-index bb4aa88c50a8..00588b9db474 100644
---- a/tools/perf/util/parse-branch-options.c
-+++ b/tools/perf/util/parse-branch-options.c
-@@ -32,6 +32,7 @@ static const struct branch_mode branch_modes[] = {
- 	BRANCH_OPT("call", PERF_SAMPLE_BRANCH_CALL),
- 	BRANCH_OPT("save_type", PERF_SAMPLE_BRANCH_TYPE_SAVE),
- 	BRANCH_OPT("stack", PERF_SAMPLE_BRANCH_CALL_STACK),
-+	BRANCH_OPT("priv", PERF_SAMPLE_BRANCH_PRIV_SAVE),
- 	BRANCH_END
- };
- 
+ MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
 -- 
 2.25.1
 
