@@ -2,234 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E46FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C64C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiCIBOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
+        id S230244AbiCIBOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiCIBNX (ORCPT
+        with ESMTP id S231439AbiCIBNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:13:23 -0500
-Received: from mail-ot1-x349.google.com (mail-ot1-x349.google.com [IPv6:2607:f8b0:4864:20::349])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD6B159282
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:56:51 -0800 (PST)
-Received: by mail-ot1-x349.google.com with SMTP id w7-20020a9d6747000000b005b25c9036fdso613482otm.5
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:56:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=Tgx8ae//L5IA0Yqg+D9TLCaQ78LCepfaB8sQmorTCkw=;
-        b=VOKPAsZMw2EV5dnaXWEgHzcI5T7bLhbnjoKi9m50b58E08xYQ7AQ9wyvJWF/iwQD2i
-         aBXNXX/+p5kssXAP/xEEA3iE4zfOV/rH1m4zIE6673YDm2JTUpG3vhISAhVnVF10BZDA
-         er/lKNdTchIWlOMT8Mla52KvQtNMtEt9wsIyC6NF+oclvaI3bW05E/B9XEX9wmL4iINU
-         f0EG9As4WkKNuXXMbHqrhPU6ANTfBbNNev1NL0Mo1YxqfJqgwfQb3+vzaKCEGigpkhUM
-         7XDGWwezEmMQZpnvkAmwolSIauMUP6Qkdgy7xp0FCmDnQsCgZGbAPTtAnZlTffldFHoW
-         8SkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=Tgx8ae//L5IA0Yqg+D9TLCaQ78LCepfaB8sQmorTCkw=;
-        b=BcUSh4MO1T0P4JIxeu/oqbtAfxdLEeB0sdvi1R8UOHAiTzQoGHCOCOudvHCGdhjX1q
-         pgzQYgfs8NGwbpZsMuWrEHNOvSuCovDXaiireR//HDw/B0+NmjAzpcrB0681HpPRewC/
-         HDDMCRd9ziaZ/Rnupa9OkGzAp0UKi2fw/Tx4AchJROr0iQF80pxfkz4AeTDh4N0RVtoa
-         t6LzBCkU2CW/5+iFSwlf3FF/BcfZQWAjsxiROjuwYm/f/y6yNKxBohiwx0+KHZOjUdX7
-         dd/B8HESn+Hbfh8Hu5QfYP4ebiKpzoMVHNExaCM4wyIxSvR5fOGCb5rBCs69u4lhB+fS
-         ijnQ==
-X-Gm-Message-State: AOAM533L3fvo8colA3da4un7peo6B2hPoydFxX0FTzzt+JwHDY1j3a9b
-        8oJqDrtboWGXrX9xW3owwxSLUjSzc08=
-X-Google-Smtp-Source: ABdhPJzr/LkGrf4zyQbWc/3GKFRSRZHS+D+1l8yz6GSzSf+zXSNr/RBGB8TIrC/rAfzru4/+7Vn4wNwfMpY=
-X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:57a6:54a6:aad1:c0a8])
- (user=yuzhao job=sendgmr) by 2002:a25:dd87:0:b0:628:e822:bd with SMTP id
- u129-20020a25dd87000000b00628e82200bdmr13462896ybg.505.1646783306798; Tue, 08
- Mar 2022 15:48:26 -0800 (PST)
-Date:   Tue,  8 Mar 2022 16:47:12 -0700
-In-Reply-To: <20220308234723.3834941-1-yuzhao@google.com>
-Message-Id: <20220308234723.3834941-3-yuzhao@google.com>
-Mime-Version: 1.0
-References: <20220308234723.3834941-1-yuzhao@google.com>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH v8 02/14] mm: x86: add CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG
-From:   Yu Zhao <yuzhao@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Yu Zhao <yuzhao@google.com>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 8 Mar 2022 20:13:22 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DA3235
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:56:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646787406; x=1678323406;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=IU9EJdUsYdTjKhzRHBzqQif2QxxIdhXmLLx9zqanGZ4=;
+  b=T/qmoq12ynnp6W9BT39iFOuAVw68bMuSreI0dtAblz07mSxgf7b8oUVj
+   hdMclHa92q1DQVwUUlqQWyhJZKebKc8x9nAtt/bugquHyEbyizZOA1R/w
+   XtSFhWzLkyjbTjtgKQXQehHOz7fcmD5BBg06p7wFMIFTLBO04qLTKck9E
+   wAU/h/Mg5MTy1rGmfLNs8dXNLo08sV9XNSDTGLRzMC+FoXtmka1SB2BWc
+   H1E/WP9WoE/OWET18ML4y6hd72QhItDQz3Cbm+YkPej5GSqdisqGZ21/g
+   l8FnbwRHLCPWAH+tAzYZBYbxdTV4wNimg2QsHKrF23VnwTz2dtWBZpxsl
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="235462989"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="235462989"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:56:45 -0800
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="641969304"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:56:41 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
+        <minchan@kernel.org>, <apopple@nvidia.com>,
+        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
+        <almasrymina@google.com>, <jhubbard@nvidia.com>,
+        <rcampbell@nvidia.com>, <peterx@redhat.com>,
+        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 16/16] mm/migration: fix potential pte_unmap on an not
+ mapped pte
+References: <20220304093409.25829-1-linmiaohe@huawei.com>
+        <20220304093409.25829-17-linmiaohe@huawei.com>
+        <871qze5nmv.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <9c6873ae-7614-1178-8c9f-6e933a12e35b@huawei.com>
+Date:   Wed, 09 Mar 2022 08:56:39 +0800
+In-Reply-To: <9c6873ae-7614-1178-8c9f-6e933a12e35b@huawei.com> (Miaohe Lin's
+        message of "Tue, 8 Mar 2022 20:19:58 +0800")
+Message-ID: <877d94gczc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some architectures support the accessed bit in non-leaf PMD entries,
-e.g., x86 sets the accessed bit in a non-leaf PMD entry when using it
-as part of linear address translation [1]. Page table walkers that
-clear the accessed bit may use this capability to reduce their search
-space.
+Miaohe Lin <linmiaohe@huawei.com> writes:
 
-Note that:
-1. Although an inline function is preferable, this capability is added
-   as a configuration option for consistency with the existing macros.
-2. Due to the little interest in other varieties, this capability was
-   only tested on Intel and AMD CPUs.
+> On 2022/3/7 13:37, Huang, Ying wrote:
+>> Miaohe Lin <linmiaohe@huawei.com> writes:
+>> 
+>>> __migration_entry_wait and migration_entry_wait_on_locked assume pte is
+>>> always mapped from caller. But this is not the case when it's called from
+>>> migration_entry_wait_huge and follow_huge_pmd. And a parameter unmap to
+>>> indicate whether pte needs to be unmapped to fix this issue.
+>> 
+>> This seems a possible issue.
+>> 
+>> Have you tested it?  It appears that it's possible to trigger the
+>> issue.  If so, you can paste the error log here.
+>
+> This might happen iff on x86 machine with HIGHMEM enabled which is uncommon
+> now (at least in my work environment).
 
-[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
-     Volume 3 (June 2021), section 4.8
+Yes.  32-bit isn't popular now.  But you can always test it via virtual
+machine.
 
-Signed-off-by: Yu Zhao <yuzhao@google.com>
-Acked-by: Brian Geffon <bgeffon@google.com>
-Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Acked-by: Steven Barrett <steven@liquorix.net>
-Acked-by: Suleiman Souhlal <suleiman@google.com>
-Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-Tested-by: Donald Carr <d@chaos-reins.com>
-Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
----
- arch/Kconfig                   | 9 +++++++++
- arch/x86/Kconfig               | 1 +
- arch/x86/include/asm/pgtable.h | 3 ++-
- arch/x86/mm/pgtable.c          | 5 ++++-
- include/linux/pgtable.h        | 4 ++--
- 5 files changed, 18 insertions(+), 4 deletions(-)
+> So I can't paste the err log. And The
+> issues from this series mainly come from the code investigating with some tests.
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 678a80713b21..f9c59ecadbbb 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1322,6 +1322,15 @@ config DYNAMIC_SIGFRAME
- config HAVE_ARCH_NODE_DEV_GROUP
- 	bool
-=20
-+config ARCH_HAS_NONLEAF_PMD_YOUNG
-+	bool
-+	depends on PGTABLE_LEVELS > 2
-+	help
-+	  Architectures that select this option are capable of setting the
-+	  accessed bit in non-leaf PMD entries when using them as part of linear
-+	  address translations. Page table walkers that clear the accessed bit
-+	  may use this capability to reduce their search space.
-+
- source "kernel/gcov/Kconfig"
-=20
- source "scripts/gcc-plugins/Kconfig"
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..e787b7fc75be 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -85,6 +85,7 @@ config X86
- 	select ARCH_HAS_PMEM_API		if X86_64
- 	select ARCH_HAS_PTE_DEVMAP		if X86_64
- 	select ARCH_HAS_PTE_SPECIAL
-+	select ARCH_HAS_NONLEAF_PMD_YOUNG
- 	select ARCH_HAS_UACCESS_FLUSHCACHE	if X86_64
- 	select ARCH_HAS_COPY_MC			if X86_64
- 	select ARCH_HAS_SET_MEMORY
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.=
-h
-index 60b6ce45c2e3..f973788f6b21 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -819,7 +819,8 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
-=20
- static inline int pmd_bad(pmd_t pmd)
- {
--	return (pmd_flags(pmd) & ~_PAGE_USER) !=3D _KERNPG_TABLE;
-+	return (pmd_flags(pmd) & ~(_PAGE_USER | _PAGE_ACCESSED)) !=3D
-+	       (_KERNPG_TABLE & ~_PAGE_ACCESSED);
- }
-=20
- static inline unsigned long pages_to_mb(unsigned long npg)
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 3481b35cb4ec..a224193d84bf 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -550,7 +550,7 @@ int ptep_test_and_clear_young(struct vm_area_struct *vm=
-a,
- 	return ret;
- }
-=20
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_ARCH_HAS_NONLEA=
-F_PMD_YOUNG)
- int pmdp_test_and_clear_young(struct vm_area_struct *vma,
- 			      unsigned long addr, pmd_t *pmdp)
- {
-@@ -562,6 +562,9 @@ int pmdp_test_and_clear_young(struct vm_area_struct *vm=
-a,
-=20
- 	return ret;
- }
-+#endif
-+
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
- int pudp_test_and_clear_young(struct vm_area_struct *vma,
- 			      unsigned long addr, pud_t *pudp)
- {
-diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
-index 79f64dcff07d..743e7fc4afda 100644
---- a/include/linux/pgtable.h
-+++ b/include/linux/pgtable.h
-@@ -212,7 +212,7 @@ static inline int ptep_test_and_clear_young(struct vm_a=
-rea_struct *vma,
- #endif
-=20
- #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_ARCH_HAS_NONLEA=
-F_PMD_YOUNG)
- static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
- 					    unsigned long address,
- 					    pmd_t *pmdp)
-@@ -233,7 +233,7 @@ static inline int pmdp_test_and_clear_young(struct vm_a=
-rea_struct *vma,
- 	BUILD_BUG();
- 	return 0;
- }
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=
- */
- #endif
-=20
- #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH
---=20
-2.35.1.616.g0bdcbb4464-goog
+If not too complex, I still think it's better to test your code and
+verify the problem.
 
+Best Regards,
+Huang, Ying
+
+> Thanks. :)
+>
+>> 
+>> BTW: have you tested the other functionality issues in your patchset?
+>> 
+>> Best Regards,
+>> Huang, Ying
+>> 
+>>> Fixes: 30dad30922cc ("mm: migration: add migrate_entry_wait_huge()")
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> ---
+>>>  include/linux/migrate.h |  2 +-
+>>>  include/linux/swapops.h |  4 ++--
+>>>  mm/filemap.c            | 10 +++++-----
+>>>  mm/hugetlb.c            |  2 +-
+>>>  mm/migrate.c            | 14 ++++++++------
+>>>  5 files changed, 17 insertions(+), 15 deletions(-)
+>>>
+>>> diff --git a/include/linux/migrate.h b/include/linux/migrate.h
+>>> index 66a34eae8cb6..3ef4ff699bef 100644
+>>> --- a/include/linux/migrate.h
+>>> +++ b/include/linux/migrate.h
+>>> @@ -41,7 +41,7 @@ extern int migrate_huge_page_move_mapping(struct address_space *mapping,
+>>>  extern int migrate_page_move_mapping(struct address_space *mapping,
+>>>  		struct page *newpage, struct page *page, int extra_count);
+>>>  void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+>>> -				spinlock_t *ptl);
+>>> +				spinlock_t *ptl, bool unmap);
+>>>  void folio_migrate_flags(struct folio *newfolio, struct folio *folio);
+>>>  void folio_migrate_copy(struct folio *newfolio, struct folio *folio);
+>>>  int folio_migrate_mapping(struct address_space *mapping,
+>>> diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+>>> index d356ab4047f7..d66556875d7d 100644
+>>> --- a/include/linux/swapops.h
+>>> +++ b/include/linux/swapops.h
+>>> @@ -213,7 +213,7 @@ static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
+>>>  }
+>>>  
+>>>  extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+>>> -					spinlock_t *ptl);
+>>> +					spinlock_t *ptl, bool unmap);
+>>>  extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>>>  					unsigned long address);
+>>>  extern void migration_entry_wait_huge(struct vm_area_struct *vma,
+>>> @@ -235,7 +235,7 @@ static inline int is_migration_entry(swp_entry_t swp)
+>>>  }
+>>>  
+>>>  static inline void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+>>> -					spinlock_t *ptl) { }
+>>> +					spinlock_t *ptl, bool unmap) { }
+>>>  static inline void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>>>  					 unsigned long address) { }
+>>>  static inline void migration_entry_wait_huge(struct vm_area_struct *vma,
+>>> diff --git a/mm/filemap.c b/mm/filemap.c
+>>> index 8f7e6088ee2a..18c353d52aae 100644
+>>> --- a/mm/filemap.c
+>>> +++ b/mm/filemap.c
+>>> @@ -1389,6 +1389,7 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+>>>   * @ptep: mapped pte pointer. Will return with the ptep unmapped. Only required
+>>>   *        for pte entries, pass NULL for pmd entries.
+>>>   * @ptl: already locked ptl. This function will drop the lock.
+>>> + * @unmap: indicating whether ptep need to be unmapped.
+>>>   *
+>>>   * Wait for a migration entry referencing the given page to be removed. This is
+>>>   * equivalent to put_and_wait_on_page_locked(page, TASK_UNINTERRUPTIBLE) except
+>>> @@ -1402,7 +1403,7 @@ static inline int folio_wait_bit_common(struct folio *folio, int bit_nr,
+>>>   * there.
+>>>   */
+>>>  void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+>>> -				spinlock_t *ptl)
+>>> +				spinlock_t *ptl, bool unmap)
+>>>  {
+>>>  	struct wait_page_queue wait_page;
+>>>  	wait_queue_entry_t *wait = &wait_page.wait;
+>>> @@ -1439,10 +1440,9 @@ void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
+>>>  	 * a valid reference to the page, and it must take the ptl to remove the
+>>>  	 * migration entry. So the page is valid until the ptl is dropped.
+>>>  	 */
+>>> -	if (ptep)
+>>> -		pte_unmap_unlock(ptep, ptl);
+>>> -	else
+>>> -		spin_unlock(ptl);
+>>> +	spin_unlock(ptl);
+>>> +	if (unmap && ptep)
+>>> +		pte_unmap(ptep);
+>>>  
+>>>  	for (;;) {
+>>>  		unsigned int flags;
+>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>> index 07668781c246..8088128c25db 100644
+>>> --- a/mm/hugetlb.c
+>>> +++ b/mm/hugetlb.c
+>>> @@ -6713,7 +6713,7 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+>>>  	} else {
+>>>  		if (is_hugetlb_entry_migration(pte)) {
+>>>  			spin_unlock(ptl);
+>>> -			__migration_entry_wait(mm, (pte_t *)pmd, ptl);
+>>> +			__migration_entry_wait(mm, (pte_t *)pmd, ptl, false);
+>>>  			goto retry;
+>>>  		}
+>>>  		/*
+>>> diff --git a/mm/migrate.c b/mm/migrate.c
+>>> index 98a968e6f465..5519261f54fe 100644
+>>> --- a/mm/migrate.c
+>>> +++ b/mm/migrate.c
+>>> @@ -281,7 +281,7 @@ void remove_migration_ptes(struct folio *src, struct folio *dst, bool locked)
+>>>   * When we return from this function the fault will be retried.
+>>>   */
+>>>  void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+>>> -				spinlock_t *ptl)
+>>> +				spinlock_t *ptl, bool unmap)
+>>>  {
+>>>  	pte_t pte;
+>>>  	swp_entry_t entry;
+>>> @@ -295,10 +295,12 @@ void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+>>>  	if (!is_migration_entry(entry))
+>>>  		goto out;
+>>>  
+>>> -	migration_entry_wait_on_locked(entry, ptep, ptl);
+>>> +	migration_entry_wait_on_locked(entry, ptep, ptl, unmap);
+>>>  	return;
+>>>  out:
+>>> -	pte_unmap_unlock(ptep, ptl);
+>>> +	spin_unlock(ptl);
+>>> +	if (unmap)
+>>> +		pte_unmap(ptep);
+>>>  }
+>>>  
+>>>  void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>>> @@ -306,14 +308,14 @@ void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+>>>  {
+>>>  	spinlock_t *ptl = pte_lockptr(mm, pmd);
+>>>  	pte_t *ptep = pte_offset_map(pmd, address);
+>>> -	__migration_entry_wait(mm, ptep, ptl);
+>>> +	__migration_entry_wait(mm, ptep, ptl, true);
+>>>  }
+>>>  
+>>>  void migration_entry_wait_huge(struct vm_area_struct *vma,
+>>>  		struct mm_struct *mm, pte_t *pte)
+>>>  {
+>>>  	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), mm, pte);
+>>> -	__migration_entry_wait(mm, pte, ptl);
+>>> +	__migration_entry_wait(mm, pte, ptl, false);
+>>>  }
+>>>  
+>>>  #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+>>> @@ -324,7 +326,7 @@ void pmd_migration_entry_wait(struct mm_struct *mm, pmd_t *pmd)
+>>>  	ptl = pmd_lock(mm, pmd);
+>>>  	if (!is_pmd_migration_entry(*pmd))
+>>>  		goto unlock;
+>>> -	migration_entry_wait_on_locked(pmd_to_swp_entry(*pmd), NULL, ptl);
+>>> +	migration_entry_wait_on_locked(pmd_to_swp_entry(*pmd), NULL, ptl, false);
+>>>  	return;
+>>>  unlock:
+>>>  	spin_unlock(ptl);
+>> .
+>> 
