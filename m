@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E445C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE4FC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239904AbiCIQnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        id S239889AbiCIQna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237230AbiCIQai (ORCPT
+        with ESMTP id S237255AbiCIQaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B7B15B994;
-        Wed,  9 Mar 2022 08:24:14 -0800 (PST)
+        Wed, 9 Mar 2022 11:30:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD19415C9F2;
+        Wed,  9 Mar 2022 08:24:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 180A8619AC;
-        Wed,  9 Mar 2022 16:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36B7C340F5;
-        Wed,  9 Mar 2022 16:24:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFBDF6195B;
+        Wed,  9 Mar 2022 16:23:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D72C340F7;
+        Wed,  9 Mar 2022 16:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843046;
-        bh=l9vur0dL3GUULj6pSN4H0lg8/y0wbvxtMheOvgS9E8c=;
+        s=k20201202; t=1646843033;
+        bh=iW0d5jYTr5uhwSlZKDqadiIGanQlhVOoTlRuLUDGIHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t+pdigbcYPlyMz7UIegrXUPwXk0Ts7exvEAVl9s12FxQqGKabVpi7sgcAw5MFtmBU
-         PQjKSxBROKWh3dxYoADWSvhjrqqrxTX4Y4yvwt979P8wpAX7g3qW0MiFsg+bTWhLi+
-         vvbxgmsqQTOA02FjSfc+abMK4C4k4OTcCag072QA1UIuym/yJfECjMXb5D8Ab/0Saz
-         R9jUhR6TCCpw0DMVxuzY05wawd8P+/kKcbQd3Xk2g6oN6NcJGhBL9QSMm20zgo/hxr
-         MGE+Yu5RFPd6eF+DIvGdTzMfh19MY6sAU/Vn7x2uUlcrzfAMaB1J08cYZg/vxnIstR
-         a9RHHjYTMagxw==
+        b=s4suJoNiTIXn7waYRQ+3EW62ptc9x2v0ouE1zCNtCakzf/NSD4u0vo6HAI9R2oABF
+         81kHMNrxt0U/egSAZ1S5YG4rq2WjfGBtjK2ul5pa5UV2j1rT9d6qZmcsOznIefLs5e
+         cDiwvwISWHbhK/GPOlGNLnUnr10Cbp0g7GjkyZSsIOuVLXrpdrrjmgIQUd7mVDSzvO
+         aOT/FvRLhnYBV9OvG7E4gVXA9Go/WwOcrrsMnYaP0FvmMuxJaYNKjF6cq2PDpeIYZ5
+         TI9+Wcum0PJH7BSO9B3RBLYEsxjknWtQvly9u0minRB5ZyjRQNroFLwJNECndnO2KD
+         +0wsoLa8EEsmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+Cc:     Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <foss+kernel@0leil.net>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
         Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 06/19] ARM: dts: rockchip: reorder rk322x hmdi clocks
-Date:   Wed,  9 Mar 2022 11:23:23 -0500
-Message-Id: <20220309162337.136773-6-sashal@kernel.org>
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 03/19] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Wed,  9 Mar 2022 11:23:20 -0500
+Message-Id: <20220309162337.136773-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
 References: <20220309162337.136773-1-sashal@kernel.org>
@@ -53,36 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-[ Upstream commit be4e65bdffab5f588044325117df77dad7e9c45a ]
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-The binding specifies the clock order to "iahb", "isfr", "cec". Reorder
-the clocks accordingly.
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220210142353.3420859-1-s.hauer@pengutronix.de
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
+
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
+
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/rk322x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index 140e22d74dcf..d393bb481e74 100644
---- a/arch/arm/boot/dts/rk322x.dtsi
-+++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -635,8 +635,8 @@ hdmi: hdmi@200a0000 {
- 		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 		assigned-clocks = <&cru SCLK_HDMI_PHY>;
- 		assigned-clock-parents = <&hdmi_phy>;
--		clocks = <&cru SCLK_HDMI_HDCP>, <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_CEC>;
--		clock-names = "isfr", "iahb", "cec";
-+		clocks = <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
-+		clock-names = "iahb", "isfr", "cec";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&hdmii2c_xfer &hdmi_hpd &hdmi_cec>;
- 		resets = <&cru SRST_HDMI_P>;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index 45b86933c6ea..390b86ec6538 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -467,6 +467,12 @@ vcc5v0_host_en: vcc5v0-host-en {
+ };
+ 
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
++	 */
++	max-frequency = <100000000>;
++
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
 -- 
 2.34.1
 
