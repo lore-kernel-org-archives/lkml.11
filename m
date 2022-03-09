@@ -2,154 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC9DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E680C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236451AbiCISEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:04:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
+        id S236507AbiCISEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiCISED (ORCPT
+        with ESMTP id S236467AbiCISEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:04:03 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC1B63F3
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:03:04 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C2FA621118;
-        Wed,  9 Mar 2022 18:03:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646848982; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LiWoSBzAEkCGU0Hf+4zaaFdMVIEVCG4nJJMVf7RzVoI=;
-        b=CLLWUWSN9ubDbTFaYanIiR0lUrprKcnmy5k7Y81YBtZWKNgVMrYsWVqmZZVtHBhw45MIAg
-        78av96XmoTF3brhaxpSiGINy76V+yPR0uia/5I2xMZ7mA/EQohnmtLCU5VHL0hutHEFPeJ
-        XAKwnxGZ29FZjSmq9+4fkUbJXqQxVHQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646848982;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LiWoSBzAEkCGU0Hf+4zaaFdMVIEVCG4nJJMVf7RzVoI=;
-        b=Q3Obw1A7h7KfmsNKdz9yheW4tCJ3BjzF/XZHK6j4Wxtnm6t04z9OAuHCBvxAdEQ/5ksnOz
-        M5yo065GDFt3twDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6897B13D7D;
-        Wed,  9 Mar 2022 18:03:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ENrmGNbrKGIQJwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 09 Mar 2022 18:03:02 +0000
-Message-ID: <62cd72d5-c072-d159-8de4-95cd0804c7db@suse.cz>
-Date:   Wed, 9 Mar 2022 19:03:02 +0100
+        Wed, 9 Mar 2022 13:04:13 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4054565C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:03:14 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id im7so2632688qvb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 10:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cs.unc.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7//5WGEHwjqe2bICZboVYvRQFNwW3c3+2be3/LbYcZ4=;
+        b=Fn4AI9GPiTd3TQeCzD71Wyi5K3kXWyZckgC0YzUgQlVz5UnOu7njPWw2IT51slzD3D
+         vUT5lsYAU5SiMCH2p8/Yw2uDGjXZV/GmFoEZYP/OYMEsKqEndNXPnck224zYXHzur1CR
+         3noGqnExOjfvMgGnKyZRp1fJXj+i7eYFzgk/GqZErayKw0hfLC8lHVMQWgLw0AQylQvQ
+         zBcpcuKvFS1XIDs31oU/B4IlXSXslVgisJkeKS4480/RCpedsHCrrfqNSITQsvQrXPWo
+         WilKu3nfVO53UnfqtxksO8Dr3PAmr3VqLTyS/+XRMnymFO0+zE1B2x4R5yJpatuSzFKP
+         ZcQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7//5WGEHwjqe2bICZboVYvRQFNwW3c3+2be3/LbYcZ4=;
+        b=RWOMf2XqeDCzGwJ6817sJMkS81+fC5WytJ+I3e65jAf0G/3HbNF0bobGl0VzLYSWbt
+         YrAOZ5jP8VyVH7HdQ//qRqlOZKmXVRd4cjlEzDtuPVVyR+Hscsq+GEAN9z900F4ozI5R
+         RkyDRyn3otnLSlFwpbooCV8LkFDaKFwa1oWkxxImcSLIBONL5wR5VjWQmGFq/RDeEGJI
+         KUj38M7YUNglLvKXsBfcjdktsFMcPKRlCfT6DfUPducybjtRfs9KWlnga4FWrrexrPw8
+         okniZ6YOLKpRWaElU2MR1w4+eIFAmgqa08xIqD1Y7kncoZ6Gu3GiIJdNYUImLviHcjWi
+         /sbg==
+X-Gm-Message-State: AOAM530rpdS2Jh51LGnOm+IdIHRQbx9NFIWWyoP9ew7sObz0RbQze00N
+        wV+4By7jenKTCuu46/WZupqoYA==
+X-Google-Smtp-Source: ABdhPJwZ1gCjB8wHBq7S0Ok2bKRSbw+YhaU3o/w8FElXExas99p92MP+dcVE4fVLyrP1eL+S1es8bw==
+X-Received: by 2002:a05:6214:19ed:b0:42c:289b:860e with SMTP id q13-20020a05621419ed00b0042c289b860emr781716qvc.73.1646848993287;
+        Wed, 09 Mar 2022 10:03:13 -0800 (PST)
+Received: from localhost.localdomain ([107.13.145.4])
+        by smtp.gmail.com with ESMTPSA id 4-20020ac85944000000b002e1a12b17fesm1584136qtz.92.2022.03.09.10.03.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 10:03:12 -0800 (PST)
+From:   Sagar Patel <sagarmp@cs.unc.edu>
+To:     Andy Whitcroft <apw@canonical.com>
+Cc:     Joe Perches <joe@perches.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Sagar Patel <sagarmp@cs.unc.edu>
+Subject: [PATCH v2] checkpatch: use python3 to find codespell dictionary
+Date:   Wed,  9 Mar 2022 13:00:49 -0500
+Message-Id: <20220309180048.147672-1-sagarmp@cs.unc.edu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 3/9] mm: slightly clarify KSM logic in do_swap_page()
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org
-References: <20220131162940.210846-1-david@redhat.com>
- <20220131162940.210846-4-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220131162940.210846-4-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 17:29, David Hildenbrand wrote:
-> Let's make it clearer that KSM might only have to copy a page
-> in case we have a page in the swapcache, not if we allocated a fresh
-> page and bypassed the swapcache. While at it, add a comment why this is
-> usually necessary and merge the two swapcache conditions.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+Commit 0ee3e7b8893e ("checkpatch: get default codespell dictionary path
+from package location") introduced the ability to search for the
+codespell dictionary rather than hardcoding its path.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+codespell requires Python 3.6 or above, but on some systems, the python
+executable is a Python 2.7 interpreter. In this case, searching for the
+dictionary fails, subsequently making codespell fail:
 
+No codespell typos will be found - file '/usr/share/codespell/dictionary.txt': No such file or directory
 
-> ---
->  mm/memory.c | 38 +++++++++++++++++++++++---------------
->  1 file changed, 23 insertions(+), 15 deletions(-)
-> 
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 923165b4c27e..3c91294cca98 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3615,21 +3615,29 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->  		goto out_release;
->  	}
->  
-> -	/*
-> -	 * Make sure try_to_free_swap or reuse_swap_page or swapoff did not
-> -	 * release the swapcache from under us.  The page pin, and pte_same
-> -	 * test below, are not enough to exclude that.  Even if it is still
-> -	 * swapcache, we need to check that the page's swap has not changed.
-> -	 */
-> -	if (unlikely((!PageSwapCache(page) ||
-> -			page_private(page) != entry.val)) && swapcache)
-> -		goto out_page;
-> -
-> -	page = ksm_might_need_to_copy(page, vma, vmf->address);
-> -	if (unlikely(!page)) {
-> -		ret = VM_FAULT_OOM;
-> -		page = swapcache;
-> -		goto out_page;
-> +	if (swapcache) {
-> +		/*
-> +		 * Make sure try_to_free_swap or reuse_swap_page or swapoff did
-> +		 * not release the swapcache from under us.  The page pin, and
-> +		 * pte_same test below, are not enough to exclude that.  Even if
-> +		 * it is still swapcache, we need to check that the page's swap
-> +		 * has not changed.
-> +		 */
-> +		if (unlikely(!PageSwapCache(page) ||
-> +			     page_private(page) != entry.val))
-> +			goto out_page;
-> +
-> +		/*
-> +		 * KSM sometimes has to copy on read faults, for example, if
-> +		 * page->index of !PageKSM() pages would be nonlinear inside the
-> +		 * anon VMA -- PageKSM() is lost on actual swapout.
-> +		 */
-> +		page = ksm_might_need_to_copy(page, vma, vmf->address);
-> +		if (unlikely(!page)) {
-> +			ret = VM_FAULT_OOM;
-> +			page = swapcache;
-> +			goto out_page;
-> +		}
->  	}
->  
->  	cgroup_throttle_swaprate(page, GFP_KERNEL);
+So, use python3 to remove ambiguity.
+
+In addition, when searching for dictionary.txt, do not check if the
+codespell executable exists since,
+
+  - checkpatch.pl only uses dictionary.txt, not the codespell
+    executable.
+  - codespell can be installed via a Python package manager, in which
+    case the codespell executable may not be present in a typical $PATH,
+    but a dictionary does exist.
+
+Signed-off-by: Sagar Patel <sagarmp@cs.unc.edu>
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+---
+Hey,
+
+Changes since v1:
+- reword commit message to clarify that the codespell executable is not used,
+  and that the executable may not be present in a *typical* $PATH.
+
+---Sagar Patel
+---
+ scripts/checkpatch.pl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index b01c36a15d9d..46302e074b18 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -334,7 +334,7 @@ if ($user_codespellfile) {
+ } elsif (!(-f $codespellfile)) {
+ 	# If /usr/share/codespell/dictionary.txt is not present, try to find it
+ 	# under codespell's install directory: <codespell_root>/data/dictionary.txt
+-	if (($codespell || $help) && which("codespell") ne "" && which("python") ne "") {
++	if (($codespell || $help) && which("python3") ne "") {
+ 		my $python_codespell_dict = << "EOF";
+ 
+ import os.path as op
+@@ -344,7 +344,7 @@ codespell_file = op.join(codespell_dir, 'data', 'dictionary.txt')
+ print(codespell_file, end='')
+ EOF
+ 
+-		my $codespell_dict = `python -c "$python_codespell_dict" 2> /dev/null`;
++		my $codespell_dict = `python3 -c "$python_codespell_dict" 2> /dev/null`;
+ 		$codespellfile = $codespell_dict if (-f $codespell_dict);
+ 	}
+ }
+-- 
+2.25.1
 
