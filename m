@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DA1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8EAC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236281AbiCIQ3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:29:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
+        id S235629AbiCIQ14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234042AbiCIQWc (ORCPT
+        with ESMTP id S238112AbiCIQVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:22:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00AF1EAEB;
-        Wed,  9 Mar 2022 08:21:32 -0800 (PST)
+        Wed, 9 Mar 2022 11:21:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E981520C8;
+        Wed,  9 Mar 2022 08:18:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 465B56194C;
-        Wed,  9 Mar 2022 16:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA1EC340E8;
-        Wed,  9 Mar 2022 16:21:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7497B82212;
+        Wed,  9 Mar 2022 16:18:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5560AC340EC;
+        Wed,  9 Mar 2022 16:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842891;
-        bh=97Nn50gt58l93v/9KvAPm/j6wwDc3B/WHx2XjMzWcM4=;
+        s=k20201202; t=1646842717;
+        bh=5nw7cHt/RTx/pOOhvfo54s8PdS6J/svkQh4QT7q+nsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NsM7/PejihgS50t5LhctRNJjQjlvPAmlPx4NN7RnhH+Ysco5unSYfgTG7YLcV3vpT
-         ggyh9uGHHshcUrIxhxr3Txz4x+mDSM10VZOUWIYmMF0bI235HA0SIktFGspY6RvKPO
-         UmW5WGCQbfJNcOjn/PQ0B6hNZob7uSLkR3XY4ij2qZcUUCjRQxvJP1B7YA/nnK4Itj
-         dDPDpXiDdrV/pIBPM/y8CCvuU9LDciePlP3Itp63Uh3cfLRGQFOuEtU5SNH+6o2R4v
-         eZuuAbgWHmlbq5OLFPRcxmr94YKmhUPkhORqmvZMGEDUyORKgHnIE2C2Wr03fSCEIx
-         UHDVsSDAItrvQ==
+        b=GukQMC97WCrzAVZhWvKq5okxJCfazL+a7s3G8EmohL41lMUOYwhgKlTdR3eTuHQXj
+         u7q/NTDMFtYKjr4gpoKnyi5cBOFVZRoiXkHuTILYAZnfTSz1k2CSbjuWNt5FqEjDNq
+         pRhie7+uLxu3b9EjZLwmslpSy8X+wYaw0vYUl2kF2zmL5lo1nBXW4mxfTq3uv+zKuj
+         zNH7YL5WptzdA1htWGW41a9mfBvUJROokWohBjotsGWKZag3XnnGWkQIa5bi6WDlwg
+         kzXP29jGvUtpDEB/4o3BKwhSNW0jTDyTx9SpR1Jnw7Uw2mb15vOVRbUYYkePAV2hAe
+         x4aqqBJoMGH7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Golan Ben Ami <golan.ben.ami@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ilan.peer@intel.com,
-        miriam.rachel.korenblit@intel.com, mordechay.goodstein@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 18/24] iwlwifi: don't advertise TWT support
-Date:   Wed,  9 Mar 2022 11:19:37 -0500
-Message-Id: <20220309161946.136122-18-sashal@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org, stefan.maetje@esd.eu,
+        mailhol.vincent@wanadoo.fr, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 15/27] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+Date:   Wed,  9 Mar 2022 11:16:52 -0500
+Message-Id: <20220309161711.135679-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
+References: <20220309161711.135679-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,53 +56,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Golan Ben Ami <golan.ben.ami@intel.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
+[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
 
-Some APs misbehave when TWT is used and cause our firmware to crash.
-We don't know a reasonable way to detect and work around this problem
-in the FW yet.  To prevent these crashes, disable TWT in the driver by
-stopping to advertise TWT support.
+Register the CAN device only when all the necessary initialization is
+completed. This patch makes sure all the data structures and locks are
+initialized before registering the CAN device.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
-Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
-[reworded the commit message]
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Pavel Machek <pavel@denx.de>
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/can/rcar/rcar_canfd.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-index 475f951d4b1e..fc40cca096c2 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-@@ -541,8 +541,7 @@ static const struct ieee80211_sband_iftype_data iwl_he_capa[] = {
- 			.has_he = true,
- 			.he_cap_elem = {
- 				.mac_cap_info[0] =
--					IEEE80211_HE_MAC_CAP0_HTC_HE |
--					IEEE80211_HE_MAC_CAP0_TWT_REQ,
-+					IEEE80211_HE_MAC_CAP0_HTC_HE,
- 				.mac_cap_info[1] =
- 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
- 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 750217393f48..56c7a68a6491 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -295,7 +295,6 @@ static const u8 he_if_types_ext_capa_sta[] = {
- 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
- 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
- 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
--	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
- };
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 137eea4c7bad..4871428859fd 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1716,15 +1716,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
  
- static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+ 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
+ 		       RCANFD_NAPI_WEIGHT);
++	spin_lock_init(&priv->tx_lock);
++	devm_can_led_init(ndev);
++	gpriv->ch[priv->channel] = priv;
+ 	err = register_candev(ndev);
+ 	if (err) {
+ 		dev_err(&pdev->dev,
+ 			"register_candev() failed, error %d\n", err);
+ 		goto fail_candev;
+ 	}
+-	spin_lock_init(&priv->tx_lock);
+-	devm_can_led_init(ndev);
+-	gpriv->ch[priv->channel] = priv;
+ 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
+ 	return 0;
+ 
 -- 
 2.34.1
 
