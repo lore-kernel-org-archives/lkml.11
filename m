@@ -2,253 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B99C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A373FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbiCINny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 08:43:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59586 "EHLO
+        id S231621AbiCINoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 08:44:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233273AbiCINnt (ORCPT
+        with ESMTP id S233278AbiCINoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 08:43:49 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2074.outbound.protection.outlook.com [40.107.96.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03095C12DD;
-        Wed,  9 Mar 2022 05:42:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lIJEApFRPfW+wwpYWUbDDjC3XGs6IYA0RO5bpyEhsfRy2SHsLVSeM7MY+35Q57WwUqCGyLhiIwGQGZa6zXMgQKaapc66hSb4VhQdiccr8nCr+OJ2lNRmMiv1qXafAWPJWEMUbIB06Y05SmrkvhqhdhcKIbzBWWNzntbRYcT5iRPsmcGnq6Q1KVXTmvq/KVg0TAJ1iwnjyRTjkygooOCvXTK2vHVrtLmcWbr1X1k3wNalCHYmuNlCsu/ltttLdmTKSa0s91ohCu2N+hYr/XCuDnxh/J0XPwJ+WRgeI4EL+qOOMG5b6RO3iPlEbMTbJADJs2Ush3qVs6TQQQKD3z13Hw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OfXKSTDsfaM8fZRwULHj2z/dqYmvN4Q2/+WSbqYWSQA=;
- b=hHrhmvRXFMq/bwopPRuDMtw6m9oQaK7ycL7KaCg3Z9lM2XLVmD5a/JsGyJpF5md8Gyw6Z+sI/AREfFpGQNUO1cgKZ4oBpcr5xaLQI/npW8dqAuuOcwIZv7icSoLBOnQ59us6j92rcQi8MfOajk4nBjorrobxoUum2zL1cjuGOMwYoL+MU37nUsB0UpWrD6NSeI4kuD9dkI2fyFXQLIbHVG5T1MUw6vLhrTDC8KKk4QDYhFzokig3psBmAcIV1RxcPGkUf41agdtvLNhnOY1J4ChlkIrPo9nRk8m7I+dwcKmTbVhJKHi7FgEh3Sp4Mo/D6XFfTRXNXqo9ruQu+wAdbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OfXKSTDsfaM8fZRwULHj2z/dqYmvN4Q2/+WSbqYWSQA=;
- b=FfPuPM4R/2mMDveXma8r0hwmz07LYZ/YpPQ3nN+epXR9fz2Bd6+7f8mcjoZjpjHMlM68y0I7LjFF+ZkQM6vuA18Eq+D5BNEgGIQrlJAw3K2V72YYY0aqz2Lhd0NJzzyMlZ8DzMuephAwoeMgo8JvfgaJIQlg92R9vMyLQO9NreY=
-Received: from DM6PR07CA0063.namprd07.prod.outlook.com (2603:10b6:5:74::40) by
- DM5PR02MB2331.namprd02.prod.outlook.com (2603:10b6:3:57::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5038.17; Wed, 9 Mar 2022 13:42:48 +0000
-Received: from DM3NAM02FT041.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:74:cafe::9d) by DM6PR07CA0063.outlook.office365.com
- (2603:10b6:5:74::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.20 via Frontend
- Transport; Wed, 9 Mar 2022 13:42:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT041.mail.protection.outlook.com (10.13.5.133) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5038.14 via Frontend Transport; Wed, 9 Mar 2022 13:42:48 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 9 Mar 2022 05:42:47 -0800
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 9 Mar 2022 05:42:47 -0800
-Envelope-to: zajec5@gmail.com,
- robh+dt@kernel.org,
- trini@konsulko.com,
- sjg@chromium.org,
- srinivas.kandagatla@linaro.org,
- krzysztof.kozlowski@canonical.com,
- ricardo@foundries.io,
- jorge@foundries.io,
- seanga2@gmail.com,
- devicetree@vger.kernel.org,
- u-boot@lists.denx.de,
- linux-kernel@vger.kernel.org,
- rafal@milecki.pl
-Received: from [10.254.241.50] (port=55666)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1nRwaV-0005MV-7L; Wed, 09 Mar 2022 05:42:47 -0800
-Message-ID: <578e243d-2273-add3-898c-959888c2a155@xilinx.com>
-Date:   Wed, 9 Mar 2022 14:42:43 +0100
+        Wed, 9 Mar 2022 08:44:14 -0500
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DCDEF090;
+        Wed,  9 Mar 2022 05:43:14 -0800 (PST)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id CF06D200003;
+        Wed,  9 Mar 2022 13:43:07 +0000 (UTC)
+Message-ID: <9b6e166e-fd10-4242-1ad9-a6ab1ddb0c95@ovn.org>
+Date:   Wed, 9 Mar 2022 14:43:07 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH V3] dt-bindings: nvmem: add U-Boot environment variables
- binding
+ Thunderbird/91.5.0
+Cc:     i.maximets@ovn.org, Johannes Berg <johannes@sipsolutions.net>,
+        dev@openvswitch.org, Toms Atteka <cpp.code.lv@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, David Ahern <dsahern@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "pshelar@ovn.org" <pshelar@ovn.org>
 Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tom Rini <trini@konsulko.com>, Simon Glass <sjg@chromium.org>
-CC:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Ricardo Salveti <ricardo@foundries.io>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Jorge Ramirez-Ortiz <jorge@foundries.io>,
-        Sean Anderson <seanga2@gmail.com>,
-        <devicetree@vger.kernel.org>, <u-boot@lists.denx.de>,
-        <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20220228131250.16943-1-zajec5@gmail.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-In-Reply-To: <20220228131250.16943-1-zajec5@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Roi Dayan <roid@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+ <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+ <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+ <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+ <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+ <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+ <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+ <20220308081731.3588b495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6f0feae8-ecb4-ca1d-133e-1013ce9e8b4f@ovn.org>
+ <20220308121617.3f638793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <81250230-a845-b03f-6600-b716c02f5137@nvidia.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <81250230-a845-b03f-6600-b716c02f5137@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3983d298-4301-4d72-33ca-08da01d2b2d0
-X-MS-TrafficTypeDiagnostic: DM5PR02MB2331:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR02MB2331A49341274A644121C0A1C60A9@DM5PR02MB2331.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d8K0slqyuMU4ecqFOgSdvN1PN6LCKa8Jy/a1K0X0UWV84mGg4OV116V56xa3ySDearqQAMryavxx5UoRnD4eNrNHICrXpe1iFIec/cFL+JUq+G/Ic5HY56pifJyfhJpRaBnZwFsoDzOzJvNBtDyimv99i22PYx1mwZjJkfAA4jVke30UuZUXUb7YNjZTXEfqeAAPQNxC+fuArm//WpqzD0Xg8DW7x/xjhy+geF2NREAesAylnIntMC642S2PZ+NH3LQo0TEXFDeYRqMpZN8RaNdh4++ozQ+iPCdDRCCHwOriu0/01DNeuV9yvvrHhtxtMwFykQErgZ/rbgujy7/4Gawk5KmxQ+d2WQ7fzy2CqvMR8GtAnUUnVIIren541WSmlEzRdCe8L4uOWj/7mFR8HtgmMLbjq129zfH6468/5DpSY8dFXl7fI1A+E/S6afG0kDoPYn9HsnWgrBkt5jnnmivzXkWOxaW0vLdxzs15k5xmLmdMVtUDbNV/iXaBgAr0krharaU2zZle2qyANeJH3m/d6h9NBNGwcfJ/JdQFVU0WbY6GHLYiPTcAZZW5claMEDXWasSk7ThMMi+Mtl8pmSRVAXcrNxDu4sAWhdYgEEVGDY0hMfWM+QG3NNolucO3iFFRFBAkQLr5gBM6fwmRC1babDY8KZMSY1NxR953TgxzaYyUSeejmqgQnF0wJko2exWJzwwEAEopx5XIFXWTb+scY5OVd3gTVHZa+ftss4OvspIuPgAIKQBlsZTu7tq1fPv7cvO+NiUXgZQAHZcaTyVTAKRlULGJ59DbGNcukVsGt9vyhGbbPZBvs6HqVcERxUAbz4drzO9AtlOCzRjHayrN8mcfox7qZxEG5wOCe+Q=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(47076005)(8676002)(36860700001)(316002)(82310400004)(31686004)(70586007)(70206006)(110136005)(54906003)(4326008)(36756003)(186003)(31696002)(66574015)(40460700003)(2616005)(5660300002)(356005)(336012)(53546011)(6666004)(966005)(7416002)(7636003)(83380400001)(26005)(508600001)(8936002)(9786002)(2906002)(44832011)(426003)(50156003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 13:42:48.0314
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3983d298-4301-4d72-33ca-08da01d2b2d0
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT041.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2331
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/9/22 08:49, Roi Dayan wrote:
+> 
+> 
+> On 2022-03-08 10:16 PM, Jakub Kicinski wrote:
+>> On Tue, 8 Mar 2022 20:33:12 +0100 Ilya Maximets wrote:
+>>> On 3/8/22 17:17, Jakub Kicinski wrote:
+>>>> On Tue, 8 Mar 2022 15:12:45 +0100 Ilya Maximets wrote:
+>>>>> Yes, that is something that I had in mind too.  The only thing that makes
+>>>>> me uncomfortable is OVS_KEY_ATTR_TUNNEL_INFO = 30 here.  Even though it
+>>>>> doesn't make a lot of difference, I'd better keep the kernel-only attributes
+>>>>> at the end of the enumeration.  Is there a better way to handle kernel-only
+>>>>> attribute?
+>>>>
+>>>> My thought was to leave the kernel/userspace only types "behind" to
+>>>> avoid perpetuating the same constructs.
+>>>>
+>>>> Johannes's point about userspace to userspace messages makes the whole
+>>>> thing a little less of an aberration.
+>>>>
+>>>> Is there a reason for the types to be hidden under __KERNEL__?
+>>>> Or someone did that in a misguided attempt to save space in attr arrays
+>>>> when parsing?
+>>>
+>>> My impression is that OVS_KEY_ATTR_TUNNEL_INFO was hidden from the
+>>> user space just because it's not supposed to ever be used by the
+>>> user space application.  Pravin or Jesse should know for sure.
+>>
+>> Hard to make any assumptions about what user space that takes
+>> the liberty of re-defining kernel uAPI types will or will not
+>> do ;) The only way to be safe would be to actively reject the
+>> attr ID on the kernel side. Unless user space uses the same
+>> exact name for something else IMHO hiding the value doesn't
+>> afford us any extra protection.
+>>
+>>>>> I agree with that.
+>>>>
+>>>> Should we add the user space types to the kernel header and remove the
+>>>> ifdef __KERNEL__ around TUNNEL_INFO, then?
+>>>
+>>> I don't think we need to actually define them, but we may list them
+>>> in the comment.  I'm OK with either option though.
+>>>
+>>> For the removal of ifdef __KERNEL__, that might be a good thing to do.
+>>> I'm just not sure what are the best practices here.
+>>> We'll need to make some code changes in user space to avoid warnings
+>>> about not all the enum members being used in 'switch'es.  But that's
+>>> not a problem.
+>>
+>> Presumably only as the headers are updated? IOW we would not break
+>> the build for older sources?
 
+Yep.  OVS doesn't use kernel header directly, so the change will be
+needed only when the header in OVS repo is updated.  Current/older
+sources will be fine.
 
-On 2/28/22 14:12, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> U-Boot uses environment variables for storing device setup data. It
-> usually needs to be accessed by a bootloader, kernel and often
-> user-space.
-> 
-> This binding allows describing environment data located in a raw flash
-> partition. It's treated as NVMEM device and can be reused later for
-> other storage devices.
-> 
-> Using DT should be cleaner than hardcoding & duplicating such info in
-> multiple places. Bootloader & kernel can share DTS and user-space can
-> try reading it too or just have correct data exposed by a kernel.
-> 
-> A custom "compatible" string allows system to automatically load
-> relevant NVMEM driver but phandle can be also used for reading raw
-> location.
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> ---
-> V2: Update descriptions to don't make this binding MTD (flash partition)
->      specific. Mention multiple possible storage ways.
-> V3: Drop
->      allOf:
->        - $ref: nvmem.yaml#
->      as we don't use anything rom the nvmem.yaml. Thanks Rob.
-> ---
->   .../devicetree/bindings/nvmem/u-boot,env.yaml | 62 +++++++++++++++++++
->   MAINTAINERS                                   |  5 ++
->   2 files changed, 67 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
-> new file mode 100644
-> index 000000000000..e70b2a60cb9a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/nvmem/u-boot,env.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: U-Boot environment variables
-> +
-> +description: |
-> +  U-Boot uses environment variables to store device parameters and
-> +  configuration. They may be used for booting process, setup or keeping end user
-> +  info.
-> +
-> +  Data is stored using U-Boot specific formats (variant specific header and NUL
-> +  separated key-value pairs).
-> +
-> +  Environment data can be stored on various storage entities, e.g.:
-> +  1. Raw flash partition
-> +  2. UBI volume
-> +
-> +  This binding allows marking storage device (as containing env data) and
-> +  specifying used format.
-> +
-> +  Right now only flash partition case is covered but it may be extended to e.g.
-> +  UBI volumes in the future.
-> +
-> +maintainers:
-> +  - Rafał Miłecki <rafal@milecki.pl>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - description: A standalone env data block
-> +        const: u-boot,env
-> +      - description: Two redundant blocks with active one flagged
-> +        const: u-boot,env-redundant-bool
-> +      - description: Two redundant blocks with active having higher counter
-> +        const: u-boot,env-redundant-count
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    partitions {
-> +        compatible = "fixed-partitions";
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +
-> +        partition@0 {
-> +            reg = <0x0 0x40000>;
-> +            label = "u-boot";
-> +            read-only;
-> +        };
-> +
-> +        env: partition@40000 {
-> +            compatible = "u-boot,env";
-> +            reg = <0x40000 0x10000>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index db8052bc1d26..24fc181a7e6c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19958,6 +19958,11 @@ W:	http://linuxtv.org
->   T:	git git://linuxtv.org/media_tree.git
->   F:	drivers/media/pci/tw686x/
->   
-> +U-BOOT ENVIRONMENT VARIABLES
-> +M:	Rafał Miłecki <rafal@milecki.pl>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
-> +
->   UACCE ACCELERATOR FRAMEWORK
->   M:	Zhangfei Gao <zhangfei.gao@linaro.org>
->   M:	Zhou Wang <wangzhou1@hisilicon.com>
+>>
+>>> If you think that having a flat enum without 'ifdef's is a viable
+>>> option from a kernel's point of view, I'm all for it.
+>>>
+>>> Maybe something like this (only checked that this compiles; 29 and
+>>> 30 are correct numbers of these userspace attributes):
+>>
+>> It's a bit of an uncharted territory, hard to say what's right.
+>> It may be a little easier to code up the rejection if we have
+>> the types defined (which I think we need to do in
+>> __parse_flow_nlattrs()? seems OvS does its own nla parsing?)
 
-I think that parsing these partitions is quite sw intensive process and I can't 
-still see the value to have compatible string here.
-I would prefer to have just any link from u-boot node to partition instead.
+Ack.  And, yes, __parse_flow_nlattrs() seems to be the right spot.
+OVS has lots of nested attributes with some special treatment in a
+few cases and dependency tracking, AFAICT, so it parses attributes
+on it's own.  Is there a better way?
 
-But up to Simon or Tom to decide.
+>>
+>> Johannes, any preference?
+>>
+>>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>>> index 9d1710f20505..86bc951be5bc 100644
+>>> --- a/include/uapi/linux/openvswitch.h
+>>> +++ b/include/uapi/linux/openvswitch.h
+>>> @@ -351,11 +351,19 @@ enum ovs_key_attr {
+>>>       OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+>>>       OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+>>>       OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+>>> -    OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>>>   -#ifdef __KERNEL__
+>>> -    OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+>>> -#endif
+>>> +    /* User space decided to squat on types 29 and 30.  They are listed
+>>> +     * below, but should not be sent to the kernel:
+>>> +     *
+>>> +     * OVS_KEY_ATTR_PACKET_TYPE,   be32 packet type
+>>> +     * OVS_KEY_ATTR_ND_EXTENSIONS, IPv6 Neighbor Discovery extensions
+>>> +     *
+>>> +     * WARNING: No new types should be added unless they are defined
+>>> +     *          for both kernel and user space (no 'ifdef's).  It's hard
+>>> +     *          to keep compatibility otherwise. */
+>>> +    OVS_KEY_ATTR_TUNNEL_INFO = 31,  /* struct ip_tunnel_info.
+>>> +                       For in-kernel use only. */
+>>> +    OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>>>       __OVS_KEY_ATTR_MAX
+>>>   };
+> 
+> so why not again just flat enum without ifdefs and without values
+> commented out? even if we leave values in comments like above it doesn't
+> mean the userspace won't use them by mistake and send to the kernel.
+> but the kernel will probably ignore as not being used and at least
+> there won't be a conflict again even if by mistake.. and it's easiest
+> to read.
 
-Thanks,
-Michal
+OK.  Seems like we have some votes and a reason (explicit reject) to have
+them defined.  This will also make current user space and kernel definitions
+equal.  Let me put together a patch and we'll continue the discussion there.
+
+> 
+>>>   diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+>>> index 8b4124820f7d..315064bada3e 100644
+>>> --- a/net/openvswitch/flow_netlink.c
+>>> +++ b/net/openvswitch/flow_netlink.c
+>>> @@ -346,7 +346,7 @@ size_t ovs_key_attr_size(void)
+>>>       /* Whenever adding new OVS_KEY_ FIELDS, we should consider
+>>>        * updating this function.
+>>>        */
+>>> -    BUILD_BUG_ON(OVS_KEY_ATTR_TUNNEL_INFO != 30);
+>>> +    BUILD_BUG_ON(OVS_KEY_ATTR_MAX != 32);
+>>>         return    nla_total_size(4)   /* OVS_KEY_ATTR_PRIORITY */
+>>>           + nla_total_size(0)   /* OVS_KEY_ATTR_TUNNEL */
+>>> ---
+>>>
+>>> Thoughts?
+>>>
+>>> The same change can be ported to the user-space header, but with
+>>> types actually defined and not part of the comment.  It may look
+>>> like this: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpastebin.com%2Fk8UWEZtR&amp;data=04%7C01%7Croid%40nvidia.com%7C3f34544168c14459f44608da01408358%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637823673860054963%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=HYfuir9d21MFFxPibJz%2FppfxsylDMLz0CZIOcSCLQQw%3D&amp;reserved=0  (without IPV6_EXTHDRS yet).
+>>> For the future, we'll try to find a way to define them in a separate
+>>> enum or will define them dynamically based on the policy dumped from
+>>> the currently running kernel. In any case no new userspace-only types
+>>> should be defined in that enum.
+>>
+
