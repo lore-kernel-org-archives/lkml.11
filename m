@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A0AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DA1C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235688AbiCIQ2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S236281AbiCIQ3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237945AbiCIQVL (ORCPT
+        with ESMTP id S234042AbiCIQWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249A625C7;
-        Wed,  9 Mar 2022 08:17:32 -0800 (PST)
+        Wed, 9 Mar 2022 11:22:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00AF1EAEB;
+        Wed,  9 Mar 2022 08:21:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C302FB82206;
-        Wed,  9 Mar 2022 16:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24468C340E8;
-        Wed,  9 Mar 2022 16:17:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 465B56194C;
+        Wed,  9 Mar 2022 16:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA1EC340E8;
+        Wed,  9 Mar 2022 16:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842649;
-        bh=Y/AzchoFpdLn6g8WkJT0uKS4BVm0X//JoewFAWcfMvk=;
+        s=k20201202; t=1646842891;
+        bh=97Nn50gt58l93v/9KvAPm/j6wwDc3B/WHx2XjMzWcM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XfSyyOmc3yzBwwRzQ6v5juPZ4INbn83EO4nsgrydnf8DrFi5Jxv3EwzFgW4tf7Bm5
-         L7WlEbpGYzIgfIR7uiIX42QkYKYZeS2oqD4J91ztG/nbgbuNfAEIS4xapIVz3H0sAw
-         EGLh4mMGdoIzzFZByevOWxY6AyNnbE5ix1B5clIQypLRQWZb0jjS6jZOuBDnLZj1dY
-         /nw3Mb92gM3GZxfmL9B1yowlbDtnzTzyKW6JXjtw/hKyBA1Er2kQtwxzU4Tity1bY1
-         oIW7ItVj6t3y0GPHNmqXwq2iw7dvyenXyDe9vygGSWMCB9QVS9d7MKdhgKhJ1I2FCm
-         49ncqEBMChV3A==
+        b=NsM7/PejihgS50t5LhctRNJjQjlvPAmlPx4NN7RnhH+Ysco5unSYfgTG7YLcV3vpT
+         ggyh9uGHHshcUrIxhxr3Txz4x+mDSM10VZOUWIYmMF0bI235HA0SIktFGspY6RvKPO
+         UmW5WGCQbfJNcOjn/PQ0B6hNZob7uSLkR3XY4ij2qZcUUCjRQxvJP1B7YA/nnK4Itj
+         dDPDpXiDdrV/pIBPM/y8CCvuU9LDciePlP3Itp63Uh3cfLRGQFOuEtU5SNH+6o2R4v
+         eZuuAbgWHmlbq5OLFPRcxmr94YKmhUPkhORqmvZMGEDUyORKgHnIE2C2Wr03fSCEIx
+         UHDVsSDAItrvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Quentin Schulz <foss+kernel@0leil.net>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        jakob.unterwurzacher@theobroma-systems.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 02/27] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-Date:   Wed,  9 Mar 2022 11:16:39 -0500
-Message-Id: <20220309161711.135679-2-sashal@kernel.org>
+Cc:     Golan Ben Ami <golan.ben.ami@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ilan.peer@intel.com,
+        miriam.rachel.korenblit@intel.com, mordechay.goodstein@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 18/24] iwlwifi: don't advertise TWT support
+Date:   Wed,  9 Mar 2022 11:19:37 -0500
+Message-Id: <20220309161946.136122-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
-References: <20220309161711.135679-1-sashal@kernel.org>
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,71 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+From: Golan Ben Ami <golan.ben.ami@intel.com>
 
-[ Upstream commit ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd ]
+[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
 
-The micro USB3.0 port available on the Haikou evaluation kit for Puma
-RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
-was broken until now because of missing logic around the ID pin.
+Some APs misbehave when TWT is used and cause our firmware to crash.
+We don't know a reasonable way to detect and work around this problem
+in the FW yet.  To prevent these crashes, disable TWT in the driver by
+stopping to advertise TWT support.
 
-This adds proper support for USB OTG on Puma Haikou by "connecting" the
-GPIO used for USB ID to the USB3 controller device.
-
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220120125156.16217-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
+Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
+[reworded the commit message]
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-index 292bb7e80cf3..3ae5d727e367 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-@@ -232,6 +232,7 @@ &usbdrd3_0 {
- 
- &usbdrd_dwc3_0 {
- 	dr_mode = "otg";
-+	extcon = <&extcon_usb3>;
- 	status = "okay";
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+index 475f951d4b1e..fc40cca096c2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+@@ -541,8 +541,7 @@ static const struct ieee80211_sband_iftype_data iwl_he_capa[] = {
+ 			.has_he = true,
+ 			.he_cap_elem = {
+ 				.mac_cap_info[0] =
+-					IEEE80211_HE_MAC_CAP0_HTC_HE |
+-					IEEE80211_HE_MAC_CAP0_TWT_REQ,
++					IEEE80211_HE_MAC_CAP0_HTC_HE,
+ 				.mac_cap_info[1] =
+ 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
+ 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 750217393f48..56c7a68a6491 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -295,7 +295,6 @@ static const u8 he_if_types_ext_capa_sta[] = {
+ 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
+ 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
+ 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
+-	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
  };
  
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index fb67db4619ea..002ece51c3ba 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -25,6 +25,13 @@ module_led: led-0 {
- 		};
- 	};
- 
-+	extcon_usb3: extcon-usb3 {
-+		compatible = "linux,extcon-usb-gpio";
-+		id-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&usb3_id>;
-+	};
-+
- 	clkin_gmac: external-gmac-clock {
- 		compatible = "fixed-clock";
- 		clock-frequency = <125000000>;
-@@ -422,6 +429,13 @@ vcc5v0_host_en: vcc5v0-host-en {
- 			  <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
- 	};
-+
-+	usb3 {
-+		usb3_id: usb3-id {
-+			rockchip,pins =
-+			  <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
- };
- 
- &sdhci {
+ static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
 -- 
 2.34.1
 
