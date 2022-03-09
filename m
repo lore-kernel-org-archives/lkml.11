@@ -2,128 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCFC2C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18968C47087
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237087AbiCIQsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        id S238480AbiCIQvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:51:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238001AbiCIQbR (ORCPT
+        with ESMTP id S235886AbiCIQez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:17 -0500
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B65192C8E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:25:30 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:58940)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRz7u-008XLf-2X; Wed, 09 Mar 2022 09:25:26 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34572 helo=localhost.localdomain)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRz7t-005hAS-3k; Wed, 09 Mar 2022 09:25:25 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Wed,  9 Mar 2022 10:24:43 -0600
-Message-Id: <20220309162454.123006-2-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
-References: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+        Wed, 9 Mar 2022 11:34:55 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B35AC065
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:30:18 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id s11so2738128pfu.13
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:30:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OEKJ6HDfRbAYXq1y3GQ16S8ECnj8rGvJ1M6VsKHeWho=;
+        b=oIHRdIQt5LoDmfPbY/G+bBH9o203m/KAHGz2i3DiFvY04vAFtOZbiV2VNw1Bco6aPR
+         7KbjGoeqlwQ3COOJKgMqcvt6n0uAgO8pXJ9sECo3BMw6jNYxt57ENxj/F5kjvVMnCAXv
+         jY2cx0MvlUyBrD5/D8cKaWx8Xmj0/ViDCRVWQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OEKJ6HDfRbAYXq1y3GQ16S8ECnj8rGvJ1M6VsKHeWho=;
+        b=Vl4bEM4f/mkLUqjDzl/UyRkQD7cDDaFkuTFtbMKIXAVBo7djmZSfcK60CFAVWJo8Te
+         SMrSo39yrOI/HD7g+5P7Q3tVdosHghKXQYo6R7Zt6xVOUpJD4Oe91yHZlnes6RDjGL4y
+         OUsAizSCOXR9vL9kOT4uLq2+EBxKu3nSLfkVC+bxqyWrk9Rn71PwDbO7EgLlfLLM4NOi
+         YDy2zAtRul5tnOaENaz7eFlOpxuDcOfqrsOMKS1R6BnGCjForzzP6p97gwUJRcKR8ebl
+         xUkRqWndFAFU5Yid76tzKzB/ZEGAE15tBsaNDEyxSDOPd8mew3JPa5kG/BH2wr0+qWK/
+         bKkw==
+X-Gm-Message-State: AOAM5317THoSZttNoCQFONKVNvSyHSclSlnpaYOTDvaocbhSaK9EH1oq
+        3jPGxj2IGoClrV2KxIUkIfZlbA==
+X-Google-Smtp-Source: ABdhPJysLOSUH1ejLQlt60xHSX+d3Bmy5LiPEBTc5BsVYUZY79bDZ5hXlYyKJbRu0bUDKCQC8AewHg==
+X-Received: by 2002:a05:6a00:140b:b0:4e1:2cbd:30ba with SMTP id l11-20020a056a00140b00b004e12cbd30bamr340497pfu.46.1646843418232;
+        Wed, 09 Mar 2022 08:30:18 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id g28-20020a63111c000000b00374646abc42sm2841805pgl.36.2022.03.09.08.30.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 08:30:17 -0800 (PST)
+Date:   Wed, 9 Mar 2022 08:30:17 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Michael Ellerman <patch-notifications@ellerman.id.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Helge Deller <deller@gmx.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Paul Mackerras <paulus@samba.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
+        linux-parisc@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH v4 00/13] Fix LKDTM for PPC64/IA64/PARISC v4
+Message-ID: <202203090829.53A243306@keescook>
+References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
+ <164674125384.3322453.12551849351633372798.b4-ty@ellerman.id.au>
+ <87r17bnbxx.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nRz7t-005hAS-3k;;;mid=<20220309162454.123006-2-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18NPI0fwGnL/QDFI18nl9zROcIqRJPmxUU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 02/13] ptrace/arm: Rename tracehook_report_syscall report_syscall
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87r17bnbxx.fsf@mpe.ellerman.id.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make the arm and arm64 code more concise and less confusing by
-renaming the architecture specific tracehook_report_syscall to
-report_syscall.
+On Wed, Mar 09, 2022 at 12:37:14PM +1100, Michael Ellerman wrote:
+> Michael Ellerman <patch-notifications@ellerman.id.au> writes:
+> > On Tue, 15 Feb 2022 13:40:55 +0100, Christophe Leroy wrote:
+> >> PPC64/IA64/PARISC have function descriptors. LKDTM doesn't work
+> >> on those three architectures because LKDTM messes up function
+> >> descriptors with functions.
+> >> 
+> >> This series does some cleanup in the three architectures and
+> >> refactors function descriptors so that it can then easily use it
+> >> in a generic way in LKDTM.
+> >> 
+> >> [...]
+> >
+> > Applied to powerpc/next.
+> 
+> I also have it in an rc2-based topic branch if there are any merge
+> conflicts that people want to resolve, I don't see any in linux-next at
+> the moment though.
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/log/?h=topic/func-desc-lkdtm
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- arch/arm/kernel/ptrace.c   | 7 +++----
- arch/arm64/kernel/ptrace.c | 7 +++----
- 2 files changed, 6 insertions(+), 8 deletions(-)
+Thanks! I've got some core changes coming for lkdtm, but I'm waiting
+until after the merge window to rebase them and get them into -next.
 
-diff --git a/arch/arm/kernel/ptrace.c b/arch/arm/kernel/ptrace.c
-index 43b963ea4a0e..e5aa3237853d 100644
---- a/arch/arm/kernel/ptrace.c
-+++ b/arch/arm/kernel/ptrace.c
-@@ -831,8 +831,7 @@ enum ptrace_syscall_dir {
- 	PTRACE_SYSCALL_EXIT,
- };
- 
--static void tracehook_report_syscall(struct pt_regs *regs,
--				    enum ptrace_syscall_dir dir)
-+static void report_syscall(struct pt_regs *regs, enum ptrace_syscall_dir dir)
- {
- 	unsigned long ip;
- 
-@@ -856,7 +855,7 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs)
- 	int scno;
- 
- 	if (test_thread_flag(TIF_SYSCALL_TRACE))
--		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
-+		report_syscall(regs, PTRACE_SYSCALL_ENTER);
- 
- 	/* Do seccomp after ptrace; syscall may have changed. */
- #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
-@@ -897,5 +896,5 @@ asmlinkage void syscall_trace_exit(struct pt_regs *regs)
- 		trace_sys_exit(regs, regs_return_value(regs));
- 
- 	if (test_thread_flag(TIF_SYSCALL_TRACE))
--		tracehook_report_syscall(regs, PTRACE_SYSCALL_EXIT);
-+		report_syscall(regs, PTRACE_SYSCALL_EXIT);
- }
-diff --git a/arch/arm64/kernel/ptrace.c b/arch/arm64/kernel/ptrace.c
-index 39dbdfdc38d3..b7845575f86f 100644
---- a/arch/arm64/kernel/ptrace.c
-+++ b/arch/arm64/kernel/ptrace.c
-@@ -1792,8 +1792,7 @@ enum ptrace_syscall_dir {
- 	PTRACE_SYSCALL_EXIT,
- };
- 
--static void tracehook_report_syscall(struct pt_regs *regs,
--				     enum ptrace_syscall_dir dir)
-+static void report_syscall(struct pt_regs *regs, enum ptrace_syscall_dir dir)
- {
- 	int regno;
- 	unsigned long saved_reg;
-@@ -1842,7 +1841,7 @@ int syscall_trace_enter(struct pt_regs *regs)
- 	unsigned long flags = read_thread_flags();
- 
- 	if (flags & (_TIF_SYSCALL_EMU | _TIF_SYSCALL_TRACE)) {
--		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
-+		report_syscall(regs, PTRACE_SYSCALL_ENTER);
- 		if (flags & _TIF_SYSCALL_EMU)
- 			return NO_SYSCALL;
- 	}
-@@ -1870,7 +1869,7 @@ void syscall_trace_exit(struct pt_regs *regs)
- 		trace_sys_exit(regs, syscall_get_return_value(current, regs));
- 
- 	if (flags & (_TIF_SYSCALL_TRACE | _TIF_SINGLESTEP))
--		tracehook_report_syscall(regs, PTRACE_SYSCALL_EXIT);
-+		report_syscall(regs, PTRACE_SYSCALL_EXIT);
- 
- 	rseq_syscall(regs);
- }
 -- 
-2.29.2
-
+Kees Cook
