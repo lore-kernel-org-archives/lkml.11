@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2952EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235821AbiCIRrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:47:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
+        id S236560AbiCIRrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:47:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236296AbiCIRq5 (ORCPT
+        with ESMTP id S236591AbiCIRrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:46:57 -0500
+        Wed, 9 Mar 2022 12:47:10 -0500
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EB0E3C5D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:45:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1B411E3D9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:46:06 -0800 (PST)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KDKNC0sf9z9sTQ;
-        Wed,  9 Mar 2022 18:45:15 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4KDKNF0fN3z9sTS;
+        Wed,  9 Mar 2022 18:45:17 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RSGCSf_gVQVT; Wed,  9 Mar 2022 18:45:15 +0100 (CET)
+        with ESMTP id bw4yrIEQ2HL5; Wed,  9 Mar 2022 18:45:17 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN02jYkz9sTS;
-        Wed,  9 Mar 2022 18:45:04 +0100 (CET)
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN10vz1z9sTV;
+        Wed,  9 Mar 2022 18:45:05 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 424F28B786;
-        Wed,  9 Mar 2022 18:45:04 +0100 (CET)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0A5388B763;
+        Wed,  9 Mar 2022 18:45:05 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id yTn6sHsrOdJ4; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
+        with ESMTP id RunPUUwNT2DJ; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.27])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 07D998B792;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E7B6F8B78B;
         Wed,  9 Mar 2022 18:45:02 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229Hj0Q53619072
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229HiuXO3619026
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 9 Mar 2022 18:45:00 +0100
+        Wed, 9 Mar 2022 18:44:56 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229Hj0Lt3619071;
-        Wed, 9 Mar 2022 18:45:00 +0100
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229Hit9h3619025;
+        Wed, 9 Mar 2022 18:44:55 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -51,129 +51,189 @@ Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-mm@kvack.org, akpm@linux-foundation.org,
         catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v8 14/14] powerpc: Simplify and move arch_randomize_brk()
-Date:   Wed,  9 Mar 2022 18:44:48 +0100
-Message-Id: <e932b8c46681634e4b5d852c07e287b829de77f8.1646847562.git.christophe.leroy@csgroup.eu>
+        linux-arm-kernel@lists.infradead.org,
+        Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v8 03/14] mm, hugetlbfs: Allow an arch to always use generic versions of get_unmapped_area functions
+Date:   Wed,  9 Mar 2022 18:44:37 +0100
+Message-Id: <82ebdfa2f2244d286a2f97a16549ff334438261b.1646847561.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 References: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847883; l=3535; s=20211009; h=from:subject:message-id; bh=m8/bRotc0cgZPMEveh9v8pqEIJxpWDsSnOKuKTObI2Q=; b=YGBpwgh4PoZQFhFaREAeLU/2Vhlwbby/NZsYDjaE6th2MphGJoPw0aF6+aAWNSYurzkF7QrtlNvS yasMMlnjD0sP+jG0tmQ40RaCpJeQW7cFN154xroL4Qr1GPCSR0Nx
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847882; l=6083; s=20211009; h=from:subject:message-id; bh=thpAysBeMixL/GwjpD3NdHaQCVCGsiEZQtTYyQo5FGA=; b=ZJQoobZAfE0OgcobH4551vlxvjOSA/UDrvkLYVLZY5o3CuyKIArtP/7CQu5EwD/j8V3CsJYmbT5o xs6hdFEEB8SAt5qJUh2aHzmLPt/6KoieZL8Vw3efATPOAebAWGoP
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch_randomize_brk() is only needed for hash on book3s/64, for other
-platforms the one provided by the default mmap layout is good enough.
+Unlike most architectures, powerpc can only define at runtime
+if it is going to use the generic arch_get_unmapped_area() or not.
 
-Move it to hash_utils.c and use randomize_page() like the generic one.
+Today, powerpc has a copy of the generic arch_get_unmapped_area()
+because when selection HAVE_ARCH_UNMAPPED_AREA the generic
+arch_get_unmapped_area() is not available.
 
-And properly opt out the radix case instead of making an assumption
-on mmu_highuser_ssize.
+Rename it generic_get_unmapped_area() and make it independent of
+HAVE_ARCH_UNMAPPED_AREA.
 
-Also change to a 32M range like most other architectures instead of 8M.
+Do the same for arch_get_unmapped_area_topdown() versus
+HAVE_ARCH_UNMAPPED_AREA_TOPDOWN.
+
+Do the same for hugetlb_get_unmapped_area() versus
+HAVE_ARCH_HUGETLB_UNMAPPED_AREA.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
 ---
- arch/powerpc/kernel/process.c         | 41 ---------------------------
- arch/powerpc/mm/book3s64/hash_utils.c | 19 +++++++++++++
- 2 files changed, 19 insertions(+), 41 deletions(-)
+ fs/hugetlbfs/inode.c     | 17 +++++++++++++----
+ include/linux/hugetlb.h  |  5 +++++
+ include/linux/sched/mm.h |  9 +++++++++
+ mm/mmap.c                | 31 ++++++++++++++++++++++++-------
+ 4 files changed, 51 insertions(+), 11 deletions(-)
 
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 984813a4d5dc..e7f809bdd433 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -34,10 +34,8 @@
- #include <linux/ftrace.h>
- #include <linux/kernel_stat.h>
- #include <linux/personality.h>
--#include <linux/random.h>
- #include <linux/hw_breakpoint.h>
- #include <linux/uaccess.h>
--#include <linux/elf-randomize.h>
- #include <linux/pkeys.h>
- #include <linux/seq_buf.h>
+diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+index a7c6c7498be0..ba15a85c7dfb 100644
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -195,7 +195,6 @@ static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
+  * Called under mmap_write_lock(mm).
+  */
  
-@@ -2313,42 +2311,3 @@ unsigned long arch_align_stack(unsigned long sp)
- 		sp -= get_random_int() & ~PAGE_MASK;
- 	return sp & ~0xf;
+-#ifndef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
+ static unsigned long
+ hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
+ 		unsigned long len, unsigned long pgoff, unsigned long flags)
+@@ -244,9 +243,10 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
+ 	return addr;
  }
--
--static inline unsigned long brk_rnd(void)
--{
--        unsigned long rnd = 0;
--
--	/* 8MB for 32bit, 1GB for 64bit */
--	if (is_32bit_task())
--		rnd = (get_random_long() % (1UL<<(23-PAGE_SHIFT)));
--	else
--		rnd = (get_random_long() % (1UL<<(30-PAGE_SHIFT)));
--
--	return rnd << PAGE_SHIFT;
--}
--
--unsigned long arch_randomize_brk(struct mm_struct *mm)
--{
--	unsigned long base = mm->brk;
--	unsigned long ret;
--
--#ifdef CONFIG_PPC_BOOK3S_64
--	/*
--	 * If we are using 1TB segments and we are allowed to randomise
--	 * the heap, we can put it above 1TB so it is backed by a 1TB
--	 * segment. Otherwise the heap will be in the bottom 1TB
--	 * which always uses 256MB segments and this may result in a
--	 * performance penalty.
--	 */
--	if (!radix_enabled() && !is_32bit_task() && (mmu_highuser_ssize == MMU_SEGSIZE_1T))
--		base = max_t(unsigned long, mm->brk, 1UL << SID_SHIFT_1T);
--#endif
--
--	ret = PAGE_ALIGN(base + brk_rnd());
--
--	if (ret < mm->brk)
--		return mm->brk;
--
--	return ret;
--}
--
-diff --git a/arch/powerpc/mm/book3s64/hash_utils.c b/arch/powerpc/mm/book3s64/hash_utils.c
-index 43ecad8f9564..72a3eca02449 100644
---- a/arch/powerpc/mm/book3s64/hash_utils.c
-+++ b/arch/powerpc/mm/book3s64/hash_utils.c
-@@ -37,6 +37,8 @@
- #include <linux/cpu.h>
- #include <linux/pgtable.h>
- #include <linux/debugfs.h>
-+#include <linux/random.h>
-+#include <linux/elf-randomize.h>
  
- #include <asm/interrupt.h>
- #include <asm/processor.h>
-@@ -2133,3 +2135,20 @@ void __init print_system_hash_info(void)
- 	if (htab_hash_mask)
- 		pr_info("htab_hash_mask    = 0x%lx\n", htab_hash_mask);
+-static unsigned long
+-hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+-		unsigned long len, unsigned long pgoff, unsigned long flags)
++unsigned long
++generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
++				  unsigned long len, unsigned long pgoff,
++				  unsigned long flags)
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma;
+@@ -282,6 +282,15 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+ 	return hugetlb_get_unmapped_area_bottomup(file, addr, len,
+ 			pgoff, flags);
  }
 +
-+unsigned long arch_randomize_brk(struct mm_struct *mm)
++#ifndef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
++static unsigned long
++hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
++			  unsigned long len, unsigned long pgoff,
++			  unsigned long flags)
 +{
-+	/*
-+	 * If we are using 1TB segments and we are allowed to randomise
-+	 * the heap, we can put it above 1TB so it is backed by a 1TB
-+	 * segment. Otherwise the heap will be in the bottom 1TB
-+	 * which always uses 256MB segments and this may result in a
-+	 * performance penalty.
-+	 */
-+	if (is_32bit_task())
-+		return randomize_page(mm->brk, SZ_32M);
-+	else if (!radix_enabled() && mmu_highuser_ssize == MMU_SEGSIZE_1T)
-+		return randomize_page(max_t(unsigned long, mm->brk, SZ_1T), SZ_1G);
-+	else
-+		return randomize_page(mm->brk, SZ_1G);
++	return generic_hugetlb_get_unmapped_area(file, addr, len, pgoff, flags);
 +}
+ #endif
+ 
+ static size_t
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+index d1897a69c540..d9ce1fe3a403 100644
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -513,6 +513,11 @@ unsigned long hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+ 					unsigned long flags);
+ #endif /* HAVE_ARCH_HUGETLB_UNMAPPED_AREA */
+ 
++unsigned long
++generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
++				  unsigned long len, unsigned long pgoff,
++				  unsigned long flags);
++
+ /*
+  * huegtlb page specific state flags.  These flags are located in page.private
+  * of the hugetlb head page.  Functions created via the below macros should be
+diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+index aa5f09ca5bcf..1dcf54360aea 100644
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -144,6 +144,15 @@ extern unsigned long
+ arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
+ 			  unsigned long len, unsigned long pgoff,
+ 			  unsigned long flags);
++
++unsigned long
++generic_get_unmapped_area(struct file *filp, unsigned long addr,
++			  unsigned long len, unsigned long pgoff,
++			  unsigned long flags);
++unsigned long
++generic_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
++				  unsigned long len, unsigned long pgoff,
++				  unsigned long flags);
+ #else
+ static inline void arch_pick_mmap_layout(struct mm_struct *mm,
+ 					 struct rlimit *rlim_stack) {}
+diff --git a/mm/mmap.c b/mm/mmap.c
+index d445c1b9d606..e062a4462db5 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2138,10 +2138,10 @@ unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info)
+  *
+  * This function "knows" that -ENOMEM has the bits set.
+  */
+-#ifndef HAVE_ARCH_UNMAPPED_AREA
+ unsigned long
+-arch_get_unmapped_area(struct file *filp, unsigned long addr,
+-		unsigned long len, unsigned long pgoff, unsigned long flags)
++generic_get_unmapped_area(struct file *filp, unsigned long addr,
++			  unsigned long len, unsigned long pgoff,
++			  unsigned long flags)
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma, *prev;
+@@ -2171,17 +2171,25 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+ 	info.align_offset = 0;
+ 	return vm_unmapped_area(&info);
+ }
++
++#ifndef HAVE_ARCH_UNMAPPED_AREA
++unsigned long
++arch_get_unmapped_area(struct file *filp, unsigned long addr,
++		       unsigned long len, unsigned long pgoff,
++		       unsigned long flags)
++{
++	return generic_get_unmapped_area(filp, addr, len, pgoff, flags);
++}
+ #endif
+ 
+ /*
+  * This mmap-allocator allocates new areas top-down from below the
+  * stack's low limit (the base):
+  */
+-#ifndef HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
+ unsigned long
+-arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
+-			  unsigned long len, unsigned long pgoff,
+-			  unsigned long flags)
++generic_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
++				  unsigned long len, unsigned long pgoff,
++				  unsigned long flags)
+ {
+ 	struct vm_area_struct *vma, *prev;
+ 	struct mm_struct *mm = current->mm;
+@@ -2229,6 +2237,15 @@ arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
+ 
+ 	return addr;
+ }
++
++#ifndef HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
++unsigned long
++arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
++			       unsigned long len, unsigned long pgoff,
++			       unsigned long flags)
++{
++	return generic_get_unmapped_area_topdown(filp, addr, len, pgoff, flags);
++}
+ #endif
+ 
+ unsigned long
 -- 
 2.34.1
 
