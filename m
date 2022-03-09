@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A27FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236361AbiCIQTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        id S236458AbiCIQTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:19:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236183AbiCIQJl (ORCPT
+        with ESMTP id S236218AbiCIQJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA20CB1AAF;
-        Wed,  9 Mar 2022 08:08:03 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30857C2E65;
+        Wed,  9 Mar 2022 08:08:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 543B6B82220;
-        Wed,  9 Mar 2022 16:08:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3B8C340E8;
-        Wed,  9 Mar 2022 16:08:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA374B82220;
+        Wed,  9 Mar 2022 16:08:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32B66C340E8;
+        Wed,  9 Mar 2022 16:08:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842081;
-        bh=sCcnUuF8FK5ROo5bLztXlk70IFYHouVroVyN4ACPzSI=;
+        s=korg; t=1646842089;
+        bh=aznECDtrCLjMhduI5pusl4speT9yyZT4RO1s2dy+4IM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aoHjkKvtVM0Azq9inmm2M24kJGj/ZvGAGr4DKL1F7dw4YGDg5fF6EknUusOTJ9LCP
-         v0+Y/aoP7DBFP5Co+N+WqJYDL2fdl58UMQS5usAN8/cPQUHuO8ECKCUAQHvUOsSKbm
-         XBVSFYilzsVLm/MLJNhc7G5eaL0+GLcrr1SxjFek=
+        b=WkgfE4G1H91EVU+8QrMQO5mmH1wsliL43iXZI+2NpMhpUgLZaEsZn0FSKnDdCDiVt
+         EyCYNHQuJdcDF4TcP9bo4RAJcZhte+tYyHCHolgoBwKC9RXyHdkpTUYAfXGz1/xqg3
+         w16Es1gojvAHDw/VucHfChqNgpqOLT5bZ2bm6ZuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 09/43] x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
-Date:   Wed,  9 Mar 2022 16:59:53 +0100
-Message-Id: <20220309155900.008330596@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 38/43] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+Date:   Wed,  9 Mar 2022 17:00:22 +0100
+Message-Id: <20220309155900.834551052@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -50,93 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: James Morse <james.morse@arm.com>
 
-commit 0de05d056afdb00eca8c7bbb0c79a3438daf700c upstream.
+commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
 
-The commit
+KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
+implemented, and to preserve that state during migration through its
+firmware register interface.
 
-   44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
+Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
 
-added a warning for the "eIBRS + unprivileged eBPF" combination, which
-has been shown to be vulnerable against Spectre v2 BHB-based attacks.
-
-However, there's no warning about the "eIBRS + LFENCE retpoline +
-unprivileged eBPF" combo. The LFENCE adds more protection by shortening
-the speculation window after a mispredicted branch. That makes an attack
-significantly more difficult, even with unprivileged eBPF. So at least
-for now the logic doesn't warn about that combination.
-
-But if you then add SMT into the mix, the SMT attack angle weakens the
-effectiveness of the LFENCE considerably.
-
-So extend the "eIBRS + unprivileged eBPF" warning to also include the
-"eIBRS + LFENCE + unprivileged eBPF + SMT" case.
-
-  [ bp: Massage commit message. ]
-
-Suggested-by: Alyssa Milburn <alyssa.milburn@linux.intel.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ arch/arm64/include/uapi/asm/kvm.h |    5 +++++
+ arch/arm64/kvm/hypercalls.c       |   12 ++++++++++++
+ arch/arm64/kvm/psci.c             |   18 +++++++++++++++++-
+ 3 files changed, 34 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -653,12 +653,27 @@ static inline const char *spectre_v2_mod
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -281,6 +281,11 @@ struct kvm_arm_copy_mte_tags {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED     	(1U << 4)
  
- #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
-+#define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
++
+ /* SVE registers */
+ #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
  
- #ifdef CONFIG_BPF_SYSCALL
- void unpriv_ebpf_notify(int new_state)
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -107,6 +107,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu
+ 				break;
+ 			}
+ 			break;
++		case ARM_SMCCC_ARCH_WORKAROUND_3:
++			switch (arm64_get_spectre_bhb_state()) {
++			case SPECTRE_VULNERABLE:
++				break;
++			case SPECTRE_MITIGATED:
++				val[0] = SMCCC_RET_SUCCESS;
++				break;
++			case SPECTRE_UNAFFECTED:
++				val[0] = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
++				break;
++			}
++			break;
+ 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
+ 			val[0] = SMCCC_RET_SUCCESS;
+ 			break;
+--- a/arch/arm64/kvm/psci.c
++++ b/arch/arm64/kvm/psci.c
+@@ -406,7 +406,7 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
+ 
+ int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
  {
--	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+	if (new_state)
-+		return;
-+
-+	/* Unprivileged eBPF is enabled */
-+
-+	switch (spectre_v2_enabled) {
-+	case SPECTRE_V2_EIBRS:
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+		break;
-+	case SPECTRE_V2_EIBRS_LFENCE:
-+		if (sched_smt_active())
-+			pr_err(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
-+		break;
-+	default:
-+		break;
-+	}
+-	return 3;		/* PSCI version and two workaround registers */
++	return 4;		/* PSCI version and three workaround registers */
  }
- #endif
  
-@@ -1118,6 +1133,10 @@ void cpu_bugs_smt_update(void)
- {
- 	mutex_lock(&spec_ctrl_mutex);
+ int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+@@ -420,6 +420,9 @@ int kvm_arm_copy_fw_reg_indices(struct k
+ 	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
+ 		return -EFAULT;
  
-+	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
-+	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
-+		pr_warn_once(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
++	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
++		return -EFAULT;
 +
- 	switch (spectre_v2_user_stibp) {
- 	case SPECTRE_V2_USER_NONE:
+ 	return 0;
+ }
+ 
+@@ -459,6 +462,17 @@ static int get_kernel_wa_level(u64 regid
+ 		case SPECTRE_VULNERABLE:
+ 			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+ 		}
++		break;
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
++		switch (arm64_get_spectre_bhb_state()) {
++		case SPECTRE_VULNERABLE:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
++		case SPECTRE_MITIGATED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
++		case SPECTRE_UNAFFECTED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
++		}
++		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -475,6 +489,7 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *
  		break;
-@@ -1793,7 +1812,11 @@ static ssize_t spectre_v2_show_state(cha
- 		return sprintf(buf, "Vulnerable: LFENCE\n");
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+ 		break;
+ 	default:
+@@ -520,6 +535,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *
+ 	}
  
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
--		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+		return sprintf(buf, "Vulnerable: eIBRS with unprivileged eBPF\n");
-+
-+	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
-+	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
-+		return sprintf(buf, "Vulnerable: eIBRS+LFENCE with unprivileged eBPF and SMT\n");
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+ 			return -EINVAL;
  
- 	return sprintf(buf, "%s%s%s%s%s%s\n",
- 		       spectre_v2_strings[spectre_v2_enabled],
 
 
