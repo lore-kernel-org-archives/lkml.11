@@ -2,103 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 272F4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiCISzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:55:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
+        id S237044AbiCIS6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:58:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235550AbiCISzq (ORCPT
+        with ESMTP id S235281AbiCIS6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:55:46 -0500
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28C88D69E;
-        Wed,  9 Mar 2022 10:54:47 -0800 (PST)
-Received: by mail-yb1-f170.google.com with SMTP id g1so6340046ybe.4;
-        Wed, 09 Mar 2022 10:54:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZbXguUA3SAuK+Qqg58CaspcW6OAlxtt0qvmLSsMJ9ok=;
-        b=c1lrVoJkoq+65QcVYPEdVKLR1VZPBZQ/QDoDE0LUcioDfJPbYn6YVsEijo7BE47H4/
-         ZvYPehd0Ze907HZPub4sKVgKIIs7ANjRU4tPdUcmrvoPFIuVj5ipbe/vgMkZQGS/kx/b
-         zzhe0SmDNE4GIgVHcUrdbM+aiiKcbMu5y7em5f0M0zridtbyGQmJDoOuecqxSnx9Saiy
-         9N7AmdfLN9fPEgN2E754W4Ml4/nyfqiIEFTCa1ivFy9H7eZKcxNDbeCFFmESo0mpRDLz
-         okWUGV/t2UMQzDfUVD3OoKEqYLF2iDUoy505+u1W17FZOfzLFRf9DxbLRwtZTUtuOpaL
-         uVEA==
-X-Gm-Message-State: AOAM530Zp5xDjN9rLalijCwYz7cVCehS0/YOjK99ggG1NXKwibrlyZit
-        4tZwr0fHZpkcTcyUWVy6kfCwM8KUBG4O9Ox20UI=
-X-Google-Smtp-Source: ABdhPJySslQluMapftZwOdQuwtvKtkaH3gpq/5V55iNkRKUk3CWTKt28vTn174ahSJl2cFeLrBHio+MzDgNAc95EAoI=
-X-Received: by 2002:a25:fe10:0:b0:625:262f:e792 with SMTP id
- k16-20020a25fe10000000b00625262fe792mr950349ybe.365.1646852086908; Wed, 09
- Mar 2022 10:54:46 -0800 (PST)
+        Wed, 9 Mar 2022 13:58:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5371FCEE;
+        Wed,  9 Mar 2022 10:57:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9671DB82357;
+        Wed,  9 Mar 2022 18:57:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2192EC340EC;
+        Wed,  9 Mar 2022 18:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646852258;
+        bh=823gQkzc3z2Ax/PB0AF2EV05ZOJdbyNdg1TPhRMlf2Q=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=FuJ4NbNq6ZUsKFhmbJ2zFX5viVTa8gA45bLJJZRHiFOzTeSCo3hBGt/tPAM32fL0z
+         ooTODTKvoDEPUwxniaQSdeA8mFp02c4vFjMPMLJ4hvz5j+lRhUJds/ZlgHbDqyPr3A
+         fD0ZaKpYDQGnxagXfQJ0s4CXXOIeP93L1/3+m/yPbauUZD6dLxFOQ5UrWPIZ/BPnHB
+         tkD+2moevzlwOtOY5NVtvxqIFKqQ4cn3FzcfbjYzqUQd2iBEOmE8HZYvbgCuCx+xKL
+         gS7if2l5nKWHcrAOCK73sr+mm47SCj3LqlTASTm868D8aSod/TWX98LeI4xfcbMqCz
+         VDUrsMZZo2MCA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220309012351.616826-1-Jinzhou.Su@amd.com> <YiisRXfrIco8hnXf@amd.com>
-In-Reply-To: <YiisRXfrIco8hnXf@amd.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 9 Mar 2022 19:54:35 +0100
-Message-ID: <CAJZ5v0ioLFryuiE7pg1ywvj22TSpV6N9ADak3rQG8z8GYqF+rw@mail.gmail.com>
-Subject: Re: [PATCH v3 0/4] Add tracer tool for AMD P-State driver
-To:     Huang Rui <ray.huang@amd.com>,
-        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>
-Cc:     "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "dsmythies@telus.net" <dsmythies@telus.net>,
-        "viresh.kumar@linaro.org" <viresh.kumar@linaro.org>,
-        "todd.e.brandt@linux.intel.com" <todd.e.brandt@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Sharma, Deepak" <Deepak.Sharma@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
-        "Yuan, Perry" <Perry.Yuan@amd.com>,
-        "Meng, Li (Jassmine)" <Li.Meng@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220304011703.2061466-1-chi.minghao@zte.com.cn>
+References: <20220304011703.2061466-1-chi.minghao@zte.com.cn>
+Subject: Re: [PATCH] clk/rockchip: Use of_device_get_match_data()
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     heiko@sntech.de, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+To:     cgel.zte@gmail.com, mturquette@baylibre.com
+Date:   Wed, 09 Mar 2022 10:57:36 -0800
+User-Agent: alot/0.10
+Message-Id: <20220309185738.2192EC340EC@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 2:32 PM Huang Rui <ray.huang@amd.com> wrote:
->
-> On Wed, Mar 09, 2022 at 09:23:47AM +0800, Su, Jinzhou (Joe) wrote:
-> > Hello,
-> >
-> > intel_pstate_tracer is a useful tool to analyze the performance of
-> > intel_pstate driver. We upstream out AMD P-state driver into Linux
-> > kernel recently and like to use similar tool to tune the performance
-> > of the driver.
-> >
-> > I modified intel_pstate_tracer.py then it could import as a module to
-> > analyze AMD P-State trace event. Other trace event also can benifit from
-> > this change once they need this tool.
-> >
-> > intel_pstate_tracer could be used as the same way as before and the
-> > original functionality isn't broken.
-> >
-> > Changes from V2->V3
-> >
-> > -fix typo in amd-pstate RST
-> >
-> > Changes from V1->V2
-> >
-> > -Add tracer documentation in amd-pstate RST
-> >
-> > -fix typo in amd_pstate_trace.py
-> >
-> > -add "Co-developed-by" in patch 1/4
-> >
-> > Thanks,
-> > Joe
-> >
-> > Jinzhou Su (4):
-> >   cpufreq: amd-pstate: Add more tracepoint for AMD P-State module
-> >   tools/power/x86/intel_pstate_tracer: make tracer as a module
-> >   tools/power/x86/amd_pstate_tracer: Add tracer tool for AMD P-state
-> >   Documentation: amd-pstate: add tracer tool introduction
->
-> Series are Reviewed-by: Huang Rui <ray.huang@amd.com>
+Quoting cgel.zte@gmail.com (2022-03-03 17:17:03)
+> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+>=20
+> Use of_device_get_match_data() to simplify the code.
+>=20
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> ---
+>  drivers/clk/rockchip/clk-rk3399.c | 8 +-------
+>  1 file changed, 1 insertion(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/clk/rockchip/clk-rk3399.c b/drivers/clk/rockchip/clk=
+-rk3399.c
+> index 306910a3a0d3..b1b67bfb63b8 100644
+> --- a/drivers/clk/rockchip/clk-rk3399.c
+> +++ b/drivers/clk/rockchip/clk-rk3399.c
+> @@ -1634,14 +1634,8 @@ static const struct of_device_id clk_rk3399_match_=
+table[] =3D {
+>  static int __init clk_rk3399_probe(struct platform_device *pdev)
+>  {
+>         struct device_node *np =3D pdev->dev.of_node;
+> -       const struct of_device_id *match;
+>         const struct clk_rk3399_inits *init_data;
+> -
+> -       match =3D of_match_device(clk_rk3399_match_table, &pdev->dev);
+> -       if (!match || !match->data)
+> -               return -EINVAL;
+> -
+> -       init_data =3D match->data;
+> +       init_data =3D of_device_get_match_data(&pdev->dev);
 
-All patches in the series have been applied as 5.18 material, thanks!
+The translation doesn't look equivalent. Before we would bail out of
+probe if match data isn't there with an error. That isn't possible of
+course with further investigation but please make a note of this in the
+commit text to aid review. Also, please don't send new versions of
+patches in reply to previous versions of patches. It breaks my patch
+workflow. Thanks in advance.
+
+>         if (init_data->inits)
+>                 init_data->inits(np);
+>
