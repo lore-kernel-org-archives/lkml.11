@@ -2,277 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbiCIRGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:06:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
+        id S236829AbiCIRGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:06:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238960AbiCIREP (ORCPT
+        with ESMTP id S239217AbiCIREr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:04:15 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2348619E016
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:53:00 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d81518795fso19749617b3.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:53:00 -0800 (PST)
+        Wed, 9 Mar 2022 12:04:47 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924A24E384;
+        Wed,  9 Mar 2022 08:53:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646844838; x=1678380838;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=G1bxJYJjdpOMIN9t5kCC7s1P+jSUFkfrs8BPxS710Wc=;
+  b=CzaCxILhaCxCeS8I4q1i2qRBmkoucslpOvMYYv+zI/94BUv8sSBdXkzX
+   Xud7QqTXfBdsEaH8ml6HGuOLwW53bs4EKejyd4UhgGHtdUiZGyattDx+D
+   gjUInaH9uTyveEWHiw9SdVkDdfFZ3Jazf2Y2wcKTX+IHBQGdJ9DUjC3eU
+   oLNbjVFgLnXKDzb4xAbD2oi7/iFvRZ5Sklcg9VzIXrtKccZ6FqAjOGiAF
+   lnC2dCL31FK64EMXEjRuttzGIU2Q/zejWclg7HGpx77Dyn6JFq+SxapQU
+   2PgCPzvBwX98ernD0PH9JCsD8BYwEHPXKjabi1IMzPJ3BIsluBe5XmOX0
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
+   d="scan'208";a="148646595"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 09:53:57 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 09:53:56 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Mar 2022 09:53:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QIl2VVBrPGeLYh/QaUiQjwK6ZZVz0HlM7tIJrI5Z5VZo0FsyQYm7cDEZtNqgh76uZ2FaXAUfw6bfK0K+WV62/9EDkGeK6PU3J40vID43DFdw9HzdOl7nC3wdTPvLz7oQnC3G7UismX21wOZfMd+mK82tQP/5sBQ/RQ/gFhGF8A1EMwtXwg0BwBUOHXUjBGdAMerAurORLBSWbcGJv1TSytnyapaSeVrVqWx8TOzp4sAE8clKeNnfqzkyG28GyIVVwcTw737jSBst+ZjgnqEncJJZFMoQP5xCc2HoDMGBr65dHD0lPPq2RczqDqChCfktRyJRnJ29tBzh811pGlCOoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G1bxJYJjdpOMIN9t5kCC7s1P+jSUFkfrs8BPxS710Wc=;
+ b=iROAJBanC45D/SWeAo+sO49yz6Obw4ls4pYaIblmPKIx3baFTEyItnCYerZgRLBYm+VXe+VyQDwqmaeecjkLlZybmoaSXNyEC0XzFSZZUf6qQoCKEOwfVeWsAgdaFZQ54ata8yXo3DBlQk3cfPmZKAh9WV9hX59sjma/CeBubp0yLfe4qk59ZcY+EBACJEd5SPPKZKRvs+gIfo5FkytY92MV+OpYuqW3AE7q9pZMHdcv+meHhO4ZIrWo64Cm6rTYA1nK5l6QINK8I571LHcEKq5vPMlJyvtqlPjq1r3RfkKkTNLFVMFSDmNQaShm3BWguy7/tjkC7QX6yHehykiQkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=iI4tUDTwn0xfO1TZ7KSGGMNGPVBXGkFL9ZZA2HGZghg=;
-        b=X9nwYEkE+WqweWRkaCswHljXOOyceq5HLfdQ2h5VCa5BOpSfIMw+CfpAA66J3vFCf2
-         DnzE9UQtPeSlxG8o9pCfRDINTOEaiKErWwiNx6nfsrU8fAK+ceVUAS2JHMQD+AbI1jw8
-         DKHKfrO6gE3o4AH5kcy/Xl/EwVhaZ69JUDtMIle7+RpS6ZagXNItEvUcdhXBvlHBpDzH
-         l3fyRMp2q68ITY/BLJ3Wo+w0+hl26SwqRm77pi7ScO/UoZYTYj89rffHavcoKPlf9R6l
-         UekpqNxes8w71bhq9KSVr3VQ8aymhFsdmRvHHLK69SFOrSb8FaW4zH7Z8JHbBxJrrLrt
-         fypw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=iI4tUDTwn0xfO1TZ7KSGGMNGPVBXGkFL9ZZA2HGZghg=;
-        b=ZniQlagaw8Jw3eP5AA22kaQ0jFQSgEDvUl/4d1Fv9PrZ6fShZ/fpgkIg9EdhiGYjdh
-         3gBcyFVCtUfnJI3sHCkyzkmCBAy7FgJn4PGmmX7jD0saAe6NjGaKlrOmFmCs7gdUG3Kv
-         2lsZiTqhANcsvj7DU36Em8e3TYoK+9Glrt2HhVD7SLLorJshq8vyiw2UWEj96p/GKNuZ
-         Qe4VHKK0Q+SVQKy8wrFrB8dqj5szX6lbhb3/FGOg6haL8gKYTFpda1cCY6FeNHi9S3ob
-         nyPtYGbLAtMCtrW/mublgc3+1dLQX+P4oZwF+C6xiY6iG8/oU21FvFAzeBdx0Rrx/krt
-         bO6w==
-X-Gm-Message-State: AOAM532NRdWVaTHiH47ujZAMpxBdj9dJoPEhske1LPbYS4gzkt0B9+Zh
-        9+TLaXI4sB0tJfJLIBxVYi1FrhvZkq96dTc=
-X-Google-Smtp-Source: ABdhPJyiYlANBNw1jaz9icxi5eZzNkYkUx7cFRm94KikzOWhS/qWZXLh4JI4RlXwg336vFv+RrJsOxkplJS3X04=
-X-Received: from tj2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:187])
- (user=tjmercier job=sendgmr) by 2002:a81:397:0:b0:2db:645b:c8e5 with SMTP id
- 145-20020a810397000000b002db645bc8e5mr567278ywd.421.1646844761009; Wed, 09
- Mar 2022 08:52:41 -0800 (PST)
-Date:   Wed,  9 Mar 2022 16:52:13 +0000
-In-Reply-To: <20220309165222.2843651-1-tjmercier@google.com>
-Message-Id: <20220309165222.2843651-4-tjmercier@google.com>
-Mime-Version: 1.0
-References: <20220309165222.2843651-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [RFC v3 3/8] dmabuf: Use the GPU cgroup charge/uncharge APIs
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     kaleshsingh@google.com, Kenny.Ho@amd.com,
-        "T.J. Mercier" <tjmercier@google.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G1bxJYJjdpOMIN9t5kCC7s1P+jSUFkfrs8BPxS710Wc=;
+ b=PrnMEfgb7/A3DBvPhTja5P+vE2+1fJAvBm+yBDfMF3E66MkN88z5I8hOS7iDWXfTGblADzKoOgpOnmUAID29a+mB0o72iIhZSACGPI9lp8JhKIcGXyXFXCX9ZafQxgsEYwFPsqWgE8q2Lo4gh/BeQLQnSCLlgD7QpYK81bvqTX4=
+Received: from DM8PR11MB5687.namprd11.prod.outlook.com (2603:10b6:8:22::7) by
+ DM6PR11MB3852.namprd11.prod.outlook.com (2603:10b6:5:13a::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5061.21; Wed, 9 Mar 2022 16:53:46 +0000
+Received: from DM8PR11MB5687.namprd11.prod.outlook.com
+ ([fe80::fc32:96a4:933f:194f]) by DM8PR11MB5687.namprd11.prod.outlook.com
+ ([fe80::fc32:96a4:933f:194f%4]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
+ 16:53:46 +0000
+From:   <Codrin.Ciubotariu@microchip.com>
+To:     <colin.i.king@gmail.com>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
+        <Nicolas.Ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <Claudiu.Beznea@microchip.com>, <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH][next] ASoC: atmel: mchp-pdmc: Fix spelling mistake
+ "microchopnes" -> "microphones"
+Thread-Topic: [PATCH][next] ASoC: atmel: mchp-pdmc: Fix spelling mistake
+ "microchopnes" -> "microphones"
+Thread-Index: AQHYM9SadTAEADrffUavYDImKC5Uaqy3RNIA
+Date:   Wed, 9 Mar 2022 16:53:46 +0000
+Message-ID: <5438f75c-607c-f6a1-e403-bc07444d2ec4@microchip.com>
+References: <20220309164116.178685-1-colin.i.king@gmail.com>
+In-Reply-To: <20220309164116.178685-1-colin.i.king@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7cafb27f-8069-499c-5e75-08da01ed60be
+x-ms-traffictypediagnostic: DM6PR11MB3852:EE_
+x-microsoft-antispam-prvs: <DM6PR11MB3852692635C90F967042B5B1E70A9@DM6PR11MB3852.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NTl50PGhtPW1FAaAiNZPmF1AQCWPe6aknoNvCNjoaOnl1Vyj4FLCi2PU911dQJuPbcpCDP7LWgeMEIESwa7hDQ2+P//szM5KZOphqhRoCsCR+I43CxXNegkGslwC+HV7qEw/VM5VEp2llxgzzIsMZyf45uziHkXGOmosT/IltZ1GTSk3sP8y/av1ZxgjM530BftAoiZbNjXnP0oXS+9tz5nd6+h3xcDUtkY18HLpYR7m9mK5p0aBCzMsFScapfmEpnBlbAX/b0yDGXlRKQaMULmQA4pk9DrCPkMvCLcsSZlUU/sbUuspPfY3ZqCjLqjkjV9oOZWohlT0/Cc9Ly91FepHgk/Pk1Uqehqnu7A3QfBl7tJH2sGt6lZUzINOioa5w6TIgIiSapTlqhuNBAfs54RYFkh6Fedaztu8QmmBPAtrdqgdAJz9c59UtyZFU+DH/b0WfH1+u85nHuejJC048X4avrTebHjp87uf8lP64J50QZgUZHWO5J1ZxvEDSDg1IJycdqF4VksqHoUCdsfkvvdheKACsANaEAUMvT6k2kX2RQ4bK6utIAmyBJCAQ7u96gy67PBgxppJ6W7xqAGXslzCiN4GfD5xtYiFCSUjHbJ7UgBHGB3rU8xrJNgVveArFPM3TXfAWzaEuu7RWB7DU31hfzxvOlOigrV1aZ7m8FvbtG3ZXHexBLokbnuUTcZBcW8xOQJz3TO4rOar7PGrayuHkZPwlvAuF145cpeVh+sR5CaBC8oplB1liyEgoA1y/gtpGlz7M6uPAOH3KhtSQEs0U0xnqKP5udiUBNSy0j0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5687.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(122000001)(921005)(83380400001)(6486002)(54906003)(5660300002)(110136005)(71200400001)(7416002)(76116006)(8676002)(4326008)(8936002)(66446008)(66556008)(64756008)(66476007)(66946007)(316002)(91956017)(2616005)(26005)(186003)(508600001)(6512007)(53546011)(2906002)(38070700005)(31696002)(6506007)(86362001)(36756003)(31686004)(558084003)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MklwL1NicWdOeURVQWp3K3QvdkpMNWdLKzNqb0dWampTSXFXQkpEVjBzUTZW?=
+ =?utf-8?B?QlRhaGtBOVRaNll5eEdTYkhJK1l3eGNUMnBWWDFZeTQzU3k3Q1d3bk91anQ1?=
+ =?utf-8?B?WXRQZUtLazB6M3BDYXNjOFpDamx1QS9wMnV5QUVqLzA3Vk9QK0hkcEUzd0Fk?=
+ =?utf-8?B?VkF6NVFBWGttL2ZDQWVTM1piQ3VRS1pLNytIM2lsNDFja01MUE1XelcxWUZU?=
+ =?utf-8?B?RDBiZUJ2TDN5eDd4ZzNTYmJMd29XYzBmQ241dmwra2pJQXA3cUMwVzQ5VzlF?=
+ =?utf-8?B?WXUwUDJaS2dzbEU0SzN5ekJwcXJnbzdRREMweWtiK2lXQkRxV3lTRjZqWGtF?=
+ =?utf-8?B?bDBlWWUwZW9lenY0RU56MlBoQkNjUi9XVUJVRS9TNzFaNmdiVlc2cmw3a3hW?=
+ =?utf-8?B?VmVPMXdkNlVTRW4rTmtoSG5jVlU4NTJZRTFFMzQzSlJFL2NrWWc3MmlQNTBR?=
+ =?utf-8?B?aFRZRy93VzZ4aE4yeHJzaWpOdFRLRlRaeTRna3Q4OTVlaDhUdm4rWmNZMUZh?=
+ =?utf-8?B?akdJZDFVR3NyZmZGZDBlOHRlYXN2ZzJsWk84YkNSTWtLZHN0UEUwZDdwSDlI?=
+ =?utf-8?B?cjQ1Nm5KclZiRkNUOHMrTDVPZ2lLOVBCemUwcWU1SmIwVlA5RVNtd3l4SmQ2?=
+ =?utf-8?B?YmdVSXhOOGViOEduNVpYNGxVK1ltcUFwYWY5YTFCTGhLWDNRUlBJS2tCMGdI?=
+ =?utf-8?B?NGx6NVZGaUFBUkZERDVXTmdBTGxLdUVhWXcwN0xTb2JBUE5oM2QxUk9hVzB2?=
+ =?utf-8?B?dERGcXBCaW5xVG50YTNycnR6a1k2a0J3emlHeTFmOWgreE5VTk1pZzhiTGtR?=
+ =?utf-8?B?THkvamhtZC9xdlY3STFoY1F3NVN0cTRrd2dCRlgzdWd5SEJjQW1JWUFQSkNx?=
+ =?utf-8?B?TDhLVi9uMFhPWnZ6UmsvNTE1aDJKdlNkdWV0N0NaaWc2WnlhelZ4N1dEelVB?=
+ =?utf-8?B?RHhVS1BVZTMvUXExdEdjMGcxT3hONWhKL3JFMDZpR1FxYWo3S3B0WFlRNkpq?=
+ =?utf-8?B?TnJGd2IvT3AvS3o5alQ2ays3NjJQQXZpT0EweHBBNCs5c2dXdkY3S1VWTEtm?=
+ =?utf-8?B?Z0ZjZUVNdEZiVzdJNi9qYy8yN3JiVTQvZlVpcFZER1p1K0xUMkRTOE8zMUdl?=
+ =?utf-8?B?OXcrU3JJV29XcXBkZ1IwelVwdmEvcFU5WU5kNWRwQmlJVWlGaW54amZLUHNX?=
+ =?utf-8?B?bTJIemd1M2lyNlBIeGtyUEE0c2c5dC9XY1ZvMXg1WHlOUmlNc1hFRTBSYjhE?=
+ =?utf-8?B?N2NBdlg1cmxKY1ZGeUpqV0dSZTkyV09zMjhac1BQM2xEWnJFMlVTTm9NZ0xq?=
+ =?utf-8?B?eDc2NGUrZVVYZEVaVEVJYnlYZXg2NmFkUXBBMzRzREU3WXR6eXdiUktSeWYx?=
+ =?utf-8?B?V094aXJkMkp5OEREWHpqbkhxNzRjN054NnU4cnVqVzZ5bnUzOEpQU2RtOUti?=
+ =?utf-8?B?OXJxUlU5UExmSmVLUVJxOUpZS21UQVJkcVBuNEt4bXhPanp3WHNyaWU2MkpE?=
+ =?utf-8?B?KzRYbTNHcXJYSnB3V2p4U2Z3OU9NOHBQNitlVzJvNGh0bmY5WC9wNWFlZ3p1?=
+ =?utf-8?B?S0hyTW5nVDhCcGF3Nks0a0wxVTU1WmZ5akk3eFpDUm9lcDVhTkppbVUzc1lS?=
+ =?utf-8?B?dmVPOHlrQjZKRjhHWTAyUW90ZjNZMVI2bUt5aU9yekFJSnYyeVpOQ09VQU55?=
+ =?utf-8?B?K3JPY2lvYTZBdVBySFpRc21WYUxTWklsM2M0Q2ZMeEpHckg0N3pZN0dxNmtv?=
+ =?utf-8?B?aGhQekZLZlpLMVpNQUh3S2dubnFqc2x4R1R6T1ZpekZnSmdqRTc5VVZxTUpU?=
+ =?utf-8?B?VDh1VVFWNWJBMVE4ZGs4QkVoWk1mcGd0RkNFK2pCbktyamRBQVhlOXJsemVn?=
+ =?utf-8?B?NEtjQVh2WjZWOGhNOHdHL0JhNUZJRGMyVFZBcGRpbmJCbktYRzI0TDBwWFMy?=
+ =?utf-8?B?Ym5LMTZqMDJSNWFoTjlSaVovZHlHTG10MlR5NFpLWkhYQkYyblliaXBtSE1T?=
+ =?utf-8?B?ZXBLWjJERnBRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BCAC9BAA75825A4B86F647C3C3DEE5E7@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5687.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7cafb27f-8069-499c-5e75-08da01ed60be
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2022 16:53:46.7218
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /zHR/SvegeQRbuhiAllaX8iEld8iDEwDe5SaK01R6ggDEWfp0L7JdlSKFGmQuM3adgZmHBtpfxKjoGbq450SVlX8xPe4lahUaLA3BX1XcAM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3852
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch uses the GPU cgroup charge/uncharge APIs to charge buffers
-allocated by any DMA-BUF exporter that exports a buffer with a GPU cgroup
-device association.
-
-By doing so, it becomes possible to track who allocated/exported a
-DMA-BUF even after the allocating process drops all references to a
-buffer.
-
-Originally-by: Hridya Valsaraju <hridya@google.com>
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
-
----
-v3 changes
-Use more common dual author commit message format per John Stultz.
-
-v2 changes
-Move dma-buf cgroup charging/uncharging from a dma_buf_op defined by
-every heap to a single dma-buf function for all heaps per Daniel Vetter and
-Christian K=C3=B6nig.
----
- drivers/dma-buf/dma-buf.c | 52 +++++++++++++++++++++++++++++++++++++++
- include/linux/dma-buf.h   | 20 +++++++++++++--
- 2 files changed, 70 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index 602b12d7470d..83d0d1b91547 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -56,6 +56,50 @@ static char *dmabuffs_dname(struct dentry *dentry, char =
-*buffer, int buflen)
- 			     dentry->d_name.name, ret > 0 ? name : "");
- }
-=20
-+#ifdef CONFIG_CGROUP_GPU
-+static inline struct gpucg_device *
-+exp_info_gpucg_dev(const struct dma_buf_export_info *exp_info)
-+{
-+	return exp_info->gpucg_dev;
-+}
-+
-+static bool dmabuf_try_charge(struct dma_buf *dmabuf,
-+			      struct gpucg_device *gpucg_dev)
-+{
-+	dmabuf->gpucg =3D gpucg_get(current);
-+	dmabuf->gpucg_dev =3D gpucg_dev;
-+	if (gpucg_try_charge(dmabuf->gpucg, dmabuf->gpucg_dev, dmabuf->size)) {
-+		gpucg_put(dmabuf->gpucg);
-+		dmabuf->gpucg =3D NULL;
-+		dmabuf->gpucg_dev =3D NULL;
-+		return false;
-+	}
-+	return true;
-+}
-+
-+static void dmabuf_uncharge(struct dma_buf *dmabuf)
-+{
-+	if (dmabuf->gpucg && dmabuf->gpucg_dev) {
-+		gpucg_uncharge(dmabuf->gpucg, dmabuf->gpucg_dev, dmabuf->size);
-+		gpucg_put(dmabuf->gpucg);
-+	}
-+}
-+#else /* CONFIG_CGROUP_GPU */
-+static inline struct gpucg_device *exp_info_gpucg_dev(
-+const struct dma_buf_export_info *exp_info)
-+{
-+	return NULL;
-+}
-+
-+static inline bool dmabuf_try_charge(struct dma_buf *dmabuf,
-+				     struct gpucg_device *gpucg_dev))
-+{
-+	return false;
-+}
-+
-+static inline void dmabuf_uncharge(struct dma_buf *dmabuf) {}
-+#endif /* CONFIG_CGROUP_GPU */
-+
- static void dma_buf_release(struct dentry *dentry)
- {
- 	struct dma_buf *dmabuf;
-@@ -79,6 +123,8 @@ static void dma_buf_release(struct dentry *dentry)
- 	if (dmabuf->resv =3D=3D (struct dma_resv *)&dmabuf[1])
- 		dma_resv_fini(dmabuf->resv);
-=20
-+	dmabuf_uncharge(dmabuf);
-+
- 	WARN_ON(!list_empty(&dmabuf->attachments));
- 	module_put(dmabuf->owner);
- 	kfree(dmabuf->name);
-@@ -484,6 +530,7 @@ struct dma_buf *dma_buf_export(const struct dma_buf_exp=
-ort_info *exp_info)
- {
- 	struct dma_buf *dmabuf;
- 	struct dma_resv *resv =3D exp_info->resv;
-+	struct gpucg_device *gpucg_dev =3D exp_info_gpucg_dev(exp_info);
- 	struct file *file;
- 	size_t alloc_size =3D sizeof(struct dma_buf);
- 	int ret;
-@@ -534,6 +581,9 @@ struct dma_buf *dma_buf_export(const struct dma_buf_exp=
-ort_info *exp_info)
- 	}
- 	dmabuf->resv =3D resv;
-=20
-+	if (gpucg_dev && !dmabuf_try_charge(dmabuf, gpucg_dev))
-+		goto err_charge;
-+
- 	file =3D dma_buf_getfile(dmabuf, exp_info->flags);
- 	if (IS_ERR(file)) {
- 		ret =3D PTR_ERR(file);
-@@ -565,6 +615,8 @@ struct dma_buf *dma_buf_export(const struct dma_buf_exp=
-ort_info *exp_info)
- 	file->f_path.dentry->d_fsdata =3D NULL;
- 	fput(file);
- err_dmabuf:
-+	dmabuf_uncharge(dmabuf);
-+err_charge:
- 	kfree(dmabuf);
- err_module:
- 	module_put(exp_info->owner);
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index 7ab50076e7a6..742f29c3daaf 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -13,6 +13,7 @@
- #ifndef __DMA_BUF_H__
- #define __DMA_BUF_H__
-=20
-+#include <linux/cgroup_gpu.h>
- #include <linux/dma-buf-map.h>
- #include <linux/file.h>
- #include <linux/err.h>
-@@ -303,7 +304,7 @@ struct dma_buf {
- 	/**
- 	 * @size:
- 	 *
--	 * Size of the buffer; invariant over the lifetime of the buffer.
-+	 * Size of the buffer in bytes; invariant over the lifetime of the buffer=
-.
- 	 */
- 	size_t size;
-=20
-@@ -453,6 +454,17 @@ struct dma_buf {
- 		struct dma_buf *dmabuf;
- 	} *sysfs_entry;
- #endif
-+
-+#ifdef CONFIG_CGROUP_GPU
-+	/** @gpucg: Pointer to the cgroup this buffer currently belongs to. */
-+	struct gpucg *gpucg;
-+
-+	/** @gpucg_dev:
-+	 *
-+	 * Pointer to the cgroup GPU device whence this buffer originates.
-+	 */
-+	struct gpucg_device *gpucg_dev;
-+#endif
- };
-=20
- /**
-@@ -529,9 +541,10 @@ struct dma_buf_attachment {
-  * @exp_name:	name of the exporter - useful for debugging.
-  * @owner:	pointer to exporter module - used for refcounting kernel module
-  * @ops:	Attach allocator-defined dma buf ops to the new buffer
-- * @size:	Size of the buffer - invariant over the lifetime of the buffer
-+ * @size:	Size of the buffer in bytes - invariant over the lifetime of the=
- buffer
-  * @flags:	mode flags for the file
-  * @resv:	reservation-object, NULL to allocate default one
-+ * @gpucg_dev:	pointer to the gpu cgroup device this buffer belongs to
-  * @priv:	Attach private data of allocator to this buffer
-  *
-  * This structure holds the information required to export the buffer. Use=
-d
-@@ -544,6 +557,9 @@ struct dma_buf_export_info {
- 	size_t size;
- 	int flags;
- 	struct dma_resv *resv;
-+#ifdef CONFIG_CGROUP_GPU
-+	struct gpucg_device *gpucg_dev;
-+#endif
- 	void *priv;
- };
-=20
---=20
-2.35.1.616.g0bdcbb4464-goog
-
+T24gMDkuMDMuMjAyMiAxODo0MSwgQ29saW4gSWFuIEtpbmcgd3JvdGU6DQo+IFRoZXJlIGlzIGEg
+c3BlbGxpbmcgbWlzdGFrZSBpbiBhIGRldl9pbmZvIG1lc3NhZ2UuIEZpeCBpdC4NCj4gDQo+IFNp
+Z25lZC1vZmYtYnk6IENvbGluIElhbiBLaW5nIDxjb2xpbi5pLmtpbmdAZ21haWwuY29tPg0KDQpS
+ZXZpZXdlZC1ieTogQ29kcmluIENpdWJvdGFyaXUgPGNvZHJpbi5jaXVib3Rhcml1QG1pY3JvY2hp
+cC5jb20+DQoNClRoYW5rcyENCg==
