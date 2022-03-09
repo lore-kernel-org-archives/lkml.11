@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5928C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D81C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234607AbiCIQKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S233258AbiCIQKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234544AbiCIQHg (ORCPT
+        with ESMTP id S234458AbiCIQHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:07:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC98144F4A;
-        Wed,  9 Mar 2022 08:03:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB068144F40;
+        Wed,  9 Mar 2022 08:03:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FBC5615FA;
-        Wed,  9 Mar 2022 16:03:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E56AC340E8;
-        Wed,  9 Mar 2022 16:03:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54F0861666;
+        Wed,  9 Mar 2022 16:03:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6034EC340E8;
+        Wed,  9 Mar 2022 16:03:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841821;
-        bh=wBLb1JgeLGCmIlJRSZ+nBqsfFArPm7x3PghLmULm8JI=;
+        s=korg; t=1646841818;
+        bh=rSTOUX5LUvBCX6WBogDAqooyuvYNrP66hsRf3uWRExc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SukCp2OJzM8l1vjhHToKSkmwIeIs11hpbrsAozhfcD0Zr7HidyDKrRdJ9K5ymNHjo
-         DStrPiGJ4s4Z8qBojP1WqMC/rmMMhl+PmZaSugEj7tTQDR/EcZ5PMjRfA7qVblnIuP
-         guFdcjZRDQRQaOvvZabFcc5Y6YOWNAkqRKDWudEM=
+        b=ACdvPAL4piYXHwUHvqfvsT+KvEHyNLzi70achmGqFwwtR0XlsN3ZLKcGjKQRisbKO
+         UVbfEAevPTe5g/5hUHxp+plQkemtI3hpsOHsobgDWKxZ4Je7rNrySzFER1uC2OTQLs
+         ARZmCzAIFBWkGjdJGvMqTHLGi9Z/lcUwmQMcIv6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.19 08/18] x86/speculation: Update link to AMD speculation whitepaper
-Date:   Wed,  9 Mar 2022 16:59:45 +0100
-Message-Id: <20220309155856.404068474@linuxfoundation.org>
+Subject: [PATCH 4.19 07/18] x86/speculation: Use generic retpoline by default on AMD
+Date:   Wed,  9 Mar 2022 16:59:44 +0100
+Message-Id: <20220309155856.375338710@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.155540075@linuxfoundation.org>
 References: <20220309155856.155540075@linuxfoundation.org>
@@ -50,39 +50,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kim Phillips <kim.phillips@amd.com>
 
-commit e9b6013a7ce31535b04b02ba99babefe8a8599fa upstream.
+commit 244d00b5dd4755f8df892c86cab35fb2cfd4f14b upstream.
 
-Update the link to the "Software Techniques for Managing Speculation
-on AMD Processors" whitepaper.
+AMD retpoline may be susceptible to speculation. The speculation
+execution window for an incorrect indirect branch prediction using
+LFENCE/JMP sequence may potentially be large enough to allow
+exploitation using Spectre V2.
+
+By default, don't use retpoline,lfence on AMD.  Instead, use the
+generic retpoline.
 
 Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/spectre.rst |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |    8 --------
+ 1 file changed, 8 deletions(-)
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -60,8 +60,8 @@ privileged data touched during the specu
- Spectre variant 1 attacks take advantage of speculative execution of
- conditional branches, while Spectre variant 2 attacks use speculative
- execution of indirect branches to leak privileged memory.
--See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[7] <spec_ref7>`
--:ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
-+See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[6] <spec_ref6>`
-+:ref:`[7] <spec_ref7>` :ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -898,14 +898,6 @@ static enum spectre_v2_mitigation __init
+ 		return SPECTRE_V2_NONE;
+ 	}
  
- Spectre variant 1 (Bounds Check Bypass)
- ---------------------------------------
-@@ -746,7 +746,7 @@ AMD white papers:
- 
- .. _spec_ref6:
- 
--[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/90343-B_SoftwareTechniquesforManagingSpeculation_WP_7-18Update_FNL.pdf>`_.
-+[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/Managing-Speculation-on-AMD-Processors.pdf>`_.
- 
- ARM white papers:
+-	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+-		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+-			pr_err("LFENCE not serializing, switching to generic retpoline\n");
+-			return SPECTRE_V2_RETPOLINE;
+-		}
+-		return SPECTRE_V2_LFENCE;
+-	}
+-
+ 	return SPECTRE_V2_RETPOLINE;
+ }
  
 
 
