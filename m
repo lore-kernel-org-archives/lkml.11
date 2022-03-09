@@ -2,165 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D60C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67965C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237438AbiCIXBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        id S237528AbiCIXFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:05:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCIXBj (ORCPT
+        with ESMTP id S235095AbiCIXEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:01:39 -0500
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B691AC7920;
-        Wed,  9 Mar 2022 15:00:35 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app2 (Coremail) with SMTP id by_KCgDXTnqGMSlinS07AA--.50493S2;
-        Thu, 10 Mar 2022 07:00:26 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jreuter@yaina.de, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, thomas@osterried.de,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V2] ax25: Fix refcount leaks caused by ax25_cb_del()
-Date:   Thu, 10 Mar 2022 07:00:20 +0800
-Message-Id: <20220309230020.125785-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgDXTnqGMSlinS07AA--.50493S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGw1UZr4xZrWkKF1UCw1fCrg_yoWrWFWDpF
-        W0kay5ArZrtr1ruF48Gr97WF18A34q939xGFy5Za4Ika43Jwn5JrWrt3yUJFy3JrZ5JF48
-        X347Ww4xZr4DuFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMDAVZdtYkSWQAJs2
+        Wed, 9 Mar 2022 18:04:51 -0500
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D75C122F7B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:03:52 -0800 (PST)
+Received: by mail-vs1-xe2e.google.com with SMTP id d64so4047913vsd.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 15:03:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AeQi6kiCFo5FC0J2ToEH9QNxl9pFekwn4FCq117LLQw=;
+        b=HZuTq/sH7LNaeSxq8d84GyZGCM/pclQ9UQtaKV4mdeYTSP7wyrnOEeAXceyJmAgH/j
+         7Klw7FZCCF2HRWBQkX3KiAnqbYdxJhMChfvSrwxQhSe01Gr/lszbEKAAwxbz53/ekeIx
+         MkPgXXtGrwmzWw93Dh8tCcrEgLX8Vt3G9B9LYX6EP5+7t8OgXU4C2+d2jbjjnMRAhuZK
+         A7XMamZhkYDmBpC1CJRfUOFi+eglUIRF/fb/PV9m5MAwqPbyRRaqo9E1+eYar3sLBP/8
+         1Tt0hD+SS5x5w526Xw8klC/G6txpsuukf6uJgFsdG9EV5IBYrIZvkvVOvak71km1rKTO
+         l+2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AeQi6kiCFo5FC0J2ToEH9QNxl9pFekwn4FCq117LLQw=;
+        b=dW5l2MV889JRzWEoK2OMCWLKDFKCihtdlBikkuio015ievDj/TAptWvZQgYgzy5JYz
+         vBqyz584txYWaAe7sXLbs5Hl6mxZPx2DoG0A98phkWsgTPv/PkHScwoogUc/0gbUUMGx
+         eK5kGeBYMAQ8ThvauYXcloAG1pJWQv9Ba+JeDqi2yupPEU3JI8EF/4B6vl/FKdd++UfP
+         R384W8toycfnD5zvT/cNiCfuxtW08pK60oJzzSUXaWLO9HIzyYpiXaevoHo1Rr+3Of/J
+         bAULeZDKN5W9460kp3wT9IoBYeSHpcHsfs0hIvzMrsFWpFkW7l82L5lnWOLwQ+dJDJyv
+         n2ew==
+X-Gm-Message-State: AOAM530kMyTzppd04L4YsZZB6nzU+rGCymhKreBXWSFW1w2Wa2VJUMKD
+        w5heaEySUgrBzAHvkzGqb2lJQezylbQyzTOSHY/yog==
+X-Google-Smtp-Source: ABdhPJyW2Lzm9eBtM0SVhsb0hZbqYu8t0c7BZziKTdVRx17mOj70qBBDwO2BPDcvK8Por2SwuDyFleNfH/nAhjgoC54=
+X-Received: by 2002:a67:c09b:0:b0:322:9ac9:4b2e with SMTP id
+ x27-20020a67c09b000000b003229ac94b2emr1022475vsi.11.1646867030875; Wed, 09
+ Mar 2022 15:03:50 -0800 (PST)
+MIME-Version: 1.0
+References: <20220208211637.2221872-1-eranian@google.com> <20220208211637.2221872-7-eranian@google.com>
+ <YgPedIWUiPIzF8OW@hirez.programming.kicks-ass.net> <YiI0DKEzc41bF15C@hirez.programming.kicks-ass.net>
+In-Reply-To: <YiI0DKEzc41bF15C@hirez.programming.kicks-ass.net>
+From:   Stephane Eranian <eranian@google.com>
+Date:   Wed, 9 Mar 2022 15:03:39 -0800
+Message-ID: <CABPqkBRQwYnxcXigKwF83BPhQmombqa6nuF5-krqN=00Loy_gg@mail.gmail.com>
+Subject: Re: [PATCH v6 06/12] perf/x86/amd: add AMD branch sampling period adjustment
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kim.phillips@amd.com,
+        acme@redhat.com, jolsa@redhat.com, songliubraving@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
-avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
-net_device caused by rebinding operation") increase the refcounts of
-ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
-in ax25_kill_by_device() in order to prevent UAF bugs. But there are
-reference count leaks.
+On Fri, Mar 4, 2022 at 7:45 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Wed, Feb 09, 2022 at 04:32:04PM +0100, Peter Zijlstra wrote:
+> > On Tue, Feb 08, 2022 at 01:16:31PM -0800, Stephane Eranian wrote:
+> > > Add code to adjust the sampling event period when used with the Branch
+> > > Sampling feature (BRS). Given the depth of the BRS (16), the period is
+> > > reduced by that depth such that in the best case scenario, BRS saturates at
+> > > the desired sampling period. In practice, though, the processor may execute
+> > > more branches. Given a desired period P and a depth D, the kernel programs
+> > > the actual period at P - D. After P occurrences of the sampling event, the
+> > > counter overflows. It then may take X branches (skid) before the NMI is
+> > > caught and held by the hardware and BRS activates. Then, after D branches,
+> > > BRS saturates and the NMI is delivered.  With no skid, the effective period
+> > > would be (P - D) + D = P. In practice, however, it will likely be (P - D) +
+> > > X + D. There is no way to eliminate X or predict X.
+> > >
+> > > Signed-off-by: Stephane Eranian <eranian@google.com>
+> > > ---
+> > >  arch/x86/events/core.c       |  7 +++++++
+> > >  arch/x86/events/perf_event.h | 12 ++++++++++++
+> > >  2 files changed, 19 insertions(+)
+> > >
+> > > diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+> > > index c2a890caeb0a..ed285f640efe 100644
+> > > --- a/arch/x86/events/core.c
+> > > +++ b/arch/x86/events/core.c
+> > > @@ -1374,6 +1374,13 @@ int x86_perf_event_set_period(struct perf_event *event)
+> > >         x86_pmu.set_topdown_event_period)
+> > >             return x86_pmu.set_topdown_event_period(event);
+> > >
+> > > +   /*
+> > > +    * decrease period by the depth of the BRS feature to get
+> > > +    * the last N taken branches and approximate the desired period
+> > > +    */
+> > > +   if (has_branch_stack(event))
+> > > +           period = amd_brs_adjust_period(period);
+> > > +
+> > >     /*
+> > >      * If we are way outside a reasonable range then just skip forward:
+> > >      */
+> > > diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+> > > index 3485a4cf0241..25b037b571e4 100644
+> > > --- a/arch/x86/events/perf_event.h
+> > > +++ b/arch/x86/events/perf_event.h
+> > > @@ -1263,6 +1263,14 @@ static inline bool amd_brs_active(void)
+> > >     return cpuc->brs_active;
+> > >  }
+> > >
+> > > +static inline s64 amd_brs_adjust_period(s64 period)
+> > > +{
+> > > +   if (period > x86_pmu.lbr_nr)
+> > > +           return period - x86_pmu.lbr_nr;
+> > > +
+> > > +   return period;
+> > > +}
+> >
+> > This makes no sense to me without also enforcing that the event is in
+> > fact that branch retired thing.
+>
+> So what are we going to do with all these patches? Note that I did pick
+> them up for testing and I've fixed at least 2 build problems with them.
+>
+> But I still don't think they're actually completely sane. So there's the
+> above issue, subtracting lbr_nr from a random event just makes no sense.
 
-If we use ax25_bind() to increase the refcounts of ax25_dev and
-net_device, then, use ax25_cb_del() invoked by ax25_destroy_socket()
-to delete ax25_cb in hlist before calling ax25_kill_by_device(), the
-decrements of refcounts in ax25_kill_by_device() will not be executed,
-because ax25_cb is deleted from the hlist.
 
-This patch adds two flags in ax25_dev in order to prevent reference
-count leaks. If we bind successfully, then, use ax25_cb_del() to
-delete ax25_cb, the two "test_bit" condition checks in ax25_kill_by_device()
-could pass and the refcounts could be decreased properly.
+You are right. Initially, I had it such that only retired_branch_taken was
+the only event possible. In that case, subtracting lbr_nr made sense.
+Since, I have relaxed the event but it exposes this problem. I think
+given how BRS works, I am okay restricting to retired_br_taken
+because no matter what the hw is going to activate at P (period)
+and wait for 16  taken branches before delivering the NMI. So if I
+am sampling on cycles with P=1000000, then the NMI is delivered
+at P + X + Z, where X = number of cycles elapsed for the 16 taken
+branches (unpredictable) and Z the interrupt skid for NMI (which is
+extremely big on AMD). With retired_branch_taken, that formula
+becomes: P + 16 + Z, where Z is the number of taken branches
+during the skid. But given BRS saturates when full, you do lose
+the content because of the Z skid. My opinion is we keep the
+lbr_nr subtraction and force event to be only retired_branch_taken.
 
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V2:
-  - Change memory leak to refcount leak.
+> But there's also the whole exclusion thing, IIRC you're making it
+> exclusive against other LBR users, but AFAICT having one LBR user active
+> will completely screw over any other sampling event due to introducing
+> these massive skids.
 
- include/net/ax25.h  |  7 +++++--
- net/ax25/af_ax25.c  | 10 ++++++----
- net/ax25/ax25_dev.c |  3 ++-
- 3 files changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 8221af1811d..50b3eacada0 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -157,7 +157,9 @@ enum {
- #define AX25_DEF_PACLEN		256			/* Paclen=256 */
- #define	AX25_DEF_PROTOCOL	AX25_PROTO_STD_SIMPLEX	/* Standard AX.25 */
- #define AX25_DEF_DS_TIMEOUT	180000			/* DAMA timeout 3 minutes */
--
-+#define AX25_DEV_INIT    0
-+#define AX25_DEV_KILL    1
-+#define AX25_DEV_BIND    2
- typedef struct ax25_uid_assoc {
- 	struct hlist_node	uid_node;
- 	refcount_t		refcount;
-@@ -240,8 +242,9 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
- #endif
- 	refcount_t		refcount;
-+	unsigned long   kill_flag;
-+	unsigned long   bind_flag;
- } ax25_dev;
--
- typedef struct ax25_cb {
- 	struct hlist_node	ax25_node;
- 	ax25_address		source_addr, dest_addr;
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 6bd09718077..5519448378d 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -86,6 +86,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			set_bit(AX25_DEV_KILL, &ax25_dev->kill_flag);
- 			sk = s->sk;
- 			if (!sk) {
- 				spin_unlock_bh(&ax25_list_lock);
-@@ -114,9 +115,12 @@ static void ax25_kill_by_device(struct net_device *dev)
- 			goto again;
- 		}
- 	}
-+	if(!test_bit(AX25_DEV_KILL, &ax25_dev->kill_flag) && test_bit(AX25_DEV_BIND, &ax25_dev->bind_flag)) {
-+		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		ax25_dev_put(ax25_dev);
-+	}
- 	spin_unlock_bh(&ax25_list_lock);
- }
--
- /*
-  *	Handle device status changes.
-  */
-@@ -1132,13 +1136,11 @@ static int ax25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- done:
- 	ax25_cb_add(ax25);
- 	sock_reset_flag(sk, SOCK_ZAPPED);
--
-+	set_bit(AX25_DEV_BIND, &ax25_dev->bind_flag);
- out:
- 	release_sock(sk);
--
- 	return err;
- }
--
- /*
-  *	FIXME: nonblock behaviour looks like it may have a bug.
-  */
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c26..7c40914e5c9 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -77,7 +77,8 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->values[AX25_VALUES_PACLEN]	= AX25_DEF_PACLEN;
- 	ax25_dev->values[AX25_VALUES_PROTOCOL]  = AX25_DEF_PROTOCOL;
- 	ax25_dev->values[AX25_VALUES_DS_TIMEOUT]= AX25_DEF_DS_TIMEOUT;
--
-+	ax25_dev->kill_flag = AX25_DEV_INIT;
-+	ax25_dev->bind_flag = AX25_DEV_INIT;
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_ds_setup_timer(ax25_dev);
- #endif
---
-2.17.1
-
+The skid is not massive compared to the actual skid of regular interrupt-based
+sampling. You are looking at the time it takes to execute 16 taken branches
+vs. 2000+ cycles for the NMI skid.  And this would happen only if the other
+events overflow during that 16 taken branch window.
