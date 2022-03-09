@@ -2,160 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9131CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiCILPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        id S232020AbiCILQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiCILPx (ORCPT
+        with ESMTP id S232065AbiCILQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:15:53 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF67713CECA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:14:53 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id q19so1689237pgm.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 03:14:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IsQsBuB2ms4XH7MMbYKCaAltmU40a94dVvRdCh2kPG8=;
-        b=giQbAvpiNC6GgihtPUmX/gFcKXYFcGs5sk/zxjgS1mngiwkVPSv4j6HBatM0A6SLlD
-         N8pUdXxYXl2dKA+Qime4DiOB5yxnMcG6y5PEEtMWzLJPHakjdt5TNPJ9vNIZBKiqfz5q
-         FIS9Y3LvOE9bG3rek35JoAtOfqqZLFepdhsm2MbOwIMeEuLWd+7m0UBTr8YeUl9qIqwH
-         DIMBlWDd/Hq4QUgfWKKEPdUYScu/rzE4O05+0ycytJSuR+bFfjPlArO5p5A6ZTAG0AFs
-         kK1ckGlUZqDk+8DjcadQrClsK0k3ZPNAGZ5w3AzjGd8bBNPWttN+iWpfE5e3PCWow/PV
-         ynGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IsQsBuB2ms4XH7MMbYKCaAltmU40a94dVvRdCh2kPG8=;
-        b=bvFQ0hif+Qtx5Zrrl4v+IUzKrk94mR5XJn5dDH4MjgzgCgkqPeyoF4IUtigmc14i5P
-         Jnn0EV1TRciksEZqbKQYYH2Thl99tFl5LkHkufkWo5uuDXQF1GYBFmxOcrzRTxHHXbZe
-         nH+Q69o/cYtlZ5YERSIJxo2mZqXDQiHjLCyjrKbKP4gh8383yYG7aoIDRnCr5He13c9O
-         0EOcBdnDHNqsthice9MVXWTIpDG+M6PrimK1EGksfwInpcl8utD2ZEVmv8zoBBx5Jy0M
-         PSEdJ5PXUtaQCn4N198PfLyQ980ZOzLwfFMRjRf7PgIClhpH/OP0YOYGs4wna3YwiWbN
-         IqKQ==
-X-Gm-Message-State: AOAM530AfrYqAMhWjhldGIJyaQzz5NYY5fLOpUhsFY6x+dj7ujIjnGZw
-        Rc40Ox0j/8Uhf3SGQldfNJ5Gi86eYtVcdg==
-X-Google-Smtp-Source: ABdhPJwBIGZHoRknu7XKYBKDZJFavSBHX1JbW99jXbsjdCSN8eEhyiUwRrZ9tgEjVnaIgmQI9H+4+g==
-X-Received: by 2002:a63:204d:0:b0:378:c9e5:bea6 with SMTP id r13-20020a63204d000000b00378c9e5bea6mr17841111pgm.573.1646824493366;
-        Wed, 09 Mar 2022 03:14:53 -0800 (PST)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id v66-20020a622f45000000b004f129e7767fsm2459618pfv.130.2022.03.09.03.14.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 03:14:52 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     corbet@lwn.net, hannes@cmpxchg.org, mingo@redhat.com,
-        peterz@infradead.org, surenb@google.com, ebiggers@google.com
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Martin Steigerwald <Martin.Steigerwald@proact.de>
-Subject: [PATCH v2] psi: report zeroes for CPU full at the system level
-Date:   Wed,  9 Mar 2022 19:14:45 +0800
-Message-Id: <20220309111445.86484-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Mar 2022 06:16:06 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ED413CEC0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:15:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646824507; x=1678360507;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Utk9SS6PsR9Xvg1e/hmDcvs9nDjDFfgM3k6h4tERtw0=;
+  b=a6Dd3lRk80RGAlS9bz/9PeJpPmblNyvGD++2PYqlpHQgHMtKqkYHcwXX
+   +6sG3/b6okJQMMQsaSf5yzbGXM3AVqqgR8mAmlybRxFx9RndyVQZctKxy
+   cqSDPz35N0Q9ghEglAORRTnBwlgVEN0aR/Il2gst7iPFHoGwz2dbW2DBd
+   OacMeFE5uuGirJzK52QQd1W+3lldxfK+EYedGXqBQs8YhHZejEOWgfcZe
+   aeXEnjHU/iVkIj/DPC3jqGWOa10vQBeCx3Pzxv1krZO+y9LKBnjdiToW5
+   81eDG7DnK2QSvhNUTxYrPlasKyi3Jnli2umNsbTtHhawdWsVP360xqW+k
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341380429"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="341380429"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 03:15:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="596238218"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Mar 2022 03:15:05 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRuHY-00039j-Qw; Wed, 09 Mar 2022 11:15:04 +0000
+Date:   Wed, 9 Mar 2022 19:14:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/070-audio 13/15]
+ drivers/clk/clk-apple-nco.c:139:16: error: implicit declaration of function
+ 'FIELD_PREP'
+Message-ID: <202203091915.aH27LZEz-lkp@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Martin find it confusing when look at the /proc/pressure/cpu output,
-and found no hint about that CPU "full" line in psi Documentation.
+tree:   https://github.com/AsahiLinux/linux bits/070-audio
+head:   1d99a1536d2dd3a0727f8cb942549073f0b3f055
+commit: 1bf217d927e0f44f6f66173636f037e43acd065a [13/15] fixup! clk: clk-apple-nco: Add driver for Apple NCO
+config: arc-buildonly-randconfig-r005-20220307 (https://download.01.org/0day-ci/archive/20220309/202203091915.aH27LZEz-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/1bf217d927e0f44f6f66173636f037e43acd065a
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/070-audio
+        git checkout 1bf217d927e0f44f6f66173636f037e43acd065a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/
 
-% cat /proc/pressure/cpu
-some avg10=0.92 avg60=0.91 avg300=0.73 total=933490489
-full avg10=0.22 avg60=0.23 avg300=0.16 total=358783277
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The PSI_CPU_FULL state is introduced by commit e7fcd7622823
-("psi: Add PSI_CPU_FULL state"), which mainly for cgroup level,
-but also counted at the system level as a side effect.
+All errors (new ones prefixed by >>):
 
-Naturally, the FULL state doesn't exist for the CPU resource at
-the system level. These "full" numbers can come from CPU idle
-schedule latency. For example, t1 is the time when task wakeup
-on an idle CPU, t2 is the time when CPU pick and switch to it.
-The delta of (t2 - t1) will be in CPU_FULL state.
+   drivers/clk/clk-apple-nco.c: In function 'applnco_div_translate':
+>> drivers/clk/clk-apple-nco.c:139:16: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+     139 |         return FIELD_PREP(DIV_COARSE, tbl->fwd[coarse - COARSE_DIV_OFFSET]) |
+         |                ^~~~~~~~~~
+   drivers/clk/clk-apple-nco.c: In function 'applnco_div_translate_inv':
+>> drivers/clk/clk-apple-nco.c:147:27: error: implicit declaration of function 'FIELD_GET' [-Werror=implicit-function-declaration]
+     147 |         coarse = tbl->inv[FIELD_GET(DIV_COARSE, regval)] + COARSE_DIV_OFFSET;
+         |                           ^~~~~~~~~
+   drivers/clk/clk-apple-nco.c: At top level:
+   drivers/clk/clk-apple-nco.c:322:1: error: expected ',' or ';' before 'static'
+     322 | static struct platform_driver applnco_driver = {
+         | ^~~~~~
+   In file included from drivers/clk/clk-apple-nco.c:16:
+   drivers/clk/clk-apple-nco.c: In function 'applnco_driver_init':
+   drivers/clk/clk-apple-nco.c:329:24: error: 'applnco_driver' undeclared (first use in this function); did you mean 'applnco_probe'?
+     329 | module_platform_driver(applnco_driver);
+         |                        ^~~~~~~~~~~~~~
+   include/linux/platform_device.h:222:36: note: in definition of macro 'platform_driver_register'
+     222 |         __platform_driver_register(drv, THIS_MODULE)
+         |                                    ^~~
+   include/linux/platform_device.h:252:9: note: in expansion of macro 'module_driver'
+     252 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/clk/clk-apple-nco.c:329:1: note: in expansion of macro 'module_platform_driver'
+     329 | module_platform_driver(applnco_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/clk/clk-apple-nco.c:329:24: note: each undeclared identifier is reported only once for each function it appears in
+     329 | module_platform_driver(applnco_driver);
+         |                        ^~~~~~~~~~~~~~
+   include/linux/platform_device.h:222:36: note: in definition of macro 'platform_driver_register'
+     222 |         __platform_driver_register(drv, THIS_MODULE)
+         |                                    ^~~
+   include/linux/platform_device.h:252:9: note: in expansion of macro 'module_driver'
+     252 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/clk/clk-apple-nco.c:329:1: note: in expansion of macro 'module_platform_driver'
+     329 | module_platform_driver(applnco_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/device.h:32,
+                    from include/linux/platform_device.h:13,
+                    from drivers/clk/clk-apple-nco.c:16:
+   drivers/clk/clk-apple-nco.c: In function 'applnco_driver_exit':
+   drivers/clk/clk-apple-nco.c:329:24: error: 'applnco_driver' undeclared (first use in this function); did you mean 'applnco_probe'?
+     329 | module_platform_driver(applnco_driver);
+         |                        ^~~~~~~~~~~~~~
+   include/linux/device/driver.h:267:24: note: in definition of macro 'module_driver'
+     267 |         __unregister(&(__driver) , ##__VA_ARGS__); \
+         |                        ^~~~~~~~
+   drivers/clk/clk-apple-nco.c:329:1: note: in expansion of macro 'module_platform_driver'
+     329 | module_platform_driver(applnco_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/clk/clk-apple-nco.c: In function 'applnco_driver_init':
+   include/linux/device/driver.h:263:1: error: control reaches end of non-void function [-Werror=return-type]
+     263 | } \
+         | ^
+   include/linux/platform_device.h:252:9: note: in expansion of macro 'module_driver'
+     252 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/clk/clk-apple-nco.c:329:1: note: in expansion of macro 'module_platform_driver'
+     329 | module_platform_driver(applnco_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   At top level:
+   drivers/clk/clk-apple-nco.c:254:12: warning: 'applnco_probe' defined but not used [-Wunused-function]
+     254 | static int applnco_probe(struct platform_device *pdev)
+         |            ^~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-Another case all processes can be stalled is when all cgroups
-have been throttled at the same time, which unlikely to happen.
 
-Anyway, CPU_FULL metric is meaningless and confusing at the
-system level. So this patch will report zeroes for CPU full
-at the system level, and update psi Documentation accordingly.
+vim +/FIELD_PREP +139 drivers/clk/clk-apple-nco.c
 
-Fixes: e7fcd7622823 ("psi: Add PSI_CPU_FULL state")
-Reported-by: Martin Steigerwald <Martin.Steigerwald@proact.de>
-Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+4affca42511f75 Martin Povišer 2022-02-08  131  
+4affca42511f75 Martin Povišer 2022-02-08  132  static u32 applnco_div_translate(struct applnco_tables *tbl, unsigned int div)
+4affca42511f75 Martin Povišer 2022-02-08  133  {
+4affca42511f75 Martin Povišer 2022-02-08  134  	unsigned int coarse = div / 4;
+4affca42511f75 Martin Povišer 2022-02-08  135  
+4affca42511f75 Martin Povišer 2022-02-08  136  	if (WARN_ON(applnco_div_out_of_range(div)))
+4affca42511f75 Martin Povišer 2022-02-08  137  		return 0;
+4affca42511f75 Martin Povišer 2022-02-08  138  
+4affca42511f75 Martin Povišer 2022-02-08 @139  	return FIELD_PREP(DIV_COARSE, tbl->fwd[coarse - COARSE_DIV_OFFSET]) |
+4affca42511f75 Martin Povišer 2022-02-08  140  			FIELD_PREP(DIV_FINE, div % 4);
+4affca42511f75 Martin Povišer 2022-02-08  141  }
+4affca42511f75 Martin Povišer 2022-02-08  142  
+4affca42511f75 Martin Povišer 2022-02-08  143  static unsigned int applnco_div_translate_inv(struct applnco_tables *tbl, u32 regval)
+4affca42511f75 Martin Povišer 2022-02-08  144  {
+4affca42511f75 Martin Povišer 2022-02-08  145  	unsigned int coarse, fine;
+4affca42511f75 Martin Povišer 2022-02-08  146  
+4affca42511f75 Martin Povišer 2022-02-08 @147  	coarse = tbl->inv[FIELD_GET(DIV_COARSE, regval)] + COARSE_DIV_OFFSET;
+4affca42511f75 Martin Povišer 2022-02-08  148  	fine = FIELD_GET(DIV_FINE, regval);
+4affca42511f75 Martin Povišer 2022-02-08  149  
+4affca42511f75 Martin Povišer 2022-02-08  150  	return coarse * 4 + fine;
+4affca42511f75 Martin Povišer 2022-02-08  151  }
+4affca42511f75 Martin Povišer 2022-02-08  152  
+
+:::::: The code at line 139 was first introduced by commit
+:::::: 4affca42511f7532ad7ce1a4b880e54d612f2d94 clk: clk-apple-nco: Add driver for Apple NCO
+
+:::::: TO: Martin Povišer <povik+lin@cutebit.org>
+:::::: CC: Hector Martin <marcan@marcan.st>
+
 ---
-Changes in v2:
-- update doc about the zeroes in CPU full at the system level.
----
- Documentation/accounting/psi.rst |  9 ++++-----
- kernel/sched/psi.c               | 15 +++++++++------
- 2 files changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/accounting/psi.rst b/Documentation/accounting/psi.rst
-index 860fe651d645..5e40b3f437f9 100644
---- a/Documentation/accounting/psi.rst
-+++ b/Documentation/accounting/psi.rst
-@@ -37,11 +37,7 @@ Pressure interface
- Pressure information for each resource is exported through the
- respective file in /proc/pressure/ -- cpu, memory, and io.
- 
--The format for CPU is as such::
--
--	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
--
--and for memory and IO::
-+The format is as such::
- 
- 	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
- 	full avg10=0.00 avg60=0.00 avg300=0.00 total=0
-@@ -58,6 +54,9 @@ situation from a state where some tasks are stalled but the CPU is
- still doing productive work. As such, time spent in this subset of the
- stall state is tracked separately and exported in the "full" averages.
- 
-+CPU full is undefined at the system level, but has been reported
-+since 5.13, so it is set to zero for backward compatibility.
-+
- The ratios (in %) are tracked as recent trends over ten, sixty, and
- three hundred second windows, which gives insight into short term events
- as well as medium and long term trends. The total absolute stall time
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index e14358178849..97fd85c5143c 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -1062,14 +1062,17 @@ int psi_show(struct seq_file *m, struct psi_group *group, enum psi_res res)
- 	mutex_unlock(&group->avgs_lock);
- 
- 	for (full = 0; full < 2; full++) {
--		unsigned long avg[3];
--		u64 total;
-+		unsigned long avg[3] = { 0, };
-+		u64 total = 0;
- 		int w;
- 
--		for (w = 0; w < 3; w++)
--			avg[w] = group->avg[res * 2 + full][w];
--		total = div_u64(group->total[PSI_AVGS][res * 2 + full],
--				NSEC_PER_USEC);
-+		/* CPU FULL is undefined at the system level */
-+		if (!(group == &psi_system && res == PSI_CPU && full)) {
-+			for (w = 0; w < 3; w++)
-+				avg[w] = group->avg[res * 2 + full][w];
-+			total = div_u64(group->total[PSI_AVGS][res * 2 + full],
-+					NSEC_PER_USEC);
-+		}
- 
- 		seq_printf(m, "%s avg10=%lu.%02lu avg60=%lu.%02lu avg300=%lu.%02lu total=%llu\n",
- 			   full ? "full" : "some",
--- 
-2.20.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
