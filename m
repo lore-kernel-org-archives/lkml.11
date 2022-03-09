@@ -2,97 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97984C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3BAC4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238216AbiCIQuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:50:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
+        id S236061AbiCIQv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239688AbiCIQd3 (ORCPT
+        with ESMTP id S236714AbiCIQgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:33:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88D357B30;
-        Wed,  9 Mar 2022 08:28:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD55619CB;
-        Wed,  9 Mar 2022 16:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988E3C340E8;
-        Wed,  9 Mar 2022 16:28:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843290;
-        bh=lFLXRhW34vfFCOIYngRiWETJjhBV4ONwtADOaPDllds=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZyZJu0co2iO0+a+UgZnjGY3RkQnn4dn2PxGsHhWK6QQ6iJ81ab9Blo7mlOF/rYS5W
-         GJ8RmfROYRJAK173rZGfmhh8umst/VxF7nLBzIliEk0XlQo+fdDonWaA96TxibQFn+
-         7gG0Z/uWfjqz1+xwyaLrGFR0IgKVS1aZPJBUe/58eMCC09QsB3D9BLNxS34hKk1jVa
-         7F6sYbi4pswTxsKPdu6zES/LiX1MClLr1FXEl7+Tl4jyfFo0RQ/bfIe6tofz1ivs18
-         Uh4W/YdTd2Eb/5LRPg0Qh9Rk1KjPJbRs6rKIMXR3sUk+053e9CdwCIpxXQXNzxPQGU
-         UdlDSKGNt6+yQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/11] kselftest/vm: fix tests build with old libc
-Date:   Wed,  9 Mar 2022 11:27:16 -0500
-Message-Id: <20220309162716.137399-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162716.137399-1-sashal@kernel.org>
-References: <20220309162716.137399-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:36:45 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F64B69CE4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:32:16 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id u17so596388pfk.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:32:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gY50ygEuixJOL5+CoXoow1CeKmNwyNyKxbVe9LukYfQ=;
+        b=PWj3A38TItrhsUjIRjWiaSik+i8qjhK1vVSzvImJ/IP/sBZ1SK16gd+4vLXNQJIbfz
+         fq1MW9biuBNne5pe3fHiUnjTtyl3ymQBVPVACAAd0YvUvvBY80zbJXDXhDENAQEcfLCy
+         w3cs3JW4i8Wm/1fIlJ8U/oZ/PDcWTWgkItkFw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gY50ygEuixJOL5+CoXoow1CeKmNwyNyKxbVe9LukYfQ=;
+        b=4OJHOb6VUNQZKx5I/A+koLpv9BjcIhtedRj9SbT3n2ALywVkuAuN9m9vxSglLoCVw6
+         ZkMZIK8OlvsSsN+WotVMXfXQWMQ+PsrnTY699O4pX/yUiOKlt6D+l1H5sHkn7k8m/c1J
+         IKihu848VjZjOPjKQH0akEfROgemHyOz3NwN6hrpVI3jRHFdhBji/IwyZwxrH0k7232y
+         +/H51h1XQUQTAyEMJV54iOuHhFTjOhQ49pmMVWIs1w5IgmvQVHr1MBa1NRb67f0d603O
+         FXdVSMpxu+dkWM8n9m3BqEw7AB0sUck2LnNI51gPJXVHTGU8ysJ9U5V4OQ4Hp2UY7y07
+         aK7A==
+X-Gm-Message-State: AOAM532vBJjxBQ2uLAHNEd39e+F/Qoo87jibY6AO/iUy2fhJruHC1Oa4
+        61jHhRQkDIxEjOPZycC4dSXFHA==
+X-Google-Smtp-Source: ABdhPJwXXZ86osX5c0II41H74ZTE2EneiajZEn1zrtqB/xvvBuaNxf78dej0GeYsUMxEOmzs8vYjZA==
+X-Received: by 2002:a05:6a00:ad0:b0:4e1:2d96:2ab0 with SMTP id c16-20020a056a000ad000b004e12d962ab0mr549019pfl.3.1646843535989;
+        Wed, 09 Mar 2022 08:32:15 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q24-20020aa79618000000b004e0e89985eesm3588763pfg.156.2022.03.09.08.32.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 08:32:15 -0800 (PST)
+Date:   Wed, 9 Mar 2022 08:32:14 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <liam.howlett@oracle.com>,
+        Jann Horn <jannh@google.com>, linux-mm@kvack.org
+Subject: Re: [GIT PULL] Fix fill_files_note
+Message-ID: <202203090830.7E971BD6C@keescook>
+References: <20220131153740.2396974-1-willy@infradead.org>
+ <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+ <YfgKw5z2uswzMVRQ@casper.infradead.org>
+ <877dafq3bw.fsf@email.froward.int.ebiederm.org>
+ <YfgPwPvopO1aqcVC@casper.infradead.org>
+ <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+ <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
+ <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
+ <202203081342.1924AD9@keescook>
+ <877d93dr8p.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <877d93dr8p.fsf@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+On Wed, Mar 09, 2022 at 10:29:10AM -0600, Eric W. Biederman wrote:
+> Kees Cook <keescook@chromium.org> writes:
+> 
+> > On Tue, Mar 08, 2022 at 01:35:03PM -0600, Eric W. Biederman wrote:
+> >> 
+> >> Kees,
+> >> 
+> >> Please pull the coredump-vma-snapshot-fix branch from the git tree:
+> >> 
+> >>   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
+> >> 
+> >>   HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
+> >> 
+> >> Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
+> >> which could cause trouble.
+> >> 
+> >> Refactor the code and clean it up so that the vma snapshot makes
+> >> it to fill_files_note, and then use the vma snapshot in fill_files_note.
+> >> 
+> >> Eric W. Biederman (5):
+> >>       coredump: Move definition of struct coredump_params into coredump.h
+> >>       coredump: Snapshot the vmas in do_coredump
+> >>       coredump: Remove the WARN_ON in dump_vma_snapshot
+> >>       coredump/elf: Pass coredump_params into fill_note_info
+> >>       coredump: Use the vma snapshot in fill_files_note
+> >> 
+> >>  fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
+> >>  fs/binfmt_elf_fdpic.c    | 18 +++++--------
+> >>  fs/binfmt_flat.c         |  1 +
+> >>  fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
+> >>  include/linux/binfmts.h  | 13 +---------
+> >>  include/linux/coredump.h | 20 ++++++++++++---
+> >>  6 files changed, 93 insertions(+), 84 deletions(-)
+> >> 
+> >> ---
+> >> 
+> >> Kees I realized I needed to rebase this on Jann Horn's commit
+> >> 84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
+> >> libraries").  Unfortunately before I got that done I got distracted and
+> >> these changes have been sitting in limbo for most of the development
+> >> cycle.  Since you are running a tree that is including changes like this
+> >> including Jann's can you please pull these changes into your tree.
+> >
+> > Sure! Can you make a signed tag for this pull?
+> 
+> Not yet.
+> 
+> Hopefully I will get the time to set that up soon, but I am not at all
+> setup to do signed tags at this point.
 
-[ Upstream commit b773827e361952b3f53ac6fa4c4e39ccd632102e ]
+Okay, cool. Since I'd already review these before, I've pulled and it
+should be in -next now.
 
-The error message when I build vm tests on debian10 (GLIBC 2.28):
+> [...]
+> Thanks.  That looks like a good place to start.
 
-    userfaultfd.c: In function `userfaultfd_pagemap_test':
-    userfaultfd.c:1393:37: error: `MADV_PAGEOUT' undeclared (first use
-    in this function); did you mean `MADV_RANDOM'?
-      if (madvise(area_dst, test_pgsize, MADV_PAGEOUT))
-                                         ^~~~~~~~~~~~
-                                         MADV_RANDOM
+I will try to clean up that work-flow and stuff it into my kernel-tools
+repo.
 
-This patch includes these newer definitions from UAPI linux/mman.h, is
-useful to fix tests build on systems without these definitions in glibc
-sys/mman.h.
-
-Link: https://lkml.kernel.org/r/20220227055330.43087-2-zhouchengming@bytedance.com
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/vm/userfaultfd.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index d77ed41b2094..1f89d3dd8295 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -60,6 +60,7 @@
- #include <signal.h>
- #include <poll.h>
- #include <string.h>
-+#include <linux/mman.h>
- #include <sys/mman.h>
- #include <sys/syscall.h>
- #include <sys/ioctl.h>
 -- 
-2.34.1
-
+Kees Cook
