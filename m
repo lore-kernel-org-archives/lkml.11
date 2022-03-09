@@ -2,94 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 06:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F70C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 06:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiCIGSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 01:18:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57528 "EHLO
+        id S229981AbiCIGVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 01:21:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiCIGSw (ORCPT
+        with ESMTP id S229935AbiCIGVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 01:18:52 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759FF5FC5;
-        Tue,  8 Mar 2022 22:17:49 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V6hoZqR_1646806666;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6hoZqR_1646806666)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Mar 2022 14:17:47 +0800
-Message-ID: <1646806544.818761-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: linux-next: build warning after merge of the vhost tree
-Date:   Wed, 9 Mar 2022 14:15:44 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <20220307154011.6d456f28@canb.auug.org.au>
- <1646635600.9436276-1-xuanzhuo@linux.alibaba.com>
- <20220307211242.59fc0f0e@canb.auug.org.au>
- <20220307060012-mutt-send-email-mst@kernel.org>
- <20220309171300.0500a07e@canb.auug.org.au>
-In-Reply-To: <20220309171300.0500a07e@canb.auug.org.au>
+        Wed, 9 Mar 2022 01:21:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9EBDEF9;
+        Tue,  8 Mar 2022 22:20:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88A6D61931;
+        Wed,  9 Mar 2022 06:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DE45FC340EF;
+        Wed,  9 Mar 2022 06:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646806809;
+        bh=NhRWfcFvPi1Kumwtwa/A4ApGMbS/NIoS2EE+TZmmG1U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d+w7F0pVyIvaWdmASD7R/y1/ejy+w8kp69W0as0mTPc/6nX9TjXEg2LDGwOTHimPR
+         Eqp6iN0VHtssuvKh9MjZrP/PIdf5AuCGwGdY1L/sAC0vUVsgWXyXprrPnPjQZDAyRd
+         GNZutf4//mLUWS8aSw2G2Fj7KDX1EdV+AHndJlREnwS/i6nJpb3ZGx0aZwc8GJ9H3u
+         AsxQ51OTYL6gX0SJjDSpHcN4dV+STWIG4zSKMMuRL/UtKx3J9KiNlM8n00OHmpenf2
+         jiWOAk2gi1tFDq1MneQTqU6a91ePTUSefUA+U9sq/yXAGYRgsfYR4eD8jikNTyYyFZ
+         919eUCTkJB80g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C04ADE73C2D;
+        Wed,  9 Mar 2022 06:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ethernet: Fix error handling in xemaclite_of_probe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164680680978.10719.6940364945225498751.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 06:20:09 +0000
+References: <20220308024751.2320-1-linmq006@gmail.com>
+In-Reply-To: <20220308024751.2320-1-linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
+        arnd@arndb.de, andrew@lunn.ch, michael@walle.cc,
+        prabhakar.mahadev-lad.rj@bp.renesas.com, yuehaibing@huawei.com,
+        john.linn@xilinx.com, grant.likely@secretlab.ca,
+        Sadanand.Mutyala@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 17:13:00 +1100, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> Hi Michael,
->
-> On Mon, 7 Mar 2022 06:00:27 -0500 "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >
-> > On Mon, Mar 07, 2022 at 09:12:42PM +1100, Stephen Rothwell wrote:
-> > >
-> > > On Mon, 7 Mar 2022 14:46:40 +0800 Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > > >
-> > > > Can you help me test this patch? I don't have an arm environment around me.
-> > > >
-> > > > Thanks
-> > > >
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index 1fa2d632a994..4d629d1ea894 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -1820,7 +1820,7 @@ static int virtnet_rx_vq_reset(struct virtnet_info *vi,
-> > > >
-> > > >  err:
-> > > >         netdev_err(vi->dev,
-> > > > -                  "reset rx reset vq fail: rx queue index: %ld err: %d\n",
-> > > > +                  "reset rx reset vq fail: rx queue index: %td err: %d\n",
-> > > >                    rq - vi->rq, err);
-> > > >         virtnet_napi_enable(rq->vq, &rq->napi);
-> > > >         return err;
-> > > > @@ -1870,7 +1870,7 @@ static int virtnet_tx_vq_reset(struct virtnet_info *vi,
-> > > >
-> > > >  err:
-> > > >         netdev_err(vi->dev,
-> > > > -                  "reset tx reset vq fail: tx queue index: %ld err: %d\n",
-> > > > +                  "reset tx reset vq fail: tx queue index: %td err: %d\n",
-> > > >                    sq - vi->sq, err);
-> > > >         virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > >         return err;
-> > >
-> > > I had to apply that by hand, but it does work.
-> > >
-> > > Tested-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> >
-> > OK, I squashed this into the problematic patch. Thanks a lot!
->
-> The warnings have reappeared today :-( and this fixup is not applied.
-> Something got lost in the rebase/rewrite?
+Hello:
 
-Sorry for that.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-The patch of the fix I submitted before was not merged locally. When the patch
-set of v7 was released yesterday, this fix patch was not included.
+On Tue,  8 Mar 2022 02:47:49 +0000 you wrote:
+> This node pointer is returned by of_parse_phandle() with refcount
+> incremented in this function. Calling of_node_put() to avoid the
+> refcount leak. As the remove function do.
+> 
+> Fixes: 5cdaaa12866e ("net: emaclite: adding MDIO and phy lib support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - ethernet: Fix error handling in xemaclite_of_probe
+    https://git.kernel.org/netdev/net/c/b19ab4b38b06
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> --
-> Cheers,
-> Stephen Rothwell
->
