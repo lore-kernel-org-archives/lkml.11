@@ -2,94 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4320FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C461DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234704AbiCISM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:12:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S235153AbiCISOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:14:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234580AbiCISMX (ORCPT
+        with ESMTP id S232226AbiCISOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:12:23 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7474E4A914
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:11:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646849484; x=1678385484;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IvfYlv4aZRnCKxc/YYjAe0zT+9hrffvuYhF4AGabNyE=;
-  b=PgU+RbjraMgCHvGxrQ+Z5luUgNHxXHXXQ9BLiTxYpcONdoWm8c2oCwan
-   FmM7PZn8oFECIn8iXEPOie8jgVBhIjKTlenkseZj48A9y4LIxaA0z1D51
-   3m0ILdMO4dMdNbuzHHsR/KxNtEXwR/vGZd83KwomIkdjhFTloIAX3AU/f
-   CrWIk6FMdcKfBovzkE5aYB6iwrT7ZZhBC5YcaqArNuZcIwXI9SQDjQX3K
-   5VVTm+jvDUWx172aTQXxqup57mVj/jw45Y9pXi1L3Yz7bRvDvY8VB7KOJ
-   JF2Y9XAILyvsH7P5LfRYyRMCOlUvkfNtbQ7cg7iQjLC+Ygtd7nApimzjP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242496623"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="242496623"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 10:11:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="510585086"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 09 Mar 2022 10:11:21 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nS0mO-0003fH-V6; Wed, 09 Mar 2022 18:11:20 +0000
-Date:   Thu, 10 Mar 2022 02:10:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Lawrence <paullawrence@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ANDROID: fuse-bpf: fix semicolon.cocci warnings
-Message-ID: <20220309181059.GA31901@06428da54493>
-References: <202203100238.1ZdkujYi-lkp@intel.com>
+        Wed, 9 Mar 2022 13:14:16 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F34A14AE06;
+        Wed,  9 Mar 2022 10:13:16 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id F2D2892009C; Wed,  9 Mar 2022 19:13:14 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id EB60D92009B;
+        Wed,  9 Mar 2022 18:13:14 +0000 (GMT)
+Date:   Wed, 9 Mar 2022 18:13:14 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Mike Rapoport <rppt@kernel.org>
+cc:     Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] docs/kernel-parameters: update description of mem=
+In-Reply-To: <20220309172258.1183796-1-rppt@kernel.org>
+Message-ID: <alpine.DEB.2.21.2203091809100.47558@angie.orcam.me.uk>
+References: <20220309172258.1183796-1-rppt@kernel.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202203100238.1ZdkujYi-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Wed, 9 Mar 2022, Mike Rapoport wrote:
 
-fs/fuse/dir.c:557:43-44: Unneeded semicolon
+> From: Mike Rapoport <rppt@linux.ibm.com>
+> 
+> The existing description of mem= does not cover all the cases and
+> differences between how architectures treat it.
+> 
+> Extend the description to match the code.
 
+ This:
 
- Remove unneeded semicolon.
+> +	mem=nn[KMG]	[HEXAGON] Set the memory size.
+> +			Must be specified, otherwise memory size will be 0.
+> +
 
-Generated by: scripts/coccinelle/misc/semicolon.cocci
+I guess would better be folded into the other `mem=nn[KMG]' description 
+above, possibly between [ARM64] and [X86] so as to keep the order roughly 
+alphabetic.
 
-Fixes: 8efdff35e305 ("ANDROID: fuse-bpf: Move fd operations to be synchronous")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   681ba23265bee4f2f0bd461df7d0025f4df17f09
-commit: 8efdff35e3052e44d519ccfb9d50594f5df0240b [9996/9999] ANDROID: fuse-bpf: Move fd operations to be synchronous
-:::::: branch date: 8 hours ago
-:::::: commit date: 22 hours ago
-
- fs/fuse/dir.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/fs/fuse/dir.c
-+++ b/fs/fuse/dir.c
-@@ -554,7 +554,7 @@ int fuse_lookup_name(struct super_block
- 			struct bpf_prog *bpf_prog = ERR_PTR(-EINVAL);
- 
- 			if (bpf_file && !IS_ERR(bpf_file))
--				bpf_prog = fuse_get_bpf_prog(bpf_file);;
-+				bpf_prog = fuse_get_bpf_prog(bpf_file);
- 
- 			if (IS_ERR(bpf_prog)) {
- 				iput(*inode);
+  Maciej
