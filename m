@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C90C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FA7C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiCIQHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:07:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
+        id S234662AbiCIQHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:07:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234494AbiCIQHd (ORCPT
+        with ESMTP id S234552AbiCIQHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:07:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D91141E12;
-        Wed,  9 Mar 2022 08:03:36 -0800 (PST)
+        Wed, 9 Mar 2022 11:07:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B247F4ECED;
+        Wed,  9 Mar 2022 08:03:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52308616A7;
-        Wed,  9 Mar 2022 16:03:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B8D1C340E8;
-        Wed,  9 Mar 2022 16:03:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC6F616F2;
+        Wed,  9 Mar 2022 16:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 715CAC340E8;
+        Wed,  9 Mar 2022 16:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841801;
-        bh=dBM59trElM9mKdvh5X3TAf3lhidiLDUO/YzmBUoNg2U=;
+        s=korg; t=1646841798;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KErPgsisq1u67p+mYq2ev7nQFQefyAI03EuXuD16uFNgp/Xj71/7bKhHDMrtKp/Tj
-         p4EBmSt9A5PA48qLZ9gyuEcAzAVTEEzSAj76WKfwQSBf85rihObI6BTw++6cOHNaRY
-         0NjJ7TojrI1FR9QpZvbeOqy2/Gy6V/Vw2YpG7Ff8=
+        b=PpJMNPR2IJZCqbtVkop8La3JicmJlfTvy5uwZgD46shgOsyhg1/i4EkIG7GMVPjtK
+         V0QBy2Mhtzj4QRTXK1H2L3Z5rBYr5dV9M8vNPN9ishRklXcff+aWQpbpa5uTKpvGD7
+         rWE8Yq8RkrfumCju105Gcdc8CimZpZTVdthoLqGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 18/18] ARM: fix build error when BPF_SYSCALL is disabled
-Date:   Wed,  9 Mar 2022 16:59:55 +0100
-Message-Id: <20220309155856.697696644@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.19 17/18] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Wed,  9 Mar 2022 16:59:54 +0100
+Message-Id: <20220309155856.668355914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.155540075@linuxfoundation.org>
 References: <20220309155856.155540075@linuxfoundation.org>
@@ -50,31 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 330f4c53d3c2d8b11d86ec03a964b86dc81452f5 upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-It was missing a semicolon.
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Fixes: 25875aa71dfe ("ARM: include unprivileged BPF status in Spectre V2 reporting").
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
+
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 --- a/arch/arm/kernel/spectre.c
 +++ b/arch/arm/kernel/spectre.c
-@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(v
- #ifdef CONFIG_BPF_SYSCALL
- 	return !sysctl_unprivileged_bpf_disabled;
- #else
--	return false
-+	return false;
- #endif
- }
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
  
+ #include <asm/spectre.h>
+ 
++static bool _unprivileged_ebpf_enabled(void)
++{
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
++#else
++	return false
++#endif
++}
++
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
+ 
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
