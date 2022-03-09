@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBDFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF460C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbiCILss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:48:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        id S232360AbiCILtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:49:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbiCILso (ORCPT
+        with ESMTP id S232201AbiCILtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:48:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256F9710E3;
-        Wed,  9 Mar 2022 03:47:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C04AA61882;
-        Wed,  9 Mar 2022 11:47:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 405E6C340E8;
-        Wed,  9 Mar 2022 11:47:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646826465;
-        bh=+QA/FxGruRPfGsGWICz2UjyGiib5mePYmSUey22VoFg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DjiDDldUNNlnovKQ0JBaKVcuvn/dbfSjkRQkbCon5BAEFHaDkySjAYE2z+U7bla3G
-         wWR/Umyl72MgH7tmmkUe466DMUJIFYNoFfy07My64dQoDPg1ZM/TNs34ggE2ZIUfpy
-         Lnc8BE38NSlbtEpHJ+mul9H+B/aDXnQDlDoDT18aqSyaIU2FZGFNrrFbKoPDNFiJGS
-         VMDpHT5YNJ9Du77/e9jqTuhl9qNu7jKrRNTDnltslkNYHL7hxsQIVbJAr/PRD14Ii2
-         sf+Vc8uS12V1qWI5iIS0kRBXZEgzKuaYVEzdJx5gMHOvRTnfbACHuYHJAMAVgG64Sk
-         1lUmhK3LaPBjg==
-Date:   Wed, 9 Mar 2022 11:47:38 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-Message-ID: <YiiT2lFuxc3ob+Zq@sirena.org.uk>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220117145608.6781-1-madvenka@linux.microsoft.com>
- <20220117145608.6781-7-madvenka@linux.microsoft.com>
- <YgutJKqYe8ss8LLd@FVFF77S0Q05N>
- <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
- <YiY6hecX0pVWowQ7@sirena.org.uk>
- <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
+        Wed, 9 Mar 2022 06:49:11 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5879E171EEF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:48:09 -0800 (PST)
+Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MfqCF-1o3RL42ODZ-00gGuL for <linux-kernel@vger.kernel.org>; Wed, 09 Mar
+ 2022 12:48:07 +0100
+Received: by mail-wr1-f44.google.com with SMTP id h15so2592525wrc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 03:48:07 -0800 (PST)
+X-Gm-Message-State: AOAM530sDQ4h1UpFt+fZR3OEV1C3XLKKa0c1c3VpB/ic/DKKCHSxhft8
+        Yy7bGpF9wcJCZtSN/+Vc/gYRSv4QCa+cfNRRoD0=
+X-Google-Smtp-Source: ABdhPJx8CmrEkP9lIy7Z5de0qkV2NmzIOzmwBGL9JST+3PaDpmd2sG65KYvqwn/RglW3lLU3PwBwOhS6PRPEiVwkkUI=
+X-Received: by 2002:adf:e181:0:b0:1f7:7d5e:c3bb with SMTP id
+ az1-20020adfe181000000b001f77d5ec3bbmr8821463wrb.12.1646826487258; Wed, 09
+ Mar 2022 03:48:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fR2gx6UElM3+rVbt"
-Content-Disposition: inline
-In-Reply-To: <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com>
-X-Cookie: You will inherit millions of dollars.
+References: <20220309052842.247031-1-michael@michaelkloos.com>
+ <CAK8P3a2Mr_z6h7eg1O8ZN5_qE-o+8KFFBum3CxyuDYeF50s1dw@mail.gmail.com> <e936de26-95b7-1eed-008e-8d025b638265@michaelkloos.com>
+In-Reply-To: <e936de26-95b7-1eed-008e-8d025b638265@michaelkloos.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 9 Mar 2022 12:47:50 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a33g1D2mE2Z_ZsukMCBZ3gCGdDbH+2osHZe0Y8GoO_5UA@mail.gmail.com>
+Message-ID: <CAK8P3a33g1D2mE2Z_ZsukMCBZ3gCGdDbH+2osHZe0Y8GoO_5UA@mail.gmail.com>
+Subject: Re: [PATCH] riscv: Work to remove kernel dependence on the M-extension
+To:     "Michael T. Kloos" <michael@michaelkloos.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:DfQbHoCGD30olWfmn00WWrwJm36gsGzi2gl8xkAxfg4UF5SUWZP
+ xxjdnkOXHaEs6B5MoIE8y/8QJM3XpNIOcob5RVq9B2+Sv0HGsJZb9iquo394Rz1NjVKPeUU
+ B/6z64IlrJznToOC+kG7lx3fRKgjGe1/6m0uJ2U/dc/REDKPCxm/4LpJuKhPZzICLB3SZrd
+ sksTPmu1BA5IJzuEa7OtA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pKYYSIcRy1Y=:rdOHeu3gLfOEag6BgUa6Zw
+ inEWJLEnjgi5NI8vpjVe5HHLRpTL/cSSiaDwqr4XgWOSXgErhWVluJmiNRe8mBBqldRCdRTVN
+ nXMVfFD/grANRZnGMCXWZ08Tek1DfneFJ/QmSoAIKRXOk9W0IHHNpsaONRNw616a0ymPq1fRY
+ ldDz9q5Ak4Nr9o7qgt+cMfVJ84Ne5nKsOvELSEJbF13/g0gSJa0nHGqSAdq8vKNeOTY5x5SOU
+ mO7s+67ZMDJhUbmo2KKcB+Lt48HWjlGmJhUO2ZJWMmxKAsbpPimI90oa9agTuyWiNTji2lPwr
+ Ar7AEld7mYjDa2Be3bzYQVjgaTpVevYDBqM8QBcoKUYlCDPeu1GOHRxA5mK+KSBo4FgcdJf3a
+ TOXIcM3lDtydS8wSPG1PmmVLKJ4J6OlnrjcCmtu2p4z7f5l0JghlC5YUsC2BUbwAVpbLGPp/2
+ 76HNSL9rcriKQR0Nt7vbqv1dqEpTbW2LPSjXrqv7aM/H88Zuy5NXIzfHt+HXvQoV5cpU8WQYz
+ scFJvIzJqYaUkTI1QutFuB3L1K6k1GGZFh9XqMgLpY1YkZzpw3pKoyetRLncpuWftmjv/JGNZ
+ PzIZU7qvsBK5sBkEl0FL6KHgKPpCKRTHb9qSmUHiDY7M87bNOrVwTM6KbOrhlPvPFz1WW/ojZ
+ MlRtqdztVO7xlYyj32CVjSN86PGqpW22jZQWJu2SwmhLh6SEzzCuP3E09zIL08GtV3mY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 9, 2022 at 12:43 PM Michael T. Kloos
+<michael@michaelkloos.com> wrote:
+>
+> Thank you for your feedback.  I don't really have much of an
+> opinion about that right now aside from that I know where things
+> are in the current structure and am comfortable.  My goal with this
+> contribution was to keep it in-line with the current config
+> structure.  Hence, I put it right next to the menuconfig option
+> to control CONFIG_RISCV_ISA_C under Platform Type.
+>
+> I wouldn't necessarily be opposed to rethinking the way platform
+> feature selection is presented in menuconfig.  If people feel that
+> most users will be looking for an rv64gc config and that it should
+> be made for clear, perhaps it could be done.  I would need to do
+> more thinking about how exactly that would look.
+>
+> I do think that it is outside the scope of this patch.  Were you
+> working on something like that and worried about a merge conflict?
 
---fR2gx6UElM3+rVbt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+As I said, I think your patch is ok, and I have no objections to it
+being merged. It's just one more option among others that
+can cause problems if users get it wrong.
 
-On Tue, Mar 08, 2022 at 04:00:35PM -0600, Madhavan T. Venkataraman wrote:
-
-> It is just that patch 11 that defines "select
-> HAVE_RELIABLE_STACKTRACE" did not receive any comments from you
-> (unless I missed a comment that came from you. That is entirely
-> possible. If I missed it, my bad). Since you suggested that change, I
-> just wanted to make sure that that patch looks OK to you.
-
-I think that's more a question for the livepatch people to be honest -
-it's not entirely a technical one, there's a bunch of confidence level
-stuff going on.  For example there was some suggestion that people might
-insist on having objtool support, though there's also substantial
-pushback on making objtool a requirement for anything from other
-quarters.  I was hoping that posting that patch would provoke some
-discussion about what exactly is needed but that's not happened thus
-far.
-
---fR2gx6UElM3+rVbt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIok9kACgkQJNaLcl1U
-h9Atswf/aYL+WGkgkI963GJMyK23dK7OKYHwJjpAKq7WTCiRO8kPKRIENSCe4khl
-qf1PIUDbuaEWsacF/ovb7WGNFEqtuNuGwJCdsEeVjHPya0+FxLkQZ2qI/gF0dZgB
-l06fXYg29pg5oXdYWxaJHERjgPQbZxm7FnLkNd49g2KgeDxRIDRq+R0e4t0X8AjU
-xbA6Zk+mlQxEzfMOkslmcnKsgO2PM/aOwAKSdJdm70L2UP/H0FoOZq7e5tDOK6OO
-wffrEPTucsbI3C7HHrMsULi0IHT6SWIE0U5T5/61KqIJ2xP5KhNn8FbZB6amF4qJ
-OaCn/7+3OZMScj2cx86kCAC0Nw/1hA==
-=xFhr
------END PGP SIGNATURE-----
-
---fR2gx6UElM3+rVbt--
+       Arnd
