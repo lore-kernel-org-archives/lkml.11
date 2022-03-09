@@ -2,131 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiCISnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:43:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
+        id S235571AbiCISpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231269AbiCISni (ORCPT
+        with ESMTP id S230366AbiCISph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:43:38 -0500
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7EB1403D;
-        Wed,  9 Mar 2022 10:42:37 -0800 (PST)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2dbd97f9bfcso33212037b3.9;
-        Wed, 09 Mar 2022 10:42:37 -0800 (PST)
+        Wed, 9 Mar 2022 13:45:37 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727241A39C4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 10:44:38 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id 12so3548270oix.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 10:44:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GzeUrmmuWHgosSXEZvaiJ6fiMFBDvmNqArc7pVhUdmw=;
+        b=ClMUF32qhbiWve6kYgskziTxmhZ7Brsa9mqUDFdshCXbEDjBm84JMaju5LoB+7/bOD
+         nMMMsSUwMUv5/5oUsBSyzTYvTgYZkzsOpFPMYGAxBIjWZxKOhIW6ShOzwgNWJWY3c+w8
+         nhL3dlCX4ZoQuQsiNCuoC5/JeSZhBgX6+1LU/X8Tqrbx+VV1vA0psLFgK5kUULUfSWbR
+         Xb4aUlegUj9unYzzQahxzEeQ2m/MJYh0/3RNu7mqsnEo0l2ImhYK63VLGZp2G+mDvAh9
+         gN9EKvUK3km0kd2k84g1etzpz1KD+0I8V0Yr9ZLQTSMborilFdYhj+OtMvz2WJ66txes
+         4hew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y61mRCKE3zM9b3wOa8ze9bCmXMfmsVduldNuViZnA4k=;
-        b=GE95ESInc2IO8KVquGpLPySZ/+w308ZgkRCbYhr/mdez6s10atGaEEOcXQNqF3yOzs
-         7or9LjOeJNNZhBLWPPqqHkRY96Siescs1oPn5ngD0J51AS0agRTYkTYwPapikrj3jumj
-         QAw/GTvMHddtmjsXUPcL3Zw1EKf/3ZSv5Zgbyw4wsoaDs/PiJe/ewE30VZl+iyXwImhw
-         Lf3ZzrJIpEVszDT8UAzgX28bYH5lgyZygdgfnwUfaEXisJYYHq4+ItkgxDeCs0iamHGn
-         EuAHLMWkwiFLka24HjPmofayoBwRbYTgWn6XtkCmgAacUOHy0ymn/zKKoxoIQMda3YQZ
-         hrpA==
-X-Gm-Message-State: AOAM532aKd7EdlPF04nB4xyuJKmDe5EnFI5tkuJmiXJpZ0QzZaHHSRRV
-        ljRivgTtoSkwmCpjnUIGuOikuMdw0K96HUDL090=
-X-Google-Smtp-Source: ABdhPJwnEUJOD5z2fMROtMR0asiHyfh52H3fwaFsMnbIiBicsEFlOHLbZIOrDuUxLrBPkwWxCOLEpAfGKZlTIDoDxT0=
-X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
- b145-20020a811b97000000b002db640f49d8mr971245ywb.326.1646851356977; Wed, 09
- Mar 2022 10:42:36 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GzeUrmmuWHgosSXEZvaiJ6fiMFBDvmNqArc7pVhUdmw=;
+        b=LK4gLM8Idknl/9pNlrJUHEoCD/ObrmXH7X0yNQIGZwVdnTpOFzdEM0daS1VALU+aef
+         pt2JJy5NGero/E0h0oNiLE0/cn/RXC9dNsHRZE2DO/N3YEm2ZDgyGbtRb/0HlXydH6GE
+         2xglNZKHydHMeVwitAVpnux0sV5JbzqGmGXml6hRPWclPGhbPxW9RpSJ9pb88jCk0q9+
+         aiY9GMH/p7xcC6jg4Z7lIBntoVY2JswL7NaWBWuUnf7fsE7G6ydZTzOjjVr+5JvVe/jg
+         28Kppcl06L5FbjId3ii1Kj1ibQebOtK9E/m5jcm7QRikbvM87nKutTbv9o87QDXQXMGf
+         nuIw==
+X-Gm-Message-State: AOAM533J6px+jQod0Pa4DCcunICwDukv8eJfN4Uw48S/1o4xGDlG7zC7
+        JonRug6SjjZeBgRWxifsDjWYPQ==
+X-Google-Smtp-Source: ABdhPJw3xe5kwsc8CBSNTcJFUsMyL0+atOL+7H6yn+T9qqhqw8AlcyYWCQdvxGtb6mJNoZm0SK7hUw==
+X-Received: by 2002:a05:6808:bc1:b0:2d9:a01a:48a9 with SMTP id o1-20020a0568080bc100b002d9a01a48a9mr6847416oik.244.1646851477762;
+        Wed, 09 Mar 2022 10:44:37 -0800 (PST)
+Received: from [192.168.17.16] ([189.219.74.147])
+        by smtp.gmail.com with ESMTPSA id h18-20020a4a6b52000000b003212884f3e1sm1303655oof.19.2022.03.09.10.44.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 10:44:37 -0800 (PST)
+Message-ID: <249f3f06-5486-5988-dedb-3ba7eed580f3@linaro.org>
+Date:   Wed, 9 Mar 2022 12:44:36 -0600
 MIME-Version: 1.0
-References: <43dfaba0646d498fe94c1a8479b812346133f438.1646765290.git.darren@os.amperecomputing.com>
-In-Reply-To: <43dfaba0646d498fe94c1a8479b812346133f438.1646765290.git.darren@os.amperecomputing.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 9 Mar 2022 19:42:26 +0100
-Message-ID: <CAJZ5v0gMh2ed+ZWOnd-t_uTrZtm=AUfxOAkAKWT7WQK3=gf+7w@mail.gmail.com>
-Subject: Re: [PATCH] ACPI/APEI: Limit printable size of BERT table data
-To:     Darren Hart <darren@os.amperecomputing.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Doug Rady <dcrady@os.amperecomputing.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 4.14 00/18] 4.14.271-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220309155856.090281301@linuxfoundation.org>
+From:   =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
+In-Reply-To: <20220309155856.090281301@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 7:51 PM Darren Hart
-<darren@os.amperecomputing.com> wrote:
->
-> Platforms with large BERT table data can trigger soft lockup errors
-> while attempting to print the entire BERT table data to the console at
-> boot:
->
->   watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
->
-> Observed on Ampere Altra systems with a single BERT record of ~250KB.
->
-> The original bert driver appears to have assumed relatively small table
-> data. Since it is impractical to reassemble large table data from
-> interwoven console messages, and the table data is available in
->
->   /sys/firmware/acpi/tables/data/BERT
->
-> limit the size for tables printed to the console to 1024 (for no reason
-> other than it seemed like a good place to kick off the discussion, would
-> appreciate feedback from existing users in terms of what size would
-> maintain their current usage model).
->
-> Alternatively, we could make printing a CONFIG option, use the
-> bert_disable boot arg (or something similar), or use a debug log level.
-> However, all those solutions require extra steps or change the existing
-> behavior for small table data. Limiting the size preserves existing
-> behavior on existing platforms with small table data, and eliminates the
-> soft lockups for platforms with large table data, while still making it
-> available.
->
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Len Brown <lenb@kernel.org>
-> Cc: James Morse <james.morse@arm.com>
-> Cc: Tony Luck <tony.luck@intel.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Doug Rady <dcrady@os.amperecomputing.com>
-> Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Hello!
 
-Not that I have a particularly strong opinion here, but this looks
-reasonable to me, so I've queued it up for 5.18.
+On 09/03/22 09:59, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.14.271 release.
+> There are 18 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.271-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-APEI reviewers, please chime in if you disagree with the above.
+Regressions found.
 
-> ---
->  drivers/acpi/apei/bert.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-> index 19e50fcbf4d6..ad8ab3f12cf3 100644
-> --- a/drivers/acpi/apei/bert.c
-> +++ b/drivers/acpi/apei/bert.c
-> @@ -29,6 +29,7 @@
->
->  #undef pr_fmt
->  #define pr_fmt(fmt) "BERT: " fmt
-> +#define ACPI_BERT_PRINT_MAX_LEN 1024
->
->  static int bert_disable;
->
-> @@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
->                 }
->
->                 pr_info_once("Error records from previous boot:\n");
-> -
-> -               cper_estatus_print(KERN_INFO HW_ERR, estatus);
-> +               if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-> +                       cper_estatus_print(KERN_INFO HW_ERR, estatus);
-> +               else
-> +                       pr_info_once("Max print length exceeded, table data is available at:\n"
-> +                                    "/sys/firmware/acpi/tables/data/BERT");
->
->                 /*
->                  * Because the boot error source is "one-time polled" type,
-> --
-> 2.31.1
->
+The following Arm combinations failed to build:
+- arm-gcc-8-bcm2835_defconfig
+- arm-gcc-8-imx_v6_v7_defconfig
+- arm-gcc-8-omap2plus_defconfig
+- arm-gcc-9-bcm2835_defconfig
+- arm-gcc-9-imx_v6_v7_defconfig
+- arm-gcc-9-omap2plus_defconfig
+- arm-gcc-10-bcm2835_defconfig
+- arm-gcc-10-imx_v6_v7_defconfig
+- arm-gcc-10-omap2plus_defconfig
+- arm-gcc-11-bcm2835_defconfig
+- arm-gcc-11-imx_v6_v7_defconfig
+- arm-gcc-11-omap2plus_defconfig
+
+Messages look like this:
+
+   /builds/linux/arch/arm/kernel/entry-common.S: Assembler messages:
+   /builds/linux/arch/arm/kernel/entry-common.S:164: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/kernel/entry-common.S:173: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   make[2]: *** [/builds/linux/scripts/Makefile.build:430: arch/arm/kernel/entry-common.o] Error 1
+   /builds/linux/arch/arm/mm/cache-v7.S: Assembler messages:
+   /builds/linux/arch/arm/mm/cache-v7.S:63: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/mm/cache-v7.S:136: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/mm/cache-v7.S:170: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/mm/cache-v7.S:298: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   make[2]: *** [/builds/linux/scripts/Makefile.build:430: arch/arm/mm/cache-v7.o] Error 1
+   /builds/linux/arch/arm/mm/tlb-v7.S: Assembler messages:
+   /builds/linux/arch/arm/mm/tlb-v7.S:88: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   make[2]: *** [/builds/linux/scripts/Makefile.build:430: arch/arm/mm/tlb-v7.o] Error 1
+   /builds/linux/arch/arm/kernel/entry-armv.S: Assembler messages:
+   /builds/linux/arch/arm/kernel/entry-armv.S:1121: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/kernel/entry-armv.S:1144: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/kernel/entry-armv.S:1167: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/kernel/entry-armv.S:1190: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/kernel/entry-armv.S:1229: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   make[2]: *** [/builds/linux/scripts/Makefile.build:430: arch/arm/kernel/entry-armv.o] Error 1
+   /builds/linux/arch/arm/mm/proc-v7-2level.S: Assembler messages:
+   /builds/linux/arch/arm/mm/proc-v7-2level.S:58: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/mm/proc-v7-2level.S:60: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   /builds/linux/arch/arm/mm/proc-v7.S:62: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
+   make[2]: *** [/builds/linux/scripts/Makefile.build:430: arch/arm/mm/proc-v7.o] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [/builds/linux/Makefile:1053: arch/arm/mm] Error 2
+
+
+Greetings!
+
+Daniel Díaz
+daniel.diaz@linaro.org
