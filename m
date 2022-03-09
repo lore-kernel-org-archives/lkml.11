@@ -2,113 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D140FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233606AbiCIOnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:43:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        id S233609AbiCIOnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 09:43:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231469AbiCIOmz (ORCPT
+        with ESMTP id S233362AbiCIOnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:42:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DF517DBB7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:41:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C5994CE1F08
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B581C340E8;
-        Wed,  9 Mar 2022 14:41:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646836913;
-        bh=GFoS6bPRq7lzudSutkAFe2brQro/Mh9slsno9R8y1vM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=S1k0sVmKPBTacVmbx8BTwfhZZcpPblrE6SH1a/uxzCxYq14PNXGrpZQEyM2z+ymhi
-         +nbO79UQkBDUch83CsQfxb2ami/ek/9xKZnn/TnXFSYZB5wVtum/cij0qGU7FKQpjl
-         SrkMDT3vi6Tj916Ae2C0l6h/qk9isYlEu/u34CjyY41QCvTOIOAfdlwtkwzevpnjWC
-         ILfnx0IhHs4mNWFrOGiaATGwlNaggIHKFh+nLIkAWdePKFb0aqOksidIivwgzD5Bfl
-         VWRqpI59/MvApv85jdudgz5r2lXpoNhSMvRP+NEUX7fca6UW229qHJSEjaq/9mcvlO
-         E8DfKyRzRz/9Q==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] ARM: fix building NOMMU ARMv4/v5 kernels
-Date:   Wed,  9 Mar 2022 15:40:47 +0100
-Message-Id: <20220309144138.360482-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Wed, 9 Mar 2022 09:43:19 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C8117DBBF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:42:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646836941; x=1678372941;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VXzSaYAq968hpLq9pjQu4f3W0hi/lLLCGhCMIFyMafw=;
+  b=C3BkaDaNMpF6mjSQYrTebGcK6t2IL67vsOdrGU9HoRhxsaeDFrI0h5oA
+   jgGEElDq73VIAy66bcQ59OpjxQUX0NfngrOh7849/jN+qKFU24PGfU9uQ
+   4n5GUrZdFIrFASiRJOyza85IlbBhBfENhfF3N2jex50dxnR2v40kLWtgA
+   OW2/9jbMfxT+bKAJlhz/DP/S9Gvd9KBhxMtze5/sqQWUavRE3tm2iNOj4
+   j2l7+4BAP0U9wow1FVSo6jvfpJx9BSGuuXwgLqFYa7i8Gq617un2kH4Yu
+   nEtqcUllRB7OYrKgIkOanG53S+kbv+8s9mlyhZtOxtluxgd4LVqnSSK4A
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
+   d="scan'208";a="148622984"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 07:42:20 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 07:42:19 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 07:42:17 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <p.yadav@ti.com>, <michael@walle.cc>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <nicolas.ferre@microchip.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH v2 0/4] mtd: spi-nor: Parse BFPT to determine the 4-Byte Address Mode
+Date:   Wed, 9 Mar 2022 16:42:11 +0200
+Message-ID: <20220309144215.179449-1-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Get the 4-Byte Address mode method from BFPT and favor it in the detriment
+of the "default" set_4byte_addr_mode method or the methods set by vendors.
+This may introduce some regressions if flashes have wrong BFPT data. The
+fix is to introduce post_bfpt() hooks and fix where needed. We should let
+the core/sfdp do the params initialization, and do vendor specific updates
+just where needed.
 
-The removal of the old-style irq entry broke obscure NOMMU
-configurations on machines that have an MMU:
+This patch set depends on:
+https://lore.kernel.org/lkml/20220304093011.198173-1-tudor.ambarus@microchip.com/
+which depends on:
+https://lore.kernel.org/lkml/20220228111712.111737-1-tudor.ambarus@microchip.com/
 
-ld.lld: error: undefined symbol: generic_handle_arch_irq
- referenced by kernel/entry-armv.o:(__irq_svc) in archive arch/arm/built-in.a
+You can find a branch containing the entire chain at:
+git@github.com:ambarus/linux-0day.git spi-nor/next-bfpt-4byte-addr
 
-A follow-up patch to convert nvic to the generic_handle_arch_irq()
-could have fixed this by removing the Kconfig conditional, but did
-it differently.
+v2: drop quad enable patch
 
-Change the Kconfig logic so ARM machines now unconditionally
-enable the feature.
+Tudor Ambarus (4):
+  mtd: spi-nor: Parse BFPT to determine the 4-Byte Address Mode methods
+  mtd: spi-nor: Update name and description of the set_4byte_addr_mode
+    BFPT methods
+  mtd: spi-nor: Favor the BFPT-parsed set_4byte_addr_mode method
+  mtd: spi-nor: sfdp: Keep SFDP definitions private
 
-I have also submitted a patch to remove support for the configurations
-that broke, but fixing the regression first is a trivial and correct
-change.
+ drivers/mtd/spi-nor/core.c      |  70 +----------
+ drivers/mtd/spi-nor/core.h      |   1 -
+ drivers/mtd/spi-nor/macronix.c  |   9 +-
+ drivers/mtd/spi-nor/micron-st.c |  32 +----
+ drivers/mtd/spi-nor/sfdp.c      | 199 ++++++++++++++++++++++++++++++++
+ drivers/mtd/spi-nor/sfdp.h      |  57 +--------
+ drivers/mtd/spi-nor/winbond.c   |  18 +--
+ 7 files changed, 234 insertions(+), 152 deletions(-)
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 54f481a2308e ("ARM: remove old-style irq entry")
-Fixes: 52d240871760 ("irqchip: nvic: Use GENERIC_IRQ_MULTI_HANDLER")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-This patch should go into the arm/devel-stable branch that has
-the arm-irq-and-vmap-stacks-for-rmk patches from Ard
----
- arch/arm/Kconfig        | 2 +-
- drivers/irqchip/Kconfig | 1 -
- 2 files changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e9975ddd5034..5f0b40bab4fb 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -60,7 +60,7 @@ config ARM
- 	select GENERIC_CPU_AUTOPROBE
- 	select GENERIC_EARLY_IOREMAP
- 	select GENERIC_IDLE_POLL_SETUP
--	select GENERIC_IRQ_MULTI_HANDLER if MMU
-+	select GENERIC_IRQ_MULTI_HANDLER
- 	select GENERIC_IRQ_PROBE
- 	select GENERIC_IRQ_SHOW
- 	select GENERIC_IRQ_SHOW_LEVEL
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 488eaa14d3a7..7038957f4a77 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -58,7 +58,6 @@ config ARM_NVIC
- 	bool
- 	select IRQ_DOMAIN_HIERARCHY
- 	select GENERIC_IRQ_CHIP
--	select GENERIC_IRQ_MULTI_HANDLER
- 
- config ARM_VIC
- 	bool
 -- 
-2.29.2
+2.25.1
 
