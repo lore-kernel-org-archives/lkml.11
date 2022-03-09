@@ -2,479 +2,467 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C2CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77EF3C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235792AbiCIQSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:18:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
+        id S235850AbiCIQSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235772AbiCIQJK (ORCPT
+        with ESMTP id S235769AbiCIQJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:09:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4992E141FD6;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E36141479;
         Wed,  9 Mar 2022 08:06:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8198B82233;
-        Wed,  9 Mar 2022 16:06:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D399C340E8;
-        Wed,  9 Mar 2022 16:06:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841996;
-        bh=Y21BwUiwJ6jSo7QpwswaYdroljfpKXaOF9SDO0U9ox8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDgGIzYozmQ6UB8ggSOIXT0cwyFsTcowgclYwXyHeU8xlgwmLJHV6t9db0J0PJwN9
-         O/86cc+fbVTzop6QrWlKUZEzQieJ4ptTgdZIidH+NJJG/CJfyY3N+p+vq3+VJl5Sav
-         cVaNinGHLGBMJhtmdCG8IVhfitUb42Lx6KJReJ7k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.10 13/43] ARM: Spectre-BHB workaround
-Date:   Wed,  9 Mar 2022 16:59:46 +0100
-Message-Id: <20220309155859.628347878@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
-References: <20220309155859.239810747@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Wed, 09 Mar 2022 16:06:10 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646841971;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p9XDSOfBkJW9KT2uV7flb2vyVjv+XayBbqoN39U7/is=;
+        b=sT2qn68SSRkHaABdLML8H0qWnrjD8vKOQsHzvB/Pf081ac5Pk3BscVsz1EiFwA4seZWeAr
+        6IfcEmsLZPEH4UvhclXPuEK3MAkAgDTqAMJ3aE7MH7W8wd/+DGxPPNMvTIb6TVaihDYsLP
+        tDjRHhFthWlpKZHPW1obn9wvJ6lx48IvHkZ/4DYsDXqoKRP3uehlUsafTNKOfn50g9rYQK
+        ITVaNEsFlJ/n7sPmqM2MpzNjYrsTeNMUpZiNeTKlJS6DKGmSRRgqaQjrbClU6JmSpwfCrI
+        HaPRW1MqLVCzB420TafJ858AdDD3XSXcGBfvHPI2NN2ZkCZjP6XBy9awXBe03Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646841971;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p9XDSOfBkJW9KT2uV7flb2vyVjv+XayBbqoN39U7/is=;
+        b=KdWWqc+OH6DG5f3Oyj0xNKtrHRqDzBbUhEma/kUV7eXwBBaNhz+fOEuDYqGdxqojeUUDWW
+        we4NN9sOET20REAQ==
+From:   "tip-bot2 for Ross Philipson" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/boot: Fix memremap of setup_indirect structures
+Cc:     Ross Philipson <ross.philipson@oracle.com>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        <stable@vger.kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1645668456-22036-2-git-send-email-ross.philipson@oracle.com>
+References: <1645668456-22036-2-git-send-email-ross.philipson@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164684197045.16921.8900620444174308462.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+The following commit has been merged into the x86/urgent branch of tip:
 
-comomit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
+Commit-ID:     7228918b34615ef6317edcd9a058a057bc54aa32
+Gitweb:        https://git.kernel.org/tip/7228918b34615ef6317edcd9a058a057bc54aa32
+Author:        Ross Philipson <ross.philipson@oracle.com>
+AuthorDate:    Wed, 23 Feb 2022 21:07:35 -05:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Wed, 09 Mar 2022 12:49:44 +01:00
 
-Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
-Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
-well to be safe, which is affected by Spectre V2 in the same ways as
-Cortex-A15.
+x86/boot: Fix memremap of setup_indirect structures
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-[changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+As documented, the setup_indirect structure is nested inside
+the setup_data structures in the setup_data list. The code currently
+accesses the fields inside the setup_indirect structure but only
+the sizeof(struct setup_data) is being memremapped. No crash
+occurred but this is just due to how the area is remapped under the
+covers.
+
+Properly memremap both the setup_data and setup_indirect structures
+in these cases before accessing them.
+
+Fixes: b3c72fc9a78e ("x86/boot: Introduce setup_indirect")
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1645668456-22036-2-git-send-email-ross.philipson@oracle.com
 ---
- arch/arm/include/asm/assembler.h   |   10 ++++
- arch/arm/include/asm/spectre.h     |    4 +
- arch/arm/include/asm/vmlinux.lds.h |   18 +++++++-
- arch/arm/kernel/entry-armv.S       |   79 ++++++++++++++++++++++++++++++++++---
- arch/arm/kernel/entry-common.S     |   24 +++++++++++
- arch/arm/kernel/spectre.c          |    4 +
- arch/arm/kernel/traps.c            |   38 +++++++++++++++++
- arch/arm/mm/Kconfig                |   10 ++++
- arch/arm/mm/proc-v7-bugs.c         |   76 +++++++++++++++++++++++++++++++++++
- 9 files changed, 254 insertions(+), 9 deletions(-)
+ arch/x86/kernel/e820.c     | 41 ++++++++++++++------
+ arch/x86/kernel/kdebugfs.c | 37 +++++++++++++-----
+ arch/x86/kernel/ksysfs.c   | 77 +++++++++++++++++++++++++++++--------
+ arch/x86/kernel/setup.c    | 34 ++++++++++++----
+ arch/x86/mm/ioremap.c      | 24 ++++++++++--
+ 5 files changed, 166 insertions(+), 47 deletions(-)
 
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -107,6 +107,16 @@
- 	.endm
- #endif
- 
-+#if __LINUX_ARM_ARCH__ < 7
-+	.macro	dsb, args
-+	mcr	p15, 0, r0, c7, c10, 4
-+	.endm
-+
-+	.macro	isb, args
-+	mcr	p15, 0, r0, c7, r5, 4
-+	.endm
-+#endif
-+
- 	.macro asm_trace_hardirqs_off, save=1
- #if defined(CONFIG_TRACE_IRQFLAGS)
- 	.if \save
---- a/arch/arm/include/asm/spectre.h
-+++ b/arch/arm/include/asm/spectre.h
-@@ -14,6 +14,7 @@ enum {
- 	__SPECTRE_V2_METHOD_ICIALLU,
- 	__SPECTRE_V2_METHOD_SMC,
- 	__SPECTRE_V2_METHOD_HVC,
-+	__SPECTRE_V2_METHOD_LOOP8,
- };
- 
- enum {
-@@ -21,8 +22,11 @@ enum {
- 	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
- 	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
- 	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
-+	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
- };
- 
- void spectre_v2_update_state(unsigned int state, unsigned int methods);
- 
-+int spectre_bhb_update_vectors(unsigned int method);
-+
- #endif
---- a/arch/arm/include/asm/vmlinux.lds.h
-+++ b/arch/arm/include/asm/vmlinux.lds.h
-@@ -116,11 +116,23 @@
+diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
+index bc0657f..f267205 100644
+--- a/arch/x86/kernel/e820.c
++++ b/arch/x86/kernel/e820.c
+@@ -995,8 +995,10 @@ early_param("memmap", parse_memmap_opt);
   */
- #define ARM_VECTORS							\
- 	__vectors_lma = .;						\
--	.vectors 0xffff0000 : AT(__vectors_start) {			\
--		*(.vectors)						\
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
-+		.vectors {						\
-+			*(.vectors)					\
-+		}							\
-+		.vectors.bhb.loop8 {					\
-+			*(.vectors.bhb.loop8)				\
-+		}							\
-+		.vectors.bhb.bpiall {					\
-+			*(.vectors.bhb.bpiall)				\
-+		}							\
- 	}								\
- 	ARM_LMA(__vectors, .vectors);					\
--	. = __vectors_lma + SIZEOF(.vectors);				\
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);		\
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);		\
-+	. = __vectors_lma + SIZEOF(.vectors) +				\
-+		SIZEOF(.vectors.bhb.loop8) +				\
-+		SIZEOF(.vectors.bhb.bpiall);				\
- 									\
- 	__stubs_lma = .;						\
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1005,12 +1005,11 @@ vector_\name:
- 	sub	lr, lr, #\correction
- 	.endif
- 
--	@
--	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
--	@ (parent CPSR)
--	@
-+	@ Save r0, lr_<exception> (parent PC)
- 	stmia	sp, {r0, lr}		@ save r0, lr
--	mrs	lr, spsr
-+
-+	@ Save spsr_<exception> (parent CPSR)
-+2:	mrs	lr, spsr
- 	str	lr, [sp, #8]		@ save spsr
- 
- 	@
-@@ -1031,6 +1030,44 @@ vector_\name:
- 	movs	pc, lr			@ branch to handler in SVC mode
- ENDPROC(vector_\name)
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.subsection 1
-+	.align 5
-+vector_bhb_loop8_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mov	r0, #8
-+1:	b	. + 4
-+	subs	r0, r0, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	2b
-+ENDPROC(vector_bhb_loop8_\name)
-+
-+vector_bhb_bpiall_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
-+	@ isb not needed due to "movs pc, lr" in the vector stub
-+	@ which gives a "context synchronisation".
-+	b	2b
-+ENDPROC(vector_bhb_bpiall_\name)
-+	.previous
-+#endif
-+
- 	.align	2
- 	@ handler addresses follow this label
- 1:
-@@ -1039,6 +1076,10 @@ ENDPROC(vector_\name)
- 	.section .stubs, "ax", %progbits
- 	@ This must be the first word
- 	.word	vector_swi
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.word	vector_bhb_loop8_swi
-+	.word	vector_bhb_bpiall_swi
-+#endif
- 
- vector_rst:
-  ARM(	swi	SYS_ERROR0	)
-@@ -1153,8 +1194,10 @@ vector_addrexcptn:
-  * FIQ "NMI" handler
-  *-----------------------------------------------------------------------------
-  * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
-- * systems.
-+ * systems. This must be the last vector stub, so lets place it in its own
-+ * subsection.
-  */
-+	.subsection 2
- 	vector_stub	fiq, FIQ_MODE, 4
- 
- 	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-@@ -1187,6 +1230,30 @@ vector_addrexcptn:
- 	W(b)	vector_irq
- 	W(b)	vector_fiq
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.section .vectors.bhb.loop8, "ax", %progbits
-+.L__vectors_bhb_loop8_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_loop8_und
-+	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+	W(b)	vector_bhb_loop8_pabt
-+	W(b)	vector_bhb_loop8_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_loop8_irq
-+	W(b)	vector_bhb_loop8_fiq
-+
-+	.section .vectors.bhb.bpiall, "ax", %progbits
-+.L__vectors_bhb_bpiall_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_bpiall_und
-+	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+	W(b)	vector_bhb_bpiall_pabt
-+	W(b)	vector_bhb_bpiall_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_bpiall_irq
-+	W(b)	vector_bhb_bpiall_fiq
-+#endif
-+
- 	.data
- 	.align	2
- 
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -163,12 +163,36 @@ ENDPROC(ret_from_fork)
-  */
- 
- 	.align	5
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+ENTRY(vector_bhb_loop8_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mov	r8, #8
-+1:	b	2f
-+2:	subs	r8, r8, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_loop8_swi)
-+
-+	.align	5
-+ENTRY(vector_bhb_bpiall_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mcr	p15, 0, r8, c7, c5, 6	@ BPIALL
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_bpiall_swi)
-+#endif
-+	.align	5
- ENTRY(vector_swi)
- #ifdef CONFIG_CPU_V7M
- 	v7m_exception_entry
- #else
- 	sub	sp, sp, #PT_REGS_SIZE
- 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
-+3:
-  ARM(	add	r8, sp, #S_PC		)
-  ARM(	stmdb	r8, {sp, lr}^		)	@ Calling sp, lr
-  THUMB(	mov	r8, sp			)
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -45,6 +45,10 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		method = "Firmware call";
- 		break;
- 
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		method = "History overwrite";
-+		break;
-+
- 	default:
- 		method = "Multiple mitigations";
- 		break;
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -30,6 +30,7 @@
- #include <linux/atomic.h>
- #include <asm/cacheflush.h>
- #include <asm/exception.h>
-+#include <asm/spectre.h>
- #include <asm/unistd.h>
- #include <asm/traps.h>
- #include <asm/ptrace.h>
-@@ -820,6 +821,43 @@ static void flush_vectors(void *vma, siz
- 	flush_icache_range(start, end);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+int spectre_bhb_update_vectors(unsigned int method)
-+{
-+	extern char __vectors_bhb_bpiall_start[], __vectors_bhb_bpiall_end[];
-+	extern char __vectors_bhb_loop8_start[], __vectors_bhb_loop8_end[];
-+	void *vec_start, *vec_end;
-+
-+	if (system_state > SYSTEM_SCHEDULING) {
-+		pr_err("CPU%u: Spectre BHB workaround too late - system vulnerable\n",
-+		       smp_processor_id());
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		vec_start = __vectors_bhb_loop8_start;
-+		vec_end = __vectors_bhb_loop8_end;
-+		break;
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		vec_start = __vectors_bhb_bpiall_start;
-+		vec_end = __vectors_bhb_bpiall_end;
-+		break;
-+
-+	default:
-+		pr_err("CPU%u: unknown Spectre BHB state %d\n",
-+		       smp_processor_id(), method);
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	copy_from_lma(vectors_page, vec_start, vec_end);
-+	flush_vectors(vectors_page, 0, vec_end - vec_start);
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#endif
-+
- void __init early_trap_init(void *vectors_base)
+ void __init e820__reserve_setup_data(void)
  {
- 	extern char __stubs_start[], __stubs_end[];
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -854,6 +854,16 @@ config HARDEN_BRANCH_PREDICTOR
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data;
++	u64 pa_data, pa_next;
++	u32 len;
  
- 	   If unsure, say Y.
+ 	pa_data = boot_params.hdr.setup_data;
+ 	if (!pa_data)
+@@ -1004,6 +1006,14 @@ void __init e820__reserve_setup_data(void)
  
-+config HARDEN_BRANCH_HISTORY
-+	bool "Harden Spectre style attacks against branch history" if EXPERT
-+	depends on CPU_SPECTRE
-+	default y
-+	help
-+	  Speculation attacks against some high-performance processors can
-+	  make use of branch history to influence future speculation. When
-+	  taking an exception, a sequence of branches overwrites the branch
-+	  history, or branch history is invalidated.
-+
- config TLS_REG_EMUL
- 	bool
- 	select NEED_KUSER_HELPERS
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -177,6 +177,81 @@ static void cpu_v7_spectre_v2_init(void)
- 	spectre_v2_update_state(state, method);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+static int spectre_bhb_method;
-+
-+static const char *spectre_bhb_method_name(int method)
-+{
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		return "loop";
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		return "BPIALL";
-+
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	if (spectre_bhb_method != method) {
-+		if (spectre_bhb_method) {
-+			pr_err("CPU%u: Spectre BHB: method disagreement, system vulnerable\n",
-+			       smp_processor_id());
-+
-+			return SPECTRE_VULNERABLE;
+ 	while (pa_data) {
+ 		data = early_memremap(pa_data, sizeof(*data));
++		if (!data) {
++			pr_warn("e820: failed to memremap setup_data entry\n");
++			return;
 +		}
 +
-+		if (spectre_bhb_update_vectors(method) == SPECTRE_VULNERABLE)
-+			return SPECTRE_VULNERABLE;
++		len = sizeof(*data);
++		pa_next = data->next;
 +
-+		spectre_bhb_method = method;
+ 		e820__range_update(pa_data, sizeof(*data)+data->len, E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+ 
+ 		/*
+@@ -1015,18 +1025,27 @@ void __init e820__reserve_setup_data(void)
+ 						 sizeof(*data) + data->len,
+ 						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			e820__range_update(((struct setup_indirect *)data->data)->addr,
+-					   ((struct setup_indirect *)data->data)->len,
+-					   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+-			e820__range_update_kexec(((struct setup_indirect *)data->data)->addr,
+-						 ((struct setup_indirect *)data->data)->len,
+-						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++		if (data->type == SETUP_INDIRECT) {
++			len += data->len;
++			early_memunmap(data, sizeof(*data));
++			data = early_memremap(pa_data, len);
++			if (!data) {
++				pr_warn("e820: failed to memremap indirect setup_data\n");
++				return;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				e820__range_update(indirect->addr, indirect->len,
++						   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++				e820__range_update_kexec(indirect->addr, indirect->len,
++							 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++			}
+ 		}
+ 
+-		pa_data = data->next;
+-		early_memunmap(data, sizeof(*data));
++		pa_data = pa_next;
++		early_memunmap(data, len);
+ 	}
+ 
+ 	e820__update_table(e820_table);
+diff --git a/arch/x86/kernel/kdebugfs.c b/arch/x86/kernel/kdebugfs.c
+index 64b6da9..e2e89be 100644
+--- a/arch/x86/kernel/kdebugfs.c
++++ b/arch/x86/kernel/kdebugfs.c
+@@ -88,11 +88,13 @@ create_setup_data_node(struct dentry *parent, int no,
+ 
+ static int __init create_setup_data_nodes(struct dentry *parent)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data_node *node;
+ 	struct setup_data *data;
+-	int error;
++	u64 pa_data, pa_next;
+ 	struct dentry *d;
+-	u64 pa_data;
++	int error;
++	u32 len;
+ 	int no = 0;
+ 
+ 	d = debugfs_create_dir("setup_data", parent);
+@@ -112,12 +114,29 @@ static int __init create_setup_data_nodes(struct dentry *parent)
+ 			error = -ENOMEM;
+ 			goto err_dir;
+ 		}
+-
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			node->paddr = ((struct setup_indirect *)data->data)->addr;
+-			node->type  = ((struct setup_indirect *)data->data)->type;
+-			node->len   = ((struct setup_indirect *)data->data)->len;
++		pa_next = data->next;
++
++		if (data->type == SETUP_INDIRECT) {
++			len = sizeof(*data) + data->len;
++			memunmap(data);
++			data = memremap(pa_data, len, MEMREMAP_WB);
++			if (!data) {
++				kfree(node);
++				error = -ENOMEM;
++				goto err_dir;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				node->paddr = indirect->addr;
++				node->type  = indirect->type;
++				node->len   = indirect->len;
++			} else {
++				node->paddr = pa_data;
++				node->type  = data->type;
++				node->len   = data->len;
++			}
+ 		} else {
+ 			node->paddr = pa_data;
+ 			node->type  = data->type;
+@@ -125,7 +144,7 @@ static int __init create_setup_data_nodes(struct dentry *parent)
+ 		}
+ 
+ 		create_setup_data_node(d, no, node);
+-		pa_data = data->next;
++		pa_data = pa_next;
+ 
+ 		memunmap(data);
+ 		no++;
+diff --git a/arch/x86/kernel/ksysfs.c b/arch/x86/kernel/ksysfs.c
+index d0a1912..257892f 100644
+--- a/arch/x86/kernel/ksysfs.c
++++ b/arch/x86/kernel/ksysfs.c
+@@ -91,26 +91,41 @@ static int get_setup_data_paddr(int nr, u64 *paddr)
+ 
+ static int __init get_setup_data_size(int nr, size_t *size)
+ {
+-	int i = 0;
++	u64 pa_data = boot_params.hdr.setup_data, pa_next;
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data = boot_params.hdr.setup_data;
++	int i = 0;
++	u32 len;
+ 
+ 	while (pa_data) {
+ 		data = memremap(pa_data, sizeof(*data), MEMREMAP_WB);
+ 		if (!data)
+ 			return -ENOMEM;
++		pa_next = data->next;
++
+ 		if (nr == i) {
+-			if (data->type == SETUP_INDIRECT &&
+-			    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
+-				*size = ((struct setup_indirect *)data->data)->len;
+-			else
++			if (data->type == SETUP_INDIRECT) {
++				len = sizeof(*data) + data->len;
++				memunmap(data);
++				data = memremap(pa_data, len, MEMREMAP_WB);
++				if (!data)
++					return -ENOMEM;
++
++				indirect = (struct setup_indirect *)data->data;
++
++				if (indirect->type != SETUP_INDIRECT)
++					*size = indirect->len;
++				else
++					*size = data->len;
++			} else {
+ 				*size = data->len;
++			}
+ 
+ 			memunmap(data);
+ 			return 0;
+ 		}
+ 
+-		pa_data = data->next;
++		pa_data = pa_next;
+ 		memunmap(data);
+ 		i++;
+ 	}
+@@ -120,9 +135,11 @@ static int __init get_setup_data_size(int nr, size_t *size)
+ static ssize_t type_show(struct kobject *kobj,
+ 			 struct kobj_attribute *attr, char *buf)
+ {
++	struct setup_indirect *indirect;
++	struct setup_data *data;
+ 	int nr, ret;
+ 	u64 paddr;
+-	struct setup_data *data;
++	u32 len;
+ 
+ 	ret = kobj_to_setup_data_nr(kobj, &nr);
+ 	if (ret)
+@@ -135,10 +152,20 @@ static ssize_t type_show(struct kobject *kobj,
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	if (data->type == SETUP_INDIRECT)
+-		ret = sprintf(buf, "0x%x\n", ((struct setup_indirect *)data->data)->type);
+-	else
++	if (data->type == SETUP_INDIRECT) {
++		len = sizeof(*data) + data->len;
++		memunmap(data);
++		data = memremap(paddr, len, MEMREMAP_WB);
++		if (!data)
++			return -ENOMEM;
++
++		indirect = (struct setup_indirect *)data->data;
++
++		ret = sprintf(buf, "0x%x\n", indirect->type);
++	} else {
+ 		ret = sprintf(buf, "0x%x\n", data->type);
 +	}
 +
-+	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
-+		smp_processor_id(), spectre_bhb_method_name(method));
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#else
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	return SPECTRE_VULNERABLE;
-+}
-+#endif
-+
-+static void cpu_v7_spectre_bhb_init(void)
-+{
-+	unsigned int state, method = 0;
-+
-+	switch (read_cpuid_part()) {
-+	case ARM_CPU_PART_CORTEX_A15:
-+	case ARM_CPU_PART_BRAHMA_B15:
-+	case ARM_CPU_PART_CORTEX_A57:
-+	case ARM_CPU_PART_CORTEX_A72:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_LOOP8;
-+		break;
-+
-+	case ARM_CPU_PART_CORTEX_A73:
-+	case ARM_CPU_PART_CORTEX_A75:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_BPIALL;
-+		break;
-+
-+	default:
-+		state = SPECTRE_UNAFFECTED;
-+		break;
-+	}
-+
-+	if (state == SPECTRE_MITIGATED)
-+		state = spectre_bhb_install_workaround(method);
-+
-+	spectre_v2_update_state(state, method);
-+}
-+
- static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
- 						  u32 mask, const char *msg)
- {
-@@ -217,4 +292,5 @@ void cpu_v7_ca15_ibe(void)
- void cpu_v7_bugs_init(void)
- {
- 	cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
+ 	memunmap(data);
+ 	return ret;
  }
-
-
+@@ -149,9 +176,10 @@ static ssize_t setup_data_data_read(struct file *fp,
+ 				    char *buf,
+ 				    loff_t off, size_t count)
+ {
++	struct setup_indirect *indirect;
++	struct setup_data *data;
+ 	int nr, ret = 0;
+ 	u64 paddr, len;
+-	struct setup_data *data;
+ 	void *p;
+ 
+ 	ret = kobj_to_setup_data_nr(kobj, &nr);
+@@ -165,10 +193,27 @@ static ssize_t setup_data_data_read(struct file *fp,
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	if (data->type == SETUP_INDIRECT &&
+-	    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-		paddr = ((struct setup_indirect *)data->data)->addr;
+-		len = ((struct setup_indirect *)data->data)->len;
++	if (data->type == SETUP_INDIRECT) {
++		len = sizeof(*data) + data->len;
++		memunmap(data);
++		data = memremap(paddr, len, MEMREMAP_WB);
++		if (!data)
++			return -ENOMEM;
++
++		indirect = (struct setup_indirect *)data->data;
++
++		if (indirect->type != SETUP_INDIRECT) {
++			paddr = indirect->addr;
++			len = indirect->len;
++		} else {
++			/*
++			 * Even though this is technically undefined, return
++			 * the data as though it is a normal setup_data struct.
++			 * This will at least allow it to be inspected.
++			 */
++			paddr += sizeof(*data);
++			len = data->len;
++		}
+ 	} else {
+ 		paddr += sizeof(*data);
+ 		len = data->len;
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index f7a132e..90d7e17 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -369,21 +369,41 @@ static void __init parse_setup_data(void)
+ 
+ static void __init memblock_x86_reserve_range_setup_data(void)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data;
++	u64 pa_data, pa_next;
++	u32 len;
+ 
+ 	pa_data = boot_params.hdr.setup_data;
+ 	while (pa_data) {
+ 		data = early_memremap(pa_data, sizeof(*data));
++		if (!data) {
++			pr_warn("setup: failed to memremap setup_data entry\n");
++			return;
++		}
++
++		len = sizeof(*data);
++		pa_next = data->next;
++
+ 		memblock_reserve(pa_data, sizeof(*data) + data->len);
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
+-			memblock_reserve(((struct setup_indirect *)data->data)->addr,
+-					 ((struct setup_indirect *)data->data)->len);
++		if (data->type == SETUP_INDIRECT) {
++			len += data->len;
++			early_memunmap(data, sizeof(*data));
++			data = early_memremap(pa_data, len);
++			if (!data) {
++				pr_warn("setup: failed to memremap indirect setup_data\n");
++				return;
++			}
+ 
+-		pa_data = data->next;
+-		early_memunmap(data, sizeof(*data));
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT)
++				memblock_reserve(indirect->addr, indirect->len);
++		}
++
++		pa_data = pa_next;
++		early_memunmap(data, len);
+ 	}
+ }
+ 
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index 026031b..ab666c4 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -615,6 +615,7 @@ static bool memremap_is_efi_data(resource_size_t phys_addr,
+ static bool memremap_is_setup_data(resource_size_t phys_addr,
+ 				   unsigned long size)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+ 	u64 paddr, paddr_next;
+ 
+@@ -627,6 +628,10 @@ static bool memremap_is_setup_data(resource_size_t phys_addr,
+ 
+ 		data = memremap(paddr, sizeof(*data),
+ 				MEMREMAP_WB | MEMREMAP_DEC);
++		if (!data) {
++			pr_warn("failed to memremap setup_data entry\n");
++			return false;
++		}
+ 
+ 		paddr_next = data->next;
+ 		len = data->len;
+@@ -636,10 +641,21 @@ static bool memremap_is_setup_data(resource_size_t phys_addr,
+ 			return true;
+ 		}
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			paddr = ((struct setup_indirect *)data->data)->addr;
+-			len = ((struct setup_indirect *)data->data)->len;
++		if (data->type == SETUP_INDIRECT) {
++			memunmap(data);
++			data = memremap(paddr, sizeof(*data) + len,
++					MEMREMAP_WB | MEMREMAP_DEC);
++			if (!data) {
++				pr_warn("failed to memremap indirect setup_data\n");
++				return false;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				paddr = indirect->addr;
++				len = indirect->len;
++			}
+ 		}
+ 
+ 		memunmap(data);
