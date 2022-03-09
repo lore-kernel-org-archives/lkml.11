@@ -2,170 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C26FC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E44EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiCIMmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:42:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
+        id S231984AbiCIMqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:46:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232812AbiCIMmo (ORCPT
+        with ESMTP id S230231AbiCIMqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:42:44 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C4D1768EF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:41:45 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 58FBF1F381;
-        Wed,  9 Mar 2022 12:41:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646829704; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C8Hk1US5ALaJqROKDmhS5n/mU774qzqXx0l8GfBy25Q=;
-        b=S3cCmYevcge2i3KzDINHS821CqzPoY5g8kr8ONVETVsoO/xqtxHgFCXR/n8YfampCsLqhs
-        Um9WKgHtiWSL9WqnkGTCnLiSmGLcFDZyxh/YzbvBQg1X6V+XPRE52QriJPjrVxzuKhJHH1
-        DQakS0ebltreZU2V56HHO92t1OX1xLM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646829704;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C8Hk1US5ALaJqROKDmhS5n/mU774qzqXx0l8GfBy25Q=;
-        b=vXG6v5OTi7xjoT7gDdoCiQKs1fmoVBRY1h5gNC3VWquG1E2LmqxnJwHX3BrgD4sA8egMtL
-        3L3wFDb9fmoPbBAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3AF0613D79;
-        Wed,  9 Mar 2022 12:41:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HtSBDYigKGL7CQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 09 Mar 2022 12:41:44 +0000
-Message-ID: <105e1620-5cf2-fecd-27e7-21a6045cc3ac@suse.cz>
-Date:   Wed, 9 Mar 2022 13:41:43 +0100
+        Wed, 9 Mar 2022 07:46:01 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4017129D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:45:03 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id i8so2829598wrr.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:45:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vgKY2Q6+QhjEsaicdqEnaC8ePiL0nSdZLDa1oY8ac70=;
+        b=vVSZXrOPJfdfQlk3yTj0sWxYXjSZJJJkmhzOxE8T2zdhsyWzXcJymep2acmJW5EkAj
+         tDRgXyY/uR+mP9F92Mto8Ua/ILvYDmGp64/LXYomkY+MK1rCMnk8u12j2VVPJahNUhS6
+         +CsX2K1acavUCwQt7YsxEB0kw5Dd+RkwxFtZ0Fl15TTmgrVdO0kIXf8UNPjbmEHb54Wy
+         rBdBlhr4PTMAYyRcjAH3JGSph2JPa0K8mfiYKGg49yc8LQoUMJJWCgYNgOTtO58extn8
+         mchCuXE3HVN6NGKZVKmMxBCKSy+gODUHJwECYAwDSrwtUey2k5ZfdtG1VP2B15qGSVeJ
+         Qfww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vgKY2Q6+QhjEsaicdqEnaC8ePiL0nSdZLDa1oY8ac70=;
+        b=v4awtDWSB3YFOUlRggVXNxX1b5h1KCsjRyTpUt4bA6KUATJAjznbhOuwoY5iFKk2MM
+         srihr56DSuZze5apLofWOsf162AFeGalfsWQaKeRdbVpG7PCNVi6S06oDhmKHKLQEVSU
+         2WZqCgtkvZgXeenrkYYy84Emx537oxlEEG6SpGierWiNm8Vchqo3vFjSxqIy8GdrHQi9
+         ZT0G3R8Dlxh7a5qlj/b2NV7s0nHuznJZYInTCweyaMS6b9h/j2wqqTTbncEeP/SbDLEa
+         BI9SBoYYD2hRdvHMab4TZvCJVdb5YmfuZUkiGvPFhTWjnLf+6r9gnsCO73uOIB33O4wa
+         zvgQ==
+X-Gm-Message-State: AOAM531adaEtLMd4eeMrx7w77mpX0Bsu4nkHhMoGxl29ZQJ+kIJl3Rfi
+        ScP2FSWM3aF98UtTlJbw59SFTQ==
+X-Google-Smtp-Source: ABdhPJwj7n2SG+ZJ5L+LFVYmeqokwoThVczi/zeuMIVWGe6Ti9GLdtc8xDYQ1inhbtePKDrv/qyzog==
+X-Received: by 2002:a5d:6344:0:b0:1f0:21ee:9705 with SMTP id b4-20020a5d6344000000b001f021ee9705mr15663343wrw.93.1646829901625;
+        Wed, 09 Mar 2022 04:45:01 -0800 (PST)
+Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm5414414wmb.48.2022.03.09.04.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 04:45:01 -0800 (PST)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     broonie@kernel.org
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] ASoC: qcom: fix Kconfig for SC7280
+Date:   Wed,  9 Mar 2022 12:44:53 +0000
+Message-Id: <20220309124453.25841-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Hugh Dickins <hughd@google.com>,
-        Liam Howlett <liam.howlett@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-References: <319e4db9-64ae-4bca-92f0-ade85d342ff@google.com>
- <20220304184927.vkq6ewn6uqtcesma@revolver>
- <20220304190531.6giqbnnaka4xhovx@revolver>
- <6038ebc2-bc88-497d-a3f3-5936726fb023@google.com>
- <20220305020021.qmwg5dkham4lyz6v@revolver>
- <29eac73-4f94-1688-3834-8bd6687a18@google.com>
- <20220308160552.d3dlcaclkqnlkzzj@revolver>
- <6036627b-6110-cc58-ca1-a6f736553dd@google.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH mmotm] mempolicy: mbind_range() set_policy() after
- vma_merge()
-In-Reply-To: <6036627b-6110-cc58-ca1-a6f736553dd@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/8/22 22:32, Hugh Dickins wrote:
-> On Tue, 8 Mar 2022, Liam Howlett wrote:
->> * Hugh Dickins <hughd@google.com> [220304 21:29]:
->> > On Sat, 5 Mar 2022, Liam Howlett wrote:
->> > > * Hugh Dickins <hughd@google.com> [220304 17:48]:
->> > > > On Fri, 4 Mar 2022, Liam Howlett wrote:
->> > > > > * Liam R. Howlett <Liam.Howlett@Oracle.com> [220304 13:49]:
->> > > > > > * Hugh Dickins <hughd@google.com> [220303 23:36]:
->> > > > > 
->> > > > > I just thought of something after my initial email
->> > > > > 
->> > > > > How does the ->set_policy() requirement on tmpfs play out for the
->> > > > > mpol_equal() check earlier in that for loop?
->> > > > 
->> > > > It took me a while to page all this back in (and remind myself of
->> > > > what is case 8) to answer that question!
->> > > > 
->> > > > The answer is that the mpol_equal() check at the top of the loop is on
->> > > > an existing, unmodified vma; so it's right to assume that any necessary
->> > > > set_policy() has already been done.
->> > > > 
->> > > > Whereas the mpol_equal() check being removed in this patch, is being
->> > > > done on a vma which may have just been extended to cover a greater range:
->> > > > so although the relevant set_policy() may have already been done on a part
->> > > > of its range, there is now another part which needs the policy applied.
->> > > 
->> > > Doesn't the policy get checked during vma_merge()?  Specifically the
->> > > mpol_equal(policy, vma_policy(next)) check?
->> > 
->> > Sorry, I'm reduced to the unhelpful reply of "Yes. So?"
->> > 
->> > If vma_merge() finds that vma's new_pol allows it to be merged with prev,
->> > that still requires mbind_range() (or its call to vma_replace_policy())
->> > to set_policy() on prev (now assigned to vma), to apply that new_pol to
->> > the extension of prev - vma_merge() would have checked mpol_equal(),
->> > but would not have done the set_policy().
->> 
->> I must be missing something.  If mpol_equal() isn't sufficient to ensure
->> we don't need to set_policy(), then why are the other vma_merge() cases
->> okay - such as madvise_update_vma() and mlock_fixup()?  Won't the mem
->> policy change in the same way in these cases?
-> 
-> mlock provides a good example to compare.
-> 
-> Mlocking pages is the business of mlock(), and mlock_fixup() needs to
-> attend to mm->locked_vm, and calling something to mark as PageMlocked
-> those pages already in the area now covered by mlock.  But it doesn't
-> need to worry about set_policy(), that's not its business, and is
-> unaffected by mlock changes (though merging of vmas needs mpol_equal()
-> to check that policy is the same, and merging and splitting of vmas
-> need to maintain the refcount of the shared policy if any).
-> 
-> Whereas NUMA mempolicy is the business of mbind(), and mbind_range()
-> needs to attend to vma->vm_policy, and if it's a mapping of something
-> supporting a shared set_policy(), call that to establish the new range
-> on the object mapped.  But it doesn't need to worry about mm->locked_vm
-> or whether pages are Mlocked, that's not its business, and is unaffected
-> by mbind changes (though merging of vmas needs to check VM_LOCKED among
-> other flags to check that they are the same before it can merge).
+select would force the symbol to value without checking the dependencies.
+In this case selecting TX and RX MACROs directly without checking its
+dependency on COMMON_CLK would break builds on platform which do no
+set COMMON_CLK.
+ex:
+WARNING: unmet direct dependencies detected for SND_SOC_LPASS_RX_MACRO
+  Depends on [n]: SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] && COMMON_CLK [=n]
+  Selected by [m]:
+  - SND_SOC_SC7280 [=m] && SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] &&
+	 SND_SOC_QCOM [=m] && I2C [=y] && SOUNDWIRE [=m]
 
-So if I understand correctly, we have case 8 of vma_merge():
+move select to imply which should enforce symbol to be set to 'n' if any
+dependencies are not resolved.
 
-    AAAA
-PPPPNNNNXXXX
-becomes
-PPPPXXXXXXXX 8
+Fixes: 57350bd41c3a ("ASoC: qcom: SC7280: Add machine driver")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+ sound/soc/qcom/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-N is vma with some old policy different from new_pol
-A is the range where we change to new policy new_pol, which happens to be
-the same as existing policy of X
-Thus vma_merge() extends vma X to include range A - the vma N
-vma_merge() succeeds because it's passed new_pol to do the compatibility
-checks (although N still has the previous policy)
-
-Before Hugh's patch we would then realize "oh X already has new_pol, nothing
-to do". Note that this AFAICS doesn't affect actual pages migration between
-nodes, because that happens outside of mbind_range(). But it causes us to
-skip vma_replace_policy(), which causes us to skip vm_ops->set_policy, where
-tmpfs does something important (we could maybe argue that Hugh didn't
-specify the user visible effects of this exactly enough :) what is "leaving
-the new mbind unenforced" - are pages not migrated in this case?).
-
-HTH (if I'm right),
-Vlastimil
-
-> Does that help?
-> 
-> Hugh
-> 
+diff --git a/sound/soc/qcom/Kconfig b/sound/soc/qcom/Kconfig
+index ae99833b3fdb..593fd85e03ad 100644
+--- a/sound/soc/qcom/Kconfig
++++ b/sound/soc/qcom/Kconfig
+@@ -194,8 +194,8 @@ config SND_SOC_SC7280
+ 	select SND_SOC_LPASS_SC7280
+ 	select SND_SOC_MAX98357A
+ 	select SND_SOC_WCD938X
+-	select SND_SOC_LPASS_RX_MACRO
+-	select SND_SOC_LPASS_TX_MACRO
++	imply SND_SOC_LPASS_RX_MACRO
++	imply SND_SOC_LPASS_TX_MACRO
+ 	help
+ 	  Add support for audio on Qualcomm Technologies Inc.
+ 	  SC7280 SoC-based systems.
+-- 
+2.21.0
 
