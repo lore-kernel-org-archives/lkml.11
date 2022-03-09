@@ -2,122 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231839AbiCIJJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:09:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
+        id S231849AbiCIJKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:10:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiCIJJg (ORCPT
+        with ESMTP id S231830AbiCIJKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:09:36 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E3014F29C;
-        Wed,  9 Mar 2022 01:08:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646816918; x=1678352918;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=w7iza/zSYzgNpQ1Yq4u/4l41Ldi1VH8IMiOYWwqOtRU=;
-  b=pi75kxqi5e1OtL5/M6GAyQmMNdVNwLzB0n/+uVzFphzA7QGBwkT7Uxlu
-   W/kOzGuK+sLDURauWqcfjHoCBUtVN0BbLdmGq2z8V7WBXnNiBF2rbda/0
-   vC+eWX6rpgdIL2/QBfrYp4FDcS4qL+KAxjqkVpDD9r1a0gZDnyprCfIQZ
-   c5SEyYr6I69y5+xjItza91X6XvmdV8Boyljf2vLyOsxFLab8Tj9scLdC1
-   Jr0WABpbg6mm8H596oOfTnIES+1MIti9wOtm0B2U/wrCE8nLYd9VjRe9c
-   kRuyb6XB4UkHnBHFwE4LBUouOzS4/1/nBw5yCqOAZ031tIQW0TaeExmKC
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="155781418"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 02:08:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 02:08:37 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Mar 2022 02:08:37 -0700
-Date:   Wed, 9 Mar 2022 10:11:29 +0100
-From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
-To:     David Laight <David.Laight@aculab.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Message-ID: <20220309091129.b5q3gtiuqlk5skka@soft-dev3-1.localhost>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
- <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
- <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
+        Wed, 9 Mar 2022 04:10:01 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C43214F9A4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:09:03 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2DB713F1AF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:09:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646816941;
+        bh=WzHkSBUQpjp6lbzAQCdNWpRnWZNKxL9bPgaE1U5jbzc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=iTMWEx5kqBub5kJk/mV3kyM3geHDAgrzoNcdYEak3SoCnDTQ7lHFRgjAmjBFTsSg2
+         Dux6BtpJmqELIWrRMpmKxnq79C9qqmfCGn9AjU/mZjwgdMXy8FB5AM7eo5VG350mCO
+         k93aSHfKHGMvY6kGN9yzM1tWdHRTk7zO1iPVQ+fVneVT+aF/TazfH/kSmD9Ni55r4t
+         9XxeG7imH8nvyZ9sWob3kLooBpkw33Dlc6QNg61qoZpM7bafu5no5GNMgxFpo5mK2l
+         /w8SGb1T+LzyCeMQYGw9JDi0KYhQrGOrimMOC9rG11JONAGo5LDoDQHApLpJmtPU9E
+         rXFrzqPbumo5A==
+Received: by mail-ej1-f70.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so941310ejk.16
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:09:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WzHkSBUQpjp6lbzAQCdNWpRnWZNKxL9bPgaE1U5jbzc=;
+        b=t7gksT0/xI38kg7hZhKu98maJTg19ILExWSKI6wCrcRHQPf21BkKagOG1qEbfJIan8
+         vS1XfLXgttXEl8jQpILqt5kCKOBfc88+hxpWujW8lPt1f0POPOBmkiCO0t+zjyS82kHR
+         1iEjhjBoIIoWzBdq3UFfj+CcEeRnEqGFCnQ85PWsKp6U+IfBtcONBjjVoS0ULuuNS+8S
+         wZ7H9MdDbONHcHAx7u7Ho9LC6tFbOI4AtebmrK1QitJJxOok+ZzWGrYYbR1sYdyNMqSa
+         k6nXT23YcYOod4bO94hcvQ9k2xogpPzB+0j9WyrYkfClH2jwai9EsBY2dHIGyyqal2/2
+         7yug==
+X-Gm-Message-State: AOAM533zGLvolhUfJgMEBw7cQp+yNdbW0d7f+Mqm/GEEVi9JI6UlhSlh
+        JKLJyGUxIodO1eaPRkJA2DcjilY7CEKgKY5DwLQR1ASRHCg6FkZg9fBd4j3ox5AofCo9lE6yWEk
+        ABpyLz4e7LZb8UYXJZqQuLpGaDl6RpulHdV+yv/lfoQ==
+X-Received: by 2002:a17:906:31c1:b0:6c9:cfb3:4dd3 with SMTP id f1-20020a17090631c100b006c9cfb34dd3mr16530541ejf.392.1646816940895;
+        Wed, 09 Mar 2022 01:09:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyokg1UCn/6f42J+LUZN2KQU+wzLO/g3QE5jQNu/CJVwGdXXaVXsl0iCLmJT1kJ7fjTkbU2tQ==
+X-Received: by 2002:a17:906:31c1:b0:6c9:cfb3:4dd3 with SMTP id f1-20020a17090631c100b006c9cfb34dd3mr16530530ejf.392.1646816940747;
+        Wed, 09 Mar 2022 01:09:00 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id dz10-20020a0564021d4a00b0041665989a9csm533969edb.41.2022.03.09.01.08.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 01:08:59 -0800 (PST)
+Message-ID: <730c8fd2-111e-e028-43d0-0942df2ce188@canonical.com>
+Date:   Wed, 9 Mar 2022 10:08:59 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: regulator: Add bindings for Richtek
+ RT5190A PMIC
+Content-Language: en-US
+To:     cy_huang <u0084500@gmail.com>, broonie@kernel.org,
+        robh+dt@kernel.org
+Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <1646812903-32496-1-git-send-email-u0084500@gmail.com>
+ <1646812903-32496-2-git-send-email-u0084500@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1646812903-32496-2-git-send-email-u0084500@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/08/2022 22:46, David Laight wrote:
+On 09/03/2022 09:01, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
-> From: Horatiu Vultur
-> > Sent: 08 March 2022 22:30
-> >
-> > The 03/08/2022 22:36, Andrew Lunn wrote:
-> > >
-> > > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
-> > > >  {
-> > > > -     u32 val;
-> > > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
-> > > > +     int ret = 0;
-> > > >
-> > > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
-> > > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
-> > > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
-> > > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
-> > > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> > > > +             if (time_after(jiffies, time)) {
-> > > > +                     ret = -ETIMEDOUT;
-> > > > +                     break;
-> > > > +             }
-> > >
-> > > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
-> > > explicitly supports that.
-> >
-> > I have tried but it didn't improve. It was the same as before.
+> Add bindings for Richtek RT5190A PMIC.
 > 
-> How many times round the loop is it going ?
-
-In the tests that I have done, I have never seen entering in the loop.
-
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> ---
+>  .../regulator/richtek,rt5190a-regulator.yaml       | 141 +++++++++++++++++++++
+>  .../regulator/richtek,rt5190a-regulator.h          |  15 +++
+>  2 files changed, 156 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/richtek,rt5190a-regulator.yaml
+>  create mode 100644 include/dt-bindings/regulator/richtek,rt5190a-regulator.h
 > 
-> It might be that by the time readx_poll_timeout_atomic()
-> gets around to reading the register the fifo is actually ready.
-> 
-> The there is the delay between detecting 'ready' and writing
-> the next data.
-> That delay might be cumulative and affect performance.
 
-There is also a small delay between writting the word and checking if
-more words can be written.
 
-> 
-> OTOH spinning waiting for fifo space is just plain horrid.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Yes, I agree with you.
 
-> Reminds me of 3C509 drivers :-)
-
-> 
->         David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
--- 
-/Horatiu
+Best regards,
+Krzysztof
