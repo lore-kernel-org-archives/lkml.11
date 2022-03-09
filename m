@@ -2,87 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1122C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235626AbiCIQpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:45:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44340 "EHLO
+        id S235684AbiCIQph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:45:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238092AbiCIQbV (ORCPT
+        with ESMTP id S238099AbiCIQbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:31:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18458192E23;
-        Wed,  9 Mar 2022 08:25:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DD446184D;
-        Wed,  9 Mar 2022 16:25:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05A36C340F3;
-        Wed,  9 Mar 2022 16:25:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843135;
-        bh=0DvuFx9PPeHyq7CmIC/s91cfM2NemeyY3+9c8q8Dv3E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f9qc+bfX8CSL1WiCZIHDMEAfDqJTVytU1PQ6UM4RT61VCa0uYNnEFI03ecmWTgK0S
-         II8GclRMkGEChGWdPNS8niH7nsnIgVIjJnR24tKhI9spayZRbsmNlAlDV2q4C2bqLn
-         P5uWeTSQbSSfVAoDg8r5bldKgU71nMDTf5QE9+eJzZMLxbgVJNjBo1yA6AZ0ms/rg9
-         vcag0v3/M31yaWRvEiXFEZxupO0P0LU2eBOqCB/MMyo8CWwwCL59rBoYGLz0maGSTv
-         6DRk/u5QqJO92H7q9J30vj1yKO3ROOG+Fad9+vzVehCDiWzWwKaLw41YGGoQ2wczhW
-         CwgJdsVQvXeNw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corentin Labbe <clabbe@baylibre.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/14] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-Date:   Wed,  9 Mar 2022 11:24:58 -0500
-Message-Id: <20220309162508.137035-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
-References: <20220309162508.137035-1-sashal@kernel.org>
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F62192E35
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:25:39 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:33396)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz82-00329F-Jv; Wed, 09 Mar 2022 09:25:34 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34572 helo=localhost.localdomain)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz81-005hAS-Gm; Wed, 09 Mar 2022 09:25:34 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Date:   Wed,  9 Mar 2022 10:24:46 -0600
+Message-Id: <20220309162454.123006-5-ebiederm@xmission.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+References: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-XM-SPF: eid=1nRz81-005hAS-Gm;;;mid=<20220309162454.123006-5-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18M+LFl+3GrdoDApc9hc69jyTG2SyR/cMQ=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 05/13] ptrace: Remove tracehook_signal_handler
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+The two line function tracehook_signal_handler is only called from
+signal_delivered.  Expand it inline in signal_delivered and remove it.
+Just to make it easier to understand what is going on.
 
-[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
-
-crypto-controller had a typo, fix it.
-In the same time, rename it to just crypto
-
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/Kconfig              |  1 -
+ include/linux/tracehook.h | 17 -----------------
+ kernel/signal.c           |  3 ++-
+ 3 files changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 2ff81f3736c8..e442bf7427ae 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -957,7 +957,7 @@ i2s: i2s@ff890000 {
- 		status = "disabled";
- 	};
+diff --git a/arch/Kconfig b/arch/Kconfig
+index a517a949eb1d..6382520ef0a5 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -219,7 +219,6 @@ config TRACE_IRQFLAGS_SUPPORT
+ #	CORE_DUMP_USE_REGSET	#define'd in linux/elf.h
+ #	TIF_SYSCALL_TRACE	calls ptrace_report_syscall_{entry,exit}
+ #	TIF_NOTIFY_RESUME	calls tracehook_notify_resume()
+-#	signal delivery		calls tracehook_signal_handler()
+ #
+ config HAVE_ARCH_TRACEHOOK
+ 	bool
+diff --git a/include/linux/tracehook.h b/include/linux/tracehook.h
+index 819e82ac09bd..b77bf4917196 100644
+--- a/include/linux/tracehook.h
++++ b/include/linux/tracehook.h
+@@ -52,23 +52,6 @@
+ struct linux_binprm;
  
--	crypto: cypto-controller@ff8a0000 {
-+	crypto: crypto@ff8a0000 {
- 		compatible = "rockchip,rk3288-crypto";
- 		reg = <0x0 0xff8a0000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+ 
+-/**
+- * tracehook_signal_handler - signal handler setup is complete
+- * @stepping:		nonzero if debugger single-step or block-step in use
+- *
+- * Called by the arch code after a signal handler has been set up.
+- * Register and stack state reflects the user handler about to run.
+- * Signal mask changes have already been made.
+- *
+- * Called without locks, shortly before returning to user mode
+- * (or handling more signals).
+- */
+-static inline void tracehook_signal_handler(int stepping)
+-{
+-	if (stepping)
+-		ptrace_notify(SIGTRAP);
+-}
+-
+ /**
+  * set_notify_resume - cause tracehook_notify_resume() to be called
+  * @task:		task that will call tracehook_notify_resume()
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 38602738866e..0e0bd1c1068b 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2898,7 +2898,8 @@ static void signal_delivered(struct ksignal *ksig, int stepping)
+ 	set_current_blocked(&blocked);
+ 	if (current->sas_ss_flags & SS_AUTODISARM)
+ 		sas_ss_reset(current);
+-	tracehook_signal_handler(stepping);
++	if (stepping)
++		ptrace_notify(SIGTRAP);
+ }
+ 
+ void signal_setup_done(int failed, struct ksignal *ksig, int stepping)
 -- 
-2.34.1
+2.29.2
 
