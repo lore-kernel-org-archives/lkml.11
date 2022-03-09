@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 392FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E39C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiCIRAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        id S235925AbiCIRAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235812AbiCIQ7t (ORCPT
+        with ESMTP id S236417AbiCIQ7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:59:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB9B1AEEE2;
-        Wed,  9 Mar 2022 08:47:03 -0800 (PST)
+        Wed, 9 Mar 2022 11:59:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802201AF8DE;
+        Wed,  9 Mar 2022 08:47:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2194B61B00;
-        Wed,  9 Mar 2022 16:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA1CC340E8;
-        Wed,  9 Mar 2022 16:46:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3341D61A14;
+        Wed,  9 Mar 2022 16:46:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E9DC340E8;
+        Wed,  9 Mar 2022 16:46:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646844414;
-        bh=69qB+T3NP2ANEZDijaOTA8FnpGUD5EkLGQds1YqsSj0=;
+        s=k20201202; t=1646844391;
+        bh=a3DTqmH79yoaAcjJPIl6maCRI/QOfMcGZ7OD9vgdnF4=;
         h=From:To:Cc:Subject:Date:From;
-        b=cSFIlRBfBj9kpZrr1xgOPNCfSEDmBOqCoJOOyd1ndfc60f0gQVKRd0utv8FtpPVdV
-         A3Sf2p1ILAEanRqAewUz3+NdD5oPgErv4E9X57OlHsew55xPhSqIDzxeX5J1A/nsuJ
-         TPt/BffDIayF9ycdEAadUrBh9E5OrpD+vuWopFofg3QLlWBWsbBZsa+pDwPDN9x/E8
-         tneqivubKC7Dd38bdbcShHdyjnULJB0tug5pNNpEwNzjO/sX87ZNeqkTTruULsUFnQ
-         p54AJXP9XHILwpPZ9zrUCzOTT5b4Y/yLVSmr6hyc7wVkvfS1nCuzQc5SFP2Pfb8rCr
-         wgrZ0U0yA/jOA==
+        b=bRVpV5jaIfkFGu2nHOWj9BlQ3ShHE9PRfIWoDGJpb5D6sgjh1DeQxSvXw/TWmqiU4
+         fMnvYJnzknOKccbtLyVo41tacvtqBVeRSYY13aWJjTXUSgxZzmDHihfN43/gD5Jrpg
+         vfVEEkOtneKlRjxwJLnOOVQ31ceyG04vxYp2f3//kwCfQs8JkctdCIFzhIZ7+2WDox
+         T98xMDsGN2ec5Yoyg8DKkMrn6N2hHkATR5WpgCcYqu/YF3xmbmo7XJATlIb3KIHnHb
+         AGI8xpqwp6i7b7X+JaX8jV0kx+FKtDHh6pQqSLOvSTwPFT9Q4Jm3HaiCR9xIQ9B0OI
+         uxTUvunL51krA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Li RongQing <lirongqing@baidu.com>,
@@ -39,9 +39,9 @@ Cc:     Li RongQing <lirongqing@baidu.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.10] KVM: x86: Yield to IPI target vCPU only if it is busy
-Date:   Wed,  9 Mar 2022 11:46:44 -0500
-Message-Id: <20220309164645.138079-1-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.16] KVM: x86: Yield to IPI target vCPU only if it is busy
+Date:   Wed,  9 Mar 2022 11:46:18 -0500
+Message-Id: <20220309164618.137930-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 X-stable: review
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 7462b79c39de..8fe6eb5bed3f 100644
+index 59abbdad7729..2121c20e877f 100644
 --- a/arch/x86/kernel/kvm.c
 +++ b/arch/x86/kernel/kvm.c
-@@ -590,7 +590,7 @@ static void kvm_smp_send_call_func_ipi(const struct cpumask *mask)
+@@ -619,7 +619,7 @@ static void kvm_smp_send_call_func_ipi(const struct cpumask *mask)
  
  	/* Make sure other vCPUs get a chance to run if they need to. */
  	for_each_cpu(cpu, mask) {
