@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D46CC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80290C4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236037AbiCIQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
+        id S235996AbiCIQ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:28:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238179AbiCIQVb (ORCPT
+        with ESMTP id S238174AbiCIQVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:21:31 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ED13A5
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:20:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646842819; x=1678378819;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uQaFjxnhDmWW/A/begYFww9lfX3qbyY1C3VpweNIXT4=;
-  b=cAstdKAcJjaVun/U32rKoscbjEL1nzOfjVxWbZ+grMKxPiTv9oYfsHTE
-   a7o38Oew0kD66j33WZRzq87jgqlSZYhkM/Qro/K9PJ1M7kPWRC9nO9mWb
-   rQxm/PcwqPRAAtUHwaWYmjshdriClzxDX/qWG81OQoAJIjzIbvJzeUYjt
-   3EcTkU6SX+ahUuatqpwsygyE0dr/VDG/ExTOjdGJzoBPAJo0JOlWzeMyC
-   qmirMpBst5SsYln1cJwm7mPPvWZ400FGra8mhv9SGiLvnzbPypwze5YzG
-   FP0BkXUda5HInzkND34ybzdroRZ4pou5wqRZliyNaEv7LM2XbEzuGlLJF
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="279741257"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="279741257"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:20:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="578435113"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 09 Mar 2022 08:20:16 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRz2t-0003Wo-H0; Wed, 09 Mar 2022 16:20:15 +0000
-Date:   Thu, 10 Mar 2022 00:19:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: /tmp/ccxeevnD.s: Warning: Can not find match relax hint.  Line: 1775
-Message-ID: <202203100020.Ow4SqtVo-lkp@intel.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B085BDF9B;
+        Wed,  9 Mar 2022 08:20:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C5F361926;
+        Wed,  9 Mar 2022 16:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC34C340EC;
+        Wed,  9 Mar 2022 16:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646842808;
+        bh=YIErJnc75CCefGBPMKlJGtrhLN04w92UXi9qejAIpu0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mAL1bBL/C8EYBdRPJREovsE3uhylQKiuL2W8fZagnZfubWmQYxCGSCqx8HXquRR+g
+         rZcc4JtASOD4LWNfQeZbk7vQVJr5Ybe/4xNCK2gX4MZmBnL2Nh2WUA4SNiovhTUCu2
+         DUG/6KXXilMevvR6+rSiZOzTICGkOdNA+v0kFP9krtIM6yt5QqUxfAd5bibEDvNUpY
+         1TgNim263e9bFs0uHU/mFJYD6S54pH0z5s7fD46R6Y+r1m/fKQ0vMw77UNK+WT260V
+         k7FCXFuiNEqbfSkyXVafBRKMO7LxlxoYBkj24/bEMvgN/sQeO2Xe2HHimat0lAHpe/
+         K0Mz2A6zAr04Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <foss+kernel@0leil.net>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 04/24] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Wed,  9 Mar 2022 11:19:23 -0500
+Message-Id: <20220309161946.136122-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexei,
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-FYI, the error/warning still remains.
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   330f4c53d3c2d8b11d86ec03a964b86dc81452f5
-commit: 29db4bea1d10b73749d7992c1fc9ac13499e8871 bpf: Prepare relo_core.c for kernel duty.
-date:   3 months ago
-config: nds32-buildonly-randconfig-r002-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100020.Ow4SqtVo-lkp@intel.com/config)
-compiler: nds32le-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=29db4bea1d10b73749d7992c1fc9ac13499e8871
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 29db4bea1d10b73749d7992c1fc9ac13499e8871
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
 
-All warnings (new ones prefixed by >>):
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
 
-   tools/lib/bpf/relo_core.c: In function 'bpf_core_apply_relo_insn':
-   tools/lib/bpf/relo_core.c:1346:1: warning: the frame size of 1160 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    1346 | }
-         | ^
-   /tmp/ccxeevnD.s: Assembler messages:
->> /tmp/ccxeevnD.s: Warning: Can not find match relax hint.  Line: 1775
-
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index 002ece51c3ba..08fa00364b42 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -439,6 +439,12 @@ usb3_id: usb3-id {
+ };
+ 
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
++	 */
++	max-frequency = <100000000>;
++
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
+-- 
+2.34.1
+
