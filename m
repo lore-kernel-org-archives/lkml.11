@@ -2,310 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53279C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235483AbiCIQXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
+        id S235619AbiCIQXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234912AbiCIQMp (ORCPT
+        with ESMTP id S236636AbiCIQTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:12:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCF614FFC4;
-        Wed,  9 Mar 2022 08:09:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E4FDB82224;
-        Wed,  9 Mar 2022 16:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E76CC340EC;
-        Wed,  9 Mar 2022 16:09:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842191;
-        bh=oAy40g1GwMXudB1PoTaSbgS8tYsxXpG0PSmshLCBrns=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZ1+Nsjkx5jQN2+jjkyMz9w8ozrUN9sbZLFg+Zj+ga6vjd6uWo40+9FntUTtpGhBm
-         CKpqFQd6V0ojnbq93PVfS1qiDXkmROt/tvsxkMmYdntdC479GTLva3e/5RYmuzy0Ao
-         zxcvcXMumlgwaeaPGlSy6wNIwTkplxsfFAssgyKM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.16 29/37] arm64: entry: Add vectors that have the bhb mitigation sequences
-Date:   Wed,  9 Mar 2022 17:00:30 +0100
-Message-Id: <20220309155859.932269331@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
-References: <20220309155859.086952723@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 9 Mar 2022 11:19:44 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD9C190B74
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:15:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646842505; x=1678378505;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WM6eCdkxZ9CYApmaiSTssyYOiXBFLkK74l7LdadqI1Q=;
+  b=h2TmMF7b93quSonBZpgJzkmVyXfSFyxnc8gzg55j6FO5loQSp0x5yt+R
+   HKTukTKKCSsv1epYTKWRWbnAo4A2Yw8yDXobA4Z2fJBeRT/OaHmAzdo45
+   LcXkR57NkMbP3CRlerCGZ1N0jW/xlFBEPvXv0VODI4e2SfPlw8m3GAugD
+   GgVgvLmx6iJ2eXKOYL3FUxHN7xgplLjGGQTx5R3bl1Cb6DRb4hDe7aO0x
+   4KbH77XIM/OYIFERcNDVcpw5J8aTf6P4GLL1JANPLbbzPK6iybFQseCtc
+   Cm9xlutxrT+Tvdk8vnpfw4X1GoEmFv17/pFVeFKs/UBYwWiGBdxfA+rHO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="235617247"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="235617247"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:14:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="711991410"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2022 08:14:45 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 640E794; Wed,  9 Mar 2022 18:15:04 +0200 (EET)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     dave.hansen@intel.com
+Cc:     aarcange@redhat.com, ak@linux.intel.com, bp@alien8.de,
+        brijesh.singh@amd.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com,
+        kirill.shutemov@linux.intel.com, knsathya@kernel.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCH] x86/tdx: Handle CPUID via #VE
+Date:   Wed,  9 Mar 2022 19:15:02 +0300
+Message-Id: <20220309161502.22884-1-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <133a741f-02ae-49bd-1bc4-87ec42ab024b@intel.com>
+References: <133a741f-02ae-49bd-1bc4-87ec42ab024b@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+In TDX guests, most CPUID leaf/sub-leaf combinations are virtualized
+by the TDX module while some trigger #VE.
 
-commit ba2689234be92024e5635d30fe744f4853ad97db upstream.
+Implement the #VE handling for EXIT_REASON_CPUID by handing it through
+the hypercall, which in turn lets the TDX module handle it by invoking
+the host VMM.
 
-Some CPUs affected by Spectre-BHB need a sequence of branches, or a
-firmware call to be run before any indirect branch. This needs to go
-in the vectors. No CPU needs both.
+More details on CPUID Virtualization can be found in the TDX module
+specification, the section titled "CPUID Virtualization".
 
-While this can be patched in, it would run on all CPUs as there is a
-single set of vectors. If only one part of a big/little combination is
-affected, the unaffected CPUs have to run the mitigation too.
+Note that VMM that handles the hypercall is not trusted. It can return
+data that may steer the guest kernel in wrong direct. Only allow  VMM
+to control range reserved for hypervisor communication.
 
-Create extra vectors that include the sequence. Subsequent patches will
-allow affected CPUs to select this set of vectors. Later patches will
-modify the loop count to match what the CPU requires.
+Return all-zeros for any CPUID outside the hypervisor range. It matches
+CPU behaviour for non-supported leaf.
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/arm64/include/asm/assembler.h |   24 ++++++++++++++++
- arch/arm64/include/asm/vectors.h   |   34 +++++++++++++++++++++++
- arch/arm64/kernel/entry.S          |   53 ++++++++++++++++++++++++++++++-------
- arch/arm64/kernel/proton-pack.c    |   16 +++++++++++
- include/linux/arm-smccc.h          |    5 +++
- 5 files changed, 123 insertions(+), 9 deletions(-)
- create mode 100644 arch/arm64/include/asm/vectors.h
+ arch/x86/coco/tdx.c | 58 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -840,4 +840,28 @@ alternative_endif
- 
- #endif /* GNU_PROPERTY_AARCH64_FEATURE_1_DEFAULT */
- 
-+	.macro __mitigate_spectre_bhb_loop      tmp
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	mov	\tmp, #32
-+.Lspectre_bhb_loop\@:
-+	b	. + 4
-+	subs	\tmp, \tmp, #1
-+	b.ne	.Lspectre_bhb_loop\@
-+	sb
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
-+
-+	/* Save/restores x0-x3 to the stack */
-+	.macro __mitigate_spectre_bhb_fw
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	stp	x0, x1, [sp, #-16]!
-+	stp	x2, x3, [sp, #-16]!
-+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+alternative_cb	smccc_patch_fw_mitigation_conduit
-+	nop					// Patched to SMC/HVC #0
-+alternative_cb_end
-+	ldp	x2, x3, [sp], #16
-+	ldp	x0, x1, [sp], #16
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
- #endif	/* __ASM_ASSEMBLER_H */
---- /dev/null
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2022 ARM Ltd.
-+ */
-+#ifndef __ASM_VECTORS_H
-+#define __ASM_VECTORS_H
-+
-+/*
-+ * Note: the order of this enum corresponds to two arrays in entry.S:
-+ * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
-+ * 'full fat' vectors are used directly.
-+ */
-+enum arm64_bp_harden_el1_vectors {
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	/*
-+	 * Perform the BHB loop mitigation, before branching to the canonical
-+	 * vectors.
-+	 */
-+	EL1_VECTOR_BHB_LOOP,
-+
-+	/*
-+	 * Make the SMC call for firmware mitigation, before branching to the
-+	 * canonical vectors.
-+	 */
-+	EL1_VECTOR_BHB_FW,
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+
-+	/*
-+	 * Remap the kernel before branching to the canonical vectors.
-+	 */
-+	EL1_VECTOR_KPTI,
-++};
-+
-+#endif /* __ASM_VECTORS_H */
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -646,13 +646,26 @@ alternative_else_nop_endif
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
--	.macro tramp_ventry, vector_start, regsize, kpti
-+
-+#define BHB_MITIGATION_NONE	0
-+#define BHB_MITIGATION_LOOP	1
-+#define BHB_MITIGATION_FW	2
-+
-+	.macro tramp_ventry, vector_start, regsize, kpti, bhb
- 	.align	7
- 1:
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
- 
-+	.if	\bhb == BHB_MITIGATION_LOOP
-+	/*
-+	 * This sequence must appear before the first indirect branch. i.e. the
-+	 * ret out of tramp_ventry. It appears here because x30 is free.
-+	 */
-+	__mitigate_spectre_bhb_loop	x30
-+	.endif // \bhb == BHB_MITIGATION_LOOP
-+
- 	.if	\kpti == 1
- 	/*
- 	 * Defend against branch aliasing attacks by pushing a dummy
-@@ -680,6 +693,15 @@ alternative_else_nop_endif
- 	ldr	x30, =vectors
- 	.endif // \kpti == 1
- 
-+	.if	\bhb == BHB_MITIGATION_FW
-+	/*
-+	 * The firmware sequence must appear before the first indirect branch.
-+	 * i.e. the ret out of tramp_ventry. But it also needs the stack to be
-+	 * mapped to save/restore the registers the SMC clobbers.
-+	 */
-+	__mitigate_spectre_bhb_fw
-+	.endif // \bhb == BHB_MITIGATION_FW
-+
- 	add	x30, x30, #(1b - \vector_start + 4)
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
-@@ -687,6 +709,9 @@ alternative_else_nop_endif
- 
- 	.macro tramp_exit, regsize = 64
- 	adr	x30, tramp_vectors
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	add	x30, x30, SZ_4K
-+#endif
- 	msr	vbar_el1, x30
- 	ldr	lr, [sp, #S_LR]
- 	tramp_unmap_kernel	x29
-@@ -698,26 +723,32 @@ alternative_else_nop_endif
- 	sb
- 	.endm
- 
--	.macro	generate_tramp_vector,	kpti
-+	.macro	generate_tramp_vector,	kpti, bhb
- .Lvector_start\@:
- 	.space	0x400
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, \kpti
-+	tramp_ventry	.Lvector_start\@, 64, \kpti, \bhb
- 	.endr
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 32, \kpti
-+	tramp_ventry	.Lvector_start\@, 32, \kpti, \bhb
- 	.endr
- 	.endm
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- /*
-  * Exception vectors trampoline.
-+ * The order must match __bp_harden_el1_vectors and the
-+ * arm64_bp_harden_el1_vectors enum.
-  */
- 	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- SYM_CODE_START_NOALIGN(tramp_vectors)
--	generate_tramp_vector	kpti=1
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_LOOP
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_NONE
- SYM_CODE_END(tramp_vectors)
- 
- SYM_CODE_START(tramp_exit_native)
-@@ -744,7 +775,7 @@ SYM_DATA_END(__entry_tramp_data_start)
-  * Exception vectors for spectre mitigations on entry from EL1 when
-  * kpti is not in use.
-  */
--	.macro generate_el1_vector
-+	.macro generate_el1_vector, bhb
- .Lvector_start\@:
- 	kernel_ventry	1, t, 64, sync		// Synchronous EL1t
- 	kernel_ventry	1, t, 64, irq		// IRQ EL1t
-@@ -757,17 +788,21 @@ SYM_DATA_END(__entry_tramp_data_start)
- 	kernel_ventry	1, h, 64, error		// Error EL1h
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, kpti=0
-+	tramp_ventry	.Lvector_start\@, 64, 0, \bhb
- 	.endr
- 	.rept 4
--	tramp_ventry	.Lvector_start\@, 32, kpti=0
-+	tramp_ventry	.Lvector_start\@, 32, 0, \bhb
- 	.endr
- 	.endm
- 
-+/* The order must match tramp_vecs and the arm64_bp_harden_el1_vectors enum. */
- 	.pushsection ".entry.text", "ax"
- 	.align	11
- SYM_CODE_START(__bp_harden_el1_vectors)
--	generate_el1_vector
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_el1_vector	bhb=BHB_MITIGATION_LOOP
-+	generate_el1_vector	bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
- SYM_CODE_END(__bp_harden_el1_vectors)
- 	.popsection
- 
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -770,3 +770,19 @@ int arch_prctl_spec_ctrl_get(struct task
- 		return -ENODEV;
- 	}
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index a2f19c78583a..3d468a2b9ec6 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -163,6 +163,48 @@ static bool write_msr(struct pt_regs *regs)
+ 	return !__tdx_hypercall(&args, 0);
  }
-+
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
-+						     __le32 *origptr,
-+						      __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
-+
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_fw_mitigation_enabled(struct alt_instr *alt,
-+						   __le32 *origptr,
-+						   __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -92,6 +92,11 @@
- 			   ARM_SMCCC_SMC_32,				\
- 			   0, 0x7fff)
  
-+#define ARM_SMCCC_ARCH_WORKAROUND_3					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x3fff)
++static bool handle_cpuid(struct pt_regs *regs)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = TDX_HYPERCALL_STANDARD,
++		.r11 = hcall_func(EXIT_REASON_CPUID),
++		.r12 = regs->ax,
++		.r13 = regs->cx,
++	};
 +
- #define ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID				\
- 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
- 			   ARM_SMCCC_SMC_32,				\
-
++	/*
++	 * Only allow VMM to control range reserved for hypervisor
++	 * communication.
++	 *
++	 * Return all-zeros for any CPUID outside the range. It matches CPU
++	 * behaviour for non-supported leaf.
++	 */
++	if (regs->ax < 0x40000000 || regs->ax > 0x4FFFFFFF) {
++		regs->ax = regs->bx = regs->cx = regs->dx = 0;
++		return true;
++	}
++
++	/*
++	 * Emulate the CPUID instruction via a hypercall. More info about
++	 * ABI can be found in TDX Guest-Host-Communication Interface
++	 * (GHCI), section titled "VP.VMCALL<Instruction.CPUID>".
++	 */
++	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
++		return false;
++
++	/*
++	 * As per TDX GHCI CPUID ABI, r12-r15 registers contain contents of
++	 * EAX, EBX, ECX, EDX registers after the CPUID instruction execution.
++	 * So copy the register contents back to pt_regs.
++	 */
++	regs->ax = args.r12;
++	regs->bx = args.r13;
++	regs->cx = args.r14;
++	regs->dx = args.r15;
++
++	return true;
++}
++
+ void tdx_get_ve_info(struct ve_info *ve)
+ {
+ 	struct tdx_module_output out;
+@@ -186,6 +228,18 @@ void tdx_get_ve_info(struct ve_info *ve)
+ 	ve->instr_info  = upper_32_bits(out.r10);
+ }
+ 
++/* Handle the user initiated #VE */
++static bool virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
++{
++	switch (ve->exit_reason) {
++	case EXIT_REASON_CPUID:
++		return handle_cpuid(regs);
++	default:
++		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
++		return false;
++	}
++}
++
+ /* Handle the kernel #VE */
+ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+ {
+@@ -196,6 +250,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+ 		return read_msr(regs);
+ 	case EXIT_REASON_MSR_WRITE:
+ 		return write_msr(regs);
++	case EXIT_REASON_CPUID:
++		return handle_cpuid(regs);
+ 	default:
+ 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+ 		return false;
+@@ -207,7 +263,7 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ 	bool ret;
+ 
+ 	if (user_mode(regs))
+-		ret = false;
++		ret = virt_exception_user(regs, ve);
+ 	else
+ 		ret = virt_exception_kernel(regs, ve);
+ 
+-- 
+2.34.1
 
