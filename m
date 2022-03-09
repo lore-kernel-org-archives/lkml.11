@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02C5C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07B3C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236988AbiCIQUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:20:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
+        id S236928AbiCIQUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:20:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbiCIQJg (ORCPT
+        with ESMTP id S236107AbiCIQJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E30712AD7;
-        Wed,  9 Mar 2022 08:07:27 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5D130F69;
+        Wed,  9 Mar 2022 08:07:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 062DBB82220;
-        Wed,  9 Mar 2022 16:07:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443E9C340EF;
-        Wed,  9 Mar 2022 16:07:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C4B8B82224;
+        Wed,  9 Mar 2022 16:07:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD1E1C340E8;
+        Wed,  9 Mar 2022 16:07:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842044;
-        bh=KCX8P+H2W0agVF1iCpkDtDeNldgE0W8QeXXKrS24w74=;
+        s=korg; t=1646842050;
+        bh=Ebe6j7mF1Vi1ha8wvA/CYSV2TTwbIeu1/dDrKYmnmo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tI52vrl0ifJF7wF5sHo1Bznb4PmghYHpTEG3Vt1cQvnhuUwhPb5MCi0CwEGV92F91
-         3RuQKGj3TPvTJ/6RjFpKlgWd9+orrwuzNFUrYF/yzt9pIuT1DJZF6AJ+MflESIoZek
-         6DN6yiFSaFxqIY0Hiz63ngSvTwaO81pYQYVQwDzQ=
+        b=gnCuJNdLd6hi1MAr3O3p3ehNz5mtIMwAjrY9PgTyLeqc0v7ad9t1f8cRhlvgZv13Q
+         SsaCKqtMejAR2aeqpdSLint5CSOLb8kwqrWyajnly5tZPdkwGG4DkWCtTqJaoJiv4Z
+         g+Ho/RwT4CjRWZqE/o78Vk1mm56qEbQYvfcX5zq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 21/43] arm64: entry.S: Add ventry overflow sanity checks
-Date:   Wed,  9 Mar 2022 17:00:05 +0100
-Message-Id: <20220309155900.351257001@linuxfoundation.org>
+Subject: [PATCH 5.15 23/43] KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+Date:   Wed,  9 Mar 2022 17:00:07 +0100
+Message-Id: <20220309155900.408984976@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -52,44 +50,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
+commit 5bdf3437603d4af87f9c7f424b0c8aeed2420745 upstream.
 
-Subsequent patches add even more code to the ventry slots.
-Ensure kernels that overflow a ventry slot don't get built.
+CPUs vulnerable to Spectre-BHB either need to make an SMC-CC firmware
+call from the vectors, or run a sequence of branches. This gets added
+to the hyp vectors. If there is no support for arch-workaround-1 in
+firmware, the indirect vector will be used.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+kvm_init_vector_slots() only initialises the two indirect slots if
+the platform is vulnerable to Spectre-v3a. pKVM's hyp_map_vectors()
+only initialises __hyp_bp_vect_base if the platform is vulnerable to
+Spectre-v3a.
+
+As there are about to more users of the indirect vectors, ensure
+their entries in hyp_spectre_vector_selector[] are always initialised,
+and __hyp_bp_vect_base defaults to the regular VA mapping.
+
+The Spectre-v3a check is moved to a helper
+kvm_system_needs_idmapped_vectors(), and merged with the code
+that creates the hyp mappings.
+
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/include/asm/kvm_host.h |    5 +++++
+ arch/arm64/kvm/arm.c              |    5 +----
+ arch/arm64/kvm/hyp/nvhe/mm.c      |    4 +++-
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -37,6 +37,7 @@
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -711,6 +711,11 @@ static inline void kvm_init_host_cpu_con
+ 	ctxt_sys_reg(cpu_ctxt, MPIDR_EL1) = read_cpuid_mpidr();
+ }
  
- 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
- 	.align 7
-+.Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
- alternative_if ARM64_UNMAP_KERNEL_AT_EL0
-@@ -95,6 +96,7 @@ alternative_else_nop_endif
- 	mrs	x0, tpidrro_el0
- #endif
- 	b	el\el\ht\()_\regsize\()_\label
-+.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
++static inline bool kvm_system_needs_idmapped_vectors(void)
++{
++	return cpus_have_const_cap(ARM64_SPECTRE_V3A);
++}
++
+ void kvm_arm_vcpu_ptrauth_trap(struct kvm_vcpu *vcpu);
  
- 	.macro tramp_alias, dst, sym
-@@ -662,6 +664,7 @@ alternative_else_nop_endif
- 	add	x30, x30, #(1b - tramp_vectors)
- 	isb
- 	ret
-+.org 1b + 128	// Did we overflow the ventry slot?
- 	.endm
+ static inline void kvm_arch_hardware_unsetup(void) {}
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -1458,10 +1458,7 @@ static int kvm_init_vector_slots(void)
+ 	base = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs));
+ 	kvm_init_vector_slot(base, HYP_VECTOR_SPECTRE_DIRECT);
  
- 	.macro tramp_exit, regsize = 64
+-	if (!cpus_have_const_cap(ARM64_SPECTRE_V3A))
+-		return 0;
+-
+-	if (!has_vhe()) {
++	if (kvm_system_needs_idmapped_vectors() && !has_vhe()) {
+ 		err = create_hyp_exec_mappings(__pa_symbol(__bp_harden_hyp_vecs),
+ 					       __BP_HARDEN_HYP_VECS_SZ, &base);
+ 		if (err)
+--- a/arch/arm64/kvm/hyp/nvhe/mm.c
++++ b/arch/arm64/kvm/hyp/nvhe/mm.c
+@@ -146,8 +146,10 @@ int hyp_map_vectors(void)
+ 	phys_addr_t phys;
+ 	void *bp_base;
+ 
+-	if (!cpus_have_const_cap(ARM64_SPECTRE_V3A))
++	if (!kvm_system_needs_idmapped_vectors()) {
++		__hyp_bp_vect_base = __bp_harden_hyp_vecs;
+ 		return 0;
++	}
+ 
+ 	phys = __hyp_pa(__bp_harden_hyp_vecs);
+ 	bp_base = (void *)__pkvm_create_private_mapping(phys,
 
 
