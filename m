@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A539C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiCIBG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:06:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
+        id S229904AbiCIBGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:06:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiCIBGF (ORCPT
+        with ESMTP id S229763AbiCIBGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:06:05 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE06144F52
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:45:08 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id r6so208948wrr.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:45:08 -0800 (PST)
+        Tue, 8 Mar 2022 20:06:08 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30FE145E18;
+        Tue,  8 Mar 2022 16:45:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wirenboard-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:references:subject
-         :content-language:from:in-reply-to:content-transfer-encoding;
-        bh=R5rD06Jb33tlpsYg+zacl9gOGE39RgYTcZ3AUmAKk+k=;
-        b=kT0CoUpD6C3Xk+Syyc3g2EyRA6X+44nx9fnethcGlcRmfLBQpCmyre7xE3rkEC/Y1t
-         STrq8nxvUWIMlu5tRsYNT16i802tLm/s3IyJRYk1bI2Pji3IVN7bLx7hyyfvCgTJitIy
-         0+vQ8zJSa9Kbj2C1GGvbWbLCvbf1mMaHoiZlr/iSm9Xp3F1GJw1SB3m1Z2Al1R00X5Ne
-         ibT8bT+jzYCECm9PLVzl145bqj7V9/GAo3/T9kdCmR/N4ksOT/UM/LVxLZa4iXVRb38J
-         7a9ZtfrtSSJZ4ORPlySmANv/5Ig1MxehiFh0UVmL1aJv5jZtyFSLRccKYl490TDoCnWl
-         cCmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :references:subject:content-language:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R5rD06Jb33tlpsYg+zacl9gOGE39RgYTcZ3AUmAKk+k=;
-        b=plxAqJcyzuL/XRt7oynz/sgV+qAGA7K//fsqKt0+OL79B94O7759c9U9p5kfeI4AOa
-         3fbvI6gHzsxJBKPYYuZe0p5PwhulgGTLfNedFR46aevyz/NDha3kioUOz++jKF6x5ba9
-         VjnI9vVvFPDYzNd7Kvz2kOpUv0wfkKJOcaZRiksspiDvINTr4ukKRuVoYY5fSbNcijqg
-         10eYTNyvS5iREqK9cNBrnCQ3h1lR2t29i8yC2V4/+7Hr9koO7c0C4HIA8gtx7AacYIiE
-         INf70Orswkwqw/V+FfbgKPlGPw3yp7improOy0RlB/px5vndLR39Ik00TobeRKAojaTX
-         G+TQ==
-X-Gm-Message-State: AOAM530Ipa0lhJ+g+NlxqLVi26R992ZEO2zuCa2u+67jHOICAW60ehcx
-        hYuzcWMVRyKRQCDN8qKv4csVzlDsTuZibP0Q
-X-Google-Smtp-Source: ABdhPJwAa5h+FPbQ9EbtrO+8twaLOcIwcj6An3X7zE034ZrmYDx1nBgzQc3Ssz/Np+zl4LlJ6UlLlg==
-X-Received: by 2002:a05:6402:354f:b0:416:8fba:8348 with SMTP id f15-20020a056402354f00b004168fba8348mr968136edd.73.1646783099315;
-        Tue, 08 Mar 2022 15:44:59 -0800 (PST)
-Received: from [192.168.0.103] ([37.252.93.155])
-        by smtp.googlemail.com with ESMTPSA id fq6-20020a1709069d8600b006db088ca6d0sm74709ejc.126.2022.03.08.15.44.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 15:44:58 -0800 (PST)
-Message-ID: <bc846d95-5571-cfd1-c848-1ae9240f50a4@wirenboard.com>
-Date:   Wed, 9 Mar 2022 02:44:56 +0300
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646786722; x=1678322722;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=keyAJb6A5NPJJZZCWIJLthBI4AdiJa40DZ7S3GIHMrU=;
+  b=LZkhgbglOnIIedL+zx7HWB8iGr38V54updzBUpfDUDWk0tL2ryH8YhJo
+   VjZi1Eq3n9vhxdzXIufTmAEA5mbaRIqimlpBYrjNgpbLxNw6Aw2znMYcF
+   Msty4iozTX/XVi+sc7dXfIgdStfsbn+6pctjv3/QPhVW1Ds+VaXf2DhMT
+   o=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Mar 2022 16:05:12 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:05:11 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 8 Mar 2022 16:05:11 -0800
+Received: from [10.111.182.121] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 8 Mar 2022
+ 16:05:10 -0800
+Message-ID: <b69308a5-0d29-6b48-833c-f3eacfe03b08@quicinc.com>
+Date:   Tue, 8 Mar 2022 16:05:09 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-To:     fuyao1697@cyg.com
-Cc:     devicetree@vger.kernel.org, jernej.skrabec@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, maijianzhang@allwinnertech.com,
-        mripard@kernel.org, robh+dt@kernel.org, wens@csie.org
-References: <YiCnR5v9fYoXXy39@scg>
-Subject: Re: [PATCH] sunxi:dts: remove r40 can node
-Content-Language: en-GB
-From:   Evgeny Boger <boger@wirenboard.com>
-In-Reply-To: <YiCnR5v9fYoXXy39@scg>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] ath10k: Fix error handling in ath10k_setup_msa_resources
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Rakesh Pillai" <pillair@codeaurora.org>,
+        <ath10k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220308070238.19295-1-linmq006@gmail.com>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <20220308070238.19295-1-linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 3/7/2022 11:02 PM, Miaoqian Lin wrote:
+> The device_node pointer is returned by of_parse_phandle()  with refcount
 
-as I explained in the original commit message, CAN is definitely there 
-and is working perfectly at least on A40i.
-I know it was removed from the user manual, but I personally verified 
-that it is working.
+Kalle, can you fix this nit when you apply?  remove extra space after ()
 
-Maybe you can tell why CAN should be removed besides not being described 
-in the manual? Are there some hardware or maybe license issues?
+> incremented. We should use of_node_put() on it when done.
+> 
+> This function only calls of_node_put() in the regular path.
+> And it will cause refcount leak in error path.
+> 
+> Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>   drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> index 9513ab696fff..f79dd9a71690 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> @@ -1556,11 +1556,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
+>   	node = of_parse_phandle(dev->of_node, "memory-region", 0);
+>   	if (node) {
+>   		ret = of_address_to_resource(node, 0, &r);
+> +		of_node_put(node);
+>   		if (ret) {
+>   			dev_err(dev, "failed to resolve msa fixed region\n");
+>   			return ret;
+>   		}
+> -		of_node_put(node);
+>   
+>   		ar->msa.paddr = r.start;
+>   		ar->msa.mem_size = resource_size(&r);
 
-Thanks!
-
---
-  Best wishes,
-  Evgeny Boger
-  CTO @ wirenboard.com
-
-
-
-
-
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
