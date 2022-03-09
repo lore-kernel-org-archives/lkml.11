@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 352AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiCINBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 08:01:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
+        id S232996AbiCINLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 08:11:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232860AbiCINBv (ORCPT
+        with ESMTP id S231661AbiCINLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 08:01:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB31F178683
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 05:00:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 9 Mar 2022 08:11:02 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54689102154
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 05:10:03 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C8C2D1F381;
+        Wed,  9 Mar 2022 13:10:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646831401; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AF5nHoVPx+QVoqlhpPP/leSCgEv59byPDm5kXVlHWhQ=;
+        b=mz4exN5KalKA/E49edzKguWynqFlnY2k74hzjQHSy7MY2N8okqHEgXg4oP2hud2Sdi90Ln
+        6+ytQQDJDQos6pchUbd0tGqRMkFH/kiwmazj3QkMgdr37E6c0WYxotsgqsMghBuL5XxuUz
+        p9VoX/mPiip+j5tlpYGQRfR/XtnN32Q=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E9C3B8214E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:00:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F13C340E8;
-        Wed,  9 Mar 2022 13:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646830849;
-        bh=05mWd2rzKwbYb9xhfIrjasgLspp1675V6bzZz5xZETY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rk37yvuJ0fjqDriItDz+V3Yf3Jlw+KIqxJ9EwiPxqe517GzBdz8Y9INqZaZkFXJO0
-         aTgA0gRrILYDNSpazoNlAvJglkmWVnscCAb/iWI/UQqD/Law+iqbYzFkHTDD1hCkSf
-         BZeM9PdY1IdR3x344Egfv26hr/ZYmjtZSwgdaM0mXmP8FUQWLqeAE86qXDyCKIIxbx
-         F0prNvHBe5TvtzSN2ISEmmJvI/fyMAIgykRmkSX4BoNGi7awMqXDcXIeSrZxj5fB4R
-         l62qg4SfPGH0xyMD3qAs6B6Yr+08O1Scqi2fvUacgPeXVk/UVTH2PLQg34Vt9SwaEf
-         lUK8qXsdFhZNw==
-Date:   Wed, 9 Mar 2022 13:00:45 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     John Keeping <john@metanate.com>
-Cc:     alsa-devel@alsa-project.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Daniel Beer <daniel.beer@igorinstitute.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: tas5805m: fix pdn polarity
-Message-ID: <Yiik/f+2bYbU4UL8@sirena.org.uk>
-References: <20220309104104.3605112-1-john@metanate.com>
- <YiiZv7Fc8a4O1nYR@sirena.org.uk>
- <Yiie1OUCvi49f1Q7@donbot>
+        by relay2.suse.de (Postfix) with ESMTPS id 5C904A3B81;
+        Wed,  9 Mar 2022 13:09:56 +0000 (UTC)
+Date:   Wed, 9 Mar 2022 14:09:59 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, tglx@linutronix.de,
+        mingo@redhat.com, dvhart@infradead.org, dave@stgolabs.net,
+        andrealmeid@collabora.com, peterz@infradead.org,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: Re: [PATCH v4] mm/oom_kill.c: futex: Don't OOM reap a process with a
+ futex robust list
+Message-ID: <YiinJ3A6WoTJLN8d@dhcp22.suse.cz>
+References: <20220309002550.103786-1-npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hjBCmlAKl+Qf/it8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yiie1OUCvi49f1Q7@donbot>
-X-Cookie: You will inherit millions of dollars.
+In-Reply-To: <20220309002550.103786-1-npache@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue 08-03-22 17:25:50, Nico Pache wrote:
+> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+> be targeted by the oom reaper. This mapping is also used to store the futex
+> robust list; the kernel does not keep a copy of the robust list and instead
+> references a userspace address to maintain the robustness during a process
+> death. A race can occur between exit_mm and the oom reaper that allows
+> the oom reaper to clear the memory of the futex robust list before the
+> exit path has handled the futex death.
 
---hjBCmlAKl+Qf/it8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The above is missing the important part of the problem description. So
+the oom_reaper frees the memory which is backing the robust list. It
+would be useful to link that to the lockup on the futex.
 
-On Wed, Mar 09, 2022 at 12:34:28PM +0000, John Keeping wrote:
-> On Wed, Mar 09, 2022 at 12:12:47PM +0000, Mark Brown wrote:
-> > On Wed, Mar 09, 2022 at 10:41:04AM +0000, John Keeping wrote:
-> >=20
-> > > Fixes: ec45268467f4 ("ASoC: add support for TAS5805M digital amplifie=
-r")
-> >=20
-> > Please don't insert fixes tags unless you're actually fixing a bug,
-> > stylistic improvements like this - people try to use the tag for
-> > backporting bug fixes and so on so extra tags create noise for them.
+> Prevent the OOM reaper from concurrently reaping the mappings if the dying
+> process contains a robust_list. If the dying task_struct does not contain
+> a pointer in tsk->robust_list, we can assume there was either never one
+> setup for this task struct, or futex_cleanup has properly handled the
+> futex death and we can safely reap this memory.
 
-> This isn't purely stylistic - it affects the interpretation of pdn-gpios
-> in the device tree so that it matches all of the other bindings that use
-> this property: active means PDN asserted.
-
-So there's some functional change?  That's not at all clear from either
-the patch description or the code - it's flipping both the ACTIVE mode
-for the GPIO and all the values set which should result in no visible
-change.  If there is a functional problem that is being fixed the
-description needs to be clear as to what that is.
-
---hjBCmlAKl+Qf/it8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIopPwACgkQJNaLcl1U
-h9Dz6Qf/Rx3O2NC+fo44hKIqYpJBFJAGAT1vhCKye5rC0cPnfrahsuAJlCCtNnD0
-0lH5kzPWDHEDWwFgdqTReBykG6CR2XJeMbmppFJBDXRwleeKLkZsxC4L9b4iQlK3
-B5/67vv6Ju0SECEO8XDQQGnqPYclkGA+Bw0fzUvFZtpLxQFgVgbvO5Zy3NDnPLIb
-NEMZECzfJP2At7zBbYhBR/VgLRNNjfskD1A/fFb66ldkUUenIy5oQc4EhsowIuFQ
-C6hrzwilfB8c2M5gAF1wHdr8I8oOkauoHazJJ2awQZypPn2xKU8JEW2tArhHpTQs
-INvjPb0PRGQJls6P1GKKHKNngVgXzg==
-=uZKY
------END PGP SIGNATURE-----
-
---hjBCmlAKl+Qf/it8--
+I do agree with Waiman that this should go into a helper function. This
+would be a quick workaround but I believe that it would be much better
+to either do the futex cleanup in the oom_reaper context if that could
+be done without blocking. If that is really not feasible for some reason
+then we could skip over vmas which are backing the robust list. Have you
+considered any of those solutions?
+-- 
+Michal Hocko
+SUSE Labs
