@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18968C47087
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97984C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238480AbiCIQvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
+        id S238216AbiCIQuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235886AbiCIQez (ORCPT
+        with ESMTP id S239688AbiCIQd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:34:55 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B35AC065
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:30:18 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id s11so2738128pfu.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:30:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OEKJ6HDfRbAYXq1y3GQ16S8ECnj8rGvJ1M6VsKHeWho=;
-        b=oIHRdIQt5LoDmfPbY/G+bBH9o203m/KAHGz2i3DiFvY04vAFtOZbiV2VNw1Bco6aPR
-         7KbjGoeqlwQ3COOJKgMqcvt6n0uAgO8pXJ9sECo3BMw6jNYxt57ENxj/F5kjvVMnCAXv
-         jY2cx0MvlUyBrD5/D8cKaWx8Xmj0/ViDCRVWQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OEKJ6HDfRbAYXq1y3GQ16S8ECnj8rGvJ1M6VsKHeWho=;
-        b=Vl4bEM4f/mkLUqjDzl/UyRkQD7cDDaFkuTFtbMKIXAVBo7djmZSfcK60CFAVWJo8Te
-         SMrSo39yrOI/HD7g+5P7Q3tVdosHghKXQYo6R7Zt6xVOUpJD4Oe91yHZlnes6RDjGL4y
-         OUsAizSCOXR9vL9kOT4uLq2+EBxKu3nSLfkVC+bxqyWrk9Rn71PwDbO7EgLlfLLM4NOi
-         YDy2zAtRul5tnOaENaz7eFlOpxuDcOfqrsOMKS1R6BnGCjForzzP6p97gwUJRcKR8ebl
-         xUkRqWndFAFU5Yid76tzKzB/ZEGAE15tBsaNDEyxSDOPd8mew3JPa5kG/BH2wr0+qWK/
-         bKkw==
-X-Gm-Message-State: AOAM5317THoSZttNoCQFONKVNvSyHSclSlnpaYOTDvaocbhSaK9EH1oq
-        3jPGxj2IGoClrV2KxIUkIfZlbA==
-X-Google-Smtp-Source: ABdhPJysLOSUH1ejLQlt60xHSX+d3Bmy5LiPEBTc5BsVYUZY79bDZ5hXlYyKJbRu0bUDKCQC8AewHg==
-X-Received: by 2002:a05:6a00:140b:b0:4e1:2cbd:30ba with SMTP id l11-20020a056a00140b00b004e12cbd30bamr340497pfu.46.1646843418232;
-        Wed, 09 Mar 2022 08:30:18 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g28-20020a63111c000000b00374646abc42sm2841805pgl.36.2022.03.09.08.30.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 08:30:17 -0800 (PST)
-Date:   Wed, 9 Mar 2022 08:30:17 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Michael Ellerman <patch-notifications@ellerman.id.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 9 Mar 2022 11:33:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88D357B30;
+        Wed,  9 Mar 2022 08:28:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD55619CB;
+        Wed,  9 Mar 2022 16:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988E3C340E8;
+        Wed,  9 Mar 2022 16:28:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646843290;
+        bh=lFLXRhW34vfFCOIYngRiWETJjhBV4ONwtADOaPDllds=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZyZJu0co2iO0+a+UgZnjGY3RkQnn4dn2PxGsHhWK6QQ6iJ81ab9Blo7mlOF/rYS5W
+         GJ8RmfROYRJAK173rZGfmhh8umst/VxF7nLBzIliEk0XlQo+fdDonWaA96TxibQFn+
+         7gG0Z/uWfjqz1+xwyaLrGFR0IgKVS1aZPJBUe/58eMCC09QsB3D9BLNxS34hKk1jVa
+         7F6sYbi4pswTxsKPdu6zES/LiX1MClLr1FXEl7+Tl4jyfFo0RQ/bfIe6tofz1ivs18
+         Uh4W/YdTd2Eb/5LRPg0Qh9Rk1KjPJbRs6rKIMXR3sUk+053e9CdwCIpxXQXNzxPQGU
+         UdlDSKGNt6+yQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Helge Deller <deller@gmx.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Mackerras <paulus@samba.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH v4 00/13] Fix LKDTM for PPC64/IA64/PARISC v4
-Message-ID: <202203090829.53A243306@keescook>
-References: <cover.1644928018.git.christophe.leroy@csgroup.eu>
- <164674125384.3322453.12551849351633372798.b4-ty@ellerman.id.au>
- <87r17bnbxx.fsf@mpe.ellerman.id.au>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/11] kselftest/vm: fix tests build with old libc
+Date:   Wed,  9 Mar 2022 11:27:16 -0500
+Message-Id: <20220309162716.137399-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309162716.137399-1-sashal@kernel.org>
+References: <20220309162716.137399-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87r17bnbxx.fsf@mpe.ellerman.id.au>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 12:37:14PM +1100, Michael Ellerman wrote:
-> Michael Ellerman <patch-notifications@ellerman.id.au> writes:
-> > On Tue, 15 Feb 2022 13:40:55 +0100, Christophe Leroy wrote:
-> >> PPC64/IA64/PARISC have function descriptors. LKDTM doesn't work
-> >> on those three architectures because LKDTM messes up function
-> >> descriptors with functions.
-> >> 
-> >> This series does some cleanup in the three architectures and
-> >> refactors function descriptors so that it can then easily use it
-> >> in a generic way in LKDTM.
-> >> 
-> >> [...]
-> >
-> > Applied to powerpc/next.
-> 
-> I also have it in an rc2-based topic branch if there are any merge
-> conflicts that people want to resolve, I don't see any in linux-next at
-> the moment though.
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/log/?h=topic/func-desc-lkdtm
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-Thanks! I've got some core changes coming for lkdtm, but I'm waiting
-until after the merge window to rebase them and get them into -next.
+[ Upstream commit b773827e361952b3f53ac6fa4c4e39ccd632102e ]
 
+The error message when I build vm tests on debian10 (GLIBC 2.28):
+
+    userfaultfd.c: In function `userfaultfd_pagemap_test':
+    userfaultfd.c:1393:37: error: `MADV_PAGEOUT' undeclared (first use
+    in this function); did you mean `MADV_RANDOM'?
+      if (madvise(area_dst, test_pgsize, MADV_PAGEOUT))
+                                         ^~~~~~~~~~~~
+                                         MADV_RANDOM
+
+This patch includes these newer definitions from UAPI linux/mman.h, is
+useful to fix tests build on systems without these definitions in glibc
+sys/mman.h.
+
+Link: https://lkml.kernel.org/r/20220227055330.43087-2-zhouchengming@bytedance.com
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/vm/userfaultfd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index d77ed41b2094..1f89d3dd8295 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -60,6 +60,7 @@
+ #include <signal.h>
+ #include <poll.h>
+ #include <string.h>
++#include <linux/mman.h>
+ #include <sys/mman.h>
+ #include <sys/syscall.h>
+ #include <sys/ioctl.h>
 -- 
-Kees Cook
+2.34.1
+
