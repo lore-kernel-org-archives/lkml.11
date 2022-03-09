@@ -2,93 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA05AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232520AbiCIMUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:20:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S231510AbiCIMUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiCIMUH (ORCPT
+        with ESMTP id S229514AbiCIMUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:20:07 -0500
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B617312F404;
-        Wed,  9 Mar 2022 04:19:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=79aUx
-        1c7CPT8LgoaiDSdBrkYa0kTdsJauFmLg37A0L0=; b=VoPwc4VTZ8G5D9wgi9/jX
-        JBS9L4MPrTsSb+8aAfvIYuOaRWQY3t7wSBgCx2n7Yo3BYEeUCzPdQ6KRn2iddndf
-        tJBmSaInX5oCUmZ/JC92qIahUdUPMrMvymtXuH8Y7g7av/4+YVUJtGNvMLptDPEC
-        N8AcFML5UuZnbc5fMsr6Mg=
-Received: from localhost.localdomain (unknown [218.106.182.227])
-        by smtp2 (Coremail) with SMTP id GtxpCgDXZW4TmyhiJ7pvBA--.12980S4;
-        Wed, 09 Mar 2022 20:18:35 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com,
-        andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v2] net: arc_emac: Fix use after free in arc_mdio_probe()
-Date:   Wed,  9 Mar 2022 20:18:24 +0800
-Message-Id: <20220309121824.36529-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Mar 2022 07:20:43 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F9217227B;
+        Wed,  9 Mar 2022 04:19:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646828385; x=1678364385;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=2XNQVwdKnvrJJjNli7sgRrYSwBvQxLv8hzZcl5S1ao8=;
+  b=bNbOXVk7hj9vukwuL4bJBXN242qxUDXmB4b0wi+ZZBDeNwUN4OCFkggZ
+   FcW9eXwxbvhA0KHTtZNeg0RqKiZfjHdU1rNnkMX6uZEvwc4gFV+wPLkQJ
+   OvC3uNqTwyqRWEGiLTB+Nc+pt4eu4Z4T/8Rxmko3zdBfEzbaw7v38kCX/
+   DmvF1eHMBuITbJz7lIxDRzVL3xukJBitm4vaWVTo04ouVD47nPztdidzn
+   A3wi66wpnJXEQPkRJWwCfWd88NpikeIEur91sv9SCb4PEkvIyEIZHBykC
+   WkPl57MZhy7nBIa30j1wYqMsheGZEAeWh4dbcXc7plG6o7PM5Cl1ub9sh
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341390397"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="341390397"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 04:19:45 -0800
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="554095705"
+Received: from vladi-laptop.ger.corp.intel.com ([10.252.32.21])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 04:19:41 -0800
+Date:   Wed, 9 Mar 2022 14:19:39 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+In-Reply-To: <c2607267-798b-d7a0-86f6-4a729c22911f@linux.intel.com>
+Message-ID: <9c2d96c0-44cf-c84c-5ff7-34c74716a23b@linux.intel.com>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de> <c2607267-798b-d7a0-86f6-4a729c22911f@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgDXZW4TmyhiJ7pvBA--.12980S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr4fXFWUKFW7KFyrCFyrCrg_yoW8Xw4xpa
-        yUu3srA3s2qw1UKF4kAay0v343tayrJryj9FyIvws0qw15Zr1fGrW7KFWq9w1UKF4qkF1a
-        qa1xZFyrAFZ8JwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR4E_iUUUUU=
-X-Originating-IP: [218.106.182.227]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiDxu+jFUMb4IN1gAAsJ
+Content-Type: multipart/mixed; boundary="8323329-1618434843-1646828384=:1769"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
-the "bus". But bus->name is still used in the next line, which will lead
-to a use after free.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-We can fix it by putting the name in a local variable and make the
-bus->name point to the rodata section "name",then use the name in the
-error message without referring to bus to avoid the uaf.
+--8323329-1618434843-1646828384=:1769
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On Mon, 7 Mar 2022, Ilpo Järvinen wrote:
 
-diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
-index 9acf589b1178..87f40c2ba904 100644
---- a/drivers/net/ethernet/arc/emac_mdio.c
-+++ b/drivers/net/ethernet/arc/emac_mdio.c
-@@ -132,6 +132,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- {
- 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
- 	struct device_node *np = priv->dev->of_node;
-+	const char *name = "Synopsys MII Bus";
- 	struct mii_bus *bus;
- 	int error;
- 
-@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- 	priv->bus = bus;
- 	bus->priv = priv;
- 	bus->parent = priv->dev;
--	bus->name = "Synopsys MII Bus";
-+	bus->name = name;
- 	bus->read = &arc_mdio_read;
- 	bus->write = &arc_mdio_write;
- 	bus->reset = &arc_mdio_reset;
-@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- 	if (error) {
- 		mdiobus_free(bus);
- 		return dev_err_probe(priv->dev, error,
--				     "cannot register MDIO bus %s\n", bus->name);
-+				     "cannot register MDIO bus %s\n", name);
- 	}
- 
- 	return 0;
+> On Sun, 6 Mar 2022, Lukas Wunner wrote:
+> 
+> > On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo Järvinen wrote:
+> 
+> > > +	/*
+> > > +	 * XXX: Though we could interpret the "RTS" timings as Driver Enable
+> > > +	 * (DE) assertion/de-assertion timings, initially not supporting that.
+> > > +	 * Ideally we should have timing values for the Driver instead of the
+> > > +	 * RTS signal.
+> > > +	 */
+> > > +	rs485->delay_rts_before_send = 0;
+> > > +	rs485->delay_rts_after_send = 0;
+> > 
+> > I don't quite understand this code comment.
+> 
+> It seemed to be missing one "Enable" word.
+> 
+> Here's my interpretation of it (this comment was written by somebody 
+> else, perhaps either Heikki or Andy):
+> 
+> Since this HW has dedicated DE/RE in contrast to RTS, it is not specified 
+> anywhere that delay_rts_* should apply to them as well and that the 
+> writer of that comment was hoping to have something dedicated to them
+> rather than repurposing RTS-related fields.
+> 
+> I could of course change this if everything called RTS should be applied 
+> to DE as well?
+
+Now that it has been pretty much established that anything called "rts" 
+should be applied to DE as well, I took another look on implementing these 
+delays.
+
+It turns out to be impractical to do/ineffective because "serial clock 
+periods" are used as the unit by the HW ("serial clock periods" is not as 
+clearly defined by the datasheet as I'd like but it is most likely based 
+on the high-rated uartclk cycles). With the uartclk I've on test HW, the 
+combined delay with max turnaround time and DE assert/de-assert timings 
+cannot do even the smallest possible non-zero value (1 msec). That's 
+because the TAT and DET registers allow only 16-bit and 8-bit values for 
+delays.
+
+I also attempted to test it by writing the maximum values into them and 
+got no visible difference. There a note about +1 for delay in TAT so to 
+play safe I put 0xfff0 instead 0xffff (if the HW couldn't handle that 
+16-bit overflow properly).
+
+Perhaps the SW half-duplex with DE/RE will have to be used to cover this 
+case?
+
+
 -- 
-2.25.1
+ i.
 
+--8323329-1618434843-1646828384=:1769--
