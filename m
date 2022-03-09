@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E39C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E49C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiCIRAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
+        id S235825AbiCIRAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:00:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236417AbiCIQ7v (ORCPT
+        with ESMTP id S236303AbiCIQ7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:59:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802201AF8DE;
-        Wed,  9 Mar 2022 08:47:09 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B8B1AF8CF;
+        Wed,  9 Mar 2022 08:47:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3341D61A14;
-        Wed,  9 Mar 2022 16:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E9DC340E8;
-        Wed,  9 Mar 2022 16:46:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3535E61847;
+        Wed,  9 Mar 2022 16:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5668C340E8;
+        Wed,  9 Mar 2022 16:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646844391;
-        bh=a3DTqmH79yoaAcjJPIl6maCRI/QOfMcGZ7OD9vgdnF4=;
+        s=k20201202; t=1646844426;
+        bh=SA2QB8kqGSNFVpyd+5r6V1cJR1KQQcp7Q4UfP4/NaJY=;
         h=From:To:Cc:Subject:Date:From;
-        b=bRVpV5jaIfkFGu2nHOWj9BlQ3ShHE9PRfIWoDGJpb5D6sgjh1DeQxSvXw/TWmqiU4
-         fMnvYJnzknOKccbtLyVo41tacvtqBVeRSYY13aWJjTXUSgxZzmDHihfN43/gD5Jrpg
-         vfVEEkOtneKlRjxwJLnOOVQ31ceyG04vxYp2f3//kwCfQs8JkctdCIFzhIZ7+2WDox
-         T98xMDsGN2ec5Yoyg8DKkMrn6N2hHkATR5WpgCcYqu/YF3xmbmo7XJATlIb3KIHnHb
-         AGI8xpqwp6i7b7X+JaX8jV0kx+FKtDHh6pQqSLOvSTwPFT9Q4Jm3HaiCR9xIQ9B0OI
-         uxTUvunL51krA==
+        b=Qew2Q24dUVs/ll/gR0bGsQGrl4a9l1DoEgDL57d8y0kT/ZrHlGtR0b8wqSffF9Qf+
+         E+wU/GkAQSH1b9tEdF/WcYYBjPypYhTNdfOr3ps7xyMqKT3Qj1LiAP6m5yP6srg/oO
+         EyecjWCEHi703THN2XXxClhYfIIWjDQElbjGStlbbECfpQ0ZkaA+bl/CQWMlsmxbHH
+         aDcLDjiFgyBTMDXDCVLkQbL9rlJf0oY00kEULG2WXimQ6JNWCrh3E1Cd+HyCYlygWb
+         Wn0pSUuDpH0dfaXlOpxsUYrTSEMByRByRODnIeL4dtoi/Vwio+hjDKlBMGwsKB1qKe
+         49c6Q0SmYyk6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Li RongQing <lirongqing@baidu.com>,
@@ -39,9 +39,9 @@ Cc:     Li RongQing <lirongqing@baidu.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.16] KVM: x86: Yield to IPI target vCPU only if it is busy
-Date:   Wed,  9 Mar 2022 11:46:18 -0500
-Message-Id: <20220309164618.137930-1-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.4] KVM: x86: Yield to IPI target vCPU only if it is busy
+Date:   Wed,  9 Mar 2022 11:46:55 -0500
+Message-Id: <20220309164655.138121-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 X-stable: review
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 59abbdad7729..2121c20e877f 100644
+index 6ff2c7cac4c4..77e4d875a468 100644
 --- a/arch/x86/kernel/kvm.c
 +++ b/arch/x86/kernel/kvm.c
-@@ -619,7 +619,7 @@ static void kvm_smp_send_call_func_ipi(const struct cpumask *mask)
+@@ -543,7 +543,7 @@ static void kvm_smp_send_call_func_ipi(const struct cpumask *mask)
  
  	/* Make sure other vCPUs get a chance to run if they need to. */
  	for_each_cpu(cpu, mask) {
