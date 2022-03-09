@@ -2,151 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B411C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238735AbiCIWfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:35:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
+        id S238738AbiCIWgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:36:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238702AbiCIWfi (ORCPT
+        with ESMTP id S232562AbiCIWgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:35:38 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04617121689
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:34:39 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id h5so1853692plf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:34:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iqofDGyvLh9ucnd9K2IvJDYKRmWqauAqViHarwufpQo=;
-        b=OADP5Tdq8IEmMkpS6qsuttrrRqtzkyntAjIyx9m7gOS2j73vT942qZA4DhUwWkRXhw
-         NiVem8FWxIyiRa7hnClnEVdWuw6NzdkRx19K4RmelBn7IKON5TyNUic5QEh4Y0SXKAM8
-         1D5VYGceoTDZDgTAfPE1r1/K2I6Iv2z4pWbyNbYiJNaEQnKWf1lWuRhJNmJ2V2ABJvJK
-         Bj1NZCdE4MUDbs/FvYrBGvuwtHlZe+lh7QWatODVqHobR7N2eeBa6dEp2DYmntp91EpL
-         tqgDpTzraqoUlc+VKxfdr08ueP506O/m52NUAQGHy2CLYAN4fMKL2k2QCrbrrMt1/AKr
-         Cprg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iqofDGyvLh9ucnd9K2IvJDYKRmWqauAqViHarwufpQo=;
-        b=XMsEVjvtJM1Q2Cug6BZK0X2tT7mJUyW0ujhd3f+yikIBO+TXmYFpPP/YJsqm6WATps
-         gcwlWh6pPkg2Bd4EzwxeENu4QyXEkym+Na0//yl+k1nFJq28YSAoERmJNPruU/vxB1K6
-         ejodi7AVgtFIhme7TFsdHXjdwwrBi9+nzp6UB8l5zR3hnwem7ogmyq6+6Ye6rX1fYgal
-         0ozM4gC/B82498mGA8jQ+g3ghn3ivsbTdrdA9IeZm0rkYIICm+SMVCmXEP2SXopM8rli
-         gbjkX3L3BgIEASKS2zGLCXqchl2vVP5jyRZqWHrhL3+Wojhbs0ocRDVOLKu3BKPJq6CT
-         SQ6A==
-X-Gm-Message-State: AOAM530VTgGHQcMsMywj4C3R0k9svjl+vlwpSGVuk/RGq0h8gOQjWi3f
-        nhVOksQFdYFOrcPNjBPw87M=
-X-Google-Smtp-Source: ABdhPJw3GGik8ofqP7XbwJF1EfgkYIqYSlkZZCNl+r7SAtuLMEY/vW7U1uW85L91ejc+GIbmZyXIxg==
-X-Received: by 2002:a17:90b:4c43:b0:1bf:8585:9baa with SMTP id np3-20020a17090b4c4300b001bf85859baamr1808359pjb.60.1646865278466;
-        Wed, 09 Mar 2022 14:34:38 -0800 (PST)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:6f34:be93:349a:f478])
-        by smtp.gmail.com with ESMTPSA id e14-20020a056a001a8e00b004f75cf1ab6csm3476477pfv.206.2022.03.09.14.34.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 14:34:37 -0800 (PST)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 2/2] xtensa: don't link with libgcc
-Date:   Wed,  9 Mar 2022 14:34:18 -0800
-Message-Id: <20220309223418.1253242-3-jcmvbkbc@gmail.com>
+        Wed, 9 Mar 2022 17:36:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96B31216A8;
+        Wed,  9 Mar 2022 14:35:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51D0BB8240E;
+        Wed,  9 Mar 2022 22:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073C8C340E8;
+        Wed,  9 Mar 2022 22:35:15 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Nathan Chancellor <nathan@kernel.org>,
+        Will Deacon <will@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        James Morse <james.morse@arm.com>,
+        Marc Zyngier <maz@kernel.org>, stable@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: [PATCH] arm64: Do not include __READ_ONCE() block in assembly files
+Date:   Wed,  9 Mar 2022 22:35:13 +0000
+Message-Id: <164686530868.2021143.5226596562469342998.b4-ty@arm.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220309223418.1253242-1-jcmvbkbc@gmail.com>
-References: <20220309223418.1253242-1-jcmvbkbc@gmail.com>
+In-Reply-To: <20220309191633.2307110-1-nathan@kernel.org>
+References: <20220309191633.2307110-1-nathan@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-libgcc may be absent or may have different ABI than the kernel. Don't
-link with it. Drop declarations and export for helpers that are not
-implemented. Use generic versions of DI mode multiplication and
-comparisons. Drop register window spilling helper as it should never be
-used by the compiler-generated code.
+On Wed, 9 Mar 2022 12:16:34 -0700, Nathan Chancellor wrote:
+> When building arm64 defconfig + CONFIG_LTO_CLANG_{FULL,THIN}=y after
+> commit 558c303c9734 ("arm64: Mitigate spectre style branch history side
+> channels"), the following error occurs:
+> 
+>   <instantiation>:4:2: error: invalid fixup for movz/movk instruction
+>    mov w0, #ARM_SMCCC_ARCH_WORKAROUND_3
+>    ^
+> 
+> [...]
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/Kconfig               |  3 +++
- arch/xtensa/Makefile              |  6 +-----
- arch/xtensa/kernel/xtensa_ksyms.c | 14 --------------
- 3 files changed, 4 insertions(+), 19 deletions(-)
+Applied to arm64 (for-next/spectre-bhb), thanks!
 
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 8ac599aa6d99..b324f6743073 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -20,6 +20,9 @@ config XTENSA
- 	select DMA_REMAP if MMU
- 	select GENERIC_ATOMIC64
- 	select GENERIC_IRQ_SHOW
-+	select GENERIC_LIB_CMPDI2
-+	select GENERIC_LIB_MULDI3
-+	select GENERIC_LIB_UCMPDI2
- 	select GENERIC_PCI_IOMAP
- 	select GENERIC_SCHED_CLOCK
- 	select HAVE_ARCH_AUDITSYSCALL
-diff --git a/arch/xtensa/Makefile b/arch/xtensa/Makefile
-index ee2769519eaf..725cd4cd8b30 100644
---- a/arch/xtensa/Makefile
-+++ b/arch/xtensa/Makefile
-@@ -51,13 +51,9 @@ KBUILD_CPPFLAGS += $(patsubst %,-I$(srctree)/%include,$(vardirs) $(plfdirs))
- 
- KBUILD_DEFCONFIG := iss_defconfig
- 
--# Find libgcc.a
--
--LIBGCC := $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
--
- head-y		:= arch/xtensa/kernel/head.o
- 
--libs-y		+= arch/xtensa/lib/ $(LIBGCC)
-+libs-y		+= arch/xtensa/lib/
- 
- boot		:= arch/xtensa/boot
- 
-diff --git a/arch/xtensa/kernel/xtensa_ksyms.c b/arch/xtensa/kernel/xtensa_ksyms.c
-index d79edbb98d2a..b0bc8897c924 100644
---- a/arch/xtensa/kernel/xtensa_ksyms.c
-+++ b/arch/xtensa/kernel/xtensa_ksyms.c
-@@ -59,32 +59,18 @@ extern long long __ashldi3(long long, int);
- extern long long __lshrdi3(long long, int);
- extern int __divsi3(int, int);
- extern int __modsi3(int, int);
--extern long long __muldi3(long long, long long);
- extern int __mulsi3(int, int);
- extern unsigned int __udivsi3(unsigned int, unsigned int);
- extern unsigned int __umodsi3(unsigned int, unsigned int);
--extern unsigned long long __umoddi3(unsigned long long, unsigned long long);
--extern unsigned long long __udivdi3(unsigned long long, unsigned long long);
--extern int __ucmpdi2(int, int);
- 
- EXPORT_SYMBOL(__ashldi3);
- EXPORT_SYMBOL(__ashrdi3);
- EXPORT_SYMBOL(__lshrdi3);
- EXPORT_SYMBOL(__divsi3);
- EXPORT_SYMBOL(__modsi3);
--EXPORT_SYMBOL(__muldi3);
- EXPORT_SYMBOL(__mulsi3);
- EXPORT_SYMBOL(__udivsi3);
- EXPORT_SYMBOL(__umodsi3);
--EXPORT_SYMBOL(__udivdi3);
--EXPORT_SYMBOL(__umoddi3);
--EXPORT_SYMBOL(__ucmpdi2);
--
--void __xtensa_libgcc_window_spill(void)
--{
--	BUG();
--}
--EXPORT_SYMBOL(__xtensa_libgcc_window_spill);
- 
- unsigned int __sync_fetch_and_and_4(volatile void *p, unsigned int v)
- {
+[1/1] arm64: Do not include __READ_ONCE() block in assembly files
+      https://git.kernel.org/arm64/c/52c9f93a9c48
+
 -- 
-2.30.2
+Catalin
 
