@@ -2,221 +2,491 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F73C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbiCILcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:32:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        id S232250AbiCILce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbiCILcO (ORCPT
+        with ESMTP id S232229AbiCILca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:32:14 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A83F14FFD4;
-        Wed,  9 Mar 2022 03:31:15 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 233BF1655;
-        Wed,  9 Mar 2022 03:31:15 -0800 (PST)
-Received: from [10.163.33.203] (unknown [10.163.33.203])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFA443FA4D;
-        Wed,  9 Mar 2022 03:31:03 -0800 (PST)
-Message-ID: <f1b4dbb5-7cd4-7513-4b18-169b97745a0a@arm.com>
-Date:   Wed, 9 Mar 2022 17:01:02 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V3 05/30] arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, geert@linux-m68k.org,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-arch@vger.kernel.org, Will Deacon <will@kernel.org>
-References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
- <1646045273-9343-6-git-send-email-anshuman.khandual@arm.com>
- <YiDessYDSt060Euc@arm.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <YiDessYDSt060Euc@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Mar 2022 06:32:30 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EEF170D48
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:31:25 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id j17so2602923wrc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 03:31:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=GOvMOP28MDGDg8jm0bUDGj4CT9iVJx+FbMwn9im/8gE=;
+        b=DYYRrXwBfYdyvZl7nwCI8zi46eWeNWLbjRs9meSQAuyTqNBswColwKkgj1Dp19oVrr
+         bNJCGZQQ8jwHp5IOnCQSDFH9LCc+Bcr4qzdPeFS8hwHjstKvNa3coGWkKYmWLF85WVvX
+         YZROikc7TuVurBioTrh0ahbB6iKjCB4+x+M/UxL9JRljYaHJ8ba5kaocfc5dOJe37NVB
+         5pFUFnTPMgNLtkbQgT1F74VVmramT/+Fg/Q1RUI67+1b39srqC7ffqy0hSKu0TUjKDaO
+         M2K5dS/tZyNT5wZ8s4o0gEiZxvGSWcL+k8sGwlLnbkurflNfH/GCisE+3zIc14h9vnrH
+         FS0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=GOvMOP28MDGDg8jm0bUDGj4CT9iVJx+FbMwn9im/8gE=;
+        b=SXUPA8ocOf47wD/rbgJfUJBivLXBiiCV1+U0ddUoqB0EhWvk9CekAyz4yI18fHOFMF
+         7zmFYbb3/Q2wMfnRxSEA1nM7P66wOR/WhBS1sunpnLsyV7oLdoVQxu17IWPlwvjACmw0
+         33tgnh1NssQ5izT29tsUBaKqAzmYJhr+IFHSuLkdNE+tLi21wPMYpkOfoVRDuPH/5uF4
+         5XFqxF5oPsF0GH0uHFYdvDfHnipqqnpCJmu7CsUx3Jmg2wHcVGQ+WAVKH/UuSBDoYbY+
+         LuQp34ehUE+O+405cuMcu5aqE3gD7vB25KsdyHCdreJnF8I+S3fFkfJ6JJz1Ptsr6Oa6
+         ud0g==
+X-Gm-Message-State: AOAM53243gPoSZJK4VoApb/Veqi/8IyY9rQwQrr8H+Wro6zSWUF9Qheg
+        uTpQketT4RHZxuXv4krsZyZ1Fg==
+X-Google-Smtp-Source: ABdhPJwj0qlp2p8qBOZtQ+eZg7IOGgHWUmDKmHLQRaft41pDKWTDT1rJCXMLVFG/egaBSRDOio7xeA==
+X-Received: by 2002:adf:a482:0:b0:1e3:3e5f:496c with SMTP id g2-20020adfa482000000b001e33e5f496cmr15266410wrb.606.1646825483932;
+        Wed, 09 Mar 2022 03:31:23 -0800 (PST)
+Received: from linaro.org ([2a00:23c5:6809:2201:546d:7d59:1703:bf96])
+        by smtp.gmail.com with ESMTPSA id o11-20020adf9d4b000000b001f0077ea337sm1503812wre.22.2022.03.09.03.31.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 03:31:23 -0800 (PST)
+From:   Mike Leach <mike.leach@linaro.org>
+To:     liviu.dudau@arm.com, sudeep.holla@arm.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        coresight@lists.linaro.org, linux-kernel@vger.kernel.org,
+        lorenzo.pieralisi@arm.com
+Cc:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        robh+dt@kernel.org, Mike Leach <mike.leach@linaro.org>
+Subject: [PATCH RESEND 1/1] arm64: dts: arm:  Juno - add CTI entries to device tree
+Date:   Wed,  9 Mar 2022 11:31:17 +0000
+Message-Id: <20220309113117.1126-2-mike.leach@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220309113117.1126-1-mike.leach@linaro.org>
+References: <20220309113117.1126-1-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add in CTI entries for Juno r0, r1 and r2 to device tree entries.
 
+Tested on Linux 5.7-rc1
 
-On 3/3/22 20:58, Catalin Marinas wrote:
-> Hi Anshuman,
-> 
-> On Mon, Feb 28, 2022 at 04:17:28PM +0530, Anshuman Khandual wrote:
->> +static inline pgprot_t __vm_get_page_prot(unsigned long vm_flags)
->> +{
->> +	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
->> +	case VM_NONE:
->> +		return PAGE_NONE;
->> +	case VM_READ:
->> +	case VM_WRITE:
->> +	case VM_WRITE | VM_READ:
->> +		return PAGE_READONLY;
->> +	case VM_EXEC:
->> +		return PAGE_EXECONLY;
->> +	case VM_EXEC | VM_READ:
->> +	case VM_EXEC | VM_WRITE:
->> +	case VM_EXEC | VM_WRITE | VM_READ:
->> +		return PAGE_READONLY_EXEC;
->> +	case VM_SHARED:
->> +		return PAGE_NONE;
->> +	case VM_SHARED | VM_READ:
->> +		return PAGE_READONLY;
->> +	case VM_SHARED | VM_WRITE:
->> +	case VM_SHARED | VM_WRITE | VM_READ:
->> +		return PAGE_SHARED;
->> +	case VM_SHARED | VM_EXEC:
->> +		return PAGE_EXECONLY;
->> +	case VM_SHARED | VM_EXEC | VM_READ:
->> +		return PAGE_READONLY_EXEC;
->> +	case VM_SHARED | VM_EXEC | VM_WRITE:
->> +	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
->> +		return PAGE_SHARED_EXEC;
->> +	default:
->> +		BUILD_BUG();
->> +	}
->> +}
-> 
-> I'd say ack for trying to get of the extra arch_vm_get_page_prot() and
-> arch_filter_pgprot() but, TBH, I'm not so keen on the outcome. I haven't
-> built the code to see what's generated but I suspect it's no significant
-> improvement. As for the code readability, the arm64 parts don't look
-> much better either. The only advantage with this patch is that all
-> functions have been moved under arch/arm64.
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+---
+ arch/arm64/boot/dts/arm/juno-base.dtsi    | 162 +++++++++++++++++++++-
+ arch/arm64/boot/dts/arm/juno-cs-r1r2.dtsi |  37 ++++-
+ arch/arm64/boot/dts/arm/juno-r1.dts       |  25 ++++
+ arch/arm64/boot/dts/arm/juno-r2.dts       |  25 ++++
+ arch/arm64/boot/dts/arm/juno.dts          |  25 ++++
+ 5 files changed, 269 insertions(+), 5 deletions(-)
 
-Got it.
+diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
+index 6288e104a089..e022d72c4b0d 100644
+--- a/arch/arm64/boot/dts/arm/juno-base.dtsi
++++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
+@@ -117,7 +117,7 @@
+ 	 * The actual size is just 4K though 64K is reserved. Access to the
+ 	 * unmapped reserved region results in a DECERR response.
+ 	 */
+-	etf@20010000 { /* etf0 */
++	etf_sys0: etf@20010000 { /* etf0 */
+ 		compatible = "arm,coresight-tmc", "arm,primecell";
+ 		reg = <0 0x20010000 0 0x1000>;
+ 
+@@ -141,7 +141,7 @@
+ 		};
+ 	};
+ 
+-	tpiu@20030000 {
++	tpiu_sys: tpiu@20030000 {
+ 		compatible = "arm,coresight-tpiu", "arm,primecell";
+ 		reg = <0 0x20030000 0 0x1000>;
+ 
+@@ -194,7 +194,7 @@
+ 		};
+ 	};
+ 
+-	etr@20070000 {
++	etr_sys: etr@20070000 {
+ 		compatible = "arm,coresight-tmc", "arm,primecell";
+ 		reg = <0 0x20070000 0 0x1000>;
+ 		iommus = <&smmu_etr 0>;
+@@ -212,7 +212,7 @@
+ 		};
+ 	};
+ 
+-	stm@20100000 {
++	stm_sys: stm@20100000 {
+ 		compatible = "arm,coresight-stm", "arm,primecell";
+ 		reg = <0 0x20100000 0 0x1000>,
+ 		      <0 0x28000000 0 0x1000000>;
+@@ -289,6 +289,18 @@
+ 		};
+ 	};
+ 
++	cti0: cti@22020000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x22020000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm0>;
++	};
++
+ 	funnel@220c0000 { /* cluster0 funnel */
+ 		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+ 		reg = <0 0x220c0000 0 0x1000>;
+@@ -349,6 +361,18 @@
+ 		};
+ 	};
+ 
++	cti1: cti@22120000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x22120000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm1>;
++	};
++
+ 	cpu_debug2: cpu-debug@23010000 {
+ 		compatible = "arm,coresight-cpu-debug", "arm,primecell";
+ 		reg = <0x0 0x23010000 0x0 0x1000>;
+@@ -374,6 +398,18 @@
+ 		};
+ 	};
+ 
++	cti2: cti@23020000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x23020000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm2>;
++	};
++
+ 	funnel@230c0000 { /* cluster1 funnel */
+ 		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+ 		reg = <0 0x230c0000 0 0x1000>;
+@@ -446,6 +482,18 @@
+ 		};
+ 	};
+ 
++	cti3: cti@23120000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x23120000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm3>;
++	};
++
+ 	cpu_debug4: cpu-debug@23210000 {
+ 		compatible = "arm,coresight-cpu-debug", "arm,primecell";
+ 		reg = <0x0 0x23210000 0x0 0x1000>;
+@@ -471,6 +519,18 @@
+ 		};
+ 	};
+ 
++	cti4: cti@23220000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x23220000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm4>;
++	};
++
+ 	cpu_debug5: cpu-debug@23310000 {
+ 		compatible = "arm,coresight-cpu-debug", "arm,primecell";
+ 		reg = <0x0 0x23310000 0x0 0x1000>;
+@@ -496,6 +556,100 @@
+ 		};
+ 	};
+ 
++	cti5: cti@23320000 {
++		compatible = "arm,coresight-cti-v8-arch", "arm,coresight-cti",
++			     "arm,primecell";
++		reg = <0 0x23320000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		arm,cs-dev-assoc = <&etm5>;
++	};
++
++	cti@20020000 { /* sys_cti_0 */
++		compatible = "arm,coresight-cti", "arm,primecell";
++		reg = <0 0x20020000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		trig-conns@0 {
++			reg = <0>;
++			arm,trig-in-sigs=<2 3>;
++			arm,trig-in-types=<SNK_FULL SNK_ACQCOMP>;
++			arm,trig-out-sigs=<0 1>;
++			arm,trig-out-types=<SNK_FLUSHIN SNK_TRIGIN>;
++			arm,cs-dev-assoc = <&etr_sys>;
++		};
++
++		trig-conns@1 {
++			reg = <1>;
++			arm,trig-in-sigs=<0 1>;
++			arm,trig-in-types=<SNK_FULL SNK_ACQCOMP>;
++			arm,trig-out-sigs=<7 6>;
++			arm,trig-out-types=<SNK_FLUSHIN SNK_TRIGIN>;
++			arm,cs-dev-assoc = <&etf_sys0>;
++		};
++
++		trig-conns@2 {
++			reg = <2>;
++			arm,trig-in-sigs=<4 5 6 7>;
++			arm,trig-in-types=<STM_TOUT_SPTE STM_TOUT_SW
++					   STM_TOUT_HETE STM_ASYNCOUT>;
++			arm,trig-out-sigs=<4 5>;
++			arm,trig-out-types=<STM_HWEVENT STM_HWEVENT>;
++			arm,cs-dev-assoc = <&stm_sys>;
++		};
++
++		trig-conns@3 {
++			reg = <3>;
++			arm,trig-out-sigs=<2 3>;
++			arm,trig-out-types=<SNK_FLUSHIN SNK_TRIGIN>;
++			arm,cs-dev-assoc = <&tpiu_sys>;
++		};
++	};
++
++	cti@20110000 { /* sys_cti_1 */
++		compatible = "arm,coresight-cti", "arm,primecell";
++		reg = <0 0x20110000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		trig-conns@0 {
++			reg = <0>;
++			arm,trig-in-sigs=<0>;
++			arm,trig-in-types=<GEN_INTREQ>;
++			arm,trig-out-sigs=<0>;
++			arm,trig-out-types=<GEN_HALTREQ>;
++			arm,trig-conn-name = "sys_profiler";
++		};
++
++		trig-conns@1 {
++			reg = <1>;
++			arm,trig-out-sigs=<2 3>;
++			arm,trig-out-types=<GEN_HALTREQ GEN_RESTARTREQ>;
++			arm,trig-conn-name = "watchdog";
++		};
++
++		trig-conns@2 {
++			reg = <2>;
++			arm,trig-out-sigs=<1 6>;
++			arm,trig-out-types=<GEN_HALTREQ GEN_RESTARTREQ>;
++			arm,trig-conn-name = "g_counter";
++		};
++	};
++
+ 	gpu: gpu@2d000000 {
+ 		compatible = "arm,juno-mali", "arm,mali-t624";
+ 		reg = <0 0x2d000000 0 0x10000>;
+diff --git a/arch/arm64/boot/dts/arm/juno-cs-r1r2.dtsi b/arch/arm64/boot/dts/arm/juno-cs-r1r2.dtsi
+index eda3d9e18af6..752b05f8bf31 100644
+--- a/arch/arm64/boot/dts/arm/juno-cs-r1r2.dtsi
++++ b/arch/arm64/boot/dts/arm/juno-cs-r1r2.dtsi
+@@ -23,7 +23,7 @@
+ 		};
+ 	};
+ 
+-	etf@20140000 { /* etf1 */
++	etf_sys1: etf@20140000 { /* etf1 */
+ 		compatible = "arm,coresight-tmc", "arm,primecell";
+ 		reg = <0 0x20140000 0 0x1000>;
+ 
+@@ -82,4 +82,39 @@
+ 
+ 		};
+ 	};
++
++	cti@20160000 { /* sys_cti_2 */
++		compatible = "arm,coresight-cti", "arm,primecell";
++		reg = <0 0x20160000 0 0x1000>;
++
++		clocks = <&soc_smc50mhz>;
++		clock-names = "apb_pclk";
++		power-domains = <&scpi_devpd 0>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		trig-conns@0 {
++			reg = <0>;
++			arm,trig-in-sigs=<0 1>;
++			arm,trig-in-types=<SNK_FULL SNK_ACQCOMP>;
++			arm,trig-out-sigs=<0 1>;
++			arm,trig-out-types=<SNK_FLUSHIN SNK_TRIGIN>;
++			arm,cs-dev-assoc = <&etf_sys1>;
++		};
++
++		trig-conns@1 {
++			reg = <1>;
++			arm,trig-in-sigs=<2 3 4>;
++			arm,trig-in-types=<ELA_DBGREQ ELA_TSTART ELA_TSTOP>;
++			arm,trig-conn-name = "ela_clus_0";
++		};
++
++		trig-conns@2 {
++			reg = <2>;
++			arm,trig-in-sigs=<5 6 7>;
++			arm,trig-in-types=<ELA_DBGREQ ELA_TSTART ELA_TSTOP>;
++			arm,trig-conn-name = "ela_clus_1";
++		};
++	};
+ };
+diff --git a/arch/arm64/boot/dts/arm/juno-r1.dts b/arch/arm64/boot/dts/arm/juno-r1.dts
+index 0e24e29eb9b1..f099fb611d4e 100644
+--- a/arch/arm64/boot/dts/arm/juno-r1.dts
++++ b/arch/arm64/boot/dts/arm/juno-r1.dts
+@@ -9,6 +9,7 @@
+ /dts-v1/;
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/arm/coresight-cti-dt.h>
+ #include "juno-base.dtsi"
+ #include "juno-cs-r1r2.dtsi"
+ 
+@@ -313,3 +314,27 @@
+ &cpu_debug5 {
+ 	cpu = <&A53_3>;
+ };
++
++&cti0 {
++	cpu = <&A57_0>;
++};
++
++&cti1 {
++	cpu = <&A57_1>;
++};
++
++&cti2 {
++	cpu = <&A53_0>;
++};
++
++&cti3 {
++	cpu = <&A53_1>;
++};
++
++&cti4 {
++	cpu = <&A53_2>;
++};
++
++&cti5 {
++	cpu = <&A53_3>;
++};
+diff --git a/arch/arm64/boot/dts/arm/juno-r2.dts b/arch/arm64/boot/dts/arm/juno-r2.dts
+index e609420ce3e4..709389582ae3 100644
+--- a/arch/arm64/boot/dts/arm/juno-r2.dts
++++ b/arch/arm64/boot/dts/arm/juno-r2.dts
+@@ -9,6 +9,7 @@
+ /dts-v1/;
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/arm/coresight-cti-dt.h>
+ #include "juno-base.dtsi"
+ #include "juno-cs-r1r2.dtsi"
+ 
+@@ -319,3 +320,27 @@
+ &cpu_debug5 {
+ 	cpu = <&A53_3>;
+ };
++
++&cti0 {
++	cpu = <&A72_0>;
++};
++
++&cti1 {
++	cpu = <&A72_1>;
++};
++
++&cti2 {
++	cpu = <&A53_0>;
++};
++
++&cti3 {
++	cpu = <&A53_1>;
++};
++
++&cti4 {
++	cpu = <&A53_2>;
++};
++
++&cti5 {
++	cpu = <&A53_3>;
++};
+diff --git a/arch/arm64/boot/dts/arm/juno.dts b/arch/arm64/boot/dts/arm/juno.dts
+index f00cffbd032c..dbc22e70b62c 100644
+--- a/arch/arm64/boot/dts/arm/juno.dts
++++ b/arch/arm64/boot/dts/arm/juno.dts
+@@ -9,6 +9,7 @@
+ /dts-v1/;
+ 
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/arm/coresight-cti-dt.h>
+ #include "juno-base.dtsi"
+ 
+ / {
+@@ -295,3 +296,27 @@
+ &cpu_debug5 {
+ 	cpu = <&A53_3>;
+ };
++
++&cti0 {
++	cpu = <&A57_0>;
++};
++
++&cti1 {
++	cpu = <&A57_1>;
++};
++
++&cti2 {
++	cpu = <&A53_0>;
++};
++
++&cti3 {
++	cpu = <&A53_1>;
++};
++
++&cti4 {
++	cpu = <&A53_2>;
++};
++
++&cti5 {
++	cpu = <&A53_3>;
++};
+-- 
+2.17.1
 
-> 
-> I'd keep most architectures that don't have own arch_vm_get_page_prot()
-> or arch_filter_pgprot() unchanged and with a generic protection_map[]
-> array. For architectures that need fancier stuff, add a
-> CONFIG_ARCH_HAS_VM_GET_PAGE_PROT (as you do) and allow them to define
-> vm_get_page_prot() while getting rid of arch_vm_get_page_prot() and
-> arch_filter_pgprot(). I think you could also duplicate protection_map[]
-> for architectures with own vm_get_page_prot() (make it static) and
-> #ifdef it out in mm/mmap.c.
-> 
-> If later you have more complex needs or a switch statement generates
-> better code, go for it, but for this series I'd keep things simple, only
-> focus on getting rid of arch_vm_get_page_prot() and
-> arch_filter_pgprot().
-
-Got it.
-
-> 
-> If I grep'ed correctly, there are only 4 architectures that have own
-> arch_vm_get_page_prot() (arm64, powerpc, sparc, x86) and 2 that have own
-> arch_filter_pgprot() (arm64, x86). Try to only change these for the time
-> being, together with the other generic mm cleanups you have in this
-> series. I think there are a couple more that touch protection_map[]
-> (arm, m68k). You can leave the generic protection_map[] global if the
-> arch does not select ARCH_HAS_VM_GET_PAGE_PROT.
-
-Okay, I will probably split the series into two parts.
-
--  Drop arch_vm_get_page_prot() and arch_filter_pgprot() on relevant
-   platforms i.e arm64, powerpc, sparc and x86 via this new config
-   ARCH_HAS_VM_GET_PAGE_PROT, keeping the generic protection_map[]
-   since platform __SXXX/__PXX macros would be still around.
-
--  Drop __SXXX/__PXXX across all platforms via just initializing
-   protection_map[] early during boot in the platform OR moving
-   both vm_get_page_prot() via ARCH_HAS_VM_GET_PAGE_PROT and the
-   generic protection_map[] inside the platform.
-
-   There were some objections with respect to switch case code in
-   comparison to the array based table look up.
-
-> 
->> +static pgprot_t arm64_arch_filter_pgprot(pgprot_t prot)
->> +{
->> +	if (cpus_have_const_cap(ARM64_HAS_EPAN))
->> +		return prot;
->> +
->> +	if (pgprot_val(prot) != pgprot_val(PAGE_EXECONLY))
->> +		return prot;
->> +
->> +	return PAGE_READONLY_EXEC;
->> +}
->> +
->> +static pgprot_t arm64_arch_vm_get_page_prot(unsigned long vm_flags)
->> +{
->> +	pteval_t prot = 0;
->> +
->> +	if (vm_flags & VM_ARM64_BTI)
->> +		prot |= PTE_GP;
->> +
->> +	/*
->> +	 * There are two conditions required for returning a Normal Tagged
->> +	 * memory type: (1) the user requested it via PROT_MTE passed to
->> +	 * mmap() or mprotect() and (2) the corresponding vma supports MTE. We
->> +	 * register (1) as VM_MTE in the vma->vm_flags and (2) as
->> +	 * VM_MTE_ALLOWED. Note that the latter can only be set during the
->> +	 * mmap() call since mprotect() does not accept MAP_* flags.
->> +	 * Checking for VM_MTE only is sufficient since arch_validate_flags()
->> +	 * does not permit (VM_MTE & !VM_MTE_ALLOWED).
->> +	 */
->> +	if (vm_flags & VM_MTE)
->> +		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
->> +
->> +	return __pgprot(prot);
->> +}
->> +
->> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
->> +{
->> +	pgprot_t ret = __pgprot(pgprot_val(__vm_get_page_prot(vm_flags)) |
->> +			pgprot_val(arm64_arch_vm_get_page_prot(vm_flags)));
->> +
->> +	return arm64_arch_filter_pgprot(ret);
->> +}
-> 
-> If we kept the array, we can have everything in a single function
-> (untested and with my own comments for future changes):
-
-Got it.
-
-> 
-> pgprot_t vm_get_page_prot(unsigned long vm_flags)
-> {
-> 	pgprot_t prot = __pgprot(pgprot_val(protection_map[vm_flags &
-> 				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]));
-> 
-> 	/*
-> 	 * We could get rid of this test if we updated protection_map[]
-> 	 * to turn exec-only into read-exec during boot.
-> 	 */
-> 	if (!cpus_have_const_cap(ARM64_HAS_EPAN) &&
-> 	    pgprot_val(prot) == pgprot_val(PAGE_EXECONLY))
-> 		prot = PAGE_READONLY_EXEC;
-> 
-> 	if (vm_flags & VM_ARM64_BTI)
-> 		prot != PTE_GP;
-> 
-> 	/*
-> 	 * We can get rid of the requirement for PROT_NORMAL to be 0
-> 	 * since here we can mask out PTE_ATTRINDX_MASK.
-> 	 */
-> 	if (vm_flags & VM_MTE) {
-> 		prot &= ~PTE_ATTRINDX_MASK;
-> 		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
-> 	}
-> 
-> 	return prot;
-> }
-> 
