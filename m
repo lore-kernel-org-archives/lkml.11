@@ -2,161 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A571FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238340AbiCIQVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:21:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        id S234376AbiCIQWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234918AbiCIQMu (ORCPT
+        with ESMTP id S235350AbiCIQNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:12:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB58014FFF1;
-        Wed,  9 Mar 2022 08:09:54 -0800 (PST)
+        Wed, 9 Mar 2022 11:13:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2BBB65C6;
+        Wed,  9 Mar 2022 08:10:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6886561797;
-        Wed,  9 Mar 2022 16:09:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BDC1C340EC;
-        Wed,  9 Mar 2022 16:09:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C50E617B2;
+        Wed,  9 Mar 2022 16:10:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A11C340E8;
+        Wed,  9 Mar 2022 16:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842193;
-        bh=QwlJvWOkklMTHykH22gZQn+3XT4PMhG8ZaiKF4jVX/8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+Mc4aHRVaRavkwQl6rESqKmc7ukgbhoIuvWpRHYsgHlM0YqFIY+4sjSRZtht9J6m
-         8MRMsaYaiRX82UNRIf4Ar1VtRXzbjWhsanvRPU2ch/TOfqmAiUCoKe3nGBlfjx6nbD
-         DodrcWOs04MXClsB2mA6WLL3t1P2IItZfT+/VL6I=
+        s=korg; t=1646842238;
+        bh=BJ4mK36dJa3m7BHv0N7l1otb+o11ZWh6TABV80ZECH4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hNfsmjSlMv/QdPXiNoeKL+xUHFv1FwMJOQBlaPfTFm0qz5y/O33ufaVJoKTAH+Vv4
+         KkK0TQVNTpi7J0+t2t+X1JbKRFzIkshD5xgtLnLu5sX0ID94GMmCJ2/B59/t+LRE8x
+         pZOl04oFV3OTNw1+MMd/r7AGkv5ZF09iFS6yS8/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.16 03/37] Documentation/hw-vuln: Update spectre doc
-Date:   Wed,  9 Mar 2022 17:00:04 +0100
-Message-Id: <20220309155859.188409810@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.16 00/37] 5.16.14-rc1 review
+Date:   Wed,  9 Mar 2022 17:00:01 +0100
+Message-Id: <20220309155859.086952723@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
-References: <20220309155859.086952723@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.14-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.16.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.16.14-rc1
+X-KernelTest-Deadline: 2022-03-11T15:59+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+This is the start of the stable review cycle for the 5.16.14 release.
+There are 37 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 5ad3eb1132453b9795ce5fd4572b1c18b292cca9 upstream.
+Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
+Anything received after that time might be too late.
 
-Update the doc with the new fun.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.14-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+and the diffstat can be found below.
 
-  [ bp: Massage commit message. ]
+thanks,
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/admin-guide/hw-vuln/spectre.rst   |   44 ++++++++++++++++--------
- Documentation/admin-guide/kernel-parameters.txt |    8 +++-
- 2 files changed, 36 insertions(+), 16 deletions(-)
+greg k-h
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -131,6 +131,19 @@ steer its indirect branch speculations t
- speculative execution's side effects left in level 1 cache to infer the
- victim's data.
- 
-+Yet another variant 2 attack vector is for the attacker to poison the
-+Branch History Buffer (BHB) to speculatively steer an indirect branch
-+to a specific Branch Target Buffer (BTB) entry, even if the entry isn't
-+associated with the source address of the indirect branch. Specifically,
-+the BHB might be shared across privilege levels even in the presence of
-+Enhanced IBRS.
-+
-+Currently the only known real-world BHB attack vector is via
-+unprivileged eBPF. Therefore, it's highly recommended to not enable
-+unprivileged eBPF, especially when eIBRS is used (without retpolines).
-+For a full mitigation against BHB attacks, it's recommended to use
-+retpolines (or eIBRS combined with retpolines).
-+
- Attack scenarios
- ----------------
- 
-@@ -364,13 +377,15 @@ The possible values in this file are:
- 
-   - Kernel status:
- 
--  ====================================  =================================
--  'Not affected'                        The processor is not vulnerable
--  'Vulnerable'                          Vulnerable, no mitigation
--  'Mitigation: Full generic retpoline'  Software-focused mitigation
--  'Mitigation: Full AMD retpoline'      AMD-specific software mitigation
--  'Mitigation: Enhanced IBRS'           Hardware-focused mitigation
--  ====================================  =================================
-+  ========================================  =================================
-+  'Not affected'                            The processor is not vulnerable
-+  'Mitigation: None'                        Vulnerable, no mitigation
-+  'Mitigation: Retpolines'                  Use Retpoline thunks
-+  'Mitigation: LFENCE'                      Use LFENCE instructions
-+  'Mitigation: Enhanced IBRS'               Hardware-focused mitigation
-+  'Mitigation: Enhanced IBRS + Retpolines'  Hardware-focused + Retpolines
-+  'Mitigation: Enhanced IBRS + LFENCE'      Hardware-focused + LFENCE
-+  ========================================  =================================
- 
-   - Firmware status: Show if Indirect Branch Restricted Speculation (IBRS) is
-     used to protect against Spectre variant 2 attacks when calling firmware (x86 only).
-@@ -583,12 +598,13 @@ kernel command line.
- 
- 		Specific mitigations can also be selected manually:
- 
--		retpoline
--					replace indirect branches
--		retpoline,generic
--					google's original retpoline
--		retpoline,amd
--					AMD-specific minimal thunk
-+                retpoline               auto pick between generic,lfence
-+                retpoline,generic       Retpolines
-+                retpoline,lfence        LFENCE; indirect branch
-+                retpoline,amd           alias for retpoline,lfence
-+                eibrs                   enhanced IBRS
-+                eibrs,retpoline         enhanced IBRS + Retpolines
-+                eibrs,lfence            enhanced IBRS + LFENCE
- 
- 		Not specifying this option is equivalent to
- 		spectre_v2=auto.
-@@ -599,7 +615,7 @@ kernel command line.
- 		spectre_v2=off. Spectre variant 1 mitigations
- 		cannot be disabled.
- 
--For spectre_v2_user see :doc:`/admin-guide/kernel-parameters`.
-+For spectre_v2_user see Documentation/admin-guide/kernel-parameters.txt
- 
- Mitigation selection guide
- --------------------------
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5303,8 +5303,12 @@
- 			Specific mitigations can also be selected manually:
- 
- 			retpoline	  - replace indirect branches
--			retpoline,generic - google's original retpoline
--			retpoline,amd     - AMD-specific minimal thunk
-+			retpoline,generic - Retpolines
-+			retpoline,lfence  - LFENCE; indirect branch
-+			retpoline,amd     - alias for retpoline,lfence
-+			eibrs		  - enhanced IBRS
-+			eibrs,retpoline   - enhanced IBRS + Retpolines
-+			eibrs,lfence      - enhanced IBRS + LFENCE
- 
- 			Not specifying this option is equivalent to
- 			spectre_v2=auto.
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.16.14-rc1
+
+Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+    ARM: fix build error when BPF_SYSCALL is disabled
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+James Morse <james.morse@arm.com>
+    arm64: Use the clearbhb instruction in mitigations
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+
+James Morse <james.morse@arm.com>
+    arm64: Mitigate spectre style branch history side channels
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+
+James Morse <james.morse@arm.com>
+    arm64: Add percpu vectors for EL1
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add macro for reading symbol addresses from the trampoline
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add vectors that have the bhb mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow the trampoline text to occupy multiple pages
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the kpti trampoline's kpti sequence optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move trampoline macros out of ifdef'd section
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Don't assume tramp_vectors is the start of the vectors
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move the trampoline data page before the text page
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Free up another register on kpti's tramp_exit path
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the trampoline cleanup optional
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+
+James Morse <james.morse@arm.com>
+    arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+
+James Morse <james.morse@arm.com>
+    arm64: entry.S: Add ventry overflow sanity checks
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_RPRES
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_AFP
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: add ID_AA64ISAR2_EL1 sys register
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: include unprivileged BPF status in Spectre V2 reporting
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Spectre-BHB workaround
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: use LOADADDR() to get load address of sections
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: early traps initialisation
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: report Spectre v2 status through sysfs
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about Spectre v2 LFENCE mitigation
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Update link to AMD speculation whitepaper
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Use generic retpoline by default on AMD
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Peter Zijlstra <peterz@infradead.org>
+    Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/speculation: Add eIBRS + Retpoline options
+
+Peter Zijlstra (Intel) <peterz@infradead.org>
+    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+
+-------------
+
+Diffstat:
+
+ Documentation/admin-guide/hw-vuln/spectre.rst   |  50 +--
+ Documentation/admin-guide/kernel-parameters.txt |   8 +-
+ Documentation/arm64/cpu-feature-registers.rst   |  17 ++
+ Documentation/arm64/elf_hwcaps.rst              |   8 +
+ Makefile                                        |   4 +-
+ arch/arm/include/asm/assembler.h                |  10 +
+ arch/arm/include/asm/spectre.h                  |  32 ++
+ arch/arm/include/asm/vmlinux.lds.h              |  35 ++-
+ arch/arm/kernel/Makefile                        |   2 +
+ arch/arm/kernel/entry-armv.S                    |  79 ++++-
+ arch/arm/kernel/entry-common.S                  |  24 ++
+ arch/arm/kernel/spectre.c                       |  71 +++++
+ arch/arm/kernel/traps.c                         |  65 +++-
+ arch/arm/mm/Kconfig                             |  11 +
+ arch/arm/mm/proc-v7-bugs.c                      | 207 ++++++++++---
+ arch/arm64/Kconfig                              |   9 +
+ arch/arm64/include/asm/assembler.h              |  53 ++++
+ arch/arm64/include/asm/cpu.h                    |   1 +
+ arch/arm64/include/asm/cpufeature.h             |  29 ++
+ arch/arm64/include/asm/cputype.h                |   8 +
+ arch/arm64/include/asm/fixmap.h                 |   6 +-
+ arch/arm64/include/asm/hwcap.h                  |   2 +
+ arch/arm64/include/asm/insn.h                   |   1 +
+ arch/arm64/include/asm/kvm_host.h               |   5 +
+ arch/arm64/include/asm/sections.h               |   5 +
+ arch/arm64/include/asm/spectre.h                |   4 +
+ arch/arm64/include/asm/sysreg.h                 |  18 ++
+ arch/arm64/include/asm/vectors.h                |  73 +++++
+ arch/arm64/include/uapi/asm/hwcap.h             |   2 +
+ arch/arm64/include/uapi/asm/kvm.h               |   5 +
+ arch/arm64/kernel/cpu_errata.c                  |   7 +
+ arch/arm64/kernel/cpufeature.c                  |  25 ++
+ arch/arm64/kernel/cpuinfo.c                     |   3 +
+ arch/arm64/kernel/entry.S                       | 214 +++++++++----
+ arch/arm64/kernel/image-vars.h                  |   4 +
+ arch/arm64/kernel/proton-pack.c                 | 391 +++++++++++++++++++++++-
+ arch/arm64/kernel/vmlinux.lds.S                 |   2 +-
+ arch/arm64/kvm/arm.c                            |   5 +-
+ arch/arm64/kvm/hyp/hyp-entry.S                  |   9 +
+ arch/arm64/kvm/hyp/nvhe/mm.c                    |   4 +-
+ arch/arm64/kvm/hyp/vhe/switch.c                 |   9 +-
+ arch/arm64/kvm/hypercalls.c                     |  12 +
+ arch/arm64/kvm/psci.c                           |  18 +-
+ arch/arm64/kvm/sys_regs.c                       |   2 +-
+ arch/arm64/mm/mmu.c                             |  12 +-
+ arch/arm64/tools/cpucaps                        |   1 +
+ arch/x86/include/asm/cpufeatures.h              |   2 +-
+ arch/x86/include/asm/nospec-branch.h            |  16 +-
+ arch/x86/kernel/alternative.c                   |   8 +-
+ arch/x86/kernel/cpu/bugs.c                      | 204 ++++++++++---
+ arch/x86/lib/retpoline.S                        |   2 +-
+ arch/x86/net/bpf_jit_comp.c                     |   2 +-
+ include/linux/arm-smccc.h                       |   5 +
+ include/linux/bpf.h                             |  12 +
+ kernel/sysctl.c                                 |   7 +
+ tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
+ 56 files changed, 1606 insertions(+), 216 deletions(-)
 
 
