@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6802C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 392E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234756AbiCIQO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:14:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S229861AbiCIQPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:15:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235898AbiCIQJS (ORCPT
+        with ESMTP id S235941AbiCIQJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30206144F5F;
-        Wed,  9 Mar 2022 08:06:57 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23F51451C3;
+        Wed,  9 Mar 2022 08:06:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02ACE615FA;
-        Wed,  9 Mar 2022 16:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B5CC340E8;
-        Wed,  9 Mar 2022 16:06:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 053F4616A7;
+        Wed,  9 Mar 2022 16:06:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D740C340EF;
+        Wed,  9 Mar 2022 16:06:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842016;
-        bh=iG4dGyVQTtgev5VOsQ8d1I4SvBWcNj19Mn9JiAy+Rwo=;
+        s=korg; t=1646841999;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HYoaGAg9rUraxUSMZihqE6hsBCEbMw3XfVYxEnvOgBz4kFUtBhyCqtS+x325I5npA
-         AMkLbyUyunpkhbrtdnxf9hfCaVMrjcxbgudUuXhPJploCIfj0pTCBPCcAkvgVd2z+/
-         tMDsVH5G9vFF0iCmFg4D/i4/sGxLfJTJlc+bwU18=
+        b=L2l/fpMTdN9naIsuzXlEl52ZVETwI1qQ8vA8PvrphaTCUsG1s7wKjyZ8EXIoX5QnF
+         hAUFwh8L7sPEDG/X5iOac5mU/z4RECn8BrQDvbGl1SGOdrGbe3Y6llCLCc9kURjTGF
+         Ar4UpZw+2wV0Jv2RF3r8VJCediImWyT8ofyWCOfg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.15 12/43] ARM: use LOADADDR() to get load address of sections
-Date:   Wed,  9 Mar 2022 16:59:56 +0100
-Message-Id: <20220309155900.093988923@linuxfoundation.org>
+Subject: [PATCH 5.10 14/43] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Wed,  9 Mar 2022 16:59:47 +0100
+Message-Id: <20220309155859.656517835@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
-References: <20220309155859.734715884@linuxfoundation.org>
+In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309155859.239810747@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,60 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-Use the linker's LOADADDR() macro to get the load address of the
-sections, and provide a macro to set the start and end symbols.
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
+
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/vmlinux.lds.h |   19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/arch/arm/include/asm/vmlinux.lds.h
-+++ b/arch/arm/include/asm/vmlinux.lds.h
-@@ -26,6 +26,11 @@
- #define ARM_MMU_DISCARD(x)	x
- #endif
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
  
-+/* Set start/end symbol names to the LMA for the section */
-+#define ARM_LMA(sym, section)						\
-+	sym##_start = LOADADDR(section);				\
-+	sym##_end = LOADADDR(section) + SIZEOF(section)
+ #include <asm/spectre.h>
+ 
++static bool _unprivileged_ebpf_enabled(void)
++{
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
++#else
++	return false
++#endif
++}
 +
- #define PROC_INFO							\
- 		. = ALIGN(4);						\
- 		__proc_info_begin = .;					\
-@@ -110,19 +115,19 @@
-  * only thing that matters is their relative offsets
-  */
- #define ARM_VECTORS							\
--	__vectors_start = .;						\
-+	__vectors_lma = .;						\
- 	.vectors 0xffff0000 : AT(__vectors_start) {			\
- 		*(.vectors)						\
- 	}								\
--	. = __vectors_start + SIZEOF(.vectors);				\
--	__vectors_end = .;						\
-+	ARM_LMA(__vectors, .vectors);					\
-+	. = __vectors_lma + SIZEOF(.vectors);				\
- 									\
--	__stubs_start = .;						\
--	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
-+	__stubs_lma = .;						\
-+	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
- 		*(.stubs)						\
- 	}								\
--	. = __stubs_start + SIZEOF(.stubs);				\
--	__stubs_end = .;						\
-+	ARM_LMA(__stubs, .stubs);					\
-+	. = __stubs_lma + SIZEOF(.stubs);				\
- 									\
- 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
  
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
