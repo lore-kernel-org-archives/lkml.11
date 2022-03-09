@@ -2,243 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C04F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43977C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238502AbiCIWIK convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        id S237374AbiCIWJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:09:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235954AbiCIWII (ORCPT
+        with ESMTP id S233630AbiCIWJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:08:08 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2531A120184
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:07:07 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nS4SO-0007xe-Vw; Wed, 09 Mar 2022 23:06:57 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        wens@csie.org, maxime@cerno.tech, gfavor@ventanamicro.com,
-        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
-        mick@ics.forth.gr, allen.baum@esperantotech.com,
-        jscheid@ventanamicro.com, rtrauben@gmail.com, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu
-Subject: Re: [PATCH v7 00/13] riscv: support for Svpbmt and D1 memory types
-Date:   Wed, 09 Mar 2022 23:06:55 +0100
-Message-ID: <9863388.BuYlmvG7s8@diego>
-In-Reply-To: <2347714.EJkkgcx2xJ@diego>
-References: <mhng-4052f547-4a01-44ca-9286-97cc57819fbc@palmer-ri-x1c9> <2347714.EJkkgcx2xJ@diego>
+        Wed, 9 Mar 2022 17:09:09 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F58120185
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:08:09 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id r22so5193069ljd.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:08:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vrzRO7DmEsu3cOettTYwW7UCWoPESsH1sMNrUtKi/nA=;
+        b=D6wVcBiWwb900bMY/FETws43aV7d/ko8szzVk+WS/1DR8zDMaY02pV3MC0tbljgnh0
+         WzWCdAtyOwpv/1w8DCR8AZ6HTvBBoLgi0tmfvoHNHVgaE0PG1ZMJdGiaE0dVMTR2N5Iq
+         kSr/dWbefbXW+jTenAzDyNmg7qSGnPTV6OdpU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vrzRO7DmEsu3cOettTYwW7UCWoPESsH1sMNrUtKi/nA=;
+        b=CKHAFMU0NHm6tHD7wVcNKaT6AQwAcLMJf5fySZ4wm6W6jm4aLMY4nPSUSxxDtj+dSC
+         WV0h+eaVsC2VXNVNMGc9qh/iR9Q696F6viPjoBW9zHgstUpoLTdV2ibid2gEb+pbx/Du
+         k9evWFuu8Npa6k7bYLTrTJjpBWguTKw59PlgIBT4YeGabAi+4hRS/zX0FYd1u3daqjcp
+         mVvATwzfQogJgOVcpwNkahN5Hr0ZeO/7YgNgXd04CMpnkgQv8jv7NqumWiadebGvU4Fy
+         PsrRJMRzzQb+ymDL6Hqi3KUBbvKMZcnhL1mfy3IVlQ6EMeXOl6yl29znpnpzaacFG7Q5
+         g6Gg==
+X-Gm-Message-State: AOAM532BFv0Ou+XTUSx0bvzLRIvzMv472MUchBDIfDqrFf4WR4Q9B1tW
+        NJPVICwpFlCwVCfa2oypkOBpI5KDeOWw94SVva8=
+X-Google-Smtp-Source: ABdhPJxDY2sf+prQYT9d54b822bb0lo3B90gRvMIK6iP4lIO/7rrEsFE3k2YK/nan1MRhGRW6gGutQ==
+X-Received: by 2002:a2e:b88d:0:b0:246:8b8c:a90d with SMTP id r13-20020a2eb88d000000b002468b8ca90dmr1037719ljp.265.1646863687797;
+        Wed, 09 Mar 2022 14:08:07 -0800 (PST)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id h6-20020ac25d66000000b0044315401373sm608997lft.29.2022.03.09.14.08.07
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 14:08:07 -0800 (PST)
+Received: by mail-lj1-f175.google.com with SMTP id o6so5205114ljp.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:08:07 -0800 (PST)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr1025987lja.443.1646863686763; Wed, 09
+ Mar 2022 14:08:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+References: <YikTHqjv4S6ZQ3Fv@casper.infradead.org>
+In-Reply-To: <YikTHqjv4S6ZQ3Fv@casper.infradead.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 9 Mar 2022 14:07:50 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiKSXZyKu+LhZjXp+UnDa7kcOyPPG+C8n3K-3AQ3KgMhA@mail.gmail.com>
+Message-ID: <CAHk-=wiKSXZyKu+LhZjXp+UnDa7kcOyPPG+C8n3K-3AQ3KgMhA@mail.gmail.com>
+Subject: Re: [RFC] Free up a page flag
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 8. März 2022, 12:56:20 CET schrieb Heiko Stübner:
-> Hi Palmer,
-> 
-> Am Dienstag, 8. März 2022, 01:47:25 CET schrieb Palmer Dabbelt:
-> > On Mon, 07 Mar 2022 12:52:57 PST (-0800), heiko@sntech.de wrote:
-> > > Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
-> > > for things like non-cacheable pages or I/O memory pages.
-> > >
-> > >
-> > > So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
-> > > types) using the alternatives framework.
-> > >
-> > > This includes a number of changes to the alternatives mechanism itself.
-> > > The biggest one being the move to a more central location, as I expect
-> > > in the future, nearly every chip needing some sort of patching, be it
-> > > either for erratas or for optional features (svpbmt or others).
-> > >
-> > > Detection of the svpbmt functionality is done via Atish's isa extension
-> > > handling series [0] and thus does not need any dt-parsing of its own
-> > > anymore.
-> > >
-> > > The series also introduces support for the memory types of the D1
-> > > which are implemented differently to svpbmt. But when patching anyway
-> > > it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
-> > > location.
-> > >
-> > > The only slightly bigger difference is that the "normal" type is not 0
-> > > as with svpbmt, so kernel patches for this PMA type need to be applied
-> > > even before the MMU is brought up, so the series introduces a separate
-> > > stage for that.
-> > >
-> > >
-> > > In theory this series is 3 parts:
-> > > - sbi cache-flush / null-ptr
-> > 
-> > That first patch looks like an acceptable candidate for fixes.  If 
-> > there's a regression that manifests I'm happy to take it, but if it's 
-> > only possible to manifest a crash with the new stuff then I'm OK just 
-> > holding off until the merge window.
-> 
-> While right now only my poking around the early init via alternatives
-> is affected, the problem exists for everyone.
-> 
-> I.e. I do consider flush_icache_all() to be generic enough that we
-> should expect someone trying to call this in some early code-path
-> as well.
-> 
-> But any call to flush_icache_all() before sbi_init() ran will cause the
-> breakage that is fixed by patch1 .
-> 
-> 
-> So it doesn't look like any _current_ code path has that issue, but
-> it might be good to just pick patch1 for the next merge window
-> individually?
-> 
-> 
-> 
-> > > - alternatives improvements
-> > > - svpbmt+d1
-> > >
-> > > So expecially patches from the first 2 areas could be applied when
-> > > deemed ready, I just thought to keep it together to show-case where
-> > > the end-goal is and not requiring jumping between different series.
-> > >
-> > >
-> > > I picked the recipient list from the previous versions, hopefully
-> > > I didn't forget anybody.
-> > >
-> > > changes in v7:
-> > > - fix typo in patch1 (Atish)
-> > > - moved to Atish's isa-extension framework
-> > > - and therefore move regular boot-alternatives directly behind fill_hwcaps
-> > > - change T-Head errata Kconfig text (Atish)
-> > 
-> > I was just poking around v6, so I have some minor comments there.  None 
-> > of those need to block merging this, but I am getting a bunch of build 
-> > failures under allmodconfig
-> > 
-> >     $ make.riscv allmodconfig
-> >     #
-> >     # configuration written to .config
-> >     #
-> >     $ make.riscv mm/kasan/init.o
-> >       SYNC    include/config/auto.conf.cmd
-> >       CALL    scripts/atomic/check-atomics.sh
-> >       CC      arch/riscv/kernel/asm-offsets.s
-> >       CALL    scripts/checksyscalls.sh
-> >       CC      mm/kasan/init.o
-> >     ./arch/riscv/include/asm/pgtable.h: Assembler messages:
-> >     ./arch/riscv/include/asm/pgtable.h:323: Error: attempt to move .org backwards
-> >     make[2]: *** [scripts/Makefile.build:288: mm/kasan/init.o] Error 1
-> >     make[1]: *** [scripts/Makefile.build:550: mm/kasan] Error 2
-> >     make: *** [Makefile:1831: mm] Error 2
-> > 
-> > Unfortunately my build box just blew up so I haven't had time to confim 
-> > this still exists on v7, but nothing's jumping out as a fix.  I've put 
-> > this on the riscv-d1 branch at kernel.org/palmer/linux, not sure exactly 
-> > what's going on but I'm guessing one of the macros has gone off the 
-> > rails.  I'm going to look at something else (as this one at least 
-> > depends on Atish's patches), but LMK if you've got the time to look into 
-> > this or if I should.
-> 
-> Yeah, we now depend on Atish's isa-extension parsing (same for my cmo
-> series and some more series I saw on the list), so getting that into a
-> mergeable position would be really great :-)
-> 
-> "attempt to move .org backwards" seems to be the telltale sign of the
-> alternatives blocks not matching up in size. While I definitly didn't see
-> anything like this in my tests on qemu + d1, I'll try to investigate where
-> that comes from.
+On Wed, Mar 9, 2022 at 12:50 PM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> We're always running out of page flags.  Here's an attempt to free one
+> up for the next time somebody wants one.
 
-Hmm, looking at your branch [0] it seems that you're missing
-patch7 that introduces the no-compressed-instruction thingy
-for alternatives.
+Ugh. This is too ugly for words.
 
-And missing that patch will of course cause the size issue.
+I wouldn't mind something along the conceptual lines of "these bits
+are only used for this type", but I think it would need to be much
+more organized and explicit, not this kind of randomness.
 
-The patch has made its way to the actual mailing lists [1], so I guess
-it "just" somehow didn't reach your inbox due to some mail hickup?
+For example, quite a few of the page bits really only make sense for
+the "page cache and anonymous pages" kind.
 
+I think this includes some really fundamental bits like the lock bit
+(and the associated waiters bit), along with a lot of the "owner" aka
+"this can be used by the filesystem" bits.
 
-Heiko
+I think it _also_ includes all the LRU and workingset bits etc.
 
+So if we consider that kind of case the "normal" case, the not-normal
+case is likely (a) slab, (b) reserved pages and (c) zspages.,
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/palmer/linux.git/log/?h=riscv-d1
-[1] https://lore.kernel.org/all/20220307205310.1905628-8-heiko@sntech.de/
+Which is pretty close to your "xyzzy" bit (I think you came to the
+same list of "slab or reserved" conclusion because of the fundamental
+issues above), but my point is that I think this approach is
+acceptable if we make it much less random, and make it a lot more
+explicit and thought through.
 
+And we'd probably need to actually *verify* that we don't do things
+like lock (or LRU) those non-normal pages.
 
-> > > changes in v6:
-> > > - rebase onto 5.17-rc1
-> > > - handle sbi null-ptr differently
-> > > - improve commit messages
-> > > - use riscv,mmu as property name
-> > >
-> > > changes in v5:
-> > > - move to use alternatives for runtime-patching
-> > > - add D1 variant
-> > >
-> > >
-> > > [0] https://lore.kernel.org/r/20220222204811.2281949-2-atishp@rivosinc.com
-> > >
-> > >
-> > > Heiko Stuebner (12):
-> > >   riscv: prevent null-pointer dereference with sbi_remote_fence_i
-> > >   riscv: integrate alternatives better into the main architecture
-> > >   riscv: allow different stages with alternatives
-> > >   riscv: implement module alternatives
-> > >   riscv: implement ALTERNATIVE_2 macro
-> > >   riscv: extend concatenated alternatives-lines to the same length
-> > >   riscv: prevent compressed instructions in alternatives
-> > >   riscv: move boot alternatives to after fill_hwcap
-> > >   riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-> > >   riscv: add cpufeature handling via alternatives
-> > >   riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-> > >   riscv: add memory-type errata for T-Head
-> > >
-> > > Wei Fu (1):
-> > >   riscv: add RISC-V Svpbmt extension support
-> > >
-> > >  arch/riscv/Kconfig.erratas                  |  29 +++--
-> > >  arch/riscv/Kconfig.socs                     |   1 -
-> > >  arch/riscv/Makefile                         |   2 +-
-> > >  arch/riscv/errata/Makefile                  |   2 +-
-> > >  arch/riscv/errata/sifive/errata.c           |  17 ++-
-> > >  arch/riscv/errata/thead/Makefile            |   1 +
-> > >  arch/riscv/errata/thead/errata.c            |  85 +++++++++++++++
-> > >  arch/riscv/include/asm/alternative-macros.h | 114 +++++++++++---------
-> > >  arch/riscv/include/asm/alternative.h        |  16 ++-
-> > >  arch/riscv/include/asm/errata_list.h        |  52 +++++++++
-> > >  arch/riscv/include/asm/fixmap.h             |   2 -
-> > >  arch/riscv/include/asm/hwcap.h              |   1 +
-> > >  arch/riscv/include/asm/pgtable-32.h         |  17 +++
-> > >  arch/riscv/include/asm/pgtable-64.h         |  79 +++++++++++++-
-> > >  arch/riscv/include/asm/pgtable-bits.h       |  10 --
-> > >  arch/riscv/include/asm/pgtable.h            |  53 +++++++--
-> > >  arch/riscv/include/asm/vendorid_list.h      |   1 +
-> > >  arch/riscv/kernel/Makefile                  |   1 +
-> > >  arch/riscv/{errata => kernel}/alternative.c |  48 +++++++--
-> > >  arch/riscv/kernel/cpu.c                     |   1 +
-> > >  arch/riscv/kernel/cpufeature.c              |  80 +++++++++++++-
-> > >  arch/riscv/kernel/module.c                  |  29 +++++
-> > >  arch/riscv/kernel/sbi.c                     |  10 +-
-> > >  arch/riscv/kernel/setup.c                   |   2 +
-> > >  arch/riscv/kernel/smpboot.c                 |   4 -
-> > >  arch/riscv/kernel/traps.c                   |   2 +-
-> > >  arch/riscv/mm/init.c                        |   1 +
-> > >  27 files changed, 546 insertions(+), 114 deletions(-)
-> > >  create mode 100644 arch/riscv/errata/thead/Makefile
-> > >  create mode 100644 arch/riscv/errata/thead/errata.c
-> > >  rename arch/riscv/{errata => kernel}/alternative.c (59%)
-> > 
-> 
-> 
+We already have some page flag bits that are only used for those kinds
+of odd pages: the page_flags field is used only for zspages, but other
+pages can (misuse) that field for PG_buddy/offline/etc. That whole
+thing is particularly ugly in how it tries to make sure there are is
+no mapcount use of it.
 
+So I do think something like your "xyzzy" bit can work, but I'd really
+want it to be a lot more explicit and a lot less random than "let's
+encode two special bits this way".
 
-
-
+                   Linus
