@@ -2,397 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B52C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FF6C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237837AbiCIT1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:27:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S237960AbiCIT3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:29:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235826AbiCIT1l (ORCPT
+        with ESMTP id S238453AbiCIT3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:27:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00286B2529
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:26:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646854000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 9 Mar 2022 14:29:03 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D1373053
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:28:04 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D4C8321117;
+        Wed,  9 Mar 2022 19:28:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646854082; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=WN5GUEmgrDS5blhpeuLnIFwphWNcOPQ/ZcWUtDauiB0=;
-        b=buiVTS6vK549UGexOodGze1iLVQmsiaSyy8elR/HkWjn08IIqVw0dxTlZjVRXECywAPlKA
-        sl1Oz6euq1s6uRqKtEeoTQZXlB0itdH9tHTnFqgZ9AArCauHqkem+xk/Cc/SRGbnzZB45h
-        J0dTJpoHQ27LhAMyZQoTJ4dIY+hnppA=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-196-SNF_hKmjOBaJGvevSSA3rQ-1; Wed, 09 Mar 2022 14:26:39 -0500
-X-MC-Unique: SNF_hKmjOBaJGvevSSA3rQ-1
-Received: by mail-qv1-f72.google.com with SMTP id hu9-20020a056214234900b0042c4017aeb3so2929404qvb.14
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:26:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=WN5GUEmgrDS5blhpeuLnIFwphWNcOPQ/ZcWUtDauiB0=;
-        b=Mbd2FdOCSkk5c348mjcwd2az0x/nrXr0MfvJhtKDid+kuhEXyY8/ULbJ5WSvr328TO
-         293p5QjbveS5t74ta5o33CAqvVdnyHPHeVE9tZqkIbYdWRSpJxY9YW10ZESXuhIeTbYF
-         CLTJoI76GXWTd0ji/rpqFwZoxXFLdTGUPiD5+dRQ2+TdBfLUR5RApVk+kg5YFSF4sPAK
-         13hhuvVDWAVALSVO2fHYHI05Beu+qao1g+nShdU/VnSy3/eDzteXicQLzcmFXCGxePNa
-         jlQdOZDr/NUFbmKN0Vs1HhFQL0oAH8EsGzQUjnVkuOygJm6bBZhe2J8w/tzq9z/pjdWL
-         XX9g==
-X-Gm-Message-State: AOAM531CJYwxakFLbYfJslb7IR44ERnZSwOKHWt8UHCUTw7Y52/lUmPi
-        TQx3Y/FDVpkkwDwm0Otmot40j1kXrUMYTQtHwuSsIYDZgN7i8l1NvomVO8gclw4nMrScyW2AzCd
-        +zPwcQb7uXy1VkdpAmXs8Hpf6
-X-Received: by 2002:ac8:5bd3:0:b0:2de:ade1:5c39 with SMTP id b19-20020ac85bd3000000b002deade15c39mr1060309qtb.445.1646853998466;
-        Wed, 09 Mar 2022 11:26:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyedwqff1Gl8UKIvvRzupccuMgUSCb/i3BaeYE2aR9jC3oRSKWG8PpdoxVNsmPki2IcuXhE2w==
-X-Received: by 2002:ac8:5bd3:0:b0:2de:ade1:5c39 with SMTP id b19-20020ac85bd3000000b002deade15c39mr1060283qtb.445.1646853998184;
-        Wed, 09 Mar 2022 11:26:38 -0800 (PST)
-Received: from [192.168.1.3] (68-20-15-154.lightspeed.rlghnc.sbcglobal.net. [68.20.15.154])
-        by smtp.gmail.com with ESMTPSA id w2-20020a379402000000b0067b27a0598fsm1266267qkd.82.2022.03.09.11.26.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 11:26:37 -0800 (PST)
-Message-ID: <9d69be49081bccff44260e4c6e0049c63d6d04a1.camel@redhat.com>
-Subject: Re: [PATCH v2 13/19] netfs: Add a function to consolidate beginning
- a read
-From:   Jeff Layton <jlayton@redhat.com>
-To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com
-Cc:     Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        David Wysochanski <dwysocha@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 09 Mar 2022 14:26:36 -0500
-In-Reply-To: <164678214287.1200972.16734134007649832160.stgit@warthog.procyon.org.uk>
-References: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
-         <164678214287.1200972.16734134007649832160.stgit@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        bh=EBgd/kQM55+aKZyAxeZX48FkKVfo/mz5CTR5lRw9eKc=;
+        b=b3Z3M399AMh+GTSPcGUbXFhjUT60ZcnZGXo3ZwidAB2Na7GV2lWe7y6CQnjqN9QCUraFtC
+        kmMIH2GqDsK/+M4d77UvYJMdMic1Ds/bAscRHv+OmappmAs096Qlr09Exv3pt+gfeVfNL8
+        upzReRQE7qX0ExI5JafnRK6j3g2Qwbc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646854082;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EBgd/kQM55+aKZyAxeZX48FkKVfo/mz5CTR5lRw9eKc=;
+        b=nOFXmqBfiMmnupNjUk7t+uMDGgMsx/dslFxiJeSG1xw9ddpJVnlNHSzDrlfBRb0b6wL5Sh
+        Xia5h41juXNdSRCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8AD0913D7C;
+        Wed,  9 Mar 2022 19:28:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id bdAuIML/KGINRQAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 09 Mar 2022 19:28:02 +0000
+Message-ID: <d1169f34-ccd8-299d-af1f-f45da37556db@suse.de>
+Date:   Wed, 9 Mar 2022 20:28:01 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
+Content-Language: en-US
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>
+Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        dri-devel@lists.freedesktop.org, Dmitry Osipenko <digetx@gmail.com>
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+ <4ce1e172-799c-cba3-0a72-4a6fdf2c6d2f@suse.de>
+ <caa9a2ea-d1b4-fa96-0e90-37a89aa0c000@collabora.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <caa9a2ea-d1b4-fa96-0e90-37a89aa0c000@collabora.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------0fZuqDyqCnXB5WEZyY7uvbDk"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-08 at 23:29 +0000, David Howells wrote:
-> Add a function to do the steps needed to begin a read request, allowing
-> this code to be removed from several other functions and consolidated.
-> 
-> Changes
-> =======
-> ver #2)
->  - Move before the unstaticking patch so that some functions can be left
->    static.
->  - Set uninitialised return code in netfs_begin_read()[1][2].
->  - Fixed a refleak caused by non-removal of a get from netfs_write_begin()
->    when the request submission code got moved to netfs_begin_read().
-> 
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: linux-cachefs@redhat.com
-> 
-> Link: https://lore.kernel.org/r/20220303163826.1120936-1-nathan@kernel.org/ [1]
-> Link: https://lore.kernel.org/r/20220303235647.1297171-1-colin.i.king@gmail.com/ [2]
-> Link: https://lore.kernel.org/r/164623004355.3564931.7275693529042495641.stgit@warthog.procyon.org.uk/ # v1
-> ---
-> 
->  fs/netfs/internal.h          |    2 -
->  fs/netfs/objects.c           |    2 -
->  fs/netfs/read_helper.c       |  144 +++++++++++++++++++++---------------------
->  include/trace/events/netfs.h |    5 +
->  4 files changed, 77 insertions(+), 76 deletions(-)
-> 
-> diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
-> index 5f9719409f21..937c2465943f 100644
-> --- a/fs/netfs/internal.h
-> +++ b/fs/netfs/internal.h
-> @@ -39,7 +39,7 @@ static inline void netfs_see_request(struct netfs_io_request *rreq,
->   */
->  extern unsigned int netfs_debug;
->  
-> -void netfs_rreq_work(struct work_struct *work);
-> +int netfs_begin_read(struct netfs_io_request *rreq, bool sync);
->  
->  /*
->   * stats.c
-> diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
-> index 657b19e60118..82f4d6c4f515 100644
-> --- a/fs/netfs/objects.c
-> +++ b/fs/netfs/objects.c
-> @@ -35,7 +35,7 @@ struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
->  	rreq->i_size	= i_size_read(inode);
->  	rreq->debug_id	= atomic_inc_return(&debug_ids);
->  	INIT_LIST_HEAD(&rreq->subrequests);
-> -	INIT_WORK(&rreq->work, netfs_rreq_work);
-> +	INIT_WORK(&rreq->work, NULL);
->  	refcount_set(&rreq->ref, 1);
->  	__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
->  	if (rreq->netfs_ops->init_request) {
-> diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
-> index 73be06c409bb..19d4fe0b4987 100644
-> --- a/fs/netfs/read_helper.c
-> +++ b/fs/netfs/read_helper.c
-> @@ -443,7 +443,7 @@ static void netfs_rreq_assess(struct netfs_io_request *rreq, bool was_async)
->  	netfs_rreq_completed(rreq, was_async);
->  }
->  
-> -void netfs_rreq_work(struct work_struct *work)
-> +static void netfs_rreq_work(struct work_struct *work)
->  {
->  	struct netfs_io_request *rreq =
->  		container_of(work, struct netfs_io_request, work);
-> @@ -688,6 +688,69 @@ static bool netfs_rreq_submit_slice(struct netfs_io_request *rreq,
->  	return false;
->  }
->  
-> +/*
-> + * Begin the process of reading in a chunk of data, where that data may be
-> + * stitched together from multiple sources, including multiple servers and the
-> + * local cache.
-> + */
-> +int netfs_begin_read(struct netfs_io_request *rreq, bool sync)
-> +{
-> +	unsigned int debug_index = 0;
-> +	int ret;
-> +
-> +	_enter("R=%x %llx-%llx",
-> +	       rreq->debug_id, rreq->start, rreq->start + rreq->len - 1);
-> +
-> +	if (rreq->len == 0) {
-> +		pr_err("Zero-sized read [R=%x]\n", rreq->debug_id);
-> +		netfs_put_request(rreq, false, netfs_rreq_trace_put_zero_len);
-> +		return -EIO;
-> +	}
-> +
-> +	rreq->work.func = netfs_rreq_work;
-> +
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------0fZuqDyqCnXB5WEZyY7uvbDk
+Content-Type: multipart/mixed; boundary="------------oCd2skkQJSv6EnHzuN8xFK1Z";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+ David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
+ <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Gert Wollny <gert.wollny@collabora.com>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org,
+ Gustavo Padovan <gustavo.padovan@collabora.com>,
+ dri-devel@lists.freedesktop.org, Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <d1169f34-ccd8-299d-af1f-f45da37556db@suse.de>
+Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+ <4ce1e172-799c-cba3-0a72-4a6fdf2c6d2f@suse.de>
+ <caa9a2ea-d1b4-fa96-0e90-37a89aa0c000@collabora.com>
+In-Reply-To: <caa9a2ea-d1b4-fa96-0e90-37a89aa0c000@collabora.com>
 
-^^^
-This seems like it should be an INIT_WORK call. I assume you're moving
-this here this because you intend to use netfs_alloc_request for writes
-too?
+--------------oCd2skkQJSv6EnHzuN8xFK1Z
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> +	if (sync)
-> +		netfs_get_request(rreq, netfs_rreq_trace_get_hold);
-> +
-> +	/* Chop the read into slices according to what the cache and the netfs
-> +	 * want and submit each one.
-> +	 */
-> +	atomic_set(&rreq->nr_outstanding, 1);
-> +	do {
-> +		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-> +			break;
-> +
-> +	} while (rreq->submitted < rreq->len);
-> +
-> +	if (sync) {
-> +		/* Keep nr_outstanding incremented so that the ref always belongs to
-> +		 * us, and the service code isn't punted off to a random thread pool to
-> +		 * process.
-> +		 */
-> +		for (;;) {
-> +			wait_var_event(&rreq->nr_outstanding,
-> +				       atomic_read(&rreq->nr_outstanding) == 1);
-> +			netfs_rreq_assess(rreq, false);
-> +			if (!test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags))
-> +				break;
-> +			cond_resched();
-> +		}
-> +
-> +		ret = rreq->error;
-> +		if (ret == 0 && rreq->submitted < rreq->len) {
-> +			trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_read);
-> +			ret = -EIO;
-> +		}
-> +		netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
-> +	} else {
-> +		/* If we decrement nr_outstanding to 0, the ref belongs to us. */
-> +		if (atomic_dec_and_test(&rreq->nr_outstanding))
-> +			netfs_rreq_assess(rreq, false);
-> +		ret = 0;
-> +	}
-> +	return ret;
-> +}
-> +
->  static void netfs_cache_expand_readahead(struct netfs_io_request *rreq,
->  					 loff_t *_start, size_t *_len, loff_t i_size)
->  {
-> @@ -750,7 +813,6 @@ void netfs_readahead(struct readahead_control *ractl)
->  {
->  	struct netfs_io_request *rreq;
->  	struct netfs_i_context *ctx = netfs_i_context(ractl->mapping->host);
-> -	unsigned int debug_index = 0;
->  	int ret;
->  
->  	_enter("%lx,%x", readahead_index(ractl), readahead_count(ractl));
-> @@ -777,22 +839,13 @@ void netfs_readahead(struct readahead_control *ractl)
->  
->  	netfs_rreq_expand(rreq, ractl);
->  
-> -	atomic_set(&rreq->nr_outstanding, 1);
-> -	do {
-> -		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-> -			break;
-> -
-> -	} while (rreq->submitted < rreq->len);
-> -
->  	/* Drop the refs on the folios here rather than in the cache or
->  	 * filesystem.  The locks will be dropped in netfs_rreq_unlock().
->  	 */
->  	while (readahead_folio(ractl))
->  		;
->  
-> -	/* If we decrement nr_outstanding to 0, the ref belongs to us. */
-> -	if (atomic_dec_and_test(&rreq->nr_outstanding))
-> -		netfs_rreq_assess(rreq, false);
-> +	netfs_begin_read(rreq, false);
->  	return;
->  
->  cleanup_free:
-> @@ -821,7 +874,6 @@ int netfs_readpage(struct file *file, struct page *subpage)
->  	struct address_space *mapping = folio->mapping;
->  	struct netfs_io_request *rreq;
->  	struct netfs_i_context *ctx = netfs_i_context(mapping->host);
-> -	unsigned int debug_index = 0;
->  	int ret;
->  
->  	_enter("%lx", folio_index(folio));
-> @@ -836,42 +888,16 @@ int netfs_readpage(struct file *file, struct page *subpage)
->  
->  	if (ctx->ops->begin_cache_operation) {
->  		ret = ctx->ops->begin_cache_operation(rreq);
-> -		if (ret == -ENOMEM || ret == -EINTR || ret == -ERESTARTSYS) {
-> -			folio_unlock(folio);
-> -			goto out;
-> -		}
-> +		if (ret == -ENOMEM || ret == -EINTR || ret == -ERESTARTSYS)
-> +			goto discard;
->  	}
->  
->  	netfs_stat(&netfs_n_rh_readpage);
->  	trace_netfs_read(rreq, rreq->start, rreq->len, netfs_read_trace_readpage);
-> +	return netfs_begin_read(rreq, true);
->  
-> -	netfs_get_request(rreq, netfs_rreq_trace_get_hold);
-> -
-> -	atomic_set(&rreq->nr_outstanding, 1);
-> -	do {
-> -		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-> -			break;
-> -
-> -	} while (rreq->submitted < rreq->len);
-> -
-> -	/* Keep nr_outstanding incremented so that the ref always belongs to us, and
-> -	 * the service code isn't punted off to a random thread pool to
-> -	 * process.
-> -	 */
-> -	do {
-> -		wait_var_event(&rreq->nr_outstanding,
-> -			       atomic_read(&rreq->nr_outstanding) == 1);
-> -		netfs_rreq_assess(rreq, false);
-> -	} while (test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags));
-> -
-> -	ret = rreq->error;
-> -	if (ret == 0 && rreq->submitted < rreq->len) {
-> -		trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_readpage);
-> -		ret = -EIO;
-> -	}
-> -out:
-> -	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
-> -	return ret;
-> +discard:
-> +	netfs_put_request(rreq, false, netfs_rreq_trace_put_discard);
->  alloc_error:
->  	folio_unlock(folio);
->  	return ret;
-> @@ -966,7 +992,7 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
->  	struct netfs_io_request *rreq;
->  	struct netfs_i_context *ctx = netfs_i_context(file_inode(file ));
->  	struct folio *folio;
-> -	unsigned int debug_index = 0, fgp_flags;
-> +	unsigned int fgp_flags;
->  	pgoff_t index = pos >> PAGE_SHIFT;
->  	int ret;
->  
-> @@ -1029,39 +1055,13 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
->  	 */
->  	ractl._nr_pages = folio_nr_pages(folio);
->  	netfs_rreq_expand(rreq, &ractl);
-> -	netfs_get_request(rreq, netfs_rreq_trace_get_hold);
->  
->  	/* We hold the folio locks, so we can drop the references */
->  	folio_get(folio);
->  	while (readahead_folio(&ractl))
->  		;
->  
-> -	atomic_set(&rreq->nr_outstanding, 1);
-> -	do {
-> -		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-> -			break;
-> -
-> -	} while (rreq->submitted < rreq->len);
-> -
-> -	/* Keep nr_outstanding incremented so that the ref always belongs to
-> -	 * us, and the service code isn't punted off to a random thread pool to
-> -	 * process.
-> -	 */
-> -	for (;;) {
-> -		wait_var_event(&rreq->nr_outstanding,
-> -			       atomic_read(&rreq->nr_outstanding) == 1);
-> -		netfs_rreq_assess(rreq, false);
-> -		if (!test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags))
-> -			break;
-> -		cond_resched();
-> -	}
-> -
-> -	ret = rreq->error;
-> -	if (ret == 0 && rreq->submitted < rreq->len) {
-> -		trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_write_begin);
-> -		ret = -EIO;
-> -	}
-> -	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
-> +	ret = netfs_begin_read(rreq, true);
->  	if (ret < 0)
->  		goto error;
->  
-> diff --git a/include/trace/events/netfs.h b/include/trace/events/netfs.h
-> index 685b07573394..55501d044bbc 100644
-> --- a/include/trace/events/netfs.h
-> +++ b/include/trace/events/netfs.h
-> @@ -56,17 +56,18 @@
->  	EM(netfs_fail_check_write_begin,	"check-write-begin")	\
->  	EM(netfs_fail_copy_to_cache,		"copy-to-cache")	\
->  	EM(netfs_fail_read,			"read")			\
-> -	EM(netfs_fail_short_readpage,		"short-readpage")	\
-> -	EM(netfs_fail_short_write_begin,	"short-write-begin")	\
-> +	EM(netfs_fail_short_read,		"short-read")		\
->  	E_(netfs_fail_prepare_write,		"prep-write")
->  
->  #define netfs_rreq_ref_traces					\
->  	EM(netfs_rreq_trace_get_hold,		"GET HOLD   ")	\
->  	EM(netfs_rreq_trace_get_subreq,		"GET SUBREQ ")	\
->  	EM(netfs_rreq_trace_put_complete,	"PUT COMPLT ")	\
-> +	EM(netfs_rreq_trace_put_discard,	"PUT DISCARD")	\
->  	EM(netfs_rreq_trace_put_failed,		"PUT FAILED ")	\
->  	EM(netfs_rreq_trace_put_hold,		"PUT HOLD   ")	\
->  	EM(netfs_rreq_trace_put_subreq,		"PUT SUBREQ ")	\
-> +	EM(netfs_rreq_trace_put_zero_len,	"PUT ZEROLEN")	\
->  	E_(netfs_rreq_trace_new,		"NEW        ")
->  
->  #define netfs_sreq_ref_traces					\
-> 
-> 
+SGkNCg0KQW0gMDkuMDMuMjIgdW0gMTI6NTUgc2NocmllYiBEbWl0cnkgT3NpcGVua286DQo+
+IEhlbGxvLA0KPiANCj4gT24gMy85LzIyIDExOjU5LCBUaG9tYXMgWmltbWVybWFubiB3cm90
+ZToNCj4+IEhpDQo+Pg0KPj4gQW0gMDguMDMuMjIgdW0gMTQ6MTcgc2NocmllYiBEbWl0cnkg
+T3NpcGVua286DQo+Pj4gSGVsbG8sDQo+Pj4NCj4+PiBUaGlzIHBhdGNoc2V0IGludHJvZHVj
+ZXMgbWVtb3J5IHNocmlua2VyIGZvciB0aGUgVmlydElPLUdQVSBEUk0gZHJpdmVyLg0KPj4+
+IER1cmluZyBPT00sIHRoZSBzaHJpbmtlciB3aWxsIHJlbGVhc2UgQk9zIHRoYXQgYXJlIG1h
+cmtlZCBhcyAibm90IG5lZWRlZCINCj4+PiBieSB1c2Vyc3BhY2UgdXNpbmcgdGhlIG5ldyBt
+YWR2aXNlIElPQ1RMLiBUaGUgdXNlcnNwYWNlIGluIHRoaXMgY2FzZSBpcw0KPj4+IHRoZSBN
+ZXNhIFZpckdMIGRyaXZlciwgaXQgd2lsbCBtYXJrIHRoZSBjYWNoZWQgQk9zIGFzICJub3Qg
+bmVlZGVkIiwNCj4+PiBhbGxvd2luZyBrZXJuZWwgZHJpdmVyIHRvIHJlbGVhc2UgbWVtb3J5
+IG9mIHRoZSBjYWNoZWQgc2htZW0gQk9zIG9uDQo+Pj4gbG93bWVtDQo+Pj4gc2l0dWF0aW9u
+cywgcHJldmVudGluZyBPT00ga2lsbHMuDQo+Pg0KPj4gVmlydGlvLWdwdSBpcyBidWlsZCBv
+biB0b3Agb2YgR0VNIHNobWVtIGhlbHBlcnMuIEkgaGF2ZSBhIHByb3RvdHlwZQ0KPj4gcGF0
+Y2hzZXQgdGhhdCBhZGRzIGEgc2hyaW5rZXIgdG8gdGhlc2UgaGVscGVycy4gSWYgeW91IHdh
+bnQgdG8gZ28NCj4+IGZ1cnRoZXIsIHlvdSBjb3VsZCBpbXBsZW1lbnQgc29tZXRoaW5nIGxp
+a2UgdGhhdCBpbnN0ZWFkLiBQYW5mcm9zdCBhbmQNCj4+IGxpbWEgYWxzbyBoYXZlIHRoZWly
+IG93biBzaHJpbmtlciBhbmQgY291bGQgY2VydGFpbmx5IGJlIGNvbnZlcnRlZCB0bw0KPj4g
+dGhlIGdlbS1zaG1lbSBzaHJpbmtlci4NCj4gDQo+IEkgaGFkIGEgdGhvdWdodCB0aGF0IGl0
+IGNvdWxkIGJlIHBvc3NpYmxlIHRvIHVuaWZ5IHNocmlua2VycyBpbnRvIGENCj4gY29tbW9u
+IERSTSBmcmFtZXdvcmsuIENvdWxkIHlvdSBwbGVhc2UgZ2l2ZSBtZSBhIGxpbmsgdG8geW91
+cnMgcHJvdG90eXBlDQo+IHBhdGNoc2V0Pw0KDQpJIHVwbG9hZGVkIHRoZSBwYXRjaGVzIHRv
+DQoNCiANCmh0dHBzOi8vZ2l0bGFiLmZyZWVkZXNrdG9wLm9yZy90emltbWVybWFubi9saW51
+eC8tL2NvbW1pdHMvZ2VtLXNobWVtLWNhY2hlZC1tYXBwaW5ncw0KDQppdCdzIGluY29tcGxl
+dGUgYW5kIHVuLWRlYnVnZ2VkLCBidXQgaXQgc2hvd3Mgd2hhdCBuZWVkcyB0byBiZSBkb25l
+LiBJdCANCmhhcyB0aGUgaW5mcmFzdHJ1Y3R1cmUsIGJ1dCBsYWNrcyB0aGUgY2hhbmdlcyB0
+byB0aGUgR0VNIHNobWVtIGNvZGUuDQoNClRoZSByZWFzb24gZm9yIHRoaXMgd29yayBpcyB0
+byBrZWVwIEdFTSBzaG1lbSBwYWdlcyBtYXBwZWQgYW5kIGFsbG9jYXRlZCANCmV2ZW4gd2hp
+bGUgdGhlIEJPIGlzIG5laXRoZXIgbWFwcGVkIG5vciBwaW5uZWQuICBBcyBpdCBpcyBub3cs
+IEdFTSBTSE1FTSANCmNyZWF0ZXMgYW5kIHJlbGVhc2VzIHBhZ2VzIG9uIGVhY2ggcGluIGFu
+ZCB1bnBpbiwgYW5kIG1hcHMgYW5kIHVubWFwcyANCm1lbW9yeSByYW5nZXMgb24gZWFjaCB2
+bWFwIGFuZCB2dW5tYXAuICBJdCdzIGFsbCB3YXN0ZWZ1bC4gT25seSB0aGUgDQpmaXJzdCBw
+aW4gYW5kIHZtYXAgY2FsbHMgc2hvdWxkIGVzdGFibGlzaCBwYWdlcyBhbmQgbWFwcGluZ3Mg
+YW5kIG9ubHkgDQp0aGUgcHVyZ2UgYW5kIGZyZWUgZnVuY3Rpb25zIHNob3VsZCByZWxlYXNl
+IHRoZW0uDQoNClRoZSBwYXRjaHNldCBhZGRzIG5ldyBoZWxwZXJzIGZvciBCTyBwdXJnaW5n
+IHRvIHN0cnVjdCANCmRybV9nZW1fb2JqZWN0X2Z1bmNzLiBXaXRoIHRoaXMsIEkgdGhpbmsg
+aXQgbWlnaHQgYmUgcG9zc2libGUgdG8gaGF2ZSANCm9uZSBnbG9iYWwgRFJNIHNocmlua2Vy
+IGFuZCBsZXQgaXQgaGFuZGxlIGFsbCBCT3M7IGluZGVwZW5kZW50IG9mIGVhY2ggDQpCTydz
+IG1lbW9yeSBtYW5hZ2VyLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQoNCi0tIA0KVGhv
+bWFzIFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdh
+cmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5i
+ZXJnLCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8
+aHJlcjogSXZvIFRvdGV2DQo=
 
-Seems reasonable otherwise.
+--------------oCd2skkQJSv6EnHzuN8xFK1Z--
 
--- 
-Jeff Layton <jlayton@redhat.com>
+--------------0fZuqDyqCnXB5WEZyY7uvbDk
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIo/8EFAwAAAAAACgkQlh/E3EQov+B5
+Cg/8D7p/w31jtMqJdXvTfREicil4d2w52/vvgXkFNV6+5IoG0WCNVZ4aiTiws28X/ATH31KjS388
+3stbqkYxb1+Zui9tiXi2ciKBNc9ofNxeht/fpuP0vz0Xqigh0bYXPZmzLiDmwns7sXauMNML4cM1
+CqDnnwL+gjV/ZaowppqMgJqcB47k+SPURriV7ryLVb5Wc34MP3Qa3rbbOPm954y6bv1/W6zwIOAJ
+4Kpu5q6n0m4XWYV8rMVloIODbjm5yUcY0v/RolNfNEZICqDa82stzim8Co9JleplaUixuT7S3xX0
+enWNLyjzuzNz1m1AI64qTNXOwj8oa+Uu5H+rTXxA0+sT9kvZNad8NevS+buLiUEeF2pQullvY2Hh
+TVGmElsblRlDHKA6EpZKnCvjfxtXul1WuQHXAa3E+SX5MQAmWD08MaswNqMqSbzL/vE5lt7nR5yY
+ijCJoAylYpJ9esEkYc22++vvdDm5DMJP6Sto4/uCNIotmZmCOUWdDXb501ypJct8pJsgrMma0pKJ
+wAv8W3sCMHpUgpnB/of52Of7U7CPSe2CJrQ/7QUNRrCNSTp9lH8Ef1j9WxafqNlYJS+K850jOK4Y
+OVZWpm8L8iNpkv9mHd5O1qx6Hk2cjWop7BeSgs0o1u8qCi0KBZKfemMiacLpI8yiBaP60JyVFAsa
+rE8=
+=Wf5r
+-----END PGP SIGNATURE-----
+
+--------------0fZuqDyqCnXB5WEZyY7uvbDk--
