@@ -2,126 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC656C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231970AbiCILPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:15:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
+        id S232006AbiCILPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiCILPd (ORCPT
+        with ESMTP id S230392AbiCILPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:15:33 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A51B13CA1E;
-        Wed,  9 Mar 2022 03:14:35 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2db569555d6so18335637b3.12;
-        Wed, 09 Mar 2022 03:14:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KXHpYkfJW7jBmBNFMclcDkzdMin2P6Ml1MYW+332E1w=;
-        b=hCifVydiTw930qv1RnwhpicXVtyNfJX3L0JcvqeHGT4zAbaeDHC05bPp14Ucipa/9Z
-         7TWxC/4jFKXSMlayYn72i6rl642q8jdQXDMb+UhaJFs0n91q3kvZ5xtTj5pP5SU/3KHE
-         6S/XSouo4M6Q3+HIhCtc7D+QVrZ9iPhHeP3p/JklUoAKcA1C69DU7B0sAfOp975IMP30
-         VcDTQpPD7EPmWZQOehMhZJpfMug+rsZrvsvSUJ9ZrJ7WJAAIIsLTfaRKbNtzQZRCTMdk
-         +itPmRqtgqselTM1A+orPlMmZ/OjMyNlWfhTyIXvj9XN9dkM5uCwgM2u25VRuYotyPyk
-         fFEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KXHpYkfJW7jBmBNFMclcDkzdMin2P6Ml1MYW+332E1w=;
-        b=2+1yjzvZ2r9i1LVChPWowfrl7s/CcRW0nt0YvN6EZJS/WceU1bKDQXrlBoHN98sqpP
-         SYNAtAYwV5SaLlSEMspxILQNs81nekY0b7WG8LeCWdKxR6jdtO8jAe/FjMf38qneD3eR
-         gmV1w4g4KsZKgBykNnMCT/zMipOQLPeufOnUW/JNFHys+wgiTvzJRNW5Eh0rMLOu4441
-         Z9WlAJpJH0bWYYuzSLpKs9aXTbXyvDjvTlF2jNeI8forMwiVXghlrynNSKeXNCrdRgDJ
-         NsTJEtptxuq78FhceYnSr94/IWq08TItSOgLNL0G1s+GJs818WqGrF8QQLOYU2fkOZ9U
-         aDZg==
-X-Gm-Message-State: AOAM5321PalMrgBE0R33yoG/CWbb/e6wXhkQTBJ081TNATlNZAbOffyH
-        ncQazkMLNVPFpU3ra5qQd9nay7doCOOywly2o+kQk+lupYaK8w==
-X-Google-Smtp-Source: ABdhPJzJgbD/NnoXwaG2bLoYsUbVfrLNI4gaym16qCRCsmDbE8UKEgc4grL76evfdhzUk62srwcPvygXdM/ogqvYwcU=
-X-Received: by 2002:a81:2f12:0:b0:2d7:d366:164a with SMTP id
- v18-20020a812f12000000b002d7d366164amr17064120ywv.265.1646824473797; Wed, 09
- Mar 2022 03:14:33 -0800 (PST)
+        Wed, 9 Mar 2022 06:15:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF41F13CA2B;
+        Wed,  9 Mar 2022 03:14:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 900B9B82023;
+        Wed,  9 Mar 2022 11:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5476CC340EE;
+        Wed,  9 Mar 2022 11:14:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646824488;
+        bh=k62VYnEAja+A8m7m/Ypa0GboSWV+2bBhbEgOgQIQVR4=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=ra455ULILUulZFobV379nzboqFYi3ADAbkEj4B9+/CzI/43yRfkwPIo+Z8h7C+BOX
+         n30vrJFpQF8OJ40Xlnp6jzeVzgMH+mg8pXx1IJQuOVaCunqMhcqlw9F0ISv1D1CUMg
+         dC9WRDkvN6X/0CGRKQ366APg3kv/sJtuYsyPxjclha11pA7YWrdZ2OW8ojm6qLZISn
+         6lTmlE+YPuUIItTJqxzYYv/tGAk+yPcNJtGgmaBEceyfCG6zaHvaC4g+HdHnKP057c
+         KG+uC9ssTeeYJNT273ofFgIgQJTrBEjbr8pdJzapwK9q4hzY0rE/6WTGO93pEXhNHE
+         XpuRYY3RcGDdQ==
+Received: by mail-wr1-f48.google.com with SMTP id q14so2477025wrc.4;
+        Wed, 09 Mar 2022 03:14:48 -0800 (PST)
+X-Gm-Message-State: AOAM5323QugK2H0HUaUycwEcOSPEiY6KeEldVDaE6Pmu9ODEuAL5Iq1V
+        +HdGQZOpN9CLLKGWnA/6JYOAYqUq/oBZJ6P7L5Q=
+X-Google-Smtp-Source: ABdhPJy6hfL3Lomm6LHCjFT02ifY5Z2dI7dos7tZhxKknO38FbpSc3bNemFJ7dwu98T+AWRaPXffZcT0e/onc5UvZKA=
+X-Received: by 2002:a5d:4387:0:b0:1ed:a13a:ef0c with SMTP id
+ i7-20020a5d4387000000b001eda13aef0cmr15722930wrq.62.1646824486677; Wed, 09
+ Mar 2022 03:14:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220309035648.2080945-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220309035648.2080945-1-chi.minghao@zte.com.cn>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 9 Mar 2022 11:14:07 +0000
-Message-ID: <CA+V-a8tZaOYxr32Hn43N6GNBR0kx856j_fcRYOhwCRPjkituTA@mail.gmail.com>
-Subject: Re: [PATCH] media:davinci:vpbe_display: Use platform_get_irq() to get
- the interrupt
-To:     cgel.zte@gmail.com
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
+Received: by 2002:a05:6000:1d93:0:0:0:0 with HTTP; Wed, 9 Mar 2022 03:14:45
+ -0800 (PST)
+In-Reply-To: <HK2PR04MB38910EE3467822EBAB4CC79681099@HK2PR04MB3891.apcprd04.prod.outlook.com>
+References: <HK2PR04MB38914869B1FEE326CFE11779812D9@HK2PR04MB3891.apcprd04.prod.outlook.com>
+ <CAKYAXd_hF+xYXNiawCZLYmnha+wSUSUCEJTVBw8v6UDYfjPiUg@mail.gmail.com> <HK2PR04MB38910EE3467822EBAB4CC79681099@HK2PR04MB3891.apcprd04.prod.outlook.com>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Wed, 9 Mar 2022 20:14:45 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd8c+qTqa_ymymFeZmcar+35_CYMjwP41GpbbiMeGUYxjw@mail.gmail.com>
+Message-ID: <CAKYAXd8c+qTqa_ymymFeZmcar+35_CYMjwP41GpbbiMeGUYxjw@mail.gmail.com>
+Subject: Re: [PATCH] exfat: do not clear VolumeDirty in writeback
+To:     "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>
+Cc:     "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Andy.Wu@sony.com" <Andy.Wu@sony.com>,
+        "Wataru.Aoyama@sony.com" <Wataru.Aoyama@sony.com>,
+        "Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp" 
+        <Kohada.Tetsuhiro@dc.mitsubishielectric.co.jp>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Minghao,
+2022-03-08 19:55 GMT+09:00, Yuezhang.Mo@sony.com <Yuezhang.Mo@sony.com>:
+> Hi Namjae Jeon,
+>
+>> > +int exfat_clear_volume_dirty(struct super_block *sb) {
+>> > +	if (sb->s_flags & (SB_SYNCHRONOUS | SB_DIRSYNC))
+>> How about moving exfat_clear_volume_dirty() to IS_DIRSYNC() check in each
+>> operations instead of this check?
+>
+> I found that VolumeDirty keeps VOL_DIRTY until sync or umount regardless of
+> sync or dirsync enabled,
+> because there is no paired call to
+> exfat_set_volume_dirty()/exfat_clear_volume_dirty() in
+> __exfat_write_inode().
+>
+> If exfat_set_volume_dirty()/exfat_clear_volume_dirty() is called in pairs in
+> __exfat_write_inode(),
+> it will cause frequent writing of bootsector.
+>
+> So, how about removing exfat_clear_volume_dirty() from each operations,
+> except in exfat_sync_fs()?
+Okay. Please send the patch for this.
 
-Thank you for the patch.
-
-On Wed, Mar 9, 2022 at 3:56 AM <cgel.zte@gmail.com> wrote:
+Thanks!
 >
-> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 >
-> It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-> for requesting IRQ's resources any more, as they can be not ready yet in
-> case of DT-booting.
->
-> platform_get_irq() instead is a recommended way for getting IRQ even if
-> it was not retrieved earlier.
->
-> It also makes code simpler because we're getting "int" value right away
-> and no conversion from resource to int is required.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-> ---
->  drivers/media/platform/davinci/vpbe_display.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-NAK, vpbe_display driver doesn't use DT.
-
-Cheers,
-Prabhakar
-
-> diff --git a/drivers/media/platform/davinci/vpbe_display.c b/drivers/media/platform/davinci/vpbe_display.c
-> index bf3c3e76b921..e0aabcb333ac 100644
-> --- a/drivers/media/platform/davinci/vpbe_display.c
-> +++ b/drivers/media/platform/davinci/vpbe_display.c
-> @@ -1363,7 +1363,6 @@ static int vpbe_display_probe(struct platform_device *pdev)
->  {
->         struct vpbe_display *disp_dev;
->         struct v4l2_device *v4l2_dev;
-> -       struct resource *res = NULL;
->         struct vb2_queue *q;
->         int k;
->         int i;
-> @@ -1405,14 +1404,13 @@ static int vpbe_display_probe(struct platform_device *pdev)
->                 }
->         }
->
-> -       res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> -       if (!res) {
-> +       irq = platform_get_irq(pdev, 0);
-> +       if (irq < 0) {
->                 v4l2_err(v4l2_dev, "Unable to get VENC interrupt resource\n");
->                 err = -ENODEV;
->                 goto probe_out;
->         }
->
-> -       irq = res->start;
->         err = devm_request_irq(&pdev->dev, irq, venc_isr, 0,
->                                VPBE_DISPLAY_DRIVER, disp_dev);
->         if (err) {
-> --
-> 2.25.1
+> Best Regards,
+> Yuezhang Mo
 >
