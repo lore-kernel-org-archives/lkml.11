@@ -2,76 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00350C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA05AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiCIMTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
+        id S232520AbiCIMUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:20:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232360AbiCIMTo (ORCPT
+        with ESMTP id S229514AbiCIMUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:19:44 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275B3128666
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:18:46 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nRvH4-0008IN-H2; Wed, 09 Mar 2022 13:18:38 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nRvH1-0000g4-SU; Wed, 09 Mar 2022 13:18:35 +0100
-Date:   Wed, 9 Mar 2022 13:18:35 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        paskripkin@gmail.com
-Subject: net: asix: best way to handle orphan PHYs
-Message-ID: <20220309121835.GA15680@pengutronix.de>
+        Wed, 9 Mar 2022 07:20:07 -0500
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B617312F404;
+        Wed,  9 Mar 2022 04:19:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=79aUx
+        1c7CPT8LgoaiDSdBrkYa0kTdsJauFmLg37A0L0=; b=VoPwc4VTZ8G5D9wgi9/jX
+        JBS9L4MPrTsSb+8aAfvIYuOaRWQY3t7wSBgCx2n7Yo3BYEeUCzPdQ6KRn2iddndf
+        tJBmSaInX5oCUmZ/JC92qIahUdUPMrMvymtXuH8Y7g7av/4+YVUJtGNvMLptDPEC
+        N8AcFML5UuZnbc5fMsr6Mg=
+Received: from localhost.localdomain (unknown [218.106.182.227])
+        by smtp2 (Coremail) with SMTP id GtxpCgDXZW4TmyhiJ7pvBA--.12980S4;
+        Wed, 09 Mar 2022 20:18:35 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com,
+        andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] net: arc_emac: Fix use after free in arc_mdio_probe()
+Date:   Wed,  9 Mar 2022 20:18:24 +0800
+Message-Id: <20220309121824.36529-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:30:44 up 88 days, 16:16, 77 users,  load average: 0.22, 0.28,
- 0.24
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgDXZW4TmyhiJ7pvBA--.12980S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr4fXFWUKFW7KFyrCFyrCrg_yoW8Xw4xpa
+        yUu3srA3s2qw1UKF4kAay0v343tayrJryj9FyIvws0qw15Zr1fGrW7KFWq9w1UKF4qkF1a
+        qa1xZFyrAFZ8JwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR4E_iUUUUU=
+X-Originating-IP: [218.106.182.227]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiDxu+jFUMb4IN1gAAsJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello all,
+If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
+the "bus". But bus->name is still used in the next line, which will lead
+to a use after free.
 
-I have ASIX based USB Ethernet adapter with two PHYs: internal and
-external. The internal PHY is enabled by default and there seems to be
-no way to disable internal PHY on the MAC level without affecting the
-external PHY.
+We can fix it by putting the name in a local variable and make the
+bus->name point to the rodata section "name",then use the name in the
+error message without referring to bus to avoid the uaf.
 
-What is the preferred method to suspend internal PHY?
-Currently I have following options:
-- suspend PHY in the probe function of the PHY driver
-- get the phydev in the MAC driver and call phy_suspend()
-- whisper magic numbers from the MAC driver directly this the MDIO bus.
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Are there other options?
-
-Regards,
-Oleksij
+diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
+index 9acf589b1178..87f40c2ba904 100644
+--- a/drivers/net/ethernet/arc/emac_mdio.c
++++ b/drivers/net/ethernet/arc/emac_mdio.c
+@@ -132,6 +132,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ {
+ 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
+ 	struct device_node *np = priv->dev->of_node;
++	const char *name = "Synopsys MII Bus";
+ 	struct mii_bus *bus;
+ 	int error;
+ 
+@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	priv->bus = bus;
+ 	bus->priv = priv;
+ 	bus->parent = priv->dev;
+-	bus->name = "Synopsys MII Bus";
++	bus->name = name;
+ 	bus->read = &arc_mdio_read;
+ 	bus->write = &arc_mdio_write;
+ 	bus->reset = &arc_mdio_reset;
+@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	if (error) {
+ 		mdiobus_free(bus);
+ 		return dev_err_probe(priv->dev, error,
+-				     "cannot register MDIO bus %s\n", bus->name);
++				     "cannot register MDIO bus %s\n", name);
+ 	}
+ 
+ 	return 0;
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.25.1
+
