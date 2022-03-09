@@ -2,47 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFDAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF84C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbiCIDX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 22:23:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S231713AbiCIDYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiCIDXy (ORCPT
+        with ESMTP id S231605AbiCIDYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 22:23:54 -0500
+        Tue, 8 Mar 2022 22:24:47 -0500
 Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115712649;
-        Tue,  8 Mar 2022 19:22:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6F71AF1E;
+        Tue,  8 Mar 2022 19:23:50 -0800 (PST)
 Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
         by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nRmuY-0002xm-O0; Wed, 09 Mar 2022 14:22:51 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 09 Mar 2022 15:22:50 +1200
-Date:   Wed, 9 Mar 2022 15:22:50 +1200
+        id 1nRmv7-0002yO-AC; Wed, 09 Mar 2022 14:23:26 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 09 Mar 2022 15:23:25 +1200
+Date:   Wed, 9 Mar 2022 15:23:25 +1200
 From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Kai Ye <yekai13@huawei.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wangzhou1@hisilicon.com
-Subject: Re: [PATCH] crypto: hisilicon/qm - fix memset during queues clearing
-Message-ID: <YigdiqFEjUIzpTMm@gondor.apana.org.au>
-References: <20220304094647.6845-1-yekai13@huawei.com>
+To:     trix@redhat.com
+Cc:     davem@davemloft.net, catalin.marinas@arm.com, will@kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: crypto: cleanup comments
+Message-ID: <YigdrXqVrTkahfPL@gondor.apana.org.au>
+References: <20220306133420.769037-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304094647.6845-1-yekai13@huawei.com>
+In-Reply-To: <20220306133420.769037-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 05:46:47PM +0800, Kai Ye wrote:
-> Due to that extra page addr is used as a qp error flag when the device
-> resetting. So it not should to clear this qp flag in userspace.
+On Sun, Mar 06, 2022 at 05:34:20AM -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> Signed-off-by: Kai Ye <yekai13@huawei.com>
+> For spdx, use // for *.c files
+> 
+> Replacements
+> significanty to significantly
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 > ---
->  drivers/crypto/hisilicon/qm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  arch/arm64/crypto/sha3-ce-glue.c   | 2 +-
+>  arch/arm64/crypto/sha512-armv8.pl  | 2 +-
+>  arch/arm64/crypto/sha512-ce-glue.c | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
 
 Patch applied.  Thanks.
 -- 
