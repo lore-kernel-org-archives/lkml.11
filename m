@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06130C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234651AbiCIQK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:10:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
+        id S234675AbiCIQLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:11:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234724AbiCIQH7 (ORCPT
+        with ESMTP id S234745AbiCIQIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:07:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929F71480C8;
-        Wed,  9 Mar 2022 08:04:15 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473A9166A5C;
+        Wed,  9 Mar 2022 08:04:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BBB6B82222;
-        Wed,  9 Mar 2022 16:04:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B041BC340E8;
-        Wed,  9 Mar 2022 16:04:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17EEBB82220;
+        Wed,  9 Mar 2022 16:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73857C340E8;
+        Wed,  9 Mar 2022 16:03:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841852;
-        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
+        s=korg; t=1646841829;
+        bh=u+YGfUV9apuvZVrDnvXJwlZo8kXMTKNOPz6JW4FrGnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGXl3okeoLzEPiskxjwJkLwLfOq5VEnqRBYCDaU7zNKO42kDV0+YogiAmOa5ZkpL1
-         iCD7s1sjDXeok+guEWnXMwQ2eoUG/IAiDdnYGx6vUU/W+/72lqkaWcxocRax1Zar2s
-         0q0wjZ9KsJ/QrgcJDzwSEfJjlcf8lSu+FxTpwYkA=
+        b=uA/1ovugM10fhGHQ8YJUy9z28X7t9VFKJtyzzkEUQbCN4BkxgqfRN8fVhgqbSpXDV
+         QM/1fDXQ78ki4uXTSjL8Hof5aqVrLpPt7QmQdbTUHDzx0AGwf05BG4lLqZvkR1ib5D
+         C2E2cGZr9iOB/MfEN7FTq5uU8g15wgBx/slgR2bQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 17/18] ARM: include unprivileged BPF status in Spectre V2 reporting
-Date:   Wed,  9 Mar 2022 17:00:06 +0100
-Message-Id: <20220309155857.059352644@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Anthony Steinhauser <asteinhauser@google.com>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.4 01/18] x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
+Date:   Wed,  9 Mar 2022 16:59:50 +0100
+Message-Id: <20220309155856.596251147@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.552503355@linuxfoundation.org>
 References: <20220309155856.552503355@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,54 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Borislav Petkov <bp@suse.de>
 
-commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
+upstream commit a5ce9f2bb665d1d2b31f139a02dbaa2dfbb62fa6 upstream.
 
-The mitigations for Spectre-BHB are only applied when an exception
-is taken, but when unprivileged BPF is enabled, userspace can
-load BPF programs that can be used to exploit the problem.
+Merge the test whether the CPU supports STIBP into the test which
+determines whether STIBP is required. Thus try to simplify what is
+already an insane logic.
 
-When unprivileged BPF is enabled, report the vulnerable status via
-the spectre_v2 sysfs file.
+Remove a superfluous newline in a comment, while at it.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Anthony Steinhauser <asteinhauser@google.com>
+Link: https://lkml.kernel.org/r/20200615065806.GB14668@zn.tnic
+[fllinden@amazon.com: fixed contextual conflict (comment) for 5.4]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/x86/kernel/cpu/bugs.c |   13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -1,9 +1,19 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/bpf.h>
- #include <linux/cpu.h>
- #include <linux/device.h>
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -756,10 +756,12 @@ spectre_v2_user_select_mitigation(enum s
+ 	}
  
- #include <asm/spectre.h>
+ 	/*
+-	 * If enhanced IBRS is enabled or SMT impossible, STIBP is not
++	 * If no STIBP, enhanced IBRS is enabled or SMT impossible, STIBP is not
+ 	 * required.
+ 	 */
+-	if (!smt_possible || spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
++	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
++	    !smt_possible ||
++	    spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
+ 		return;
  
-+static bool _unprivileged_ebpf_enabled(void)
-+{
-+#ifdef CONFIG_BPF_SYSCALL
-+	return !sysctl_unprivileged_bpf_disabled;
-+#else
-+	return false
-+#endif
-+}
-+
- ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
- 	if (spectre_v2_state != SPECTRE_MITIGATED)
- 		return sprintf(buf, "%s\n", "Vulnerable");
+ 	/*
+@@ -771,12 +773,6 @@ spectre_v2_user_select_mitigation(enum s
+ 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
+ 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
  
-+	if (_unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
- 	switch (spectre_v2_methods) {
- 	case SPECTRE_V2_METHOD_BPIALL:
- 		method = "Branch predictor hardening";
+-	/*
+-	 * If STIBP is not available, clear the STIBP mode.
+-	 */
+-	if (!boot_cpu_has(X86_FEATURE_STIBP))
+-		mode = SPECTRE_V2_USER_NONE;
+-
+ 	spectre_v2_user_stibp = mode;
+ 
+ set_mode:
+@@ -1267,7 +1263,6 @@ static int ib_prctl_set(struct task_stru
+ 		if (spectre_v2_user_ibpb == SPECTRE_V2_USER_NONE &&
+ 		    spectre_v2_user_stibp == SPECTRE_V2_USER_NONE)
+ 			return 0;
+-
+ 		/*
+ 		 * With strict mode for both IBPB and STIBP, the instruction
+ 		 * code paths avoid checking this task flag and instead,
 
 
