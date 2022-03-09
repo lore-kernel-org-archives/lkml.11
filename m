@@ -2,112 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C185C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D36AC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbiCIQHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:07:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
+        id S234315AbiCIQHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:07:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiCIQFm (ORCPT
+        with ESMTP id S234406AbiCIQFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:05:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3BF1405D0;
-        Wed,  9 Mar 2022 08:02:59 -0800 (PST)
+        Wed, 9 Mar 2022 11:05:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76ED13EF8F;
+        Wed,  9 Mar 2022 08:02:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4F67B82226;
-        Wed,  9 Mar 2022 16:02:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F009AC340E8;
-        Wed,  9 Mar 2022 16:02:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C41B5B82222;
+        Wed,  9 Mar 2022 16:02:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8DEEC340E8;
+        Wed,  9 Mar 2022 16:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841776;
-        bh=cam9jz1lhBQ1bzbDOOb5/sES4ZWRJgbU5/7XX53WJgo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CLgMpjZ+BihsuNtxTQhs6Y8Cs82alsF89ate0cT/8GmBPVEI0RqAaCsfE5o45GTXR
-         qapi3H1xEe75gOsdtaXsyL1H0Ix2d13ynf7yocAl17Bh+BpQ+h3tHN98TEpAI8KtQ8
-         8vutU71PRICCfuF+3EOvgolDtH6zz6ueKk9zhuWM=
+        s=korg; t=1646841773;
+        bh=3fQUgmqWeDD+UpGTO6YQJwkMhWwp1kKe/wrEc0SOUAw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=S8/R7RG/KX04QcYHCoMJQWR53JC9lYh0WI9lE1cLRUOcZnu1EPxS3hOY3hQf1QF6K
+         JBg09laSCpz74PugYt7fGztwp1MxjvvdZRT/IyyJM73qCnv16P1iWoLFcOE2c++9IR
+         h0Zw+axd//4K0rLb1bbK7wYwk14R5D/LJ/YuOSTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Anthony Steinhauser <asteinhauser@google.com>,
-        Frank van der Linden <fllinden@amazon.com>
-Subject: [PATCH 4.19 01/18] x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
-Date:   Wed,  9 Mar 2022 16:59:38 +0100
-Message-Id: <20220309155856.200585245@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/18] 4.14.271-rc1 review
+Date:   Wed,  9 Mar 2022 16:59:30 +0100
+Message-Id: <20220309155856.090281301@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155856.155540075@linuxfoundation.org>
-References: <20220309155856.155540075@linuxfoundation.org>
+MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.271-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.271-rc1
+X-KernelTest-Deadline: 2022-03-11T15:58+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+This is the start of the stable review cycle for the 4.14.271 release.
+There are 18 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit a5ce9f2bb665d1d2b31f139a02dbaa2dfbb62fa6 upstream.
+Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
+Anything received after that time might be too late.
 
-Merge the test whether the CPU supports STIBP into the test which
-determines whether STIBP is required. Thus try to simplify what is
-already an insane logic.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.271-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-Remove a superfluous newline in a comment, while at it.
+thanks,
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Anthony Steinhauser <asteinhauser@google.com>
-Link: https://lkml.kernel.org/r/20200615065806.GB14668@zn.tnic
-[fllinden@amazon.com: fixed contextual conflict (comment) for 4.19]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kernel/cpu/bugs.c |   13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+greg k-h
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -756,10 +756,12 @@ spectre_v2_user_select_mitigation(enum s
- 	}
- 
- 	/*
--	 * If enhanced IBRS is enabled or SMT impossible, STIBP is not
-+	 * If no STIBP, enhanced IBRS is enabled or SMT impossible, STIBP is not
- 	 * required.
- 	 */
--	if (!smt_possible || spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
-+	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
-+	    !smt_possible ||
-+	    spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
- 		return;
- 
- 	/*
-@@ -771,12 +773,6 @@ spectre_v2_user_select_mitigation(enum s
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
--	/*
--	 * If STIBP is not available, clear the STIBP mode.
--	 */
--	if (!boot_cpu_has(X86_FEATURE_STIBP))
--		mode = SPECTRE_V2_USER_NONE;
--
- 	spectre_v2_user_stibp = mode;
- 
- set_mode:
-@@ -1255,7 +1251,6 @@ static int ib_prctl_set(struct task_stru
- 		if (spectre_v2_user_ibpb == SPECTRE_V2_USER_NONE &&
- 		    spectre_v2_user_stibp == SPECTRE_V2_USER_NONE)
- 			return 0;
--
- 		/*
- 		 * With strict mode for both IBPB and STIBP, the instruction
- 		 * code paths avoid checking this task flag and instead,
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.271-rc1
+
+Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+    ARM: fix build error when BPF_SYSCALL is disabled
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: include unprivileged BPF status in Spectre V2 reporting
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Spectre-BHB workaround
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: use LOADADDR() to get load address of sections
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: early traps initialisation
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: report Spectre v2 status through sysfs
+
+Mark Rutland <mark.rutland@arm.com>
+    arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
+
+Steven Price <steven.price@arm.com>
+    arm/arm64: Provide a wrapper for SMCCC 1.1 calls
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about Spectre v2 LFENCE mitigation
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Update link to AMD speculation whitepaper
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Use generic retpoline by default on AMD
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Peter Zijlstra <peterz@infradead.org>
+    Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/speculation: Add eIBRS + Retpoline options
+
+Peter Zijlstra (Intel) <peterz@infradead.org>
+    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+Peter Zijlstra <peterz@infradead.org>
+    x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+
+Borislav Petkov <bp@suse.de>
+    x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
+
+
+-------------
+
+Diffstat:
+
+ Documentation/admin-guide/hw-vuln/spectre.rst   |  48 ++++--
+ Documentation/admin-guide/kernel-parameters.txt |   8 +-
+ Makefile                                        |   4 +-
+ arch/arm/include/asm/assembler.h                |  10 ++
+ arch/arm/include/asm/spectre.h                  |  32 ++++
+ arch/arm/kernel/Makefile                        |   2 +
+ arch/arm/kernel/entry-armv.S                    |  79 ++++++++-
+ arch/arm/kernel/entry-common.S                  |  24 +++
+ arch/arm/kernel/spectre.c                       |  71 ++++++++
+ arch/arm/kernel/traps.c                         |  65 ++++++-
+ arch/arm/kernel/vmlinux-xip.lds.S               |  37 ++--
+ arch/arm/kernel/vmlinux.lds.S                   |  37 ++--
+ arch/arm/mm/Kconfig                             |  11 ++
+ arch/arm/mm/proc-v7-bugs.c                      | 198 +++++++++++++++++++---
+ arch/x86/include/asm/cpufeatures.h              |   2 +-
+ arch/x86/include/asm/nospec-branch.h            |  16 +-
+ arch/x86/kernel/cpu/bugs.c                      | 214 +++++++++++++++++-------
+ drivers/firmware/psci.c                         |  15 ++
+ include/linux/arm-smccc.h                       |  74 ++++++++
+ include/linux/bpf.h                             |  11 ++
+ kernel/sysctl.c                                 |   8 +
+ tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
+ 22 files changed, 822 insertions(+), 146 deletions(-)
 
 
