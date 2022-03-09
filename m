@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C420C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7E8C3525B
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236124AbiCIQ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        id S236260AbiCIQ33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238146AbiCIQV3 (ORCPT
+        with ESMTP id S238471AbiCIQWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A993115339B;
-        Wed,  9 Mar 2022 08:19:32 -0800 (PST)
+        Wed, 9 Mar 2022 11:22:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB687E10;
+        Wed,  9 Mar 2022 08:21:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 502CBB82206;
-        Wed,  9 Mar 2022 16:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC727C340F3;
-        Wed,  9 Mar 2022 16:19:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E346194C;
+        Wed,  9 Mar 2022 16:21:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F1BC340F4;
+        Wed,  9 Mar 2022 16:21:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842770;
-        bh=qz2/+MsYFE+k4rvs9wvf9F2qqKY54LYjp3wUAUnPR30=;
+        s=k20201202; t=1646842883;
+        bh=CHblr8NWTGcnGBYCwMJgLGnlDhamOLYtaCJlu/aYA1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LaDaAh2rF7Wm/tsatS9H1qaRIwCgoTeNvq5hKkH7uJ8QV+hGGpr/opudxQBJLmjh/
-         6T9e+BuX90dRYrIcwEzFtqIe9+8qqGNw+9qCfs8XPTgjK3gd1/A+CJazktzG+ndpxQ
-         lNQC94xqWLs81GUJ+9+SqMFiIp5zc95ul+s8fMT/NPAj6q9T5563e0G0ILv+PMlpTH
-         zFVwjQPvCYXfyLLQmlj+wTfJLfeLaF+Uhit+QA8/svbAHuuZlJTxk1FA/ubGsQ7Fbb
-         Y/VdtBGX7+VUzseME/uquKyKOVi48ivCN9wNqFW9bmooy26Jn/nfenSOh3JNciYMVj
-         k5TQLZkrZVsvA==
+        b=Hg3v7PGriZg/HLLSMz2q5PvW65i0iBu/Ms9ypNEHtr05GJOmcW7SnP3QFq8qduXru
+         qbgmkD/T7bMEe7XU6GhJYc59JyxnMT+ctLJ7N7x7gp2tIypKnkaiKXGpp33xVKufiP
+         0gDN4jDnEdZ4z6qe95oILoevXawzYuqxGHT6BJ9Svai+SGopn7RhnOgm+ipH8DxBpZ
+         GQ+MgTFcJzdXqu2FEFOF3MKW4XzoTZOmqoM0rBVgAIGRU1/8RDeowQ2JTKT64XVoq0
+         yCLt9lVeqs7/C9pBC1h2nPcg3orXwxYoP59v+4fIKXlPaZ6pkK/ZZZyZU3cOElh1qN
+         YtA8roNPdHYGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 24/27] tcp: make tcp_read_sock() more robust
-Date:   Wed,  9 Mar 2022 11:17:01 -0500
-Message-Id: <20220309161711.135679-24-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, hadess@hadess.net,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 17/24] Input: goodix - workaround Cherry Trail devices with a bogus ACPI Interrupt() resource
+Date:   Wed,  9 Mar 2022 11:19:36 -0500
+Message-Id: <20220309161946.136122-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
-References: <20220309161711.135679-1-sashal@kernel.org>
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,48 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
+[ Upstream commit d982992669733dd75520000c6057d8ee0725a363 ]
 
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
+ACPI/x86 devices with a Cherry Trail SoC should have a GpioInt + a regular
+GPIO ACPI resource in their ACPI tables.
 
-Instead, issue a one time warning and make sure to make progress.
+Some CHT devices have a bug, where the also is bogus interrupt resource
+(likely copied from a previous Bay Trail based generation of the device).
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The i2c-core-acpi code will assign the bogus, non-working, interrupt
+resource to client->irq. Add a workaround to fix this up.
+
+BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2043960
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220228111613.363336-1-hdegoede@redhat.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/input/touchscreen/goodix.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 28abb0bb1c51..38f936785179 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1653,11 +1653,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
+diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
+index 5051a1766aac..18021ae8183d 100644
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -784,7 +784,7 @@ static int goodix_add_acpi_gpio_mappings(struct goodix_ts_data *ts)
+ 	const struct acpi_gpio_mapping *gpio_mapping = NULL;
+ 	struct device *dev = &ts->client->dev;
+ 	LIST_HEAD(resources);
+-	int ret;
++	int irq, ret;
+ 
+ 	ts->gpio_count = 0;
+ 	ts->gpio_int_idx = -1;
+@@ -797,6 +797,20 @@ static int goodix_add_acpi_gpio_mappings(struct goodix_ts_data *ts)
+ 
+ 	acpi_dev_free_resource_list(&resources);
+ 
++	/*
++	 * CHT devices should have a GpioInt + a regular GPIO ACPI resource.
++	 * Some CHT devices have a bug (where the also is bogus Interrupt
++	 * resource copied from a previous BYT based generation). i2c-core-acpi
++	 * will use the non-working Interrupt resource, fix this up.
++	 */
++	if (soc_intel_is_cht() && ts->gpio_count == 2 && ts->gpio_int_idx != -1) {
++		irq = acpi_dev_gpio_irq_get(ACPI_COMPANION(dev), 0);
++		if (irq > 0 && irq != ts->client->irq) {
++			dev_warn(dev, "Overriding IRQ %d -> %d\n", ts->client->irq, irq);
++			ts->client->irq = irq;
++		}
++	}
 +
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
+ 	if (ts->gpio_count == 2 && ts->gpio_int_idx == 0) {
+ 		ts->irq_pin_access_method = IRQ_PIN_ACCESS_ACPI_GPIO;
+ 		gpio_mapping = acpi_goodix_int_first_gpios;
 -- 
 2.34.1
 
