@@ -2,232 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ADCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51802C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiCIFi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 00:38:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
+        id S229742AbiCIFil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 00:38:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiCIFiS (ORCPT
+        with ESMTP id S229751AbiCIFii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 00:38:18 -0500
-Received: from smtp.tom.com (smtprz14.163.net [106.3.154.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AF915FC86
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:37:20 -0800 (PST)
-Received: from my-app02.tom.com (my-app02.tom.com [127.0.0.1])
-        by freemail02.tom.com (Postfix) with ESMTP id 0F0DAB00D54
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:37:18 +0800 (CST)
-Received: from my-app02.tom.com (HELO smtp.tom.com) ([127.0.0.1])
-          by my-app02 (TOM SMTP Server) with SMTP ID 1559286216
-          for <linux-kernel@vger.kernel.org>;
-          Wed, 09 Mar 2022 13:37:18 +0800 (CST)
-Received: from antispam1.tom.com (unknown [172.25.16.55])
-        by freemail02.tom.com (Postfix) with ESMTP id F1C13B00D46
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:37:17 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=201807;
-        t=1646804237; bh=MUh5KVNE2W4JLszfknRl0oZMTR+2Hb8TA8gRL7Ml8FY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dBkLykuegjCYgs/29jw8bX+MG1DKtbQbXhdlYpEviHRgW0qTE8+GpmxQ/lHj4k7ag
-         SGJc+H9NwX2Hb2QjG+UoogiuRVjWxIKvz33zN3A4vGPfE4aI2Stt+lcUn/nwW0jSke
-         MG+/H9Vy/Aa5/f3V9/mKiYFZJMziFkek7Dt9YNxM=
-Received: from antispam1.tom.com (antispam1.tom.com [127.0.0.1])
-        by antispam1.tom.com (Postfix) with ESMTP id DFD95D415B9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 13:37:17 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at antispam1.tom.com
-Received: from antispam1.tom.com ([127.0.0.1])
-        by antispam1.tom.com (antispam1.tom.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 8WGa6UERejBq for <linux-kernel@vger.kernel.org>;
-        Wed,  9 Mar 2022 13:37:16 +0800 (CST)
-Received: from localhost.localdomain (unknown [101.93.196.13])
-        by antispam1.tom.com (Postfix) with ESMTPA id 5CB87D4155F;
-        Wed,  9 Mar 2022 13:37:15 +0800 (CST)
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     sunmingbao@tom.com, tyler.sun@dell.com, ping.gan@dell.com,
-        yanxiu.cai@dell.com, libin.zhang@dell.com, ao.sun@dell.com
-Subject: [PATCH v2 1/2] nvmet-tcp: support specifying the congestion-control
-Date:   Wed,  9 Mar 2022 13:37:11 +0800
-Message-Id: <20220309053711.2561-1-sunmingbao@tom.com>
-X-Mailer: git-send-email 2.26.2
+        Wed, 9 Mar 2022 00:38:38 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D11B716E
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:37:38 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id hu12so1214771qvb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 21:37:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZsAdyEXRI2fprv2zVOJpXzajm9rrZywAumRIFm2mze0=;
+        b=oFYFga8k/HlIBFE206iPp4pwPH8a4cgdN/hl+9ziS++S1x+V9FMC5s7OXUnVw1u0cv
+         fVJRhdaN/AD9DmTHsRjXzu/9LzIAIvOEkSW58NF/EB8mdQA8K2EGu7O0eSpznARXCbn6
+         1T0AboaKn45uAHtVU+jliQtLKQrD8C4I/ggzDkKX5PEYa22wPS7DVIkD4lI3as8/DXV+
+         QSlZZsKzgDNWgemgE8S5Ai2CjR8bkrjnHh6cgzrZc8IRCV7V7wDNXaxuPzWiuxRd4lmm
+         F147oMl1bAVrp+HRTpHJQmSN/dT2nmQYXockeXKUedfvsZgYl/933HmLZ6YxMjqNI1Wb
+         N94w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZsAdyEXRI2fprv2zVOJpXzajm9rrZywAumRIFm2mze0=;
+        b=BMTVpyjBIWLvr++2NJ++LSxnbqfhMVttwyUfzQinR8b+0Kjkm9InqgaNUGCLBKn431
+         84BWEn/UO4PJiuZ/gPDjkEvItYJlZ1B1uJFaXZ9+C2wQAEr821N0RDmwCd+C2Uo9TkOt
+         eiyCDsiANpg6dkNEotCfv23JsNKy2keNnjf61XoeNW4/DvZ1o3PCC2B/JRZY+x8kV2LZ
+         1RJCdkVM6Lqy81rqSWHRj5m/gNq1NpB1ugm0u/pryQJjPMB/+wL8ACX7FMjm4d5bhDAe
+         IUOHYYBMza63IsYKaYXKcXoF7IHRfagPqNBE1BpXppV5HJm1IkEEdCzTzfL9E9nahBUE
+         JvGA==
+X-Gm-Message-State: AOAM531R94naIwoExzwaE67wOoh2KJZOMmWL415M3rU1WKjja2ajK/tU
+        8AO5UKcefrLETyilz73MhFw=
+X-Google-Smtp-Source: ABdhPJyJr4Q0Kdl/XKudXwMVIgpmw0iTMVTpgP5Zm5uquMOUnBAjsO3HfFb9wXdMnaCunZB1cU1MXg==
+X-Received: by 2002:a0c:f801:0:b0:427:47d3:3715 with SMTP id r1-20020a0cf801000000b0042747d33715mr15196166qvn.46.1646804257952;
+        Tue, 08 Mar 2022 21:37:37 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id n143-20020a37a495000000b0067b12bc1d7bsm541304qke.13.2022.03.08.21.37.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 21:37:37 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     linux@dominikbrodowski.net
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] pcmcia: Use platform_get_irq() to get the interrupt
+Date:   Wed,  9 Mar 2022 05:37:32 +0000
+Message-Id: <20220309053732.2081252-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingbao Sun <tyler.sun@dell.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-congestion-control could have a noticeable impaction on the
-performance of TCP-based communications. This is of course true
-to NVMe_over_TCP.
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
-Different congestion-controls (e.g., cubic, dctcp) are suitable for
-different scenarios. Proper adoption of congestion control would benefit
-the performance. On the contrary, the performance could be destroyed.
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
 
-Though we can specify the congestion-control of NVMe_over_TCP via
-writing '/proc/sys/net/ipv4/tcp_congestion_control', but this also
-changes the congestion-control of all the future TCP sockets that
-have not been explicitly assigned the congestion-control, thus bringing
-potential impaction on their performance.
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
 
-So it makes sense to make NVMe_over_TCP support specifying the
-congestion-control. And this commit addresses the target side.
-
-Implementation approach:
-the following new file entry was created for user to specify the
-congestion-control of each nvmet port.
-'/sys/kernel/config/nvmet/ports/X/tcp_congestion'
-Then later in nvmet_tcp_add_port, the specified congestion-control
-would be applied to the listening socket of the nvmet port.
-
-Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/nvme/target/configfs.c | 37 ++++++++++++++++++++++++++++++++++
- drivers/nvme/target/nvmet.h    |  1 +
- drivers/nvme/target/tcp.c      | 27 +++++++++++++++++++++++++
- 3 files changed, 65 insertions(+)
+ drivers/pcmcia/bcm63xx_pcmcia.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvme/target/configfs.c b/drivers/nvme/target/configfs.c
-index 091a0ca16361..644e89bb0ee9 100644
---- a/drivers/nvme/target/configfs.c
-+++ b/drivers/nvme/target/configfs.c
-@@ -222,6 +222,41 @@ static ssize_t nvmet_addr_trsvcid_store(struct config_item *item,
- 
- CONFIGFS_ATTR(nvmet_, addr_trsvcid);
- 
-+static ssize_t nvmet_tcp_congestion_show(struct config_item *item,
-+		char *page)
-+{
-+	struct nvmet_port *port = to_nvmet_port(item);
-+
-+	return snprintf(page, PAGE_SIZE, "%s\n",
-+			port->tcp_congestion ? port->tcp_congestion : "");
-+}
-+
-+static ssize_t nvmet_tcp_congestion_store(struct config_item *item,
-+		const char *page, size_t count)
-+{
-+	struct nvmet_port *port = to_nvmet_port(item);
-+	int len;
-+	char *buf;
-+
-+	len = strcspn(page, "\n");
-+	if (!len)
-+		return -EINVAL;
-+
-+	if (nvmet_is_port_enabled(port, __func__))
-+		return -EACCES;
-+
-+	buf = kmemdup_nul(page, len, GFP_KERNEL);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	kfree(port->tcp_congestion);
-+	port->tcp_congestion = buf;
-+
-+	return count;
-+}
-+
-+CONFIGFS_ATTR(nvmet_, tcp_congestion);
-+
- static ssize_t nvmet_param_inline_data_size_show(struct config_item *item,
- 		char *page)
+diff --git a/drivers/pcmcia/bcm63xx_pcmcia.c b/drivers/pcmcia/bcm63xx_pcmcia.c
+index 16f573173471..bb06311d0b5f 100644
+--- a/drivers/pcmcia/bcm63xx_pcmcia.c
++++ b/drivers/pcmcia/bcm63xx_pcmcia.c
+@@ -327,10 +327,11 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
  {
-@@ -1597,6 +1632,7 @@ static void nvmet_port_release(struct config_item *item)
- 	list_del(&port->global_entry);
- 
- 	kfree(port->ana_state);
-+	kfree(port->tcp_congestion);
- 	kfree(port);
- }
- 
-@@ -1605,6 +1641,7 @@ static struct configfs_attribute *nvmet_port_attrs[] = {
- 	&nvmet_attr_addr_treq,
- 	&nvmet_attr_addr_traddr,
- 	&nvmet_attr_addr_trsvcid,
-+	&nvmet_attr_tcp_congestion,
- 	&nvmet_attr_addr_trtype,
- 	&nvmet_attr_param_inline_data_size,
- #ifdef CONFIG_BLK_DEV_INTEGRITY
-diff --git a/drivers/nvme/target/nvmet.h b/drivers/nvme/target/nvmet.h
-index 69637bf8f8e1..76a57c4c3456 100644
---- a/drivers/nvme/target/nvmet.h
-+++ b/drivers/nvme/target/nvmet.h
-@@ -145,6 +145,7 @@ struct nvmet_port {
- 	struct config_group		ana_groups_group;
- 	struct nvmet_ana_group		ana_default_group;
- 	enum nvme_ana_state		*ana_state;
-+	const char			*tcp_congestion;
- 	void				*priv;
- 	bool				enabled;
- 	int				inline_data_size;
-diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
-index 83ca577f72be..3b72e782c901 100644
---- a/drivers/nvme/target/tcp.c
-+++ b/drivers/nvme/target/tcp.c
-@@ -1657,8 +1657,10 @@ static void nvmet_tcp_accept_work(struct work_struct *w)
- 	struct nvmet_tcp_port *port =
- 		container_of(w, struct nvmet_tcp_port, accept_work);
- 	struct socket *newsock;
-+	struct inet_connection_sock *icsk, *icsk_new;
+ 	struct bcm63xx_pcmcia_socket *skt;
+ 	struct pcmcia_socket *sock;
+-	struct resource *res, *irq_res;
++	struct resource *res;
+ 	unsigned int regmem_size = 0, iomem_size = 0;
+ 	u32 val;
  	int ret;
++	int irq;
  
-+	icsk = inet_csk(port->sock->sk);
- 	while (true) {
- 		ret = kernel_accept(port->sock, &newsock, O_NONBLOCK);
- 		if (ret < 0) {
-@@ -1666,6 +1668,16 @@ static void nvmet_tcp_accept_work(struct work_struct *w)
- 				pr_warn("failed to accept err=%d\n", ret);
- 			return;
- 		}
-+
-+		if (port->nport->tcp_congestion) {
-+			icsk_new = inet_csk(newsock->sk);
-+			if (icsk_new->icsk_ca_ops != icsk->icsk_ca_ops) {
-+				pr_warn("congestion abnormal: expected %s, actual %s.\n",
-+					icsk->icsk_ca_ops->name,
-+					icsk_new->icsk_ca_ops->name);
-+			}
-+		}
-+
- 		ret = nvmet_tcp_alloc_queue(port, newsock);
- 		if (ret) {
- 			pr_err("failed to allocate queue\n");
-@@ -1693,6 +1705,8 @@ static int nvmet_tcp_add_port(struct nvmet_port *nport)
- {
- 	struct nvmet_tcp_port *port;
- 	__kernel_sa_family_t af;
-+	char ca_name[TCP_CA_NAME_MAX];
-+	sockptr_t optval;
- 	int ret;
+ 	skt = kzalloc(sizeof(*skt), GFP_KERNEL);
+ 	if (!skt)
+@@ -342,9 +343,9 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
+ 	/* make sure we have all resources we need */
+ 	skt->common_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	skt->attr_res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
+-	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	irq = platform_get_irq(pdev, 0);
+ 	skt->pd = pdev->dev.platform_data;
+-	if (!skt->common_res || !skt->attr_res || !irq_res || !skt->pd) {
++	if (!skt->common_res || !skt->attr_res || (irq < 0) || !skt->pd) {
+ 		ret = -EINVAL;
+ 		goto err;
+ 	}
+@@ -380,7 +381,7 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
+ 	sock->dev.parent = &pdev->dev;
+ 	sock->features = SS_CAP_STATIC_MAP | SS_CAP_PCCARD;
+ 	sock->io_offset = (unsigned long)skt->io_base;
+-	sock->pci_irq = irq_res->start;
++	sock->pci_irq = irq;
  
- 	port = kzalloc(sizeof(*port), GFP_KERNEL);
-@@ -1741,6 +1755,19 @@ static int nvmet_tcp_add_port(struct nvmet_port *nport)
- 	if (so_priority > 0)
- 		sock_set_priority(port->sock->sk, so_priority);
- 
-+	if (nport->tcp_congestion) {
-+		strncpy(ca_name, nport->tcp_congestion, TCP_CA_NAME_MAX-1);
-+		optval = KERNEL_SOCKPTR(ca_name);
-+		ret = sock_common_setsockopt(port->sock, IPPROTO_TCP,
-+					     TCP_CONGESTION, optval,
-+					     strlen(ca_name));
-+		if (ret) {
-+			pr_err("failed to set port socket's congestion to %s: %d\n",
-+			       ca_name, ret);
-+			goto err_sock;
-+		}
-+	}
-+
- 	ret = kernel_bind(port->sock, (struct sockaddr *)&port->addr,
- 			sizeof(port->addr));
- 	if (ret) {
+ #ifdef CONFIG_CARDBUS
+ 	sock->cb_dev = bcm63xx_cb_dev;
 -- 
-2.26.2
+2.25.1
 
