@@ -2,181 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbiCIJa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
+        id S232105AbiCIJa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbiCIJaX (ORCPT
+        with ESMTP id S231480AbiCIJay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:30:23 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D09516E7F7;
-        Wed,  9 Mar 2022 01:29:25 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2297dkET010366;
-        Wed, 9 Mar 2022 03:28:40 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=cnOds1P2HYMESzPFz39oF0gCUJHlgInu9tI0YBb37ME=;
- b=qEDhi0fDzrUDTtw6O9p55Ji32CEH4LBZ03lH9Jz3DuQq31Jm7rsOWLy+nkQqSnUeFRmz
- VQgPcnQZtrPHkugyrkCpKrG+Mp5gll9U+KbxCl+qHqy2D6NoExgzNjniS8oV2UJLVz/q
- eSMH1nTgu+9fals4bIxfEerV+sMe4jgU5MKeUyS2xO1kqt/0qk+Bv0hCxcD6SlRTVPHT
- nSz/JAGslfCSt3i8dft2XmDUa00PrKEU84XioTFrF8bkil49UOFBxXUKkTdSVsJ+jP1y
- 7ecQ6rg7DlT3jNOrPnn2UTxBUqfkqjqyaaF5aQKr8TxzU15q4Igulv5e5ftNPIemkN0N Ig== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3em55swdv0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 09 Mar 2022 03:28:40 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 9 Mar
- 2022 09:28:38 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 9 Mar 2022 09:28:38 +0000
-Received: from [198.61.65.38] (unknown [198.61.65.38])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5956546C;
-        Wed,  9 Mar 2022 09:28:38 +0000 (UTC)
-Message-ID: <a5fe73dc-1126-0f46-cbc0-1ab864843ea6@opensource.cirrus.com>
-Date:   Wed, 9 Mar 2022 09:28:38 +0000
+        Wed, 9 Mar 2022 04:30:54 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80050.outbound.protection.outlook.com [40.107.8.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8859A16EAAA;
+        Wed,  9 Mar 2022 01:29:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZNnusOlR6abIkKYIry6DMjv6d0ou1ABrBU+tps7ZWMjLAwDKzN4vziZrcLWRoVWYu67MJQLI5gaWals52DCgmKV4ce1T19srRRZRLCpdgqyH4Y3hXezVF2sv9IH6kBE4DKeyzJK2HAwY3uQuTmFZ+wCT0ncJKeiySymAiptCG2zJx0oktNSKsQcv1VhfnEC2n6Bc8ULn8MZDVwpmENcpJORrEUxTQ6D6GJV1WwTJPwS0EPmLL2gL+w14sP9wzdpsJvHiWgQfDhxP3fJKL+kLdVJ6VJPviajRsSKxp9lT/JjgPOM7eiowDAZhoo+9o4pdCZEHSLL60ZMSds7wlOdg/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FFiGxjnuwDzTcWbu3rUrTl/LsXHzrmiwnP9ACe183Fg=;
+ b=EoaVMJYGy9+RPItaUa/mWXslNevd3hNtEucJzhOf1vzhlkMXVYGIhw4F0sJjB8SFpG7T3DqK/wCUpeviRvUX6Whbt0v2M8Adl1ZbrSrM5dk5Gu2RIivYBgH/sJ1XKzzSBQzXTCDBOVAVjUrBJ0fEhNFpbpKqGAt67QPjrQlhB+er2amaKD+7P6K4LR9MejhRip+wrtLaAs2B2zs6wz7ftBxbkKBS9iVqVdi0qg7Sj/FpIQ6D8Gydf2d7Lc7LCZ8zIguqm+MsTm8tjlniOIUwYCXW8zJoaUhgDCsjbRgQsXJREzbe30FAAnMp2zWnpnl8xruuWIOuL5idQHPNeXsOMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FFiGxjnuwDzTcWbu3rUrTl/LsXHzrmiwnP9ACe183Fg=;
+ b=bj2dvS4xTK8ZEFn9+XkAeoqAEUH6kMwhAE9K3+i3aLkZgdgq+gBeCZ41dDQSsFrK3viie1lACoClk3UFXh27LYNWtyl3Wsjqa01z1sgyEznpBS/YSGB6ViEvybBoyZyo/ixGMiRHQ75EF3jtvwzaarDMI63C28sai6a7vZvpK9U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from VI1PR0402MB3902.eurprd04.prod.outlook.com
+ (2603:10a6:803:22::27) by DU0PR04MB9298.eurprd04.prod.outlook.com
+ (2603:10a6:10:355::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.23; Wed, 9 Mar
+ 2022 09:29:48 +0000
+Received: from VI1PR0402MB3902.eurprd04.prod.outlook.com
+ ([fe80::7075:9a92:d8b1:61cf]) by VI1PR0402MB3902.eurprd04.prod.outlook.com
+ ([fe80::7075:9a92:d8b1:61cf%3]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
+ 09:29:48 +0000
+Date:   Wed, 9 Mar 2022 11:29:44 +0200
+From:   Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] media: i2c: rdacm2x: properly set subdev entity function
+Message-ID: <20220309092944.oxddlm4z7mzv63sw@fsr-ub1664-121.ea.freescale.net>
+References: <20220308125549.9676-1-laurentiu.palcu@oss.nxp.com>
+ <20220309084311.vn3awybkxzxd32i4@uno.localdomain>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309084311.vn3awybkxzxd32i4@uno.localdomain>
+User-Agent: NeoMutt/20171215
+X-ClientProxiedBy: AM4PR0101CA0049.eurprd01.prod.exchangelabs.com
+ (2603:10a6:200:41::17) To VI1PR0402MB3902.eurprd04.prod.outlook.com
+ (2603:10a6:803:22::27)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 15/16] ASoC: dt-bindings: cs35l41: Document CS35l41
- External Boost
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        David Rhodes <drhodes@opensource.cirrus.com>
-References: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
- <20220308171730.454587-16-tanureal@opensource.cirrus.com>
- <20220309012043.GA1694603@robh.at.kernel.org>
-From:   Lucas tanure <tanureal@opensource.cirrus.com>
-In-Reply-To: <20220309012043.GA1694603@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: howsFYvVvDI4cucQBfeq_h8T-Enuu5Fn
-X-Proofpoint-GUID: howsFYvVvDI4cucQBfeq_h8T-Enuu5Fn
-X-Proofpoint-Spam-Reason: safe
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d4e34970-1aab-4088-f9bc-08da01af5ab2
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9298:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <DU0PR04MB9298094FCAC5AE2F919EE633BE0A9@DU0PR04MB9298.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1TfL+rD1/44LQUz8I1sO1BotOYqrWKtWvOixpYliEqZHcIF09Kz//n2iuQt7OITuwcFMFdcwMhskzeG9y4hCnaxX61Slh4w6VvvYlGOmamNY4GomUE3O9Xrhh03MRVGqHBcJex2O0OdTvk0GjDf2pZmR5pc2ox1B0lBehS7wOS4KJo2scgIX0ew+CSYmuoJNAENVHz9KHbWcx6gllpa62OGN0pdW17cDnGRYVn+Ue2rPK06TofM2J05qG3Z4/f6HtNZtl2QrtsDHdDX6mU6pFUpHDENQtV1CYZpVHf8zgENkSr0qcmLKGm/rwtKvudRJvZBlUWG/c31J9qCP7q1c8hW3u7qAeZz0ZsA/pI2bSSZWKKqapvtxbpZDrEaUE77BTr+vN/jG2Eb0gdojPEPK0/AwepZKCBP3hS9mxXwv2oM/zAcRDVWuqqTetODN1wk85H78tHi2aDL+HsPs5pfFHv4ZKYh7VXwL4BWsKe9eo5oU7AfgP1TeBxSpW69hkPGbDfLj0HURzilt2yEO7LS/tbyaQW3nD79klS8GNTpbJcG8R/XYGPma6nyY5R4eFhXBL2/N/ytDOC/8jJ6R1xJ/xroRs5dvjqMAbgnfeNNL9+vQ7HtrBJJAoo/SjhJcIzEtyZo3EzC1jRJBSRORNc7ZC4xH1ExPwNxknp579OCPVjYHDiZ/n4hiK9E02cm2Ij/SpbQZjyLko1mIuuMvCnugoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3902.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(8676002)(186003)(2906002)(6666004)(52116002)(8936002)(66476007)(66556008)(66946007)(4326008)(83380400001)(6486002)(5660300002)(26005)(6512007)(9686003)(86362001)(54906003)(38350700002)(498600001)(44832011)(6506007)(6916009)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EDaGdYF3/cWz+Hb4d6HRJ3AFswlXYWIgnpWx+pU8cgaSFhE4tlEHyeRRvJgC?=
+ =?us-ascii?Q?avnVkEYaU4wXS8RC3FkgImR8h/2OaUFrgEeqcmJDNK6GYWeYDhFfnnxXT2RK?=
+ =?us-ascii?Q?kJPVnDhBB0wE9aBpDowc7kA4WYwV/ak9mZd5pOzE3jmKwCzD6ngM7kL3PTCe?=
+ =?us-ascii?Q?7vLLpEW0o1qxQONj70t2ZJm6jRaAi62iDrBqtjffjoP2ABk/KpW5WVEXf6U8?=
+ =?us-ascii?Q?4EOgFqK5eqH2QFbBifY+2lTQ1tysREtzBXLvOYoQLL1rkAphn6724nwWnVpi?=
+ =?us-ascii?Q?or9RQ3tC8qdYCNae+tJQdymi99ojLUMdTdOjHhx0gU6qFfYMOwJOLkONHxEv?=
+ =?us-ascii?Q?YmUQGjEF0WQmMsZxBuvGbFNvTq8cWHSSmq45WRoMknsJuRZtv6yjwnR0ltxO?=
+ =?us-ascii?Q?Xzo7SuSQljCkPGmJcRZ2+RFfCc80qukl3iXjzQwbBJEkJrO7mG9H/V3Te3gy?=
+ =?us-ascii?Q?43bT4TDpDvPws1V5YVbesG3KNs7wK75pIf2014yW3LpkuniIc+rdc6XUjTEa?=
+ =?us-ascii?Q?ieYaaWvUDjgTnWjcPJJmSVjX5ZSR6NVNL12s7IY+ES+sb/t5y0O99PS3piSC?=
+ =?us-ascii?Q?9P1yCd9aQClSBULHTLFMJzqYOr28sk4mxnPGWIRAU1xkRFGLV/fLZ3Yukdpk?=
+ =?us-ascii?Q?gU/hi1c/n38oqEBBmyf7olpEuQ5cCwY4BbiglubZzEFnGMBivSw7NbTPTO3i?=
+ =?us-ascii?Q?Je7VEzIaEcGyIKPgg3kaT1DmZKmjYO3TbL+7nCRU2ISSlMiFCH0VTxJVhmRr?=
+ =?us-ascii?Q?kGGZ64eZAtIEluBXs0ihOAuvAvKk93zcMIUAGCdgs9lavS+nVOl4TZvr1tnb?=
+ =?us-ascii?Q?Mq6AiMObL/IQpT7nsevWRBmUJ5kUzoRqTuQtrBFQZ2fUKvpSZOPfbiPNG+45?=
+ =?us-ascii?Q?JlIBXu7snbwL80XZG+pfVw2k4aSTqvgFI1mALoD8N9iLySHGEDYSTHwyLLB8?=
+ =?us-ascii?Q?0eck2obFetwVwv7FJoVxzDKShzOKB3Lbdg7mYWX9L9lOe5gVoRfs9/2L16vl?=
+ =?us-ascii?Q?ArwEPKTAnu1uKrQB3pWbouyPL9kfB+WDJ5dzF+SJrFAQvQuG2IuYWjiKwYkw?=
+ =?us-ascii?Q?nM1ujK8fuyKxJlkRYgJb02hq+ZgTk552ay7Nld/TJLQTLTeqrMngeRUh8lLD?=
+ =?us-ascii?Q?t4kN5Q+l9jyH+WdGodU87FHx0+rJ2FKeXaKVbaRVo48e9hmZKERm6nxk9aZn?=
+ =?us-ascii?Q?7mE8vYPImverZasrtmCT4ivx8bwLvD1wjtiEPPSic2PWAUZ641uPe/AtQC6k?=
+ =?us-ascii?Q?oUNTaIUm4e5Sa5dfTKNYaB+xU8sBPUA9vr+lwtHc6MRZ6Lx1a1QZCeXYuFDY?=
+ =?us-ascii?Q?E61zk6EwdB+wn3lrJbwS5AQnRysdRTYj/f9rcyNHJ8JSDipLU/R/Mue7AeRv?=
+ =?us-ascii?Q?DpNfh4Ol2Zvu1wEah8HhOno2mcFrRZRR6Nx0OUX8GaeDTKJBwK+Aw20qophw?=
+ =?us-ascii?Q?zJDfzeosxjRkex4uEXY1y30hGp8bjoUV3b7/RInX9oVLhKUQBrcP7wFHLCGG?=
+ =?us-ascii?Q?7c0ucaZfVmwrH+xA6oSPnkcDso8hdFDNFXHHwnxzTqPDQnUSAJCU6cz9Myrc?=
+ =?us-ascii?Q?iuUE3Z6hqkmzSEAbUL67DoipEMhyXcAFnXjAzM1RoDTftU6CHOv8HWHfzSCk?=
+ =?us-ascii?Q?BISx/Izh7SjxcvJAu/+r20A=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4e34970-1aab-4088-f9bc-08da01af5ab2
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3902.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 09:29:48.2679
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ljzIY9JT1wjWtxtmSROu0AQkST3D3fhmlPBhA1In5Cs7wJvuwKoeQual2ZE5HaoT1lKlX3ZmWigTjD1+Mnl0DQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9298
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/9/22 01:20, Rob Herring wrote:
-> On Tue, Mar 08, 2022 at 05:17:29PM +0000, Lucas Tanure wrote:
->> From: David Rhodes <drhodes@opensource.cirrus.com>
->>
->> Document internal and external boost feature for ASoC CS35L41.
->> For internal boost the following properties are required:
->> - cirrus,boost-peak-milliamp
->> - cirrus,boost-ind-nanohenry
->> - cirrus,boost-cap-microfarad
->>
->> For external boost, the GPIO1 must be configured as output,
->> so the following properties are required:
->> - cirrus,gpio1-src-select = <1>
->> - cirrus,gpio1-output-enable
->>
->> Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
->> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
->> ---
->>   .../bindings/sound/cirrus,cs35l41.yaml        | 44 +++++++++++++++++--
->>   1 file changed, 41 insertions(+), 3 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
->> index 3235702ce402..09b515924c59 100644
->> --- a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
->> +++ b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
->> @@ -75,6 +75,19 @@ properties:
->>       maximum: 3
->>       default: 2
->>   
->> +  cirrus,boost-type:
->> +    description:
->> +      Configures the type of Boost being used.
->> +      Internal boost requires boost-peak-milliamp, boost-ind-nanohenry and
->> +      boost-cap-microfarad.
->> +      External Boost must have GPIO1 as GPIO output. GPIO1 will be set high to
->> +      enable boost voltage.
->> +      0 = Internal Boost
->> +      1 = External Boost
->> +    $ref: "/schemas/types.yaml#/definitions/uint32"
->> +    minimum: 0
->> +    maximum: 1
+Hi Jacopo,
+
+On Wed, Mar 09, 2022 at 09:43:11AM +0100, Jacopo Mondi wrote:
+> Hi Laurentiu,
 > 
-> What does not present mean? Might be better to make this boolean depending
-> on what you are trying to accomplish.
-Not present means Internal boost. There will be other types of boost in 
-the future, so I would like to keep it as is.
+> On Tue, Mar 08, 2022 at 02:55:49PM +0200, Laurentiu Palcu wrote:
+> > The subdevice entity function was left unset, which produces a warning
+> > when probing the device:
+> >
+> > mxc-md bus@58000000:camera: Entity type for entity rdacm20 19-0051 was
+> > not initialized!
+> >
+> > Also, set the entity flags to MEDIA_ENT_FL_DEFAULT instead of
+> > MEDIA_ENT_F_CAM_SENSOR which will be used for entity's function instead.
+> >
+> > Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+> > ---
+> > Hi,
+> >
+> > Only tested the rdacm20 part but I believe rdacm21 should work as well.
+> >
+> > Cheers,
+> > laurentiu
+> >
+> >  drivers/media/i2c/rdacm20.c | 3 ++-
+> >  drivers/media/i2c/rdacm21.c | 3 ++-
+> >  2 files changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/media/i2c/rdacm20.c b/drivers/media/i2c/rdacm20.c
+> > index 025a610de893..ea5b7d5151ee 100644
+> > --- a/drivers/media/i2c/rdacm20.c
+> > +++ b/drivers/media/i2c/rdacm20.c
+> > @@ -611,7 +611,8 @@ static int rdacm20_probe(struct i2c_client *client)
+> >  		goto error_free_ctrls;
+> >
+> >  	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+> > -	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
+> > +	dev->sd.entity.flags |= MEDIA_ENT_FL_DEFAULT;
+> 
+> I'm not sure if setting the DEFAULT flag is right:
+> 
+>  * %MEDIA_ENT_FL_DEFAULT
+>  *    indicates the default entity for a given type.
+>  *    This can be used to report the default audio and video devices or the
+>  *    default camera sensor.
+> 
+> In a typical setup there will be several RDACM2x in use, marking all
+> of them as "default" seems not right (if I understood the flag
+> description right).
+
+My initial thought was to not set the entity flags at all. However,
+since the old code had the flags set to MEDIA_ENT_F_CAM_SENSOR which is,
+essentially, 0x20001, setting it to MEDIA_ENT_FL_DEFAULT (1 << 0) would
+mean, basically, the same thing and would not affect existing user apps
+that might already probe that flag... Removing the flag now might
+potentially break existing apps. :/
+
+Are there any other opinions on this one?
 
 > 
->> +
->>     cirrus,gpio1-polarity-invert:
->>       description:
->>         Boolean which specifies whether the GPIO1
->> @@ -131,9 +144,32 @@ required:
->>     - compatible
->>     - reg
->>     - "#sound-dai-cells"
->> -  - cirrus,boost-peak-milliamp
->> -  - cirrus,boost-ind-nanohenry
->> -  - cirrus,boost-cap-microfarad
->> +
->> +allOf:
->> +  - if:
->> +      properties:
->> +        cirrus,boost-type:
->> +            const: 0
 > 
-> Note that this will be true if cirrus,boost-type is not present. You
-> probably want to add 'required'.
-Yes, that's expected. We want to continue to support old device trees 
-without boost type, and for that case it sets to internal boost.
+> > +	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+> 
+> This seems right, and it's probably worth a Fixes tag?
+
+I'll send a v2 with the Fixes tag which I meant to add but totally
+forgot...
+
+Cheers,
+Laurentiu
 
 > 
->> +    then:
->> +      required:
->> +        - cirrus,boost-peak-milliamp
->> +        - cirrus,boost-ind-nanohenry
->> +        - cirrus,boost-cap-microfarad
->> +    else:
->> +      if:
->> +        properties:
->> +          cirrus,boost-type:
->> +            const: 1
->> +      then:
->> +        required:
->> +          - cirrus,gpio1-output-enable
->> +          - cirrus,gpio1-src-select
->> +        properties:
->> +          cirrus,boost-peak-milliamp: false
->> +          cirrus,boost-ind-nanohenry: false
->> +          cirrus,boost-cap-microfarad: false
->> +          cirrus,gpio1-src-select:
->> +            enum: [1]
->>   
->>   additionalProperties: false
->>   
->> @@ -150,6 +186,8 @@ examples:
->>             VA-supply = <&dummy_vreg>;
->>             VP-supply = <&dummy_vreg>;
->>             reset-gpios = <&gpio 110 0>;
->> +
->> +          cirrus,boost-type = <0>;
->>             cirrus,boost-peak-milliamp = <4500>;
->>             cirrus,boost-ind-nanohenry = <1000>;
->>             cirrus,boost-cap-microfarad = <15>;
->> -- 
->> 2.35.1
->>
->>
-
+> Thanks
+>    j
+> 
+> >  	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+> >  	if (ret < 0)
+> >  		goto error_free_ctrls;
+> > diff --git a/drivers/media/i2c/rdacm21.c b/drivers/media/i2c/rdacm21.c
+> > index 12ec5467ed1e..be89bd43e88b 100644
+> > --- a/drivers/media/i2c/rdacm21.c
+> > +++ b/drivers/media/i2c/rdacm21.c
+> > @@ -583,7 +583,8 @@ static int rdacm21_probe(struct i2c_client *client)
+> >  		goto error_free_ctrls;
+> >
+> >  	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+> > -	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
+> > +	dev->sd.entity.flags |= MEDIA_ENT_FL_DEFAULT;
+> > +	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+> >  	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+> >  	if (ret < 0)
+> >  		goto error_free_ctrls;
+> > --
+> > 2.33.0
+> >
