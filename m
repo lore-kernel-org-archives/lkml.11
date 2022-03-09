@@ -2,158 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9826C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236533AbiCIXyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:54:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
+        id S238353AbiCIXz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiCIXyP (ORCPT
+        with ESMTP id S229586AbiCIXz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:54:15 -0500
-X-Greylist: delayed 1469 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 15:53:13 PST
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.151.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC6C74607
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:53:13 -0800 (PST)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 7305B13116
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 17:25:25 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id S5gLnMD1G9AGSS5gLncIOB; Wed, 09 Mar 2022 17:25:25 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=j2oKgn9eLs375qgfE96Bspnkel26NAPBR0e3aVigLuw=; b=VCjIdmK58ynNO/iJx0ibGOYrGa
-        Xz6VUjXhlFYjVIKSabx4AgiaYKW/pZuFAINqpRTo1en+nDXx8LaG7u095SUH7ntqjrjQEVQcPLSpB
-        mjExvyJQ+k36LQfCMBZQN4C3mDnIUdcPki3diEXSZ9WjOz5r5rQ6Jo6P4llFXS3JAKVmFk/BfonG7
-        IMzq0DZa62vEuUy2PVzwIh2pxz9dhTHIWiQpNLUFL9QyPAm46dG2jhEjyWcAhDSC8XT9G7Mk4LZDc
-        w3jffoxYlBhkZe1nDzeWZraDQp4ffh64VwFQwPBNUS6Sj3UNYlgDIAz3INC2gNW3qYrC33qOES3eo
-        zaj0V5hg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57414 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nS5gK-000V88-Nj; Wed, 09 Mar 2022 23:25:24 +0000
-Date:   Wed, 9 Mar 2022 15:25:23 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Sam Shih <sam.shih@mediatek.com>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Ryder Lee <ryder.lee@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        John Crispin <john@phrozen.org>
-Subject: Re: [PATCH 1/2] dt-bindings: reset: mt7986: Add reset-controller
- header file
-Message-ID: <20220309232523.GA3804043@roeck-us.net>
-References: <20220105100456.7126-1-sam.shih@mediatek.com>
- <20220105100456.7126-2-sam.shih@mediatek.com>
+        Wed, 9 Mar 2022 18:55:26 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B1412223D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:54:25 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id w25-20020a6bd619000000b00640ddd0ad11so2768810ioa.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 15:54:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FZKkfb+B9Ye8SW4sgOk+aViFCG1Zd9t6idiFkhiqLKA=;
+        b=g0ov9lk9GvFqoOOXXZPlzI6gKo96E0p6grsJHTU6oldXRvaJFP5/6l86YdAxAXXVtm
+         UwCILfSHxQr20LjYX+Bf4XUt15aMXYrJLWBkhoTf26fEIGVnw2fRBvB4CUK0GLtsotvZ
+         fP0vjrTIRy3+lmr5+YZtVwtMY237hP4XW4S7Q4PCsbbMX874UtUNSM5OVFdog+c+qIWy
+         nnVva6PJA0qjPNwsMIaeNf3X24FPiJbcL6NGPLqWwzJZRff29/b/HmVnrTW7q31vkONA
+         aj+hor2ouL8xFH9ss/TdKIRisVoMbxRK/p8kVEDFrsxCl9jKVEMGFmdRb+jdrTlzv+hP
+         d8mg==
+X-Gm-Message-State: AOAM531JGIhVORK4rAeH465TJQS7FwmVjx5QSgQiT2E+KACypXGC4+rY
+        2Mr4RFwF7FYpn/i9oTIbbgEVmkvYC7n4F2VaJc70IAiQtvlw
+X-Google-Smtp-Source: ABdhPJyVHy/khyyLSyf05JTis72no6NvtkZogjvY6QKKugmN/bv16pOOktXDBrhtnfxHZvR7dvaajtm3yJlsPwJXk3Ttq0pln574
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105100456.7126-2-sam.shih@mediatek.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nS5gK-000V88-Nj
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57414
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 86
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+X-Received: by 2002:a92:7513:0:b0:2b9:5b61:e376 with SMTP id
+ q19-20020a927513000000b002b95b61e376mr1558659ilc.193.1646870064861; Wed, 09
+ Mar 2022 15:54:24 -0800 (PST)
+Date:   Wed, 09 Mar 2022 15:54:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000351b8605d9d1d1bf@google.com>
+Subject: [syzbot] memory leak in usb_get_configuration
+From:   syzbot <syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
+        rob@robgreener.com, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 06:04:55PM +0800, Sam Shih wrote:
-> Add infracfg, toprgu, and ethsys reset-controller header file
-> for MT7986 platform.
-> 
-> Signed-off-by: Sam Shih <sam.shih@mediatek.com>
-> Acked-by: Rob Herring <robh@kernel.org>
+Hello,
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+syzbot found the following issue on:
 
-> ---
->  include/dt-bindings/reset/mt7986-resets.h | 55 +++++++++++++++++++++++
->  1 file changed, 55 insertions(+)
->  create mode 100644 include/dt-bindings/reset/mt7986-resets.h
-> 
-> diff --git a/include/dt-bindings/reset/mt7986-resets.h b/include/dt-bindings/reset/mt7986-resets.h
-> new file mode 100644
-> index 000000000000..af3d16c81192
-> --- /dev/null
-> +++ b/include/dt-bindings/reset/mt7986-resets.h
-> @@ -0,0 +1,55 @@
-> +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-> +/*
-> + * Copyright (c) 2022 MediaTek Inc.
-> + * Author: Sam Shih <sam.shih@mediatek.com>
-> + */
-> +
-> +#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT7986
-> +#define _DT_BINDINGS_RESET_CONTROLLER_MT7986
-> +
-> +/* INFRACFG resets */
-> +#define MT7986_INFRACFG_PEXTP_MAC_SW_RST	6
-> +#define MT7986_INFRACFG_SSUSB_SW_RST		7
-> +#define MT7986_INFRACFG_EIP97_SW_RST		8
-> +#define MT7986_INFRACFG_AUDIO_SW_RST		13
-> +#define MT7986_INFRACFG_CQ_DMA_SW_RST		14
-> +
-> +#define MT7986_INFRACFG_TRNG_SW_RST		17
-> +#define MT7986_INFRACFG_AP_DMA_SW_RST		32
-> +#define MT7986_INFRACFG_I2C_SW_RST		33
-> +#define MT7986_INFRACFG_NFI_SW_RST		34
-> +#define MT7986_INFRACFG_SPI0_SW_RST		35
-> +#define MT7986_INFRACFG_SPI1_SW_RST		36
-> +#define MT7986_INFRACFG_UART0_SW_RST		37
-> +#define MT7986_INFRACFG_UART1_SW_RST		38
-> +#define MT7986_INFRACFG_UART2_SW_RST		39
-> +#define MT7986_INFRACFG_AUXADC_SW_RST		43
-> +
-> +#define MT7986_INFRACFG_APXGPT_SW_RST		66
-> +#define MT7986_INFRACFG_PWM_SW_RST		68
-> +
-> +#define MT7986_INFRACFG_SW_RST_NUM		69
-> +
-> +/* TOPRGU resets */
-> +#define MT7986_TOPRGU_APMIXEDSYS_SW_RST		0
-> +#define MT7986_TOPRGU_SGMII0_SW_RST		1
-> +#define MT7986_TOPRGU_SGMII1_SW_RST		2
-> +#define MT7986_TOPRGU_INFRA_SW_RST		3
-> +#define MT7986_TOPRGU_U2PHY_SW_RST		5
-> +#define MT7986_TOPRGU_PCIE_SW_RST		6
-> +#define MT7986_TOPRGU_SSUSB_SW_RST		7
-> +#define MT7986_TOPRGU_ETHDMA_SW_RST		20
-> +#define MT7986_TOPRGU_CONSYS_SW_RST		23
-> +
-> +#define MT7986_TOPRGU_SW_RST_NUM		24
-> +
-> +/* ETHSYS Subsystem resets */
-> +#define MT7986_ETHSYS_FE_SW_RST			6
-> +#define MT7986_ETHSYS_PMTR_SW_RST		8
-> +#define MT7986_ETHSYS_GMAC_SW_RST		23
-> +#define MT7986_ETHSYS_PPE0_SW_RST		30
-> +#define MT7986_ETHSYS_PPE1_SW_RST		31
-> +
-> +#define MT7986_ETHSYS_SW_RST_NUM		32
-> +
-> +#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT7986 */
+HEAD commit:    0014404f9c18 Merge branch 'akpm' (patches from Andrew)
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15864216700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3f0a704147ec8e32
+dashboard link: https://syzkaller.appspot.com/bug?extid=f0fae482604e6d9a87c9
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13a63dbe700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e150a1700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff88810c0289e0 (size 32):
+  comm "kworker/1:2", pid 139, jiffies 4294947862 (age 15.910s)
+  hex dump (first 32 bytes):
+    09 02 12 00 01 00 00 00 00 09 04 00 00 00 d0 bb  ................
+    3a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  :...............
+  backtrace:
+    [<ffffffff82c98127>] kmalloc include/linux/slab.h:586 [inline]
+    [<ffffffff82c98127>] usb_get_configuration+0x1c7/0x1cd0 drivers/usb/core/config.c:919
+    [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
+    [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
+    [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+    [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+    [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
+    [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
+    [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
+    [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
+    [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
+    [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+BUG: memory leak
+unreferenced object 0xffff88810a600f40 (size 64):
+  comm "kworker/1:2", pid 139, jiffies 4294947866 (age 15.870s)
+  hex dump (first 32 bytes):
+    01 00 00 00 01 00 00 00 09 04 00 00 00 d0 bb 3a  ...............:
+    00 00 00 00 00 00 00 00 f2 89 02 0c 81 88 ff ff  ................
+  backtrace:
+    [<ffffffff82c9871d>] kmalloc include/linux/slab.h:586 [inline]
+    [<ffffffff82c9871d>] kzalloc include/linux/slab.h:714 [inline]
+    [<ffffffff82c9871d>] usb_parse_configuration drivers/usb/core/config.c:772 [inline]
+    [<ffffffff82c9871d>] usb_get_configuration+0x7bd/0x1cd0 drivers/usb/core/config.c:944
+    [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
+    [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
+    [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+    [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+    [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
+    [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
+    [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
+    [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
+    [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
+    [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
