@@ -2,204 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C982FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbiCIHNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:13:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
+        id S230255AbiCIHOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:14:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiCIHM5 (ORCPT
+        with ESMTP id S229760AbiCIHOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:12:57 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614BF1081B3
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:11:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646809919; x=1678345919;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=M48WQ1VdLf6ReFI/U9jDn3CFilIzAHEjcRYKH8tp1K0=;
-  b=dYXlhNbwUOFRMsPbacXQo6gwuOxM3qMN4GQ60pelUO7Rcq8vUZ/4nwDk
-   /V1UqbQcd8/1piRtnh8kLGqPTaWCkhgibmcTu9n+VdRkLAliTPllfPprW
-   hATVvFin7RwPBMFKgI6ttWNiPAjhskVWIq0Dnv6Jz2rUvNgxg7amM9LOG
-   Kns/GAOItoE+LXAI2rQWU+xNdfZEJHilLr/MpegEAUz6ulwevf1k0867I
-   MkOZjxxukVMoXrmAOSFn2mklCo/YYclvKNJvQDSZ1MB+Y0ghbRAm4OTay
-   k0nz8ReDNFjBDXc+zd2AZsxhC+QoYYHV9aJRzsg1u5yNlNtKNnmn2Gq4A
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="242351043"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="242351043"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 23:11:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="711842655"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 23:11:57 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRqUG-0002ok-LT; Wed, 09 Mar 2022 07:11:56 +0000
-Date:   Wed, 9 Mar 2022 15:11:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Lawrence <paullawrence@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 9998/9999] fs/fuse/backing.c:955:27: warning: cast to pointer from integer
- of different size
-Message-ID: <202203091504.1hJGsrgr-lkp@intel.com>
+        Wed, 9 Mar 2022 02:14:15 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2082.outbound.protection.outlook.com [40.107.100.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED8F710F8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:13:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=odRPK/+fYTU+1u9nKnjy2r0AxTU/cgBKLHA3+YoAButdzU779vZ7KR+5TsXBMODYaIVrvzQd7BOIgG3I0q6Sd2yYyYL0PFCB0rYWx80fv0w55FGdPXCBd1z+rH+pWgg+umJhU0+/btyAY5BIV0Au7olij+iN5mPmxVUxGITRM2suyuNGnbirvycUGP6Q/QY9L2r1wg49wk1dufRb/nK69K/jVmSaffvhtIGQBiXa8ChTwbktX3GFXdwuGx6IfBLmGtUX0ZkYi5C25SMeCRFQaAjPnp6MavsDS4yRZwkUb6qOiBJLJnkEgP6xyo6xyztjE2qg5ZQX6Sr0z3yYHsShBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BFREi8Sy5PvUgDfHs0BiwGrw3bILUxnGn3pSevYXIL4=;
+ b=hCi6NkWhrc48VT3ZHs5E8oxrMkSvrzzJoXPGAKHAYr+4pN0EVWxlYo/TC7PpCiIW4Zfs9HyPHUalcmTU3kWjg92VctDAZOaoSZmf5t34F9i0F8+vXQLVL0AwFusrwGDlJkdk4izfBhzq+9EBiHCstFZdLmc9s1qASBnlCzaI1MeHpz++IwV3WLPVszJS+7nEsnX9uUbTrIV5tTrNI5XC/NeRXOHiLJ1OoFljL+12HM2+nDxlb0tFkP10opQm9QagXWMePIrP/Z0okEKfg04CXMXDPKMcpE/iUbpgw1qG873EKQ8PyvyNtYXaozc/+1GUZbHnsnhA3S27bU8gXOaMAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BFREi8Sy5PvUgDfHs0BiwGrw3bILUxnGn3pSevYXIL4=;
+ b=19gFSM+b+7SixJJrOc2p/yeTrYfIQnHGum4xXfIZrNJr8WQ1ktStx0rEDuLuV69xVtJL1W5foa4VWU+DFWWd1AgCI27swfUgqbugArZllCp45pq24BvkV3KuJNexeczjKsUDi4Jx11CItC0yWZLc3VuXWG/rK517wa5k4ZQsIUA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MW2PR12MB2379.namprd12.prod.outlook.com (2603:10b6:907:9::24)
+ by BYAPR12MB4727.namprd12.prod.outlook.com (2603:10b6:a03:99::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Wed, 9 Mar
+ 2022 07:13:07 +0000
+Received: from MW2PR12MB2379.namprd12.prod.outlook.com
+ ([fe80::a094:81bc:148a:fc38]) by MW2PR12MB2379.namprd12.prod.outlook.com
+ ([fe80::a094:81bc:148a:fc38%5]) with mapi id 15.20.5038.026; Wed, 9 Mar 2022
+ 07:13:07 +0000
+Message-ID: <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
+Date:   Wed, 9 Mar 2022 12:42:51 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v6] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+Content-Language: en-US
+To:     Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        mgorman@techsingularity.net, mingo@kernel.org,
+        song.bao.hua@hisilicon.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+References: <20220308063749.6929-1-kprateek.nayak@amd.com>
+ <20220308092944.GJ618915@linux.vnet.ibm.com>
+ <7e5bdc95-a30a-58bc-fc67-98b03fe1fa22@amd.com>
+ <20220309052554.GK618915@linux.vnet.ibm.com>
+From:   K Prateek Nayak <kprateek.nayak@amd.com>
+In-Reply-To: <20220309052554.GK618915@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0036.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:97::15) To MW2PR12MB2379.namprd12.prod.outlook.com
+ (2603:10b6:907:9::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 32f27a9e-dc0c-4d4d-4897-08da019c42a2
+X-MS-TrafficTypeDiagnostic: BYAPR12MB4727:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB472763915FA1A08FE0205EDD980A9@BYAPR12MB4727.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IKWhiRyDe6hyDcHI+W4P89FnsKlWqnsy4gQvJxq5087q3yOa8ZFsDl55dCSlW9ZJ/yyCUA+Pj7HirsZEn+aKNXR06yWc6ULXtz8LuOTIj+urOZhKCvSTdbreKVnvDQ2xCGJhP+H+Gr91I4MiGKDPlfjKs5oTYlbOhx3knOfIR9DG7te98dUH0luQ2U2rxQe63PKFENxr5D5pXcQFDi2RyVCrjCcMggwnfcdqcoga+PIsi1RJiiZ2zXtK/twxsfZ898LHmkAurXsNlB02EhLotuSD7XakspN+cZMUHdU5wW0YSora4i9R+QbLJ/eoitn08dH1cZmXNm0pjFsjdqhTKZLpLRw55YU8THEpaekjqFICl41KWr2p5Z8EzCbhUUGLRmXeK4HM6tspJb9Bt5cnmIMg5AOXbj4xTmzOA1C0I8RmNK60iguMmqgaet1xCsbMTtqBpe0jkZpHpM/VQkTkeL3tZmLiY9mnydCkvM1Ru0j9Eb0IbCG8xDe3W1NOM/8Y2phJhFQxL5538HOqlVp8zTb6Pr/3bjfGoXVZcm2dpCNjH/Efd5j57h27t83oNYMCd0huFLwGecTJaouEY1TGxBKAFeS4z1yQqixeM6v/ZQvYr+OgBE13F2y3k0YSWkmrmsEgk1DJOEAlozAQhhjWZwN1ycZKABjCqLBquTnKja9XpBEt9C8dcAlMKW6eRUdoSHDuZVIdaRYZUTxAIo9wgwXYuxbrNnoI7uKgcubDQh0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB2379.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(66556008)(66946007)(31686004)(36756003)(66476007)(7416002)(5660300002)(4326008)(6486002)(31696002)(316002)(86362001)(2906002)(6916009)(8936002)(6666004)(6506007)(53546011)(26005)(2616005)(186003)(38100700002)(6512007)(508600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cVkveXJVLzFmOTZEQlNVOFlBYWlRSnE5ZytkOUNZU2tpMWt0d0FSNnZDbWhS?=
+ =?utf-8?B?aEJsdTU5SHd6ZmtJRDNEbDBPTjVISmVCcjJhUzlDVWtlOEN6bUFDL2gyVVpE?=
+ =?utf-8?B?RnNFUzBuN1hscFVuTkM3VGd0a01DY1dXaFpEckRNRy9pZnl2NlRSZGNrL29O?=
+ =?utf-8?B?QmRabFdRcEdvdkdnLzdNVC96YkZveUtqWUtaSC8waVYzOWpFUEpyUHhmeklO?=
+ =?utf-8?B?cUV2TzR4K2t1MVlOTzZtSjhWSjhBM1l2UmY5M0R2cjNWVVdGOThvUzdkMWRx?=
+ =?utf-8?B?Y2w5bXdwOXROM1JZSDZibWlLR0xvWG1pSzFQS25SQWQrZUdJeGVYcG1nTTA2?=
+ =?utf-8?B?YlBGelVLamlpcllTZE5OMTVodG1VcG9rQSt1SlptZGY3SFRGVUVPeFh4STJw?=
+ =?utf-8?B?a2ZkSi9RRzNDMjNnZzh1SVR0SzhUbk9qbXg4enhrbGdrRUVyMGhDZncxeFdj?=
+ =?utf-8?B?VDZEZkNBUEFGSGpBZTVyWU4vYlJFUEtEWEFkU1pTMWFXdmhpQzA2cXBZSmpo?=
+ =?utf-8?B?dlNva0E4TnRVVGVSQ08wY2ZxME9QUXZqTnJrRFd1RVRtMG41akoyZWtObkRl?=
+ =?utf-8?B?NlR0cUZKR3pvV1pyMGFBdjk2OTNNSHBkSi9aSUdZT3FvQ2ZrczMzbGpFZ0Vr?=
+ =?utf-8?B?OXNyaTlRY3FYSEVrQyt0MDR5alZJRm9US0ptYlNnYVRkMTlNMm42UzlISTlY?=
+ =?utf-8?B?STIxRHNPYTE3OHN1UzJ3Q04zZnhJTE1YaHRocGxBeXJRWlE3Z0NQQjBVSVpW?=
+ =?utf-8?B?T2x1NnZqL3Y1UDNrd24vQjFXZkN5MVdLc3ZzQVNUNTVaR0k1QmplMFFrdS9Z?=
+ =?utf-8?B?dTJtRCtHVmMxb1lIUkhsc0c3R3luMm9ocVVYcU9wUzhIQ1F4RzdpbDB5Ris2?=
+ =?utf-8?B?dXlTRlp1SXdEMjFLd21Nd2dDdzFoVE1hZ0FodDZlbkMyUWJwNXhuMjIrbUZ5?=
+ =?utf-8?B?eUlHcGdFNE1HZ0ZoN0tKbVZuMmhCSHZyMU5zQ0F4Vi9RSlR5Q3BrekJJWGlK?=
+ =?utf-8?B?YjFtTXNoVDlySFFSRzBubFVqRTdtZ3VUMkNjMUlPRXNjNWRreFBuOW5TTXA1?=
+ =?utf-8?B?YnNpQnMvQWl4dzZUakV3OGlPSUtxRUNVU1NPYXAreUhFd2tqaWJ1TklUVXVY?=
+ =?utf-8?B?N3orNC9wZG1LQW9zN1o3eW1pYitEZ25mMmNLQWRJenVNdnErS2E5elc0OSs2?=
+ =?utf-8?B?SktjRVE2RjRGd1ZlVkRENkQ0T3UweUR5VzZMU05yZkxaV0U5VVRpcE9QRVNJ?=
+ =?utf-8?B?UFViek9OTFhnSU5NVG8rZjZXMEJ6TnpwZ3FtR25BUS95YVlRZERjRnlUS0px?=
+ =?utf-8?B?cFk2ZVJ1YmJDNVVKT1dQWkc0N0xReU9ocHFvNkZFL2xSc1Z1THF4YmNBQnN2?=
+ =?utf-8?B?WVRPMFFRZDFRRVVNNVRkMllLWEtGTnFHZW1mUDZybEduYWRuTkRRdzJ2Q2ZM?=
+ =?utf-8?B?NzU2Tk0yaUhiWVBScDNZckgrMnhqVGcrUmltTkhCZ2hqSFoyNStJTXlzcVB4?=
+ =?utf-8?B?NCtMTUZpQ2svUmlrNEh0UlkrNjNmV0xnM3hIOGMramF1WHJNeW5mbmphcnQ4?=
+ =?utf-8?B?UFkweWZuWmdoTnR4cE1FTVAvMmVodnV2TjY5UXdOKy9xRXVWS1MyclNONzgr?=
+ =?utf-8?B?VHV5YjZ3VUxlaGZQRUE4cFk1Y0lWZUdNenVaUGw4Vi8vRDl0am54enZETWZJ?=
+ =?utf-8?B?NnZRRGhCUFRWb203RmVPakdpU2dlWFl3Y3Z3VVM0SUtCRGxxMWRRbTlIcXJP?=
+ =?utf-8?B?aGYvRy9ielRVRlJTb2FSeXFhM3RQZUF3eitmZUZqeld0eXhsZjl2ZlkxYjF5?=
+ =?utf-8?B?d3crT3BXYlRoQ1BTZThIayt1ejkxblpHalQ3c052QnNyZUg4QUM4RWlwODRl?=
+ =?utf-8?B?Y0Y2S3ZSNUJzUXo4ZVRScWdpbC85bm5BeDhJWC8zZzQwTjVPYVVpblgrQ0RR?=
+ =?utf-8?B?b2lINXdqb0JqdkJoUW5OOGRIQVo3M0xOejNDMGNTaDF1TUIzblBTRWxndUdQ?=
+ =?utf-8?B?VlV1WjRCQU83d2kxT1NDbU5xYkRYYmRuRm5BWDc1VHo1REFaL1NiMUVQQi9O?=
+ =?utf-8?B?THlwMkREVlFteGlVK3gvUHlsNXZSU0FKYmJSWDN2SUZmVFA0RjNCZEFvNDhv?=
+ =?utf-8?B?RVNwR1VybllVc2daTUNhWWpaOXoyRXF0YWRva3hpamZuVkxUQ0J2QzdOeFVj?=
+ =?utf-8?Q?lGhx28XjbUZbSfGxZsIRfEI=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32f27a9e-dc0c-4d4d-4897-08da019c42a2
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB2379.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 07:13:07.3303
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: K44LkXl98jA70qDhTIs/bBS2LJUhiLVeX6d9VRchIfxIIG3eDss7QXdobcr/oIQ1nwXG3W+1Cm1fl146POTEig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4727
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   5da5b1871950c71755fa5a0b88c78e2f2623da24
-commit: 8efdff35e3052e44d519ccfb9d50594f5df0240b [9998/9999] ANDROID: fuse-bpf: Move fd operations to be synchronous
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203091504.1hJGsrgr-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/8efdff35e3052e44d519ccfb9d50594f5df0240b
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
-        git checkout 8efdff35e3052e44d519ccfb9d50594f5df0240b
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/fuse/
+Hello Srikar,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 3/9/2022 10:55 AM, Srikar Dronamraju wrote:
+> * K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-08 17:18:16]:
+> [..snip..]
+>> Yes. We've tested stream with 8 and 16 stream threads on a Zen3 system
+>> with 16 LLCs and in both cases, with unbound runs, we've seen each
+>> Stream thread get a separate LLC and we didn't observe any stacking.
+> If the problem is only happening with pinned case, then it means that in the
+> in unpinned case, the load balancer is able to do the load balancing
+> correctly and quickly but for some reason may not be able to do the same in
+> pinned case. Without the patch, even in the unpinned case, the initial CPU
+> range is more less the same number of LLCs as the pinned. However its able
+> to spread better.
+The problem this patch is trying to solve is that of the initial placement
+of task when they are pinned to a subset of cpu in a way that number of
+allowed cpus in a NUMA domain is less than the imb_numa_nr.
 
-All warnings (new ones prefixed by >>):
+Consider the same example of Stream running 8 threads with pinning as follows
+on the dual socket Zen3 system (0-63,128-191 in one socket, 64-127,192-255 in
+another socket) with 8 LLCs per socket:
 
-   fs/fuse/backing.c: In function 'fuse_lookup_finalize':
->> fs/fuse/backing.c:955:27: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-     955 |   struct file *bpf_file = (struct file*) febo->bpf_fd;
-         |                           ^
-   fs/fuse/backing.c:988:18: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-     988 |   backing_file = (struct file *) febo->backing_fd;
-         |                  ^
-   fs/fuse/backing.c:984:21: warning: variable 'fc' set but not used [-Wunused-but-set-variable]
-     984 |   struct fuse_conn *fc;
-         |                     ^~
-   fs/fuse/backing.c: In function 'fuse_statfs_initialize':
-   fs/fuse/backing.c:1771:18: warning: initialized field overwritten [-Woverride-init]
-    1771 |   .out_numargs = 1,
-         |                  ^
-   fs/fuse/backing.c:1771:18: note: (near initialization for '(anonymous).out_numargs')
+numactl -C 0,16,32,48,64,80,96,112 ./stream8
 
+Number of cpus available in each socket for this task is 4. However, each
+socket consists of 8 LLCs. According to current scheduler, all the LLCs are
+available for task to use but in reality, it can only use 4. Hence, all
+the stream threads are put on same socket and they have to initially share
+LLCs and the same set of cpus. This is why we see stacking initially and
+this is what we are addressing.
 
-vim +955 fs/fuse/backing.c
+We've observed that load balancer does kick in and is able to spread the tasks
+apart but this takes a while and quite a few migrations before a stable state
+is reached.
 
-   911	
-   912	struct dentry *fuse_lookup_finalize(struct fuse_args *fa, struct inode *dir,
-   913				   struct dentry *entry, unsigned int flags)
-   914	{
-   915		struct fuse_dentry *fd;
-   916		struct dentry *bd;
-   917		struct inode *inode, *backing_inode;
-   918		struct fuse_entry_out *feo = fa->out_args[0].value;
-   919		struct fuse_entry_bpf_out *febo = fa->out_args[1].value;
-   920	
-   921		fd = get_fuse_dentry(entry);
-   922		if (!fd)
-   923			return ERR_PTR(-EIO);
-   924		bd = fd->backing_path.dentry;
-   925		if (!bd)
-   926			return ERR_PTR(-ENOENT);
-   927		backing_inode = bd->d_inode;
-   928		if (!backing_inode)
-   929			return 0;
-   930	
-   931		inode = fuse_iget_backing(dir->i_sb, backing_inode);
-   932	
-   933		if (IS_ERR(inode))
-   934			return ERR_PTR(PTR_ERR(inode));
-   935	
-   936		/* TODO Make sure this handles invalid handles */
-   937		/* TODO Do we need the same code in revalidate */
-   938		if (get_fuse_inode(inode)->bpf) {
-   939			bpf_prog_put(get_fuse_inode(inode)->bpf);
-   940			get_fuse_inode(inode)->bpf = NULL;
-   941		}
-   942	
-   943		switch (febo->bpf_action) {
-   944		case FUSE_ACTION_KEEP:
-   945			get_fuse_inode(inode)->bpf = get_fuse_inode(dir)->bpf;
-   946			if (get_fuse_inode(inode)->bpf)
-   947				bpf_prog_inc(get_fuse_inode(inode)->bpf);
-   948			break;
-   949	
-   950		case FUSE_ACTION_REMOVE:
-   951			get_fuse_inode(inode)->bpf = NULL;
-   952			break;
-   953	
-   954		case FUSE_ACTION_REPLACE: {
- > 955			struct file *bpf_file = (struct file*) febo->bpf_fd;
-   956			struct bpf_prog *bpf_prog = ERR_PTR(-EINVAL);
-   957	
-   958			if (bpf_file && !IS_ERR(bpf_file))
-   959				bpf_prog = fuse_get_bpf_prog(bpf_file);
-   960	
-   961			if (IS_ERR(bpf_prog))
-   962				return ERR_PTR(PTR_ERR(bpf_prog));
-   963	
-   964			get_fuse_inode(inode)->bpf = bpf_prog;
-   965			break;
-   966		}
-   967	
-   968		default:
-   969			return ERR_PTR(-EIO);
-   970		}
-   971	
-   972		switch (febo->backing_action) {
-   973		case FUSE_ACTION_KEEP:
-   974			/* backing inode/path are added in fuse_lookup_backing */
-   975			break;
-   976	
-   977		case FUSE_ACTION_REMOVE:
-   978			iput(get_fuse_inode(inode)->backing_inode);
-   979			get_fuse_inode(inode)->backing_inode = NULL;
-   980			path_put_init(&get_fuse_dentry(entry)->backing_path);
-   981			break;
-   982	
-   983		case FUSE_ACTION_REPLACE: {
-   984			struct fuse_conn *fc;
-   985			struct file *backing_file;
-   986	
-   987			fc = get_fuse_mount(dir)->fc;
-   988			backing_file = (struct file *) febo->backing_fd;
-   989			if (!backing_file || IS_ERR(backing_file))
-   990				return ERR_PTR(-EIO);
-   991	
-   992			iput(get_fuse_inode(inode)->backing_inode);
-   993			get_fuse_inode(inode)->backing_inode =
-   994				backing_file->f_inode;
-   995			ihold(get_fuse_inode(inode)->backing_inode);
-   996	
-   997			path_put(&get_fuse_dentry(entry)->backing_path);
-   998			get_fuse_dentry(entry)->backing_path = backing_file->f_path;
-   999			path_get(&get_fuse_dentry(entry)->backing_path);
-  1000	
-  1001			fput(backing_file);
-  1002			break;
-  1003		}
-  1004	
-  1005		default:
-  1006			return ERR_PTR(-EIO);
-  1007		}
-  1008	
-  1009		get_fuse_inode(inode)->nodeid = feo->nodeid;
-  1010	
-  1011		return d_splice_alias(inode, entry);
-  1012	}
-  1013	
+Following is the output of the tracepoint sched_migrate_task on 5.17-rc1
+tip sched/core for stream running 8 threads with the same pinning pattern:
+(Output has been slightly modified for readability)
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+167.928338: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=32 dest_cpu=48 START - {8}{0}
+... 9 migrations
+168.595632: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=16 dest_cpu=64 * {7}{1}
+168.595634: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=16 dest_cpu=64 * {6}{2}
+... 3 migrations
+168.625803: sched_migrate_task: comm=stream pid=5052 prio=120 orig_cpu=0 dest_cpu=64 * {5}{3}
+168.626146: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=16 dest_cpu=0
+168.650832: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=0 dest_cpu=48
+168.651009: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=64 dest_cpu=32 * {6}{2}
+168.677314: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=32 dest_cpu=80 * {5}{3}
+168.677320: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=48 dest_cpu=64 * {4}{4}
+168.735707: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=64 dest_cpu=96
+168.775510: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=80 dest_cpu=0 * {5}{3}
+... 39 migrations
+170.232105: sched_migrate_task: comm=stream pid=5049 prio=120 orig_cpu=0 dest_cpu=64 END {4}{4}
+
+As we can see, 63 migrations are arecorded during the runtime of the
+program that can be avoided by the correct initial placement.
+
+As you highlight, there may be areas in the load balancer path that
+can be optimized too for such a case.
+> I believe the problem could be in can_migrate_task() checking for
+> !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr)
+>
+> i.e dst_cpu is doing a load balance on behalf of the entire LLC, however it
+> only will pull tasks that can be pulled into it.
+Please correct me if I'm wrong but don't we scan the entire sched group
+and check if there is a compatible cpu for pinned tasks in can_migrate_task()
+when !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr) ?
+
+If a compatible cpu is found in the group, it is stored in new_dst_cpu
+member of lb_env to be used later in the load balancing path if my
+understanding is correct.
+--
+Thanks and Regards,
+Prateek
