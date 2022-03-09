@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EC3C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E0EC41535
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236837AbiCIQsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S236979AbiCIQse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:48:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237374AbiCIQao (ORCPT
+        with ESMTP id S237772AbiCIQbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:44 -0500
+        Wed, 9 Mar 2022 11:31:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C03165C18;
-        Wed,  9 Mar 2022 08:24:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC4E18FAC9;
+        Wed,  9 Mar 2022 08:25:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F649616F3;
-        Wed,  9 Mar 2022 16:24:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF9CC340E8;
-        Wed,  9 Mar 2022 16:23:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E97F8619BF;
+        Wed,  9 Mar 2022 16:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87BA8C340EC;
+        Wed,  9 Mar 2022 16:24:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843039;
-        bh=aRujg7DCfCwhUQUnKt+v2yJpA3gL/esTSYaKgC2Yn6A=;
+        s=k20201202; t=1646843087;
+        bh=gkiHubqFkAkhD2fB+BeQdrYXBCDfNv/tJCePJLxs6SY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=giR57gYHXZ/dHIWrDA6F2YuFk2FfrHibYfIpMTYjLXJwIII3ZXbg55QHilb7Dcsi9
-         dprhduAAtIzFHcYJnOWkqHWclhlgDIV23jL20UR/TarRwxdJuC3AbvvpcEcKq8j2Rz
-         igpNlj5u4zBMJVvXhS9l0BsZOzuN6mEF72uvMv8jGn2fvbj3VxLBF7c2T7YQxNlrTt
-         k+1z499y9+goqlC3SmJSjUsilk7xd0vDv2w86PfrRq12NEDGHHBcBzWHw3YqnBimuS
-         I/uGRCiRBRMpYdgntqwXGmw8u3oGeN1vyWVo05QHfBZCUpMy4dcq03Mn/dDC309dAM
-         8j9E8i1DTmIPw==
+        b=oqiZjan2Upy/OyQFjEm6WtQOkJgi8nhjuh7o5c5SJfe6G4QQGu3qe7l01mMuT+NfP
+         iGwwslly90YjUEx1qPuzvwDEW5PDqEBbgNuyCemmZn8ukXVfiHwtPlxOQomAXqs0FI
+         V4wGK00PqdrgsaO1nLUsI+enAf9ZWRCGOmVlDpLJBMDJUnfbXXJkkuIL/rgdCtN3Gz
+         uchl2TfbOkkOUdRg1icVOBQULQmCKEk5ViKapdm49uwzjPX2W695PwqRhrjX20J3kV
+         0zvjkw6eCdYf2Mij5xuujsmPLwOgzIdwJUS3V9IL7fGImwoXEEV7BVMjNiE+FLxJfS
+         TGCmsidxAspWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        jbx6244@gmail.com, helen.koike@collabora.com, knaerzche@gmail.com,
-        zhangqing@rock-chips.com, briannorris@chromium.org,
-        daniel.lezcano@linaro.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 04/19] arm64: dts: rockchip: reorder rk3399 hdmi clocks
-Date:   Wed,  9 Mar 2022 11:23:21 -0500
-Message-Id: <20220309162337.136773-4-sashal@kernel.org>
+Cc:     Manasi Navare <manasi.d.navare@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, dri-devel@lists.freedesktop.org,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
+Subject: [PATCH AUTOSEL 5.4 14/19] drm/vrr: Set VRR capable prop only if it is attached to connector
+Date:   Wed,  9 Mar 2022 11:23:31 -0500
+Message-Id: <20220309162337.136773-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
 References: <20220309162337.136773-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,39 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Manasi Navare <manasi.d.navare@intel.com>
 
-[ Upstream commit 2e8a8b5955a000cc655f7e368670518cbb77fe58 ]
+[ Upstream commit 62929726ef0ec72cbbe9440c5d125d4278b99894 ]
 
-The binding specifies the clock order to "cec", "grf", "vpll". Reorder
-the clocks accordingly.
+VRR capable property is not attached by default to the connector
+It is attached only if VRR is supported.
+So if the driver tries to call drm core set prop function without
+it being attached that causes NULL dereference.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220126145549.617165-19-s.hauer@pengutronix.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Manasi Navare <manasi.d.navare@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220225013055.9282-1-manasi.d.navare@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_connector.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 750dad0d1740..95942d917de5 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1746,10 +1746,10 @@ hdmi: hdmi@ff940000 {
- 		interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH 0>;
- 		clocks = <&cru PCLK_HDMI_CTRL>,
- 			 <&cru SCLK_HDMI_SFR>,
--			 <&cru PLL_VPLL>,
-+			 <&cru SCLK_HDMI_CEC>,
- 			 <&cru PCLK_VIO_GRF>,
--			 <&cru SCLK_HDMI_CEC>;
--		clock-names = "iahb", "isfr", "vpll", "grf", "cec";
-+			 <&cru PLL_VPLL>;
-+		clock-names = "iahb", "isfr", "cec", "grf", "vpll";
- 		power-domains = <&power RK3399_PD_HDCP>;
- 		reg-io-width = <4>;
- 		rockchip,grf = <&grf>;
+diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+index 2337b3827e6a..11a81e8ba963 100644
+--- a/drivers/gpu/drm/drm_connector.c
++++ b/drivers/gpu/drm/drm_connector.c
+@@ -1984,6 +1984,9 @@ EXPORT_SYMBOL(drm_connector_attach_max_bpc_property);
+ void drm_connector_set_vrr_capable_property(
+ 		struct drm_connector *connector, bool capable)
+ {
++	if (!connector->vrr_capable_property)
++		return;
++
+ 	drm_object_property_set_value(&connector->base,
+ 				      connector->vrr_capable_property,
+ 				      capable);
 -- 
 2.34.1
 
