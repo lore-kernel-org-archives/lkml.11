@@ -2,128 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D269C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E224C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235129AbiCIQND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:13:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
+        id S235054AbiCIQM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235441AbiCIQIv (ORCPT
+        with ESMTP id S235404AbiCIQIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9B118E43E;
-        Wed,  9 Mar 2022 08:05:56 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C5413CA25;
+        Wed,  9 Mar 2022 08:05:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB1F2B82221;
-        Wed,  9 Mar 2022 16:05:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23CBEC340E8;
-        Wed,  9 Mar 2022 16:05:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 746B4B82222;
+        Wed,  9 Mar 2022 16:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA40C340E8;
+        Wed,  9 Mar 2022 16:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841953;
-        bh=rxrVtqzt8KzhHd7aJFQSaUe6TCVXuDiXrwAXtG1xse4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JNXUw9TuPgS4KrQe3y3/3p22W7rAsXbEBB4AkvY6Wo+LsM0fna2Vfwx17zxdo0PGW
-         x60h3EEMkwMlBrAegdLk3eJ8jpqbz6bUc02zYauNivxXrVluvaF756SjsFHjr9ievo
-         dveFvyHLUhORMu03dzD8D7ybb1J5jzh1ZISlxMjI=
+        s=korg; t=1646841897;
+        bh=XBybpJyAFe6Gt+30ldIN9wMIK/cXPSF5eZqeyD4Ue+w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZrIFhQ0gQpIET8JG6r1kxFBkQUXbSgF77WZs96hRipcK9iw++Y7YeMY6bcXNZ2ahp
+         abhD39QlkmwFuu4F9vCt4VB5ptKt1V5PqGzSJrWdBiFXWtp5bnpQeXnHquSUoQJNsQ
+         TQybCEaGkInpJtJRgi72X598wZBZD5/3ZG4ACawA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 33/43] arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
-Date:   Wed,  9 Mar 2022 17:00:06 +0100
-Message-Id: <20220309155900.198457305@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.10 00/43] 5.10.105-rc1 review
+Date:   Wed,  9 Mar 2022 16:59:33 +0100
+Message-Id: <20220309155859.239810747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
-References: <20220309155859.239810747@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.105-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.10.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.10.105-rc1
+X-KernelTest-Deadline: 2022-03-11T15:59+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+This is the start of the stable review cycle for the 5.10.105 release.
+There are 43 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit aff65393fa1401e034656e349abd655cfe272de0 upstream.
+Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
+Anything received after that time might be too late.
 
-kpti is an optional feature, for systems not using kpti a set of
-vectors for the spectre-bhb mitigations is needed.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.105-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+and the diffstat can be found below.
 
-Add another set of vectors, __bp_harden_el1_vectors, that will be
-used if a mitigation is needed and kpti is not in use.
+thanks,
 
-The EL1 ventries are repeated verbatim as there is no additional
-work needed for entry from EL1.
+greg k-h
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/kernel/entry.S |   35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+-------------
+Pseudo-Shortlog of commits:
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -819,10 +819,11 @@ alternative_else_nop_endif
- 	.macro tramp_ventry, vector_start, regsize, kpti
- 	.align	7
- 1:
--	.if	\kpti == 1
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
-+
-+	.if	\kpti == 1
- 	/*
- 	 * Defend against branch aliasing attacks by pushing a dummy
- 	 * entry onto the return stack and using a RET instruction to
-@@ -910,6 +911,38 @@ SYM_DATA_END(__entry_tramp_data_start)
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 
- /*
-+ * Exception vectors for spectre mitigations on entry from EL1 when
-+ * kpti is not in use.
-+ */
-+	.macro generate_el1_vector
-+.Lvector_start\@:
-+	kernel_ventry	1, sync_invalid			// Synchronous EL1t
-+	kernel_ventry	1, irq_invalid			// IRQ EL1t
-+	kernel_ventry	1, fiq_invalid			// FIQ EL1t
-+	kernel_ventry	1, error_invalid		// Error EL1t
-+
-+	kernel_ventry	1, sync				// Synchronous EL1h
-+	kernel_ventry	1, irq				// IRQ EL1h
-+	kernel_ventry	1, fiq_invalid			// FIQ EL1h
-+	kernel_ventry	1, error			// Error EL1h
-+
-+	.rept	4
-+	tramp_ventry	.Lvector_start\@, 64, kpti=0
-+	.endr
-+	.rept 4
-+	tramp_ventry	.Lvector_start\@, 32, kpti=0
-+	.endr
-+	.endm
-+
-+	.pushsection ".entry.text", "ax"
-+	.align	11
-+SYM_CODE_START(__bp_harden_el1_vectors)
-+	generate_el1_vector
-+SYM_CODE_END(__bp_harden_el1_vectors)
-+	.popsection
-+
-+
-+/*
-  * Register switch for AArch64. The callee-saved registers need to be saved
-  * and restored. On entry:
-  *   x0 = previous task_struct (must be preserved across the switch)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.10.105-rc1
+
+Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+    ARM: fix build error when BPF_SYSCALL is disabled
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+James Morse <james.morse@arm.com>
+    arm64: Use the clearbhb instruction in mitigations
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+
+James Morse <james.morse@arm.com>
+    arm64: Mitigate spectre style branch history side channels
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+
+James Morse <james.morse@arm.com>
+    arm64: Add percpu vectors for EL1
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add macro for reading symbol addresses from the trampoline
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add vectors that have the bhb mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow the trampoline text to occupy multiple pages
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the kpti trampoline's kpti sequence optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move trampoline macros out of ifdef'd section
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Don't assume tramp_vectors is the start of the vectors
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move the trampoline data page before the text page
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Free up another register on kpti's tramp_exit path
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the trampoline cleanup optional
+
+James Morse <james.morse@arm.com>
+    arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+
+James Morse <james.morse@arm.com>
+    arm64: entry.S: Add ventry overflow sanity checks
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_RPRES
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_AFP
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: add ID_AA64ISAR2_EL1 sys register
+
+Marc Zyngier <maz@kernel.org>
+    arm64: Add HWCAP for self-synchronising virtual counter
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-A510 CPU part definition
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-X2 CPU part definition
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+
+Hector Martin <marcan@marcan.st>
+    arm64: cputype: Add CPU implementor & types for the Apple M1 cores
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: include unprivileged BPF status in Spectre V2 reporting
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Spectre-BHB workaround
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: use LOADADDR() to get load address of sections
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: early traps initialisation
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: report Spectre v2 status through sysfs
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about Spectre v2 LFENCE mitigation
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Update link to AMD speculation whitepaper
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Use generic retpoline by default on AMD
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Peter Zijlstra <peterz@infradead.org>
+    Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/speculation: Add eIBRS + Retpoline options
+
+Peter Zijlstra (Intel) <peterz@infradead.org>
+    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+Peter Zijlstra <peterz@infradead.org>
+    x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+
+
+-------------
+
+Diffstat:
+
+ Documentation/admin-guide/hw-vuln/spectre.rst   |  48 ++--
+ Documentation/admin-guide/kernel-parameters.txt |   8 +-
+ Documentation/arm64/cpu-feature-registers.rst   |  29 +-
+ Documentation/arm64/elf_hwcaps.rst              |  12 +
+ Makefile                                        |   4 +-
+ arch/arm/include/asm/assembler.h                |  10 +
+ arch/arm/include/asm/spectre.h                  |  32 +++
+ arch/arm/include/asm/vmlinux.lds.h              |  35 ++-
+ arch/arm/kernel/Makefile                        |   2 +
+ arch/arm/kernel/entry-armv.S                    |  79 +++++-
+ arch/arm/kernel/entry-common.S                  |  24 ++
+ arch/arm/kernel/spectre.c                       |  71 +++++
+ arch/arm/kernel/traps.c                         |  65 ++++-
+ arch/arm/mm/Kconfig                             |  11 +
+ arch/arm/mm/proc-v7-bugs.c                      | 207 +++++++++++---
+ arch/arm64/Kconfig                              |   9 +
+ arch/arm64/include/asm/assembler.h              |  33 +++
+ arch/arm64/include/asm/cpu.h                    |   1 +
+ arch/arm64/include/asm/cpucaps.h                |   3 +-
+ arch/arm64/include/asm/cpufeature.h             |  28 ++
+ arch/arm64/include/asm/cputype.h                |  22 ++
+ arch/arm64/include/asm/fixmap.h                 |   6 +-
+ arch/arm64/include/asm/hwcap.h                  |   3 +
+ arch/arm64/include/asm/insn.h                   |   1 +
+ arch/arm64/include/asm/kvm_asm.h                |   8 +
+ arch/arm64/include/asm/kvm_mmu.h                |   3 +-
+ arch/arm64/include/asm/mmu.h                    |   6 +
+ arch/arm64/include/asm/sections.h               |   5 +
+ arch/arm64/include/asm/spectre.h                |   4 +
+ arch/arm64/include/asm/sysreg.h                 |  18 ++
+ arch/arm64/include/asm/vectors.h                |  73 +++++
+ arch/arm64/include/uapi/asm/hwcap.h             |   3 +
+ arch/arm64/include/uapi/asm/kvm.h               |   5 +
+ arch/arm64/kernel/cpu_errata.c                  |   7 +
+ arch/arm64/kernel/cpufeature.c                  |  28 +-
+ arch/arm64/kernel/cpuinfo.c                     |   4 +
+ arch/arm64/kernel/entry.S                       | 213 ++++++++++----
+ arch/arm64/kernel/proton-pack.c                 | 359 +++++++++++++++++++++++-
+ arch/arm64/kernel/vmlinux.lds.S                 |   2 +-
+ arch/arm64/kvm/arm.c                            |   3 +-
+ arch/arm64/kvm/hyp/hyp-entry.S                  |   4 +
+ arch/arm64/kvm/hyp/smccc_wa.S                   |  75 +++++
+ arch/arm64/kvm/hyp/vhe/switch.c                 |   9 +-
+ arch/arm64/kvm/hypercalls.c                     |  12 +
+ arch/arm64/kvm/psci.c                           |  18 +-
+ arch/arm64/kvm/sys_regs.c                       |   2 +-
+ arch/arm64/mm/mmu.c                             |  12 +-
+ arch/x86/include/asm/cpufeatures.h              |   2 +-
+ arch/x86/include/asm/nospec-branch.h            |  16 +-
+ arch/x86/kernel/cpu/bugs.c                      | 205 ++++++++++----
+ include/linux/arm-smccc.h                       |   5 +
+ include/linux/bpf.h                             |  12 +
+ kernel/sysctl.c                                 |   7 +
+ tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
+ 54 files changed, 1651 insertions(+), 214 deletions(-)
 
 
