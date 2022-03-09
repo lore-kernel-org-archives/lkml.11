@@ -2,185 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ADAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA87C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiCISt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:49:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        id S236867AbiCISti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:49:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236796AbiCIStX (ORCPT
+        with ESMTP id S236844AbiCIStf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:49:23 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB54171EC2;
-        Wed,  9 Mar 2022 10:48:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=i5b4RZa7ZGU8BzAqKcxR7htqsIE/qrDUybnyPYPDJl8=; b=SFNj4S76wlmtds4dW0mXQqzRvG
-        S6RzZt/BN8ktkWjDJJrWn+WFAei1UEg/UzAfSu2rIz/L3aVo8HWRmERv4VEHY62nEiK6PjT1ja64S
-        OvVEqvEqA0tjijVhBFGspAPKjUtVKvj22qe536MwoaAd+Bx1lZx6WbuRsKykzsk9q4NdllKG2f06v
-        xNvz94eGUkoa+seoJoGW/ForRiU2sldlLWzYH8bH5GqSAyUocCAI+CV06QI3nJwG6gfHh9Otw8bpW
-        jj6K18cMXv/vI+oF8D8YI4/1IIYuCZ6cMzSGUydDW3+myuKI2Hh/uKnMf1Pitg3TsPrx06RJ89ZZh
-        O6DAGeeg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57752)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nS1MB-0002OU-Um; Wed, 09 Mar 2022 18:48:19 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nS1M9-0008Bp-CW; Wed, 09 Mar 2022 18:48:17 +0000
-Date:   Wed, 9 Mar 2022 18:48:17 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [next] arm: Internal error: Oops: 5 PC is at
- __read_once_word_nocheck
-Message-ID: <Yij2cZVKwPexGsTf@shell.armlinux.org.uk>
-References: <CA+G9fYtpy8VgK+ag6OsA9TDrwi5YGU4hu7GM8xwpO7v6LrCD4Q@mail.gmail.com>
- <YiiDZ7jjG38gqP+Q@shell.armlinux.org.uk>
- <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
- <CA+G9fYvCvBBi+dZ+CnUy=ZK6GhCFhBw72_==Cav=Q8QP5T1r5w@mail.gmail.com>
- <CA+G9fYt73AYs=z-BeZh22RBp==sf73pKky6m4iPSH7a4FssK7w@mail.gmail.com>
- <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
- <YijCkHHhpleeADAO@shell.armlinux.org.uk>
- <CA+G9fYtjrAMg8TykZdRyZEfRthyqom_73x87F-60C_QFeEL8Bg@mail.gmail.com>
- <YijfzAhWAgfGGqCO@shell.armlinux.org.uk>
- <CAMj1kXFvjawvOzeTb2m1H=P-_aXgW-ozvaOK1FtjBv7G0sCDFA@mail.gmail.com>
+        Wed, 9 Mar 2022 13:49:35 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBC51A39EF;
+        Wed,  9 Mar 2022 10:48:35 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 229HcPMF011109;
+        Wed, 9 Mar 2022 18:43:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ROvsIGGvRAK1ngLCXr//BxHvESKX42UqHkHp1VpPzEs=;
+ b=V8eBVEVSOXpyBZ7oq/k6lE9+DV0H46qHo5twb9uvG0VbQ3InFYSYd9d3I2YKQ/8zdM7y
+ xt3XyzvqHM9zGIW/CHPviBHeOyuhbL8SgrWVyMxEB21/NoVF7N1fz2HHMACfoCHA388D
+ y6i/AigrOLIiiRHaBYhGTal4hxIbaAPDeGaS9V8Myh+ZySD0BW8N3AdfjbaM+XGMS07G
+ 5QRWtTs08IWf4mg4oUcZ7PeXvyXHCx1rqw8zeeJcijjDWV690tTyKVJ46zjyd6lvPAT7
+ oXWhqfeImoyle4SW+Jio3OzpFbqNZqkCRQhbieudIOSrmGIr2i36ZdxBbzE2wlcuDF4h Ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3enyw9jjem-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 18:43:15 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 229HR6Sb011473;
+        Wed, 9 Mar 2022 18:43:14 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3enyw9jjd1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 18:43:14 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 229IY9hC030218;
+        Wed, 9 Mar 2022 18:43:12 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3enqgnndwc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 18:43:12 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 229Ih82U30015788
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Mar 2022 18:43:08 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 95A1011C04C;
+        Wed,  9 Mar 2022 18:43:08 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AB61011C052;
+        Wed,  9 Mar 2022 18:43:06 +0000 (GMT)
+Received: from sig-9-65-73-171.ibm.com (unknown [9.65.73.171])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Mar 2022 18:43:06 +0000 (GMT)
+Message-ID: <f8390bfecbcbae7b9151e2ce65f0c8e5e4a34ce8.camel@linux.ibm.com>
+Subject: Re: [PATCH 0/4] Add CA enforcement in the machine keyring
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Eric Snowberg <eric.snowberg@oracle.com>, jarkko@kernel.org,
+        dhowells@redhat.com, dwmw2@infradead.org
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        jmorris@namei.org, serge@hallyn.com, stefanb@linux.ibm.com,
+        nayna@linux.ibm.com, mic@linux.microsoft.com,
+        konrad.wilk@oracle.com, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Date:   Wed, 09 Mar 2022 13:43:06 -0500
+In-Reply-To: <20220301173651.3435350-1-eric.snowberg@oracle.com>
+References: <20220301173651.3435350-1-eric.snowberg@oracle.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: DY9S9WFZUMag5c4wekPoVsmPBBCGet-M
+X-Proofpoint-ORIG-GUID: vo3l3WDrmSu29pD6Wr-nZ2C8WxFmXhf9
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXFvjawvOzeTb2m1H=P-_aXgW-ozvaOK1FtjBv7G0sCDFA@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-09_07,2022-03-09_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 mlxscore=0 clxscore=1015 malwarescore=0 bulkscore=0
+ impostorscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
+ priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2203090101
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 06:43:42PM +0100, Ard Biesheuvel wrote:
-> On Wed, 9 Mar 2022 at 18:11, Russell King (Oracle)
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Wed, Mar 09, 2022 at 10:08:25PM +0530, Naresh Kamboju wrote:
-> > > Hi Russell,
-> > >
-> > > On Wed, 9 Mar 2022 at 20:37, Russell King (Oracle)
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Wed, Mar 09, 2022 at 03:57:32PM +0100, Ard Biesheuvel wrote:
-> > > > > On Wed, 9 Mar 2022 at 15:44, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> > > > > >
-> > > <trim>
-> > > > Well, we unwound until:
-> > > >
-> > > >  __irq_svc from migrate_disable+0x0/0x70
-> > > >
-> > > > and then crashed - and the key thing there is that we're at the start
-> > > > of migrate_disable() when we took an interrupt.
-> > > >
-> > > > For some reason, this triggers an access to address 0x10, which faults.
-> > > > We then try unwinding again, and successfully unwind all the way back
-> > > > to the same point (the line above) which then causes the unwinder to
-> > > > again access address 0x10, and the cycle repeats with the stack
-> > > > growing bigger and bigger.
-> > > >
-> > > > I'd suggest also testing without the revert but with my patch.
-> > >
-> > > I have tested your patch on top of linux next-20220309 and still see kernel
-> > > crash as below [1]. build link [2].
-> > >
-> > > [   26.812060] 8<--- cut here ---
-> > > [   26.813459] Unhandled fault: page domain fault (0x01b) at 0xb6a3ab70
-> > > [   26.816139] [b6a3ab70] *pgd=fb28a835
-> > > [   26.817770] Internal error: : 1b [#1] SMP ARM
-> > > [   26.819636] Modules linked in:
-> > > [   26.820956] CPU: 0 PID: 211 Comm: haveged Not tainted
-> > > 5.17.0-rc7-next-20220309 #1
-> > > [   26.824519] Hardware name: Generic DT based system
-> > > [   26.827148] PC is at __read_once_word_nocheck+0x0/0x8
-> > > [   26.829856] LR is at unwind_frame+0x7dc/0xab4
-> > >
-> > > - Naresh
-> > >
-> > > [1] https://lkft.validation.linaro.org/scheduler/job/4688599#L596
-> > > [2] https://builds.tuxbuild.com/269gYLGuAdmltuLhIUDAjS2fg1Q/
-> >
-> > I think the problem has just moved:
-> >
-> > [   27.113085]  __irq_svc from __copy_to_user_std+0x24/0x378
-> >
-> > The code at the start of __copy_to_user_std is:
-> >
-> >    0:   e3a034bf        mov     r3, #-1090519040        ; 0xbf000000
-> >    4:   e243c001        sub     ip, r3, #1
-> >    8:   e05cc000        subs    ip, ip, r0
-> >    c:   228cc001        addcs   ip, ip, #1
-> >   10:   205cc002        subscs  ip, ip, r2
-> >   14:   33a00000        movcc   r0, #0
-> >   18:   e320f014        csdb
-> >   1c:   e3a03000        mov     r3, #0
-> >   20:   e92d481d        push    {r0, r2, r3, r4, fp, lr}
-> >   24:   e1a0b00d        mov     fp, sp
-> >
-> > and the unwind information will be:
-> >
-> > 0xc056f14c <arm_copy_to_user+0x1c>: @0xc0b89b84
-> >   Compact model index: 1
-> >   0x9b      vsp = r11
-> >   0xb1 0x0d pop {r0, r2, r3}
-> >   0x84 0x81 pop {r4, r11, r14}
-> >   0xb0      finish
-> >
-> > The problem is that the unwind information says "starting at offset
-> > 0x1c, to unwind do the following operations". The first of which is
-> > to move r11 (fp) to the stack pointer. However, r11 isn't setup
-> > until function offset 0x24. You've hit that instruction, which hasn't
-> > executed yet, but the stack has been modified by pushing r0, r2-r4,
-> > fp and lr onto it.
-> >
-> > Given this, there is no way that the unwinder (as it currently stands)
-> > can do its job properly between 0x1c and 0x24.
-> >
-> > I don't think this is specifically caused by Ard's patches, but by
-> > the addition of KASAN, which has the effect of calling the unwinder
-> > at random points in the kernel (when an interrupt happens) and it's
-> > clear from the above that there are windows in the code where, if
-> > we attempt to unwind using the unwind information, we faill fail
-> > because the program state is not consistent with the unwind
-> > information.
-> >
-> > Ard's patch that changes:
-> >
-> >         ctrl->vrs[reg] = READ_ONCE_NOCHECK(*(*vsp));
-> >
-> > to use get_kernel_nofault() should have the effect of protecting
-> > against the oops, but the side effect is that it is fundamentally not
-> > possible with the way these things are to unwind at these points -
-> > which means its not possible to get a stacktrace there.
-> >
-> > So, I don't think this is a "new" problem, but a weakness of using
-> > the unwinder to get a backtrace for KASAN.
-> >
+On Tue, 2022-03-01 at 12:36 -0500, Eric Snowberg wrote:
+
+I would begin by saying,
+
+The "Enroll kernel keys thru MOK" patch set introduced a new root of
+trust by defining a "machine" keyring, which is linked to the
+secondary_trusted_keyring.  All Machine Owner Keys (MOK) are loaded
+into the machine keyring.
+
+Then proceed with the IMA new root of trust requirements - root CA
+(self-signed CA) with keyUsage limited to keyCertSign.
+
+> A key added to the IMA keyring must be signed by a key contained in either the
+
+^A certificate ... must be signed
+
+> built-in trusted or secondary trusted keyring. IMA also requires these keys 
+> to be a CA. The only option for an end-user to add their own CA is to compile
+> it into the kernel themselves or to use the insert-sys-cert.  Many end-users 
+> do not want to compile their own kernels.  With the insert-sys-cert option, 
+> there are missing upstream changes. 
 > 
-> It essentially means that we cannot unwind through asynchronous
-> exceptions, and so we should probably make the svc_entry macro
-> .nounwind, instead of pretending that we can reliably unwind through
-> it.
+> Currently, all Machine Owner Keys (MOK) load into the machine keyring.
 
-Doesn't that impact the ability to debug the kernel over things like
-oopses and the like?
+Moved to the beginning.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+> Add
+
+^Define
+>  
+> a new Kconfig option to only allow CA keys into the machine keyring.  When 
+
+Add the other criteria here as well.
+
+> compiled with the new INTEGRITY_MACHINE_KEYRING_CA_ENFORCED Kconfig, non CA 
+> keys will load into the platform keyring instead. This will allow the end-
+> user to enroll their own CA key into the machine keyring for use with IMA.
+> 
+> These patches are based on Jarkko's linux-tpmdd tree.
+> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
+
+thanks,
+
+Mimi
+
