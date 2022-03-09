@@ -2,479 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2647EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234397AbiCIQHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:07:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
+        id S234463AbiCIQHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234549AbiCIQHM (ORCPT
+        with ESMTP id S234457AbiCIQHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:07:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CECD33A15;
-        Wed,  9 Mar 2022 08:03:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67CD2B81EE7;
-        Wed,  9 Mar 2022 16:03:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7016C340E8;
-        Wed,  9 Mar 2022 16:03:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841796;
-        bh=7wNgykCYYPob3MFB7KUKDW3eJPS8syieYkFUhOkIlNg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DW2W9PlKkcmpTyMlKeRcIGx2lRhA+mTMdfDqsrd7MSoLK6tp/EZitZ6IwpsaiE+l+
-         F4hI/v6i0ZYCKF1wUsw3ynZoo6cFchd1W8FCYe2qRPYF68H0m1vGpiUF7jLn8suTAK
-         h8C5/+AXSs9AGe/5drOtFipNpfYXaQ2Zp0M8PBHc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.19 16/18] ARM: Spectre-BHB workaround
-Date:   Wed,  9 Mar 2022 16:59:53 +0100
-Message-Id: <20220309155856.638582878@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155856.155540075@linuxfoundation.org>
-References: <20220309155856.155540075@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
+        Wed, 9 Mar 2022 11:07:13 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBCF141FC2;
+        Wed,  9 Mar 2022 08:03:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H4XESlXPeXOjxfTF27DQNhWp+Y0hQJd2C+jSFpDWjp6Yrj2/mmTU6MRFLlZis/NQzFoJASca7CrzheuZdSPGdo+JudU5KDfI2hQLER7yUwjk6ECqDLGGEsJUQLO2NWeXM5jgVbg4ee1q15zZRPMtEyqH2bpxNNy8XARK5iWd5cwaN6NXQL8v4I9iTGmvE/Me2WUwMkN1Lu8lWOzdb+Rr9aHrz9y7U2e6YeL2unEZvBPETeS6WtcdJANNhsQzeCgevdTG+ks5UyqxU9LD3/OyhOY+XsmoBxuZTvzY2vcqUT06aYO49IRMIGPVjQSgmHRaWD4fHEVnBQJ8ggv/CGGxGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vrzP2UchQi43pCnpSUo0Ny3bsCPmouvmqf/3EbosyZ0=;
+ b=cv4b4ZPDEvjkByYsm8KKxF4Bod2pNRkUxDW8Qi40IhgZiOW9OB6Nug4bNyYevZzUfC7a7F942+IiIBtAP9ltUwQSo1PaS+7flrf4SNScN1inCbzE9fbmO0eicOD3FKdwnHIRMKgitcejZwanZO8EU5e6g26hWEtxvWQ9fF1i0/K+i2EoPyya2Exzb2sNPDzNsePlrx0HMOcL3iPExGB/y6Q690l7Xb9LXLHaJnOTE2U7VSuTv5cjJY67Lcv/U0IGABPaI7468bBQFwO5v6AUEDOwpP5QrkNO9Htf/OH+/ARXvrWZn6iQCJ7yuEkLRmT8yUk6U7QNdyclhsHc4oPVPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vrzP2UchQi43pCnpSUo0Ny3bsCPmouvmqf/3EbosyZ0=;
+ b=F4yzpfq+loHGNJhpMIukzSLrst1FLOqUmFutKjKJWHNFXAHNXXT+pmhSsBtyVcQ3w4iMCelMiM/P+JeaPz9gDmj8r6oxIRPvklr5P6neYP6ZQze/JdxfE/n36p0kNMbaWy/IjsHV+xg1/t8m2AsaxjxqshjRgIRn6euCfF4pBb0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com (2603:10b6:208:396::17)
+ by BYAPR12MB3126.namprd12.prod.outlook.com (2603:10b6:a03:df::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Wed, 9 Mar
+ 2022 16:03:20 +0000
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8d44:d69b:b031:1d50]) by BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8d44:d69b:b031:1d50%5]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
+ 16:03:20 +0000
+Message-ID: <7967cc8f-11af-0236-9ed6-ea9a84702965@amd.com>
+Date:   Wed, 9 Mar 2022 10:03:18 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] x86/mce: Unify vendors grading logic and provide AMD
+ machine error checks
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+        x86@kernel.org, yazen.ghannam@amd.com,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bilbao@vt.edu
+References: <20220308184133.712761-1-carlos.bilbao@amd.com>
+ <YievKnn5hSK0AvMt@nazgul.tnic>
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+In-Reply-To: <YievKnn5hSK0AvMt@nazgul.tnic>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR03CA0010.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::15) To BL1PR12MB5874.namprd12.prod.outlook.com
+ (2603:10b6:208:396::17)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8cf39534-9a1c-4b52-01de-08da01e654cc
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3126:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3126608C4C7F0ED3529B03BDF80A9@BYAPR12MB3126.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z6hO++RVHRefkxYcbKx3XT/2Usg6OVrvP7pMnOfvfD8/fo0B5gf5IhkU9qnNQ5BYyMU3BNAJttNA9BwJxvlgY1eV4qp6plmoRtMX7XocKl9Lu88jxYkzuftKxi4Fi6pIle5GN4Y87j/zbQlbPSmhqM6TOgdMQIDZorGqtg8WYzvxyz2TeYNCc8TLRMnEZDTEuW+s2YKMYqjRkPVWEwWDNa3t/bP+ctppVzjd46YxIkPZTBOoro94ES0wBjSLw1vRnDtp4y5oYxXEmZxc+NHyloXZTSOTGeze8wJrseN8AO4RCegR4FIuoUFOif2HPOP2o5k6FsMNCzhLVEjoqpcnZqyibpDhBUglhTGMdfG4oViz3qFDM0XKy5UF9gAZDpuvkiigFSR/2oLBgXp2/qa4/BFqAgWnBuZsnnBAANNKPtKB8gAob8kb13nS7Kg5A7bzrqxc6nlnAMBc6YBtZ8PZZEqosQRLRBqd2KqbwQHREJv8rYoJjzG1p6CRt21vHGV2aMc5aguFajJhlt1J06wFCloTqMX25reLImr8L7/eCuGFqKsRuZuNcWqP0uCABAI50GqPJ2EKDikHksD+/FHmApYOZFlBTwQwyOQT5cv6IgmjgPSUpS6Lk1ht9krZ+Nyv+pmNiVqUko9/NBPNMPJ55t3LkL7IIC3fbpx9DVgva8d4sLH1FtUIf2SdmGvhIZB+8nXuPbArLHbTQaHXJ5VX5OwzXYZK7j/35J0qxL9bpOPT+lU7X3GtR7FJQ4xez4Tw
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5874.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(53546011)(8936002)(6486002)(6916009)(31686004)(36756003)(2906002)(508600001)(66476007)(66946007)(66556008)(31696002)(316002)(5660300002)(4326008)(8676002)(38100700002)(44832011)(83380400001)(26005)(186003)(2616005)(6512007)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V2JKQVR5MlpYK2R3QzFDVFdFZ2hZb0M1dmlRTzh4NkJCWnBKTEdhZVU5c1lC?=
+ =?utf-8?B?RzVSc2FaaXQzM2thNng4cFBkK0VOSFl0T2Y4djlMSndZZXd2RmxLVU9rTUc3?=
+ =?utf-8?B?Snc3dnQyaXNYM3lZT0RFYkNRNS9PSEhYVGN3ZzhBa29vaDVjOFNndjdUVTB1?=
+ =?utf-8?B?Yjg2T0x6RzBTc2NFa2pTYmNOMisyK0tMOWw3RVdUcE1TdmZ2TENmbmlKQis2?=
+ =?utf-8?B?UTd3QWJ6RmxLWjJ2bVNQeU11WHgxa1pEOUpFeWF1LzE3R1JTTlZxUWxEU24x?=
+ =?utf-8?B?RS9OTFBIcHVqWlBoWW12eEkxeGp2TzF3blBJZTI1RDRzNjlKLzRPNmVNdjBl?=
+ =?utf-8?B?eXpRSGVvUzc0UUx0R3dkSEc1NU9kalRmTEFOT3ZkTUZPSWpUdFowVlY4WmRZ?=
+ =?utf-8?B?eXZvNEd4ajU1S1VTbi84REhlUkFON0JqR3dlMnRNRVJ4dzZPWERuZ2plMDhB?=
+ =?utf-8?B?YkFUR1ZCMkRPSVM1OXNubjMvOUNrc0IwaFAyV1M0QzU0VzNBL0FIREVycmk4?=
+ =?utf-8?B?SVBIbGFudm9IcENtNlVTQmo1eUhhQXlQMW5YR3JQQWZRTnhycXc1TEZwWmVY?=
+ =?utf-8?B?cno4Y05nUHNsK3dieTFOYlNTU1ZpNnJrQzVqMUxVeGVvcEt4d2tsK1hMRDQ4?=
+ =?utf-8?B?SGJrZzBIaWtkbUp1QVh2MDlRbWdPRjBFbG11cjBqRFFZNjdYUC9WTHFkRk11?=
+ =?utf-8?B?N3ZLUHNSWFRXVk5UZDN5Z2F5dFBweThSRGZmWjBOWkM0Z3BGRTFRSm8rV3ps?=
+ =?utf-8?B?MHZpYUt4aHJETEx3RG9GdWhRTytZQnYzSHNxelFBVWVudUROaUNuakR5dTFO?=
+ =?utf-8?B?MGlJb1hFOGJ6ZCtXRVhXWmkrMndHODdwdEtnSW51S25Bb0lZbFE5VzVXOWpk?=
+ =?utf-8?B?QkRNYzlwcjBhVnI1VmswM3JmdGJrMUR1ZUtSM3A2MlR0YjczUm1iYk1QS0dm?=
+ =?utf-8?B?TmlDM3UrU1JjSCtTeXMzN0g0QktUWVVIQUV6dWVqZ3dGRWwwaXh0ODFUNmVH?=
+ =?utf-8?B?TjZNQXZlb3Rrcy9EYVk1czZXZXJpQnQybkFXTmZKbWR3R29KT0FaOC85QUpF?=
+ =?utf-8?B?aElVMTVWSGxZUGlISFBvZERRaVpLYi9wckhzSW1LVGNTVmhlQVpndmlqclBk?=
+ =?utf-8?B?d29jcnVnZVFWd1lEbFhGV21LWjBvSU1BZG4xK2ZpOVBtU3g2WjE2T3BDYU9m?=
+ =?utf-8?B?cEUreEp2T2FvYzE4QkhVYUZhWEZ5TGQxMXJnVCtQenpPbk1YMTBRWHVhL1BJ?=
+ =?utf-8?B?alVZd3gvUWJzOVludmkvbDl4cDJzQ0JhckpYeGtNM1dYR3h4Y3JDQVBGTUNB?=
+ =?utf-8?B?Y1FRY2pteTJPK3hJUTRWUzl0U0NVMHlvUjZIVlJtVkRKZitzblpjaTl4RWZj?=
+ =?utf-8?B?ekJXUmRtSlI5UWJMNjRsTkdrRVNBQjVOeUlaMzA4dkorRERnWmI2b3IwbTRq?=
+ =?utf-8?B?aWhHQkNCbXQveXNpRnJ2UysyZklScEVWbDd5bW9WWG0yTUk0dU1OakRuZHNC?=
+ =?utf-8?B?elFjdTNlaFE1eEMzWEJha29icEhBQ3J3VmNqTzNWYkdHZ2JXdEozNTZ4USsw?=
+ =?utf-8?B?MXpXaGc0aENIalhNSzYxejdiVlE3V0ZabFBTdmloL2x1dXZtcWwxK3FqTXlp?=
+ =?utf-8?B?cXAxK1FQVTZtMm1LTTFpZXkrUjFNZ2dEY3dYeXZ6WmZYUlc3M0F3L2gzcTFI?=
+ =?utf-8?B?SDZmM2JPNVhpRnZzZmRvVnRBdGFQb2JjSjE4dWNGYWZENUxtMm4rblc1R3pY?=
+ =?utf-8?B?UFhJQkNqeVJ0VWJoZTZRZlBOY21Wd3Nhb3dJQ1pZZmppcE9UV1pEZjdtb1hX?=
+ =?utf-8?B?S3llaFpsWXNlNHFEeS9DaEhwem1KRFdwY2U3OU1sV3I3cTliaVlhMGJDc2k5?=
+ =?utf-8?B?VW9BMm13Q3lQd1JnZWgxc3lESlN6dUxuY2dHUzV0V3Y1ZzdUOGpORkc0Mmx6?=
+ =?utf-8?B?KzRNR0ZTd3MvUGhKMWMzajVDc1NwMXJYZll2cXphVzN5RWphaEo5V1dBZXM5?=
+ =?utf-8?B?WUlpU2dPWkQ4QWlHbDBNSGRtNGVKSTVHTVZoMER0Ujlnd0cvSUI2WFZkTkUy?=
+ =?utf-8?B?a0w5bWlVekFaYTV6aGJyOEI5VUlZcEhzZFFLZVBGVUhnWDZEY2F2b1Ura0dR?=
+ =?utf-8?B?QnZoR0FVS3NlRkxwRUY3cU1ON2tBR2tyOHdQM0xuWHpMZzBWNDhBdktaN0hZ?=
+ =?utf-8?Q?KuK15eHni7ctfXfr/849ZYQ=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8cf39534-9a1c-4b52-01de-08da01e654cc
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5874.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 16:03:20.5764
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0+5lKkU38iCRTkjq0yjCABz+I9KZ5jtaItD4dhY43rePxH6h5E+x0fCs6fzM2Wc5CqN9Tfb7bkNS0zCcEAAYiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3126
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+On 3/8/2022 1:32 PM, Borislav Petkov wrote:
+> On Tue, Mar 08, 2022 at 12:41:34PM -0600, Carlos Bilbao wrote:
+>> AMD's severity grading covers very few machine errors. In the graded cases
+>> there are no user-readable messages, complicating debugging of critical
+>> hardware errors. Furthermore, with the current implementation AMD MCEs have
+>> no support for the severities-coverage file. Adding new severities for AMD
+>> with the current logic would be too convoluted.
+>>
+>> Fix the above issues including AMD severities to the severity table, in
+>> combination with Intel MCEs. Unify the severity grading logic of both
+>> vendors. Label the vendor-specific cases (e.g. cases with different
+>> registers) where checks cannot be implicit with the available features.
+>>
+>> Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
+>> ---
+>>  arch/x86/include/asm/mce.h         |   7 ++
+>>  arch/x86/kernel/cpu/mce/severity.c | 188 +++++++++++++++--------------
+>>  2 files changed, 103 insertions(+), 92 deletions(-)
+> 
+> Sorry, maybe you're too new to this and you probably haven't read the
+> old discussions we have had about the severity grading turd. In order to
+> save you some time: adding more to that macro insanity is not going to
+> happen.
+> 
+> The AMD severity grading functions are *actually* readable vs this
+> abomination which I hate with passion.
+> 
+> If you want to add more logic, you should add to mce_severity_amd(),
+> perhaps call other helper functions which grade based on a certain
+> aspect of the error type, split the logic, use comments, etc, but
+> *definitely* not this.
+> 
+> Thx.
+> 
 
-comomit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
+Understood, sending a new patch in that direction.
 
-Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
-Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
-well to be safe, which is affected by Spectre V2 in the same ways as
-Cortex-A15.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-[changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/include/asm/assembler.h |   10 ++++
- arch/arm/include/asm/spectre.h   |    4 +
- arch/arm/kernel/entry-armv.S     |   79 ++++++++++++++++++++++++++++++++++++---
- arch/arm/kernel/entry-common.S   |   24 +++++++++++
- arch/arm/kernel/spectre.c        |    4 +
- arch/arm/kernel/traps.c          |   38 ++++++++++++++++++
- arch/arm/kernel/vmlinux.lds.h    |   18 +++++++-
- arch/arm/mm/Kconfig              |   10 ++++
- arch/arm/mm/proc-v7-bugs.c       |   76 +++++++++++++++++++++++++++++++++++++
- 9 files changed, 254 insertions(+), 9 deletions(-)
-
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -110,6 +110,16 @@
- 	.endm
- #endif
- 
-+#if __LINUX_ARM_ARCH__ < 7
-+	.macro	dsb, args
-+	mcr	p15, 0, r0, c7, c10, 4
-+	.endm
-+
-+	.macro	isb, args
-+	mcr	p15, 0, r0, c7, r5, 4
-+	.endm
-+#endif
-+
- 	.macro asm_trace_hardirqs_off, save=1
- #if defined(CONFIG_TRACE_IRQFLAGS)
- 	.if \save
---- a/arch/arm/include/asm/spectre.h
-+++ b/arch/arm/include/asm/spectre.h
-@@ -14,6 +14,7 @@ enum {
- 	__SPECTRE_V2_METHOD_ICIALLU,
- 	__SPECTRE_V2_METHOD_SMC,
- 	__SPECTRE_V2_METHOD_HVC,
-+	__SPECTRE_V2_METHOD_LOOP8,
- };
- 
- enum {
-@@ -21,8 +22,11 @@ enum {
- 	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
- 	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
- 	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
-+	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
- };
- 
- void spectre_v2_update_state(unsigned int state, unsigned int methods);
- 
-+int spectre_bhb_update_vectors(unsigned int method);
-+
- #endif
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1029,12 +1029,11 @@ vector_\name:
- 	sub	lr, lr, #\correction
- 	.endif
- 
--	@
--	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
--	@ (parent CPSR)
--	@
-+	@ Save r0, lr_<exception> (parent PC)
- 	stmia	sp, {r0, lr}		@ save r0, lr
--	mrs	lr, spsr
-+
-+	@ Save spsr_<exception> (parent CPSR)
-+2:	mrs	lr, spsr
- 	str	lr, [sp, #8]		@ save spsr
- 
- 	@
-@@ -1055,6 +1054,44 @@ vector_\name:
- 	movs	pc, lr			@ branch to handler in SVC mode
- ENDPROC(vector_\name)
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.subsection 1
-+	.align 5
-+vector_bhb_loop8_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mov	r0, #8
-+1:	b	. + 4
-+	subs	r0, r0, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	2b
-+ENDPROC(vector_bhb_loop8_\name)
-+
-+vector_bhb_bpiall_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
-+	@ isb not needed due to "movs pc, lr" in the vector stub
-+	@ which gives a "context synchronisation".
-+	b	2b
-+ENDPROC(vector_bhb_bpiall_\name)
-+	.previous
-+#endif
-+
- 	.align	2
- 	@ handler addresses follow this label
- 1:
-@@ -1063,6 +1100,10 @@ ENDPROC(vector_\name)
- 	.section .stubs, "ax", %progbits
- 	@ This must be the first word
- 	.word	vector_swi
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.word	vector_bhb_loop8_swi
-+	.word	vector_bhb_bpiall_swi
-+#endif
- 
- vector_rst:
-  ARM(	swi	SYS_ERROR0	)
-@@ -1177,8 +1218,10 @@ vector_addrexcptn:
-  * FIQ "NMI" handler
-  *-----------------------------------------------------------------------------
-  * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
-- * systems.
-+ * systems. This must be the last vector stub, so lets place it in its own
-+ * subsection.
-  */
-+	.subsection 2
- 	vector_stub	fiq, FIQ_MODE, 4
- 
- 	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-@@ -1211,6 +1254,30 @@ vector_addrexcptn:
- 	W(b)	vector_irq
- 	W(b)	vector_fiq
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.section .vectors.bhb.loop8, "ax", %progbits
-+.L__vectors_bhb_loop8_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_loop8_und
-+	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+	W(b)	vector_bhb_loop8_pabt
-+	W(b)	vector_bhb_loop8_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_loop8_irq
-+	W(b)	vector_bhb_loop8_fiq
-+
-+	.section .vectors.bhb.bpiall, "ax", %progbits
-+.L__vectors_bhb_bpiall_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_bpiall_und
-+	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+	W(b)	vector_bhb_bpiall_pabt
-+	W(b)	vector_bhb_bpiall_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_bpiall_irq
-+	W(b)	vector_bhb_bpiall_fiq
-+#endif
-+
- 	.data
- 	.align	2
- 
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -166,12 +166,36 @@ ENDPROC(ret_from_fork)
-  */
- 
- 	.align	5
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+ENTRY(vector_bhb_loop8_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mov	r8, #8
-+1:	b	2f
-+2:	subs	r8, r8, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_loop8_swi)
-+
-+	.align	5
-+ENTRY(vector_bhb_bpiall_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mcr	p15, 0, r8, c7, c5, 6	@ BPIALL
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_bpiall_swi)
-+#endif
-+	.align	5
- ENTRY(vector_swi)
- #ifdef CONFIG_CPU_V7M
- 	v7m_exception_entry
- #else
- 	sub	sp, sp, #PT_REGS_SIZE
- 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
-+3:
-  ARM(	add	r8, sp, #S_PC		)
-  ARM(	stmdb	r8, {sp, lr}^		)	@ Calling sp, lr
-  THUMB(	mov	r8, sp			)
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -45,6 +45,10 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		method = "Firmware call";
- 		break;
- 
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		method = "History overwrite";
-+		break;
-+
- 	default:
- 		method = "Multiple mitigations";
- 		break;
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -33,6 +33,7 @@
- #include <linux/atomic.h>
- #include <asm/cacheflush.h>
- #include <asm/exception.h>
-+#include <asm/spectre.h>
- #include <asm/unistd.h>
- #include <asm/traps.h>
- #include <asm/ptrace.h>
-@@ -844,6 +845,43 @@ static void flush_vectors(void *vma, siz
- 	flush_icache_range(start, end);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+int spectre_bhb_update_vectors(unsigned int method)
-+{
-+	extern char __vectors_bhb_bpiall_start[], __vectors_bhb_bpiall_end[];
-+	extern char __vectors_bhb_loop8_start[], __vectors_bhb_loop8_end[];
-+	void *vec_start, *vec_end;
-+
-+	if (system_state > SYSTEM_SCHEDULING) {
-+		pr_err("CPU%u: Spectre BHB workaround too late - system vulnerable\n",
-+		       smp_processor_id());
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		vec_start = __vectors_bhb_loop8_start;
-+		vec_end = __vectors_bhb_loop8_end;
-+		break;
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		vec_start = __vectors_bhb_bpiall_start;
-+		vec_end = __vectors_bhb_bpiall_end;
-+		break;
-+
-+	default:
-+		pr_err("CPU%u: unknown Spectre BHB state %d\n",
-+		       smp_processor_id(), method);
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	copy_from_lma(vectors_page, vec_start, vec_end);
-+	flush_vectors(vectors_page, 0, vec_end - vec_start);
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#endif
-+
- void __init early_trap_init(void *vectors_base)
- {
- 	extern char __stubs_start[], __stubs_end[];
---- a/arch/arm/kernel/vmlinux.lds.h
-+++ b/arch/arm/kernel/vmlinux.lds.h
-@@ -106,11 +106,23 @@
-  */
- #define ARM_VECTORS							\
- 	__vectors_lma = .;						\
--	.vectors 0xffff0000 : AT(__vectors_start) {			\
--		*(.vectors)						\
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
-+		.vectors {						\
-+			*(.vectors)					\
-+		}							\
-+		.vectors.bhb.loop8 {					\
-+			*(.vectors.bhb.loop8)				\
-+		}							\
-+		.vectors.bhb.bpiall {					\
-+			*(.vectors.bhb.bpiall)				\
-+		}							\
- 	}								\
- 	ARM_LMA(__vectors, .vectors);					\
--	. = __vectors_lma + SIZEOF(.vectors);				\
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);		\
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);		\
-+	. = __vectors_lma + SIZEOF(.vectors) +				\
-+		SIZEOF(.vectors.bhb.loop8) +				\
-+		SIZEOF(.vectors.bhb.bpiall);				\
- 									\
- 	__stubs_lma = .;						\
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -844,6 +844,16 @@ config HARDEN_BRANCH_PREDICTOR
- 
- 	   If unsure, say Y.
- 
-+config HARDEN_BRANCH_HISTORY
-+	bool "Harden Spectre style attacks against branch history" if EXPERT
-+	depends on CPU_SPECTRE
-+	default y
-+	help
-+	  Speculation attacks against some high-performance processors can
-+	  make use of branch history to influence future speculation. When
-+	  taking an exception, a sequence of branches overwrites the branch
-+	  history, or branch history is invalidated.
-+
- config TLS_REG_EMUL
- 	bool
- 	select NEED_KUSER_HELPERS
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -191,6 +191,81 @@ static void cpu_v7_spectre_v2_init(void)
- 	spectre_v2_update_state(state, method);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+static int spectre_bhb_method;
-+
-+static const char *spectre_bhb_method_name(int method)
-+{
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		return "loop";
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		return "BPIALL";
-+
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	if (spectre_bhb_method != method) {
-+		if (spectre_bhb_method) {
-+			pr_err("CPU%u: Spectre BHB: method disagreement, system vulnerable\n",
-+			       smp_processor_id());
-+
-+			return SPECTRE_VULNERABLE;
-+		}
-+
-+		if (spectre_bhb_update_vectors(method) == SPECTRE_VULNERABLE)
-+			return SPECTRE_VULNERABLE;
-+
-+		spectre_bhb_method = method;
-+	}
-+
-+	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
-+		smp_processor_id(), spectre_bhb_method_name(method));
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#else
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	return SPECTRE_VULNERABLE;
-+}
-+#endif
-+
-+static void cpu_v7_spectre_bhb_init(void)
-+{
-+	unsigned int state, method = 0;
-+
-+	switch (read_cpuid_part()) {
-+	case ARM_CPU_PART_CORTEX_A15:
-+	case ARM_CPU_PART_BRAHMA_B15:
-+	case ARM_CPU_PART_CORTEX_A57:
-+	case ARM_CPU_PART_CORTEX_A72:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_LOOP8;
-+		break;
-+
-+	case ARM_CPU_PART_CORTEX_A73:
-+	case ARM_CPU_PART_CORTEX_A75:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_BPIALL;
-+		break;
-+
-+	default:
-+		state = SPECTRE_UNAFFECTED;
-+		break;
-+	}
-+
-+	if (state == SPECTRE_MITIGATED)
-+		state = spectre_bhb_install_workaround(method);
-+
-+	spectre_v2_update_state(state, method);
-+}
-+
- static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
- 						  u32 mask, const char *msg)
- {
-@@ -231,4 +306,5 @@ void cpu_v7_ca15_ibe(void)
- void cpu_v7_bugs_init(void)
- {
- 	cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
- }
-
-
+Thanks,
+Carlos
