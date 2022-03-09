@@ -2,101 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5045AC352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCFC2C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238690AbiCIQvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:51:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        id S237087AbiCIQsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236739AbiCIQaL (ORCPT
+        with ESMTP id S238001AbiCIQbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE60DA85A;
-        Wed,  9 Mar 2022 08:23:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27C2AB81FF7;
-        Wed,  9 Mar 2022 16:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482B9C340F6;
-        Wed,  9 Mar 2022 16:23:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843004;
-        bh=PQOuITHVPon9XW98JjJqKHvwOVzkW8LQEUKLykbyNTI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hrpx1yqencrermm0454rqKavT9m/VaRRUC5Qx/nC9YIh8bxMV5BWaebk9QBJe9fib
-         NJGd94UMU30TWrPzss+43IUy+g3SD0tT/HsgWabmt1GCPBEIYWrvdi3w62S3SuxYT1
-         jDR4L/wr9ymW6B3jf5mCbNxdEhvhUf7KqsVc2wdItuK/TvWFITQZLg+zWRCXHpbiOP
-         dOt9/cSinYxXeEflXRKXYQgsUdqgfcyW1vnXnSSc0GXGfSJocaJcC147YrRU8nSZvZ
-         OQcnMBpHxLpRikkcRFH9NQ3uUB3xjqhVHDgz4NmhfIb0xclg7Sr0A3y2tFsObNl6Em
-         1wI5VzNZ/IXIg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/20] tcp: make tcp_read_sock() more robust
-Date:   Wed,  9 Mar 2022 11:21:55 -0500
-Message-Id: <20220309162158.136467-17-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
-References: <20220309162158.136467-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:31:17 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B65192C8E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:25:30 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:58940)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz7u-008XLf-2X; Wed, 09 Mar 2022 09:25:26 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34572 helo=localhost.localdomain)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz7t-005hAS-3k; Wed, 09 Mar 2022 09:25:25 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Date:   Wed,  9 Mar 2022 10:24:43 -0600
+Message-Id: <20220309162454.123006-2-ebiederm@xmission.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+References: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-XM-SPF: eid=1nRz7t-005hAS-3k;;;mid=<20220309162454.123006-2-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18NPI0fwGnL/QDFI18nl9zROcIqRJPmxUU=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 02/13] ptrace/arm: Rename tracehook_report_syscall report_syscall
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Make the arm and arm64 code more concise and less confusing by
+renaming the architecture specific tracehook_report_syscall to
+report_syscall.
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
-
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
-
-Instead, issue a one time warning and make sure to make progress.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/arm/kernel/ptrace.c   | 7 +++----
+ arch/arm64/kernel/ptrace.c | 7 +++----
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 63c81af41b43..a3ec2a08027b 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1652,11 +1652,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
-+
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
+diff --git a/arch/arm/kernel/ptrace.c b/arch/arm/kernel/ptrace.c
+index 43b963ea4a0e..e5aa3237853d 100644
+--- a/arch/arm/kernel/ptrace.c
++++ b/arch/arm/kernel/ptrace.c
+@@ -831,8 +831,7 @@ enum ptrace_syscall_dir {
+ 	PTRACE_SYSCALL_EXIT,
+ };
+ 
+-static void tracehook_report_syscall(struct pt_regs *regs,
+-				    enum ptrace_syscall_dir dir)
++static void report_syscall(struct pt_regs *regs, enum ptrace_syscall_dir dir)
+ {
+ 	unsigned long ip;
+ 
+@@ -856,7 +855,7 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs)
+ 	int scno;
+ 
+ 	if (test_thread_flag(TIF_SYSCALL_TRACE))
+-		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
++		report_syscall(regs, PTRACE_SYSCALL_ENTER);
+ 
+ 	/* Do seccomp after ptrace; syscall may have changed. */
+ #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+@@ -897,5 +896,5 @@ asmlinkage void syscall_trace_exit(struct pt_regs *regs)
+ 		trace_sys_exit(regs, regs_return_value(regs));
+ 
+ 	if (test_thread_flag(TIF_SYSCALL_TRACE))
+-		tracehook_report_syscall(regs, PTRACE_SYSCALL_EXIT);
++		report_syscall(regs, PTRACE_SYSCALL_EXIT);
+ }
+diff --git a/arch/arm64/kernel/ptrace.c b/arch/arm64/kernel/ptrace.c
+index 39dbdfdc38d3..b7845575f86f 100644
+--- a/arch/arm64/kernel/ptrace.c
++++ b/arch/arm64/kernel/ptrace.c
+@@ -1792,8 +1792,7 @@ enum ptrace_syscall_dir {
+ 	PTRACE_SYSCALL_EXIT,
+ };
+ 
+-static void tracehook_report_syscall(struct pt_regs *regs,
+-				     enum ptrace_syscall_dir dir)
++static void report_syscall(struct pt_regs *regs, enum ptrace_syscall_dir dir)
+ {
+ 	int regno;
+ 	unsigned long saved_reg;
+@@ -1842,7 +1841,7 @@ int syscall_trace_enter(struct pt_regs *regs)
+ 	unsigned long flags = read_thread_flags();
+ 
+ 	if (flags & (_TIF_SYSCALL_EMU | _TIF_SYSCALL_TRACE)) {
+-		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
++		report_syscall(regs, PTRACE_SYSCALL_ENTER);
+ 		if (flags & _TIF_SYSCALL_EMU)
+ 			return NO_SYSCALL;
+ 	}
+@@ -1870,7 +1869,7 @@ void syscall_trace_exit(struct pt_regs *regs)
+ 		trace_sys_exit(regs, syscall_get_return_value(current, regs));
+ 
+ 	if (flags & (_TIF_SYSCALL_TRACE | _TIF_SINGLESTEP))
+-		tracehook_report_syscall(regs, PTRACE_SYSCALL_EXIT);
++		report_syscall(regs, PTRACE_SYSCALL_EXIT);
+ 
+ 	rseq_syscall(regs);
+ }
 -- 
-2.34.1
+2.29.2
 
