@@ -2,129 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4159EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B651AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiCIBO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:14:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
+        id S230167AbiCIBOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:14:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbiCIBNI (ORCPT
+        with ESMTP id S231298AbiCIBNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:13:08 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A9B18020C
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:03:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646787784; x=1678323784;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=scepsH2Uv6wYPB3QkRsBNH+h+6F589st9pGGxe9r+3I=;
-  b=TCXwdhKa1bdyQnwUq4CvK5rKJIpeGlxDRSCD+1bMKsVFAqGqDNL7ZhL+
-   ktzZkQWmKjV6rLO6UWpfHW11lyjKlnGSEqqueMIfm2nP5uFFKXZj4Chn/
-   Sh8WBdHn+QveD0zhKuCORWSp0cbhEDhAgsab79sEvaSZ/txB5WMTOwvsm
-   uCCMuPb9g3cdIf3LyQa/2mSSUdLMp1XCKaExGzLGbS6QbOJptwZx6hJhr
-   EKUK7E84h73D0K++71k66p1fHD9Bu/SXVCFto56915ro+Rn9UcOAN8NL1
-   mZpLrVBz2qgrF3NA6i4pIsT4PfnHfc0YjthDpm39GC+KvWLs95P/P26BL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318083476"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="318083476"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 17:02:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="510312196"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 08 Mar 2022 17:02:45 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRkiy-0002Hl-N9; Wed, 09 Mar 2022 01:02:44 +0000
-Date:   Wed, 9 Mar 2022 09:02:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning:
- 'strncpy' specified bound depends on the length of the source argument
-Message-ID: <202203090830.THfDfibc-lkp@intel.com>
+        Tue, 8 Mar 2022 20:13:10 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8654A15879C
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:56:18 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id g17so1041338lfh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:56:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dlXc7nO4VVenbG9TQJ/z1TWtkG9nDmF64Ost29V8AWc=;
+        b=fk9Kkf3UiaboVe5n2sPqRmsu9R/9pSJ0MBG82T7odsoD9Z+4tUrGity1EBUSVcd5bO
+         Ay+GVgtTlqOjk5DG157lanciRnAlDA9OLu41FZ3ehebtgoQkdRl4IX3y8PNM/lSEI5AP
+         dZRPNM6mHBzmKNa87ZpX/gBVrjQgnOz7vbrW0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dlXc7nO4VVenbG9TQJ/z1TWtkG9nDmF64Ost29V8AWc=;
+        b=YGVD+Q+fiXunJmLZ9gPqdq8JYgj6Lh8fq+bo0Qf+p/ZSYcLunbN770b/VuV/9+Jb/d
+         6dLWyNLNPTSDUNxUNf4mg8ojEmJSD7CmITpYFAZDaKQbMze3Hss/auYsP7X7lL1u1dWi
+         UvG2ugBEuZOAWy3HSaRrRm7PzG+FIz8mgK8peQshaDWlH3W5jvyJJUD6XtkHDbY4jFrA
+         6bJBjtNNYW+IiKjWzIdnSy8qlelTODVjZHrgcOqcyHRKJuMca52y13yYmoBf1wNmQxYZ
+         5q5Iq6H3L0TFe6Dju7LOLafXzkl+2AjBr1ltbt/Xz5jIQqh2LiS2xKzLfnRwcYWrjeAg
+         f1Hw==
+X-Gm-Message-State: AOAM532X51eiNjtOaPa40+DaR7GCDVMalmv7S8nMN1mKm6l1fuHVWGZA
+        Q1fvWw72uRToJ3a0JShoQMqr9/aI6tCAO6mKCAg=
+X-Google-Smtp-Source: ABdhPJzxiKdZrGW/psZjQD22B72hrb/aK1eFi029KadW+xrT0pF3YkWVx9q/DroWJTM77OJuzqILRA==
+X-Received: by 2002:a17:906:a148:b0:6cd:50c7:8d4d with SMTP id bu8-20020a170906a14800b006cd50c78d4dmr15512508ejb.641.1646785800129;
+        Tue, 08 Mar 2022 16:30:00 -0800 (PST)
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
+        by smtp.gmail.com with ESMTPSA id r6-20020a1709064d0600b006da7ca3e514sm98042eju.208.2022.03.08.16.29.59
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 16:29:59 -0800 (PST)
+Received: by mail-ej1-f43.google.com with SMTP id p15so1468953ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:29:59 -0800 (PST)
+X-Received: by 2002:ac2:44a4:0:b0:445:8fc5:a12a with SMTP id
+ c4-20020ac244a4000000b004458fc5a12amr12499712lfm.27.1646785789558; Tue, 08
+ Mar 2022 16:29:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220308234723.3834941-1-yuzhao@google.com> <CAHk-=wi5wg=72exwHODJdVtAfqa1e85dGfjGftuhHQ5Z4v-DNA@mail.gmail.com>
+ <CAOUHufYFDawK6vmkQ16EQm7FSHresViifnxW2yj_RDuMSjJPjg@mail.gmail.com>
+In-Reply-To: <CAOUHufYFDawK6vmkQ16EQm7FSHresViifnxW2yj_RDuMSjJPjg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 8 Mar 2022 16:29:33 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgwgqJMyxbrxa-mY3cYh--BZ5JKDieVc=RfXR1mdqsYkQ@mail.gmail.com>
+Message-ID: <CAHk-=wgwgqJMyxbrxa-mY3cYh--BZ5JKDieVc=RfXR1mdqsYkQ@mail.gmail.com>
+Subject: Re: [PATCH v8 00/14] Multi-Gen LRU Framework
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Huazhong,
+On Tue, Mar 8, 2022 at 4:15 PM Yu Zhao <yuzhao@google.com> wrote:
+>
+> This sounds self-serving: our data centers want them, so I had to try.
 
-FYI, the error/warning still remains.
+Heh. I'm not opposed to putting them back in, but if/when we merge the
+multi-gen LRU code, I really want people to be all testing the same
+thing.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   92f90cc9fe0e7a984ea3d4bf3d120e30ba8a2118
-commit: 77e9184869c9fb00a482357ea8eef3bd7ae3d45a net: hns3: refactor dump bd info of debugfs
-date:   10 months ago
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203090830.THfDfibc-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=77e9184869c9fb00a482357ea8eef3bd7ae3d45a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 77e9184869c9fb00a482357ea8eef3bd7ae3d45a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/ethernet/hisilicon/hns3/
+I also think that if we put them back in, that should come with
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+ (a) performance numbers for the different cases
 
-All warnings (new ones prefixed by >>):
+ (b) hard guidance of what the numbers should be, and under what
+circumstances (ie giving the user enough information that he *can*
+answer the question for his configuration)
 
-   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c: In function 'hns3_dbg_fill_content.constprop':
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:125:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     125 |                         strncpy(pos, result[i], strlen(result[i]));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In function 'hns3_dbg_fill_content',
-       inlined from 'hns3_dbg_tx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:432:2:
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In function 'hns3_dbg_fill_content',
-       inlined from 'hns3_dbg_rx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:358:2:
->> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
-     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ (c) some thought about perhaps making them possibly more dynamic than
+a hardcoded build-time value (assuming the numbers show that it's
+worth doing in the first place, of course)
 
+so I think that the support for the concept can/should be left in, but
+I think that kind of fancy "I want more generations or fewer
+tiers-per-generation because of XYZ" needs to be a separate issue with
+more explanation from the initial "This multi-gen LRU gives better
+performance" merge.
 
-vim +/strncpy +127 drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+Because as-is, I don't think those config options had nearly enough
+information associated with them to merit them existing.
 
-   114	
-   115	static void hns3_dbg_fill_content(char *content, u16 len,
-   116					  const struct hns3_dbg_item *items,
-   117					  const char **result, u16 size)
-   118	{
-   119		char *pos = content;
-   120		u16 i;
-   121	
-   122		memset(content, ' ', len);
-   123		for (i = 0; i < size; i++) {
-   124			if (result)
-   125				strncpy(pos, result[i], strlen(result[i]));
-   126			else
- > 127				strncpy(pos, items[i].name, strlen(items[i].name));
-   128	
-   129			pos += strlen(items[i].name) + items[i].interval;
-   130		}
-   131	
-   132		*pos++ = '\n';
-   133		*pos++ = '\0';
-   134	}
-   135	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+                  Linus
