@@ -2,107 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439A0C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236646AbiCIQrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:47:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        id S235428AbiCIQrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:47:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbiCIQaC (ORCPT
+        with ESMTP id S236596AbiCIQaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E3A0BC3;
-        Wed,  9 Mar 2022 08:23:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A9CA6195D;
-        Wed,  9 Mar 2022 16:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E9CC3410B;
-        Wed,  9 Mar 2022 16:23:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842990;
-        bh=nCbAcrQeQOGTnXsdHXh8Jn0Q4uLhukoXOeCBftdREl8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DOCB0aR7LeeaLxmzgGjujzhNclSiOqZmWeG7rd2OUN8o1Oc/zOpgCpXxZwCcsRiCd
-         ULVAmV3kWVFj3mVwKCr9aFK9DBiUrCh3+vFrysHf+FdwQcwe7cKsg7hdER/yLkBpC8
-         qldbCfCn0WFohj4iU2flE8k08F2HRLmzOHXn5u9coR+7uZKZeO4YUnc+PQaIkhYXdO
-         g5UDDhhtCuw8dlS6dtgxoUK4fmTQI7FpVd9C9NeSQ8dGRAFQ5ajREddqQSKMs7mt/f
-         pZ3t488+FETxx8T+VYL5linwD5YX0LuLdQXaTJ2cM4vLffSIuVK3syUwkPfKY88rZ6
-         pvDdIyEAcETCQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Golan Ben Ami <golan.ben.ami@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
-        ilan.peer@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 14/20] iwlwifi: don't advertise TWT support
-Date:   Wed,  9 Mar 2022 11:21:52 -0500
-Message-Id: <20220309162158.136467-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
-References: <20220309162158.136467-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:30:03 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E631A9E34;
+        Wed,  9 Mar 2022 08:23:17 -0800 (PST)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6DAD124000E;
+        Wed,  9 Mar 2022 16:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646842995;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NZTvslklp3c1o8lr+/78tGD5AYGEYrysKlxh3WZn15s=;
+        b=oEXCiR9QBxEZaq+iKP0/y2R6V8ZwrCqwNzVmOQKofHCpB/HEgEeMXo4+h1iM/ufbk4nz4g
+        qlZxP+opKaE/HGQ/XbhOK5z/NQUydyYnmtLCYroyy3uRsUisBogOcNb7hErIR3/7HeWLsC
+        BGeR6eI+bVdFJ0l3663XZltUhj/DkFE9inOrVyvTiZK9F6xjgL66+Y7nWqjcCkyvTYsCzg
+        uInZGVsS8ZhAfBUTXXI/jJoErkBexCaLuymNeu3gfT94NMBms2jeciByCd7ZnIcp8/Sj19
+        +Ep7Fmobtz80+8FUiQD7VvdtpuNGZ5QOyvCLPas65IzKen7gP7umMUPUC0r08Q==
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Joshua Kinard <kumba@gentoo.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 02/29] rtc: ds1685: drop no_irq
+Date:   Wed,  9 Mar 2022 17:22:33 +0100
+Message-Id: <20220309162301.61679-2-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Golan Ben Ami <golan.ben.ami@intel.com>
+No platforms are currently setting no_irq. Anyway, letting platform_get_irq
+fail is fine as this means that there is no IRQ. In that case, clear
+RTC_FEATURE_ALARM so the core knows there are no alarms.
 
-[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
-
-Some APs misbehave when TWT is used and cause our firmware to crash.
-We don't know a reasonable way to detect and work around this problem
-in the FW yet.  To prevent these crashes, disable TWT in the driver by
-stopping to advertise TWT support.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
-Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
-[reworded the commit message]
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/rtc/rtc-ds1685.c   | 14 +++++---------
+ include/linux/rtc/ds1685.h |  1 -
+ 2 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-index cbde21e772b1..b862cfbcd6e7 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-@@ -587,8 +587,7 @@ static struct ieee80211_sband_iftype_data iwl_he_capa[] = {
- 			.has_he = true,
- 			.he_cap_elem = {
- 				.mac_cap_info[0] =
--					IEEE80211_HE_MAC_CAP0_HTC_HE |
--					IEEE80211_HE_MAC_CAP0_TWT_REQ,
-+					IEEE80211_HE_MAC_CAP0_HTC_HE,
- 				.mac_cap_info[1] =
- 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
- 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 922a7ea0cd24..d2c6fdb70273 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -350,7 +350,6 @@ static const u8 he_if_types_ext_capa_sta[] = {
- 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
- 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
- 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
--	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
- };
+diff --git a/drivers/rtc/rtc-ds1685.c b/drivers/rtc/rtc-ds1685.c
+index 0ec1e44e3431..a24331ba8a5f 100644
+--- a/drivers/rtc/rtc-ds1685.c
++++ b/drivers/rtc/rtc-ds1685.c
+@@ -1285,13 +1285,10 @@ ds1685_rtc_probe(struct platform_device *pdev)
+ 	 * there won't be an automatic way of notifying the kernel about it,
+ 	 * unless ctrlc is explicitly polled.
+ 	 */
+-	if (!pdata->no_irq) {
+-		ret = platform_get_irq(pdev, 0);
+-		if (ret <= 0)
+-			return ret;
+-
+-		rtc->irq_num = ret;
+-
++	rtc->irq_num = platform_get_irq(pdev, 0);
++	if (rtc->irq_num <= 0) {
++		clear_bit(RTC_FEATURE_ALARM, rtc_dev->features);
++	} else {
+ 		/* Request an IRQ. */
+ 		ret = devm_request_threaded_irq(&pdev->dev, rtc->irq_num,
+ 				       NULL, ds1685_rtc_irq_handler,
+@@ -1305,7 +1302,6 @@ ds1685_rtc_probe(struct platform_device *pdev)
+ 			rtc->irq_num = 0;
+ 		}
+ 	}
+-	rtc->no_irq = pdata->no_irq;
  
- static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+ 	/* Setup complete. */
+ 	ds1685_rtc_switch_to_bank0(rtc);
+@@ -1394,7 +1390,7 @@ ds1685_rtc_poweroff(struct platform_device *pdev)
+ 		 * have been taken care of by the shutdown scripts and this
+ 		 * is the final function call.
+ 		 */
+-		if (!rtc->no_irq)
++		if (rtc->irq_num)
+ 			disable_irq_nosync(rtc->irq_num);
+ 
+ 		/* Oscillator must be on and the countdown chain enabled. */
+diff --git a/include/linux/rtc/ds1685.h b/include/linux/rtc/ds1685.h
+index 67ee9d20cc5a..5a41c3bbcbe3 100644
+--- a/include/linux/rtc/ds1685.h
++++ b/include/linux/rtc/ds1685.h
+@@ -46,7 +46,6 @@ struct ds1685_priv {
+ 	u32 regstep;
+ 	int irq_num;
+ 	bool bcd_mode;
+-	bool no_irq;
+ 	u8 (*read)(struct ds1685_priv *, int);
+ 	void (*write)(struct ds1685_priv *, int, u8);
+ 	void (*prepare_poweroff)(void);
 -- 
-2.34.1
+2.35.1
 
