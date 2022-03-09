@@ -2,95 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C231C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236455AbiCIQwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        id S236516AbiCIQwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:52:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiCIQpA (ORCPT
+        with ESMTP id S233368AbiCIQpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:45:00 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A6A2B260;
-        Wed,  9 Mar 2022 08:38:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646843916; x=1678379916;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8pGmp/P6DW09QNCZnxhFBr88c90cP0y+5hBJacUv2zo=;
-  b=QJi/L/nVNgQAO0qoNUs5NjI3haPM6ajfVE0RxFzeKu0tkXhHqyAlEekH
-   /jW1oJvyld/yHZUAzVl4NyXPMnr9OPUpkX6z46rVTtx3m5w5ryrVdnDF4
-   IoV+LbbX3h8FrNHr8VSCzPyVvZP1fxAFLb2uNEfTEkRlp1zr4f4PU7X3W
-   z+IMkKNw+4BghpBz4uu76tV5oL6VoHqH7cs1jFzJrg7i/jBqzC0riz5PT
-   tepNCDeStE7BkytjbxkXOS9NFOtwqjECbPxTnHxkq7Rp3IuFxpR6ebmXB
-   b9PIxPwNzvjx+Desp0eKV7KOTrMTESSmlAvQE5JDGbF2kKHdba7JKsjhc
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="151431959"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 09:38:26 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 09:38:25 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 09:38:12 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH v8 01/13] media: atmel: atmel-isc-base: use streaming status when queueing buffers
-Date:   Wed, 9 Mar 2022 18:37:46 +0200
-Message-ID: <20220309163758.2672727-2-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220309163758.2672727-1-eugen.hristev@microchip.com>
-References: <20220309163758.2672727-1-eugen.hristev@microchip.com>
+        Wed, 9 Mar 2022 11:45:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460CF3A70B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:38:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B709261A59
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D538C340F4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:38:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646843917;
+        bh=iC169KEcmP4GOYp17Sss+BBLrHr5sbsqM2HTswZv53k=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kbLZCVPrrNZFgg1zNOv+uj5thtx4j1RVK30FiaV8TGBwC/29iXSw/mVIp6NiQ8tZb
+         CrSo/B/2Z71YWMe1vMEIfoQLEl7nTQWKHCDiLND5qM4OqfOV6Kkzv81DnLNyWOdqgx
+         b2xKJ0Bxn51hFE5dTNqBptDqScyBIr42XAwzZpu4BWdnfgUqMpi4+T+gDsrV8Y8I+p
+         fTDMntrIZnHYu0GgmVh0/NRFFGUsFHcpXzTEVgt7shOTUI37kiAVxt0S6fUvAvTmvi
+         2Rd26xOdel9ocLGleuKBOVfk/WlomYSXTr+d74PFsQM+AfTFDBEiVQ5LWn+lHxmTPj
+         m0RI76qyY4+RQ==
+Received: by mail-wm1-f42.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so3809120wmj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:38:37 -0800 (PST)
+X-Gm-Message-State: AOAM5301HjaM7z0YTgWIzbM0LH/yqoICC3sapgKL8RC41c3XddzxCYjD
+        9mGaPmHqa5SBNTq87lTsC4o0aF1/F6kA/5+TjoU=
+X-Google-Smtp-Source: ABdhPJznNRJosN/CnJQ8YmwilKitvCCkO6cHt7K4Li/0F09s1DxZWjuBCBpxQQg+QX8GIS2PET9sY9GvZ1dgU5eRtoM=
+X-Received: by 2002:a05:600c:384a:b0:37c:2d14:a2d3 with SMTP id
+ s10-20020a05600c384a00b0037c2d14a2d3mr196737wmr.20.1646843915414; Wed, 09 Mar
+ 2022 08:38:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220309144138.360482-1-arnd@kernel.org> <20220309144138.360482-2-arnd@kernel.org>
+ <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com> <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+ <08232117-7444-55d8-e13c-b49828c8f3e9@arm.com>
+In-Reply-To: <08232117-7444-55d8-e13c-b49828c8f3e9@arm.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 9 Mar 2022 17:38:19 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3L2sfi-VQ=yjRhkGA6x6JTvCw5KyHQnBf2r348MX_avw@mail.gmail.com>
+Message-ID: <CAK8P3a3L2sfi-VQ=yjRhkGA6x6JTvCw5KyHQnBf2r348MX_avw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
+To:     Vladimir Murzin <vladimir.murzin@arm.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During experiments with libcamera, it looks like vb2_is_streaming returns
-true before our start streaming is called.
-Order of operations is streamon -> queue -> start_streaming
-ISC would have started the DMA immediately when a buffer is being added
-to the vbqueue if the queue is streaming.
-It is more safe to start the DMA after the start streaming of the driver is
-called.
-Thus, even if vb2queue is streaming, add the buffer to the dma queue of the
-driver instead of actually starting the DMA process, if the start streaming
-has not been called yet.
-Tho achieve this, we have to use vb2_start_streaming_called instead of
-vb2_is_streaming.
+On Wed, Mar 9, 2022 at 5:21 PM Vladimir Murzin <vladimir.murzin@arm.com> wrote:
+> On 3/9/22 4:17 PM, Arnd Bergmann wrote:
+> > On Wed, Mar 9, 2022 at 4:48 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >>
+> >> On 2022-03-09 14:40, Arnd Bergmann wrote:
+> >>> From: Arnd Bergmann <arnd@arndb.de>
+> >>>
+> >>> It is possible to build MMU-less kernels for Cortex-M base
+> >>> microcrontrollers as well as a couple of older platforms that
+> >>> have not been converted to CONFIG_ARCH_MULTIPLATFORM,
+> >>> specifically ep93xx, footbridge, dove, sa1100 and s3c24xx.
+> >>>
+> >>> It seems unlikely that anybody has tested those configurations
+> >>> in recent years, as even building them is frequently broken.
+> >>> A patch I submitted caused another build time regression
+> >>> in this configuration. I sent a patch for that, but it seems
+> >>> better to also remove the option entirely, leaving ARMv7-M
+> >>> as the only supported Arm NOMMU target for simplicity.
+> >>
+> >> In that case, it would probably make sense to garbage-collect all the
+> >> configs, setup code and other stuff relating to older MMU-less CPU cores
+> >> like ARM1156, ARM940, etc. at the same time.
+> >
+> > Right, good idea. These are only selected by CONFIG_ARCH_INTEGRATOR,
+> > but that in turn doesn't build for CONFIG_MMU=n because it depends on
+> > ARCH_MULTIPLATFORM. I'll send a patch for these.
+> >
+> > I also went back and forth between removing the #ifdefs in
+> > arch/arm/mm/proc-*.S for this patch, though I did not do that in the end.
+> > We may still want them at least for proc-v7.S because that is a small
+> > chance that someone will want to support Cortex-R.
+> >
+>
+> I'd appreciate if you keep them since I run Cortex-R52...
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
----
- drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Ok, no problem.
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index db15770d5b88..d2cc6c99984f 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -442,7 +442,7 @@ static void isc_buffer_queue(struct vb2_buffer *vb)
- 
- 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
- 	if (!isc->cur_frm && list_empty(&isc->dma_queue) &&
--		vb2_is_streaming(vb->vb2_queue)) {
-+		vb2_start_streaming_called(vb->vb2_queue)) {
- 		isc->cur_frm = buf;
- 		isc_start_dma(isc);
- 	} else
--- 
-2.25.1
+Any opinion on removing CPU_ARM{7TDMI,740T,940T,946E}?
 
+       Arnd
