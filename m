@@ -2,252 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB01C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbiCIJmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:42:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        id S231436AbiCIJow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:44:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbiCIJmg (ORCPT
+        with ESMTP id S229886AbiCIJov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:42:36 -0500
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50075.outbound.protection.outlook.com [40.107.5.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A42C16EA9C;
-        Wed,  9 Mar 2022 01:41:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mrKuMMiugslMsWr1q4djxS+95WmQfTCzEC+p0kgkic1e5mLfyCztfA7xYgSdH3eFc6GPaTNcj4gZmfIs5Eitzxk7mBKIbkOFnHih9tlVlJbQ/Dk2ZgYtI8ay6+gNsBgA+xxEaADq144/JWWEhV7nu4eAL7o31/rATuJU081Jwn9BpqD8jSG6l3QG5nfZ0neW1fNkMDtZkENhJx21XBAbCPtMtC7ZYIKfmPOgr5K/Imj6TmZ6L6dfQJnvqhwkGesxL6mM72pz2HfFdTUMaOnFC7Fa4UMieXUU3v6OYJ5razvIZEmNoTYuYIN8+2eV3iRp5PUWcogUL6z2oSejzt3K8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wk6NvhCtTfcK9hE2AklyLKrOsOTcAU/RjqDgv2rFzSc=;
- b=IxsbTrafE4FdA2RiHUtktKdq+u3NvtUF/iJOz4hoU3WPyNCNNH+Qnv1ZaZN9SnZZfeSNdSdGT9fynDb4taOZ7gnDCyaamDxKmWa4oMzGNX1zj6fnrpckJVGJbPdHSnN/PVPEDDnR/cnUhwE/KmZm3hV1YiO6yadSnUi/Mjl1yh5S711TIJI93E7pApxEMzetXnf8vD+Yo26AGz94AjPEd7bk9VoiQ9zik7OVTnbY38rURG6USfpinxxtqcPUfUSXgxTvi6wo6yIgdJ6rSOc12W6gUZm+QUOauTTZcPPt2V57Fnwl4mtfD7GL/taK3Esn2e4yjjAiM9HRGuAOtqr2kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wk6NvhCtTfcK9hE2AklyLKrOsOTcAU/RjqDgv2rFzSc=;
- b=eFMm0SAzd9jupZy82FxJ6NwUWgInm1TnHL6/lYuv/A40qlBUIuyCRyRpaShxstimLhUBH2TL6NpvfKXpCNznbhJSeTdunSAR9V2ENLhtxC6TMHc6o2tdiGKaDTAJYYHmM1mabkfQxubVN0tu7srmAAgBKfTdIveHIGALvP/5qcg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DBBPR04MB6043.eurprd04.prod.outlook.com (2603:10a6:10:c5::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
- 2022 09:41:30 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 09:41:30 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com
-Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V2 6/6] remoteproc: imx_rproc: request mbox channel later
-Date:   Wed,  9 Mar 2022 18:21:18 +0800
-Message-Id: <20220309102118.8131-7-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20220309102118.8131-1-peng.fan@oss.nxp.com>
-References: <20220309102118.8131-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR04CA0002.apcprd04.prod.outlook.com
- (2603:1096:4:197::17) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Wed, 9 Mar 2022 04:44:51 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DA21405FF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:43:52 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2297OacC007454;
+        Wed, 9 Mar 2022 09:43:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : reply-to : references : mime-version : content-type
+ : in-reply-to; s=pp1; bh=0xrZJ3hhJSYU8H8btUMOcHQ4xjx05w8m9CFoUXpogLY=;
+ b=nQMjy4vfMjxzr602x/gp2Xj9LRf1YrulMXunUGG2Db6cn8zQ+mjdm6sLJbGv7tDNo+9i
+ W+N9fZLLSKxlW6zhNnGpVCZ2fHWZ4Qkx5ETP9tWhC9Pd8Rrrfx4sNtaiHr8lflUOx9TH
+ Tb1VBczhP2AAmjKRFSvPc2XePPZUe68DB3zwpm4eBWaQbYJw4vKrlXHFjFjpf/mjGWMM
+ e40N1ldCR6JB2C9CIZCF4av2eSOzpghnoQqL+HaLfDBWuHUTMAFKOZffiZGLsTl967RE
+ ScDYWKKuK5VUjHpS6DY9VUxH+xYIAfXmtj/XX8s8p1XhZjzYiQfu/8Q/SlYWcKjUyeB6 iw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3env4uucmm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 09:43:30 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2298EipB013786;
+        Wed, 9 Mar 2022 09:43:29 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3env4uucke-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 09:43:29 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2299ggIq006418;
+        Wed, 9 Mar 2022 09:43:27 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3ekyg8g9v7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Mar 2022 09:43:27 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2299hOET45678916
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Mar 2022 09:43:24 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 88FB652051;
+        Wed,  9 Mar 2022 09:43:24 +0000 (GMT)
+Received: from linux.vnet.ibm.com (unknown [9.126.150.29])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id C41045204E;
+        Wed,  9 Mar 2022 09:43:21 +0000 (GMT)
+Date:   Wed, 9 Mar 2022 15:13:20 +0530
+From:   Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        mgorman@techsingularity.net, mingo@kernel.org,
+        song.bao.hua@hisilicon.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v6] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+Message-ID: <20220309094320.GL618915@linux.vnet.ibm.com>
+Reply-To: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+References: <20220308063749.6929-1-kprateek.nayak@amd.com>
+ <20220308092944.GJ618915@linux.vnet.ibm.com>
+ <7e5bdc95-a30a-58bc-fc67-98b03fe1fa22@amd.com>
+ <20220309052554.GK618915@linux.vnet.ibm.com>
+ <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9391139d-d3ff-451f-a076-08da01b0fd6c
-X-MS-TrafficTypeDiagnostic: DBBPR04MB6043:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DBBPR04MB60439612F34B29073DE36CFBC90A9@DBBPR04MB6043.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l1ULFNaI35Jtx5+jrMl1Pp8AWFqocEbZMkL8je8WsSuVHC8k/vO4Qbpq/4dux0cyylpNZNRdqls4wcw6DjTrSRkiVdsF5ZH8hjgBitZtn1ADBKo/NzbpDTfEOxIKeJiSk5xpEDI4JqDym+Hx4GDVJFZB0k9onnnZ2C7G7c7RinQxkhQF8cKA9ytudd1kAP6uU/6hoUP38/BsH+OFtHGO52jFHo51q3ZCXkrFXhdVpluFh1bVAJJCVfjzipf1VS66bp/99mXPTQEFj5apx7ZG9c/ZuK3amyOmA1Vx+dGnvaG6aODuNrQQjnUvXTypeYmudQxI1YRTm099J4eKp7pL74JN0hAWCrR2U9kxIQIgTJZVvnEjSm21bu7/BZwNhzjCo32fyrsb6+/6LwKViHIakzweKZcZaCu8pQRo04kn7fzYVg2lsZZwm9jtROcZf3MvEyXow+rkoEiD+iDQz4/DNq5TRAyKiGdqKQ2ghIosici7hZYO1Uxe13xE5OUQ1ODDBoZG94hVHuptlgqeibtTMx/wZFELiAZtpo10KlWp4YEL0aiffkaVqZ6CA1iM6FpqtLTZLhQDJ80KRdMjyeYN83/h/rGGwg24/KA2TrG2NeN4xo5Xz0ZjhpaUXBDOBI2pv/PGqhJVaxZBYuxHXEyzVrBGoGZAtsNVEpYGVbSzoNWmGAhMeq8Hi4xUFnBjlhPsyD6gUu7u9enkNC9Nz+ceEA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(52116002)(66476007)(66556008)(66946007)(6512007)(8676002)(8936002)(7416002)(2906002)(6506007)(4326008)(6666004)(6486002)(38350700002)(38100700002)(5660300002)(498600001)(1076003)(186003)(26005)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jaX2uiU36+6ZdTc9Rg5vRQGU9U1XJ0ehP7fUC2xH9YK+srwYKMzB4pjbYxol?=
- =?us-ascii?Q?POM+pJ5J+Pp5DD+Xz4b2cJL7GqEqKiJLdX3vJ81o8seukpS+e/Q9wcKU2ESD?=
- =?us-ascii?Q?ZrfO7SOTTlVSYhnRoaNJoYtYo0U81SIRMDALrvRMpW8pW6pcJ9BNSIh2gGbA?=
- =?us-ascii?Q?/HmhjrekfUulsk6xzj2Y3P4KSy31+swDDG9ryhhGPUsx6R1XqZxjn2jk9eEA?=
- =?us-ascii?Q?uf0NdIXIFaLnoq1Y9kB2LhSV+IxW/1jF3hUStu5ZfU+DcbbIweDB6/F+bVjy?=
- =?us-ascii?Q?8t0SUodSq1NrvNP5G2UvkP/MH1fexMRHZQC90lPSuCNEpSkyk/ymYkxdjje1?=
- =?us-ascii?Q?Q5nuVKngFvxiQ5bC7H0xfDA1Cb5dqrjK1GNGh32gYJcPqRBKv999rGr4rFzg?=
- =?us-ascii?Q?zCw/UdhUo2UwyDOG/bJwf4vkgGIoNhnU3xWSnTFQoBoTolzQZ2FFhxx+aqEJ?=
- =?us-ascii?Q?JH2XxcrCAzqpVYpu6xlloQ76O2I3I9jdY1oTtol90PJwvGXheUtQyQTDO5GX?=
- =?us-ascii?Q?+LFTPI6hwn34MN4Q33BkXb/n+PZfNofdw5iirfp4Vi1ZPz8uCY3mzNxgeYxH?=
- =?us-ascii?Q?lk/q3VOK84CVHP0LS0ho3KIGotCNxrmDS0aYlsjKpR9gKVsVfRKdNT33JPUM?=
- =?us-ascii?Q?Gq/SNyJzkcfo1vqF8W5ynxPsoGaDE1zBQKorvYQvbfslCBXGioRTBfOvE3Kc?=
- =?us-ascii?Q?iQ+1y8MNbtkSZ3zfUwa5oIEsF3HfXf4i38eIQhKH1GQvH4JBjnuh7lYS4W8J?=
- =?us-ascii?Q?JFePNmOHC1JaBGkraTcYLgTIBnCPP5hYCq0rCv3Qqn7gVSxXIP9LtbLWsNJ9?=
- =?us-ascii?Q?igqFCgVzOlSSBdqmGxoAlZ+roftJutd/EXsP/vSt8DYsEplPOayNVFNRZRVX?=
- =?us-ascii?Q?ym0OJNk7t5ob7fq7lHmRZ+lU5z0KYy6vxfyoVNZnuloBMLmpxXUwb45gFntG?=
- =?us-ascii?Q?PrrZ8mHyQwx13lcB1xrTp+hhlJYGtxU5S2H7hTR4R6PaLKxYD2uSKA5I1VUe?=
- =?us-ascii?Q?mOZT1h3sga6RuOP51Uqy4tGJAdFFEIoYGWlE1AzaANVN1QEzCpXlauBxOdK4?=
- =?us-ascii?Q?2caUUZej3AhBpBw1BHlgFLY4F2KHT5+4hb6csGG8WTa5I8uzql3oRbfBfn2L?=
- =?us-ascii?Q?FsecJMCvAmvEZ5MnVxjjZLlBGNVGhrKU8XHdFqwnb4AKIDzo0SFNAiYQ9Ps3?=
- =?us-ascii?Q?SvTlnBQy+WT3Inj5YMAcMjS0Gy9vQQhMuXcf2yolw37pBbeqCj2MQ1VgveId?=
- =?us-ascii?Q?rpx8uc9CksyTRy+04kZ1DyslL7iHT2xb+/Fsw+UU09JivYHkjtLZnaZu+zeb?=
- =?us-ascii?Q?FCyAuNICXkLjVEFyDOtlMBDNASepOiOW5eaIa1OoaXTVUDQG62JT8KXW7O+3?=
- =?us-ascii?Q?3kkzkF/+m9rGZJ78OcPlmZTVAkdvKLTHY8o18gO6Yf6VuaFafWIsQNzCU2IB?=
- =?us-ascii?Q?QzkQZ9NjwIlstRelyKbeNO9cwuUYmkX81PXitH3mlqckgyQgg2FS7uHnS9N0?=
- =?us-ascii?Q?HXzsid+ipDsyHCFJYO6g81fYgfuXOi1T/118JWKC9H+7L/Tse0Gd0uhYJV6a?=
- =?us-ascii?Q?lGG8LwsxQiyDW44CS0k+tkrvD36thVx/x7Di3EXxe/9OTUMqSayKJ3EVQl1Z?=
- =?us-ascii?Q?nsglQF3fSuB1ygTT4MuOZB8=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9391139d-d3ff-451f-a076-08da01b0fd6c
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 09:41:30.5849
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e1tQUSJX6Hb6oJPuYsAK2OJCq/2XCGO8xtHNtEt5qPP5DIdNIWUwn3R7fAU+Ysl2sV0Kevj2lv7EKveuUMxMVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6043
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: F_d2i3xt3f8CgZD4OzpR37ErkqQWFq23
+X-Proofpoint-ORIG-GUID: o46rAGquczgeokd1M-WmjiNeO2FftCiG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-09_04,2022-03-04_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ clxscore=1015 suspectscore=0 adultscore=0 bulkscore=0 priorityscore=1501
+ phishscore=0 spamscore=0 mlxlogscore=999 malwarescore=0 impostorscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203090051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+* K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-09 12:42:51]:
 
-It is possible that when remote processor crash, the communication
-channel will be broken with garbage value in mailbox, such as
-when Linux is issuing a message through mailbox, remote processor
-crashes, we need free & rebuild the mailbox channels to make sure
-no garbage value in mailbox channels.
+Hi Prateek,
 
-So move the request/free to start/stop for managing remote procesosr in
-Linux, move to attach/detach for remote processor is out of control of
-Linux.
+> Hello Srikar,
+> 
+> On 3/9/2022 10:55 AM, Srikar Dronamraju wrote:
+> > * K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-08 17:18:16]:
+> > [..snip..]
+> >> Yes. We've tested stream with 8 and 16 stream threads on a Zen3 system
+> >> with 16 LLCs and in both cases, with unbound runs, we've seen each
+> >> Stream thread get a separate LLC and we didn't observe any stacking.
+> > If the problem is only happening with pinned case, then it means that in the
+> > in unpinned case, the load balancer is able to do the load balancing
+> > correctly and quickly but for some reason may not be able to do the same in
+> > pinned case. Without the patch, even in the unpinned case, the initial CPU
+> > range is more less the same number of LLCs as the pinned. However its able
+> > to spread better.
+> The problem this patch is trying to solve is that of the initial placement
+> of task when they are pinned to a subset of cpu in a way that number of
+> allowed cpus in a NUMA domain is less than the imb_numa_nr.
+> 
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- drivers/remoteproc/imx_rproc.c | 31 ++++++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 11 deletions(-)
+I completely understand your problem. The only missing piece is why is this
+initial placement *not a problem for the unpinned case*. If we are able to
+articulate how the current code works well for the unpinned case, I would
+be fine.
 
-diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-index adedecf8def6..c03d479f1b09 100644
---- a/drivers/remoteproc/imx_rproc.c
-+++ b/drivers/remoteproc/imx_rproc.c
-@@ -83,6 +83,9 @@ struct imx_rproc_mem {
- #define ATT_CORE_MASK   0xffff
- #define ATT_CORE(I)     BIT((I))
- 
-+static int imx_rproc_xtr_mbox_init(struct rproc *rproc);
-+static void imx_rproc_free_mbox(struct rproc *rproc);
-+
- struct imx_rproc {
- 	struct device			*dev;
- 	struct regmap			*regmap;
-@@ -323,6 +326,10 @@ static int imx_rproc_start(struct rproc *rproc)
- 	struct arm_smccc_res res;
- 	int ret;
- 
-+	ret = imx_rproc_xtr_mbox_init(rproc);
-+	if (ret)
-+		return ret;
-+
- 	switch (dcfg->method) {
- 	case IMX_RPROC_MMIO:
- 		ret = regmap_update_bits(priv->regmap, dcfg->src_reg, dcfg->src_mask,
-@@ -373,6 +380,8 @@ static int imx_rproc_stop(struct rproc *rproc)
- 
- 	if (ret)
- 		dev_err(dev, "Failed to stop remote core\n");
-+	else
-+		imx_rproc_free_mbox(rproc);
- 
- 	return ret;
- }
-@@ -552,7 +561,7 @@ static void imx_rproc_kick(struct rproc *rproc, int vqid)
- 
- static int imx_rproc_attach(struct rproc *rproc)
- {
--	return 0;
-+	return imx_rproc_xtr_mbox_init(rproc);
- }
- 
- /* Only support detach when doing attach recovery */
-@@ -561,6 +570,8 @@ static int imx_rproc_detach(struct rproc *rproc)
- 	if (rproc->state != RPROC_CRASHED)
- 		return -ENOTSUPP;
- 
-+	imx_rproc_free_mbox(rproc);
-+
- 	return 0;
- }
- 
-@@ -695,6 +706,9 @@ static int imx_rproc_xtr_mbox_init(struct rproc *rproc)
- 	struct mbox_client *cl;
- 	int ret;
- 
-+	if (priv->tx_ch && priv->rx_ch)
-+		return 0;
-+
- 	if (!of_get_property(dev->of_node, "mbox-names", NULL))
- 		return 0;
- 
-@@ -729,6 +743,8 @@ static void imx_rproc_free_mbox(struct rproc *rproc)
- 
- 	mbox_free_channel(priv->tx_ch);
- 	mbox_free_channel(priv->rx_ch);
-+	priv->tx_ch = NULL;
-+	priv->rx_ch = NULL;
- }
- 
- static int imx_rproc_partition_notify(struct notifier_block *nb,
-@@ -961,23 +977,19 @@ static int imx_rproc_probe(struct platform_device *pdev)
- 		goto err_put_rproc;
- 	}
- 
--	ret = imx_rproc_xtr_mbox_init(rproc);
--	if (ret)
--		goto err_put_wkq;
--
- 	ret = imx_rproc_addr_init(priv, pdev);
- 	if (ret) {
- 		dev_err(dev, "failed on imx_rproc_addr_init\n");
--		goto err_put_mbox;
-+		goto err_put_wkq;
- 	}
- 
- 	ret = imx_rproc_detect_mode(priv);
- 	if (ret)
--		goto err_put_mbox;
-+		goto err_put_wkq;
- 
- 	ret = imx_rproc_clk_enable(priv);
- 	if (ret)
--		goto err_put_mbox;
-+		goto err_put_wkq;
- 
- 	INIT_WORK(&priv->rproc_work, imx_rproc_vq_work);
- 
-@@ -994,8 +1006,6 @@ static int imx_rproc_probe(struct platform_device *pdev)
- 
- err_put_clk:
- 	clk_disable_unprepare(priv->clk);
--err_put_mbox:
--	imx_rproc_free_mbox(rproc);
- err_put_wkq:
- 	destroy_workqueue(priv->workqueue);
- err_put_rproc:
-@@ -1011,7 +1021,6 @@ static int imx_rproc_remove(struct platform_device *pdev)
- 
- 	clk_disable_unprepare(priv->clk);
- 	rproc_del(rproc);
--	imx_rproc_free_mbox(rproc);
- 	destroy_workqueue(priv->workqueue);
- 	rproc_free(rproc);
- 
+> Consider the same example of Stream running 8 threads with pinning as follows
+> on the dual socket Zen3 system (0-63,128-191 in one socket, 64-127,192-255 in
+> another socket) with 8 LLCs per socket:
+> 
+> numactl -C 0,16,32,48,64,80,96,112 ./stream8
+> 
+> Number of cpus available in each socket for this task is 4. However, each
+> socket consists of 8 LLCs. According to current scheduler, all the LLCs are
+> available for task to use but in reality, it can only use 4. Hence, all
+> the stream threads are put on same socket and they have to initially share
+> LLCs and the same set of cpus. This is why we see stacking initially and
+> this is what we are addressing.
+> 
+> We've observed that load balancer does kick in and is able to spread the tasks
+> apart but this takes a while and quite a few migrations before a stable state
+> is reached.
+> 
+> Following is the output of the tracepoint sched_migrate_task on 5.17-rc1
+> tip sched/core for stream running 8 threads with the same pinning pattern:
+> (Output has been slightly modified for readability)
+> 
+> 167.928338: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=32 dest_cpu=48 START - {8}{0}
+> ... 9 migrations
+> 168.595632: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=16 dest_cpu=64 * {7}{1}
+> 168.595634: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=16 dest_cpu=64 * {6}{2}
+> ... 3 migrations
+> 168.625803: sched_migrate_task: comm=stream pid=5052 prio=120 orig_cpu=0 dest_cpu=64 * {5}{3}
+> 168.626146: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=16 dest_cpu=0
+> 168.650832: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=0 dest_cpu=48
+> 168.651009: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=64 dest_cpu=32 * {6}{2}
+> 168.677314: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=32 dest_cpu=80 * {5}{3}
+> 168.677320: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=48 dest_cpu=64 * {4}{4}
+> 168.735707: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=64 dest_cpu=96
+> 168.775510: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=80 dest_cpu=0 * {5}{3}
+> ... 39 migrations
+> 170.232105: sched_migrate_task: comm=stream pid=5049 prio=120 orig_cpu=0 dest_cpu=64 END {4}{4}
+> 
+> As we can see, 63 migrations are arecorded during the runtime of the
+> program that can be avoided by the correct initial placement.
+> 
+> As you highlight, there may be areas in the load balancer path that
+> can be optimized too for such a case.
+> > I believe the problem could be in can_migrate_task() checking for
+> > !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr)
+> >
+> > i.e dst_cpu is doing a load balance on behalf of the entire LLC, however it
+> > only will pull tasks that can be pulled into it.
+> Please correct me if I'm wrong but don't we scan the entire sched group
+> and check if there is a compatible cpu for pinned tasks in can_migrate_task()
+> when !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr) ?
+> 
+
+> If a compatible cpu is found in the group, it is stored in new_dst_cpu
+> member of lb_env to be used later in the load balancing path if my
+> understanding is correct.
+
+Yes, this is the LBF_DST_PINNED logic, So I am wondering if that is kicking
+in correctly because this is the only difference I see between pinned and
+unpinned.
+
+> --
+> Thanks and Regards,
+> Prateek
+
 -- 
-2.30.0
-
+Thanks and Regards
+Srikar Dronamraju
