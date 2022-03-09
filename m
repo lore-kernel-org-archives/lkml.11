@@ -2,106 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C99DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238098AbiCIUIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 15:08:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        id S238100AbiCIUKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 15:10:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236182AbiCIUIb (ORCPT
+        with ESMTP id S231898AbiCIUKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 15:08:31 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919B9DECC
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 12:07:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646856451; x=1678392451;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=vqAgO5Hj65MNywbPhSvspwjP9xV2an55S1XITiL2rCs=;
-  b=WxtvJAq4BJFBON00/prxE0O9DbGRJIc0+hLwxJgatPnEyRRf8hjUXTWn
-   EPq0pCkExKlrrceyFvSghWXi4QnOCw+riu4JaV+BaInLn28qZcwp2y0dV
-   gsy3zOPccYyHpDTlB7AoEysAsBHFNO9eXYbe/rWiXtXtezcCCXNIIRiBp
-   HNV6jgEI8rgjFL9bJZsb+uBBOIim9NSG7ZEGMVZLblNWFJexcxJZv7hBH
-   3Ctv+wEAxVhcuRO0Lf1UIYMpH/ZV9LfIKC7a8/O5bGjOl+bDiXwJIh2Xm
-   avke7SWdK8aArP3XllKltn1QR5Ai4xxvBoGBxBQkK+Ef989BedDnRfazj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="318304179"
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="318304179"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 12:07:30 -0800
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="642285288"
-Received: from sli6-mobl.amr.corp.intel.com (HELO [10.209.104.236]) ([10.209.104.236])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 12:07:29 -0800
-Message-ID: <f368d524-f676-d112-5bd0-0eeba6b77ff5@intel.com>
-Date:   Wed, 9 Mar 2022 12:07:22 -0800
+        Wed, 9 Mar 2022 15:10:47 -0500
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF4EA1473;
+        Wed,  9 Mar 2022 12:09:48 -0800 (PST)
+Received: by mail-ot1-f46.google.com with SMTP id j3-20020a9d7683000000b005aeed94f4e9so2565033otl.6;
+        Wed, 09 Mar 2022 12:09:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l/Y0orG9IQYI6xXeORs6dX5FqeH3cCXmO8RJhBrMe4c=;
+        b=KzUcXG+M1geM2fDorFpsleyafRdyPW9hPdY/aRSipPM2CgE6Bjqz8bj8ZOPSCsfFBH
+         1MkMLhs6QHFtHLuVQFSnNV6O9iNflRUF8W/0NbC4wMsjh+zd2lnMNhKjGmDzwnTlnB9B
+         TORq9vvIUdbCFpExeZ2onIxiHI0hviqutChGmEURminZUS1UmClgPwPlx8+mnm/Mk60A
+         /lIusYWZX1WwbVqxf8YCP5djfaJLpSfcDpBOik8+sp2qyg8Qk1DOC45iC5yfeSCAdOtl
+         CpslrTI0Mm9jlnorG7ps9+ST1hw9E3V2SE8qF3UvABj5klytmo0gG+trwbLBB6Y9bYml
+         lBHg==
+X-Gm-Message-State: AOAM533ZRSVz/qGNAtgHrHxBLvEvQXJhNyfBLIka3tpTKm9TbsZrNIYJ
+        1mOgVDV4PFQi6aGczPHhhBJhFEVbzTUUtQ==
+X-Google-Smtp-Source: ABdhPJyJEsLNSasJ9qqPtlIyypXG3n1yKrUAcLPuryL9NkiSTkSEhaobT5U8PGjK8szlTjMGsq8TkA==
+X-Received: by 2002:a05:6830:1ac4:b0:5b2:319a:8c3 with SMTP id r4-20020a0568301ac400b005b2319a08c3mr799214otc.203.1646856587411;
+        Wed, 09 Mar 2022 12:09:47 -0800 (PST)
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com. [209.85.210.45])
+        by smtp.gmail.com with ESMTPSA id l3-20020a056830268300b005b21c30a3c5sm1526742otu.29.2022.03.09.12.09.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 12:09:47 -0800 (PST)
+Received: by mail-ot1-f45.google.com with SMTP id k9-20020a056830242900b005ad25f8ebfdso2563225ots.7;
+        Wed, 09 Mar 2022 12:09:47 -0800 (PST)
+X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
+ v133-20020a81618b000000b002dbd9528a39mr1323277ywb.132.1646856254887; Wed, 09
+ Mar 2022 12:04:14 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
- <20220302142806.51844-28-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv5 27/30] x86/kvm: Use bounce buffers for TD guest
-In-Reply-To: <20220302142806.51844-28-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220214133710.3278506-1-javierm@redhat.com> <20220214133710.3278506-4-javierm@redhat.com>
+In-Reply-To: <20220214133710.3278506-4-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 9 Mar 2022 21:04:03 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUuTAsqpx4=WnosfyjLo-t9ryQPQMaE1OeMBk4Ws9DTpQ@mail.gmail.com>
+Message-ID: <CAMuHMdUuTAsqpx4=WnosfyjLo-t9ryQPQMaE1OeMBk4Ws9DTpQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux PWM List <linux-pwm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/2/22 06:28, Kirill A. Shutemov wrote:
-> --- a/arch/x86/coco/tdx.c
-> +++ b/arch/x86/coco/tdx.c
-> @@ -5,6 +5,7 @@
->  #define pr_fmt(fmt)     "tdx: " fmt
->  
->  #include <linux/cpufeature.h>
-> +#include <linux/swiotlb.h>
->  #include <asm/coco.h>
->  #include <asm/tdx.h>
->  #include <asm/vmx.h>
-> @@ -627,5 +628,7 @@ void __init tdx_early_init(void)
->  	x86_platform.guest.enc_tlb_flush_required = tdx_tlb_flush_required;
->  	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
->  
-> +	swiotlb_force = SWIOTLB_FORCE;
+Hi Javier,
+
+On Mon, Feb 14, 2022 at 2:37 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> This adds a DRM driver for SSD1305, SSD1306, SSD1307 and SSD1309 Solomon
+> OLED display controllers.
+>
+> It's only the core part of the driver and a bus specific driver is needed
+> for each transport interface supported by the display controllers.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+
+> --- /dev/null
+> +++ b/drivers/gpu/drm/solomon/ssd130x.c
+
+> +static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
+> +                              struct drm_rect *rect)
+> +{
+> +       unsigned int x = rect->x1;
+> +       unsigned int y = rect->y1;
+> +       unsigned int width = drm_rect_width(rect);
+> +       unsigned int height = drm_rect_height(rect);
+> +       unsigned int line_length = DIV_ROUND_UP(width, 8);
+> +       unsigned int pages = DIV_ROUND_UP(y % 8 + height, 8);
+> +       u32 array_idx = 0;
+> +       int ret, i, j, k;
+> +       u8 *data_array = NULL;
 > +
->  	pr_info("Guest detected\n");
->  }
+> +       data_array = kcalloc(width, pages, GFP_KERNEL);
+> +       if (!data_array)
+> +               return -ENOMEM;
+> +
+> +       /*
+> +        * The screen is divided in pages, each having a height of 8
+> +        * pixels, and the width of the screen. When sending a byte of
+> +        * data to the controller, it gives the 8 bits for the current
+> +        * column. I.e, the first byte are the 8 bits of the first
+> +        * column, then the 8 bits for the second column, etc.
+> +        *
+> +        *
+> +        * Representation of the screen, assuming it is 5 bits
+> +        * wide. Each letter-number combination is a bit that controls
+> +        * one pixel.
+> +        *
+> +        * A0 A1 A2 A3 A4
+> +        * B0 B1 B2 B3 B4
+> +        * C0 C1 C2 C3 C4
+> +        * D0 D1 D2 D3 D4
+> +        * E0 E1 E2 E3 E4
+> +        * F0 F1 F2 F3 F4
+> +        * G0 G1 G2 G3 G4
+> +        * H0 H1 H2 H3 H4
+> +        *
+> +        * If you want to update this screen, you need to send 5 bytes:
+> +        *  (1) A0 B0 C0 D0 E0 F0 G0 H0
+> +        *  (2) A1 B1 C1 D1 E1 F1 G1 H1
+> +        *  (3) A2 B2 C2 D2 E2 F2 G2 H2
+> +        *  (4) A3 B3 C3 D3 E3 F3 G3 H3
+> +        *  (5) A4 B4 C4 D4 E4 F4 G4 H4
+> +        */
+> +
+> +       ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
+> +       if (ret < 0)
+> +               goto out_free;
+> +
+> +       ret = ssd130x_set_page_range(ssd130x, ssd130x->page_offset + y / 8, pages);
+> +       if (ret < 0)
+> +               goto out_free;
+> +
+> +       for (i = y / 8; i < y / 8 + pages; i++) {
+> +               int m = 8;
+> +
+> +               /* Last page may be partial */
+> +               if (8 * (i + 1) > ssd130x->height)
+> +                       m = ssd130x->height % 8;
+> +               for (j = x; j < x + width; j++) {
+> +                       u8 data = 0;
+> +
+> +                       for (k = 0; k < m; k++) {
+> +                               u8 byte = buf[(8 * i + k) * line_length + j / 8];
 
-AMD currently does:
+As buf does not point to (0, 0), the above is not correct if rect.x1 !=
+0 or rect.y1 != 0.  After fixing that, writing more than one text line
+to the console works, but I still see an issue with updates where the
+rectangle size and/or position are not aligned to 8 pixels horizontally.
+Will do more investigation, and send fixes...
 
-        if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-                swiotlb_force = SWIOTLB_FORCE;
+> +                               u8 bit = (byte >> (j % 8)) & 1;
+> +
+> +                               data |= bit << k;
+> +                       }
+> +                       data_array[array_idx++] = data;
+> +               }
+> +       }
+> +
+> +       ret = ssd130x_write_data(ssd130x, data_array, width * pages);
+> +
+> +out_free:
+> +       kfree(data_array);
+> +       return ret;
+> +}
+> +
+> +static void ssd130x_clear_screen(struct ssd130x_device *ssd130x)
+> +{
+> +       u8 *buf = NULL;
+> +       struct drm_rect fullscreen = {
+> +               .x1 = 0,
+> +               .x2 = ssd130x->width,
+> +               .y1 = 0,
+> +               .y2 = ssd130x->height,
+> +       };
+> +
+> +       buf = kcalloc(ssd130x->width, ssd130x->height, GFP_KERNEL);
 
-which somewhat begs the question of why we can't do the
+This buffer is larger than needed. Will send a fix.
 
-	swiotlb_force = SWIOTLB_FORCE;
+> +       if (!buf)
+> +               return;
+> +
+> +       ssd130x_update_rect(ssd130x, buf, &fullscreen);
+> +
+> +       kfree(buf);
+> +}
+> +
+> +static int ssd130x_fb_blit_rect(struct drm_framebuffer *fb, const struct dma_buf_map *map,
+> +                               struct drm_rect *rect)
+> +{
+> +       struct ssd130x_device *ssd130x = drm_to_ssd130x(fb->dev);
+> +       void *vmap = map->vaddr; /* TODO: Use mapping abstraction properly */
+> +       int ret = 0;
+> +       u8 *buf = NULL;
+> +
+> +       buf = kcalloc(fb->width, fb->height, GFP_KERNEL);
 
-thing in:
+This buffer is much larger than needed. Will send a fix.
 
-void __init mem_encrypt_init(void)
-{
-        if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-                return;
+> +       if (!buf)
+> +               return -ENOMEM;
+> +
+> +       drm_fb_xrgb8888_to_mono_reversed(buf, 0, vmap, fb, rect);
+> +
+> +       ssd130x_update_rect(ssd130x, buf, rect);
+> +
+> +       kfree(buf);
+> +
+> +       return ret;
+> +}
 
-/// Here
+Gr{oetje,eeting}s,
 
-I recall there being a reason for this.  But I don't see any mention in
-the changelog.
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
