@@ -2,68 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0633FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbiCIJIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:08:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S231839AbiCIJJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:09:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiCIJIN (ORCPT
+        with ESMTP id S230158AbiCIJJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:08:13 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE9216BCF1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:07:14 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KD5mv6BhFzbcDH;
-        Wed,  9 Mar 2022 17:02:23 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
- 2022 17:07:12 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/mmap: remove obsolete comment in ksys_mmap_pgoff
-Date:   Wed, 9 Mar 2022 17:06:23 +0800
-Message-ID: <20220309090623.13036-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Wed, 9 Mar 2022 04:09:36 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E3014F29C;
+        Wed,  9 Mar 2022 01:08:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646816918; x=1678352918;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w7iza/zSYzgNpQ1Yq4u/4l41Ldi1VH8IMiOYWwqOtRU=;
+  b=pi75kxqi5e1OtL5/M6GAyQmMNdVNwLzB0n/+uVzFphzA7QGBwkT7Uxlu
+   W/kOzGuK+sLDURauWqcfjHoCBUtVN0BbLdmGq2z8V7WBXnNiBF2rbda/0
+   vC+eWX6rpgdIL2/QBfrYp4FDcS4qL+KAxjqkVpDD9r1a0gZDnyprCfIQZ
+   c5SEyYr6I69y5+xjItza91X6XvmdV8Boyljf2vLyOsxFLab8Tj9scLdC1
+   Jr0WABpbg6mm8H596oOfTnIES+1MIti9wOtm0B2U/wrCE8nLYd9VjRe9c
+   kRuyb6XB4UkHnBHFwE4LBUouOzS4/1/nBw5yCqOAZ031tIQW0TaeExmKC
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
+   d="scan'208";a="155781418"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 02:08:38 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 02:08:37 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Mar 2022 02:08:37 -0700
+Date:   Wed, 9 Mar 2022 10:11:29 +0100
+From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
+To:     David Laight <David.Laight@aculab.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
+Message-ID: <20220309091129.b5q3gtiuqlk5skka@soft-dev3-1.localhost>
+References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
+ <YifMSUA/uZoPnpf1@lunn.ch>
+ <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
+ <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RLIMIT_MEMLOCK is already reimplemented on top of ucounts now. And since
-commit 83c1fd763b32 ("mm,hugetlb: remove mlock ulimit for SHM_HUGETLB"),
-mlock ulimit for SHM_HUGETLB is further removed. So we should remove this
-obsolete comment.
+The 03/08/2022 22:46, David Laight wrote:
+> 
+> From: Horatiu Vultur
+> > Sent: 08 March 2022 22:30
+> >
+> > The 03/08/2022 22:36, Andrew Lunn wrote:
+> > >
+> > > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
+> > > >  {
+> > > > -     u32 val;
+> > > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
+> > > > +     int ret = 0;
+> > > >
+> > > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
+> > > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
+> > > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
+> > > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
+> > > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
+> > > > +             if (time_after(jiffies, time)) {
+> > > > +                     ret = -ETIMEDOUT;
+> > > > +                     break;
+> > > > +             }
+> > >
+> > > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
+> > > explicitly supports that.
+> >
+> > I have tried but it didn't improve. It was the same as before.
+> 
+> How many times round the loop is it going ?
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/mmap.c | 2 --
- 1 file changed, 2 deletions(-)
+In the tests that I have done, I have never seen entering in the loop.
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 25d19e218f92..3aa839f81e63 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1616,8 +1616,6 @@ unsigned long ksys_mmap_pgoff(unsigned long addr, unsigned long len,
- 		/*
- 		 * VM_NORESERVE is used because the reservations will be
- 		 * taken when vm_ops->mmap() is called
--		 * A dummy user value is used because we are not locking
--		 * memory so no accounting is necessary
- 		 */
- 		file = hugetlb_file_setup(HUGETLB_ANON_FILE, len,
- 				VM_NORESERVE,
+> 
+> It might be that by the time readx_poll_timeout_atomic()
+> gets around to reading the register the fifo is actually ready.
+> 
+> The there is the delay between detecting 'ready' and writing
+> the next data.
+> That delay might be cumulative and affect performance.
+
+There is also a small delay between writting the word and checking if
+more words can be written.
+
+> 
+> OTOH spinning waiting for fifo space is just plain horrid.
+
+Yes, I agree with you.
+
+> Reminds me of 3C509 drivers :-)
+
+> 
+>         David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+
 -- 
-2.23.0
-
+/Horatiu
