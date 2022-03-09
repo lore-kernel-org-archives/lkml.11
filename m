@@ -2,100 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFB0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbiCIDKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 22:10:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S231610AbiCIDNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:13:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231633AbiCIDKv (ORCPT
+        with ESMTP id S231602AbiCIDNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 22:10:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD43214F2BA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 19:09:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 8 Mar 2022 22:13:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14CC6986E7
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 19:12:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646795572;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nKsc/xErvV8M/cbscux0U+SiTUR+sUDjaVJnbgAGPCY=;
+        b=WXfChX5V64A1IYyrWjRUBj2Cm/v4u9gKBRn0H4nSexB6irXcXXWE9Cvv1pEwrSUVbUO6ZV
+        mtVVluxv+azI2w5Ne/i0tIcQhaHMSD01EoxB6DGsVTTvX+AoLS3+W4favtgwfQj0koLkdC
+        KdC9Iscg46avsyG3gBhife88Rf5cAlA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-588-LcsQeoj3NWCDn-yzQSdHDA-1; Tue, 08 Mar 2022 22:12:50 -0500
+X-MC-Unique: LcsQeoj3NWCDn-yzQSdHDA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40D9DB81E05
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7E9C340EB;
-        Wed,  9 Mar 2022 03:09:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646795390;
-        bh=jWjiAqrUnpIhrBshclXWWixCzx//buFARMefUyobwqM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Oi2xzryvFZzBEi4JvZWKbqkaByE8vQttZgG8zIbfnUgoNheDANGSfJKw+UioNiZva
-         PBhnAnyGTrQE+5pPlT6y2wAwpVFTI2Wnu5l4vRca2nP6GrfRn1gi1yDFaobyxKCPuB
-         +loZQ/bexqdSU7TcmOrbKFxEYPr/ukyE7YI5ZSvMke3f5WglBq360s9m2RnPF9DeWP
-         V6fxLY/1U7qHBTNOLkiDEtGAr6b92IBIJMNifgmutMP1ZilqMYWXPg3ARnbGEwYmm8
-         Sc2acxK3Cm4Wkt5ichIXLW++MATAHZ7PjEB1BQBkTsr83d2V04HM02BunK9xeP9iUX
-         /EQx5qiKfz9OQ==
-Date:   Tue, 8 Mar 2022 19:09:48 -0800
-From:   Keith Busch <kbusch@kernel.org>
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Maurizio Lombardi <mlombard@redhat.com>,
-        linux-nvme@lists.infradead.org, axboe@fb.com,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, Ming Lei <minlei@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: nvme-host: disk corruptions when issuing IDENTIFY commands via
- ioctl()
-Message-ID: <20220309030948.GA3949054@dhcp-10-100-145-180.wdc.com>
-References: <CAFL455n1WaRxZuqCeQGWt1MVDnK8uUytUsAUVEUV9-LLQYv9gQ@mail.gmail.com>
- <20220308195238.GC3501708@dhcp-10-100-145-180.wdc.com>
- <YifyZ9MoUws/7esK@T590>
- <20220309003904.GA3948780@dhcp-10-100-145-180.wdc.com>
- <Yif8svaBscrL9WZk@T590>
- <20220309011429.GA3948855@dhcp-10-100-145-180.wdc.com>
- <YigVg/URukuwwKWF@T590>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7566A1006AA5;
+        Wed,  9 Mar 2022 03:12:49 +0000 (UTC)
+Received: from [10.22.11.135] (unknown [10.22.11.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C73535DF21;
+        Wed,  9 Mar 2022 03:12:48 +0000 (UTC)
+Message-ID: <54ea34a9-e261-3521-ce11-efc59c9a803c@redhat.com>
+Date:   Tue, 8 Mar 2022 22:12:48 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YigVg/URukuwwKWF@T590>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH-mm v2] mm/list_lru: Optimize
+ memcg_reparent_list_lru_node()
+Content-Language: en-US
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+References: <20220309011824.1454619-1-longman@redhat.com>
+ <YigNVbz/h8wzNjs/@carbon.dhcp.thefacebook.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YigNVbz/h8wzNjs/@carbon.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:48:35AM +0800, Ming Lei wrote:
-> > > On Tue, Mar 08, 2022 at 04:39:04PM -0800, Keith Busch wrote:
-> 
-> BTW, this issue is actually one real report from one Red Hat Customer.
+On 3/8/22 21:13, Roman Gushchin wrote:
+> On Tue, Mar 08, 2022 at 08:18:24PM -0500, Waiman Long wrote:
+>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
+>> to be race free"), we are tracking the total number of lru
+>> entries in a list_lru_node in its nr_items field.  In the case of
+>> memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
+>> is 0.  We don't even need to take the nlru->lock as no new lru entry
+>> could be added by a racing list_lru_add() to the draining src_idx memcg
+>> at this point.
+>>
+>> Signed-off-by: Waiman Long <longman@redhat.com>
+>> ---
+>>   mm/list_lru.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/mm/list_lru.c b/mm/list_lru.c
+>> index ba76428ceece..c669d87001a6 100644
+>> --- a/mm/list_lru.c
+>> +++ b/mm/list_lru.c
+>> @@ -394,6 +394,12 @@ static void memcg_reparent_list_lru_node(struct list_lru *lru, int nid,
+>>   	int dst_idx = dst_memcg->kmemcg_id;
+>>   	struct list_lru_one *src, *dst;
+>>   
+>> +	/*
+>> +	 * If there is no lru entry in this nlru, we can skip it immediately.
+>> +	 */
+>> +	if (!READ_ONCE(nlru->nr_items))
+>> +		return;
+> This is a per-node counter, not a per-memcg, right?
+Right. list_lru_node is a per-node structure inside list_lru.
+> If so, do we optimize for the case when all lru items belong to one node and
+> others are empty?
 
-And the correct fix has always been to fix the application.
+That is actually the case that I am trying to optimize for.
 
-> > > 
-> > > But the spec states clearly the data length of IDENTIFY command is 4096
-> > > and PRP list can't be used, so why do you think it isn't complete or
-> > > future proof to validate data length of IDENTIFY in nvme driver?
-> > 
-> > The current spec says that opcode uses 4k today. What about some time in
-> > the future?
-> 
-> spec change should only be applied on future hardware, which can not break
-> current in-market hardware.
+If a system has many containers. It is also likely each container may 
+mount one or more container specific filesystems. Since a container 
+likely use just a few cpus, it is highly that only the list_lru_node 
+that contains those cpus will be utilized while the rests may be empty.
 
-If a new Identify CNS were invented by committee that uses 8k, then the
-older driver enforcing only 4k mappings will create more corruption, and
-then it would be the driver's fault.
+I got the idea of doing this patch when I was looking at a crash dump 
+related to the list_lru code. That particular crash dump has more than 
+13k list_lru's and thousands of mount points. I had notice even if 
+nr_items of a list_lru_node is 0, it still tries to transfer lru entries 
+from source idx to dest idx. Without doing an lock/unlock and loading a 
+cacheline from the memcg_lrus, it can save some time. That can be 
+substantial saving if we are talking about thousands of list_lru's.
 
-> nvme target has validated the Identify's transfer length already.
+Cheers,
+Longman
 
-nvmet provides a fabrics targets, which uses SGL, not PRP. The SGL
-encodes the length, so it's possible to validate it.
- 
-> > And why are you focusing on Identify anyway?
-> 
-> Nvme spec states explicitly that the following 4 commands can't use PRP list:
-> 
-> - Identify command
-> - Namespace Attachment command
-> - Namespace Management command
-> - Set Features command
-> 
-> So it should be enough to just validate these commands.
-
-Why are these 4 opcodes so special that the driver should provide
-training wheels for broken apps, yet it must trust the same app with the
-hundreds of other possible opcodes through the same interface?
