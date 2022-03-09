@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC114C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5716DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236185AbiCIQq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
+        id S236219AbiCIQrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237965AbiCIQbP (ORCPT
+        with ESMTP id S239353AbiCIQc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8492C19140E;
-        Wed,  9 Mar 2022 08:25:24 -0800 (PST)
+        Wed, 9 Mar 2022 11:32:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521492FFE0;
+        Wed,  9 Mar 2022 08:27:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35C50B821FD;
-        Wed,  9 Mar 2022 16:25:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96ECFC340FC;
-        Wed,  9 Mar 2022 16:25:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 851A8619B9;
+        Wed,  9 Mar 2022 16:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC4CC340F3;
+        Wed,  9 Mar 2022 16:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843119;
-        bh=hMg970VvUb5PCKUGsZQd1ROHCFa98Z3h1jv5K4b88c0=;
+        s=k20201202; t=1646843231;
+        bh=GsJT7pC84zhJIAYDDKykhSRzvICLvnRXFMOtZNy5ucA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oXU/kfntwwevskn6uB8UrKRXu/qFGuIGnX9xFaUYz2uDiv2HvEXXVvmtinqfgfGJn
-         mHwBVmghALFaGDx7p4X2PKg6S5G247wMPuKSiwyR+XECuOHkQNwuBo+wX0Z6DrxJfJ
-         905hHdZSDo2LB4UdU88nhpzIv3WVwvVKcn5Ps9fCg/8YADiU93KJmYwVp4QtvymKst
-         bIdID2c4WtGy0oqDOjmPbEiknHZ8w9ueowj0RsXSxvcZci/qjxNctr1wByzKEIURbr
-         g8dAppzXkPst88FICprVIvi6E83+aYs6XgqZgIUHknPikNXs7TXUtsZdJpoCeTM+Lh
-         xYXQy/xI6Q9Ww==
+        b=G/w/P6l0fJXlu8/+uqmM1iNrbEb1UaQsmx2anHlwhYHDd5RcNU/x+PbNlWbFTT79b
+         mNYwjgEpbhZPBLaVwSyv49uzST4Bq38chGIZWfEmpi2DK4p0+c6Pk7DC9WRgfHXD5/
+         13TW3vWl1MW8Pn8OeqYJ23Z459xg1uwmxOOSo6RJBQsK+T6vl9RrYDRnT8t3Be7vZI
+         FPzJg2+hetAi3EOkkrPKnJoxUA+8bRL9r1QB9ed/PtFvvwB+unftVm+bcdaVngF9NA
+         jQpa/rkKJ3e1XKoD1p5Ja2yro5QiR7POT6l4kUDuOOlvBFMXMEEK93ArFTdkUChqhJ
+         TlwpxYTQYxzlw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yan Yan <evitayan@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/14] xfrm: Fix xfrm migrate issues when address family changes
-Date:   Wed,  9 Mar 2022 11:24:55 -0500
-Message-Id: <20220309162508.137035-2-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, rmody@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 11/12] bnx2: Fix an error message
+Date:   Wed,  9 Mar 2022 11:26:16 -0500
+Message-Id: <20220309162618.137226-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
-References: <20220309162508.137035-1-sashal@kernel.org>
+In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
+References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,56 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Yan <evitayan@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
+[ Upstream commit 8ccffe9ac3239e549beaa0a9d5e1a1eac94e866c ]
 
-xfrm_migrate cannot handle address family change of an xfrm_state.
-The symptons are the xfrm_state will be migrated to a wrong address,
-and sending as well as receiving packets wil be broken.
+Fix an error message and report the correct failing function.
 
-This commit fixes it by breaking the original xfrm_state_clone
-method into two steps so as to update the props.family before
-running xfrm_init_state. As the result, xfrm_state's inner mode,
-outer mode, type and IP header length in xfrm_state_migrate can
-be updated with the new address family.
-
-Tested with additions to Android's kernel unit test suite:
-https://android-review.googlesource.com/c/kernel/tests/+/1885354
-
-Signed-off-by: Yan Yan <evitayan@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_state.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 0fd67d1acbfb..cf147e1837a9 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1442,9 +1442,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
- 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
- 
--	if (xfrm_init_state(x) < 0)
--		goto error;
--
- 	x->props.flags = orig->props.flags;
- 	x->props.extra_flags = orig->props.extra_flags;
- 
-@@ -1528,6 +1525,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- 	if (!xc)
- 		return NULL;
- 
-+	xc->props.family = m->new_family;
-+
-+	if (xfrm_init_state(xc) < 0)
-+		goto error;
-+
- 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
- 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
- 
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 299cefe6f94b..21e32d732c3f 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8234,7 +8234,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+-				"pci_set_consistent_dma_mask failed, aborting\n");
++				"dma_set_coherent_mask failed, aborting\n");
+ 			goto err_out_unmap;
+ 		}
+ 	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
 -- 
 2.34.1
 
