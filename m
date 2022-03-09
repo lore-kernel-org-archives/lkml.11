@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE4C35278
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DF5C3527B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237370AbiCIQUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S237649AbiCIQU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:20:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbiCIQKa (ORCPT
+        with ESMTP id S234321AbiCIQLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:10:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A83A9948;
-        Wed,  9 Mar 2022 08:09:08 -0800 (PST)
+        Wed, 9 Mar 2022 11:11:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DCF141E2E;
+        Wed,  9 Mar 2022 08:09:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21022B8222E;
-        Wed,  9 Mar 2022 16:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52CB1C340EC;
-        Wed,  9 Mar 2022 16:09:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C5B617AA;
+        Wed,  9 Mar 2022 16:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A46F1C340E8;
+        Wed,  9 Mar 2022 16:09:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842145;
-        bh=Z5zp1mf8rFmooGBgHSXH5R4zz+cYDH5D/cihGt0NXHY=;
+        s=korg; t=1646842160;
+        bh=qe4bcXBBh4wTW8zC4XExzEG/Ii7AGo4ZdmTdDACP2aU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kzisaWeNnkQgIk56QjA5Akp0VzSoeFd2laWHI8FO0SLyniRVjBpjZ3fDjQw/EsQdF
-         YqLG53iDvswWX6YCdkViIdF8Y7VJAfJVYy41Oo23IcflgRS5dNG8N2aP9/do66J4Et
-         UC0Yescg1T/Ofgji8ESSpJATWns9LTC8Kv4pLfV0=
+        b=pqYTR2m/swhq4z+LHHBhz5TW2xYudlJ6q6xXGApNU0W0xuKXTpvM1yaP7sqDMPQzo
+         E0SGd9u3FCEv0QEVV/msJ68WsccZj/D2kEu1DyZ7o/M7eQBRJNTCLDRzA9HUUYqXPq
+         /4bBuZ4K7wG+D7SUJXYIgoEZjG7abBqLSuj8UmWw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.16 14/37] arm64: add ID_AA64ISAR2_EL1 sys register
-Date:   Wed,  9 Mar 2022 17:00:15 +0100
-Message-Id: <20220309155859.503049666@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.16 19/37] KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+Date:   Wed,  9 Mar 2022 17:00:20 +0100
+Message-Id: <20220309155859.645713024@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
 References: <20220309155859.086952723@linuxfoundation.org>
@@ -53,138 +48,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
+commit 5bdf3437603d4af87f9c7f424b0c8aeed2420745 upstream.
 
-This is a new ID register, introduced in 8.7.
+CPUs vulnerable to Spectre-BHB either need to make an SMC-CC firmware
+call from the vectors, or run a sequence of branches. This gets added
+to the hyp vectors. If there is no support for arch-workaround-1 in
+firmware, the indirect vector will be used.
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Cc: Alexandru Elisei <alexandru.elisei@arm.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Reiji Watanabe <reijiw@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+kvm_init_vector_slots() only initialises the two indirect slots if
+the platform is vulnerable to Spectre-v3a. pKVM's hyp_map_vectors()
+only initialises __hyp_bp_vect_base if the platform is vulnerable to
+Spectre-v3a.
+
+As there are about to more users of the indirect vectors, ensure
+their entries in hyp_spectre_vector_selector[] are always initialised,
+and __hyp_bp_vect_base defaults to the regular VA mapping.
+
+The Spectre-v3a check is moved to a helper
+kvm_system_needs_idmapped_vectors(), and merged with the code
+that creates the hyp mappings.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cpu.h    |    1 +
- arch/arm64/include/asm/sysreg.h |   15 +++++++++++++++
- arch/arm64/kernel/cpufeature.c  |    9 +++++++++
- arch/arm64/kernel/cpuinfo.c     |    1 +
- arch/arm64/kvm/sys_regs.c       |    2 +-
- 5 files changed, 27 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/kvm_host.h |    5 +++++
+ arch/arm64/kvm/arm.c              |    5 +----
+ arch/arm64/kvm/hyp/nvhe/mm.c      |    4 +++-
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/include/asm/cpu.h
-+++ b/arch/arm64/include/asm/cpu.h
-@@ -51,6 +51,7 @@ struct cpuinfo_arm64 {
- 	u64		reg_id_aa64dfr1;
- 	u64		reg_id_aa64isar0;
- 	u64		reg_id_aa64isar1;
-+	u64		reg_id_aa64isar2;
- 	u64		reg_id_aa64mmfr0;
- 	u64		reg_id_aa64mmfr1;
- 	u64		reg_id_aa64mmfr2;
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -182,6 +182,7 @@
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -712,6 +712,11 @@ static inline void kvm_init_host_cpu_con
+ 	ctxt_sys_reg(cpu_ctxt, MPIDR_EL1) = read_cpuid_mpidr();
+ }
  
- #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
- #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
-+#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
- 
- #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
- #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
-@@ -771,6 +772,20 @@
- #define ID_AA64ISAR1_GPI_NI			0x0
- #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
- 
-+/* id_aa64isar2 */
-+#define ID_AA64ISAR2_RPRES_SHIFT	4
-+#define ID_AA64ISAR2_WFXT_SHIFT		0
++static inline bool kvm_system_needs_idmapped_vectors(void)
++{
++	return cpus_have_const_cap(ARM64_SPECTRE_V3A);
++}
 +
-+#define ID_AA64ISAR2_RPRES_8BIT		0x0
-+#define ID_AA64ISAR2_RPRES_12BIT	0x1
-+/*
-+ * Value 0x1 has been removed from the architecture, and is
-+ * reserved, but has not yet been removed from the ARM ARM
-+ * as of ARM DDI 0487G.b.
-+ */
-+#define ID_AA64ISAR2_WFXT_NI		0x0
-+#define ID_AA64ISAR2_WFXT_SUPPORTED	0x2
-+
- /* id_aa64pfr0 */
- #define ID_AA64PFR0_CSV3_SHIFT		60
- #define ID_AA64PFR0_CSV2_SHIFT		56
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -225,6 +225,10 @@ static const struct arm64_ftr_bits ftr_i
- 	ARM64_FTR_END,
- };
+ void kvm_arm_vcpu_ptrauth_trap(struct kvm_vcpu *vcpu);
  
-+static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
-+	ARM64_FTR_END,
-+};
-+
- static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
-@@ -637,6 +641,7 @@ static const struct __ftr_reg_entry {
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
- 	ARM64_FTR_REG_OVERRIDE(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1,
- 			       &id_aa64isar1_override),
-+	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
+ static inline void kvm_arch_hardware_unsetup(void) {}
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -1464,10 +1464,7 @@ static int kvm_init_vector_slots(void)
+ 	base = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs));
+ 	kvm_init_vector_slot(base, HYP_VECTOR_SPECTRE_DIRECT);
  
- 	/* Op1 = 0, CRn = 0, CRm = 7 */
- 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
-@@ -933,6 +938,7 @@ void __init init_cpu_features(struct cpu
- 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
-+	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
-@@ -1151,6 +1157,8 @@ void update_cpu_features(int cpu,
- 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
- 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
- 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
-+	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
-+				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
+-	if (!cpus_have_const_cap(ARM64_SPECTRE_V3A))
+-		return 0;
+-
+-	if (!has_vhe()) {
++	if (kvm_system_needs_idmapped_vectors() && !has_vhe()) {
+ 		err = create_hyp_exec_mappings(__pa_symbol(__bp_harden_hyp_vecs),
+ 					       __BP_HARDEN_HYP_VECS_SZ, &base);
+ 		if (err)
+--- a/arch/arm64/kvm/hyp/nvhe/mm.c
++++ b/arch/arm64/kvm/hyp/nvhe/mm.c
+@@ -146,8 +146,10 @@ int hyp_map_vectors(void)
+ 	phys_addr_t phys;
+ 	void *bp_base;
  
- 	/*
- 	 * Differing PARange support is fine as long as all peripherals and
-@@ -1272,6 +1280,7 @@ u64 __read_sysreg_by_encoding(u32 sys_id
- 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
-+	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
+-	if (!cpus_have_const_cap(ARM64_SPECTRE_V3A))
++	if (!kvm_system_needs_idmapped_vectors()) {
++		__hyp_bp_vect_base = __bp_harden_hyp_vecs;
+ 		return 0;
++	}
  
- 	read_sysreg_case(SYS_CNTFRQ_EL0);
- 	read_sysreg_case(SYS_CTR_EL0);
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -391,6 +391,7 @@ static void __cpuinfo_store_cpu(struct c
- 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
- 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
- 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
-+	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
- 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
- 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
- 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
---- a/arch/arm64/kvm/sys_regs.c
-+++ b/arch/arm64/kvm/sys_regs.c
-@@ -1525,7 +1525,7 @@ static const struct sys_reg_desc sys_reg
- 	/* CRm=6 */
- 	ID_SANITISED(ID_AA64ISAR0_EL1),
- 	ID_SANITISED(ID_AA64ISAR1_EL1),
--	ID_UNALLOCATED(6,2),
-+	ID_SANITISED(ID_AA64ISAR2_EL1),
- 	ID_UNALLOCATED(6,3),
- 	ID_UNALLOCATED(6,4),
- 	ID_UNALLOCATED(6,5),
+ 	phys = __hyp_pa(__bp_harden_hyp_vecs);
+ 	bp_base = (void *)__pkvm_create_private_mapping(phys,
 
 
