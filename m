@@ -2,78 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D82C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C45C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiCIQ1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
+        id S230505AbiCIQ1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:27:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238151AbiCIQV3 (ORCPT
+        with ESMTP id S238150AbiCIQV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:21:29 -0500
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4207F14344A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:19:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description; bh=C6/n0ZrR9zK0w+X6zEmOY3Yoka9sh8gy0v8jEkCxVM0=; b=jcRm9
-        kijG8+vrjh62enKeAf0xrHMHEKBQlQXSoeBHCpx8oi19tOnyErNk8jyFl0Pl4EJi8YjihK/v7Sida
-        c2Yi3KNHOoL1NE2KtaZTwQ5uvucLWA9wNHTTk6vcJ8+MP3MXZOJ6d535TgvSjDOmN1GyWiiFrmYIH
-        zYrwaeUtM1rMePyAVAD350+y6z9c4px6rjU5M6UAhFv4ExYli0Bn9L8GYyPB64Um5V11we5kfRiY6
-        eHOZ/6E3Zg7OsDEaa/u2yQ1r7d1nPwCVq3X7H0NrZRyfz2DBCHVdN/PQZBo5K6wh5Hv5XS/DLHFYJ
-        6uPcXOREdAB6QiM+Q3CT+xrPmFY5A==;
-Received: from [81.174.171.191] (helo=donbot)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1nRz2D-0004Ud-2p; Wed, 09 Mar 2022 16:19:33 +0000
-Date:   Wed, 9 Mar 2022 16:19:31 +0000
-From:   John Keeping <john@metanate.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     alsa-devel@alsa-project.org, Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Daniel Beer <daniel.beer@igorinstitute.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ASoC: tas5805m: fix pdn polarity
-Message-ID: <YijTk0/UTXpjFiRq@donbot>
-References: <20220309135649.195277-1-john@metanate.com>
- <YijOHNT0eqDyoviP@sirena.org.uk>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F303015339D;
+        Wed,  9 Mar 2022 08:19:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E0556194A;
+        Wed,  9 Mar 2022 16:19:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0237CC340E8;
+        Wed,  9 Mar 2022 16:19:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646842774;
+        bh=OQdhJ2GZ5rK4QlrPcNeTaZV+1fFScNNo3kD9q3ZRwbM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jppcMl+0hygk3TN1hGCfCNnWxTPWwoeCR1Dcf9Q2Z7oNw2Vq9M12mNzE7yuc3Rit3
+         +5/EYkdOiAkxLjU9gBhraoUaZbchRGP3cHOCXT2KVAE1t7iTmWw4LMcaV4c4oc9wIr
+         tsr50xR1wXiYyYE3ajTmQdSvKB52+2FutbwpLdfZYPp8Nb+h7+5OV1rjOR/uZ57Mod
+         ieVefkguaARYE+pWzKDWdULBnKJusTyCwkHKcfk6Uje+k+o1zyxfLNgMzTwoFq8qFE
+         BLg+qU1mfv7G7rj/yD/CJCdRxQ7SWfLnewrY/mmnJVdmW3r0DrOJBqFRaiASIUod/m
+         Y8X3W5dVPXK6g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 25/27] sfc: extend the locking on mcdi->seqno
+Date:   Wed,  9 Mar 2022 11:17:02 -0500
+Message-Id: <20220309161711.135679-25-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
+References: <20220309161711.135679-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YijOHNT0eqDyoviP@sirena.org.uk>
-X-Authenticated: YES
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 03:56:12PM +0000, Mark Brown wrote:
-> On Wed, Mar 09, 2022 at 01:56:49PM +0000, John Keeping wrote:
-> 
-> > The binding defines the GPIO as "pdn-gpios" so when the GPIO is active
-> > the expectation is that the power down signal is asserted and this is
-> > how all other drivers using this GPIO name interpret the value.
-> 
-> > But the tas5805m driver inverts the sense from the normal expectation so
-> > when the powerdown GPIO is logically asserted the chip is running.
-> 
-> > This is a new driver that is not yet in a released kernel and has no
-> > in-tree users of the binding so fix the sense of the GPIO so that
-> > logically asserted means that the device is powered down.
-> 
-> > - Rewrite commit message to make it more obvious that this is a change
-> >   to the interpretation of the GPIO in the binding
-> 
-> I'm still not seeing the functional change here.  The actual state of
-> the GPIO is identical in both cases, all that's changing is the logical
-> view internally to the kernel.
+From: Niels Dossche <dossche.niels@gmail.com>
 
-Ah, sorry, I'm considering it functional since it changes the device
-tree ABI.
+[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
 
-Used with the same device tree with, say, GPIO_ACTIVE_HIGH the physical
-state of the GPIO will change as a result of this patch and the device
-tree needs to be updated to use GPIO_ACTIVE_LOW.
+seqno could be read as a stale value outside of the lock. The lock is
+already acquired to protect the modification of seqno against a possible
+race condition. Place the reading of this value also inside this locking
+to protect it against a possible race condition.
+
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index be6bfd6b7ec7..50baf62b2cbc 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -163,9 +163,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
+ 	spin_lock_bh(&mcdi->iface_lock);
+ 	++mcdi->seqno;
++	seqno = mcdi->seqno & SEQ_MASK;
+ 	spin_unlock_bh(&mcdi->iface_lock);
+ 
+-	seqno = mcdi->seqno & SEQ_MASK;
+ 	xflags = 0;
+ 	if (mcdi->mode == MCDI_MODE_EVENTS)
+ 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
+-- 
+2.34.1
+
