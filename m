@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8494CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236238AbiCIQ3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:29:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
+        id S236141AbiCIQ3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238447AbiCIQWP (ORCPT
+        with ESMTP id S238032AbiCIQVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:22:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95EF3A5;
-        Wed,  9 Mar 2022 08:21:16 -0800 (PST)
+        Wed, 9 Mar 2022 11:21:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778B2BB01;
+        Wed,  9 Mar 2022 08:17:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 547C46194A;
-        Wed,  9 Mar 2022 16:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA42C340E8;
-        Wed,  9 Mar 2022 16:21:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13DC2B821FD;
+        Wed,  9 Mar 2022 16:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED288C340EC;
+        Wed,  9 Mar 2022 16:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842875;
-        bh=moiyWWCvlKZ5DvlGhseaEz8RqE7nWQEU8CCZWeccmlQ=;
+        s=k20201202; t=1646842672;
+        bh=7D3pUXqXjHzFHv7MUp8ajskK4tYH1lFUmXAWGDVys2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bXqDIJz3gPFArmQIKHRPTFEYauJJUBZpw8INfLr5o+0lVA0WHf4XMkAO1odz14fCl
-         mXPliH7aKFhATTgrv8HtJozOU07zTBqSbx48Tum73VEbb3p+n5FyqbCoIBDHANoIhR
-         XC07+uKx6/diZpn8+btJrtukJdIp+M0JSKbNKxY9J4+LIdpWYKdyPSjS0C7wlfmI62
-         PoBgVElFLtDZkOllIkcys2r6b2EmRfHsdWZSTHmX/eygx5CY60mgGvA1tSPIsTbT4G
-         rwKsTE1NCjOGB/gTjk2jNc+Lr5njl8JG+HVQwqyfiu5z0zEUdP4CJXARHbFi0imE9p
-         0CIqrr5Ym5cWQ==
+        b=d24K6rXBeFma+DRehRgtoQeVRn0TxhhzldaBLecJfNcmWoTW5UfD7wpwpEVG6NTXV
+         Q1eCK+cSzqnUzvMDeOjkyFiRZSAbXZ3FXI4/D/UrT9MowVS60lNiDPuEL5KyhVwg3Q
+         2xu7Ci4+XYkJ5zvcVp2FOJmq4J+J9cwtb65qGquVOc0eIJYMNtkuig+/jhXOz83oOU
+         0Z7NLUYdJ1bXr0ptfjThYO+o8kinTuKtl7WVNWALbBmPEocjh0T1DL1L5CMM0CnbIh
+         46Ov5mXs1X0e32N+EY7ak98yUgvk94/ocd/9LDPm++F1Q3Sqq0WvNMg3lgz70ynYBy
+         dQ04hkD6cCINQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Casper Andersson <casper.casan@gmail.com>,
-        Joacim Zetterling <joacim.zetterling@westermo.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 15/24] net: sparx5: Add #include to remove warning
-Date:   Wed,  9 Mar 2022 11:19:34 -0500
-Message-Id: <20220309161946.136122-15-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        jbx6244@gmail.com, benjamin.gaignard@collabora.com,
+        jon.lin@rock-chips.com, paul.kocialkowski@bootlin.com,
+        macromorgan@hotmail.com, maccraft123mc@gmail.com,
+        zhangqing@rock-chips.com, davem@davemloft.net, knaerzche@gmail.com,
+        cnemo@tutanota.com, ezequiel@vanguardiasur.com.ar,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 06/27] arm64: dts: rockchip: align pl330 node name with dtschema
+Date:   Wed,  9 Mar 2022 11:16:43 -0500
+Message-Id: <20220309161711.135679-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
+References: <20220309161711.135679-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,38 +58,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casper Andersson <casper.casan@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 90d4025285748448809701a44cf466a3f5443eaa ]
+[ Upstream commit 8fd9415042826c7609c588e5ef45f3e84237785f ]
 
-main.h uses NUM_TARGETS from main_regs.h, but
-the missing include never causes any errors
-because everywhere main.h is (currently)
-included, main_regs.h is included before.
-But since it is dependent on main_regs.h
-it should always be included.
+Fixes dtbs_check warnings like:
 
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-Reviewed-by: Joacim Zetterling <joacim.zetterling@westermo.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  dmac@ff240000: $nodename:0: 'dmac@ff240000' does not match '^dma-controller(@.*)?$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220129175429.298836-1-krzysztof.kozlowski@canonical.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_main.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/rockchip/px30.dtsi   | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-index a1acc9b461f2..d40e18ce3293 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-@@ -16,6 +16,8 @@
- #include <linux/phylink.h>
- #include <linux/hrtimer.h>
+diff --git a/arch/arm64/boot/dts/rockchip/px30.dtsi b/arch/arm64/boot/dts/rockchip/px30.dtsi
+index 00f50b05d55a..b72874c16a71 100644
+--- a/arch/arm64/boot/dts/rockchip/px30.dtsi
++++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
+@@ -711,7 +711,7 @@ rktimer: timer@ff210000 {
+ 		clock-names = "pclk", "timer";
+ 	};
  
-+#include "sparx5_main_regs.h"
-+
- /* Target chip type */
- enum spx5_target_chiptype {
- 	SPX5_TARGET_CT_7546    = 0x7546,  /* SparX-5-64  Enterprise */
+-	dmac: dmac@ff240000 {
++	dmac: dma-controller@ff240000 {
+ 		compatible = "arm,pl330", "arm,primecell";
+ 		reg = <0x0 0xff240000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index 39db0b85b4da..b822533dc7f1 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -489,7 +489,7 @@ pwm3: pwm@ff1b0030 {
+ 		status = "disabled";
+ 	};
+ 
+-	dmac: dmac@ff1f0000 {
++	dmac: dma-controller@ff1f0000 {
+ 		compatible = "arm,pl330", "arm,primecell";
+ 		reg = <0x0 0xff1f0000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.34.1
 
