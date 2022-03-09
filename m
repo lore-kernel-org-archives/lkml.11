@@ -2,57 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B15FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiCIH7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:59:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S229976AbiCIH7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbiCIH45 (ORCPT
+        with ESMTP id S230499AbiCIH45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 02:56:57 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597EA167F8A;
-        Tue,  8 Mar 2022 23:55:28 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:55:17 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB325167F82;
+        Tue,  8 Mar 2022 23:55:27 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:55:22 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812518;
+        s=2020; t=1646812523;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PauVIadOi8Ec6TlyqUEW+QIq0oZ2IIlFpuf0LighoLM=;
-        b=p9mpHjP6Kzf7a3kpTo17ja16DOO6bxe4/D9eqAsxSUSqfITptOnZPghd+rSypL9yYJ6rCB
-        w4t/l9Tj03Jg9vxJfS4O7MYCZrD740rfC4HiThR3heBmOWVNpStJmiCR/NFDzg5MbdYJCg
-        octfpTB7nb3qK6N1hRX67MWfhuKUIt2xQftRUBXCBJAhQU1ljwjwvLlctzIJr7tvDBzvt0
-        7Uvc9UV4s86M1su437o+Gs6UHsEnwCtNfCFSGpYBVjRBcWTCsjuKc4/6vToCyQoGmeFKvo
-        5/o6WDN8y3oCuUoNIBL+CjF8LJbKbeYxNio07mIGrRmu1fR7nWkvdl7OSPKfTQ==
+        bh=6iAXRFNlGiOuLkQ8n1Z/8wU15pH0555kDE8HKzUB5dk=;
+        b=Pno2KSMehfwqdh2jY2dV4El8ZGQFRVDisevFk1y1J4weEZaOwj1pEBozN4XKWxi1Vkf0bt
+        /w+S3eFtOwDGxbAirTpszNSX85H77Z5VjK2G/f+K+t1Zgp2zHBdJj+1gkHfwHVYYwbOrBD
+        bVx3OOHrdcFrIGlQ2ThYbn6+1rfygYfA5/+PLxa5yWqu+kNZI3TY61KJTPxW/nvVjWaZ8l
+        igyypia/iS+LPxbx+2BmEssSCWYhNrcbIQjFHaRkMFIxXGTCdbRs11RA7VXSR0wi1Vk1vo
+        8jHziolfvwIjisGn1lH6iDujz9a9eBPoS0aQlS6ZOEt7C+hPBGh5szOca7Lxmw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812518;
+        s=2020e; t=1646812523;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PauVIadOi8Ec6TlyqUEW+QIq0oZ2IIlFpuf0LighoLM=;
-        b=2MSzeeh5NcnYf7QRM86Lxtbh3iGkpz33f1mbAP62OmIeW9GeGwVamE2UuMFriLCN2rn6wq
-        heSLQWBgMLc9p7Bw==
-From:   "tip-bot2 for Fenghua Yu" <tip-bot2@linutronix.de>
+        bh=6iAXRFNlGiOuLkQ8n1Z/8wU15pH0555kDE8HKzUB5dk=;
+        b=NUMHpsceJNrKm6+IjI8/lqcfvTI67AQr2aJdAGmSOJtW1jKlpgPcKpYGaOVQ9W5eQPf7rJ
+        Fddods2Jdw42yKBQ==
+From:   "tip-bot2 for Mark Rutland" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] tools/objtool: Check for use of the ENQCMD
- instruction in the kernel
-Cc:     Fenghua Yu <fenghua.yu@intel.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+Subject: [tip: x86/core] linkage: add SYM_FUNC_ALIAS{,_LOCAL,_WEAK}()
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, Jiri Slaby <jslaby@suse.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220207230254.3342514-11-fenghua.yu@intel.com>
-References: <20220207230254.3342514-11-fenghua.yu@intel.com>
+In-Reply-To: <20220216162229.1076788-2-mark.rutland@arm.com>
+References: <20220216162229.1076788-2-mark.rutland@arm.com>
 MIME-Version: 1.0
-Message-ID: <164681251774.16921.8398427805729021263.tip-bot2@tip-bot2>
+Message-ID: <164681252222.16921.2515658088729657001.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,68 +67,235 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     58ab8f3f37d0e51cd4206ce0588662cb7bfce5f1
-Gitweb:        https://git.kernel.org/tip/58ab8f3f37d0e51cd4206ce0588662cb7bfce5f1
-Author:        Fenghua Yu <fenghua.yu@intel.com>
-AuthorDate:    Mon, 07 Feb 2022 15:02:53 -08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:21 +01:00
+Commit-ID:     e0891269a8c25715bd9510dc355326b00ab42db2
+Gitweb:        https://git.kernel.org/tip/e0891269a8c25715bd9510dc355326b00ab42db2
+Author:        Mark Rutland <mark.rutland@arm.com>
+AuthorDate:    Wed, 16 Feb 2022 16:22:26 
+Committer:     Will Deacon <will@kernel.org>
+CommitterDate: Tue, 22 Feb 2022 16:21:33 
 
-tools/objtool: Check for use of the ENQCMD instruction in the kernel
+linkage: add SYM_FUNC_ALIAS{,_LOCAL,_WEAK}()
 
-The ENQCMD instruction implicitly accesses the PASID_MSR to fill in the
-pasid field of the descriptor being submitted to an accelerator. But
-there is no precise (and stable across kernel changes) point at which
-the PASID_MSR is updated from the value for one task to the next.
+Currently aliasing an asm function requires adding START and END
+annotations for each name, as per Documentation/asm-annotations.rst:
 
-Kernel code that uses accelerators must always use the ENQCMDS instruction
-which does not access the PASID_MSR.
+	SYM_FUNC_START_ALIAS(__memset)
+	SYM_FUNC_START(memset)
+	    ... asm insns ...
+	SYM_FUNC_END(memset)
+	SYM_FUNC_END_ALIAS(__memset)
 
-Check for use of the ENQCMD instruction in the kernel and warn on its
-usage.
+This is more painful than necessary to maintain, especially where a
+function has many aliases, some of which we may wish to define
+conditionally. For example, arm64's memcpy/memmove implementation (which
+uses some arch-specific SYM_*() helpers) has:
 
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+	SYM_FUNC_START_ALIAS(__memmove)
+	SYM_FUNC_START_ALIAS_WEAK_PI(memmove)
+	SYM_FUNC_START_ALIAS(__memcpy)
+	SYM_FUNC_START_WEAK_PI(memcpy)
+	    ... asm insns ...
+	SYM_FUNC_END_PI(memcpy)
+	EXPORT_SYMBOL(memcpy)
+	SYM_FUNC_END_ALIAS(__memcpy)
+	EXPORT_SYMBOL(__memcpy)
+	SYM_FUNC_END_ALIAS_PI(memmove)
+	EXPORT_SYMBOL(memmove)
+	SYM_FUNC_END_ALIAS(__memmove)
+	EXPORT_SYMBOL(__memmove)
+	SYM_FUNC_START(name)
+
+It would be much nicer if we could define the aliases *after* the
+standard function definition. This would avoid the need to specify each
+symbol name twice, and would make it easier to spot the canonical
+function definition.
+
+This patch adds new macros to allow us to do so, which allows the above
+example to be rewritten more succinctly as:
+
+	SYM_FUNC_START(__pi_memcpy)
+	    ... asm insns ...
+	SYM_FUNC_END(__pi_memcpy)
+
+	SYM_FUNC_ALIAS(__memcpy, __pi_memcpy)
+	EXPORT_SYMBOL(__memcpy)
+	SYM_FUNC_ALIAS_WEAK(memcpy, __memcpy)
+	EXPORT_SYMBOL(memcpy)
+
+	SYM_FUNC_ALIAS(__pi_memmove, __pi_memcpy)
+	SYM_FUNC_ALIAS(__memmove, __pi_memmove)
+	EXPORT_SYMBOL(__memmove)
+	SYM_FUNC_ALIAS_WEAK(memmove, __memmove)
+	EXPORT_SYMBOL(memmove)
+
+The reduction in duplication will also make it possible to replace some
+uses of WEAK with more accurate Kconfig guards, e.g.
+
+	#ifndef CONFIG_KASAN
+	SYM_FUNC_ALIAS(memmove, __memmove)
+	EXPORT_SYMBOL(memmove)
+	#endif
+
+... which should make it easier to ensure that symbols are neither used
+nor overidden unexpectedly.
+
+The existing SYM_FUNC_START_ALIAS() and SYM_FUNC_START_LOCAL_ALIAS() are
+marked as deprecated, and will be removed once existing users are moved
+over to the new scheme.
+
+The tools/perf/ copy of linkage.h is updated to match. A subsequent
+patch will depend upon this when updating the x86 asm annotations.
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220207230254.3342514-11-fenghua.yu@intel.com
+Acked-by: Mark Brown <broonie@kernel.org>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Jiri Slaby <jslaby@suse.cz>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220216162229.1076788-2-mark.rutland@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 ---
- tools/objtool/arch/x86/decode.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ Documentation/asm-annotations.rst       | 16 ++++++++--
+ include/linux/linkage.h                 | 37 +++++++++++++++++++++++-
+ tools/perf/util/include/linux/linkage.h | 35 +++++++++++++++++++++++-
+ 3 files changed, 85 insertions(+), 3 deletions(-)
 
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index c10ef78..479e769 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -112,7 +112,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	const struct elf *elf = file->elf;
- 	struct insn insn;
- 	int x86_64, ret;
--	unsigned char op1, op2,
-+	unsigned char op1, op2, op3,
- 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
- 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
- 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-@@ -139,6 +139,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+diff --git a/Documentation/asm-annotations.rst b/Documentation/asm-annotations.rst
+index f4bf0f6..4868b58 100644
+--- a/Documentation/asm-annotations.rst
++++ b/Documentation/asm-annotations.rst
+@@ -130,8 +130,20 @@ denoting a range of code via ``SYM_*_START/END`` annotations.
+   In fact, this kind of annotation corresponds to the now deprecated ``ENTRY``
+   and ``ENDPROC`` macros.
  
- 	op1 = insn.opcode.bytes[0];
- 	op2 = insn.opcode.bytes[1];
-+	op3 = insn.opcode.bytes[2];
- 
- 	if (insn.rex_prefix.nbytes) {
- 		rex = insn.rex_prefix.bytes[0];
-@@ -491,6 +492,14 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			/* nopl/nopw */
- 			*type = INSN_NOP;
- 
-+		} else if (op2 == 0x38 && op3 == 0xf8) {
-+			if (insn.prefixes.nbytes == 1 &&
-+			    insn.prefixes.bytes[0] == 0xf2) {
-+				/* ENQCMD cannot be used in the kernel. */
-+				WARN("ENQCMD instruction at %s:%lx", sec->name,
-+				     offset);
-+			}
+-* ``SYM_FUNC_START_ALIAS`` and ``SYM_FUNC_START_LOCAL_ALIAS`` serve for those
+-  who decided to have two or more names for one function. The typical use is::
++* ``SYM_FUNC_ALIAS``, ``SYM_FUNC_ALIAS_LOCAL``, and ``SYM_FUNC_ALIAS_WEAK`` can
++  be used to define multiple names for a function. The typical use is::
 +
- 		} else if (op2 == 0xa0 || op2 == 0xa8) {
++    SYM_FUNC_START(__memset)
++        ... asm insns ...
++    SYN_FUNC_END(__memset)
++    SYM_FUNC_ALIAS(memset, __memset)
++
++  In this example, one can call ``__memset`` or ``memset`` with the same
++  result, except the debug information for the instructions is generated to
++  the object file only once -- for the non-``ALIAS`` case.
++
++* ``SYM_FUNC_START_ALIAS`` and ``SYM_FUNC_START_LOCAL_ALIAS`` are deprecated
++    ways to define two or more names for one function. The typical use is::
  
- 			/* push fs/gs */
+     SYM_FUNC_START_ALIAS(__memset)
+     SYM_FUNC_START(memset)
+diff --git a/include/linux/linkage.h b/include/linux/linkage.h
+index dbf8506..e574a84 100644
+--- a/include/linux/linkage.h
++++ b/include/linux/linkage.h
+@@ -165,7 +165,18 @@
+ #ifndef SYM_END
+ #define SYM_END(name, sym_type)				\
+ 	.type name sym_type ASM_NL			\
+-	.size name, .-name
++	.set .L__sym_size_##name, .-name ASM_NL		\
++	.size name, .L__sym_size_##name
++#endif
++
++/* SYM_ALIAS -- use only if you have to */
++#ifndef SYM_ALIAS
++#define SYM_ALIAS(alias, name, sym_type, linkage)			\
++	linkage(alias) ASM_NL						\
++	.set alias, name ASM_NL						\
++	.type alias sym_type ASM_NL					\
++	.set .L__sym_size_##alias, .L__sym_size_##name ASM_NL		\
++	.size alias, .L__sym_size_##alias
+ #endif
+ 
+ /* === code annotations === */
+@@ -275,6 +286,30 @@
+ 	SYM_END(name, SYM_T_FUNC)
+ #endif
+ 
++/*
++ * SYM_FUNC_ALIAS -- define a global alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS
++#define SYM_FUNC_ALIAS(alias, name)					\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_GLOBAL)
++#endif
++
++/*
++ * SYM_FUNC_ALIAS_LOCAL -- define a local alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS_LOCAL
++#define SYM_FUNC_ALIAS_LOCAL(alias, name)				\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_LOCAL)
++#endif
++
++/*
++ * SYM_FUNC_ALIAS_WEAK -- define a weak global alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS_WEAK
++#define SYM_FUNC_ALIAS_WEAK(alias, name)				\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_WEAK)
++#endif
++
+ /* SYM_CODE_START -- use for non-C (special) functions */
+ #ifndef SYM_CODE_START
+ #define SYM_CODE_START(name)				\
+diff --git a/tools/perf/util/include/linux/linkage.h b/tools/perf/util/include/linux/linkage.h
+index 5acf053..7b4cd79 100644
+--- a/tools/perf/util/include/linux/linkage.h
++++ b/tools/perf/util/include/linux/linkage.h
+@@ -50,9 +50,20 @@
+ #ifndef SYM_END
+ #define SYM_END(name, sym_type)				\
+ 	.type name sym_type ASM_NL			\
++	.set .L__sym_size_##name, .-name ASM_NL		\
+ 	.size name, .-name
+ #endif
+ 
++/* SYM_ALIAS -- use only if you have to */
++#ifndef SYM_ALIAS
++#define SYM_ALIAS(alias, name, sym_type, linkage)			\
++	linkage(alias) ASM_NL						\
++	.set alias, name ASM_NL						\
++	.type alias sym_type ASM_NL					\
++	.set .L__sym_size_##alias, .L__sym_size_##name ASM_NL		\
++	.size alias, .L__sym_size_##alias
++#endif
++
+ /*
+  * SYM_FUNC_START_ALIAS -- use where there are two global names for one
+  * function
+@@ -101,4 +112,28 @@
+ 	SYM_END(name, SYM_T_FUNC)
+ #endif
+ 
++/*
++ * SYM_FUNC_ALIAS -- define a global alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS
++#define SYM_FUNC_ALIAS(alias, name)					\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_GLOBAL)
++#endif
++
++/*
++ * SYM_FUNC_ALIAS_LOCAL -- define a local alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS_LOCAL
++#define SYM_FUNC_ALIAS_LOCAL(alias, name)				\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_LOCAL)
++#endif
++
++/*
++ * SYM_FUNC_ALIAS_WEAK -- define a weak global alias for an existing function
++ */
++#ifndef SYM_FUNC_ALIAS_WEAK
++#define SYM_FUNC_ALIAS_WEAK(alias, name)				\
++	SYM_ALIAS(alias, name, SYM_T_FUNC, SYM_L_WEAK)
++#endif
++
+ #endif	/* PERF_LINUX_LINKAGE_H_ */
