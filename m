@@ -2,164 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiCIBX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
+        id S231128AbiCIBYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:24:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiCIBXn (ORCPT
+        with ESMTP id S232004AbiCIBXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:23:43 -0500
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777D0C7920;
-        Tue,  8 Mar 2022 17:22:09 -0800 (PST)
-Received: by mail-oo1-f45.google.com with SMTP id y27-20020a4a9c1b000000b0032129651bb0so1161518ooj.2;
-        Tue, 08 Mar 2022 17:22:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eX/AjvgUx7dimDDaqYJ1aR1sSqjm7p16ve0NHEEsMvQ=;
-        b=8DiXPWtfA6N0nw3LJFI3yF6lCTbtE6bAFW46UWcnVdDC62DsieFCjDy6FTw4nbTiOT
-         kMCuww4gSFN5sHqzI56Itbz1FdYeceU9TNMJ/rc8N/rvDe0lRZkS5NjFQDSfdcGruznz
-         vycSyxQf2ppuxU1JbQmyHe+chS4iWoBl5SO02J4YUGgjgodHqWgIXGSqlkiRdiNS4U/J
-         ztfmHZVsYsLpxkOnDQCfSCDeBQiP9tSkDDxwcyyRC8RGQ37kKRj1caBwRF4AJv5ablGY
-         ugYB7PGWK6TPYZswzSwoKAam+nP5ZpxiUjHyd5qceOm8xHDrsDmEpLZ2vyvhL9d2QY22
-         FlSw==
-X-Gm-Message-State: AOAM532G3JHDQH9Twcx5ZwnrSDP/x5ElXGPphCNKInHWGds9IFQxXUjk
-        VM9HznPfxx+mTXeGypZYNmC2S39M/w==
-X-Google-Smtp-Source: ABdhPJyozRXy0py67UpvosCIVPTHDhRZ/ISthdID0JeEIDiUNQKdIMRBpJnzpj2yaajNnIL0DActgw==
-X-Received: by 2002:a05:6870:32ce:b0:d9:a0ee:44b3 with SMTP id r14-20020a05687032ce00b000d9a0ee44b3mr4390721oac.142.1646788845214;
-        Tue, 08 Mar 2022 17:20:45 -0800 (PST)
-Received: from rob (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z192-20020a4a49c9000000b003213bf4bf0csm235322ooa.31.2022.03.08.17.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 17:20:44 -0800 (PST)
-Received: (nullmailer pid 1709815 invoked by uid 1000);
-        Wed, 09 Mar 2022 01:20:43 -0000
-Date:   Tue, 8 Mar 2022 18:20:43 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        David Rhodes <drhodes@opensource.cirrus.com>
-Subject: Re: [PATCH v3 15/16] ASoC: dt-bindings: cs35l41: Document CS35l41
- External Boost
-Message-ID: <20220309012043.GA1694603@robh.at.kernel.org>
-References: <20220308171730.454587-1-tanureal@opensource.cirrus.com>
- <20220308171730.454587-16-tanureal@opensource.cirrus.com>
+        Tue, 8 Mar 2022 20:23:46 -0500
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660F76B0B1;
+        Tue,  8 Mar 2022 17:22:20 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:37556)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRjzj-001Qdt-51; Tue, 08 Mar 2022 17:15:59 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34144 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRjzh-002fL8-Qm; Tue, 08 Mar 2022 17:15:58 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     <linux-arch@vger.kernel.org>
+Cc:     <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>, <linux-api@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Mon, 03 Jan 2022 15:30:02 -0600")
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
+        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Date:   Tue, 08 Mar 2022 18:15:51 -0600
+Message-ID: <87fsnsdlqg.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308171730.454587-16-tanureal@opensource.cirrus.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1nRjzh-002fL8-Qm;;;mid=<87fsnsdlqg.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18OQQ6XmC3RRMxFckLcbtxXLE62EYCdQMg=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 00/13] Removing tracehook.h
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 05:17:29PM +0000, Lucas Tanure wrote:
-> From: David Rhodes <drhodes@opensource.cirrus.com>
-> 
-> Document internal and external boost feature for ASoC CS35L41.
-> For internal boost the following properties are required:
-> - cirrus,boost-peak-milliamp
-> - cirrus,boost-ind-nanohenry
-> - cirrus,boost-cap-microfarad
-> 
-> For external boost, the GPIO1 must be configured as output,
-> so the following properties are required:
-> - cirrus,gpio1-src-select = <1>
-> - cirrus,gpio1-output-enable
-> 
-> Signed-off-by: David Rhodes <drhodes@opensource.cirrus.com>
-> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-> ---
->  .../bindings/sound/cirrus,cs35l41.yaml        | 44 +++++++++++++++++--
->  1 file changed, 41 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
-> index 3235702ce402..09b515924c59 100644
-> --- a/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
-> +++ b/Documentation/devicetree/bindings/sound/cirrus,cs35l41.yaml
-> @@ -75,6 +75,19 @@ properties:
->      maximum: 3
->      default: 2
->  
-> +  cirrus,boost-type:
-> +    description:
-> +      Configures the type of Boost being used.
-> +      Internal boost requires boost-peak-milliamp, boost-ind-nanohenry and
-> +      boost-cap-microfarad.
-> +      External Boost must have GPIO1 as GPIO output. GPIO1 will be set high to
-> +      enable boost voltage.
-> +      0 = Internal Boost
-> +      1 = External Boost
-> +    $ref: "/schemas/types.yaml#/definitions/uint32"
-> +    minimum: 0
-> +    maximum: 1
 
-What does not present mean? Might be better to make this boolean depending
-on what you are trying to accomplish.
+While working on cleaning up do_exit I have been having to deal with the
+code in tracehook.h.  Unfortunately the code in tracehook.h does not
+make sense as organized.
 
-> +
->    cirrus,gpio1-polarity-invert:
->      description:
->        Boolean which specifies whether the GPIO1
-> @@ -131,9 +144,32 @@ required:
->    - compatible
->    - reg
->    - "#sound-dai-cells"
-> -  - cirrus,boost-peak-milliamp
-> -  - cirrus,boost-ind-nanohenry
-> -  - cirrus,boost-cap-microfarad
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        cirrus,boost-type:
-> +            const: 0
+This set of changes reorganizes things so that tracehook.h no longer
+exists, and so that it's current contents are organized in a fashion
+that is a little easier to understand.
 
-Note that this will be true if cirrus,boost-type is not present. You 
-probably want to add 'required'.
+The biggest change is that I lean into the fact that get_signal
+always calls task_work_run and removes the logic that tried to
+be smart and decouple task_work_run and get_signal as it has proven
+to not be effective.
 
-> +    then:
-> +      required:
-> +        - cirrus,boost-peak-milliamp
-> +        - cirrus,boost-ind-nanohenry
-> +        - cirrus,boost-cap-microfarad
-> +    else:
-> +      if:
-> +        properties:
-> +          cirrus,boost-type:
-> +            const: 1
-> +      then:
-> +        required:
-> +          - cirrus,gpio1-output-enable
-> +          - cirrus,gpio1-src-select
-> +        properties:
-> +          cirrus,boost-peak-milliamp: false
-> +          cirrus,boost-ind-nanohenry: false
-> +          cirrus,boost-cap-microfarad: false
-> +          cirrus,gpio1-src-select:
-> +            enum: [1]
->  
->  additionalProperties: false
->  
-> @@ -150,6 +186,8 @@ examples:
->            VA-supply = <&dummy_vreg>;
->            VP-supply = <&dummy_vreg>;
->            reset-gpios = <&gpio 110 0>;
-> +
-> +          cirrus,boost-type = <0>;
->            cirrus,boost-peak-milliamp = <4500>;
->            cirrus,boost-ind-nanohenry = <1000>;
->            cirrus,boost-cap-microfarad = <15>;
-> -- 
-> 2.35.1
-> 
-> 
+This is a conservative change and I am not changing the how things
+like signal_pending operate (although it is probably justified).
+
+A new header resume_user_mode.h is added to hold resume_user_mode_work
+which was previously known as tracehook_notify_resume.
+
+Eric W. Biederman (13):
+      ptrace: Move ptrace_report_syscall into ptrace.h
+      ptrace/arm: Rename tracehook_report_syscall report_syscall
+      ptrace: Create ptrace_report_syscall_{entry,exit} in ptrace.h
+      ptrace: Remove arch_syscall_{enter,exit}_tracehook
+      ptrace: Remove tracehook_signal_handler
+      task_work: Remove unnecessary include from posix_timers.h
+      task_work: Introduce task_work_pending
+      task_work: Call tracehook_notify_signal from get_signal on all architectures
+      task_work: Decouple TIF_NOTIFY_SIGNAL and task_work
+      signal: Move set_notify_signal and clear_notify_signal into sched/signal.h
+      resume_user_mode: Remove #ifdef TIF_NOTIFY_RESUME in set_notify_resume
+      resume_user_mode: Move to resume_user_mode.h
+      tracehook: Remove tracehook.h
+
+ MAINTAINERS                          |   1 -
+ arch/Kconfig                         |   5 +-
+ arch/alpha/kernel/ptrace.c           |   5 +-
+ arch/alpha/kernel/signal.c           |   4 +-
+ arch/arc/kernel/ptrace.c             |   5 +-
+ arch/arc/kernel/signal.c             |   4 +-
+ arch/arm/kernel/ptrace.c             |  12 +-
+ arch/arm/kernel/signal.c             |   4 +-
+ arch/arm64/kernel/ptrace.c           |  14 +--
+ arch/arm64/kernel/signal.c           |   4 +-
+ arch/csky/kernel/ptrace.c            |   5 +-
+ arch/csky/kernel/signal.c            |   4 +-
+ arch/h8300/kernel/ptrace.c           |   5 +-
+ arch/h8300/kernel/signal.c           |   4 +-
+ arch/hexagon/kernel/process.c        |   4 +-
+ arch/hexagon/kernel/signal.c         |   1 -
+ arch/hexagon/kernel/traps.c          |   6 +-
+ arch/ia64/kernel/process.c           |   4 +-
+ arch/ia64/kernel/ptrace.c            |   6 +-
+ arch/ia64/kernel/signal.c            |   1 -
+ arch/m68k/kernel/ptrace.c            |   6 +-
+ arch/m68k/kernel/signal.c            |   4 +-
+ arch/microblaze/kernel/ptrace.c      |   5 +-
+ arch/microblaze/kernel/signal.c      |   4 +-
+ arch/mips/kernel/ptrace.c            |   5 +-
+ arch/mips/kernel/signal.c            |   4 +-
+ arch/nds32/include/asm/syscall.h     |   2 +-
+ arch/nds32/kernel/ptrace.c           |   5 +-
+ arch/nds32/kernel/signal.c           |   4 +-
+ arch/nios2/kernel/ptrace.c           |   5 +-
+ arch/nios2/kernel/signal.c           |   4 +-
+ arch/openrisc/kernel/ptrace.c        |   5 +-
+ arch/openrisc/kernel/signal.c        |   4 +-
+ arch/parisc/kernel/ptrace.c          |   7 +-
+ arch/parisc/kernel/signal.c          |   4 +-
+ arch/powerpc/kernel/ptrace/ptrace.c  |   8 +-
+ arch/powerpc/kernel/signal.c         |   4 +-
+ arch/riscv/kernel/ptrace.c           |   5 +-
+ arch/riscv/kernel/signal.c           |   4 +-
+ arch/s390/include/asm/entry-common.h |   1 -
+ arch/s390/kernel/ptrace.c            |   1 -
+ arch/s390/kernel/signal.c            |   5 +-
+ arch/sh/kernel/ptrace_32.c           |   5 +-
+ arch/sh/kernel/signal_32.c           |   4 +-
+ arch/sparc/kernel/ptrace_32.c        |   5 +-
+ arch/sparc/kernel/ptrace_64.c        |   5 +-
+ arch/sparc/kernel/signal32.c         |   1 -
+ arch/sparc/kernel/signal_32.c        |   4 +-
+ arch/sparc/kernel/signal_64.c        |   4 +-
+ arch/um/kernel/process.c             |   4 +-
+ arch/um/kernel/ptrace.c              |   5 +-
+ arch/x86/kernel/ptrace.c             |   1 -
+ arch/x86/kernel/signal.c             |   5 +-
+ arch/x86/mm/tlb.c                    |   1 +
+ arch/xtensa/kernel/ptrace.c          |   5 +-
+ arch/xtensa/kernel/signal.c          |   4 +-
+ block/blk-cgroup.c                   |   2 +-
+ fs/coredump.c                        |   1 -
+ fs/exec.c                            |   1 -
+ fs/io-wq.c                           |   6 +-
+ fs/io_uring.c                        |  11 +-
+ fs/proc/array.c                      |   1 -
+ fs/proc/base.c                       |   1 -
+ include/asm-generic/syscall.h        |   2 +-
+ include/linux/entry-common.h         |  47 +-------
+ include/linux/entry-kvm.h            |   2 +-
+ include/linux/posix-timers.h         |   1 -
+ include/linux/ptrace.h               |  78 ++++++++++++
+ include/linux/resume_user_mode.h     |  64 ++++++++++
+ include/linux/sched/signal.h         |  17 +++
+ include/linux/task_work.h            |   5 +
+ include/linux/tracehook.h            | 226 -----------------------------------
+ include/uapi/linux/ptrace.h          |   2 +-
+ kernel/entry/common.c                |  19 +--
+ kernel/entry/kvm.c                   |   9 +-
+ kernel/exit.c                        |   3 +-
+ kernel/livepatch/transition.c        |   1 -
+ kernel/seccomp.c                     |   1 -
+ kernel/signal.c                      |  23 ++--
+ kernel/task_work.c                   |   4 +-
+ kernel/time/posix-cpu-timers.c       |   1 +
+ mm/memcontrol.c                      |   2 +-
+ security/apparmor/domain.c           |   1 -
+ security/selinux/hooks.c             |   1 -
+ 84 files changed, 317 insertions(+), 462 deletions(-)
+
+Eric
