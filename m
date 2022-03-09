@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F587C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 813F1C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236531AbiCIQTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:19:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
+        id S236760AbiCIQTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:19:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236195AbiCIQJl (ORCPT
+        with ESMTP id S236159AbiCIQJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56AFB6D27;
-        Wed,  9 Mar 2022 08:08:07 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3811DA279B;
+        Wed,  9 Mar 2022 08:07:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 610E561644;
-        Wed,  9 Mar 2022 16:08:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9E1C340E8;
-        Wed,  9 Mar 2022 16:08:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD788B82220;
+        Wed,  9 Mar 2022 16:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C38C340E8;
+        Wed,  9 Mar 2022 16:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842086;
-        bh=BQM6yHpMDK0Tpuk2e3Gr783l4lRRVOUjiG3mBdAMFjw=;
+        s=korg; t=1646842072;
+        bh=jyBDepQzs3J3bAr8lcobZCUKcw7lYEkUHhe0ftiGO0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l1a1RY+a16Wo1yK915I/4EWlhJIpz482WFiUMC/uVVEf4IALuEhlNEUhGXtDh+msQ
-         BuRWn/Y1LiHoUlIe/xIaFz6YoX586VoidR9EJU3HNDWnnXolEstEFBGISxF51iURbt
-         /5C77FI380KkBAOT+xQbtTwstKYWaEUzpzDymqVA=
+        b=dnR3NlDoieMd39UE9P4OwrqtwDXPjWt0p4kwyIOXCwUUOzqsTxkUxSOLMehrYpgR7
+         yEKcUHRy4hZ6RJnDI/lxB1n3DKNTp1xujG4gViVOVYnyOJJk5YuFIZpJxtGFM/sptu
+         AE0eeYMnBg1VBKvOdywsa4lFkBM7DuiSk4hh1jZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 29/43] arm64: entry: Move trampoline macros out of ifdefd section
-Date:   Wed,  9 Mar 2022 17:00:13 +0100
-Message-Id: <20220309155900.579232688@linuxfoundation.org>
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 06/43] x86/speculation: Use generic retpoline by default on AMD
+Date:   Wed,  9 Mar 2022 16:59:50 +0100
+Message-Id: <20220309155859.922933218@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -50,52 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
+commit 244d00b5dd4755f8df892c86cab35fb2cfd4f14b upstream.
 
-The macros for building the kpti trampoline are all behind
-CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
-.entry.tramp.text section.
+AMD retpoline may be susceptible to speculation. The speculation
+execution window for an incorrect indirect branch prediction using
+LFENCE/JMP sequence may potentially be large enough to allow
+exploitation using Spectre V2.
 
-Move the macros out so they can be used to generate other kinds of
-trampoline. Only the symbols need to be guarded by
-CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+By default, don't use retpoline,lfence on AMD.  Instead, use the
+generic retpoline.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |    9 ---------
+ 1 file changed, 9 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -608,12 +608,6 @@ SYM_CODE_END(ret_to_user)
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -941,15 +941,6 @@ static enum spectre_v2_mitigation __init
+ 		return SPECTRE_V2_NONE;
+ 	}
  
- 	.popsection				// .entry.text
- 
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--/*
-- * Exception vectors trampoline.
-- */
--	.pushsection ".entry.tramp.text", "ax"
+-	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+-	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+-			pr_err("LFENCE not serializing, switching to generic retpoline\n");
+-			return SPECTRE_V2_RETPOLINE;
+-		}
+-		return SPECTRE_V2_LFENCE;
+-	}
 -
- 	// Move from tramp_pg_dir to swapper_pg_dir
- 	.macro tramp_map_kernel, tmp
- 	mrs	\tmp, ttbr1_el1
-@@ -709,6 +703,11 @@ alternative_else_nop_endif
- 	.endr
- 	.endm
+ 	return SPECTRE_V2_RETPOLINE;
+ }
  
-+#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
-+/*
-+ * Exception vectors trampoline.
-+ */
-+	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- SYM_CODE_START_NOALIGN(tramp_vectors)
- 	generate_tramp_vector
 
 
