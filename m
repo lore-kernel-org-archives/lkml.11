@@ -2,99 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A123FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbiCIHdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:33:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        id S230372AbiCIHiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiCIHdi (ORCPT
+        with ESMTP id S230369AbiCIHhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:33:38 -0500
-Received: from smtp.tom.com (smtprz15.163.net [106.3.154.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C00B7C6E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:32:38 -0800 (PST)
-Received: from my-app01.tom.com (my-app01.tom.com [127.0.0.1])
-        by freemail01.tom.com (Postfix) with ESMTP id E1B771E8C1F0
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:32:35 +0800 (CST)
-Received: from my-app01.tom.com (HELO smtp.tom.com) ([127.0.0.1])
-          by my-app01 (TOM SMTP Server) with SMTP ID -156080194
-          for <linux-kernel@vger.kernel.org>;
-          Wed, 09 Mar 2022 15:32:35 +0800 (CST)
-Received: from antispam3.tom.com (unknown [172.25.16.54])
-        by freemail01.tom.com (Postfix) with ESMTP id D2E581E8C0A7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:32:35 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=201807;
-        t=1646811155; bh=B1TXx7YwcolI6PgRXcjcE/hEwVsy2ADYRgU4ApmkzN8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GvWTYJkpbx7U5pvUYn7VyyolqtXzcmzt9+1fm5zwtRCKxFtel4gxfwXGDjoWocxig
-         jaj1bbXsGEDD0+xJa/40j8fn/3ht3vg5exh2CYt0wHGCUdFjHHn6Qjx6z+eRyJGmrb
-         8ZiTbWwLmZ7ztJ15xo+psCe+frOUO0P3MkEmz8Jk=
-Received: from antispam3.tom.com (antispam3.tom.com [127.0.0.1])
-        by antispam3.tom.com (Postfix) with ESMTP id C66289C1C2A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:32:35 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at antispam3.tom.com
-Received: from antispam3.tom.com ([127.0.0.1])
-        by antispam3.tom.com (antispam3.tom.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Czo5gYHFIBmV for <linux-kernel@vger.kernel.org>;
-        Wed,  9 Mar 2022 15:32:35 +0800 (CST)
-Received: from localhost (unknown [101.93.196.13])
-        by antispam3.tom.com (Postfix) with ESMTPA id 71EEB9C192B;
-        Wed,  9 Mar 2022 15:32:34 +0800 (CST)
-Date:   Wed, 9 Mar 2022 15:32:33 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/2] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220309153136.000048e1@tom.com>
-In-Reply-To: <20220309061442.GA31316@lst.de>
-References: <20220308151606.2563-1-sunmingbao@tom.com>
-        <20220309061442.GA31316@lst.de>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        Wed, 9 Mar 2022 02:37:54 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F363162028
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:36:48 -0800 (PST)
+X-UUID: ec819c46e933487ebe6b07e538a45ff3-20220309
+X-UUID: ec819c46e933487ebe6b07e538a45ff3-20220309
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1081879596; Wed, 09 Mar 2022 15:36:40 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 9 Mar 2022 15:36:39 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Mar 2022 15:36:39 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <matthias.bgg@gmail.com>,
+        <robert.foss@linaro.org>, <andrzej.hajda@intel.com>,
+        <narmstrong@baylibre.com>
+CC:     <xji@analogixsemi.com>, <jitao.shi@mediatek.com>,
+        <xinlei.lee@mediatek.com>, <khilman@baylibre.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [RESEND V11 2/3] drm/mediatek: implement the DSI HS packets aligned
+Date:   Wed, 9 Mar 2022 15:36:36 +0800
+Message-ID: <20220309073637.3591-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220309073637.3591-1-rex-bc.chen@mediatek.com>
+References: <20220309073637.3591-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > @@ -1447,6 +1449,21 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
-> >  	if (nctrl->opts->tos >= 0)
-> >  		ip_sock_set_tos(queue->sock->sk, nctrl->opts->tos);
-> >  
-> > +	if (nctrl->opts->mask & NVMF_OPT_TCP_CONGESTION) {
-> > +		strncpy(ca_name, nctrl->opts->tcp_congestion,
-> > +			TCP_CA_NAME_MAX-1);
-> > +		optval = KERNEL_SOCKPTR(ca_name);
-> > +		ret = sock_common_setsockopt(queue->sock, IPPROTO_TCP,
-> > +					     TCP_CONGESTION, optval,
-> > +					     strlen(ca_name));  
-> 
-> This needs to use kernel_setsockopt.  I also can see absolutely no
-> need for the optval local variable, and I also don't really see why
-> we need ca_name either - if we need to limit the length and terminate
-> it (but why?) that can be done during option parsing.
+Some DSI RX devices (for example, anx7625) require last alignment of
+packets on all lanes after each row of data is sent.
+Otherwise, there will be some issues of shift or scroll for screen.
 
-Well, actually at the beginning I did use kernel_setsockopt.
-But the compilation failed.
+Take horizontal_sync_active_byte for a example,
+we roundup the HSA packet data to lane number, and the subtraction of 2
+is the packet data value added by the roundup operation, making the
+long packets are integer multiples of lane number.
+This value (2) varies with the lane number, and that is the reason we
+do this operation when the lane number is 4.
 
-Then I found the API kernel_setsockopt disappeared from kernel v5.8.
-So I use sock_common_setsockopt instead.
-The birth of variable ca_name and optval is just because of the
-the relevant definitions related to the prototype of
-sock_common_setsockopt.
+In the previous operation of function "mtk_dsi_config_vdo_timing",
+the length of HSA and HFP data packets has been adjusted to an
+integration multiple of lane number.
+Since the number of RGB data packets cannot be guaranteed to be an
+integer multiple of lane number, we modify the data packet length of
+HBP so that the number of HBP + RGB is equal to the lane number.
+So after sending a line of data (HSA + HBP + RGB + HFP), the data
+lanes are aligned.
 
-But now through thinking your comments and investigating the story of
-the disappearance of kernel_setsockopt, I feel I should use
-tcp_set_congestion_control instead of sock_common_setsockopt.
-Just as target/tcp.c replaced kernel_setsockopt with ip_sock_set_tos.
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-As for the length limitation of the ca name, I will (if required) move
-them into the phase of option parsing in the next version.
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index bced4c7d668e..208463dbf326 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -500,6 +500,18 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
+ 		DRM_WARN("HFP + HBP less than d-phy, FPS will under 60Hz\n");
+ 	}
+ 
++	if ((dsi->mode_flags & MIPI_DSI_HS_PKT_END_ALIGNED) &&
++	    (dsi->lanes == 4)) {
++		horizontal_sync_active_byte =
++			roundup(horizontal_sync_active_byte, dsi->lanes) - 2;
++		horizontal_frontporch_byte =
++			roundup(horizontal_frontporch_byte, dsi->lanes) - 2;
++		horizontal_backporch_byte =
++			roundup(horizontal_backporch_byte, dsi->lanes) - 2;
++		horizontal_backporch_byte -=
++			(vm->hactive * dsi_tmp_buf_bpp + 2) % dsi->lanes;
++	}
++
+ 	writel(horizontal_sync_active_byte, dsi->regs + DSI_HSA_WC);
+ 	writel(horizontal_backporch_byte, dsi->regs + DSI_HBP_WC);
+ 	writel(horizontal_frontporch_byte, dsi->regs + DSI_HFP_WC);
+-- 
+2.18.0
+
