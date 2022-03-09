@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B4EC46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 636A5C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237481AbiCIQUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:20:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
+        id S238051AbiCIQVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234649AbiCIQK5 (ORCPT
+        with ESMTP id S234864AbiCIQMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:10:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D3EC0842;
-        Wed,  9 Mar 2022 08:09:14 -0800 (PST)
+        Wed, 9 Mar 2022 11:12:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF17114ACA8;
+        Wed,  9 Mar 2022 08:09:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCA37B8222A;
-        Wed,  9 Mar 2022 16:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C786C340E8;
-        Wed,  9 Mar 2022 16:09:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B6E6617B2;
+        Wed,  9 Mar 2022 16:09:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F700C340EC;
+        Wed,  9 Mar 2022 16:09:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842151;
-        bh=z7p40pY35hoI0dlU3jaT5G+091WhUUE7jq8tnccKr70=;
+        s=korg; t=1646842179;
+        bh=BQM6yHpMDK0Tpuk2e3Gr783l4lRRVOUjiG3mBdAMFjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZFv58tF6D0J7Eke3uoynW/zaIiy9Cl3BcVjdTJBjwignim97dAEeUcCIL+ywpjLE
-         ZgYtu4BfqAiJNH+JaFlAq49fETk4HzOVsEMKwjClVuPruDBxmhJ8ZwhjxhldkeqmnR
-         T4piA2l7aOg8lO8U9cJKqsLv95t2qZrgdis5qDas=
+        b=t0ni94gGdClKvyUUVbQlRAFlhvKvFln6W9w5dPFuExMtXrat0voGsQvLp992Zc2xq
+         qNojKUuHjUuP+o7PFBi1ZemNyDObFTvUfisCu1dETCLFyg0VWQfmECEoQSiip6RMcW
+         c5t11cFFTDIU9oArLPb1mCSmAquCW6UgFU0GBmxA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.16 16/37] arm64: cpufeature: add HWCAP for FEAT_RPRES
-Date:   Wed,  9 Mar 2022 17:00:17 +0100
-Message-Id: <20220309155859.560502544@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.16 25/37] arm64: entry: Move trampoline macros out of ifdefd section
+Date:   Wed,  9 Mar 2022 17:00:26 +0100
+Message-Id: <20220309155859.818120008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
 References: <20220309155859.086952723@linuxfoundation.org>
@@ -51,107 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit 1175011a7d0030d49dc9c10bde36f08f26d0a8ee upstream.
+commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
 
-Add a new HWCAP to detect the Increased precision of Reciprocal Estimate
-and Reciprocal Square Root Estimate feature (FEAT_RPRES), introduced in Armv8.7.
+The macros for building the kpti trampoline are all behind
+CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
+.entry.tramp.text section.
 
-Also expose this to userspace in the ID_AA64ISAR2_EL1 feature register.
+Move the macros out so they can be used to generate other kinds of
+trampoline. Only the symbols need to be guarded by
+CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-4-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/arm64/cpu-feature-registers.rst |    8 ++++++++
- Documentation/arm64/elf_hwcaps.rst            |    4 ++++
- arch/arm64/include/asm/hwcap.h                |    1 +
- arch/arm64/include/uapi/asm/hwcap.h           |    1 +
- arch/arm64/kernel/cpufeature.c                |    2 ++
- arch/arm64/kernel/cpuinfo.c                   |    1 +
- 6 files changed, 17 insertions(+)
+ arch/arm64/kernel/entry.S |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
---- a/Documentation/arm64/cpu-feature-registers.rst
-+++ b/Documentation/arm64/cpu-feature-registers.rst
-@@ -283,6 +283,14 @@ infrastructure:
-      | AFP                          | [47-44] |    y    |
-      +------------------------------+---------+---------+
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -608,12 +608,6 @@ SYM_CODE_END(ret_to_user)
  
-+  9) ID_AA64ISAR2_EL1 - Instruction set attribute register 2
-+
-+     +------------------------------+---------+---------+
-+     | Name                         |  bits   | visible |
-+     +------------------------------+---------+---------+
-+     | RPRES                        | [7-4]   |    y    |
-+     +------------------------------+---------+---------+
-+
+ 	.popsection				// .entry.text
  
- Appendix I: Example
- -------------------
---- a/Documentation/arm64/elf_hwcaps.rst
-+++ b/Documentation/arm64/elf_hwcaps.rst
-@@ -255,6 +255,10 @@ HWCAP2_AFP
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-/*
+- * Exception vectors trampoline.
+- */
+-	.pushsection ".entry.tramp.text", "ax"
+-
+ 	// Move from tramp_pg_dir to swapper_pg_dir
+ 	.macro tramp_map_kernel, tmp
+ 	mrs	\tmp, ttbr1_el1
+@@ -709,6 +703,11 @@ alternative_else_nop_endif
+ 	.endr
+ 	.endm
  
-     Functionality implied by ID_AA64MFR1_EL1.AFP == 0b0001.
- 
-+HWCAP2_RPRES
-+
-+    Functionality implied by ID_AA64ISAR2_EL1.RPRES == 0b0001.
-+
- 4. Unused AT_HWCAP bits
- -----------------------
- 
---- a/arch/arm64/include/asm/hwcap.h
-+++ b/arch/arm64/include/asm/hwcap.h
-@@ -107,6 +107,7 @@
- #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
- #define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
- #define KERNEL_HWCAP_AFP		__khwcap2_feature(AFP)
-+#define KERNEL_HWCAP_RPRES		__khwcap2_feature(RPRES)
- 
- /*
-  * This yields a mask that user programs can use to figure out what
---- a/arch/arm64/include/uapi/asm/hwcap.h
-+++ b/arch/arm64/include/uapi/asm/hwcap.h
-@@ -77,5 +77,6 @@
- #define HWCAP2_MTE		(1 << 18)
- #define HWCAP2_ECV		(1 << 19)
- #define HWCAP2_AFP		(1 << 20)
-+#define HWCAP2_RPRES		(1 << 21)
- 
- #endif /* _UAPI__ASM_HWCAP_H */
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -226,6 +226,7 @@ static const struct arm64_ftr_bits ftr_i
- };
- 
- static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
-+	ARM64_FTR_BITS(FTR_VISIBLE, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64ISAR2_RPRES_SHIFT, 4, 0),
- 	ARM64_FTR_END,
- };
- 
-@@ -2490,6 +2491,7 @@ static const struct arm64_cpu_capabiliti
- #endif /* CONFIG_ARM64_MTE */
- 	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
- 	HWCAP_CAP(SYS_ID_AA64MMFR1_EL1, ID_AA64MMFR1_AFP_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_AFP),
-+	HWCAP_CAP(SYS_ID_AA64ISAR2_EL1, ID_AA64ISAR2_RPRES_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_RPRES),
- 	{},
- };
- 
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -96,6 +96,7 @@ static const char *const hwcap_str[] = {
- 	[KERNEL_HWCAP_MTE]		= "mte",
- 	[KERNEL_HWCAP_ECV]		= "ecv",
- 	[KERNEL_HWCAP_AFP]		= "afp",
-+	[KERNEL_HWCAP_RPRES]		= "rpres",
- };
- 
- #ifdef CONFIG_COMPAT
++#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
++/*
++ * Exception vectors trampoline.
++ */
++	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ SYM_CODE_START_NOALIGN(tramp_vectors)
+ 	generate_tramp_vector
 
 
