@@ -2,85 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B23C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BED0C352A8
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238559AbiCIQvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:51:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
+        id S238352AbiCIQvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:51:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237011AbiCIQaa (ORCPT
+        with ESMTP id S235812AbiCIQd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:30 -0500
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26D4150400;
-        Wed,  9 Mar 2022 08:23:57 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 790731BF20A;
-        Wed,  9 Mar 2022 16:23:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646843019;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3C6FB6jhgDsl5acxT2klDaDicyoea6PWDZxx1o8S4oU=;
-        b=cwbnSDJenHY3cCJNJzpk4h5KZESvbQZkXsQo1tjsM4mUFX0U2NfPC0C6uV8LC113OBFjMI
-        nHAfpMIXLR+vj4H0PH5SP2EU3/2ue6/QWM8VZbg0G9pVqcKAw/UCsb4Mmh0i3b+enaLbxm
-        IGjPzYFNvKW498S+6JS+Dyj+gGaJ84ZssFXF5BevLeak/ye2FYkgcohuFpqWRZ09dZwlkL
-        h5UxBGq8C5puxCf7hyZqhX3M5dUpE5sXdCE7LXqVkF0yAP+iq+sdv65GrHC1eoVWSFxoKQ
-        sBzMN+Y3RkqBqSe/dmtParmCYfZfcKjqZv0RU3aWmMge9H4NNJdkCmolMTTVcw==
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 29/29] rtc: remove uie_unsupported
-Date:   Wed,  9 Mar 2022 17:23:00 +0100
-Message-Id: <20220309162301.61679-29-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
-References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+        Wed, 9 Mar 2022 11:33:56 -0500
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72969E9C6;
+        Wed,  9 Mar 2022 08:29:27 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:35982)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRzBm-0032OW-NN; Wed, 09 Mar 2022 09:29:26 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34582 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRzBl-005i1Z-OH; Wed, 09 Mar 2022 09:29:26 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Denys Vlasenko <vda.linux@googlemail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Liam R . Howlett" <liam.howlett@oracle.com>,
+        Jann Horn <jannh@google.com>, linux-mm@kvack.org
+References: <20220131153740.2396974-1-willy@infradead.org>
+        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
+        <YfgKw5z2uswzMVRQ@casper.infradead.org>
+        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
+        <YfgPwPvopO1aqcVC@casper.infradead.org>
+        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
+        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
+        <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
+        <202203081342.1924AD9@keescook>
+Date:   Wed, 09 Mar 2022 10:29:10 -0600
+In-Reply-To: <202203081342.1924AD9@keescook> (Kees Cook's message of "Tue, 8
+        Mar 2022 13:49:32 -0800")
+Message-ID: <877d93dr8p.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nRzBl-005i1Z-OH;;;mid=<877d93dr8p.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1+n6dmJ5h9NeMXTcHx08GyxJ8itHy6uo48=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [GIT PULL] Fix fill_files_note
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-uie_unsupported is not used by any drivers anymore, remove it.
+Kees Cook <keescook@chromium.org> writes:
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- drivers/rtc/class.c | 3 ---
- include/linux/rtc.h | 2 --
- 2 files changed, 5 deletions(-)
+> On Tue, Mar 08, 2022 at 01:35:03PM -0600, Eric W. Biederman wrote:
+>> 
+>> Kees,
+>> 
+>> Please pull the coredump-vma-snapshot-fix branch from the git tree:
+>> 
+>>   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
+>> 
+>>   HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
+>> 
+>> Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
+>> which could cause trouble.
+>> 
+>> Refactor the code and clean it up so that the vma snapshot makes
+>> it to fill_files_note, and then use the vma snapshot in fill_files_note.
+>> 
+>> Eric W. Biederman (5):
+>>       coredump: Move definition of struct coredump_params into coredump.h
+>>       coredump: Snapshot the vmas in do_coredump
+>>       coredump: Remove the WARN_ON in dump_vma_snapshot
+>>       coredump/elf: Pass coredump_params into fill_note_info
+>>       coredump: Use the vma snapshot in fill_files_note
+>> 
+>>  fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
+>>  fs/binfmt_elf_fdpic.c    | 18 +++++--------
+>>  fs/binfmt_flat.c         |  1 +
+>>  fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
+>>  include/linux/binfmts.h  | 13 +---------
+>>  include/linux/coredump.h | 20 ++++++++++++---
+>>  6 files changed, 93 insertions(+), 84 deletions(-)
+>> 
+>> ---
+>> 
+>> Kees I realized I needed to rebase this on Jann Horn's commit
+>> 84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
+>> libraries").  Unfortunately before I got that done I got distracted and
+>> these changes have been sitting in limbo for most of the development
+>> cycle.  Since you are running a tree that is including changes like this
+>> including Jann's can you please pull these changes into your tree.
+>
+> Sure! Can you make a signed tag for this pull?
 
-diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-index 40d504dac1a9..3c8eec2218df 100644
---- a/drivers/rtc/class.c
-+++ b/drivers/rtc/class.c
-@@ -399,9 +399,6 @@ int __devm_rtc_register_device(struct module *owner, struct rtc_device *rtc)
- 	if (!rtc->ops->set_alarm)
- 		clear_bit(RTC_FEATURE_ALARM, rtc->features);
- 
--	if (rtc->uie_unsupported)
--		clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->features);
--
- 	if (rtc->ops->set_offset)
- 		set_bit(RTC_FEATURE_CORRECTION, rtc->features);
- 
-diff --git a/include/linux/rtc.h b/include/linux/rtc.h
-index 47fd1c2d3a57..1fd9c6a21ebe 100644
---- a/include/linux/rtc.h
-+++ b/include/linux/rtc.h
-@@ -110,8 +110,6 @@ struct rtc_device {
- 	struct hrtimer pie_timer; /* sub second exp, so needs hrtimer */
- 	int pie_enabled;
- 	struct work_struct irqwork;
--	/* Some hardware can't support UIE mode */
--	int uie_unsupported;
- 
- 	/*
- 	 * This offset specifies the update timing of the RTC.
--- 
-2.35.1
+Not yet.
 
+Hopefully I will get the time to set that up soon, but I am not at all
+setup to do signed tags at this point.
+
+> If it helps, my workflow look like this, though I assume there might be
+> better ways. (tl;dr: "git tag -s TAG BRANCH")
+>
+>
+> PULL_BRANCH=name-of-branch
+> BASE=sha-of-base
+> FOR=someone
+> TOPIC=topic-name
+>
+> TAG="for-$FOR/$TOPIC"
+> SIGNED=~/.pull-request-signed-"$TAG"
+> echo "$TOPIC update" > "$SIGNED"
+> git request-pull "$BASE" git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git "$PULL_BRANCH" | awk '{print "# " $0}' >> "$SIGNED"
+> vi "$SIGNED"
+>
+> git tag -sF "$SIGNED" "$TAG" "$PULL_BRANCH"
+> git push origin "$PULL_BRANCH"
+> git push origin +"$TAG"
+
+Thanks.  That looks like a good place to start.
+
+Eric
