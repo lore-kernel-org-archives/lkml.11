@@ -2,209 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BF4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 08:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A94C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 08:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiCIIPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 03:15:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S230492AbiCIIPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 03:15:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiCIIPA (ORCPT
+        with ESMTP id S229785AbiCIIPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 03:15:00 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3F4E02C7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 00:14:01 -0800 (PST)
+        Wed, 9 Mar 2022 03:15:39 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB59EB166;
+        Wed,  9 Mar 2022 00:14:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646813641; x=1678349641;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kPfFJUUUjlCsexJdOicJgo8/WKxLoFygDITCohZkCDc=;
-  b=P/msNM4zmTAnvZKIk2Zoab7Ccie6aQjCf0aO7CGYM92dYB6sutFQVu/a
-   Zn/pzsNPc+DuTcdyQ1LYo7DJSAWKptzBKzKY5EcoXHGOJRQSwn96roysP
-   MQI7/AUMLDI8/Ex9pbCo6zSPRYa8awifk3UPib340IgX0klbJLP/kOSIS
-   0Dobn4JkKqYLyMHYQqZ9sN7GqccEcXjyMptSYwhYi51gBr86u/O2VnlsR
-   JeXn8M2nTZXbuCC6LR6BzfKq34ccT+HjTTSh3skbjMYrHfrl4t9Ig2Bef
-   C0zwDbO6K0ugnLtbQyKWVdEKXJLdxn5q9D56//WXEG6LbknEb/y7//yoD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="252488193"
+  t=1646813681; x=1678349681;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=INwh7wf9yUTzAqL1clBsB0C8mwgobM+LmmSdQXzNAQk=;
+  b=cKSbjPegtfZiZtdoQDNVuNOw5Ds73iuff/em0uGmevUK5SSb7SlmNMeM
+   eRop/zRduBKIJpJkTsQwDWesxUYeqkwyvr8eeuAhLxcfJ5CPSGkeJvkS2
+   2s27gxQoJJ/yymUXISeJiu8cJvegIu4MB3KWg4RY11lgStgjemnRIlHse
+   myCRtKB7yTRl+KpN6e1NtVR+i4IGAP3f6BNIO+QvA2m+oiVk/wyBMmxF9
+   w09VOsY29sUP92NWZE0JwNKKQjWnRuUshsQN+OaOkBcu9ZwJr6RH6iUeD
+   OO0GhLLuoF/XOwaaJIywW4eT5QvzUk6qYaDL9VQSG5FXP0mrLJ3ms+26Y
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="279642452"
 X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="252488193"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 00:14:01 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="279642452"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 00:14:41 -0800
 X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="643959005"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 09 Mar 2022 00:13:59 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRrSI-0002u5-DM; Wed, 09 Mar 2022 08:13:58 +0000
-Date:   Wed, 9 Mar 2022 16:13:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "sw.multimedia" <sw.multimedia@starfivetech.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        "jack.zhu" <jack.zhu@starfivetech.com>,
-        "keith.zhao" <keith.zhao@starfivetech.com>
-Subject: [esmil:visionfive 47/61]
- drivers/gpu/drm/starfive/starfive_drm_crtc.c:216:13: warning: variable 'ret'
- set but not used
-Message-ID: <202203091609.CXcUV5hY-lkp@intel.com>
+   d="scan'208";a="688220746"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 00:14:38 -0800
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
+        josh@joshtriplett.org, urezki@gmail.com
+Cc:     bigeasy@linutronix.de, juri.lelli@redhat.com, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] rcu: Only boost rcu reader tasks with lower priority than boost kthreads
+Date:   Wed,  9 Mar 2022 16:15:23 +0800
+Message-Id: <20220309081523.348450-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   b75fcbba0e03fd9655bc4c8854422d51474664d3
-commit: e9eb272297e1c4a48b53b76bf382053e5e518f37 [47/61] drm/starfive: Add StarFive drm driver
-config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203091609.CXcUV5hY-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/e9eb272297e1c4a48b53b76bf382053e5e518f37
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout e9eb272297e1c4a48b53b76bf382053e5e518f37
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/gpu/
+When RCU_BOOST is enabled, the boost kthreads will boosting readers
+who are blocking a given grace period, if the current reader tasks
+have a higher priority than boost kthreads(the boost kthreads priority
+not always 1, if the kthread_prio is set), boosting is useless, skip
+current task and select next task to boosting, reduce the time for a
+given grace period.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/gpu/drm/starfive/starfive_drm_crtc.c: In function 'starfive_crtc_atomic_flush':
->> drivers/gpu/drm/starfive/starfive_drm_crtc.c:216:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     216 |         int ret;
-         |             ^~~
-   drivers/gpu/drm/starfive/starfive_drm_crtc.c: In function 'starfive_crtc_atomic_enable':
-   drivers/gpu/drm/starfive/starfive_drm_crtc.c:233:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     233 |         int ret;
-         |             ^~~
-   drivers/gpu/drm/starfive/starfive_drm_crtc.c: At top level:
->> drivers/gpu/drm/starfive/starfive_drm_crtc.c:284:5: warning: no previous prototype for 'starfive_crtc_create' [-Wmissing-prototypes]
-     284 | int starfive_crtc_create(struct drm_device *drm_dev,
-         |     ^~~~~~~~~~~~~~~~~~~~
---
-   drivers/gpu/drm/starfive/starfive_drm_vpp.c: In function 'vpp1_isr_handler':
->> drivers/gpu/drm/starfive/starfive_drm_vpp.c:598:13: warning: variable 'intr_status' set but not used [-Wunused-but-set-variable]
-     598 |         u32 intr_status = 0;
-         |             ^~~~~~~~~~~
-
-
-vim +/ret +216 drivers/gpu/drm/starfive/starfive_drm_crtc.c
-
-   211	
-   212	static void starfive_crtc_atomic_flush(struct drm_crtc *crtc,
-   213					       struct drm_atomic_state *old_crtc_state)
-   214	{
-   215		struct starfive_crtc *crtcp = to_starfive_crtc(crtc);
- > 216		int ret;
-   217	
-   218		//starfive_flush_dcache(crtcp->dma_addr, 1920*1080*2);
-   219		DRM_DEBUG_DRIVER("ddr_format_change [%d], dma_addr_change [%d]\n",
-   220				crtcp->ddr_format_change, crtcp->dma_addr_change);
-   221		if (crtcp->ddr_format_change || crtcp->dma_addr_change) {
-   222			ret = ddrfmt_to_ppfmt(crtcp);
-   223			starfive_pp_update(crtcp);
-   224		} else {
-   225			DRM_DEBUG_DRIVER("%s with no change\n", __func__);
-   226		}
-   227	}
-   228	
-   229	static void starfive_crtc_atomic_enable(struct drm_crtc *crtc,
-   230						struct drm_atomic_state *state)
-   231	{
-   232		struct starfive_crtc *crtcp = to_starfive_crtc(crtc);
-   233		int ret;
-   234	
-   235	// enable crtc HW
-   236	#ifdef CONFIG_DRM_STARFIVE_MIPI_DSI
-   237		dsitx_vout_init(crtcp);
-   238		lcdc_dsi_sel(crtcp);
-   239	#else
-   240		vout_reset(crtcp);
-   241	#endif
-   242		ret = ddrfmt_to_ppfmt(crtcp);
-   243		starfive_pp_enable(crtcp);
-   244		starfive_lcdc_enable(crtcp);
-   245		crtcp->is_enabled = true;  // should before
-   246	}
-   247	
-   248	static void starfive_crtc_atomic_disable(struct drm_crtc *crtc,
-   249						 struct drm_atomic_state *state)
-   250	{
-   251		struct starfive_crtc *crtcp = to_starfive_crtc(crtc);
-   252		int pp_id;
-   253	
-   254		for (pp_id = 0; pp_id < PP_NUM; pp_id++) {
-   255			if (crtcp->pp[pp_id].inited == 1) {
-   256				pp_disable_intr(crtcp, pp_id);
-   257				vout_disable(crtcp); // disable crtc HW
-   258			}
-   259		}
-   260		crtcp->is_enabled = false;
-   261	}
-   262	
-   263	static enum drm_mode_status starfive_crtc_mode_valid(struct drm_crtc *crtc,
-   264							     const struct drm_display_mode *mode)
-   265	{
-   266		int refresh = drm_mode_vrefresh(mode);
-   267	
-   268		if (refresh > 60) //lcdc miss support 60+ fps
-   269			return MODE_BAD;
-   270		else
-   271			return MODE_OK;
-   272	}
-   273	
-   274	static const struct drm_crtc_helper_funcs starfive_crtc_helper_funcs = {
-   275		.mode_fixup = starfive_crtc_mode_fixup,
-   276		.atomic_check = starfive_crtc_atomic_check,
-   277		.atomic_begin = starfive_crtc_atomic_begin,
-   278		.atomic_flush = starfive_crtc_atomic_flush,
-   279		.atomic_enable = starfive_crtc_atomic_enable,
-   280		.atomic_disable = starfive_crtc_atomic_disable,
-   281		.mode_valid = starfive_crtc_mode_valid,
-   282	};
-   283	
- > 284	int starfive_crtc_create(struct drm_device *drm_dev,
-   285				 struct starfive_crtc *starfive_crtc,
-   286				 const struct drm_crtc_funcs *crtc_funcs,
-   287				 const struct drm_crtc_helper_funcs *crtc_helper_funcs)
-   288	{
-   289		struct drm_crtc *crtc = &starfive_crtc->crtc;
-   290		struct device *dev = drm_dev->dev;
-   291		struct device_node *port;
-   292		int ret;
-   293	
-   294		starfive_crtc->planes = devm_kzalloc(dev, sizeof(struct drm_plane), GFP_KERNEL);
-   295		ret = starfive_plane_init(drm_dev, starfive_crtc, DRM_PLANE_TYPE_PRIMARY);
-   296		if (ret) {
-   297			dev_err(drm_dev->dev, "failed to construct primary plane\n");
-   298			return ret;
-   299		}
-   300	
-   301		drm_crtc_init_with_planes(drm_dev, crtc, starfive_crtc->planes, NULL,
-   302				crtc_funcs, NULL);
-   303		drm_crtc_helper_add(crtc, crtc_helper_funcs);
-   304		port = of_get_child_by_name(starfive_crtc->dev->of_node, "port");
-   305		if (!port) {
-   306			DRM_ERROR("no port node found in %s\n", dev->of_node->full_name);
-   307			ret = -ENOENT;
-   308		}
-   309	
-   310		crtc->port = port;
-   311		return 0;
-   312	}
-   313	
-
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ v1->v2:
+ rename label 'end' to 'skip_boost'.
+ add 'boost_exp_tasks' pointer to point 'rnp->exp_tasks'
+ do the similar thing as normal grace period.
+
+ kernel/rcu/tree.h        |  2 ++
+ kernel/rcu/tree_plugin.h | 31 +++++++++++++++++++++++--------
+ 2 files changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index b8d07bf92d29..862ca09b56c7 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -103,6 +103,8 @@ struct rcu_node {
+ 				/*  queued on this rcu_node structure that */
+ 				/*  are blocking the current grace period, */
+ 				/*  there can be no such task. */
++	struct list_head *boost_exp_tasks;
++
+ 	struct rt_mutex boost_mtx;
+ 				/* Used only for the priority-boosting */
+ 				/*  side effect, not as a lock. */
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index c3d212bc5338..22bf5a8040f5 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -12,6 +12,7 @@
+  */
+ 
+ #include "../locking/rtmutex_common.h"
++#include <linux/sched/deadline.h>
+ 
+ static bool rcu_rdp_is_offloaded(struct rcu_data *rdp)
+ {
+@@ -535,6 +536,8 @@ rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
+ 			drop_boost_mutex = rt_mutex_owner(&rnp->boost_mtx.rtmutex) == t;
+ 			if (&t->rcu_node_entry == rnp->boost_tasks)
+ 				WRITE_ONCE(rnp->boost_tasks, np);
++			if (&t->rcu_node_entry == rnp->boost_exp_tasks)
++				WRITE_ONCE(rnp->boost_exp_tasks, np);
+ 		}
+ 
+ 		/*
+@@ -1022,7 +1025,7 @@ static int rcu_boost(struct rcu_node *rnp)
+ 	struct task_struct *t;
+ 	struct list_head *tb;
+ 
+-	if (READ_ONCE(rnp->exp_tasks) == NULL &&
++	if (READ_ONCE(rnp->boost_exp_tasks) == NULL &&
+ 	    READ_ONCE(rnp->boost_tasks) == NULL)
+ 		return 0;  /* Nothing left to boost. */
+ 
+@@ -1032,7 +1035,7 @@ static int rcu_boost(struct rcu_node *rnp)
+ 	 * Recheck under the lock: all tasks in need of boosting
+ 	 * might exit their RCU read-side critical sections on their own.
+ 	 */
+-	if (rnp->exp_tasks == NULL && rnp->boost_tasks == NULL) {
++	if (rnp->boost_exp_tasks == NULL && rnp->boost_tasks == NULL) {
+ 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		return 0;
+ 	}
+@@ -1043,8 +1046,8 @@ static int rcu_boost(struct rcu_node *rnp)
+ 	 * expedited grace period must boost all blocked tasks, including
+ 	 * those blocking the pre-existing normal grace period.
+ 	 */
+-	if (rnp->exp_tasks != NULL)
+-		tb = rnp->exp_tasks;
++	if (rnp->boost_exp_tasks != NULL)
++		tb = rnp->boost_exp_tasks;
+ 	else
+ 		tb = rnp->boost_tasks;
+ 
+@@ -1065,14 +1068,24 @@ static int rcu_boost(struct rcu_node *rnp)
+ 	 * section.
+ 	 */
+ 	t = container_of(tb, struct task_struct, rcu_node_entry);
++	if (dl_task(t) || t->prio <= current->prio) {
++		tb = rcu_next_node_entry(t, rnp);
++		if (rnp->boost_exp_tasks)
++			WRITE_ONCE(rnp->boost_exp_tasks, tb);
++		else
++			WRITE_ONCE(rnp->boost_tasks, tb);
++		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
++		goto skip_boost;
++	}
++
+ 	rt_mutex_init_proxy_locked(&rnp->boost_mtx.rtmutex, t);
+ 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 	/* Lock only for side effect: boosts task t's priority. */
+ 	rt_mutex_lock(&rnp->boost_mtx);
+ 	rt_mutex_unlock(&rnp->boost_mtx);  /* Then keep lockdep happy. */
+ 	rnp->n_boosts++;
+-
+-	return READ_ONCE(rnp->exp_tasks) != NULL ||
++skip_boost:
++	return READ_ONCE(rnp->boost_exp_tasks) != NULL ||
+ 	       READ_ONCE(rnp->boost_tasks) != NULL;
+ }
+ 
+@@ -1090,7 +1103,7 @@ static int rcu_boost_kthread(void *arg)
+ 		WRITE_ONCE(rnp->boost_kthread_status, RCU_KTHREAD_WAITING);
+ 		trace_rcu_utilization(TPS("End boost kthread@rcu_wait"));
+ 		rcu_wait(READ_ONCE(rnp->boost_tasks) ||
+-			 READ_ONCE(rnp->exp_tasks));
++			 READ_ONCE(rnp->boost_exp_tasks));
+ 		trace_rcu_utilization(TPS("Start boost kthread@rcu_wait"));
+ 		WRITE_ONCE(rnp->boost_kthread_status, RCU_KTHREAD_RUNNING);
+ 		more2boost = rcu_boost(rnp);
+@@ -1129,13 +1142,15 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
+ 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		return;
+ 	}
+-	if (rnp->exp_tasks != NULL ||
++	if ((rnp->exp_tasks != NULL && rnp->boost_exp_tasks == NULL) ||
+ 	    (rnp->gp_tasks != NULL &&
+ 	     rnp->boost_tasks == NULL &&
+ 	     rnp->qsmask == 0 &&
+ 	     (!time_after(rnp->boost_time, jiffies) || rcu_state.cbovld))) {
+ 		if (rnp->exp_tasks == NULL)
+ 			WRITE_ONCE(rnp->boost_tasks, rnp->gp_tasks);
++		else
++			WRITE_ONCE(rnp->boost_exp_tasks, rnp->exp_tasks);
+ 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		rcu_wake_cond(rnp->boost_kthread_task,
+ 			      READ_ONCE(rnp->boost_kthread_status));
+-- 
+2.25.1
+
