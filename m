@@ -2,69 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A56C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238573AbiCIWRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:17:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
+        id S235700AbiCIWTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:19:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238516AbiCIWRM (ORCPT
+        with ESMTP id S230286AbiCIWTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:17:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AC0104A74
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:16:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32F36B823FF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D41ACC340E8;
-        Wed,  9 Mar 2022 22:16:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646864169;
-        bh=7Gm//2LqEtD2IWBmeRggFUAph0WB0PzEA/sMIW4XQkE=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=q+M6UJDlatx/uHcTQ3L+r8cBCIaxNDgpMJ9qiQYRMYpHjvPtdeo56FgxlFpimWj0b
-         ZWSStf8VrFzttj7wqynESadR1stiC0pbEFGTwJmecddPYoNkjcPUf9Zd+cIEAycp0c
-         qvDBowY8aSUPtItSBw/dlIicvOIrxxwyby+MkvxtBB2lf7c1faNAO0YpY6ni/37Km2
-         44fTb23gaEC8yloIEvGa1dzBCpsrI8TigBNAVS0mXUok7yUIIYsKV9dZM36ldvU3oG
-         1kKTPlMKftI7rRdP6zMiAjbnZK9RfJUz3JwHhTqoy3PJOnLV+/kVjLDEOa60k9/uOZ
-         q3dZpl0ggRtXg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BB0E0E73C2D;
-        Wed,  9 Mar 2022 22:16:09 +0000 (UTC)
-Subject: Re: [GIT PULL] HID fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <nycvar.YFH.7.76.2203091139210.24795@cbobk.fhfr.pm>
-References: <nycvar.YFH.7.76.2203091139210.24795@cbobk.fhfr.pm>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <nycvar.YFH.7.76.2203091139210.24795@cbobk.fhfr.pm>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
-X-PR-Tracked-Commit-Id: fe23b6bbeac40de957724b90a88d46fb336e29a9
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 37c333a5dea519973e8b6588ef7845b18ee1cb46
-Message-Id: <164686416975.25297.17580113805057094644.pr-tracker-bot@kernel.org>
-Date:   Wed, 09 Mar 2022 22:16:09 +0000
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+        Wed, 9 Mar 2022 17:19:37 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8597D119426
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:18:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646864317; x=1678400317;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LMYXIk4MjXMgXwTZBMBZP0Nx9oN/bI0jc1AhN9mqdNc=;
+  b=N2h48pdL3Km2/gaIMhx87n5xRjo09kZGO1s4l6PPUNMt5FX6lF6hY1KN
+   0vSjFXHehTpEzUf9YafchGkd3nKb/nczrLKCsqFvoMdAoM8tnd/pBb6Tw
+   JY2xrGOCaODnTw340H0AoTre7ImlRM0PyxDLHPwUHfneQzNQBXimbIebG
+   yhpNd8Jz/dYeCH19IK9iUrKfe9VR3nAEAlB4hZV0+89SPAdbE533xg7v3
+   RqgXsLMrorDDEQdeCmE7mxFciPLnCe9Sba7QdtWZbSTNqbKvS6SewSoSy
+   GFfaItS3vZ9r3+5z6xguDTVecx7lDCsjeSvsOXn3BZyT/8iCofTx6KcOC
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237272565"
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="237272565"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 14:18:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="496008917"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 09 Mar 2022 14:18:36 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nS4df-0003tJ-F0; Wed, 09 Mar 2022 22:18:35 +0000
+Date:   Thu, 10 Mar 2022 06:17:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/kprobe_multi_4 6/11]
+ kernel/trace/bpf_trace.c:1058:64: error: 'struct pt_regs' has no member
+ named 'ip'; did you mean 'sp'?
+Message-ID: <202203100634.hZ3lL2Gt-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 9 Mar 2022 11:42:10 +0100 (CET):
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/kprobe_multi_4
+head:   02731d567ee31d7c7f012e9c5930f114ed1e2478
+commit: 651116687aeb66c22fec5e59d02674e66c0f2587 [6/11] bpf: Add cookie support to programs attached with kprobe multi link
+config: riscv-randconfig-s032-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100634.hZ3lL2Gt-lkp@intel.com/config)
+compiler: riscv32-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=651116687aeb66c22fec5e59d02674e66c0f2587
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/kprobe_multi_4
+        git checkout 651116687aeb66c22fec5e59d02674e66c0f2587
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash kernel/trace/
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/37c333a5dea519973e8b6588ef7845b18ee1cb46
+All errors (new ones prefixed by >>):
 
-Thank you!
+   kernel/trace/bpf_trace.c: In function '____bpf_get_attach_cookie_kprobe_multi':
+>> kernel/trace/bpf_trace.c:1058:64: error: 'struct pt_regs' has no member named 'ip'; did you mean 'sp'?
+    1058 |         return bpf_kprobe_multi_cookie(current->bpf_ctx, regs->ip);
+         |                                                                ^~
+         |                                                                sp
+   kernel/trace/bpf_trace.c:1059:1: error: control reaches end of non-void function [-Werror=return-type]
+    1059 | }
+         | ^
+   cc1: some warnings being treated as errors
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+
+vim +1058 kernel/trace/bpf_trace.c
+
+  1055	
+  1056	BPF_CALL_1(bpf_get_attach_cookie_kprobe_multi, struct pt_regs *, regs)
+  1057	{
+> 1058		return bpf_kprobe_multi_cookie(current->bpf_ctx, regs->ip);
+  1059	}
+  1060	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
