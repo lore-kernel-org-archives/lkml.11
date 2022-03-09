@@ -2,89 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDE5C3527E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D77E9C47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239637AbiCIQdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S236835AbiCIQdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiCIQXj (ORCPT
+        with ESMTP id S235490AbiCIQXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:23:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25565C084B;
-        Wed,  9 Mar 2022 08:21:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB78961981;
-        Wed,  9 Mar 2022 16:21:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D13C340F5;
-        Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842909;
-        bh=OQdhJ2GZ5rK4QlrPcNeTaZV+1fFScNNo3kD9q3ZRwbM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3A8oibTsf9GZ83M7PYeNnigTUuTfhMKoqLy/Zp8n3zQmnovNc8uYFfiqS1FaRug4
-         6j6YKhdNslx7pAUSLswN7OX5t/PrOsd46jchqy57JovR8gxusKyxrCg/7S3uWJlC6b
-         uZhXgTb98Pte/Wh5I59FlSm9NAAV9Yb/OBYwc5tMzkfVa4rZwpViUP9PrtMSONd6bv
-         xbSUFnoUNH8XvTCE0/dj5nt5I0Vc5dYL2CFUKJ6ZyaW6B9qqSOYgBfiLv0tNRZacsC
-         SpZ7OGQQhzrolkRMQBDh3mRuCYbQ+wQzsg5oRRYwQQD+DGdo0A4mZuYLlZyURAoGoK
-         7ap+v9fnlvURQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 22/24] sfc: extend the locking on mcdi->seqno
-Date:   Wed,  9 Mar 2022 11:19:41 -0500
-Message-Id: <20220309161946.136122-22-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:23:20 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7F0C3DA74
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:21:45 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D154168F;
+        Wed,  9 Mar 2022 08:21:45 -0800 (PST)
+Received: from [10.1.29.144] (e121487-lin.cambridge.arm.com [10.1.29.144])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 573453F7F5;
+        Wed,  9 Mar 2022 08:21:42 -0800 (PST)
+Subject: Re: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <20220309144138.360482-1-arnd@kernel.org>
+ <20220309144138.360482-2-arnd@kernel.org>
+ <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com>
+ <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+From:   Vladimir Murzin <vladimir.murzin@arm.com>
+Message-ID: <08232117-7444-55d8-e13c-b49828c8f3e9@arm.com>
+Date:   Wed, 9 Mar 2022 16:21:39 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+On 3/9/22 4:17 PM, Arnd Bergmann wrote:
+> On Wed, Mar 9, 2022 at 4:48 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2022-03-09 14:40, Arnd Bergmann wrote:
+>>> From: Arnd Bergmann <arnd@arndb.de>
+>>>
+>>> It is possible to build MMU-less kernels for Cortex-M base
+>>> microcrontrollers as well as a couple of older platforms that
+>>> have not been converted to CONFIG_ARCH_MULTIPLATFORM,
+>>> specifically ep93xx, footbridge, dove, sa1100 and s3c24xx.
+>>>
+>>> It seems unlikely that anybody has tested those configurations
+>>> in recent years, as even building them is frequently broken.
+>>> A patch I submitted caused another build time regression
+>>> in this configuration. I sent a patch for that, but it seems
+>>> better to also remove the option entirely, leaving ARMv7-M
+>>> as the only supported Arm NOMMU target for simplicity.
+>>
+>> In that case, it would probably make sense to garbage-collect all the
+>> configs, setup code and other stuff relating to older MMU-less CPU cores
+>> like ARM1156, ARM940, etc. at the same time.
+> 
+> Right, good idea. These are only selected by CONFIG_ARCH_INTEGRATOR,
+> but that in turn doesn't build for CONFIG_MMU=n because it depends on
+> ARCH_MULTIPLATFORM. I'll send a patch for these.
+> 
+> I also went back and forth between removing the #ifdefs in
+> arch/arm/mm/proc-*.S for this patch, though I did not do that in the end.
+> We may still want them at least for proc-v7.S because that is a small
+> chance that someone will want to support Cortex-R.
+> 
 
-[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
+I'd appreciate if you keep them since I run Cortex-R52...
 
-seqno could be read as a stale value outside of the lock. The lock is
-already acquired to protect the modification of seqno against a possible
-race condition. Place the reading of this value also inside this locking
-to protect it against a possible race condition.
+Cheers
+Vladimir
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/sfc/mcdi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index be6bfd6b7ec7..50baf62b2cbc 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -163,9 +163,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
- 	spin_lock_bh(&mcdi->iface_lock);
- 	++mcdi->seqno;
-+	seqno = mcdi->seqno & SEQ_MASK;
- 	spin_unlock_bh(&mcdi->iface_lock);
- 
--	seqno = mcdi->seqno & SEQ_MASK;
- 	xflags = 0;
- 	if (mcdi->mode == MCDI_MODE_EVENTS)
- 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
--- 
-2.34.1
+>         Arnd
+> 
 
