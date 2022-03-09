@@ -2,102 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA0CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B522C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232866AbiCIMvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:51:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S232871AbiCIMvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiCIMvJ (ORCPT
+        with ESMTP id S230167AbiCIMvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:51:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85F4C522F1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:50:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646830209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qK37FEIB2OXNuraDrBny1GHU3Ir9ESnwpP2fxsHmqQE=;
-        b=ZWE9qO8QJkiVeecH7hjQDAkoveP4D7RMaUXKw6gkIbq9B9nlUKg6kZNCePH8N/wWfwCoTx
-        6S5uhF0RL77ZYLFDKEI6lfLkd24xYy0EaIPtQFaO5MW61Jhoacdmej5G3XDOyHHdN1OIFF
-        XeUT0mUs2qmAPNAlyIG8Yv/r9K2Eiqo=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-QO1jbA0zOj6Rmdo_CHeV0Q-1; Wed, 09 Mar 2022 07:50:08 -0500
-X-MC-Unique: QO1jbA0zOj6Rmdo_CHeV0Q-1
-Received: by mail-wr1-f69.google.com with SMTP id a11-20020adffb8b000000b001efe754a488so729549wrr.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:50:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qK37FEIB2OXNuraDrBny1GHU3Ir9ESnwpP2fxsHmqQE=;
-        b=swbky2tr80D48EkuFMjpHvOApR28vMpVRVJtC7OVXZD+BURrBPzZu02Lx9spYYHzzP
-         jYpjoTCr3ZVs9bpbsiYCbeffK9JhbekfLMhMQFl3KONhgjkMcl8WVFcoPkFnAcmkKfdO
-         9QN1dWRa7c24toSHArZurGl6ygsXYtEK3TzGZSCln/5A9mXpJNU+7PXAreWIeY6uURKW
-         F06Z6/Nz3OeB4a7jKQPRWQFYkGa+wFz6leo8fY3VZVtXSDZgBByJVrdKzoCazfxb/QMz
-         X6olsA6/TCJhl5JqbV1quAkKMzMTXMgsvyJZ2TghqTMUIjl5daFRwTgvytmO2t7Frxg9
-         l40A==
-X-Gm-Message-State: AOAM532qezsSVicGKcWqoBKfaszRyUq4IoqHRAEdT/6kxn4NtsUHCPMr
-        1o+sNBgrfgcMeBU3CDK3npoP+uBBz1I35BB/B8Wmn6Dxy8czEV/7js4EIXzrT8tzmReofisoL1f
-        5ubmd4/KCSuzGOP/iaWy54Fek
-X-Received: by 2002:a05:600c:3391:b0:389:9c6e:c248 with SMTP id o17-20020a05600c339100b003899c6ec248mr7533667wmp.97.1646830207222;
-        Wed, 09 Mar 2022 04:50:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzeXHfCV/JaoT7fJMQEXpLGuGsq/2+i1HVZtyXeMJ9Df4V6oPcBL176FigUDbOU4N/swo1uMA==
-X-Received: by 2002:a05:600c:3391:b0:389:9c6e:c248 with SMTP id o17-20020a05600c339100b003899c6ec248mr7533636wmp.97.1646830206986;
-        Wed, 09 Mar 2022 04:50:06 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f18-20020a5d6652000000b001e669ebd528sm1715420wrw.91.2022.03.09.04.50.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 04:50:06 -0800 (PST)
-Message-ID: <d0c795a7-6379-fa95-7487-982e668df27d@redhat.com>
-Date:   Wed, 9 Mar 2022 13:50:05 +0100
+        Wed, 9 Mar 2022 07:51:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3771A997C;
+        Wed,  9 Mar 2022 04:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81210619E1;
+        Wed,  9 Mar 2022 12:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D5638C340F4;
+        Wed,  9 Mar 2022 12:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646830210;
+        bh=I6ozOdglKxYbxHYFDFEkcL7osJhYjFDadHAfNPgMPFI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cGlkfYnpR/eAABCt2nS59oAeCyM60fcONQKj7SwKoaBj4ZNcyfKL8KcNY/qQceRpM
+         C5RuSyJIxuC0NUVTCwJCsYrBJKFaBNRznFtoxt35vKJXC9FlFInaxj4yZCDgbvwyM/
+         cTBO0hMp7SljK1ODE6OiYBSj6AcJ+HSczZD7QOxF2+M3vgFWxVOsA9nqqTdSfpjed1
+         mJCfUUmiFC6m8Wfsj5OoLGBiXkB/DYwcOsBcojfWS7ZzEQ2e4Be1Cjg8ay0J6brBG6
+         SoUJoBpgofDL/HZgfdhg2SmV2KxUacWKQluWVkkQYB3sh+ynNh4ZN9btkZ8GRQlLE3
+         pIBuSbIIegs9w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6B74E7BB08;
+        Wed,  9 Mar 2022 12:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 02/10] drm/fourcc: Add drm_format_info.is_color_indexed
- flag
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1646683502.git.geert@linux-m68k.org>
- <c0a11d8203d58dbaa5f22479c48504dabdd9b4e1.1646683502.git.geert@linux-m68k.org>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <c0a11d8203d58dbaa5f22479c48504dabdd9b4e1.1646683502.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ax25: Fix NULL pointer dereference in ax25_kill_by_device
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164683021074.2371.639793018206811147.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 12:50:10 +0000
+References: <20220308081223.15919-1-duoming@zju.edu.cn>
+In-Reply-To: <20220308081223.15919-1-duoming@zju.edu.cn>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 21:52, Geert Uytterhoeven wrote:
-> Add a flag to struct drm_format_info to indicate if a format is
-> color-indexed, similar to the existing .is_yuv flag.
-> 
-> This way generic code and drivers can just check this flag, instead of
-> checking against a list of fourcc formats.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Hello:
 
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue,  8 Mar 2022 16:12:23 +0800 you wrote:
+> When two ax25 devices attempted to establish connection, the requester use ax25_create(),
+> ax25_bind() and ax25_connect() to initiate connection. The receiver use ax25_rcv() to
+> accept connection and use ax25_create_cb() in ax25_rcv() to create ax25_cb, but the
+> ax25_cb->sk is NULL. When the receiver is detaching, a NULL pointer dereference bug
+> caused by sock_hold(sk) in ax25_kill_by_device() will happen. The corresponding
+> fail log is shown below:
+> 
+> [...]
+
+Here is the summary with links:
+  - ax25: Fix NULL pointer dereference in ax25_kill_by_device
+    https://git.kernel.org/netdev/net/c/71171ac8eb34
+
+You are awesome, thank you!
 -- 
-Best regards,
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
 
