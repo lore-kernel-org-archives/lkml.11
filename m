@@ -2,214 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 04:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F23C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 04:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiCIESB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 23:18:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48074 "EHLO
+        id S229622AbiCIEXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 23:23:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiCIERx (ORCPT
+        with ESMTP id S229476AbiCIEW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 23:17:53 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D703BBDD
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 20:16:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646799415; x=1678335415;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WqTbJFB2GOpTxks0g8Gxoq6JzJPPmOhJlCkExqIauBE=;
-  b=k7aG5xmY1eDTRsRxZF00ijUz+YnUOGC/pwiq/5Z9EbFNtUl0JQj+SIiU
-   3Nk/zFWKgYwh2tLxtu80pQGkS3SOaJVS48t5uSuvaRmDjeJ9RhWxWr4L+
-   FygkTWtwVV8pzP/rPdCrJL+yIW4Huh52sDq/JCwt+8OITCdruTktv/yxm
-   WTT5CS5OCleKUcfUgQfkabgNsLvusLtgUWrn4W9IgGaNCzyh5HGjV53pa
-   6Qh2oH+AY4Bg27BCtiR7nGu86PBhu83DQClaGvN3xTwfOQ0G2SqSeUY9q
-   BexBZJzq6aQ3+pogMnlXFCg+GvTKS6aFQwi1glLlK5x0YCSroTxpSf6u4
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254822227"
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="254822227"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 20:16:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="711794238"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 20:16:50 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRnko-0002ZB-7k; Wed, 09 Mar 2022 04:16:50 +0000
-Date:   Wed, 9 Mar 2022 12:16:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Balakrishna Godavarthi <bgodavar@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Venkata Lakshmi Narayana Gubba <gubbaven@codeaurora.org>
-Subject: drivers/bluetooth/hci_qca.c:996:26: sparse: sparse: cast to
- restricted __le16
-Message-ID: <202203091200.HA9qx4ka-lkp@intel.com>
+        Tue, 8 Mar 2022 23:22:58 -0500
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EC6314A075;
+        Tue,  8 Mar 2022 20:21:58 -0800 (PST)
+Received: from [10.130.0.135] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxfxNfKyhio3kFAA--.207S3;
+        Wed, 09 Mar 2022 12:21:52 +0800 (CST)
+Subject: Re: [PATCH bpf-next v3 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable
+ in Kconfig
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
+ <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
+ <b2aa5233-282e-004c-1ba3-63417cbccd58@iogearbox.net>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+Message-ID: <c709954e-9232-d719-eeb2-6a05546231b6@loongson.cn>
+Date:   Wed, 9 Mar 2022 12:21:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <b2aa5233-282e-004c-1ba3-63417cbccd58@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9DxfxNfKyhio3kFAA--.207S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxWF4fGw4kXFW7Zw1fKF18Grg_yoWrZFW8pw
+        1jqw1xKr97Xr1fKFW7Ca47GF4UGw4jgryDJFs8u3yUZF97ua4kCr40gw1jgF9rZr97Xa1j
+        yrZ5u3WkZa1DWa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9E14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kI
+        c2xKxwCYjI0SjxkI62AI1cAE67vIY487MxkIecxEwVAFwVW8XwCF04k20xvY0x0EwIxGrw
+        CFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE
+        14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2
+        IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxK
+        x2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267
+        AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjGYLDUUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   92f90cc9fe0e7a984ea3d4bf3d120e30ba8a2118
-commit: d841502c79e3fda2ba0e8d64f9eb00e9dd884af0 Bluetooth: hci_qca: Collect controller memory dump during SSR
-date:   2 years, 2 months ago
-config: parisc-randconfig-s031-20220212 (https://download.01.org/0day-ci/archive/20220309/202203091200.HA9qx4ka-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d841502c79e3fda2ba0e8d64f9eb00e9dd884af0
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d841502c79e3fda2ba0e8d64f9eb00e9dd884af0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/bluetooth/hci_qca.c: note: in included file (through arch/parisc/include/uapi/asm/unistd.h, arch/parisc/include/asm/unistd.h, include/uapi/linux/unistd.h, ...):
-   ./arch/parisc/include/generated/uapi/asm/unistd_32.h:380:41: sparse: sparse: no newline at end of file
->> drivers/bluetooth/hci_qca.c:996:26: sparse: sparse: cast to restricted __le16
->> drivers/bluetooth/hci_qca.c:996:26: sparse: sparse: cast to restricted __le16
->> drivers/bluetooth/hci_qca.c:996:26: sparse: sparse: cast to restricted __le16
->> drivers/bluetooth/hci_qca.c:996:26: sparse: sparse: cast to restricted __le16
-   drivers/bluetooth/hci_qca.c:997:26: sparse: sparse: cast to restricted __le16
-   drivers/bluetooth/hci_qca.c:997:26: sparse: sparse: cast to restricted __le16
-   drivers/bluetooth/hci_qca.c:997:26: sparse: sparse: cast to restricted __le16
-   drivers/bluetooth/hci_qca.c:997:26: sparse: sparse: cast to restricted __le16
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
->> drivers/bluetooth/hci_qca.c:1011:37: sparse: sparse: cast to restricted __le32
-   drivers/bluetooth/hci_qca.c:1078:5: sparse: sparse: symbol 'qca_controller_memdump_event' was not declared. Should it be static?
+On 03/01/2022 07:53 AM, Daniel Borkmann wrote:
+> Hi Tiezhu,
+>
+> (patch 1/2 applied so far, thanks!)
+>
+> On 2/22/22 10:57 AM, Tiezhu Yang wrote:
+>> Currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
+>> the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
+>> without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
+>> 1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
+>> the users can not change it to 0 or 2, it seems bad for some users. We
+>
+> Can you elaborate on the "it seems bad for some users" part? What's the
+> concrete
 
-vim +996 drivers/bluetooth/hci_qca.c
+Hi Daniel,
 
-   968	
-   969	static void qca_controller_memdump(struct work_struct *work)
-   970	{
-   971		struct qca_data *qca = container_of(work, struct qca_data,
-   972						    ctrl_memdump_evt);
-   973		struct hci_uart *hu = qca->hu;
-   974		struct sk_buff *skb;
-   975		struct qca_memdump_event_hdr *cmd_hdr;
-   976		struct qca_memdump_data *qca_memdump = qca->qca_memdump;
-   977		struct qca_dump_size *dump;
-   978		char *memdump_buf;
-   979		char nullBuff[QCA_DUMP_PACKET_SIZE] = { 0 };
-   980		u16 opcode, seq_no;
-   981		u32 dump_size;
-   982	
-   983		while ((skb = skb_dequeue(&qca->rx_memdump_q))) {
-   984	
-   985			if (!qca_memdump) {
-   986				qca_memdump = kzalloc(sizeof(struct qca_memdump_data),
-   987						      GFP_ATOMIC);
-   988				if (!qca_memdump)
-   989					return;
-   990	
-   991				qca->qca_memdump = qca_memdump;
-   992			}
-   993	
-   994			qca->memdump_state = QCA_MEMDUMP_COLLECTING;
-   995			cmd_hdr = (void *) skb->data;
- > 996			opcode = __le16_to_cpu(cmd_hdr->opcode);
-   997			seq_no = __le16_to_cpu(cmd_hdr->seq_no);
-   998			skb_pull(skb, sizeof(struct qca_memdump_event_hdr));
-   999	
-  1000			if (!seq_no) {
-  1001	
-  1002				/* This is the first frame of memdump packet from
-  1003				 * the controller, Disable IBS to recevie dump
-  1004				 * with out any interruption, ideally time required for
-  1005				 * the controller to send the dump is 8 seconds. let us
-  1006				 * start timer to handle this asynchronous activity.
-  1007				 */
-  1008				clear_bit(QCA_IBS_ENABLED, &qca->flags);
-  1009				set_bit(QCA_MEMDUMP_COLLECTION, &qca->flags);
-  1010				dump = (void *) skb->data;
-> 1011				dump_size = __le32_to_cpu(dump->dump_size);
-  1012				if (!(dump_size)) {
-  1013					bt_dev_err(hu->hdev, "Rx invalid memdump size");
-  1014					kfree_skb(skb);
-  1015					return;
-  1016				}
-  1017	
-  1018				bt_dev_info(hu->hdev, "QCA collecting dump of size:%u",
-  1019					    dump_size);
-  1020				mod_timer(&qca->memdump_timer, (jiffies +
-  1021					  msecs_to_jiffies(MEMDUMP_TIMEOUT_MS)));
-  1022	
-  1023				skb_pull(skb, sizeof(dump_size));
-  1024				memdump_buf = vmalloc(dump_size);
-  1025				qca_memdump->memdump_buf_head = memdump_buf;
-  1026				qca_memdump->memdump_buf_tail = memdump_buf;
-  1027			}
-  1028	
-  1029			memdump_buf = qca_memdump->memdump_buf_tail;
-  1030	
-  1031			/* If sequence no 0 is missed then there is no point in
-  1032			 * accepting the other sequences.
-  1033			 */
-  1034			if (!memdump_buf) {
-  1035				bt_dev_err(hu->hdev, "QCA: Discarding other packets");
-  1036				kfree(qca_memdump);
-  1037				kfree_skb(skb);
-  1038				qca->qca_memdump = NULL;
-  1039				return;
-  1040			}
-  1041	
-  1042			/* There could be chance of missing some packets from
-  1043			 * the controller. In such cases let us store the dummy
-  1044			 * packets in the buffer.
-  1045			 */
-  1046			while ((seq_no > qca_memdump->current_seq_no + 1) &&
-  1047				seq_no != QCA_LAST_SEQUENCE_NUM) {
-  1048				bt_dev_err(hu->hdev, "QCA controller missed packet:%d",
-  1049					   qca_memdump->current_seq_no);
-  1050				memcpy(memdump_buf, nullBuff, QCA_DUMP_PACKET_SIZE);
-  1051				memdump_buf = memdump_buf + QCA_DUMP_PACKET_SIZE;
-  1052				qca_memdump->received_dump += QCA_DUMP_PACKET_SIZE;
-  1053				qca_memdump->current_seq_no++;
-  1054			}
-  1055	
-  1056			memcpy(memdump_buf, (unsigned char *) skb->data, skb->len);
-  1057			memdump_buf = memdump_buf + skb->len;
-  1058			qca_memdump->memdump_buf_tail = memdump_buf;
-  1059			qca_memdump->current_seq_no = seq_no + 1;
-  1060			qca_memdump->received_dump += skb->len;
-  1061			qca->qca_memdump = qca_memdump;
-  1062			kfree_skb(skb);
-  1063			if (seq_no == QCA_LAST_SEQUENCE_NUM) {
-  1064				bt_dev_info(hu->hdev, "QCA writing crash dump of size %d bytes",
-  1065					   qca_memdump->received_dump);
-  1066				memdump_buf = qca_memdump->memdump_buf_head;
-  1067				dev_coredumpv(&hu->serdev->dev, memdump_buf,
-  1068					      qca_memdump->received_dump, GFP_KERNEL);
-  1069				del_timer(&qca->memdump_timer);
-  1070				kfree(qca->qca_memdump);
-  1071				qca->qca_memdump = NULL;
-  1072				qca->memdump_state = QCA_MEMDUMP_COLLECTED;
-  1073			}
-  1074		}
-  1075	
+Sorry for the late reply.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I saw the following two similar patches, some users want to set
+bpf_jit_enable to 1 by default, at the same time, they want to
+change it to 0 or 2 to debug, only enable CONFIG_BPF_JIT_DEFAULT_ON
+is a proper way in such a case.
+
+[PATCH bpf-next] bpf: trace jit code when enable BPF_JIT_ALWAYS_ON
+https://lore.kernel.org/bpf/20210326124030.1138964-1-Jianlin.Lv@arm.com/
+
+[PATCH bpf-next] bpf: support bpf_jit_enable=2 for CONFIG_BPF_JIT_ALWAYS_ON
+https://lore.kernel.org/bpf/20211231153550.3807430-1-houtao1@huawei.com/
+
+
+> use case? Also, why not add (e.g. mips) JIT to ARCH_WANT_DEFAULT_BPF_JIT
+> if the
+> CI suite passes with high degree/confidence?
+
+Yes, we can let the specific arch select ARCH_WANT_DEFAULT_BPF_JIT in 
+Kconfig, this commit only gives another chance to enable or disable 
+CONFIG_BPF_JIT_DEFAULT_ON manually when make menuconfig, this is useful
+to debug when develop JIT.
+
+>
+>> can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
+>> but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
+>> a chance.
+>>
+>> Additionally, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
+>> BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when make
+>> menuconfig, it seems flexible for some developers.
+>>
+>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>> ---
+>>   kernel/bpf/Kconfig | 13 +++++++++++--
+>>   1 file changed, 11 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+>> index f3db15a..8521874 100644
+>> --- a/kernel/bpf/Kconfig
+>> +++ b/kernel/bpf/Kconfig
+>> @@ -54,6 +54,7 @@ config BPF_JIT
+>>   config BPF_JIT_ALWAYS_ON
+>>       bool "Permanently enable BPF JIT and remove BPF interpreter"
+>>       depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
+>> +    select BPF_JIT_DEFAULT_ON
+>
+> Is the above needed if ...
+>
+>>       help
+>>         Enables BPF JIT and removes BPF interpreter to avoid speculative
+>>         execution of BPF instructions by the interpreter.
+>> @@ -63,8 +64,16 @@ config BPF_JIT_ALWAYS_ON
+>>         failure.
+>>     config BPF_JIT_DEFAULT_ON
+>> -    def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
+>> -    depends on HAVE_EBPF_JIT && BPF_JIT
+>> +    bool "Enable BPF JIT by default"
+>> +    default y if ARCH_WANT_DEFAULT_BPF_JIT
+>
+> ... we retain the prior `default y if ARCH_WANT_DEFAULT_BPF_JIT ||
+> BPF_JIT_ALWAYS_ON` ?
+
+After add
+
+   bool "Enable BPF JIT by default"
+
+if use
+
+   default y if ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
+
+under !ARCH_WANT_DEFAULT_BPF_JIT, when enable CONFIG_BPF_JIT_ALWAYS_ON
+manually through make menuconfig, CONFIG_BPF_JIT_DEFAULT_ON is not set
+automatically, it seems not reasonable, but I do not know the reason,
+maybe this is because CONFIG_BPF_JIT_ALWAYS_ON is user selectable rather
+than selected via Kconfig only (like ARCH_WANT_DEFAULT_BPF_JIT), so here
+let BPF_JIT_ALWAYS_ON select BPF_JIT_DEFAULT_ON.
+
+>
+>> +    depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
+>
+> Why is the extra BPF_SYSCALL dependency needed? You could still have
+> this for cBPF->eBPF
+> translations when BPF syscall is compiled out (e.g. seccomp, sock/packet
+> filters, etc).
+
+Sorry, just copy-paste from "config BPF_JIT_ALWAYS_ON".
+
+If BPF_SYSCALL dependency is not needed by BPF_JIT_DEFAULT_ON,
+should we remove BPF_SYSCALL dependency in "config BPF_JIT_ALWAYS_ON"?
+
+Thanks,
+Tiezhu
+
+>
+>> +    help
+>> +      Enables BPF JIT by default to avoid speculative execution of BPF
+>> +      instructions by the interpreter.
+>> +
+>> +      When CONFIG_BPF_JIT_DEFAULT_ON is enabled but
+>> CONFIG_BPF_JIT_ALWAYS_ON
+>> +      is disabled, /proc/sys/net/core/bpf_jit_enable is set to 1 by
+>> default
+>> +      and can be changed to 0 or 2.
+>>     config BPF_UNPRIV_DEFAULT_OFF
+>>       bool "Disable unprivileged BPF by default"
+>>
+
