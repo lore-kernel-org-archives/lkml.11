@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22330C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D28C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231983AbiCIJVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        id S231995AbiCIJWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231977AbiCIJVH (ORCPT
+        with ESMTP id S229744AbiCIJWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:21:07 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EEA1662E8
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:20:08 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id s10so2067684edd.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:20:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nx24Pu2EtMIRNca2MHSzdGAjeTosa0c/taIRiMOtw1w=;
-        b=Ebr2QynI5+t+8mrz83naeQWY1VBsYxUnEqRo8KV3wLAUgUfHhYg2ycxWNFFW6JCsl5
-         8l7S58NSbq4paJt8UktEBhpQrMxMYU7roFGK/bRK4Vv022j28QtzHq4Lp8E3Z8TRqJrG
-         6zDXYHdtc+pCBcucUn13KzRTRJArWv3H1XKqbAMB4r7o5zE/iSwN7hfjzu+HRZxRuGpk
-         +c0x3jejRmSZRK60roVk4RuAVbvh0Aw3u92mN4VWCfqhKEO2XPv9YDCTxc9TBYxh6sm6
-         ihfMclaidwhuYjaGvNtWNx1c1UNo8nbHC0fM9OOWowhS6HSLdssJ4F/tPTVYnIWLAjuk
-         1Nyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nx24Pu2EtMIRNca2MHSzdGAjeTosa0c/taIRiMOtw1w=;
-        b=BhzNOPp/mCnivc5+7fG+c9lP9y1tIEdTkpoLlE1uWdktYBp4iGT2R5J6U1G+ntzdKg
-         Dx8btrSmWLfxG+PHG+By7xpq8NhOAjy1LPZKdPHq3jbSWbcbpA3is3J+JWg1nfPTO9v3
-         cAJ3lANxEzfRb29quCW445N/QKHRcljPMGArYwrgRxeFvCHneuAYhEMiroRMBFdP6hnY
-         e7bcpmI3HF36HLpvP1z23M/DWpbpEijgve8cWOZ5mbyMCWwFZZ8PTO3n3wUJ1zaJeWap
-         dWqyPw0TJ95oTMR+zHD9ud5K/KqLWcRLfgGBa8X30dDruguLAMjTb79Bg4ovEzFuyiig
-         1rNQ==
-X-Gm-Message-State: AOAM533nx9nGf0e8olQT2seTpXjIswzP/evy2TKVcxEMRG9SACQ7lydZ
-        TQOZlMjPSQU+KYQQwllgctAmeEoTMI7XEJNl
-X-Google-Smtp-Source: ABdhPJwlr/F3OrZaJ4msyWEoYHHKLGLeqryW4s0iXM2qWM9whSkmMEfDgyK8NOaJxoR84NZSwkIdOg==
-X-Received: by 2002:a05:6402:1e94:b0:416:44fa:ef49 with SMTP id f20-20020a0564021e9400b0041644faef49mr14497527edf.0.1646817607277;
-        Wed, 09 Mar 2022 01:20:07 -0800 (PST)
-Received: from localhost.localdomain ([102.126.147.138])
-        by smtp.gmail.com with ESMTPSA id r29-20020a50c01d000000b00415fb0dc793sm535180edb.47.2022.03.09.01.20.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 01:20:06 -0800 (PST)
-From:   Hatim Muhammed <hatimmohammed369@gmail.com>
-X-Google-Original-From: Hatim Muhammed
-To:     linux-kernel@vger.kernel.org
-Cc:     greg@kroah.com, abbotti@mev.co.uk, hsweeten@visionengravers.com,
-        Hatim Muhammed <hatimmohammed369@gmail.com>
-Subject: [PATCH 10/10] Constify comedi_lrange struct pointers
-Date:   Wed,  9 Mar 2022 11:20:03 +0200
-Message-Id: <20220309092003.13928-1-hatimmohammed369@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Mar 2022 04:22:19 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2048.outbound.protection.outlook.com [40.107.223.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AB61662E8;
+        Wed,  9 Mar 2022 01:21:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mISzEt2kpLDxVrMYB0LqVDSxaufEiQuG4JuBl8KyN2MrU7UxqRvSKMgLAY7ABaaylFe3A05CkP5wfmlWwj/7Hj9GyK1LT56c4UJnGeExMM+r111kqnO+QB8MDPYzg1o9qTHk3YKNPqSZCTZ0wGbf/hEF/tVWU84/zEi6eb6rfUwa0VR9rTlxzaGgaoW4jqNMAONyZybnpW76ZUNvGH7FMAczeqys80j2D+0eyv3Fp5hJJSoUvkTZ95ZY54DqD7Ja3sT/BjI1+tAb9fBo8dfhtYtQmGWSzZR7jTb5WoIA4T9OV7tUvcvWyIeqHBYeQ/QcFd1GVq60i1/cjaqPApMhQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+vpoPLcwFCcskhEn8ed6SuoZpzlZoHjG0uOch9AnvSI=;
+ b=NMYL9qJ2QPFmBvYLSFFGtIYyb8rkTAYR0NZkQfFGdL4i7SLngbxcj3ph8VpzRFHrIkEEL6tYJyvrhQScvJpV7cYP4qAzKgqwHdGmBN5FcHO4rtx0GWL+5ZE1fR6Oru9O9rwUxiUsByiBllN2H8m1z5ADrrZuq2ym3Kg8spfx9wx7PVF25Pz0Whxcfo4BEnrpn1zT4QW5d/Rj6OaaXRYypdCuvW8zDEA/dMnbWKZ+0hZcqpY3ZjZsLthBTJGUOrbLewlNihxzXC8ZN03Uczs9udmk8RBnEBQtNVoyxYGxWYB0FrKXaU0m8viLWjf4oVzXeGP0a4RpRIx4xbnCSunzBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=cornelisnetworks.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+vpoPLcwFCcskhEn8ed6SuoZpzlZoHjG0uOch9AnvSI=;
+ b=oxAa/YD4x0nkfO8pNv+7R0zZbOQY0Jx4LkwpzpXYZwsIlDBsItGXGolDsQoHGPFvDtK72aIBm7lUPFzZyxH8ODXM8RvsziFjgkVZYo6EYN4l/tttVo2633fCtcvo9SW46ZziDI4QbUTbFTiM73twehdtFpuVzCWQfo3lJOZQyf0RElP+ew8wzFf0uIEs657iRTuQ/dJI+Tu+jHPJ8E3xdtuafFjD5jIeyjC6IBgAmd6e+EeMr3vbfsA6fMc/68VII47Xqe4kArCDhm5neAu6gQFfJJujx1JK2jkP+O42bBFkoipV9m1ddYPHnfUPCfOJUh1k29SeAhx8tIikeyinBw==
+Received: from BN6PR12MB1426.namprd12.prod.outlook.com (2603:10b6:404:22::16)
+ by DM6PR12MB4156.namprd12.prod.outlook.com (2603:10b6:5:218::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Wed, 9 Mar
+ 2022 09:21:19 +0000
+Received: from BN1PR14CA0030.namprd14.prod.outlook.com (2603:10b6:408:e3::35)
+ by BN6PR12MB1426.namprd12.prod.outlook.com (2603:10b6:404:22::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
+ 2022 09:21:17 +0000
+Received: from BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e3:cafe::9e) by BN1PR14CA0030.outlook.office365.com
+ (2603:10b6:408:e3::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
+ Transport; Wed, 9 Mar 2022 09:21:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT061.mail.protection.outlook.com (10.13.177.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5038.14 via Frontend Transport; Wed, 9 Mar 2022 09:21:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 9 Mar
+ 2022 09:21:15 +0000
+Received: from localhost (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 9 Mar 2022
+ 01:21:14 -0800
+Date:   Wed, 9 Mar 2022 11:21:11 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Yajun Deng <yajun.deng@linux.dev>
+CC:     <jgg@nvidia.com>, <selvin.xavier@broadcom.com>,
+        <galpress@amazon.com>, <sleybo@amazon.com>,
+        <liangwenpeng@huawei.com>, <liweihang@huawei.com>,
+        <mustafa.ismail@intel.com>, <shiraz.saleem@intel.com>,
+        <dennis.dalessandro@cornelisnetworks.com>,
+        <mike.marciniszyn@cornelisnetworks.com>, <zyjzyj2000@gmail.com>,
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH for-next 0/9] RDMA: get rid of create_user_ah
+Message-ID: <Yihxh3HdEqu3B2w9@unreal>
+References: <20220308143428.3401170-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220308143428.3401170-1-yajun.deng@linux.dev>
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5b71876c-11c6-47b8-8d84-08da01ae2a49
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1426:EE_|DM6PR12MB4156:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB14268D113E7B51921C5B75EABD0A9@BN6PR12MB1426.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uiLZgUiW1QEf/z92deHzzdKbz4UH0v0FUxJ0yBLnWFUsBg/BUd7qHkL8gg4xcPdPfqyMovzm1dcqdQpVh+fz46JCPCWLZsc2Vf64++WTkFuHO0zgQRHpbCLB+/gO1i97A42J5jcXRTEAoRow0IGRfl/HXHC3OtcWEjK8inaM0CzmFfYeUBsLyyNyW+Jq3KTS16YY2Tt6EFhlvzXK33RtKYge3EobNFN4LO5J5u8B65VMZZbUdREnlfLPgErGxbyMXz1tSFFOvsDRGeV/QhuyAUksQYjwMPBSC403dmm2OaOcrYAavgTkyUDhKM8SSGGQKThVK3OpIwAC1Oq480r4vkzhW4OvZjSH/mnJ1R8pl/4X0endephAjBzVRqsZmbiH3x8jECbiBT1KqrVn5MPOB2pUk5sAdzp0hNQf3P7VEbXP0rsRmPWtC66yfzIwK7HWLiZDWApqHz8leV+PbEUQML4763C5ldKMYZsZaIU5qhM7tKHN48Zx2aJJrX6OBrkT0AJ+OUExBe1qjYfz6BxhuZr/fZZNl2ki1bF7YbO4QK5/Y1tG6qYHggumtqgzxPXE4syHE1hIKHBOqoPgd4u/HGHYqANa/YXZ7NotLJcU5ir6AF0mnsX8CBOgQ6Vt/pnotd5IK5CLZd6XjzP+fR1QmKQpN5qM1QbL7/snu33bZKIyR/254ACKZ3BEysnuLAo0+dE3k1TsQpmBrtcJTWTnvkkMexDbuGQCTXwZL5J2aus=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(7916004)(46966006)(36840700001)(40470700004)(86362001)(33716001)(186003)(508600001)(82310400004)(40460700003)(26005)(83380400001)(426003)(336012)(16526019)(6666004)(47076005)(9686003)(4326008)(5660300002)(2906002)(81166007)(70586007)(8676002)(70206006)(4744005)(54906003)(7416002)(36860700001)(316002)(356005)(6916009)(8936002)(26583001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 09:21:17.0028
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b71876c-11c6-47b8-8d84-08da01ae2a49
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT061.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4156
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hatim Muhammed <hatimmohammed369@gmail.com>
+On Tue, Mar 08, 2022 at 10:34:28PM +0800, Yajun Deng wrote:
+> The two members create_user_ah and create_ah in struct ib_device_ops
+> are very similar. we can use create_ah for all case. so get rid of
+> create_user_ah.
 
-Signed-off-by: Hatim Muhammed <hatimmohammed369@gmail.com>
----
- drivers/comedi/drivers/jr3_pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+1. Please read commit message and content of commit 676a80adba01
+("RDMA: Remove AH from uverbs_cmd_mask") that added that .create_user_ah()
+callback.
+2. You should send patches as a series that is threaded and not as
+stand-alone patches.
 
-diff --git a/drivers/comedi/drivers/jr3_pci.c b/drivers/comedi/drivers/jr3_pci.c
-index 951c23fa0369..f2a750a9112c 100644
---- a/drivers/comedi/drivers/jr3_pci.c
-+++ b/drivers/comedi/drivers/jr3_pci.c
-@@ -90,8 +90,8 @@ struct jr3_pci_dev_private {
- };
- 
- union jr3_pci_single_range {
--	struct comedi_lrange l;
--	char _reserved[offsetof(struct comedi_lrange, range[1])];
-+	const struct comedi_lrange l;
-+	char _reserved[offsetof(const struct comedi_lrange, range[1])];
- };
- 
- enum jr3_pci_poll_state {
--- 
-2.35.1
-
+Thanks
