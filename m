@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62630C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B974DC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238207AbiCIQVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:21:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
+        id S238255AbiCIQVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:21:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234904AbiCIQMo (ORCPT
+        with ESMTP id S235071AbiCIQNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:12:44 -0500
+        Wed, 9 Mar 2022 11:13:00 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08F13AA58;
-        Wed,  9 Mar 2022 08:09:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03AE8B16C6;
+        Wed,  9 Mar 2022 08:10:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D96AB82220;
-        Wed,  9 Mar 2022 16:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85B5C340E8;
-        Wed,  9 Mar 2022 16:09:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B2D9B82224;
+        Wed,  9 Mar 2022 16:10:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65EAC340E8;
+        Wed,  9 Mar 2022 16:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842188;
-        bh=Nvdc0gNUxRVbba+YUAyiUFdp6t8kfz07OiJe+ke0X5k=;
+        s=korg; t=1646842207;
+        bh=O7bwEJKYJXRVJIDfJwdzLbTR7ZgsTiITRhcn192SuLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fxO3vafBtjXgoWcNRT8Ktmmy1cA3p3MlrF7br+j9U7+8KXYJT9nJs/ACpCyGBCLes
-         rpnD/mBv9Ke87ey7NC9c1Dbs+6IrIV4eEW5PXI0bcYrOiO1bqqh3aTZiV0ukQCvtTz
-         mkV2NB5bhG/uZO/IK0WQZw9cjJdNAgrp2SY1QPss=
+        b=Alg5O59msaT+u5nAzbOoVzIzBXBi60REh62OCMm6DZoYKpFMw5cMVmwVlqgHgbcZF
+         BlAle37SDHDJtd9S5xQZMxKeQeIVrV12y38t9I43WPIX8p4LwM15RvHx/Y5FcobEqZ
+         9xdqzOcLH/Tsiq0Wzxy0FWroEd9CjnarUMAVUyj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.16 28/37] arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
-Date:   Wed,  9 Mar 2022 17:00:29 +0100
-Message-Id: <20220309155859.903838564@linuxfoundation.org>
+Subject: [PATCH 5.16 32/37] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Wed,  9 Mar 2022 17:00:33 +0100
+Message-Id: <20220309155900.017878588@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
 References: <20220309155859.086952723@linuxfoundation.org>
@@ -52,78 +50,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit aff65393fa1401e034656e349abd655cfe272de0 upstream.
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
 
-kpti is an optional feature, for systems not using kpti a set of
-vectors for the spectre-bhb mitigations is needed.
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
 
-Add another set of vectors, __bp_harden_el1_vectors, that will be
-used if a mitigation is needed and kpti is not in use.
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
 
-The EL1 ventries are repeated verbatim as there is no additional
-work needed for entry from EL1.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/spectre.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -649,10 +649,11 @@ alternative_else_nop_endif
- 	.macro tramp_ventry, vector_start, regsize, kpti
- 	.align	7
- 1:
--	.if	\kpti == 1
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
-+
-+	.if	\kpti == 1
- 	/*
- 	 * Defend against branch aliasing attacks by pushing a dummy
- 	 * entry onto the return stack and using a RET instruction to
-@@ -740,6 +741,38 @@ SYM_DATA_END(__entry_tramp_data_start)
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -93,5 +93,7 @@ void spectre_v4_enable_task_mitigation(s
  
- /*
-+ * Exception vectors for spectre mitigations on entry from EL1 when
-+ * kpti is not in use.
-+ */
-+	.macro generate_el1_vector
-+.Lvector_start\@:
-+	kernel_ventry	1, t, 64, sync		// Synchronous EL1t
-+	kernel_ventry	1, t, 64, irq		// IRQ EL1t
-+	kernel_ventry	1, t, 64, fiq		// FIQ EL1h
-+	kernel_ventry	1, t, 64, error		// Error EL1t
+ enum mitigation_state arm64_get_meltdown_state(void);
+ 
++enum mitigation_state arm64_get_spectre_bhb_state(void);
 +
-+	kernel_ventry	1, h, 64, sync		// Synchronous EL1h
-+	kernel_ventry	1, h, 64, irq		// IRQ EL1h
-+	kernel_ventry	1, h, 64, fiq		// FIQ EL1h
-+	kernel_ventry	1, h, 64, error		// Error EL1h
+ #endif	/* __ASSEMBLY__ */
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -96,14 +96,39 @@ static bool spectre_v2_mitigations_off(v
+ 	return ret;
+ }
+ 
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
 +
-+	.rept	4
-+	tramp_ventry	.Lvector_start\@, 64, kpti=0
-+	.endr
-+	.rept 4
-+	tramp_ventry	.Lvector_start\@, 32, kpti=0
-+	.endr
-+	.endm
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
 +
-+	.pushsection ".entry.text", "ax"
-+	.align	11
-+SYM_CODE_START(__bp_harden_el1_vectors)
-+	generate_el1_vector
-+SYM_CODE_END(__bp_harden_el1_vectors)
-+	.popsection
+ 	switch (spectre_v2_state) {
+ 	case SPECTRE_UNAFFECTED:
+-		return sprintf(buf, "Not affected\n");
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
 +
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++		fallthrough;
+ 	case SPECTRE_MITIGATED:
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 	case SPECTRE_VULNERABLE:
+ 		fallthrough;
+ 	default:
+@@ -771,6 +796,13 @@ int arch_prctl_spec_ctrl_get(struct task
+ 	}
+ }
+ 
++static enum mitigation_state spectre_bhb_state;
 +
-+/*
-  * Register switch for AArch64. The callee-saved registers need to be saved
-  * and restored. On entry:
-  *   x0 = previous task_struct (must be preserved across the switch)
++enum mitigation_state arm64_get_spectre_bhb_state(void)
++{
++	return spectre_bhb_state;
++}
++
+ /* Patched to NOP when enabled */
+ void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
+ 						     __le32 *origptr,
 
 
