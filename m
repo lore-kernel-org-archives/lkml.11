@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16234C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236419AbiCIQfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:35:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
+        id S235714AbiCIQfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:35:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235478AbiCIQ1b (ORCPT
+        with ESMTP id S235849AbiCIQ2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:27:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EEA289A0;
-        Wed,  9 Mar 2022 08:22:40 -0800 (PST)
+        Wed, 9 Mar 2022 11:28:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3135857B35;
+        Wed,  9 Mar 2022 08:22:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9052B81EE7;
-        Wed,  9 Mar 2022 16:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D271AC340F3;
-        Wed,  9 Mar 2022 16:22:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBE5EB82257;
+        Wed,  9 Mar 2022 16:22:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCD5C36AF6;
+        Wed,  9 Mar 2022 16:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842957;
-        bh=LHKATBomQ6ACtfJjG+YFvVAXAGjmKFmdhJSOLfP3MmY=;
+        s=k20201202; t=1646842968;
+        bh=VYVcfnVnx/Tdehb1QMOWLr7+5uCZw+26ot3WJBmmkec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mppyaOvV4/JUsE/osAdLx3Eiy/OahdPQJEhvQbm5UtvNrWkPlE7ZqA2ETfe7WDFcB
-         YoCzRcslhMqYjvTEItRWXhUKiwaPVOUdcvhLHu4Q+Icmtl/+VZKVoh1eEOyUmDXnYs
-         QnWc3UkMkdNaOyr5uG7lfpIT4+M7U6x1s6x0/4WTanXhm2pjgD/m7qq1vOUdXLbvHu
-         E10G2ugZZuJV15EWaYUd3A9QvU5aZLBeKX4vCAkZA+B51QMx907tvDooDdLcr47lu8
-         suORkDUQn3AO/B1rraJq3ieo/A8WK8c0uNfcKVA40sStjBTBQLDSgWSCEbT/DlqJWW
-         As/kzI4RHBCPw==
+        b=eiVgbPe4qYDBmPBf3HjVCPpugiTXCm5S8nIInblsB6znVX9NGHdHWmQ4uhC9GDMDO
+         ZaOFDN1GMWChJG4d5hvQPHnW+9yPNdPtN9CxVNz8B+Yi8CIqkssxA+EdDwMn+JRoM3
+         QGYlF752I6ak1j5wzE23lQCZ91KmKU6W6h36ySoNHLDpr/rGv4Q7MPpA/oEd147DoQ
+         MLeh/UPoEYNN+uETwdFp7S42OOTAplscZwXckIRsd0H5DJsKPknQh5aUPtAzvkobtQ
+         GuxNAo4OGP7NeDwagMmVDo9UQrPmp808mp8I4EGZUJxYbLtB/d/UMonN759eRiGeWt
+         463J08aRez2oA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/20] mac80211: refuse aggregations sessions before authorized
-Date:   Wed,  9 Mar 2022 11:21:46 -0500
-Message-Id: <20220309162158.136467-8-sashal@kernel.org>
+Cc:     Julian Braha <julianbraha@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, jarkko@kernel.org,
+        johannes.berg@intel.com, mcroce@microsoft.com, deller@gmx.de,
+        James.Bottomley@HansenPartnership.com, arnd@arndb.de
+Subject: [PATCH AUTOSEL 5.10 10/20] ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
+Date:   Wed,  9 Mar 2022 11:21:48 -0500
+Message-Id: <20220309162158.136467-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
 References: <20220309162158.136467-1-sashal@kernel.org>
@@ -52,52 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Julian Braha <julianbraha@gmail.com>
 
-[ Upstream commit a6bce78262f5dd4b50510f0aa47f3995f7b185f3 ]
+[ Upstream commit 11c57c3ba94da74c3446924260e34e0b1950b5d7 ]
 
-If an MFP station isn't authorized, the receiver will (or
-at least should) drop the action frame since it's a robust
-management frame, but if we're not authorized we haven't
-installed keys yet. Refuse attempts to start a session as
-they'd just time out.
+Resending this to properly add it to the patch tracker - thanks for letting
+me know, Arnd :)
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220203201528.ff4d5679dce9.I34bb1f2bc341e161af2d6faf74f91b332ba11285@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+When ARM is enabled, and BITREVERSE is disabled,
+Kbuild gives the following warning:
+
+WARNING: unmet direct dependencies detected for HAVE_ARCH_BITREVERSE
+  Depends on [n]: BITREVERSE [=n]
+  Selected by [y]:
+  - ARM [=y] && (CPU_32v7M [=n] || CPU_32v7 [=y]) && !CPU_32v6 [=n]
+
+This is because ARM selects HAVE_ARCH_BITREVERSE
+without selecting BITREVERSE, despite
+HAVE_ARCH_BITREVERSE depending on BITREVERSE.
+
+This unmet dependency bug was found by Kismet,
+a static analysis tool for Kconfig. Please advise if this
+is not the appropriate solution.
+
+Signed-off-by: Julian Braha <julianbraha@gmail.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/agg-tx.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ lib/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index 190f300d8923..4b4ab1961068 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -9,7 +9,7 @@
-  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
-  * Copyright 2007-2010, Intel Corporation
-  * Copyright(c) 2015-2017 Intel Deutschland GmbH
-- * Copyright (C) 2018 - 2021 Intel Corporation
-+ * Copyright (C) 2018 - 2022 Intel Corporation
-  */
- 
- #include <linux/ieee80211.h>
-@@ -626,6 +626,14 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
- 		return -EINVAL;
- 	}
- 
-+	if (test_sta_flag(sta, WLAN_STA_MFP) &&
-+	    !test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
-+		ht_dbg(sdata,
-+		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
-+		       sta->sta.addr, tid);
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * 802.11n-2009 11.5.1.1: If the initiating STA is an HT STA, is a
- 	 * member of an IBSS, and has no other existing Block Ack agreement
+diff --git a/lib/Kconfig b/lib/Kconfig
+index b46a9fd122c8..9216e24e5164 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -45,7 +45,6 @@ config BITREVERSE
+ config HAVE_ARCH_BITREVERSE
+ 	bool
+ 	default n
+-	depends on BITREVERSE
+ 	help
+ 	  This option enables the use of hardware bit-reversal instructions on
+ 	  architectures which support such operations.
 -- 
 2.34.1
 
