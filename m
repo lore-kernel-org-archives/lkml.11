@@ -2,133 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229688AbiCIBDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:03:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
+        id S229602AbiCIBDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiCIBDd (ORCPT
+        with ESMTP id S229630AbiCIBCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:03:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2046226C2C7
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:40:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646786440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3QWldaxUgjSqrqhHqZ9kQzTo6lY37kzhgmv3hw+9M2s=;
-        b=KdOx4/o+uKGCmFZPmQsHpWVslrl5h0+yW5IW/qL8EKgd1xVAVye1+xNgVQ7lwOzq3yxBq2
-        UY0hsMXKqmlC9qpCqwhR9k7udaGXG/XfbrMuO1w6sm2CXMt6Ph/P4Ka6Nt3U05Y9jZvUyn
-        JjYQ4864uGWOprVpNg+1JMDAnC5dDqw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-351-XvRYsVbpM0uP4zx8B0iw_g-1; Tue, 08 Mar 2022 18:29:17 -0500
-X-MC-Unique: XvRYsVbpM0uP4zx8B0iw_g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D5C241006AA6;
-        Tue,  8 Mar 2022 23:29:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EA4B34CEFB;
-        Tue,  8 Mar 2022 23:29:12 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH v2 14/19] netfs: Prepare to split read_helper.c
-From:   David Howells <dhowells@redhat.com>
-To:     linux-cachefs@redhat.com
-Cc:     dhowells@redhat.com, Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Jeff Layton <jlayton@redhat.com>,
-        David Wysochanski <dwysocha@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 08 Mar 2022 23:29:12 +0000
-Message-ID: <164678215208.1200972.9761906209395002182.stgit@warthog.procyon.org.uk>
-In-Reply-To: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
-References: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Tue, 8 Mar 2022 20:02:54 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5A8131F40;
+        Tue,  8 Mar 2022 16:40:31 -0800 (PST)
+X-UUID: 82f8d12d712a45e89511fe7c4249d0c5-20220309
+X-UUID: 82f8d12d712a45e89511fe7c4249d0c5-20220309
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 69372533; Wed, 09 Mar 2022 08:03:59 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 9 Mar 2022 08:03:57 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Mar 2022 08:03:58 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sean Wang <sean.wang@mediatek.com>
+Subject: [PATCH 3/3] Bluetooth: btmtkuart: fix the conflict between mtk and msft vendor event
+Date:   Wed, 9 Mar 2022 08:03:54 +0800
+Message-ID: <16e90bd42107f67d997fdef8b12430e1efd892ad.1646783737.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <f0167a9631fd0b392490311825ff0f826c054bc1.1646783737.git.objelf@gmail.com>
+References: <f0167a9631fd0b392490311825ff0f826c054bc1.1646783737.git.objelf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename netfs_rreq_unlock() to netfs_rreq_unlock_folios() to make it sound
-less like it's dropping a lock on an netfs_io_request struct.
+From: Sean Wang <sean.wang@mediatek.com>
 
-Remove the 'static' marker on netfs_rreq_unlock_folios() and declaring it
-in internal.h preparatory to splitting the file.
+There is a conflict between MediaTek wmt event and msft vendor extension
+logic in the core layer since 145373cb1b1f ("Bluetooth: Add framework for
+Microsoft vendor extension") was introduced because we changed the type of
+mediatek wmt event to the type of msft vendor event in the driver.
 
-Changes
-=======
-ver #2)
- - Slide this patch to after the one adding netfs_begin_read().
- - As a consequence, don't need to unstatic so many functions.
+But the purpose we reported mediatek event to the core layer is for the
+diagnostic purpose with that we are able to see the full packet trace via
+monitoring socket with btmon. Thus, it is harmless we keep the original
+type of mediatek vendor event here to avoid breaking the msft extension
+function especially they can be supported by Mediatek future devices.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-cachefs@redhat.com
-
-Link: https://lore.kernel.org/r/164623002861.3564931.17340149482236413375.stgit@warthog.procyon.org.uk/ # v1
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 ---
+ drivers/bluetooth/btmtkuart.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
- fs/netfs/internal.h    |    5 +++++
- fs/netfs/read_helper.c |    4 ++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
-index 937c2465943f..11c0c9ef9299 100644
---- a/fs/netfs/internal.h
-+++ b/fs/netfs/internal.h
-@@ -15,6 +15,11 @@
+diff --git a/drivers/bluetooth/btmtkuart.c b/drivers/bluetooth/btmtkuart.c
+index 7d405a16f864..695e1225b08c 100644
+--- a/drivers/bluetooth/btmtkuart.c
++++ b/drivers/bluetooth/btmtkuart.c
+@@ -192,13 +192,6 @@ static int btmtkuart_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 	struct hci_event_hdr *hdr = (void *)skb->data;
+ 	int err;
  
- #define pr_fmt(fmt) "netfs: " fmt
+-	/* Fix up the vendor event id with 0xff for vendor specific instead
+-	 * of 0xe4 so that event send via monitoring socket can be parsed
+-	 * properly.
+-	 */
+-	if (hdr->evt == 0xe4)
+-		hdr->evt = HCI_EV_VENDOR;
+-
+ 	/* When someone waits for the WMT event, the skb is being cloned
+ 	 * and being processed the events from there then.
+ 	 */
+@@ -214,7 +207,7 @@ static int btmtkuart_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 	if (err < 0)
+ 		goto err_free_skb;
  
-+/*
-+ * buffered_read.c
-+ */
-+void netfs_rreq_unlock_folios(struct netfs_io_request *rreq);
-+
- /*
-  * objects.c
-  */
-diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
-index 19d4fe0b4987..058a534ba917 100644
---- a/fs/netfs/read_helper.c
-+++ b/fs/netfs/read_helper.c
-@@ -250,7 +250,7 @@ static void netfs_rreq_write_to_cache(struct netfs_io_request *rreq)
-  * Unlock the folios in a read operation.  We need to set PG_fscache on any
-  * folios we're going to write back before we unlock them.
-  */
--static void netfs_rreq_unlock(struct netfs_io_request *rreq)
-+void netfs_rreq_unlock_folios(struct netfs_io_request *rreq)
- {
- 	struct netfs_io_subrequest *subreq;
- 	struct folio *folio;
-@@ -432,7 +432,7 @@ static void netfs_rreq_assess(struct netfs_io_request *rreq, bool was_async)
- 		return;
- 	}
- 
--	netfs_rreq_unlock(rreq);
-+	netfs_rreq_unlock_folios(rreq);
- 
- 	clear_bit_unlock(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
- 	wake_up_bit(&rreq->flags, NETFS_RREQ_IN_PROGRESS);
-
+-	if (hdr->evt == HCI_EV_VENDOR) {
++	if (hdr->evt == HCI_EV_WMT) {
+ 		if (test_and_clear_bit(BTMTKUART_TX_WAIT_VND_EVT,
+ 				       &bdev->tx_state)) {
+ 			/* Barrier to sync with other CPUs */
+-- 
+2.25.1
 
