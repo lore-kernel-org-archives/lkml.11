@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiCIHzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
+        id S230390AbiCIHz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:55:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbiCIHzn (ORCPT
+        with ESMTP id S230054AbiCIHzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:55:43 -0500
+        Wed, 9 Mar 2022 02:55:45 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3001014864D;
-        Tue,  8 Mar 2022 23:54:45 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:54:42 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABC715E6D7;
+        Tue,  8 Mar 2022 23:54:47 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:54:44 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812483;
+        s=2020; t=1646812485;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=EKA1SKca088pSphus7pr9w8vqeURlCrbpnakK/vk//4=;
-        b=NqY999dJwe2+Vki6y3UK/bK/BB5AT2/oHlbHVjXvLV6xSwfIBXPA4HdLKt7HIbyuOWEJ9a
-        l+Hx+QHujo4yeA5RzRvDDvFN83xkJ9tuvrnW7IwRMoeeXbopqoqQ5x3XsK4+zbxnBp+K7o
-        90fafpezE+cqi3nvmTgUGWjTumRmzwsc/2ajycltndBaH+w0ojF3++NWOpGOYSKa9R00B9
-        JG96dM112O4KPce2uihmFnxvASTEKYVrkine5EqnAhOxSKwcBLdNCnjnDvCIi4XnHsSrO7
-        3M+niYBK+gx23ZhhYL6SUHLeJWtgs+3iAZNTzIRnpp/AwTlbcaVJbYhO/oIBow==
+        bh=2BprdItZ3kmJ5P67amXImIPKk9q58q2OOtLSEsUh47Y=;
+        b=fPr4tN7uTh0Z/XAoUnAhcA1kY5dP5LAdCrmaZyvKdfuLSROi9PQsVv8fFelMv0QmSPJXOv
+        uMmCu/wRC+ynLed2XRWdhQAyY3oG39pag7ZJFunTh4eiY9oVv/EoelT9Mf8SyxtL+o6AE7
+        5MBnQzAPo5UAFy5Y3/d6oBO3YU66RgyhiJmzQgupTHakZMPibmKa/Riq/ut3gqyegDf5XT
+        B1dzd2ytGkgrW0AA1F4t3sHxroz3V3v9e3q8sCAT2Ju/aNlMnkWxKD/HmgRVG1n4bgdNIJ
+        US25xyPVxdkvAhN6sP6fTEdafAWrp2/P3eayZtOBFYBQcW/YhF6ccQthhu6ftA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812483;
+        s=2020e; t=1646812485;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=EKA1SKca088pSphus7pr9w8vqeURlCrbpnakK/vk//4=;
-        b=Tw0spqC1D9O5KEYlpOI7NmFEhkdGfgi11YouVOWGjTfB4iGkYz3DtqCIpoexFIrLK0E9Gs
-        /GsXQxouRXFxv+AA==
+        bh=2BprdItZ3kmJ5P67amXImIPKk9q58q2OOtLSEsUh47Y=;
+        b=k4Q1sFGs6L7kFSTZ5oLgMUVFfhTiiOiqvkj42Eyud7Ry0MD76mm1kas46zIClCEQQulGvx
+        nk7OZzJGADhPiWAw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool: Read the NOENDBR annotation
+Subject: [tip: x86/core] x86: Annotate call_on_stack()
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.586815435@infradead.org>
-References: <20220308154319.586815435@infradead.org>
+In-Reply-To: <20220308154319.468805622@infradead.org>
+References: <20220308154319.468805622@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164681248280.16921.171251912122821380.tip-bot2@tip-bot2>
+Message-ID: <164681248483.16921.9605178775958046023.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,94 +61,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     51727f8e4a1ae15770ac30f05a90536c4aa3b2d8
-Gitweb:        https://git.kernel.org/tip/51727f8e4a1ae15770ac30f05a90536c4aa3b2d8
+Commit-ID:     2170221418e44b3c3d0171194915156db31aebc1
+Gitweb:        https://git.kernel.org/tip/2170221418e44b3c3d0171194915156db31aebc1
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:52 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:50 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:38 +01:00
+CommitterDate: Tue, 08 Mar 2022 23:53:37 +01:00
 
-objtool: Read the NOENDBR annotation
+x86: Annotate call_on_stack()
 
-Read the new NOENDBR annotation. While there, attempt to not bloat
-struct instruction.
+vmlinux.o: warning: objtool: page_fault_oops()+0x13c: unreachable instruction
+
+0000 000000000005b460 <page_fault_oops>:
+...
+0128    5b588:  49 89 23                mov    %rsp,(%r11)
+012b    5b58b:  4c 89 dc                mov    %r11,%rsp
+012e    5b58e:  4c 89 f2                mov    %r14,%rdx
+0131    5b591:  48 89 ee                mov    %rbp,%rsi
+0134    5b594:  4c 89 e7                mov    %r12,%rdi
+0137    5b597:  e8 00 00 00 00          call   5b59c <page_fault_oops+0x13c>    5b598: R_X86_64_PLT32   handle_stack_overflow-0x4
+013c    5b59c:  5c                      pop    %rsp
+
+vmlinux.o: warning: objtool: sysvec_reboot()+0x6d: unreachable instruction
+
+0000 00000000000033f0 <sysvec_reboot>:
+...
+005d     344d:  4c 89 dc                mov    %r11,%rsp
+0060     3450:  e8 00 00 00 00          call   3455 <sysvec_reboot+0x65>        3451: R_X86_64_PLT32    irq_enter_rcu-0x4
+0065     3455:  48 89 ef                mov    %rbp,%rdi
+0068     3458:  e8 00 00 00 00          call   345d <sysvec_reboot+0x6d>        3459: R_X86_64_PC32     .text+0x47d0c
+006d     345d:  e8 00 00 00 00          call   3462 <sysvec_reboot+0x72>        345e: R_X86_64_PLT32    irq_exit_rcu-0x4
+0072     3462:  5c                      pop    %rsp
+
+Both cases are due to a call_on_stack() calling a __noreturn function.
+Since that's an inline asm, GCC can't do anything about the
+instructions after the CALL. Therefore put in an explicit
+ASM_REACHABLE annotation to make sure objtool and gcc are consistently
+confused about control flow.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.586815435@infradead.org
+Link: https://lore.kernel.org/r/20220308154319.468805622@infradead.org
 ---
- tools/objtool/check.c                 | 27 ++++++++++++++++++++++++++-
- tools/objtool/include/objtool/check.h | 13 ++++++++++---
- 2 files changed, 37 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/irq_stack.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index aee6246..3f28ca4 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1865,6 +1865,29 @@ static int read_unwind_hints(struct objtool_file *file)
- 	return 0;
+diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
+index ae9d40f..05af249 100644
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -99,7 +99,8 @@
  }
  
-+static int read_noendbr_hints(struct objtool_file *file)
-+{
-+	struct section *sec;
-+	struct instruction *insn;
-+	struct reloc *reloc;
-+
-+	sec = find_section_by_name(file->elf, ".rela.discard.noendbr");
-+	if (!sec)
-+		return 0;
-+
-+	list_for_each_entry(reloc, &sec->reloc_list, list) {
-+		insn = find_insn(file, reloc->sym->sec, reloc->sym->offset + reloc->addend);
-+		if (!insn) {
-+			WARN("bad .discard.noendbr entry");
-+			return -1;
-+		}
-+
-+		insn->noendbr = 1;
-+	}
-+
-+	return 0;
-+}
-+
- static int read_retpoline_hints(struct objtool_file *file)
- {
- 	struct section *sec;
-@@ -2098,6 +2121,10 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
+ #define ASM_CALL_ARG0							\
+-	"call %P[__func]				\n"
++	"call %P[__func]				\n"		\
++	ASM_REACHABLE
  
-+	ret = read_noendbr_hints(file);
-+	if (ret)
-+		return ret;
-+
- 	/*
- 	 * Must be before add_{jump_call}_destination.
- 	 */
-diff --git a/tools/objtool/include/objtool/check.h b/tools/objtool/include/objtool/check.h
-index 6cfff07..f10d737 100644
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -45,11 +45,18 @@ struct instruction {
- 	unsigned int len;
- 	enum insn_type type;
- 	unsigned long immediate;
--	bool dead_end, ignore, ignore_alts;
--	bool hint;
--	bool retpoline_safe;
-+
-+	u8 dead_end	: 1,
-+	   ignore	: 1,
-+	   ignore_alts	: 1,
-+	   hint		: 1,
-+	   retpoline_safe : 1,
-+	   noendbr	: 1;
-+		/* 2 bit hole */
- 	s8 instr;
- 	u8 visited;
-+	/* u8 hole */
-+
- 	struct alt_group *alt_group;
- 	struct symbol *call_dest;
- 	struct instruction *jump_dest;
+ #define ASM_CALL_ARG1							\
+ 	"movq	%[arg1], %%rdi				\n"		\
