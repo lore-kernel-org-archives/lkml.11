@@ -2,121 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbiCILad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:30:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S232218AbiCILcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:32:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiCILab (ORCPT
+        with ESMTP id S230468AbiCILcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:30:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE19014F9A4;
-        Wed,  9 Mar 2022 03:29:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85A056184D;
-        Wed,  9 Mar 2022 11:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ABE0C340E8;
-        Wed,  9 Mar 2022 11:29:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646825371;
-        bh=SWRdyuVCX6hHG1fEUCipTuHQCziNyV1s3WMn+Evywsw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NUvYH/HYg1pQfTa9teY3vZCnT5G4HJBKD6HR/tJamCUkuUHPIDojeTUnbaw/vxFwa
-         cn9762HspFQ15RgVBt+qHo2PtLQrXOWyCF7LqI8cXJZ6mO9iIvXDTEPaTsp2IeALTQ
-         xQxLmJBJFEgMAPV7orOHJzotym+LXdRhL/xKLLr8=
-Date:   Wed, 9 Mar 2022 12:29:27 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan McDowell <noodles@fb.com>
-Cc:     Dmitrii Okunev <xaionaro@fb.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Qiaowei Ren <qiaowei.ren@intel.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Xiaoyan Zhang <xiaoyan.zhang@intel.com>,
-        Pavel Machek <pavel@denx.de>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "platform-driver-x86@vger.kernel.org" 
-        <platform-driver-x86@vger.kernel.org>
-Subject: Re: [RFC PATCH] platform/x86: Add sysfs interface for Intel TXT
- status
-Message-ID: <YiiPl/zThbkKToar@kroah.com>
-References: <1368465884-14779-3-git-send-email-qiaowei.ren@intel.com>
- <20130516160311.GA12299@amd.pavel.ucw.cz>
- <4febd50da7e5007a2797e0f4c969fa5edd0bf725.camel@fb.com>
- <Yg5A4Mupue0V9diu@kroah.com>
- <20220217123753.GA21849@duo.ucw.cz>
- <0cf678e0b01bf421f3db6693a15ac4060501a80a.camel@fb.com>
- <20220222093101.GA23654@amd>
- <YiiD3WM76L3jbMyW@noodles-fedora-PC23Y6EG.dhcp.thefacebook.com>
- <YiiF9wfx3V+K1J33@kroah.com>
- <YiiIRLZGq5c5uBjX@noodles-fedora-PC23Y6EG.dhcp.thefacebook.com>
+        Wed, 9 Mar 2022 06:32:14 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A83F14FFD4;
+        Wed,  9 Mar 2022 03:31:15 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 233BF1655;
+        Wed,  9 Mar 2022 03:31:15 -0800 (PST)
+Received: from [10.163.33.203] (unknown [10.163.33.203])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFA443FA4D;
+        Wed,  9 Mar 2022 03:31:03 -0800 (PST)
+Message-ID: <f1b4dbb5-7cd4-7513-4b18-169b97745a0a@arm.com>
+Date:   Wed, 9 Mar 2022 17:01:02 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiiIRLZGq5c5uBjX@noodles-fedora-PC23Y6EG.dhcp.thefacebook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V3 05/30] arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Content-Language: en-US
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-arch@vger.kernel.org, Will Deacon <will@kernel.org>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+ <1646045273-9343-6-git-send-email-anshuman.khandual@arm.com>
+ <YiDessYDSt060Euc@arm.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <YiDessYDSt060Euc@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:58:17AM +0000, Jonathan McDowell wrote:
-> On Wed, Mar 09, 2022 at 11:48:23AM +0100, Greg KH wrote:
-> > On Wed, Mar 09, 2022 at 10:40:03AM +0000, Jonathan McDowell wrote:
-> > > (This is an RFC to see if the approach is generally acceptable; unlike
-> > > the previous driver this exposes the information purely as read-only
-> > > status information, so userspace can make an informed decision about the
-> > > system state without having to poke about in /dev/mem. There are still a
-> > > few extra registers I'm trying to dig up information for before a proper
-> > > submission.)
-> > > 
-> > > This module provides read-only access to the Intel TXT (Trusted
-> > > Execution Technology) status registers, allowing userspace to determine
-> > > the status of measured boot and whether the dynamic root of trust for
-> > > measurement (DRTM) has been fully enabled.
-> > > 
-> > > Tools such as txt-stat from tboot
-> > > <https://sourceforge.net/projects/tboot/ > can make use of this driver to
-> > > display state rather than relying on access to /dev/mem.
-> > > 
-> > > See Documentation/x86/intel_txt.rst for more information about Intel
-> > > TXT.
-> > > 
-> > > Signed-off-by: Jonathan McDowell <noodles@fb.com>
-> > > ---
-> > >  arch/x86/include/asm/txt.h             |  34 +++++
-> > >  drivers/platform/x86/intel/Kconfig     |  14 ++
-> > >  drivers/platform/x86/intel/Makefile    |   2 +
-> > >  drivers/platform/x86/intel/txt_sysfs.c | 185 +++++++++++++++++++++++++
-> > 
-> > No Documentation/ABI/ entry for your new sysfs entry?  How can we
-> > evaluate if this is a good api then?
+
+
+On 3/3/22 20:58, Catalin Marinas wrote:
+> Hi Anshuman,
 > 
-> As a read-only export of configuration registers is a full set of info
-> in Documentation/ABI/ required? I didn't get a feel for how required
-> that was from the existing files there.
-
-For all sysfs entries, yes, it is required.  Run the scripts/get_abi.pl
-tool as proof :)
-
-> > Wait, I don't see any sysfs code in here, are you sure you sent a viable
-> > patch?
+> On Mon, Feb 28, 2022 at 04:17:28PM +0530, Anshuman Khandual wrote:
+>> +static inline pgprot_t __vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+>> +	case VM_NONE:
+>> +		return PAGE_NONE;
+>> +	case VM_READ:
+>> +	case VM_WRITE:
+>> +	case VM_WRITE | VM_READ:
+>> +		return PAGE_READONLY;
+>> +	case VM_EXEC:
+>> +		return PAGE_EXECONLY;
+>> +	case VM_EXEC | VM_READ:
+>> +	case VM_EXEC | VM_WRITE:
+>> +	case VM_EXEC | VM_WRITE | VM_READ:
+>> +		return PAGE_READONLY_EXEC;
+>> +	case VM_SHARED:
+>> +		return PAGE_NONE;
+>> +	case VM_SHARED | VM_READ:
+>> +		return PAGE_READONLY;
+>> +	case VM_SHARED | VM_WRITE:
+>> +	case VM_SHARED | VM_WRITE | VM_READ:
+>> +		return PAGE_SHARED;
+>> +	case VM_SHARED | VM_EXEC:
+>> +		return PAGE_EXECONLY;
+>> +	case VM_SHARED | VM_EXEC | VM_READ:
+>> +		return PAGE_READONLY_EXEC;
+>> +	case VM_SHARED | VM_EXEC | VM_WRITE:
+>> +	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+>> +		return PAGE_SHARED_EXEC;
+>> +	default:
+>> +		BUILD_BUG();
+>> +	}
+>> +}
 > 
-> The export to sysfs is via securityfs, as that seemed to be the
-> appropriate route (it fits into a similar area as
-> /sys/kernel/security/integrity/ima/ or /sys/kernel/security/tpm0/,
-> providing userspace with some visibility of what the kernel thinks the
-> state is).
+> I'd say ack for trying to get of the extra arch_vm_get_page_prot() and
+> arch_filter_pgprot() but, TBH, I'm not so keen on the outcome. I haven't
+> built the code to see what's generated but I suspect it's no significant
+> improvement. As for the code readability, the arm64 parts don't look
+> much better either. The only advantage with this patch is that all
+> functions have been moved under arch/arm64.
 
-Then this is securityfs, NOT sysfs.  securityfs just happens to be
-mounted at that location.  You could mount it anywhere else as well.
-Please fix up the terminology here, it is very confusing and has nothing
-to do with sysfs at all.
+Got it.
 
-thanks,
+> 
+> I'd keep most architectures that don't have own arch_vm_get_page_prot()
+> or arch_filter_pgprot() unchanged and with a generic protection_map[]
+> array. For architectures that need fancier stuff, add a
+> CONFIG_ARCH_HAS_VM_GET_PAGE_PROT (as you do) and allow them to define
+> vm_get_page_prot() while getting rid of arch_vm_get_page_prot() and
+> arch_filter_pgprot(). I think you could also duplicate protection_map[]
+> for architectures with own vm_get_page_prot() (make it static) and
+> #ifdef it out in mm/mmap.c.
+> 
+> If later you have more complex needs or a switch statement generates
+> better code, go for it, but for this series I'd keep things simple, only
+> focus on getting rid of arch_vm_get_page_prot() and
+> arch_filter_pgprot().
 
-greg k-h
+Got it.
+
+> 
+> If I grep'ed correctly, there are only 4 architectures that have own
+> arch_vm_get_page_prot() (arm64, powerpc, sparc, x86) and 2 that have own
+> arch_filter_pgprot() (arm64, x86). Try to only change these for the time
+> being, together with the other generic mm cleanups you have in this
+> series. I think there are a couple more that touch protection_map[]
+> (arm, m68k). You can leave the generic protection_map[] global if the
+> arch does not select ARCH_HAS_VM_GET_PAGE_PROT.
+
+Okay, I will probably split the series into two parts.
+
+-  Drop arch_vm_get_page_prot() and arch_filter_pgprot() on relevant
+   platforms i.e arm64, powerpc, sparc and x86 via this new config
+   ARCH_HAS_VM_GET_PAGE_PROT, keeping the generic protection_map[]
+   since platform __SXXX/__PXX macros would be still around.
+
+-  Drop __SXXX/__PXXX across all platforms via just initializing
+   protection_map[] early during boot in the platform OR moving
+   both vm_get_page_prot() via ARCH_HAS_VM_GET_PAGE_PROT and the
+   generic protection_map[] inside the platform.
+
+   There were some objections with respect to switch case code in
+   comparison to the array based table look up.
+
+> 
+>> +static pgprot_t arm64_arch_filter_pgprot(pgprot_t prot)
+>> +{
+>> +	if (cpus_have_const_cap(ARM64_HAS_EPAN))
+>> +		return prot;
+>> +
+>> +	if (pgprot_val(prot) != pgprot_val(PAGE_EXECONLY))
+>> +		return prot;
+>> +
+>> +	return PAGE_READONLY_EXEC;
+>> +}
+>> +
+>> +static pgprot_t arm64_arch_vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pteval_t prot = 0;
+>> +
+>> +	if (vm_flags & VM_ARM64_BTI)
+>> +		prot |= PTE_GP;
+>> +
+>> +	/*
+>> +	 * There are two conditions required for returning a Normal Tagged
+>> +	 * memory type: (1) the user requested it via PROT_MTE passed to
+>> +	 * mmap() or mprotect() and (2) the corresponding vma supports MTE. We
+>> +	 * register (1) as VM_MTE in the vma->vm_flags and (2) as
+>> +	 * VM_MTE_ALLOWED. Note that the latter can only be set during the
+>> +	 * mmap() call since mprotect() does not accept MAP_* flags.
+>> +	 * Checking for VM_MTE only is sufficient since arch_validate_flags()
+>> +	 * does not permit (VM_MTE & !VM_MTE_ALLOWED).
+>> +	 */
+>> +	if (vm_flags & VM_MTE)
+>> +		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+>> +
+>> +	return __pgprot(prot);
+>> +}
+>> +
+>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pgprot_t ret = __pgprot(pgprot_val(__vm_get_page_prot(vm_flags)) |
+>> +			pgprot_val(arm64_arch_vm_get_page_prot(vm_flags)));
+>> +
+>> +	return arm64_arch_filter_pgprot(ret);
+>> +}
+> 
+> If we kept the array, we can have everything in a single function
+> (untested and with my own comments for future changes):
+
+Got it.
+
+> 
+> pgprot_t vm_get_page_prot(unsigned long vm_flags)
+> {
+> 	pgprot_t prot = __pgprot(pgprot_val(protection_map[vm_flags &
+> 				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]));
+> 
+> 	/*
+> 	 * We could get rid of this test if we updated protection_map[]
+> 	 * to turn exec-only into read-exec during boot.
+> 	 */
+> 	if (!cpus_have_const_cap(ARM64_HAS_EPAN) &&
+> 	    pgprot_val(prot) == pgprot_val(PAGE_EXECONLY))
+> 		prot = PAGE_READONLY_EXEC;
+> 
+> 	if (vm_flags & VM_ARM64_BTI)
+> 		prot != PTE_GP;
+> 
+> 	/*
+> 	 * We can get rid of the requirement for PROT_NORMAL to be 0
+> 	 * since here we can mask out PTE_ATTRINDX_MASK.
+> 	 */
+> 	if (vm_flags & VM_MTE) {
+> 		prot &= ~PTE_ATTRINDX_MASK;
+> 		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+> 	}
+> 
+> 	return prot;
+> }
+> 
