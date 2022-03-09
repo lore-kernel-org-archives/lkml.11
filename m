@@ -2,169 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbiCIH6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:58:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S230198AbiCIH7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbiCIH4c (ORCPT
+        with ESMTP id S231572AbiCIH6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:56:32 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB8A1662E6;
-        Tue,  8 Mar 2022 23:55:12 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:55:10 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812511;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJmdgn7ZCyHdWWUt8+5UsVcHFrG8zOBiO6QQ/FKHhfM=;
-        b=Yut/p7ypJlBaPRNwHRLuxLzHL/c8nypTlzFPqrqTScNSQ2ZoFZdp2siTH+EtQXOlswyqXe
-        ygRqqHRI8Yqdqwbj6X57q9MQrkZBVal1ZAsFw0TRDJc7Y28LKOojF6SjJ8xbGTfGUH2NPV
-        WfhwWqDpylHXnrpjnw9fx8xg6POGv/5NlUNJ6JXYgpuUar9tTKzrJWs0SK5PIztMQ/0RNP
-        LY1Nu4UANVb5zEtWKBYMck625gJKx2Sbge+Q8GN7vigdaYB4pIL3eHxoUAuGh87r1HvttK
-        KulxWglslg0oy1kFITYn9mxwNZ+SQDSzaRX7wL763Bd7TBgBYPyNRHccxqAPgA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812511;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJmdgn7ZCyHdWWUt8+5UsVcHFrG8zOBiO6QQ/FKHhfM=;
-        b=pzUza8KTzIRC5VMlAOJgcAOiBvBhi29YCEEfN8WOO1QafADjFYqJEWYNJLryoI8Z4GDbJE
-        t+szM7O8N/w/jrCg==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt,paravirt: Use text_gen_insn() for paravirt_patch()
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154317.697253958@infradead.org>
-References: <20220308154317.697253958@infradead.org>
+        Wed, 9 Mar 2022 02:58:03 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4F2166E0E
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 23:56:33 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KD4Jv4lzXz9sSV;
+        Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qLx4faVm02P8; Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KD4Jv40v5z9sSR;
+        Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 76C848B77D;
+        Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id WlMku7kl4AUb; Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.3])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2A0278B763;
+        Wed,  9 Mar 2022 08:56:31 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2297uI323593930
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 9 Mar 2022 08:56:18 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2297uGok3593929;
+        Wed, 9 Mar 2022 08:56:16 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc: Use rol32() instead of opencoding in csum_fold()
+Date:   Wed,  9 Mar 2022 08:56:14 +0100
+Message-Id: <794337eff7bb803d2c4e67d9eee635390c4c48fe.1646812553.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Message-ID: <164681251019.16921.10564758807764415556.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1646812573; l=1384; s=20211009; h=from:subject:message-id; bh=KDkVF9PqMt4cDBy6twCvMX/grto3ncphU+ZUsJSR6IA=; b=RHvXwbEHlO+1j8HBQrsBzcN7RyHmiKhQDWO+jKCyUQ/MU9Oq0s9c9mzE5EhM8Q2UNfaAumg9TIt1 ZkNP1gIcC713W+IjC+xio7Ol4Twoiz712ZOMJiiCO3/N1T8fa48g
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/core branch of tip:
+rol32(x, 16) will do the rotate using rlwinm.
 
-Commit-ID:     7fb70b6975509102d848f1abdba394e0bdc122c1
-Gitweb:        https://git.kernel.org/tip/7fb70b6975509102d848f1abdba394e0bdc122c1
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:20 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:28 +01:00
+No need to open code using inline assembly.
 
-x86/ibt,paravirt: Use text_gen_insn() for paravirt_patch()
-
-Less duplication is more better.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154317.697253958@infradead.org
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/x86/include/asm/text-patching.h | 20 ++++++++++++++------
- arch/x86/kernel/paravirt.c           | 23 +++--------------------
- 2 files changed, 17 insertions(+), 26 deletions(-)
+ arch/powerpc/include/asm/checksum.h | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 1c4cfb1..c6015b4 100644
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -96,32 +96,40 @@ union text_poke_insn {
- };
- 
- static __always_inline
--void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+void __text_gen_insn(void *buf, u8 opcode, const void *addr, const void *dest, int size)
+diff --git a/arch/powerpc/include/asm/checksum.h b/arch/powerpc/include/asm/checksum.h
+index 8321f6053a67..4b573a3b7e17 100644
+--- a/arch/powerpc/include/asm/checksum.h
++++ b/arch/powerpc/include/asm/checksum.h
+@@ -38,14 +38,15 @@ extern __wsum csum_and_copy_to_user(const void *src, void __user *dst,
+  */
+ static inline __sum16 csum_fold(__wsum sum)
  {
--	static union text_poke_insn insn; /* per instance */
--	int size = text_opcode_size(opcode);
-+	union text_poke_insn *insn = buf;
+-	unsigned int tmp;
+-
+-	/* swap the two 16-bit halves of sum */
+-	__asm__("rlwinm %0,%1,16,0,31" : "=r" (tmp) : "r" (sum));
+-	/* if there is a carry from adding the two 16-bit halves,
+-	   it will carry from the lower half into the upper half,
+-	   giving us the correct sum in the upper half. */
+-	return (__force __sum16)(~((__force u32)sum + tmp) >> 16);
++	u32 tmp = (__force u32)sum;
 +
-+	BUG_ON(size < text_opcode_size(opcode));
- 
- 	/*
- 	 * Hide the addresses to avoid the compiler folding in constants when
- 	 * referencing code, these can mess up annotations like
- 	 * ANNOTATE_NOENDBR.
- 	 */
-+	OPTIMIZER_HIDE_VAR(insn);
- 	OPTIMIZER_HIDE_VAR(addr);
- 	OPTIMIZER_HIDE_VAR(dest);
- 
--	insn.opcode = opcode;
-+	insn->opcode = opcode;
- 
- 	if (size > 1) {
--		insn.disp = (long)dest - (long)(addr + size);
-+		insn->disp = (long)dest - (long)(addr + size);
- 		if (size == 2) {
- 			/*
- 			 * Ensure that for JMP8 the displacement
- 			 * actually fits the signed byte.
- 			 */
--			BUG_ON((insn.disp >> 31) != (insn.disp >> 7));
-+			BUG_ON((insn->disp >> 31) != (insn->disp >> 7));
- 		}
- 	}
-+}
- 
-+static __always_inline
-+void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+{
-+	static union text_poke_insn insn; /* per instance */
-+	__text_gen_insn(&insn, opcode, addr, dest, text_opcode_size(opcode));
- 	return &insn.text;
++	/*
++	 * swap the two 16-bit halves of sum
++	 * if there is a carry from adding the two 16-bit halves,
++	 * it will carry from the lower half into the upper half,
++	 * giving us the correct sum in the upper half.
++	 */
++	return (__force __sum16)(~(tmp + rol32(tmp, 16)) >> 16);
  }
  
-diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index 4420499..06af2cf 100644
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -69,29 +69,12 @@ noinstr void paravirt_BUG(void)
- 	BUG();
- }
- 
--struct branch {
--	unsigned char opcode;
--	u32 delta;
--} __attribute__((packed));
--
- static unsigned paravirt_patch_call(void *insn_buff, const void *target,
- 				    unsigned long addr, unsigned len)
- {
--	const int call_len = 5;
--	struct branch *b = insn_buff;
--	unsigned long delta = (unsigned long)target - (addr+call_len);
--
--	if (len < call_len) {
--		pr_warn("paravirt: Failed to patch indirect CALL at %ps\n", (void *)addr);
--		/* Kernel might not be viable if patching fails, bail out: */
--		BUG_ON(1);
--	}
--
--	b->opcode = 0xe8; /* call */
--	b->delta = delta;
--	BUILD_BUG_ON(sizeof(*b) != call_len);
--
--	return call_len;
-+	__text_gen_insn(insn_buff, CALL_INSN_OPCODE,
-+			(void *)addr, target, CALL_INSN_SIZE);
-+	return CALL_INSN_SIZE;
- }
- 
- #ifdef CONFIG_PARAVIRT_XXL
+ static inline u32 from64to32(u64 x)
+-- 
+2.34.1
+
