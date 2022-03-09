@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 538EBC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B33CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234634AbiCIQKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:10:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
+        id S234651AbiCIQK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:10:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234690AbiCIQH4 (ORCPT
+        with ESMTP id S234724AbiCIQH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:07:56 -0500
+        Wed, 9 Mar 2022 11:07:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171D3A94C5;
-        Wed,  9 Mar 2022 08:04:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929F71480C8;
+        Wed,  9 Mar 2022 08:04:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2260CB82224;
-        Wed,  9 Mar 2022 16:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 625C7C340EF;
-        Wed,  9 Mar 2022 16:04:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BBB6B82222;
+        Wed,  9 Mar 2022 16:04:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B041BC340E8;
+        Wed,  9 Mar 2022 16:04:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841843;
-        bh=UnvhIlQm44RU2lBhhosbmErjf2hqypuKRtKkNXHH5p4=;
+        s=korg; t=1646841852;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLvcNqjbmxc9Ddf1ud2Wx9A1ouwNviiNGgdOFBOklXbTz9TvG0a5M2MR8sBdAYiCU
-         Ir4SAdfVEWXsSHPSkbDRy+4mLV/XsQZypIe9Eyzi1ufWlzVIReaP/Hs6qQ6/UezCbN
-         FzH2zdECzRIHfBgtT1EqQgcrv9YCet/I1GRPWdps=
+        b=XGXl3okeoLzEPiskxjwJkLwLfOq5VEnqRBYCDaU7zNKO42kDV0+YogiAmOa5ZkpL1
+         iCD7s1sjDXeok+guEWnXMwQ2eoUG/IAiDdnYGx6vUU/W+/72lqkaWcxocRax1Zar2s
+         0q0wjZ9KsJ/QrgcJDzwSEfJjlcf8lSu+FxTpwYkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 14/18] ARM: early traps initialisation
-Date:   Wed,  9 Mar 2022 17:00:03 +0100
-Message-Id: <20220309155856.972592776@linuxfoundation.org>
+Subject: [PATCH 5.4 17/18] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Wed,  9 Mar 2022 17:00:06 +0100
+Message-Id: <20220309155857.059352644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.552503355@linuxfoundation.org>
 References: <20220309155856.552503355@linuxfoundation.org>
@@ -48,71 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 04e91b7324760a377a725e218b5ee783826d30f5 upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-Provide a couple of helpers to copy the vectors and stubs, and also
-to flush the copied vectors and stubs.
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
+
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/traps.c |   27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -799,10 +799,22 @@ static inline void __init kuser_init(voi
- }
- #endif
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
  
-+#ifndef CONFIG_CPU_V7M
-+static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
-+{
-+	memcpy(vma, lma_start, lma_end - lma_start);
-+}
-+
-+static void flush_vectors(void *vma, size_t offset, size_t size)
-+{
-+	unsigned long start = (unsigned long)vma + offset;
-+	unsigned long end = start + size;
-+
-+	flush_icache_range(start, end);
-+}
-+
- void __init early_trap_init(void *vectors_base)
- {
--#ifndef CONFIG_CPU_V7M
--	unsigned long vectors = (unsigned long)vectors_base;
- 	extern char __stubs_start[], __stubs_end[];
- 	extern char __vectors_start[], __vectors_end[];
- 	unsigned i;
-@@ -823,17 +835,20 @@ void __init early_trap_init(void *vector
- 	 * into the vector page, mapped at 0xffff0000, and ensure these
- 	 * are visible to the instruction stream.
- 	 */
--	memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);
--	memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
-+	copy_from_lma(vectors_base, __vectors_start, __vectors_end);
-+	copy_from_lma(vectors_base + 0x1000, __stubs_start, __stubs_end);
+ #include <asm/spectre.h>
  
- 	kuser_init(vectors_base);
- 
--	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
-+	flush_vectors(vectors_base, 0, PAGE_SIZE * 2);
-+}
- #else /* ifndef CONFIG_CPU_V7M */
-+void __init early_trap_init(void *vectors_base)
++static bool _unprivileged_ebpf_enabled(void)
 +{
- 	/*
- 	 * on V7-M there is no need to copy the vector table to a dedicated
- 	 * memory area. The address is configurable and so a table in the kernel
- 	 * image can be used.
- 	 */
--#endif
- }
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
++#else
++	return false
 +#endif
++}
++
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
+ 
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
