@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2DFC35278
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27B0C46467
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236059AbiCIQ2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
+        id S235831AbiCIQ2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:28:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238164AbiCIQVa (ORCPT
+        with ESMTP id S238460AbiCIQWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4629A149979;
-        Wed,  9 Mar 2022 08:19:57 -0800 (PST)
+        Wed, 9 Mar 2022 11:22:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7813A5;
+        Wed,  9 Mar 2022 08:21:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1B9EB82221;
-        Wed,  9 Mar 2022 16:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1831C340E8;
-        Wed,  9 Mar 2022 16:19:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA1261926;
+        Wed,  9 Mar 2022 16:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E384EC340F3;
+        Wed,  9 Mar 2022 16:21:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842794;
-        bh=Y/AzchoFpdLn6g8WkJT0uKS4BVm0X//JoewFAWcfMvk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XSV6AM7vzZFLqYyU1n7HWW6ahG9lO2FniA14hp8whdwYWh4c3K2cAKv2FTKJJBzCj
-         B9nWQvn2CiS/hyXrv4nsWBAaWnUY44Kqkc8yaEsgF04VNGzByzm07boG4sh/QZt6mv
-         rzjlrLSqq01qnziQwHsmt2FueQvcdiwT5xiiK0iWEPvf7b2YLqQ3tIfI5HFzuCXEiC
-         Xm6g1QL2KBh/gHCccjSKtHp1wSI9tyuQc6kbr7qCYUs2ZlvZvxPmF55xIr1wtnNqlw
-         Z44tCVTqZfD4VsASYpPbUIXXo5fiqrsGXVCjsdc9K1xMv4zpXF2P2oTqi6VdsmCw5V
-         u+I/f0a+ZPieQ==
+        s=k20201202; t=1646842880;
+        bh=18sop7HHeHWk2N9tOaxxTwb116X8umHAw2ytwpnKPGs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jYtLvgTJLxiMmeqCQT/vN6heovbBXanmo3fIiuJNqk1dkWBhYPEXcTlbZMmhdCUeE
+         7ULuNdIOUsCU6NEh/adXMmCsZLazTOBMF9WSgSjzQolw/rA1ViUENElG3OtQlp0bz3
+         Pmt/+Yb2aNmWkeg8yhCLY01aRw6ve+JtyGUJOfSrtmHH06zGrZnWPfIskMoZQgWzi5
+         QGz09ofUnyScg3cxuR7vGgIv/1kgILu5jLnswk3mPgKXsJWt8rG0U0DMw/IzxBLbGr
+         ir2p9QEgaHTwLI0ltbHjvPojhWji0obP+GrCuG5NDgo2B2nwYqbHU+ycjaD89KE5lW
+         l4+GBavRoI8tg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Quentin Schulz <foss+kernel@0leil.net>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        jakob.unterwurzacher@theobroma-systems.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 01/24] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-Date:   Wed,  9 Mar 2022 11:19:20 -0500
-Message-Id: <20220309161946.136122-1-sashal@kernel.org>
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/24] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Wed,  9 Mar 2022 11:19:35 -0500
+Message-Id: <20220309161946.136122-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,71 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-The micro USB3.0 port available on the Haikou evaluation kit for Puma
-RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
-was broken until now because of missing logic around the ID pin.
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-This adds proper support for USB OTG on Puma Haikou by "connecting" the
-GPIO used for USB ID to the USB3 controller device.
-
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220120125156.16217-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-index 292bb7e80cf3..3ae5d727e367 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-@@ -232,6 +232,7 @@ &usbdrd3_0 {
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index 3bc3c314a467..4f67404fe64c 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
- &usbdrd_dwc3_0 {
- 	dr_mode = "otg";
-+	extcon = <&extcon_usb3>;
- 	status = "okay";
- };
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
  
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index fb67db4619ea..002ece51c3ba 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -25,6 +25,13 @@ module_led: led-0 {
- 		};
- 	};
- 
-+	extcon_usb3: extcon-usb3 {
-+		compatible = "linux,extcon-usb-gpio";
-+		id-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&usb3_id>;
-+	};
-+
- 	clkin_gmac: external-gmac-clock {
- 		compatible = "fixed-clock";
- 		clock-frequency = <125000000>;
-@@ -422,6 +429,13 @@ vcc5v0_host_en: vcc5v0-host-en {
- 			  <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
- 	};
-+
-+	usb3 {
-+		usb3_id: usb3-id {
-+			rockchip,pins =
-+			  <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
- };
- 
- &sdhci {
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
