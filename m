@@ -2,205 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 906F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48939C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiCIFyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 00:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
+        id S229795AbiCIF5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 00:57:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiCIFyW (ORCPT
+        with ESMTP id S229512AbiCIF5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 00:54:22 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A069025E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:53:24 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id o133-20020a25738b000000b0062872621d0eso1014679ybc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 21:53:24 -0800 (PST)
+        Wed, 9 Mar 2022 00:57:08 -0500
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FEEEC5E9
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:56:10 -0800 (PST)
+Received: by mail-vk1-xa2a.google.com with SMTP id i43so687014vkd.12
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 21:56:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w+xH5zPzO9fzlPZhErbu5z29jcELWn+6P2g2NcadMFA=;
-        b=bM2zTSm8KeB90TkOWKQFIC/tP96YmuE33vq0ZZHg+gfP6vr07pc36lboEL6JZF5rR5
-         W75V9utE8zwUPnLZzjdnO/rnaptxeubHArLRUSokfgYnm10dvJ8q/Tdcpp0lrxJZeNyq
-         Gl+LV4FzMH/vIwBuNZEQvzimEn7Wj3yd7LiyPhj4y93RN3i8m6h44RvmxqzQAIchsiuy
-         1I6AcDPYrSTmC1iHGDXqd3mW1TKBH5gmvcKxYkg5Tvrb9RJq77WweysJBeRKImUZpUzz
-         2USDBl+/faFs+wkYCi4WjKFhXKwonyXvcHQ6HshEGLP7Z1mlSLGgD6446WhYeZzrjYvc
-         VWPQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=y4/OuWLBji+6VTiCXM/a3doY0qINZlzqUpyxddd3GcI=;
+        b=By0ECgOBNferd8GoY7Rpp+PRxebOZD7PPCp+nGiF/LW0MdaikNTnNmKa9d3ZX+5HN9
+         JOa8qy7tkOJIb8OkDXsZJ6O0ho+xKSPdo1T1Id22V3EnqR8OZkkADh0RSOswlpCAV65E
+         SUjay/6GhnEZ8Np0ukadlOMqZzjUx12HJRhJM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w+xH5zPzO9fzlPZhErbu5z29jcELWn+6P2g2NcadMFA=;
-        b=HXbSOkc5sLZxvdFTh/yuf86vISl3E+STwBStmFQbz4b40kZ//SWvhpbvJ/T0NL4DNn
-         5a6hZ+5V30XM7Q+VOawXLNkK0CAkD9vSLP8NryjmwFp/3hrazTDMPCZCjvq2kbWw3MvU
-         XgtAtOaSx0C+OP/Q9yG7uqXGQwYl3sioJ1zd2tldrHLAF2/Xjv8nDZqyoCTLlwNiDBN6
-         E/NEFvdxtV+OD3LRL26x4EgOB3dpIXRFPQ6vy9bx5QdwXhPie7JGzk4Ry5p+pX0yUcpS
-         FjRVVNTZGXYulrdZaZ0U3k4y579FIgyvBX8gfJhZL7j69WPe5mw3QfmLvzfzm24g0kWY
-         zLDw==
-X-Gm-Message-State: AOAM530O7vg/NNXNX1QA+wOwTMDDosdcAHZVnONROuL7SsdlCED0gQiT
-        lPDfewpge944dknbVssbeRsbci/s0K9Y
-X-Google-Smtp-Source: ABdhPJzJF+c+5wFkgHiaslh6V5+cpIWKEMcc6bLulAiUfvYLAQ7jF7pXtx1VkHg0a/2mozQgRdhqhoOqJMwN
-X-Received: from maskray1.svl.corp.google.com ([2620:15c:2ce:200:7036:807c:86c9:3f2e])
- (user=maskray job=sendgmr) by 2002:a81:15c9:0:b0:2dc:4bf9:41ea with SMTP id
- 192-20020a8115c9000000b002dc4bf941eamr15213633ywv.145.1646805203519; Tue, 08
- Mar 2022 21:53:23 -0800 (PST)
-Date:   Tue,  8 Mar 2022 21:51:18 -0800
-Message-Id: <20220309055118.1551013-1-maskray@google.com>
-Mime-Version: 1.0
-Subject: [PATCH] powerpc: Replace ppc64 DT_RELACOUNT usage with DT_RELASZ/24
-From:   Fangrui Song <maskray@google.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Fangrui Song <maskray@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=y4/OuWLBji+6VTiCXM/a3doY0qINZlzqUpyxddd3GcI=;
+        b=AOyEbNKdhLCwZA97JnYLw+NeFsJfSshbS2RpOcIvOrHc8D8Z991CjGzc5oED+a/Nwd
+         LnSPPrWojEaEUeso0+3nteEPrjc3LVdqvcudhQBbk3DZ2etsTsvmf842kwqvwUy5jT0Q
+         54GNIw1OJyMavhvH+utnuU38O+4e4NEnvAyl7oTJVEQpUgR0pruPN+j6eISI72Vb/XGz
+         GmqPbaQzkdiC364T4B8SFoHvz8rJKMbUz2ziiqCmyJJdZ3MIPYLFZrlroO8UTq9VmBhV
+         jqzZVgoUrPpamCo0wO/kvbH4r9EqZpc03CojzXX+ppaSvhyYS2kHzKhoPrJL95mXKBWp
+         eA0A==
+X-Gm-Message-State: AOAM533C4OE8gCf28JuR0jCBJnguVnReSI1MEmuedJOcK+R9lVojKPkG
+        JOpsN3+Oey/rCsWWR7eWf9ohGwwBHAk/OdU08Syixw==
+X-Google-Smtp-Source: ABdhPJzHCZbKdmWp591ZwsY/ysoow9x2y7PHhTzdKgGF+rgOfISnKuRzxOCbEK52EyyYVHd1n8LtqmiJ6uO9Ppn3v6M=
+X-Received: by 2002:a1f:ae10:0:b0:337:7a83:899b with SMTP id
+ x16-20020a1fae10000000b003377a83899bmr5437397vke.17.1646805369369; Tue, 08
+ Mar 2022 21:56:09 -0800 (PST)
+MIME-Version: 1.0
+References: <1646388956-8033-1-git-send-email-xinlei.lee@mediatek.com>
+ <fb73a54a-7e75-2e5d-d78a-cacb5f065b06@collabora.com> <CAJMQK-jkmw1iKmy1s6CU5rbngQWNPDS4zT23PnuDf2nGus=X2w@mail.gmail.com>
+ <d6f880e1-83c6-7663-2a8a-8541115f5242@collabora.com>
+In-Reply-To: <d6f880e1-83c6-7663-2a8a-8541115f5242@collabora.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Wed, 9 Mar 2022 13:55:43 +0800
+Message-ID: <CAJMQK-ghfMF==qvPk9ecKGeE5HhyvLG2T8nLSBzji2-9wzJeNA@mail.gmail.com>
+Subject: Re: [PATCH v2, 0/4] Cooperate with DSI RX devices to modify dsi funcs
+ and delay mipi high to cooperate with panel sequence
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     xinlei.lee@mediatek.com, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        matthias.bgg@gmail.com, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        jitao.shi@mediatek.com, allen-kh.cheng@mediatek.com,
+        Rex-BC.Chen@mediatek.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DT_RELACOUNT is an ELF dynamic tag inherited from SunOS indicating the
-number of R_*_RELATIVE relocations. It is optional but {ld.lld,ld.lld}
--z combreloc always creates it (if non-zero) to slightly speed up glibc
-ld.so relocation resolving by avoiding R_*R_PPC64_RELATIVE type
-comparison. The tag is otherwise nearly unused in the wild and I'd
-recommend that software avoids using it.
+On Tue, Mar 8, 2022 at 6:00 PM Benjamin Gaignard
+<benjamin.gaignard@collabora.com> wrote:
+>
+>
+> Le 08/03/2022 =C3=A0 10:12, Hsin-Yi Wang a =C3=A9crit :
+> > On Fri, Mar 4, 2022 at 7:25 PM Benjamin Gaignard
+> > <benjamin.gaignard@collabora.com> wrote:
+> >>
+> >> Le 04/03/2022 =C3=A0 11:15, xinlei.lee@mediatek.com a =C3=A9crit :
+> >>> From: Xinlei Lee <xinlei.lee@mediatek.com>
+> >>>
+> >>> In upstream-v5.8, dsi_enable will operate panel_enable, but this
+> >>> modification has been moved in v5.9. In order to ensure the timing of
+> >>> dsi_power_on/off and the timing of pulling up/down the MIPI signal,
+> >>> the modification of v5.9 is synchronized in this series of patches.
+> >> Hello,
+> >>
+> >> I'm trying to debug an issue on mt8183 kukui krane sku176 device.
+> >> The problem is that boe-tv101wum-nl6 panel isn't working.
+> >> At boot time I can see these logs:
+> >> panel-boe-tv101wum-nl6 14014000.dsi.0: failed to write command 1
+> >> panel-boe-tv101wum-nl6 14014000.dsi.0: failed to init panel: -62
+> >> and a DSI interrupt time out.
+> >>
+> >> Since I believe the problem is link to DSI/panel enabling sequence
+> >> I have try this series but that doesn't solve the issue.
+> >> I notice that when going out of deep sleep mode panel is functional.
+> >>
+> >> May you have any idea to debug/solve this problem ?
+> >>
+> > Hi Benjamin,
+> >
+> > I think this might not be related to this series. Which kernel are you =
+using?
+> > I tried the krane sku176 with linux-next 5.17-rc6
+> > (519dd6c19986696f59847ff8bf930436ccffd9a1 (tag: next-20220307,
+> > linux-next/master) with or without this series, both can get the displa=
+y on.
+> >
+> > dsi related message:
+> > [    0.206330] mediatek-drm mediatek-drm.1.auto: Adding component
+> > match for /soc/dsi@14014000
+> > [    4.567577] panel-boe-tv101wum-nl6 14014000.dsi.0: supply pp3300
+> > not found, using dummy regulator
+> > [    4.567732] panel-boe-tv101wum-nl6 14014000.dsi.0: GPIO lookup for
+> > consumer enable
+> > [    4.567738] panel-boe-tv101wum-nl6 14014000.dsi.0: using device
+> > tree for GPIO lookup
+> > [    4.567757] of_get_named_gpiod_flags: parsed 'enable-gpios'
+> > property of node '/soc/dsi@14014000/panel@0[0]' - status (0)
+> > [    4.585884] panel-boe-tv101wum-nl6 14014000.dsi.0: supply pp3300
+> > not found, using dummy regulator
+> > [    4.586037] panel-boe-tv101wum-nl6 14014000.dsi.0: GPIO lookup for
+> > consumer enable
+> > [    4.586042] panel-boe-tv101wum-nl6 14014000.dsi.0: using device
+> > tree for GPIO lookup
+> > [    4.586059] of_get_named_gpiod_flags: parsed 'enable-gpios'
+> > property of node '/soc/dsi@14014000/panel@0[0]' - status (0)
+> > [    4.587430] mediatek-drm mediatek-drm.1.auto: bound 14014000.dsi
+> > (ops 0xffffffd369a752b8)
+> >
+> >
+> > Maybe some config is not enabled?
+>
+> I using 5.17.0-rc1-next-20220127 kernel tag.
+> The configs look similar.
+>
+> I have the follow log at boot time:
+>
+Hi Xinlei,
 
-lld>=14.0.0 (since commit da0e5b885b25cf4ded0fa89b965dc6979ac02ca9)
-underestimates DT_RELACOUNT for ppc64 when position-independent long
-branch thunks are used. Correcting it needs non-trivial arch-specific
-complexity which I'd prefer to avoid. Since our code always compares the
-relocation type with R_PPC64_RELATIVE, replacing every occurrence of
-DT_RELACOUNT with DT_RELASZ/sizeof(Elf64_Rela)=DT_RELASZ/24 is a correct
-alternative.
+Can you resend this patch to base on the latest rc? This patch no
+longer applies to rc6, I have to resolve conflict locally.
 
-DT_RELASZ is in practice bounded by an uint32_t. Dividing x by 24 can be
-implemented as (uint32_t)(x*0xaaaaaaab) >> 4.
+Thanks
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1581
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
----
- arch/powerpc/boot/crt0.S       | 28 +++++++++++++++++-----------
- arch/powerpc/kernel/reloc_64.S | 15 +++++++++------
- 2 files changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/arch/powerpc/boot/crt0.S b/arch/powerpc/boot/crt0.S
-index feadee18e271..1c96ebe7ef1a 100644
---- a/arch/powerpc/boot/crt0.S
-+++ b/arch/powerpc/boot/crt0.S
-@@ -8,7 +8,7 @@
- #include "ppc_asm.h"
- 
- RELA = 7
--RELACOUNT = 0x6ffffff9
-+RELASZ = 8
- 
- 	.data
- 	/* A procedure descriptor used when booting this as a COFF file.
-@@ -65,7 +65,7 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
- 	subf	r11,r11,r12	/* runtime - linktime offset */
- 
- 	/* The dynamic section contains a series of tagged entries.
--	 * We need the RELA and RELACOUNT entries. */
-+	 * We need the RELA and RELASZ entries. */
- 	li	r9,0
- 	li	r0,0
- 9:	lwz	r8,0(r12)	/* get tag */
-@@ -75,18 +75,21 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
- 	bne	11f
- 	lwz	r9,4(r12)	/* get RELA pointer in r9 */
- 	b	12f
--11:	addis	r8,r8,(-RELACOUNT)@ha
--	cmpwi	r8,RELACOUNT@l
-+11:	cmpwi	r8,RELASZ
- 	bne	12f
--	lwz	r0,4(r12)	/* get RELACOUNT value in r0 */
-+	lwz	r0,4(r12)	/* get RELASZ / 24 in r0 */
-+	lis     r8,0xaaaa
-+	ori     r8,r8,0xaaab
-+	mulhwu  r0,r0,r8
-+	srwi    r0,r0,4
- 12:	addi	r12,r12,8
- 	b	9b
- 
- 	/* The relocation section contains a list of relocations.
- 	 * We now do the R_PPC_RELATIVE ones, which point to words
- 	 * which need to be initialized with addend + offset.
--	 * The R_PPC_RELATIVE ones come first and there are RELACOUNT
--	 * of them. */
-+	 * The R_PPC_RELATIVE ones come first and there are at most
-+         * RELASZ/24 of them. */
- 10:	/* skip relocation if we don't have both */
- 	cmpwi	r0,0
- 	beq	3f
-@@ -160,14 +163,17 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
- 	bne	10f
- 	ld	r13,8(r11)       /* get RELA pointer in r13 */
- 	b	11f
--10:	addis	r12,r12,(-RELACOUNT)@ha
--	cmpdi	r12,RELACOUNT@l
-+10:	cmpdi	r12,RELASZ
- 	bne	11f
--	ld	r8,8(r11)       /* get RELACOUNT value in r8 */
-+	ld	r8,8(r11)       /* get RELASZ / 24 in r8 */
-+	lis     r0,0xaaaa
-+	ori     r0,r0,0xaaab
-+	mulhwu  r8,r8,r0
-+	srwi    r8,r8,4
- 11:	addi	r11,r11,16
- 	b	9b
- 12:
--	cmpdi	r13,0            /* check we have both RELA and RELACOUNT */
-+	cmpdi	r13,0            /* check we have both RELA and RELASZ */
- 	cmpdi	cr1,r8,0
- 	beq	3f
- 	beq	cr1,3f
-diff --git a/arch/powerpc/kernel/reloc_64.S b/arch/powerpc/kernel/reloc_64.S
-index 02d4719bf43a..362be759609f 100644
---- a/arch/powerpc/kernel/reloc_64.S
-+++ b/arch/powerpc/kernel/reloc_64.S
-@@ -8,7 +8,7 @@
- #include <asm/ppc_asm.h>
- 
- RELA = 7
--RELACOUNT = 0x6ffffff9
-+RELASZ = 8
- R_PPC64_RELATIVE = 22
- 
- /*
-@@ -27,7 +27,7 @@ _GLOBAL(relocate)
- 	add	r10,r10,r12	/* r10 has runtime addr of _stext */
- 
- 	/*
--	 * Scan the dynamic section for the RELA and RELACOUNT entries.
-+	 * Scan the dynamic section for the RELA and RELASZ entries.
- 	 */
- 	li	r7,0
- 	li	r8,0
-@@ -38,13 +38,16 @@ _GLOBAL(relocate)
- 	bne	2f
- 	ld	r7,8(r11)	/* get RELA pointer in r7 */
- 	b	3f
--2:	addis	r6,r6,(-RELACOUNT)@ha
--	cmpdi	r6,RELACOUNT@l
-+2:	cmpdi	r6,RELASZ
- 	bne	3f
--	ld	r8,8(r11)	/* get RELACOUNT value in r8 */
-+	ld	r8,8(r11)	/* get RELA / 24 in r8 */
-+	lis     r0,0xaaaa
-+	ori     r0,r0,0xaaab
-+	mulhwu  r8,r8,r0
-+	srwi    r8,r8,4
- 3:	addi	r11,r11,16
- 	b	1b
--4:	cmpdi	r7,0		/* check we have both RELA and RELACOUNT */
-+4:	cmpdi	r7,0		/* check we have both RELA and RELASZ */
- 	cmpdi	cr1,r8,0
- 	beq	6f
- 	beq	cr1,6f
--- 
-2.35.1.616.g0bdcbb4464-goog
-
+> [    1.533384] phy phy-11e50000.dsi-phy.2: Looking up phy-supply from dev=
+ice tree
+> [    1.533402] phy phy-11e50000.dsi-phy.2: Looking up phy-supply property=
+ in node /soc/dsi-phy@11e50000 failed
+> [    3.173068] mediatek-drm mediatek-drm.1.auto: Adding component match f=
+or /soc/dsi@14014000
+> [    4.671806] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up avdd-sup=
+ply from device tree
+> [    4.680348] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up avee-sup=
+ply from device tree
+> [    4.688784] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up pp3300-s=
+upply from device tree
+> [    4.697816] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up pp1800-s=
+upply from device tree
+> [    4.842346] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up avdd-sup=
+ply from device tree
+> [    4.854573] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up avee-sup=
+ply from device tree
+> [    4.862976] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up pp3300-s=
+upply from device tree
+> [    4.871568] panel-boe-tv101wum-nl6 14014000.dsi.0: Looking up pp1800-s=
+upply from device tree
+> [    4.964021] mediatek-drm mediatek-drm.1.auto: bound 14014000.dsi (ops =
+mtk_dsi_component_ops)
+> ...
+> [   38.273437] [drm] Wait DSI IRQ(0x00000002) Timeout
+> [   38.281584] panel-boe-tv101wum-nl6 14014000.dsi.0: failed to write com=
+mand 1
+> [   38.288651] panel-boe-tv101wum-nl6 14014000.dsi.0: failed to init pane=
+l: -62
+> ...
+> [   70.113674] mediatek-drm mediatek-drm.1.auto: [drm] *ERROR* flip_done =
+timed out
+> [   70.121054] mediatek-drm mediatek-drm.1.auto: [drm] *ERROR* [CRTC:45:c=
+rtc-0] commit wait timed out
+> [   70.130037] [drm:mtk_drm_crtc_atomic_begin] *ERROR* new event while th=
+ere is still a pending event
+> [   70.241222] ------------[ cut here ]------------
+> [   70.245898] [CRTC:45:crtc-0] vblank wait timed out
+> [   70.250729] WARNING: CPU: 7 PID: 397 at drivers/gpu/drm/drm_atomic_hel=
+per.c:1529 drm_atomic_helper_wait_for_vblanks.part.0+0x290/0x24
+> [   70.262815] Modules linked in: hci_uart btqca btbcm bluetooth cdc_ethe=
+r usbnet r8152 mtk_mdp3 hid_multitouch mtk_jpeg panfrost cros_6
+> [   70.309348] CPU: 7 PID: 397 Comm: gnome-shell Tainted: G        W     =
+    5.17.0-rc1-next-20220127+ #57
+> [   70.318731] Hardware name: MediaTek krane sku176 board (DT)
+> [   70.324293] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYP=
+E=3D--)
+> [   70.331244] pc : drm_atomic_helper_wait_for_vblanks.part.0+0x290/0x2b4
+> [   70.337762] lr : drm_atomic_helper_wait_for_vblanks.part.0+0x290/0x2b4
+> [   70.344279] sp : ffff8000092339e0
+> [   70.347583] x29: ffff8000092339e0 x28: 0000000000000001 x27: 000000000=
+0000000
+> [   70.354713] x26: 0000000000000000 x25: ffffc7e8feee4660 x24: 000000000=
+0000038
+> [   70.361842] x23: ffff6fe702b0d000 x22: 0000000000000001 x21: ffff6fe70=
+30d5080
+> [   70.368970] x20: ffff6fe709d7d700 x19: 0000000000000000 x18: 000000000=
+0000030
+> [   70.376099] x17: 000000040044ffff x16: 00400032b5503510 x15: fffffffff=
+fffffff
+> [   70.383227] x14: ffffc7e8ffa99220 x13: 000000000000094b x12: 000000000=
+0000319
+> [   70.390354] x11: 6e616c6276205d30 x10: ffffc7e8ffb49220 x9 : 00000000f=
+fffe000
+> [   70.397483] x8 : ffffc7e8ffa99220 x7 : 0000000000000001 x6 : 000000000=
+0000000
+> [   70.404611] x5 : 0000000000000000 x4 : ffff6fe73b5e4cf8 x3 : ffff6fe73=
+b5f0840
+> [   70.411738] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff6fe70=
+2f20000
+> [   70.418866] Call trace:
+> [   70.421301]  drm_atomic_helper_wait_for_vblanks.part.0+0x290/0x2b4
+> [   70.427472]  drm_atomic_helper_commit_tail_rpm+0x88/0xac
+> [   70.432775]  commit_tail+0xa0/0x17c
+> [   70.436254]  drm_atomic_helper_commit+0x190/0x3a0
+> [   70.440949]  drm_atomic_commit+0x5c/0x6c
+> [   70.444864]  drm_mode_gamma_set_ioctl+0x45c/0x640
+> [   70.449560]  drm_ioctl_kernel+0xc4/0x174
+> [   70.453475]  drm_ioctl+0x238/0x45c
+> [   70.456868]  __arm64_sys_ioctl+0xac/0xf0
+> [   70.460786]  invoke_syscall+0x48/0x114
+> [   70.464529]  el0_svc_common.constprop.0+0x60/0x11c
+> [   70.469312]  do_el0_svc+0x28/0x90
+> [   70.472619]  el0_svc+0x4c/0x100
+> [   70.475754]  el0t_64_sync_handler+0xec/0xf0
+> [   70.479928]  el0t_64_sync+0x1a0/0x1a4
+> [   70.483582] irq event stamp: 0
+> [   70.486625] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+> [   70.492883] hardirqs last disabled at (0): [<ffffc7e8fd49383c>] copy_p=
+rocess+0x658/0x197c
+> [   70.501053] softirqs last  enabled at (0): [<ffffc7e8fd49383c>] copy_p=
+rocess+0x658/0x197c
+> [   70.509219] softirqs last disabled at (0): [<0000000000000000>] 0x0
+> [   70.515475] ---[ end trace 0000000000000000 ]---
+>
+> Regards,
+> Benjamin
+>
+> >
+> >
+> >
+> >> Regards,
+> >> Benjamin
+> >>
+> >>> Changes since v1:
+> >>> 1. Dsi sequence marked with patch adjustment
+> >>> 2. Fixes: mtk_dsi: Use the drm_panel_bridge
+> >>>
+> >>> Jitao Shi (3):
+> >>>     drm/mediatek: Adjust the timing of mipi signal from LP00 to LP11
+> >>>     drm/mediatek: Separate poweron/poweroff from enable/disable and d=
+efine
+> >>>       new funcs
+> >>>     drm/mediatek: keep dsi as LP00 before dcs cmds transfer
+> >>>
+> >>> Xinlei Lee (1):
+> >>>     drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff
+> >>>       function
+> >>>
+> >>>    drivers/gpu/drm/mediatek/mtk_dsi.c | 73 ++++++++++++++++++++------=
+----
+> >>>    1 file changed, 49 insertions(+), 24 deletions(-)
+> >>>
+> >> _______________________________________________
+> >> Linux-mediatek mailing list
+> >> Linux-mediatek@lists.infradead.org
+> >> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> >>
+> >> _______________________________________________
+> >> Linux-mediatek mailing list
+> >> Linux-mediatek@lists.infradead.org
+> >> http://lists.infradead.org/mailman/listinfo/linux-mediatek
