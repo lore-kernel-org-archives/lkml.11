@@ -2,238 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C09C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E10C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238633AbiCIWWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:22:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        id S236620AbiCIWYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:24:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238618AbiCIWWW (ORCPT
+        with ESMTP id S229843AbiCIWYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:22:22 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2087.outbound.protection.outlook.com [40.107.21.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFFD120E8A;
-        Wed,  9 Mar 2022 14:21:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O2ckgYhslW0OmKCVPd4RclcfnFfrVS7Zx8Rro9PmTXO/i1f8XLzXkIGThbkBB7Cmb6GGavSOWs+1dcrPb0lUXfU7KevJShZ/LjbjJ7fPJcGLAwQtLc9m0VX9iEV0dRVEUxUyvbmAdHFlaOBOiwWWcuUuzYupro7zyF8xF0eNrG5k12Nzae/vBkQN6Qk3t/zjtHfvIvpHU+O6CDGv3Y4jJJDpnIlC6WnKx+F17EDQ0EZJflZFORPIn8OWkxlVvz0KSw9k3MIMHhLqHFfj7r20fy/K3FOT+m6GVB3U1FaltudeQOKIBa3tIxHKkYdCcUay1goaJcUTXWFCKfUAlKldEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RhEfDWu1ze6ZvDKWXQK6H8VW1nqMi7O8EtFzjmxrFKo=;
- b=Q7KR36K+YzMiiAwcee+A6CK5rGOnYN3KNWX3sV0b7q0DmYcyugUFDpk/pYnrB7Ti7wfoPqIjbvTxKY4y4v439OjkNLOY0aDvoYF0hby2MRXpxVPA6xZxhhsYHTMY4/QfYV95i7iOi/e2NIr80dXuIqoPPo8rWdeh9wiUaa9VDO9664Exsi7uZNHS5qGwSvucgmZry9VGOw/55qA2Ur+ba9aFdg78eNwSdoj4Dy16tJAO+3iGbo/fuHCfJNn76X3iYVY94A/v3qmtYRiWmjNQ8e1fXaxL+u8GZXscrZ7UihpZ4iB80eVspC3BVX6VKM7UlykbtxcG4KZGdkId/aH0Jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RhEfDWu1ze6ZvDKWXQK6H8VW1nqMi7O8EtFzjmxrFKo=;
- b=A2ifYit/B9R83XA/4W+CWjMetMA/w8qLm5FhQZHL8SL9NcyEr5go3hkhYPmjz+Tv9iQAfLDaUgnO0tn96Ym6bXkePbvGq2RSN1HOA7OB2TtOdjUmekY2QCdpnHYIZ3vRuHEFZC8Qf/CM+ckYcUaIcjFWcuIhaF5cRFZfgxpURjk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by VI1PR04MB4512.eurprd04.prod.outlook.com (2603:10a6:803:69::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Wed, 9 Mar
- 2022 22:21:20 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 22:21:20 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        arnaud.pouliquen@foss.st.com
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peng.fan@nxp.com
-Subject: [PATCH V3 2/2] remoteproc: support attach recovery after rproc crash
-Date:   Thu, 10 Mar 2022 07:01:28 +0800
-Message-Id: <20220309230128.15856-3-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20220309230128.15856-1-peng.fan@oss.nxp.com>
-References: <20220309230128.15856-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0022.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::14) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Wed, 9 Mar 2022 17:24:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36C9E40A00
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:23:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646864595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Zhhts/oGDUWHDg+NawCvM+Mq5JONWcCcE3XBLs6on8o=;
+        b=Y7D2kPIStRTrJDQlqmmbzNmrEZsUvm2GRFp4X0zKnVK8dC5ZaFxtSOKyRIbRymaYA63Ut2
+        8n90/hGZmUaPbSPTaUGD5Oael+4lcMDiWAMN+E6jh/Q0xYv8wnCYNVXlkTQ+MC6zTQuUwb
+        py14ozGgXqRG3uThcJo4qjEzrWxFy8w=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-458-D9aH85n0Na-4-4fR6pyYyg-1; Wed, 09 Mar 2022 17:23:14 -0500
+X-MC-Unique: D9aH85n0Na-4-4fR6pyYyg-1
+Received: by mail-oo1-f70.google.com with SMTP id j3-20020a4a92c3000000b00319481d8795so2800693ooh.9
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:23:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zhhts/oGDUWHDg+NawCvM+Mq5JONWcCcE3XBLs6on8o=;
+        b=bnHKea+nWAUoo9NzkSDB3+fXDPxoF+tFsPySOoC/IS+yTHYb2fTpds/MiW2ISLls2H
+         uvxNCTTXFBjub5Bfbo5DKL4xGR7DA2+yDxJ+YZZoEnW0vhLfko5e/x7uV/Ydff4oszAQ
+         lZKofRzh/REyqjr8w6kUGvnebTueitWb7vfkFGBroPXFgDx34L6IS7fWWKGePCJUZViM
+         vuR5bmVAcbKRioHq/d9+WCLLrofT1m3ELqIWzOcxwvgtYS4E1r2O47lhWjmAEX7ZSlZu
+         Nd4QrxwS9ndHj858ICb7pbMq3ObaE+le5eZ26pbCpRVtvoR/KJoc5ehiRKMyUCpkuzfp
+         eztg==
+X-Gm-Message-State: AOAM531jsxanDUKxwK94LZTrKZ571RCVsBlMPhhHegy9qTq+kcOohlbg
+        xBinjot7PJ4BD3lRuLsqro/iwU89r9HfoFCec9VbEgSCbsPwfj84YRVO+VI4YZUbw4Xmy5BjS5m
+        veaTF4WZ6Mz120ad+gbttNYB/
+X-Received: by 2002:a05:6870:4582:b0:da:b3f:3221 with SMTP id y2-20020a056870458200b000da0b3f3221mr1019122oao.209.1646864591908;
+        Wed, 09 Mar 2022 14:23:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx6yYPMYox15vablq5HrgmBlUFo96cy1+xfMCp1uiwN8WKVvpaQrgY1X2l8RSy/eS72PRmQVw==
+X-Received: by 2002:a05:6870:4582:b0:da:b3f:3221 with SMTP id y2-20020a056870458200b000da0b3f3221mr1019105oao.209.1646864591691;
+        Wed, 09 Mar 2022 14:23:11 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id k13-20020a056830150d00b005af8c9f399esm1533712otp.50.2022.03.09.14.23.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 14:23:11 -0800 (PST)
+From:   trix@redhat.com
+To:     robh+dt@kernel.org, krzk+dt@kernel.org, paulburton@kernel.org,
+        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] dt-bindings: clk: cleanup comments
+Date:   Wed,  9 Mar 2022 14:23:02 -0800
+Message-Id: <20220309222302.1114561-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f4317c70-346d-4b0e-20a5-08da021b2339
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4512:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4512041BEB71BF15B6DAC282C90A9@VI1PR04MB4512.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L7G0WbRDVvOHGqJpaMfAk0wUMvXKnLbqSMHr1BXJZYsmNRfD1X/b6RI+aCYmSWQQyw+anJyascq1Z/3kvLNRxQDcydd3B3b1XiwvDM7w02XuPEUAJATRC+e1BTKUkJXltWUuvkSKt/dP/xiEHCGG6P2iS1cBQKVqIwh0u5/nZ6UuGXQozSGipS9kMAaMtIfTbfD9JzHb/gUXiL/R4VJBCGE5ntIYdUeo8W4n14RbbuyUU+yPS0iIlJtEWuAgtDXibmqmAqGB0plPk99rdjrg3M6OtVmyexkVbI2NqahywFC6A2LhUtnCMp0LEwePkND1VGMxIl6ymAlS/vugpGoEyo9J0UcQqZqBEVuw5hthwNFjdm1O3qfX4ip7Mn1tyDr3tgL1O8jZnNpLNSYCaQJCNpNINMypB9u8iFYK0knylqcTGUWxm3S7NYriE72ByLu++zhqCMrdbmGq//10PEDMGEgCy9Zz0mkEA4u3ljAHd+1ZAiAbmGO44kwOAM2tsa9gQ/2vFpl/eGOIk4B6QFyY7nX9dKq2M77FNTrKGgF5Pn9It1Sp40hnfFBfFYrk8/3qKYVTx4wCfFkPROhToZAs+41WBjLrltTtQmwHMaIeXoStppZbkuVmRJD4w0MeguGA6XjK+0Ab67Z0OWSvGqgVXvATUKT9iwc2Uay8H/CG70+akrGmoJkhwWzmlkE4XHFZ6lao/VlSkjd+A7+Bsc1ZyGemOtgjredEZCyD+alsa+8+kkVHWctKgRaCjne01g4Qzcr7eUxyVMgh2yzoPSeNc8c69k/kNuut35ZdlzHoEk0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(8936002)(2906002)(6512007)(83380400001)(2616005)(26005)(1076003)(186003)(66946007)(66556008)(966005)(508600001)(6506007)(66476007)(6486002)(4326008)(52116002)(8676002)(86362001)(38100700002)(316002)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FVakTZIG4k7zKFbDJV0IZdmlTxYWSm13zodo//e5vo8h5E8S5x87Y6yPPb5D?=
- =?us-ascii?Q?icTu+mLqipkSrk3jsgT+GgU20fbKOibFcXJZjSR/c4va21F3pd7g7B8N2H3N?=
- =?us-ascii?Q?cGCUwJdD6s2WGtFN4kbawObYqz33agVu2OHs9jePE58W41cyE4elebs3ZJLG?=
- =?us-ascii?Q?ieWMGK4XvRhH5yQMlWUsq46Jyc4JNa8ZXX0GYHZJ9tBuGreYZbXOcmMb+VrK?=
- =?us-ascii?Q?cH2oFN8h1eXcbBeXSjnpLAj0A12d02couiDRapTANZZ+6kL24cLAA0iGVz8D?=
- =?us-ascii?Q?DD3nYyEOiahTFS/AmslR3xmw3X/p0hw3ohY+IqkCYAo5ETPJMEhELLwPPNQo?=
- =?us-ascii?Q?aqOgcBPKzZYHaiVVpFS+2vBXEZYZoPCPI4BhThCUOppZFPtPSagXsZxNMVuU?=
- =?us-ascii?Q?+HkbpChn3bM82V3RyiQaYAM6ZVWX/X4JsPruh8YlGT4r28SaEoSEFeOMdki2?=
- =?us-ascii?Q?8acJ6rUziEOGwCWF5WZihHW1TyMiCLeOnPFz5kpbB99xnIsIwIOuk+wFLKwJ?=
- =?us-ascii?Q?2vOVuDxHPVuxku76FajwFPk6LZQq7g7mulby/3KPvFvegCODMztRbWntyS1Y?=
- =?us-ascii?Q?G2u3GZ8eDcYKXzG5yMogtT3i80o6iATbl/HPKs/J2MpDaRd5YoRYJn8oLGVJ?=
- =?us-ascii?Q?v7VAE9LEUcOeR3qlcWdolJynPz3xQtigGgzyZnIlV2Vbx4PyJdx7KF+FPtKn?=
- =?us-ascii?Q?tTDvKej+GdMSVccCrFnQGLey+5tYS53dvU1TJe5iCpLVy7ARsXQYmjhjSjGh?=
- =?us-ascii?Q?vK+CnZ1E4eyHLRKonHmktjYqiaqKDzVzH06mftcdWXmjSN+c1tp0vq6eK/We?=
- =?us-ascii?Q?263MpDZrckTujFHQgJl1MG0C7X+C4vfpwxZ6F/55QKmyTKfwaDzpTdMG6PTv?=
- =?us-ascii?Q?bI0rnJfBhsyN8AzfZOVieyD5gkHDWy1K0P3belfgD2mNs+/XiwBQ+pRbNfVf?=
- =?us-ascii?Q?sLd9CydgleaA2kTNodRne+ExDtmCmXDLobgTuaxNArpR6e0AlHgFlWpy0cho?=
- =?us-ascii?Q?i2mWLQuarNU61XFA0AAGj6eNM7V18KI84wvNa/Syt7Cv6S3sNKbTLuU9MOTU?=
- =?us-ascii?Q?zONqa2+3u+dXKPU9LIONIKvPlp+FeJrIxMSlBNiEBpyzMCHXhWK8yhc0qI8T?=
- =?us-ascii?Q?FfRX/lU45Qr6A4P6cC+2v+Uzh3U5svrOWtWH3xSUpIjWV1Umtj0Hbv+AHHzO?=
- =?us-ascii?Q?sin/duz61vkaRViH536wZw/zxG9dwftSrAsYYaA3ePy7TJLNdGIRIxM4XBdO?=
- =?us-ascii?Q?EKnbhldqiwyP6c6QaoeRiJKUlfYgI8CqTMMuF0Kiq1epP7jFck0SVoRfp8Xz?=
- =?us-ascii?Q?7xnCuCKi6c/SCxdjN5N1AWU9d2uEE3p8WswX8Fch11knYJu82EZrQ34v2Kwi?=
- =?us-ascii?Q?Ccc3JC5TP4oB6ohKodPcC/KCpQsPSssyyGk78I+hldIsTEmotdgr+46rds+v?=
- =?us-ascii?Q?hOTIf1R2w4mqD/udYmJ2Ca+aD7EZRjwTrcKHN+fj7qtx69rMObzDb64DLgKv?=
- =?us-ascii?Q?yrSMSnOUVfEnF1x2sQp/ZHxa4xbnxQehs0lJ7j905BZvd99Y2PObhbYo2CbK?=
- =?us-ascii?Q?1B/89/S32NbPLvHnaP8LchiUmYT+VuA6tn8tMfinjd5Upe9c72OcywAc555b?=
- =?us-ascii?Q?fxXA9yz7nvgEIrkmx8kHMs0=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4317c70-346d-4b0e-20a5-08da021b2339
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 22:21:20.6383
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Poi0I75p/6sVfTqx5hXrWJZeChi+fQ6Ys3BUyg+sxRE7ydi+kcKJF9bmh9MlJhSdcJ3zFcGBBdTW2vCVRNk+sg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4512
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Tom Rix <trix@redhat.com>
 
-Current logic only support main processor to stop/start the remote
-processor after rproc crash. However to SoC, such as i.MX8QM/QXP, the
-remote processor could do attach recovery after crash and trigger watchdog
-reboot. It does not need main processor to load image, or stop/start M4
-core.
+For spdx, first line /* */ for *.h, change tab to space
 
-Introduce two functions: rproc_attach_recovery, rproc_firmware_recovery
-for the two cases. Firmware recovery is as before, let main processor to
-help recovery, while attach recovery is recover itself withou help.
-To attach recovery, we only do detach and attach.
+Replacements
+devider to divider
+Comunications to Communications
+periphrals to peripherals
+supportted to supported
+wich to which
+Documentatoin to Documentation
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
+ include/dt-bindings/clock/alphascale,asm9260.h    | 2 +-
+ include/dt-bindings/clock/axis,artpec6-clkctrl.h  | 2 +-
+ include/dt-bindings/clock/boston-clock.h          | 3 +--
+ include/dt-bindings/clock/marvell,mmp2.h          | 4 ++--
+ include/dt-bindings/clock/marvell,pxa168.h        | 4 ++--
+ include/dt-bindings/clock/marvell,pxa910.h        | 4 ++--
+ include/dt-bindings/clock/nuvoton,npcm7xx-clock.h | 2 +-
+ include/dt-bindings/clock/stm32fx-clock.h         | 4 ++--
+ include/dt-bindings/clock/stratix10-clock.h       | 2 +-
+ 9 files changed, 13 insertions(+), 14 deletions(-)
 
-V3:
- Resend with cover-letter
-
-V2-version 2:
- use rproc_has_feature in patch 1/2
-V2-version1:
- Nothing change in V2.
- Only move this patch out from
- https://patchwork.kernel.org/project/linux-remoteproc/list/?series=604364
-
- drivers/remoteproc/remoteproc_core.c | 67 ++++++++++++++++++++--------
- 1 file changed, 48 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index 69f51acf235e..366fad475898 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -1887,6 +1887,50 @@ static int __rproc_detach(struct rproc *rproc)
- 	return 0;
- }
+diff --git a/include/dt-bindings/clock/alphascale,asm9260.h b/include/dt-bindings/clock/alphascale,asm9260.h
+index d3871c63308be..f53f8b16883d6 100644
+--- a/include/dt-bindings/clock/alphascale,asm9260.h
++++ b/include/dt-bindings/clock/alphascale,asm9260.h
+@@ -55,7 +55,7 @@
+ #define CLKID_AHB_I2S1		45
+ #define CLKID_AHB_MAC1		46
  
-+static int rproc_attach_recovery(struct rproc *rproc)
-+{
-+	int ret;
-+
-+	mutex_unlock(&rproc->lock);
-+	ret = rproc_detach(rproc);
-+	mutex_lock(&rproc->lock);
-+	if (ret)
-+		return ret;
-+
-+	if (atomic_inc_return(&rproc->power) > 1)
-+		return 0;
-+
-+	return rproc_attach(rproc);
-+}
-+
-+static int rproc_firmware_recovery(struct rproc *rproc)
-+{
-+	const struct firmware *firmware_p;
-+	struct device *dev = &rproc->dev;
-+	int ret;
-+
-+	ret = rproc_stop(rproc, true);
-+	if (ret)
-+		return ret;
-+
-+	/* generate coredump */
-+	rproc->ops->coredump(rproc);
-+
-+	/* load firmware */
-+	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-+	if (ret < 0) {
-+		dev_err(dev, "request_firmware failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* boot the remote processor up again */
-+	ret = rproc_start(rproc, firmware_p);
-+
-+	release_firmware(firmware_p);
-+
-+	return ret;
-+}
-+
- /**
-  * rproc_trigger_recovery() - recover a remoteproc
-  * @rproc: the remote processor
-@@ -1901,7 +1945,6 @@ static int __rproc_detach(struct rproc *rproc)
+-/* devider */
++/* divider */
+ #define CLKID_SYS_CPU		47
+ #define CLKID_SYS_AHB		48
+ #define CLKID_SYS_I2S0M		49
+diff --git a/include/dt-bindings/clock/axis,artpec6-clkctrl.h b/include/dt-bindings/clock/axis,artpec6-clkctrl.h
+index b1f4971642e6f..14e424a7c08c2 100644
+--- a/include/dt-bindings/clock/axis,artpec6-clkctrl.h
++++ b/include/dt-bindings/clock/axis,artpec6-clkctrl.h
+@@ -2,7 +2,7 @@
+ /*
+  * ARTPEC-6 clock controller indexes
+  *
+- * Copyright 2016 Axis Comunications AB.
++ * Copyright 2016 Axis Communications AB.
   */
- int rproc_trigger_recovery(struct rproc *rproc)
- {
--	const struct firmware *firmware_p;
- 	struct device *dev = &rproc->dev;
- 	int ret;
  
-@@ -1915,24 +1958,10 @@ int rproc_trigger_recovery(struct rproc *rproc)
+ #ifndef DT_BINDINGS_CLK_ARTPEC6_CLKCTRL_H
+diff --git a/include/dt-bindings/clock/boston-clock.h b/include/dt-bindings/clock/boston-clock.h
+index a6f0098211378..38140fa87b09d 100644
+--- a/include/dt-bindings/clock/boston-clock.h
++++ b/include/dt-bindings/clock/boston-clock.h
+@@ -1,7 +1,6 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2016 Imagination Technologies
+- *
+- * SPDX-License-Identifier:	GPL-2.0
+  */
  
- 	dev_err(dev, "recovering %s\n", rproc->name);
+ #ifndef __DT_BINDINGS_CLOCK_BOSTON_CLOCK_H__
+diff --git a/include/dt-bindings/clock/marvell,mmp2.h b/include/dt-bindings/clock/marvell,mmp2.h
+index 87f5ad5df72f4..f0819d66b2306 100644
+--- a/include/dt-bindings/clock/marvell,mmp2.h
++++ b/include/dt-bindings/clock/marvell,mmp2.h
+@@ -32,7 +32,7 @@
+ #define MMP2_CLK_I2S0			31
+ #define MMP2_CLK_I2S1			32
  
--	ret = rproc_stop(rproc, true);
--	if (ret)
--		goto unlock_mutex;
--
--	/* generate coredump */
--	rproc->ops->coredump(rproc);
--
--	/* load firmware */
--	ret = request_firmware(&firmware_p, rproc->firmware, dev);
--	if (ret < 0) {
--		dev_err(dev, "request_firmware failed: %d\n", ret);
--		goto unlock_mutex;
--	}
--
--	/* boot the remote processor up again */
--	ret = rproc_start(rproc, firmware_p);
--
--	release_firmware(firmware_p);
-+	if (rproc_has_feature(rproc, RPROC_FEAT_ATTACH_RECOVERY))
-+		ret = rproc_attach_recovery(rproc);
-+	else
-+		ret = rproc_firmware_recovery(rproc);
+-/* apb periphrals */
++/* apb peripherals */
+ #define MMP2_CLK_TWSI0			60
+ #define MMP2_CLK_TWSI1			61
+ #define MMP2_CLK_TWSI2			62
+@@ -60,7 +60,7 @@
+ #define MMP3_CLK_THERMAL2		84
+ #define MMP3_CLK_THERMAL3		85
  
- unlock_mutex:
- 	mutex_unlock(&rproc->lock);
+-/* axi periphrals */
++/* axi peripherals */
+ #define MMP2_CLK_SDH0			101
+ #define MMP2_CLK_SDH1			102
+ #define MMP2_CLK_SDH2			103
+diff --git a/include/dt-bindings/clock/marvell,pxa168.h b/include/dt-bindings/clock/marvell,pxa168.h
+index caf90436b8483..db2b41f1b1272 100644
+--- a/include/dt-bindings/clock/marvell,pxa168.h
++++ b/include/dt-bindings/clock/marvell,pxa168.h
+@@ -23,7 +23,7 @@
+ #define PXA168_CLK_UART_PLL		27
+ #define PXA168_CLK_USB_PLL		28
+ 
+-/* apb periphrals */
++/* apb peripherals */
+ #define PXA168_CLK_TWSI0		60
+ #define PXA168_CLK_TWSI1		61
+ #define PXA168_CLK_TWSI2		62
+@@ -45,7 +45,7 @@
+ #define PXA168_CLK_SSP4			78
+ #define PXA168_CLK_TIMER		79
+ 
+-/* axi periphrals */
++/* axi peripherals */
+ #define PXA168_CLK_DFC			100
+ #define PXA168_CLK_SDH0			101
+ #define PXA168_CLK_SDH1			102
+diff --git a/include/dt-bindings/clock/marvell,pxa910.h b/include/dt-bindings/clock/marvell,pxa910.h
+index 7bf46238946eb..c9018ab354d06 100644
+--- a/include/dt-bindings/clock/marvell,pxa910.h
++++ b/include/dt-bindings/clock/marvell,pxa910.h
+@@ -23,7 +23,7 @@
+ #define PXA910_CLK_UART_PLL		27
+ #define PXA910_CLK_USB_PLL		28
+ 
+-/* apb periphrals */
++/* apb peripherals */
+ #define PXA910_CLK_TWSI0		60
+ #define PXA910_CLK_TWSI1		61
+ #define PXA910_CLK_TWSI2		62
+@@ -43,7 +43,7 @@
+ #define PXA910_CLK_TIMER0		76
+ #define PXA910_CLK_TIMER1		77
+ 
+-/* axi periphrals */
++/* axi peripherals */
+ #define PXA910_CLK_DFC			100
+ #define PXA910_CLK_SDH0			101
+ #define PXA910_CLK_SDH1			102
+diff --git a/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
+index f21522605b94b..3e0a9b68933df 100644
+--- a/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
++++ b/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Nuvoton NPCM7xx Clock Generator binding
+- * clock binding number for all clocks supportted by nuvoton,npcm7xx-clk
++ * clock binding number for all clocks supported by nuvoton,npcm7xx-clk
+  *
+  * Copyright (C) 2018 Nuvoton Technologies tali.perry@nuvoton.com
+  *
+diff --git a/include/dt-bindings/clock/stm32fx-clock.h b/include/dt-bindings/clock/stm32fx-clock.h
+index 1cc89c548578b..e5dad050d518a 100644
+--- a/include/dt-bindings/clock/stm32fx-clock.h
++++ b/include/dt-bindings/clock/stm32fx-clock.h
+@@ -7,10 +7,10 @@
+  */
+ 
+ /*
+- * List of clocks wich are not derived from system clock (SYSCLOCK)
++ * List of clocks which are not derived from system clock (SYSCLOCK)
+  *
+  * The index of these clocks is the secondary index of DT bindings
+- * (see Documentatoin/devicetree/bindings/clock/st,stm32-rcc.txt)
++ * (see Documentation/devicetree/bindings/clock/st,stm32-rcc.txt)
+  *
+  * e.g:
+ 	<assigned-clocks = <&rcc 1 CLK_LSE>;
+diff --git a/include/dt-bindings/clock/stratix10-clock.h b/include/dt-bindings/clock/stratix10-clock.h
+index 08b98e20b7cc7..636498f9e08ee 100644
+--- a/include/dt-bindings/clock/stratix10-clock.h
++++ b/include/dt-bindings/clock/stratix10-clock.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier:	GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2017, Intel Corporation
+  */
 -- 
-2.30.0
+2.26.3
 
