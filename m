@@ -2,103 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A74C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D46CC4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbiCIQ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50792 "EHLO
+        id S236037AbiCIQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:28:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237957AbiCIQVL (ORCPT
+        with ESMTP id S238179AbiCIQVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967C4145E2F;
-        Wed,  9 Mar 2022 08:17:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12B22B81E05;
-        Wed,  9 Mar 2022 16:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BF76C340E8;
-        Wed,  9 Mar 2022 16:17:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842653;
-        bh=QAmRrDrdiT5Y2sWjZcvxHoImW4DfIKnXr2i8gdVrJF0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ojpq7M9CgybSnjoHDlCiu5Zm3kRb8WKLe7rXNPmS55fSiI4Xz4kpnuOgt01JX+Zam
-         bOjToLlrttkXkmRhHt5Jto5V14XcOZRBjt6PkLzCNBmSTB/VG8APfqVK73aW63ZzyJ
-         BLfwEmBJb1W/WvIr5NusMC7gqUe+doFtFuFShFVrlSV1ol7EsYwgTeveTa6FV+16d0
-         TbVTfG1TJwjWjG0Wce+UqdtQvNBmpjcEplrD14ixAlU+W27EuZfJjE8kvwTqr1eF7M
-         9ZseG3/gLaaXnm3m+HV7tYzcM2hmIv3Let6M3ZFUou4IKS/ziqF31uu2502nebCUFm
-         9lzu5tqhhmBLw==
-Date:   Wed, 9 Mar 2022 08:17:32 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Roi Dayan <roid@nvidia.com>,
-        Johannes Berg <johannes@sipsolutions.net>, dev@openvswitch.org,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "pshelar@ovn.org" <pshelar@ovn.org>
-Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
- extension header support
-Message-ID: <20220309081732.1eafee91@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <9b6e166e-fd10-4242-1ad9-a6ab1ddb0c95@ovn.org>
-References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
-        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
-        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
-        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
-        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
-        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
-        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
-        <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
-        <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
-        <20220308081731.3588b495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <6f0feae8-ecb4-ca1d-133e-1013ce9e8b4f@ovn.org>
-        <20220308121617.3f638793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <81250230-a845-b03f-6600-b716c02f5137@nvidia.com>
-        <9b6e166e-fd10-4242-1ad9-a6ab1ddb0c95@ovn.org>
+        Wed, 9 Mar 2022 11:21:31 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ED13A5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:20:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646842819; x=1678378819;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uQaFjxnhDmWW/A/begYFww9lfX3qbyY1C3VpweNIXT4=;
+  b=cAstdKAcJjaVun/U32rKoscbjEL1nzOfjVxWbZ+grMKxPiTv9oYfsHTE
+   a7o38Oew0kD66j33WZRzq87jgqlSZYhkM/Qro/K9PJ1M7kPWRC9nO9mWb
+   rQxm/PcwqPRAAtUHwaWYmjshdriClzxDX/qWG81OQoAJIjzIbvJzeUYjt
+   3EcTkU6SX+ahUuatqpwsygyE0dr/VDG/ExTOjdGJzoBPAJo0JOlWzeMyC
+   qmirMpBst5SsYln1cJwm7mPPvWZ400FGra8mhv9SGiLvnzbPypwze5YzG
+   FP0BkXUda5HInzkND34ybzdroRZ4pou5wqRZliyNaEv7LM2XbEzuGlLJF
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="279741257"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="279741257"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:20:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="578435113"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 09 Mar 2022 08:20:16 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRz2t-0003Wo-H0; Wed, 09 Mar 2022 16:20:15 +0000
+Date:   Thu, 10 Mar 2022 00:19:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: /tmp/ccxeevnD.s: Warning: Can not find match relax hint.  Line: 1775
+Message-ID: <202203100020.Ow4SqtVo-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 14:43:07 +0100 Ilya Maximets wrote:
-> >> It's a bit of an uncharted territory, hard to say what's right.
-> >> It may be a little easier to code up the rejection if we have
-> >> the types defined (which I think we need to do in
-> >> __parse_flow_nlattrs()? seems OvS does its own nla parsing?)  
-> 
-> Ack.  And, yes, __parse_flow_nlattrs() seems to be the right spot.
-> OVS has lots of nested attributes with some special treatment in a
-> few cases and dependency tracking, AFAICT, so it parses attributes
-> on it's own.  Is there a better way?
+Hi Alexei,
 
-Looks like OvS has extra requirements like attributes can't be
-duplicated and zeroed out attrs are ignored. I don't think generic
-parsers can do that today, although the former seems like a useful
-addition.
+FYI, the error/warning still remains.
 
-A problem for another time.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   330f4c53d3c2d8b11d86ec03a964b86dc81452f5
+commit: 29db4bea1d10b73749d7992c1fc9ac13499e8871 bpf: Prepare relo_core.c for kernel duty.
+date:   3 months ago
+config: nds32-buildonly-randconfig-r002-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100020.Ow4SqtVo-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=29db4bea1d10b73749d7992c1fc9ac13499e8871
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 29db4bea1d10b73749d7992c1fc9ac13499e8871
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash
 
-> >> Johannes, any preference?
-> >
-> > so why not again just flat enum without ifdefs and without values
-> > commented out? even if we leave values in comments like above it doesn't
-> > mean the userspace won't use them by mistake and send to the kernel.
-> > but the kernel will probably ignore as not being used and at least
-> > there won't be a conflict again even if by mistake.. and it's easiest
-> > to read.  
-> 
-> OK.  Seems like we have some votes and a reason (explicit reject) to have
-> them defined.  This will also make current user space and kernel definitions
-> equal.  Let me put together a patch and we'll continue the discussion there.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks!
+All warnings (new ones prefixed by >>):
+
+   tools/lib/bpf/relo_core.c: In function 'bpf_core_apply_relo_insn':
+   tools/lib/bpf/relo_core.c:1346:1: warning: the frame size of 1160 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    1346 | }
+         | ^
+   /tmp/ccxeevnD.s: Assembler messages:
+>> /tmp/ccxeevnD.s: Warning: Can not find match relax hint.  Line: 1775
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
