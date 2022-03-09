@@ -2,114 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3186C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiCIBIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:08:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        id S230093AbiCIBIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:08:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbiCIBHu (ORCPT
+        with ESMTP id S230356AbiCIBIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:07:50 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C35F13DE2F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:48:11 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id x200so1184631ybe.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 16:48:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6blG6EAzX4w/WH2eHf6lZLaVJfDBuoOmPYe51zQt/4A=;
-        b=V39oqsH8PidHbrDaeyYTPlj2xsTvihPzTyN3cv91d+WXA3fnkhlv/m377gWtuzDsW1
-         N+UDbiIOoqMlomI5DPKFmOHepNc1QiVzaQtNWW59h74OSDKEKok24ndZz+aiTXXsIqvi
-         edgKHFlHEnHob8ds7KamIk0IoygOYIRjIAWfH5+ooKI/B3438XnSNQnFCDvOc9Bwih74
-         3hlTQbpsnTKyvSRPdyJs3pVAl6GEN0sOR0pKI2d9zxCd/CyBxMhiLkLeIlSW7+LUTkPB
-         SQUWSCOThdhBFxBgonCR0fe+eCBmIa5e/5TJHAnCo24qKGje3VPimwIZSCb6zy/sOkZP
-         wmwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6blG6EAzX4w/WH2eHf6lZLaVJfDBuoOmPYe51zQt/4A=;
-        b=N8dqYi15iraRzn3Ycgc7myVMRV0cgTHR/GS2aFH9+d3Wi3HA/JY7p0Kc8QTtnRUkul
-         U4oGmbMbcuAhbYGWt2/6sWbaQ/Ry2REV9Jp2ZsRwxDXCwm0Vb3NJv4zbfZlYPkZDrpmv
-         65xshr2DayaARjKTdmePR2e68/l/dqfSKmCXBniEDgtzg6BeHREJI84ATYb4xyC3bQ7k
-         xhjuB8coJqRkrQS3qsJKU7Nq9UfMpJVV2Wnv8K+fQ/AH6B4r5RIzoE2q4ruXFpIfaPV2
-         wBzdki7v1tQ8AjLuxZkFzd0ZlPnS1O+xdP0utnsMaYU81KXhOBYu+6/hIXFL1+GFOGrE
-         kEjw==
-X-Gm-Message-State: AOAM532h3Ytg1lxfZ61LGL0FVtsC3tHr/+SqtQYjpDVECQWULYSlbLtu
-        suS2cFbUr/1/W0jyQtWYIYfB7hwptIf6CnMiXukSVE+PmB2OThmD
-X-Google-Smtp-Source: ABdhPJxskEt4z+ERhyGQD17DQXn+/I/xUbH/kIs14UdAcFpT7QiQvRSl/uyYzEI6mSU/i59zf8y4l96MGMXa7to9HA8=
-X-Received: by 2002:a25:d188:0:b0:628:ba86:ee68 with SMTP id
- i130-20020a25d188000000b00628ba86ee68mr14027361ybg.427.1646783399600; Tue, 08
- Mar 2022 15:49:59 -0800 (PST)
+        Tue, 8 Mar 2022 20:08:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33AF3141FE8
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:49:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646786956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t1eWWygYqRs8r9/W14PM2EEm1/2DPyShF2lrMpAUnZw=;
+        b=DNhVT/fqUiiWh0SnvhpAwr0pcO9QAqElKxgELByJKKrYSOABfhCT7o71jNtKJ+Ko6A1Xiw
+        fsjjPI6vgRzT5wHFQTVy3wt8IBSB/1iq0UCLl3vOT/3bcHFo14qSjs2fXaMmaYChPh09nG
+        OpVxwW6UXE/BN5c26bBv7Hc8d4nxisc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-137-E5kCM6r3OzGotQCLRK3XaQ-1; Tue, 08 Mar 2022 19:49:11 -0500
+X-MC-Unique: E5kCM6r3OzGotQCLRK3XaQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 12103180FD72;
+        Wed,  9 Mar 2022 00:49:09 +0000 (UTC)
+Received: from [10.22.11.135] (unknown [10.22.11.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 220CD131FF;
+        Wed,  9 Mar 2022 00:48:12 +0000 (UTC)
+Message-ID: <8dc145f2-7195-05a1-40c5-533301ffca8b@redhat.com>
+Date:   Tue, 8 Mar 2022 19:48:11 -0500
 MIME-Version: 1.0
-References: <20220304170215.1868106-1-eric.dumazet@gmail.com> <20220307091541.GD15701@techsingularity.net>
-In-Reply-To: <20220307091541.GD15701@techsingularity.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 8 Mar 2022 15:49:48 -0800
-Message-ID: <CANn89iLmwT4XQ6JPi4C7dO+Q2O_j7HK19-TAo4nA1NUf8ZSLBw@mail.gmail.com>
-Subject: Re: [PATCH v2] mm/page_alloc: call check_new_pages() while zone
- spinlock is not held
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4] mm/oom_kill.c: futex: Don't OOM reap a process with a
+ futex robust list
+Content-Language: en-US
+To:     Nico Pache <npache@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Rafael Aquini <aquini@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, tglx@linutronix.de,
+        mingo@redhat.com, dvhart@infradead.org, dave@stgolabs.net,
+        andrealmeid@collabora.com, peterz@infradead.org,
+        Joel Savitz <jsavitz@redhat.com>
+References: <20220309002550.103786-1-npache@redhat.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220309002550.103786-1-npache@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 1:15 AM Mel Gorman <mgorman@techsingularity.net> wrote:
+On 3/8/22 19:25, Nico Pache wrote:
+> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+> be targeted by the oom reaper. This mapping is also used to store the futex
+> robust list; the kernel does not keep a copy of the robust list and instead
+> references a userspace address to maintain the robustness during a process
+> death. A race can occur between exit_mm and the oom reaper that allows
+> the oom reaper to clear the memory of the futex robust list before the
+> exit path has handled the futex death.
 >
-> On Fri, Mar 04, 2022 at 09:02:15AM -0800, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > For high order pages not using pcp, rmqueue() is currently calling
-> > the costly check_new_pages() while zone spinlock is held,
-> > and hard irqs masked.
-> >
-> > This is not needed, we can release the spinlock sooner to reduce
-> > zone spinlock contention.
-> >
-> > Note that after this patch, we call __mod_zone_freepage_state()
-> > before deciding to leak the page because it is in bad state.
-> >
-> > v2: We need to keep interrupts disabled to call __mod_zone_freepage_state()
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Mel Gorman <mgorman@techsingularity.net>
-> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Michal Hocko <mhocko@kernel.org>
-> > Cc: Shakeel Butt <shakeelb@google.com>
-> > Cc: Wei Xu <weixugc@google.com>
-> > Cc: Greg Thelen <gthelen@google.com>
-> > Cc: Hugh Dickins <hughd@google.com>
-> > Cc: David Rientjes <rientjes@google.com>
+> Prevent the OOM reaper from concurrently reaping the mappings if the dying
+> process contains a robust_list. If the dying task_struct does not contain
+> a pointer in tsk->robust_list, we can assume there was either never one
+> setup for this task struct, or futex_cleanup has properly handled the
+> futex death and we can safely reap this memory.
 >
-> Ok, this is only more expensive in the event pages on the free list have
-> been corrupted whch is already very unlikely so thanks!
+> Reproducer: https://gitlab.com/jsavitz/oom_futex_reproducer
 >
-> Acked-by: Mel Gorman <mgorman@techsingularity.net>
+> [1] https://elixir.bootlin.com/glibc/latest/source/nptl/allocatestack.c#L370
 >
+> Fixes: 212925802454 ("mm: oom: let oom_reap_task and exit_mmap run concurrently")
+> Cc: Rafael Aquini <aquini@redhat.com>
+> Cc: Waiman Long <longman@redhat.com>
+> Cc: Baoquan He <bhe@redhat.com>
+> Cc: Christoph von Recklinghausen <crecklin@redhat.com>
+> Cc: Don Dutile <ddutile@redhat.com>
+> Cc: Herton R. Krzesinski <herton@redhat.com>
+> Cc: David Rientjes <rientjes@google.com>
+> Cc: Michal Hocko <mhocko@suse.com>
+> Cc: Andrea Arcangeli <aarcange@redhat.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: <tglx@linutronix.de>
+> Cc: <mingo@redhat.com>
+> Cc: <dvhart@infradead.org>
+> Cc: <dave@stgolabs.net>
+> Cc: <andrealmeid@collabora.com>
+> Cc: <peterz@infradead.org>
+> Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+> Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+> Signed-off-by: Nico Pache <npache@redhat.com>
+> ---
+>   mm/oom_kill.c | 19 +++++++++++++++++++
+>   1 file changed, 19 insertions(+)
+>
+> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+> index 989f35a2bbb1..37af902494d8 100644
+> --- a/mm/oom_kill.c
+> +++ b/mm/oom_kill.c
+> @@ -587,6 +587,25 @@ static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
+>   		goto out_unlock;
+>   	}
+>   
+> +	/* Don't reap a process holding a robust_list as the pthread
+> +	 * struct is allocated in userspace using PRIVATE | ANONYMOUS
+> +	 * memory which when reaped before futex_cleanup() can leave
+> +	 * the waiting process stuck.
+> +	 */
+> +#ifdef CONFIG_FUTEX
+> +	bool robust = false;
+> +
+> +	robust = tsk->robust_list != NULL;
+> +#ifdef CONFIG_COMPAT
+> +	robust |= tsk->compat_robust_list != NULL;
+> +#endif
+> +	if (robust) {
+> +		trace_skip_task_reaping(tsk->pid);
+> +		pr_info("oom_reaper: skipping task as it contains a robust list");
+> +		goto out_finish;
+> +	}
+> +#endif
+> +
+>   	trace_start_task_reaping(tsk->pid);
+>   
+>   	/* failed to reap part of the address space. Try again later */
 
-One remaining question is:
+I believe it will be easier to read if you define a helper function like
 
-After your patch ("mm/page_alloc: allow high-order pages to be stored
-on the per-cpu lists"),
-do we want to change check_pcp_refill()/check_new_pcp() to check all pages,
-and not only the head ?
+#ifdef CONFIG_FUTEX
+static inline bool has_robust_list(struct task_struct *tsk)
+{
+         bool robust = !!tsk->robust_list;
 
-Or was it a conscious choice of yours ?
-(I presume part of the performance gains came from
-not having to bring ~7 cache lines per 32KB chunk on x86)
+#ifdef CONFIG_COMPAT
+         robust |= !!tsk->compat_robust_list
+#endif
+         return robust;
+}
+#else
+static inline bool has_robust_list(struct task_struct *tsk)
+{
+         return false;
+}
+#endif
 
-Thanks !
+Then you don't need any #if/endif in oom_reap_task_mm().
+
+Cheers,
+Longman
+
