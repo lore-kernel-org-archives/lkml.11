@@ -2,83 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0CEC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB3BC4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236197AbiCIQ3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S236163AbiCIQ3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238386AbiCIQV7 (ORCPT
+        with ESMTP id S238290AbiCIQVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF563A5;
-        Wed,  9 Mar 2022 08:21:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23FBEB82212;
-        Wed,  9 Mar 2022 16:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57812C340F4;
-        Wed,  9 Mar 2022 16:20:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842857;
-        bh=6tcnReq4dlKG8UQNN1H5WqTssEeBvARoDbZQTqK+57o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rEEqkjnifxkc10cIn9soREV2HXkOFNuEMazySeey9nk22iRcBy17il2LUIKYRMG9q
-         SW31YDIPrCW1z+5eTXmWjkv9dlj2sDpwxv1s/3oij0xJSd61wNp5P7ZSt+vbIr/2vY
-         2fJc0YfzKYyL7mChUUocDCrupZtCx/Qhx0Gt+29K2k89/5y1KuzdlSlCKM1R6li9uU
-         eSLhQUtGFwWNhgfbKs9HksUoZxV8Utxcxn55TweHSSFw1f0VX1xYjWlZ/rpX5GFOv7
-         7Q9mYuIhY/qQC/FI+7fY75swB2APSqX8+HPGrjfq6CVsV/KJ2GxTmyepQYbQ1bKy/O
-         dMUtviK5h3DNg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 13/24] Bluetooth: hci_core: Fix leaking sent_cmd skb
-Date:   Wed,  9 Mar 2022 11:19:32 -0500
-Message-Id: <20220309161946.136122-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:21:48 -0500
+Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60DC3A5;
+        Wed,  9 Mar 2022 08:20:46 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru B5CC8209A0EF
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] docs/kernel-parameters: update description of mem=
+To:     Mike Rapoport <rppt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        <linux-doc@vger.kernel.org>, <linux-mips@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220309122446.1118738-1-rppt@kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <d3679148-598e-4b58-96be-e3ab255ab8d9@omp.ru>
+Date:   Wed, 9 Mar 2022 19:20:42 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220309122446.1118738-1-rppt@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+On 3/9/22 3:24 PM, Mike Rapoport wrote:
 
-[ Upstream commit dd3b1dc3dd050f1f47cd13e300732852414270f8 ]
+> From: Mike Rapoport <rppt@linux.ibm.com>
+> 
+> The existing description of mem= does not cover all the cases and
+> differences between how architectures treat it.
+> 
+> Extend the description to match the code.
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> ---
+> 
+> This is in a way a followup for the discussion of mem= usage on MIPS:
+> 
+> https://lore.kernel.org/all/1646461289-31992-1-git-send-email-yangtiezhu@loongson.cn
+> 
+>  .../admin-guide/kernel-parameters.txt         | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..f3597841a031 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -2834,6 +2834,15 @@
+>  			2 when the kernel is not able to see the whole system memory;
+>  			3 memory that lies after 'mem=' boundary is excluded from
+>  			 the hypervisor, then assigned to KVM guests.
+> +			4 to limit the memory available for kdump kernel.
+> +
+> +			[ARC,MICROBLAZE] - the limit applies only to low memory,
+> +			high memory is not affected.
+> +
+> +			[ARM64] - only limits memory covered by the linear
+> +			mapping. The NOMAP regions are not affected.
+> +
+> +			[HEXAGON] - must be use
 
-sent_cmd memory is not freed before freeing hci_dev causing it to leak
-it contents.
+   Used?
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+> to set the memory size, there is
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 53f1b08017aa..c67390367cc2 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -4083,6 +4083,7 @@ void hci_release_dev(struct hci_dev *hdev)
- 	hci_dev_unlock(hdev);
- 
- 	ida_simple_remove(&hci_index_ida, hdev->id);
-+	kfree_skb(hdev->sent_cmd);
- 	kfree(hdev);
- }
- EXPORT_SYMBOL(hci_release_dev);
--- 
-2.34.1
+   What? :-)
 
+[...]
+
+MBR, Sergey
