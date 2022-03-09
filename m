@@ -2,130 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 024E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9990C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiCIBMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:12:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
+        id S230111AbiCIBMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbiCIBMA (ORCPT
+        with ESMTP id S230194AbiCIBL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:12:00 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB261C8FA1
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:54:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646787273; x=1678323273;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=NPF0pt6z5LWkrWSRrj9elClGQie5MKGKO466HTh0Wvs=;
-  b=dYCMACUQdiqAFv4fjMRHde5YQtQbx0SpS0FCIKI2A7gghBSCq5H9TO+l
-   kmW4VR5z4KcT1h1xVlaJsd9YCFlgA7Wk3fcFYtlb9hsC4NTYVJPBRHa1R
-   b7xuQssxnj8gK9ougYtdc6NKAbgSiYRVcP3CZLMvIhcfDiguQZOVA8eIm
-   12A414FoehlxWdDvyC82EzJ8jdfomOmNGXcZuc0nPxrpiVq4qqi4D+RUf
-   3qkF7d1naFfifnkC6wKFDHKH+AEzGJGjF7QuoI9Evz4bTIyS2p1cRIPNH
-   cxa2trCYNu9AyQszrRVBYtYXCXtwPutQyvWDZjoMPD6OnvQsEOQfQquYj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254794809"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="254794809"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:54:33 -0800
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="643852690"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:54:31 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Linux Memory Management List" <linux-mm@kvack.org>
-Subject: Re: include/linux/pgtable.h:257:16: sparse: sparse: cast to non-scalar
-References: <202203090359.xgOwYxvo-lkp@intel.com>
-Date:   Wed, 09 Mar 2022 08:54:29 +0800
-In-Reply-To: <202203090359.xgOwYxvo-lkp@intel.com> (kernel test robot's
-        message of "Wed, 9 Mar 2022 03:14:32 +0800")
-Message-ID: <87bkyggd2y.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 8 Mar 2022 20:11:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74155EB323;
+        Tue,  8 Mar 2022 17:03:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B2D612E3;
+        Wed,  9 Mar 2022 01:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF2FAC340EC;
+        Wed,  9 Mar 2022 01:03:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646787837;
+        bh=mx9Fa9vJmECpUyzdd1x48DQGKh6o3F6PUEM6C2wW0HE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=VPWtoOjcYDPN1cdxarH9H6OV0ANg/reMn/N70M7QJn6ReKHK7KfoIu3N0WhqkAFq3
+         wFezjjAqg2z+rYVCetNRes+U6r1y3GsyNYm/4Pp/iI9PnLOgLJQfXQZcuEloKuoVvR
+         snHbs+yPSthZKMoQG277tnF1EjotsoJ3Gz0pLPvzWc/bCfJe1R5cFubRNXNBBEX29G
+         cDW6qwMW8IENbJTek6Fp2JFEGJF0vlcOsP6ZDmwZWvuAuvfEdfQegO9VGbbfC02Qho
+         3dmx3Sy9L0FyhFeqI1B7OtdSVdjI61m9yjx5R2OlmNJirsHNYSUqWw2/TmALEiB9HU
+         8UiI8P9mYqVLg==
+Message-ID: <bc03c9acb654121f123cfff64d75c1749ff401c5.camel@kernel.org>
+Subject: Re: [PATCH] cachefiles: Fix volume coherency attribute
+From:   Jeff Layton <jlayton@kernel.org>
+To:     David Howells <dhowells@redhat.com>, rohiths.msft@gmail.com
+Cc:     Steve French <smfrench@gmail.com>, linux-cifs@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 08 Mar 2022 20:03:55 -0500
+In-Reply-To: <164677636135.1191348.1664733858863676368.stgit@warthog.procyon.org.uk>
+References: <164677636135.1191348.1664733858863676368.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel test robot <lkp@intel.com> writes:
-
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   ea4424be16887a37735d6550cfd0611528dbe5d9
-> commit: b99a342d4f11a5455d999b12f5fee42ab6acaf8c NUMA balancing: reduce TLB flush via delaying mapping on hint page fault
-> date:   10 months ago
-> config: alpha-randconfig-s031-20220308 (https://download.01.org/0day-ci/archive/20220309/202203090359.xgOwYxvo-lkp@intel.com/config)
-> compiler: alpha-linux-gcc (GCC) 11.2.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # apt-get install sparse
->         # sparse version: v0.6.4-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b99a342d4f11a5455d999b12f5fee42ab6acaf8c
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout b99a342d4f11a5455d999b12f5fee42ab6acaf8c
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
->
-> sparse warnings: (new ones prefixed by >>)
->    mm/memory.c:949:17: sparse: sparse: context imbalance in 'copy_pte_range' - different lock contexts for basic block
->    mm/memory.c:1629:16: sparse: sparse: context imbalance in '__get_locked_pte' - different lock contexts for basic block
->    mm/memory.c:1678:9: sparse: sparse: context imbalance in 'insert_page' - different lock contexts for basic block
->    mm/memory.c:2180:17: sparse: sparse: context imbalance in 'remap_pte_range' - different lock contexts for basic block
->    mm/memory.c:2436:17: sparse: sparse: context imbalance in 'apply_to_pte_range' - unexpected unlock
->    mm/memory.c:2692:17: sparse: sparse: context imbalance in 'wp_page_copy' - unexpected unlock
->    mm/memory.c:3038:17: sparse: sparse: context imbalance in 'wp_pfn_shared' - unexpected unlock
->    mm/memory.c:3101:19: sparse: sparse: context imbalance in 'do_wp_page' - different lock contexts for basic block
->    mm/memory.c: note: in included file (through include/linux/mm.h, arch/alpha/include/asm/io.h, include/linux/io.h, include/linux/irq.h, ...):
->>> include/linux/pgtable.h:257:16: sparse: sparse: cast to non-scalar
->>> include/linux/pgtable.h:257:16: sparse: sparse: cast from non-scalar
->    mm/memory.c:4660:5: sparse: sparse: context imbalance in 'follow_invalidate_pte' - different lock contexts for basic block
->    mm/memory.c:4781:9: sparse: sparse: context imbalance in 'follow_pfn' - unexpected unlock
->
-> vim +257 include/linux/pgtable.h
->
-> e2cda322648122 include/asm-generic/pgtable.h Andrea Arcangeli 2011-01-13  253  
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  254  #ifndef __HAVE_ARCH_PTEP_GET
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  255  static inline pte_t ptep_get(pte_t *ptep)
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  256  {
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15 @257  	return READ_ONCE(*ptep);
-
-The change isn't introduced by the reported commit apparently.  So
-there may be some mistake in the 0-Day bisection.
-
-I am not familiar with alpha architecture.  If the pte_t is always
-defined as follows for alpha, the atomicity of the operation should be
-OK?
-
-  typedef struct { unsigned long pte; } pte_t;
-
-Best Regards,
-Huang, Ying
-
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  258  }
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  259  #endif
-> 481e980a7c199c include/linux/pgtable.h       Christophe Leroy 2020-06-15  260  
->
-> :::::: The code at line 257 was first introduced by commit
-> :::::: 481e980a7c199c5a4634fd7ea308067dd4ba75fa mm: Allow arches to provide ptep_get()
->
-> :::::: TO: Christophe Leroy <christophe.leroy@csgroup.eu>
-> :::::: CC: Michael Ellerman <mpe@ellerman.id.au>
->
+On Tue, 2022-03-08 at 21:52 +0000, David Howells wrote:
+> A network filesystem may set coherency data on a volume cookie, and if
+> given, cachefiles will store this in an xattr on the directory in the cache
+> corresponding to the volume.
+> 
+> The function that sets the xattr just stores the contents of the volume
+> coherency buffer directly into the xattr, with nothing added; the checking
+> function, on the other hand, has a cut'n'paste error whereby it tries to
+> interpret the xattr contents as would be the xattr on an ordinary file
+> (using the cachefiles_xattr struct).  This results in a failure to match
+> the coherency data because the buffer ends up being shifted by 18 bytes.
+> 
+> Fix this by defining a structure specifically for the volume xattr and
+> making both the setting and checking functions use it.
+> 
+> Since the volume coherency doesn't work if used, take the opportunity to
+> insert a reserved field for future use, set it to 0 and check that it is 0.
+> Log mismatch through the appropriate tracepoint.
+> 
+> Note that this only affects cifs; 9p, afs, ceph and nfs don't use the
+> volume coherency data at the moment.
+> 
+> Fixes: 32e150037dce ("fscache, cachefiles: Store the volume coherency data")
+> Reported-by: Rohith Surabattula <rohiths.msft@gmail.com>
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Steve French <smfrench@gmail.com>
+> cc: Jeff Layton <jlayton@kernel.org>
+> cc: linux-cifs@vger.kernel.org
+> cc: linux-cachefs@redhat.com
 > ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+>  fs/cachefiles/xattr.c             |   23 ++++++++++++++++++++---
+>  include/trace/events/cachefiles.h |    2 ++
+>  2 files changed, 22 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/cachefiles/xattr.c b/fs/cachefiles/xattr.c
+> index 83f41bd0c3a9..35465109d9c4 100644
+> --- a/fs/cachefiles/xattr.c
+> +++ b/fs/cachefiles/xattr.c
+> @@ -28,6 +28,11 @@ struct cachefiles_xattr {
+>  static const char cachefiles_xattr_cache[] =
+>  	XATTR_USER_PREFIX "CacheFiles.cache";
+>  
+> +struct cachefiles_vol_xattr {
+> +	__be32	reserved;	/* Reserved, should be 0 */
+> +	__u8	data[];		/* netfs volume coherency data */
+> +} __packed;
+> +
+>  /*
+>   * set the state xattr on a cache file
+>   */
+> @@ -185,6 +190,7 @@ void cachefiles_prepare_to_write(struct fscache_cookie *cookie)
+>   */
+>  bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+>  {
+> +	struct cachefiles_vol_xattr *buf;
+>  	unsigned int len = volume->vcookie->coherency_len;
+>  	const void *p = volume->vcookie->coherency;
+>  	struct dentry *dentry = volume->dentry;
+> @@ -192,10 +198,17 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+>  
+>  	_enter("%x,#%d", volume->vcookie->debug_id, len);
+>  
+> +	len += sizeof(*buf);
+> +	buf = kmalloc(len, GFP_KERNEL);
+> +	if (!buf)
+> +		return false;
+> +	buf->reserved = cpu_to_be32(0);
+> +	memcpy(buf->data, p, len);
+> +
+>  	ret = cachefiles_inject_write_error();
+>  	if (ret == 0)
+>  		ret = vfs_setxattr(&init_user_ns, dentry, cachefiles_xattr_cache,
+> -				   p, len, 0);
+> +				   buf, len, 0);
+>  	if (ret < 0) {
+>  		trace_cachefiles_vfs_error(NULL, d_inode(dentry), ret,
+>  					   cachefiles_trace_setxattr_error);
+> @@ -209,6 +222,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+>  					       cachefiles_coherency_vol_set_ok);
+>  	}
+>  
+> +	kfree(buf);
+>  	_leave(" = %d", ret);
+>  	return ret == 0;
+>  }
+> @@ -218,7 +232,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+>   */
+>  int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+>  {
+> -	struct cachefiles_xattr *buf;
+> +	struct cachefiles_vol_xattr *buf;
+>  	struct dentry *dentry = volume->dentry;
+>  	unsigned int len = volume->vcookie->coherency_len;
+>  	const void *p = volume->vcookie->coherency;
+> @@ -228,6 +242,7 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+>  
+>  	_enter("");
+>  
+> +	len += sizeof(*buf);
+>  	buf = kmalloc(len, GFP_KERNEL);
+>  	if (!buf)
+>  		return -ENOMEM;
+> @@ -245,7 +260,9 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+>  					"Failed to read xattr with error %zd", xlen);
+>  		}
+>  		why = cachefiles_coherency_vol_check_xattr;
+> -	} else if (memcmp(buf->data, p, len) != 0) {
+> +	} else if (buf->reserved != cpu_to_be32(0)) {
+> +		why = cachefiles_coherency_vol_check_resv;
+> +	} else if (memcmp(buf->data, p, len - sizeof(*buf)) != 0) {
+>  		why = cachefiles_coherency_vol_check_cmp;
+>  	} else {
+>  		why = cachefiles_coherency_vol_check_ok;
+> diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
+> index 002d0ae4f9bc..311c14a20e70 100644
+> --- a/include/trace/events/cachefiles.h
+> +++ b/include/trace/events/cachefiles.h
+> @@ -56,6 +56,7 @@ enum cachefiles_coherency_trace {
+>  	cachefiles_coherency_set_ok,
+>  	cachefiles_coherency_vol_check_cmp,
+>  	cachefiles_coherency_vol_check_ok,
+> +	cachefiles_coherency_vol_check_resv,
+>  	cachefiles_coherency_vol_check_xattr,
+>  	cachefiles_coherency_vol_set_fail,
+>  	cachefiles_coherency_vol_set_ok,
+> @@ -139,6 +140,7 @@ enum cachefiles_error_trace {
+>  	EM(cachefiles_coherency_set_ok,		"SET ok  ")		\
+>  	EM(cachefiles_coherency_vol_check_cmp,	"VOL BAD cmp ")		\
+>  	EM(cachefiles_coherency_vol_check_ok,	"VOL OK      ")		\
+> +	EM(cachefiles_coherency_vol_check_resv,	"VOL BAD resv")	\
+>  	EM(cachefiles_coherency_vol_check_xattr,"VOL BAD xatt")		\
+>  	EM(cachefiles_coherency_vol_set_fail,	"VOL SET fail")		\
+>  	E_(cachefiles_coherency_vol_set_ok,	"VOL SET ok  ")
+> 
+> 
+
+Looks good.
+
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
