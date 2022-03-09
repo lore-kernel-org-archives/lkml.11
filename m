@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E676C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236803AbiCIQsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44928 "EHLO
+        id S236218AbiCIQrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:47:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236987AbiCIQaa (ORCPT
+        with ESMTP id S236783AbiCIQaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:30 -0500
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CB9FBA40;
-        Wed,  9 Mar 2022 08:23:54 -0800 (PST)
+        Wed, 9 Mar 2022 11:30:12 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AFFDB879;
+        Wed,  9 Mar 2022 08:23:35 -0800 (PST)
 Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C08F11BF205;
-        Wed,  9 Mar 2022 16:23:37 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6AE8DE000D;
+        Wed,  9 Mar 2022 16:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646843018;
+        t=1646843009;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jD5tZeMJyZNMNUWfLN3vw5FbsgGz51lMl3mCcg3MPjE=;
-        b=BMC5w2NzXVe7zRADn1A6UdYADpO486ZK6WcQC2IMUvL4EAugjInUOP0LipITC/2nqKRUBr
-        eNMR26Ia3MTXYuI8hYA3QqkQTSrLZEn3IYP7Bz0+VVCONcj75KrKFKXLbho+83Vur5HuxP
-        XrwcP8d1Jy6/r1vrj4i77l5SonEABuYed8q08lFC5YIDooFHS7+5+cJ7SElo0+wF0PSidG
-        Yo0MFfxbwwtXfIk9C9Ujy4cUJqXj2Fq2evz+APy9Gh7u7vu+MPvouN2J8bzLS8zucraA9J
-        O8i8k3UeMozPMHheJyRwb4zB4RhGDzTirEf1kqyBZUSv/hvz+3Wtg1bdiqUQHw==
+        bh=SS9cTXtdLiL9KpSWnPqyrZ4w2BtGkHDqzbn5AdkhuQw=;
+        b=k7NyuzUWZMeuTDjBSqBiP4XqO9Iaj5wlS0KqadTAxvaLx1rAjBT8+IzY+hHLMobpcKtOt+
+        6ux8AZA49sBm87cLzAiLtmQY27ifpU3SIdChv7E+yD3oV5mgD3WLzn+Axh5N59siOaUKwc
+        7Z9UmjCHVDkiTyqv9nWsCIJnI5Z2i+9y1zvKgqHiQNcvIX0VvxenBd4vMqACZYVUPReXXd
+        FZxPkXUM9w0QKq1QCF0kt6AJrsdvVfB2iRWk+GLrGqWZNn3ObvUaI8IWT766IbwhacFzBS
+        vhPFVhrcqFbSVGF7O5jYNUFzjP6I/mLy10qQ5Qo6PjIm1zLsXHGm+a4k6qZohA==
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Alessandro Zummo <a.zummo@towertech.it>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>
 Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 27/29] rtc: hym8563: switch to RTC_FEATURE_UPDATE_INTERRUPT
-Date:   Wed,  9 Mar 2022 17:22:58 +0100
-Message-Id: <20220309162301.61679-27-alexandre.belloni@bootlin.com>
+Subject: [PATCH 17/29] rtc: pcf8563: switch to RTC_FEATURE_UPDATE_INTERRUPT
+Date:   Wed,  9 Mar 2022 17:22:48 +0100
+Message-Id: <20220309162301.61679-17-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
@@ -50,23 +50,23 @@ Stop using uie_unsupported and clear RTC_FEATURE_UPDATE_INTERRUPT instead.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/rtc/rtc-hym8563.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/rtc/rtc-pcf8563.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-hym8563.c b/drivers/rtc/rtc-hym8563.c
-index 78f21f623d89..90e602e99d03 100644
---- a/drivers/rtc/rtc-hym8563.c
-+++ b/drivers/rtc/rtc-hym8563.c
-@@ -545,8 +545,7 @@ static int hym8563_probe(struct i2c_client *client,
+diff --git a/drivers/rtc/rtc-pcf8563.c b/drivers/rtc/rtc-pcf8563.c
+index 530f06c810fa..9d06813e2e6d 100644
+--- a/drivers/rtc/rtc-pcf8563.c
++++ b/drivers/rtc/rtc-pcf8563.c
+@@ -552,8 +552,8 @@ static int pcf8563_probe(struct i2c_client *client,
  
- 	hym8563->rtc->ops = &hym8563_rtc_ops;
- 	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, hym8563->rtc->features);
--	/* the hym8563 alarm only supports a minute accuracy */
--	hym8563->rtc->uie_unsupported = 1;
-+	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, hym8563->rtc->features);
- 
- #ifdef CONFIG_COMMON_CLK
- 	hym8563_clkout_register_clk(hym8563);
+ 	pcf8563->rtc->ops = &pcf8563_rtc_ops;
+ 	/* the pcf8563 alarm only supports a minute accuracy */
+-	pcf8563->rtc->uie_unsupported = 1;
+ 	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, pcf8563->rtc->features);
++	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf8563->rtc->features);
+ 	pcf8563->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
+ 	pcf8563->rtc->range_max = RTC_TIMESTAMP_END_2099;
+ 	pcf8563->rtc->set_start_time = true;
 -- 
 2.35.1
 
