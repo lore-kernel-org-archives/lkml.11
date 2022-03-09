@@ -2,132 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92031C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1CCC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232114AbiCIJbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:31:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
+        id S232124AbiCIJbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:31:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231480AbiCIJbH (ORCPT
+        with ESMTP id S229810AbiCIJbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:31:07 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAACF16EAA0
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:30:08 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KD6Nv0b01z9sSV;
-        Wed,  9 Mar 2022 10:30:07 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ooq6_0FsSdGe; Wed,  9 Mar 2022 10:30:07 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KD6Nt6qh0z9sSR;
-        Wed,  9 Mar 2022 10:30:06 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D7EB78B77E;
-        Wed,  9 Mar 2022 10:30:06 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id pOpmT6DffnpU; Wed,  9 Mar 2022 10:30:06 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.3])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 88E9C8B763;
-        Wed,  9 Mar 2022 10:30:06 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2299Tscg3598467
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 9 Mar 2022 10:29:54 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2299TqDE3598460;
-        Wed, 9 Mar 2022 10:29:52 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] powerpc: Remove find_current_mm_pte()
-Date:   Wed,  9 Mar 2022 10:29:50 +0100
-Message-Id: <ec79f462a3bfa8365b7df505e574d5d85246bc68.1646818177.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
+        Wed, 9 Mar 2022 04:31:20 -0500
+Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121A016E7FD;
+        Wed,  9 Mar 2022 01:30:21 -0800 (PST)
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 2299TvBX019363;
+        Wed, 9 Mar 2022 18:29:57 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 2299TvBX019363
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1646818197;
+        bh=clWEPD6AdacDEOa6KCj1PoO9ewauxhdqGkF+hXLwHwk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=2ZBjVKdPQdgv2Bf5DpuDj5qDdwZB+cQOy2j0ZK9KEuJ8nKf0zltZI2QKpVNNqI+c2
+         9H6KpNZTD+L0I4dyEwZz2u3ARS8LJGcnlah2So+0nnWOFJAFVVhgfK5krPahB7fRlG
+         YoBBWPI6/IFnZ49FivVSUifs4Uq9OnvURv5QFuGT8aa0UQpG/kSbruV5k+lmYTwnQt
+         nK7IVR9NKZMnqiS/vJvMZk3YZQzXclhu2/7h54TQqnFFlC1buCF4W7ox3Bt/R0+g3V
+         tPf1GjqDaeTAbnX1G0r4dNfYbAPot4bPrNrNsji9Huh0xrZ8kb9dpib6iUf0TiQHmK
+         TQuRWnbOPnjLg==
+X-Nifty-SrcIP: [209.85.214.177]
+Received: by mail-pl1-f177.google.com with SMTP id e2so1433120pls.10;
+        Wed, 09 Mar 2022 01:29:57 -0800 (PST)
+X-Gm-Message-State: AOAM530XQQNkjEIj90aXVvAqxQowb/zaVXFeZ0wjO/SRzw4yxT4/dJDo
+        eKQSaxNnIfK6uno75PkrrzvMm4BXjz1iRb0wgqw=
+X-Google-Smtp-Source: ABdhPJzc8aP7snE9Ier6y4JJAKFK3/PD64bYVfxzp+1b47gYUv+R/6gaz0BM5wKcDEzUg6jYau3NZwheI8vd7fEoeDA=
+X-Received: by 2002:a17:902:eb84:b0:151:f80e:e98b with SMTP id
+ q4-20020a170902eb8400b00151f80ee98bmr10526055plg.99.1646818196448; Wed, 09
+ Mar 2022 01:29:56 -0800 (PST)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1646818188; l=2526; s=20211009; h=from:subject:message-id; bh=h44Sg5AgvIMvJpGkxPGM0gq65QXd16xNa43MAsRSfio=; b=oHkiv4ZIEp7UvFFwzb2z/ajNVIwFcw+hXyjZMtTPV39nDHiMTygEQApsjKlwdgTeYlYy4PBdfQ2k JJCXgKLsAox3Wfh8ffT2Z/AwuimMsc2zUcKoli3ayLGN2lw+AZsE
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220304170813.1689186-1-nathan@kernel.org> <CAKwvOd=Q-7vPaRPj1wQagFsY3txcAKzrqU_D2UAX3h4ym91uUA@mail.gmail.com>
+ <YieGARVP2dhn8tbQ@casper.infradead.org>
+In-Reply-To: <YieGARVP2dhn8tbQ@casper.infradead.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 9 Mar 2022 18:29:14 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQnAgOqd1Zr3R0KBuGJps8K+Z7PGH5av9nA-VpJwZ4MeQ@mail.gmail.com>
+Message-ID: <CAK7LNAQnAgOqd1Zr3R0KBuGJps8K+Z7PGH5av9nA-VpJwZ4MeQ@mail.gmail.com>
+Subject: Re: [PATCH v2] kbuild: Make $(LLVM) more flexible
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>, llvm@lists.linux.dev,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Last usage of find_current_mm_pte() was removed by
-commit 15759cb054ef ("powerpc/perf/callchain: Use
-__get_user_pages_fast in read_user_stack_slow")
+On Wed, Mar 9, 2022 at 1:36 AM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Mon, Mar 07, 2022 at 11:08:29AM -0800, Nick Desaulniers wrote:
+> > > +``LLVM=0`` is not the same as omitting ``LLVM`` altogether, it will behave like
+> > > +``LLVM=1``.
+> >
+> > Hmm... I can see someone's build wrappers setting LLVM=1, then them
+> > being surprised that appending LLVM=0 doesn't disable LLVM=1 as they
+> > might expect.  But Masahiro says let's fix this later which is fine.
+>
+> What happens if you say LLVM= instead of LLVM=0 ?  Would that "undo"
+> a prior LLVM=1 and use GCC instead?
 
-Remove it.
+I think so.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/include/asm/pte-walk.h | 25 -------------------------
- arch/powerpc/mm/book3s64/pgtable.c  |  4 ++--
- 2 files changed, 2 insertions(+), 27 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/pte-walk.h b/arch/powerpc/include/asm/pte-walk.h
-index 714a35f0d425..73c22c579a79 100644
---- a/arch/powerpc/include/asm/pte-walk.h
-+++ b/arch/powerpc/include/asm/pte-walk.h
-@@ -60,29 +60,4 @@ static inline phys_addr_t ppc_find_vmap_phys(unsigned long addr)
- 	return pa;
- }
- 
--/*
-- * This is what we should always use. Any other lockless page table lookup needs
-- * careful audit against THP split.
-- */
--static inline pte_t *find_current_mm_pte(pgd_t *pgdir, unsigned long ea,
--					 bool *is_thp, unsigned *hshift)
--{
--	pte_t *pte;
--
--	VM_WARN(!arch_irqs_disabled(), "%s called with irq enabled\n", __func__);
--	VM_WARN(pgdir != current->mm->pgd,
--		"%s lock less page table lookup called on wrong mm\n", __func__);
--	pte = __find_linux_pte(pgdir, ea, is_thp, hshift);
--
--#if defined(CONFIG_DEBUG_VM) &&						\
--	!(defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE))
--	/*
--	 * We should not find huge page if these configs are not enabled.
--	 */
--	if (hshift)
--		WARN_ON(*hshift);
--#endif
--	return pte;
--}
--
- #endif /* _ASM_POWERPC_PTE_WALK_H */
-diff --git a/arch/powerpc/mm/book3s64/pgtable.c b/arch/powerpc/mm/book3s64/pgtable.c
-index 79ce3c22a29d..41a41357799d 100644
---- a/arch/powerpc/mm/book3s64/pgtable.c
-+++ b/arch/powerpc/mm/book3s64/pgtable.c
-@@ -98,14 +98,14 @@ static void do_serialize(void *arg)
- }
- 
- /*
-- * Serialize against find_current_mm_pte which does lock-less
-+ * Serialize against __find_linux_pte() which does lock-less
-  * lookup in page tables with local interrupts disabled. For huge pages
-  * it casts pmd_t to pte_t. Since format of pte_t is different from
-  * pmd_t we want to prevent transit from pmd pointing to page table
-  * to pmd pointing to huge page (and back) while interrupts are disabled.
-  * We clear pmd to possibly replace it with page table pointer in
-  * different code paths. So make sure we wait for the parallel
-- * find_current_mm_pte to finish.
-+ * __find_linux_pte() to finish.
-  */
- void serialize_against_pte_lookup(struct mm_struct *mm)
- {
 -- 
-2.34.1
-
+Best Regards
+Masahiro Yamada
