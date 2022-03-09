@@ -2,127 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A96BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B97C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238887AbiCIXcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:32:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
+        id S236967AbiCIXhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiCIXcT (ORCPT
+        with ESMTP id S232756AbiCIXhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:32:19 -0500
-X-Greylist: delayed 1460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 15:31:20 PST
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.51.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC332119413
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:31:20 -0800 (PST)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 982551BC8
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 17:06:59 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id S5OVnRO1Z22u3S5OVnB9zU; Wed, 09 Mar 2022 17:06:59 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d9Pj9k0JNH8SUjGrNlVfpwb0uWjmzh22akXzSnwgw0c=; b=rmdVolCQVW9S9lBuuetI/MtrZr
-        oX/qOdvDQd+546CwDLIO70GhQ6P22WhZuIqNFA2uxpFwp+PUAWGNgM0Mo+C8W9MJl5TDS9wChh1vq
-        il5GOzwPz/CYfnBj3lRalIxlvq20Hww5g2d/kdCCPiH3tRinT470AbCwz5KJXvWuXZiDQTjjvGjbK
-        8Xs4xbEQPmyU7sMhZifoo+oWNWwP3STJY3ldX0NDa7FR3Zpue80qKYkx24kq6d3jQg2D9AvHRTCW5
-        ydNBP/Zq360MgkkEUd3D7dmboCN9Tlyp89zbAbMKgXZABSG1Ej6/YzrpBdsJLTvlRQADWCTLfNEU7
-        NBYN5nnQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57404 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nS5OU-000E8V-Pr; Wed, 09 Mar 2022 23:06:58 +0000
-Date:   Wed, 9 Mar 2022 15:06:57 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: watchdog: renesas,wdt: Document RZ/V2L
- SoC
-Message-ID: <20220309230657.GA3801916@roeck-us.net>
-References: <20220301122332.14796-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Wed, 9 Mar 2022 18:37:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E666325587;
+        Wed,  9 Mar 2022 15:36:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70FD060B13;
+        Wed,  9 Mar 2022 23:36:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DAD4C340EE;
+        Wed,  9 Mar 2022 23:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646868994;
+        bh=PbkHs7QNANWxCf+qyn+VFMD/SOYwgb0ES8M8oJRM2bw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qXT3wKHjZ1nmlXuRsrYx7mY0Fj/jboB8x6LPKa16yvBd8twrk0QpZ+Ildtk2S73ii
+         Mo1bNDlpXaUrzaWJqlJDccTunlIHqHm6iLvtsjxajH4MWoJXtTWycHonzJqUx3aFrg
+         JhzQnsTzycxj1Q067jWamilo8dP1cZwEAKg6rHXHZgpbaxK0qnWqypXLHjbk705qpF
+         aCjn1Gr7+6WYlzV6fnDaV+jGIvznr0cmZI24Zmyvi6PnWKY1IviNsmrqRg0PkNO1te
+         ky9wY98FxtQf27DPeh4L/N8t37qZwZfnb90/fpZFMoHEsG6GnIVkj09e9I6m5rxQ0+
+         p4RdRCRVVDc7w==
+Date:   Thu, 10 Mar 2022 01:35:50 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     linux-sgx@vger.kernel.org,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v2.1 14/30] x86/sgx: Support restricting of enclave
+ page permissions
+Message-ID: <Yik51tjxXcqamBrO@iki.fi>
+References: <20220304093524.397485-1-jarkko@kernel.org>
+ <20220304093524.397485-14-jarkko@kernel.org>
+ <YihqwiU3Dr5mvMQx@iki.fi>
+ <Yih00gFMaJhLIgxa@iki.fi>
+ <5e89a3be-0760-b1b4-7693-2f3d9ac5066b@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301122332.14796-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nS5OU-000E8V-Pr
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57404
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 36
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+In-Reply-To: <5e89a3be-0760-b1b4-7693-2f3d9ac5066b@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 12:23:32PM +0000, Lad Prabhakar wrote:
-> Document RZ/V2L WDT bindings. RZ/V2L WDT is identical to one found
-> on the RZ/G2L SoC. No driver changes are required as generic compatible
-> string "renesas,rzg2l-wdt" will be used as a fallback.
+On Wed, Mar 09, 2022 at 08:59:42AM -0800, Reinette Chatre wrote:
+> Hi Jarkko,
 > 
-> While at it, drop the comment "# RZ/G2L" for "renesas,rzg2l-wdt"
-> compatible string as this will avoid changing the line for every new
-> SoC addition.
+> On 3/9/2022 1:35 AM, Jarkko Sakkinen wrote:
+> > On Wed, Mar 09, 2022 at 10:52:22AM +0200, Jarkko Sakkinen wrote:
+> >> On Fri, Mar 04, 2022 at 11:35:08AM +0200, Jarkko Sakkinen wrote:
+> >>> +#define SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS \
+> >>> +	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_restrict_perm)
+> >>
+> >> What if this was replaced with just SGX_IOC_ENCLAVE_RESET_PAGES, which
+> >> would simply do EMODPR with PROT_NONE? The main ingredient of EMODPR is to
+> >> flush out the TLB's, and move a page to pending state, which cannot be done
+> >> from inside the enclave.
 > 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> I see the main ingredient as running EMODPR to restrict the EPCM permissions. If
+> the user wants to use SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS just to flush TLB it is
+> already possible since attempting to use EMODPR to relax permissions does not
+> change any permissions (although it still sets EPCM.PR) but yet will still
+> flush the TLB.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+It's not just to flush the TLB. It also resets permissions to zero from
+which it is easy to set the exact permissions with EMODPE.
 
-> ---
-> v1->v2:
-> * Included RB tags
-> * Drop the comment "# RZ/G2L" for "renesas,rzg2l-wdt" compatible string
->   as suggested by Geert.
+> Even so, you have a very good point that removing SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+> removes the ability for users to flush the TLB after an EMODPE. If there are
+> thus PTEs present at the time the user runs EMODPE the pages would not be
+> accessible with the new permissions.
 > 
-> v1:
-> https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-> 20220227225309.28098-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-> ---
->  Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Repurposing SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS with PROT_NONE to accomplish
+> this is not efficient because:
+> - For the OS to flush the TLB the enclave pages need not be in the EPC but
+>   in order to run EMODPR the enclave page needs to be in the EPC. In an 
+>   oversubscribed environment running EMODPR unnecessarily can thus introduce
+>   a significant delay. Please see the performance comparison I did in
+>   https://lore.kernel.org/linux-sgx/77e81306-6b03-4b09-2df2-48e09e2e79d5@intel.com/
+>   The test shows that running EMODPR unnecessarily can be orders of magnitude slower.
+> - Running EMODPR on an enclave page sets the EPCM.PR bin in the enclave page
+>   that needs to be cleared with an EACCEPT from within the enclave.
+>   If the user just wants to reset the TLB after running EMODPE then it should
+>   not be necessary to run EACCEPT again to reset EPCM.PR.
 > 
-> diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> index 91a98ccd4226..146ae20eacbb 100644
-> --- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> @@ -22,7 +22,8 @@ properties:
->        - items:
->            - enum:
->                - renesas,r9a07g044-wdt    # RZ/G2{L,LC}
-> -          - const: renesas,rzg2l-wdt     # RZ/G2L
-> +              - renesas,r9a07g054-wdt    # RZ/V2L
-> +          - const: renesas,rzg2l-wdt
->  
->        - items:
->            - enum:
+> Resetting the TLB is exactly what SGX_IOC_ENCLAVE_RELAX_PERMISSIONS did in an 
+> efficient way - it is quick (no need to load pages into EPC) and it does not
+> require EACCEPT to clear EPCM.PR. 
+> 
+> It looks like we need SGX_IOC_ENCLAVE_RELAX_PERMISSIONS back. We could
+> rename it to SGX_IOC_ENCLAVE_RESET_PAGES if you prefer.
+
+Please do not add it. We do not have any use for it. It's not only used
+to flush TLB's so it would not do any good. I just use it with fixed
+PROT_NONE permissions.
+
+> >> It's there because of microarchitecture constraints, and less so to work as
+> >> a reasonable permission control mechanism (actually it does terrible job on
+> >> that side and only confuses).
+> >>
+> >> Once you have this magic TLB reset button in place you can just do one
+> >> EACCEPT and EMODPE inside the enclave and you're done.
+> >>
+> >> This is also kind of atomic in the sense that EACCEPT free's a page with no
+> >> rights so no misuse can happend before EMODPE has tuned EPCM.
+> > 
+> > I wonder if this type of pattern could be made work out for Graphene:
+> > 
+> > 1. SGX_IOC_ENCLAVE_RESET_PAGES
+> > 2. EACCEPT + EMODPE
+> > 
+> > This kind of delivers EMODP that everyone has been looking for.
+> 
+> EACCEPT will result in page table entries created for the enclave page. EMODPE
+> will be able to relax the permissions but TLB flush would be required to
+> access the page with the new permissions. SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+> (renamed to SGX_IOC_ENCLAVE_RESET_PAGES?) that does just a TLB flush is
+> required to be after EMODPE.
+
+For EMODPE TLB flush is not required. I even verified this from Mark
+Shanahan. And since access rights are zero, the page cannot be
+deferenced by threads before EMODPE.
+
+
+BR, Jarkko
