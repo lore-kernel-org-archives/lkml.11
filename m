@@ -2,246 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiCIBU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36354 "EHLO
+        id S231266AbiCIBV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:21:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbiCIBUT (ORCPT
+        with ESMTP id S230451AbiCIBVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:20:19 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DEEB10A0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:13:19 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id p9so668384wra.12
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 17:13:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jpY2z4H34H3eyBeRRD+CGY7silW4WSqrGPqcmBECpU8=;
-        b=OQR6wnO5d5c3LTMBJooNcShzMDnrZE0ChK/EkciE7eBjvAp9AaNTh8JGyr9hqlIe8o
-         /uLpYB3Sz5zoaFGYFpt6ebZD8vcNRigI2VhxHWkHBGHeMI5X4yVN+av7yUE0A4dksIjT
-         fz6/CovaYl8F+Gl4PS4wx725aQ2QwTOGvwK8bvceboZj1VlrJ6pLLMF2GFGLzX9QXTKt
-         xCSafwiMNAidJBvjoxUwKtaQPB2Qs3FRt0A5UoEpCYNk8OZNYo29CazknewuE2JjVElV
-         7cesBfsDlrU3roEDItdYH7xJ10SRqQ/6EvLmITBvheW5vavY0ObFtOFW2WTbvIZhGwT0
-         tfGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jpY2z4H34H3eyBeRRD+CGY7silW4WSqrGPqcmBECpU8=;
-        b=YwxGU2XlF+8PyqS+NDVjfWEqopBIEXrwkeZ9lM0l1//mw7v41UVKqUKMrBcL+jaa1j
-         nViOSvPZyjV1PlBTvYUIbKGgh/5Ku5RneLBkcfpGPB5le0cfhBHDCQJzCa1Qh/nIkDRn
-         aZ+fjf9X5WebepFjFqkFXKMLnajCaIL7qz8oDsHfv446NV6e/ftNbYeF6KPUYl91HrF/
-         wV0U4Z1p8OiUS2cOZCrLB65CmneON5j9UXvX9O3pP6amgJNdjc8J16PEJWUewrxTg2IY
-         XR2EzOY0O4Szit0DiWABPE36yC3qf4JB9czJr7kDQT44X/MpYUZz+kkeNUjXblsyvpz1
-         CFFQ==
-X-Gm-Message-State: AOAM5318TRvy8R5i4tSTkE9ekXt8oq+D52jSP1geYFQI9sO/h9JYC+mo
-        F7rRTBRgyGRPFlwl6ZIYqmVU7Ia5/fTwOBm6VRU9ErKJwDY=
-X-Google-Smtp-Source: ABdhPJxzYEf+xhzYvzLMbZ4CzUdlFlyPdwT3Ou9S7TZYGaRoHbCq8sPvHqx4BSkcicG04BJi2Bnpw9/xcgw7LbDC4hs=
-X-Received: by 2002:a5d:6344:0:b0:1f0:21ee:9705 with SMTP id
- b4-20020a5d6344000000b001f021ee9705mr13967971wrw.93.1646788309356; Tue, 08
- Mar 2022 17:11:49 -0800 (PST)
+        Tue, 8 Mar 2022 20:21:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D1E517E7
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:17:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E667612CF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33317C340EB;
+        Wed,  9 Mar 2022 01:14:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646788472;
+        bh=KMmFpphAkJw5H4xtgMoUXBjVB0II6e0xEoEd+Ma14SA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MQ2VHAKm0dkruIO7sm8cDWuBpBCF8q3ht9jRbIb/eteVP4X+X4R+6OtFhPCXGi7Bs
+         mmbhG2qCUR4C6QWdT/BLnFb/vK7he71VqEj2BpOS9aZBVPVfCpJ2K2mWq6OKJf0WJ8
+         P/aYodaUm9eMOD35Aan2VNFIwBhQ/+CVkO19nHUuPreLgwXEGzdilyMAYSUPAO0wLp
+         4SWSXetvELZ6Jbp0kOUSI1ponykJQZnuqw26VTDXkWY+QnuwrYhYHgTtZKdtq7BXLR
+         VLNuc6DGjEzf8eGnKrzpkEdgm6Z3hh3LvXXOfZDdfFENJqqy06NSLzX3Vs1HXd8XrM
+         SIHnOOKvs35OA==
+Date:   Tue, 8 Mar 2022 17:14:29 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     Maurizio Lombardi <mlombard@redhat.com>,
+        linux-nvme@lists.infradead.org, axboe@fb.com,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, Ming Lei <minlei@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: nvme-host: disk corruptions when issuing IDENTIFY commands via
+ ioctl()
+Message-ID: <20220309011429.GA3948855@dhcp-10-100-145-180.wdc.com>
+References: <CAFL455n1WaRxZuqCeQGWt1MVDnK8uUytUsAUVEUV9-LLQYv9gQ@mail.gmail.com>
+ <20220308195238.GC3501708@dhcp-10-100-145-180.wdc.com>
+ <YifyZ9MoUws/7esK@T590>
+ <20220309003904.GA3948780@dhcp-10-100-145-180.wdc.com>
+ <Yif8svaBscrL9WZk@T590>
 MIME-Version: 1.0
-References: <20220308131725.60607-1-dmitry.osipenko@collabora.com> <20220308131725.60607-6-dmitry.osipenko@collabora.com>
-In-Reply-To: <20220308131725.60607-6-dmitry.osipenko@collabora.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Tue, 8 Mar 2022 17:12:18 -0800
-Message-ID: <CAF6AEGvVmV4fesd0MsSo-4WxSVqOFN-U+p5HOE2job6CeYbqTA@mail.gmail.com>
-Subject: Re: [PATCH v1 5/5] drm/virtio: Add memory shrinker
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Dmitry Osipenko <digetx@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yif8svaBscrL9WZk@T590>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 5:17 AM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
+On Wed, Mar 09, 2022 at 09:02:42AM +0800, Ming Lei wrote:
+> On Tue, Mar 08, 2022 at 04:39:04PM -0800, Keith Busch wrote:
+> > On Wed, Mar 09, 2022 at 08:18:47AM +0800, Ming Lei wrote:
+> > > Given NVMe spec states that data length of IDENTIFY command should be
+> > > 4096bytes, and PRP list can't be used. 
+> > > 
+> > > So looks nvme driver need to validate the command before submitting to
+> > > hardware, otherwise any buggy application can break FS or memory easily.
+> > 
+> > No way. The driver does not police the user passthrough interface for
+> > these kinds of things.
+> 
+> So you trust application to provide correct data always?
 >
-> Add memory shrinker and new madvise IOCTL to the VirtIO-GPU driver.
-> Userspace (BO cache manager of Mesa driver) will mark BOs as "don't need"
-> using the new IOCTL to let shrinker purge the marked BOs on OOM, thus
-> shrinker will lower memory pressure and prevent OOM kills.
->
-> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> ---
->  drivers/gpu/drm/virtio/Makefile               |   3 +-
->  drivers/gpu/drm/virtio/virtgpu_drv.h          |  26 +++-
->  drivers/gpu/drm/virtio/virtgpu_gem.c          |  84 ++++++++++++
->  drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c | 124 ++++++++++++++++++
->  drivers/gpu/drm/virtio/virtgpu_ioctl.c        |  37 ++++++
->  drivers/gpu/drm/virtio/virtgpu_kms.c          |  10 ++
->  drivers/gpu/drm/virtio/virtgpu_object.c       |   7 +
->  drivers/gpu/drm/virtio/virtgpu_plane.c        |  17 ++-
->  drivers/gpu/drm/virtio/virtgpu_vq.c           |  15 +++
->  include/uapi/drm/virtgpu_drm.h                |  14 ++
->  10 files changed, 333 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c
->
+> From user viewpoint, this defect provides one easy hole to break FS or
+> memory, it is one serious issue, IMO. The FS/memory corruption can
+> be reproduced easily even in VM.
 
-[snip]
+It doesn't seem so serious considering it's been this way for 10 years,
+and we already knew about this. It's even been reported before:
 
-> diff --git a/drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c b/drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c
-> new file mode 100644
-> index 000000000000..39eb9a3e7e4a
-> --- /dev/null
-> +++ b/drivers/gpu/drm/virtio/virtgpu_gem_shrinker.c
-> @@ -0,0 +1,124 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2022 Collabora Ltd.
-> + */
-> +
-> +#include <linux/dma-mapping.h>
-> +#include <linux/shmem_fs.h>
-> +
-> +#include "virtgpu_drv.h"
-> +
-> +static unsigned long
-> +virtio_gpu_gem_shrinker_count_objects(struct shrinker *shrinker,
-> +                                     struct shrink_control *sc)
-> +{
-> +       struct drm_gem_shmem_object *shmem;
-> +       struct virtio_gpu_device *vgdev;
-> +       unsigned long count = 0;
-> +       bool empty = true;
-> +
-> +       vgdev = container_of(shrinker, struct virtio_gpu_device,
-> +                            vgshrinker.shrinker);
-> +
-> +       if (!mutex_trylock(&vgdev->mm_lock))
-> +               return 0;
+  http://lists.infradead.org/pipermail/linux-nvme/2013-August/000365.html
 
-One bit of advice from previously dealing with shrinker and heavy
-memory pressure situations (turns out 4GB chromebooks can be pretty
-much under *constant* memory pressure):
+> > It couldn't ever be complete or future proof if
+> > it did.
+> 
+> But the spec states clearly the data length of IDENTIFY command is 4096
+> and PRP list can't be used, so why do you think it isn't complete or
+> future proof to validate data length of IDENTIFY in nvme driver?
 
-You *really* want to make shrinker->count_objects lockless.. and
-minimize the lock contention on shrinker->scan_objects (ie.  The
-problem is you can end up with shrinking going on on all CPU cores in
-parallel, you want to not funnel that thru one lock as much as
-possible.
-
-See in particular:
-
-25ed38b3ed26 ("drm/msm: Drop mm_lock in scan loop")
-cc8a4d5a1bd8 ("drm/msm: Avoid mutex in shrinker_count()")
-
-BR,
--R
-
-> +       list_for_each_entry(shmem, &vgdev->vgshrinker.list, madv_list) {
-> +               empty = false;
-> +
-> +               if (!mutex_trylock(&shmem->pages_lock))
-> +                       continue;
-> +
-> +               if (drm_gem_shmem_is_purgeable(shmem))
-> +                       count += shmem->base.size >> PAGE_SHIFT;
-> +
-> +               mutex_unlock(&shmem->pages_lock);
-> +       }
-> +
-> +       mutex_unlock(&vgdev->mm_lock);
-> +
-> +       return empty ? SHRINK_EMPTY : count;
-> +}
-> +
-> +static bool virtio_gpu_gem_shrinker_purge(struct virtio_gpu_device *vgdev,
-> +                                         struct drm_gem_object *obj)
-> +{
-> +       struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(obj);
-> +       struct drm_gem_shmem_object *shmem = &bo->base;
-> +       int err;
-> +
-> +       if (!dma_resv_test_signaled(obj->resv, true) ||
-> +           !drm_gem_shmem_is_purgeable(shmem) ||
-> +           refcount_read(&bo->pin_count))
-> +               return false;
-> +
-> +       /*
-> +        * Release host's memory before guest's memory is gone to ensure that
-> +        * host won't touch released memory of the guest.
-> +        */
-> +       err = virtio_gpu_gem_host_mem_release(bo);
-> +       if (err)
-> +               return false;
-> +
-> +       list_del_init(&shmem->madv_list);
-> +       drm_gem_shmem_purge_locked(shmem);
-> +
-> +       return true;
-> +}
-> +
-> +static unsigned long
-> +virtio_gpu_gem_shrinker_scan_objects(struct shrinker *shrinker,
-> +                                    struct shrink_control *sc)
-> +{
-> +       struct drm_gem_shmem_object *shmem, *tmp;
-> +       struct virtio_gpu_device *vgdev;
-> +       unsigned long freed = 0;
-> +
-> +       vgdev = container_of(shrinker, struct virtio_gpu_device,
-> +                            vgshrinker.shrinker);
-> +
-> +       if (!mutex_trylock(&vgdev->mm_lock))
-> +               return SHRINK_STOP;
-> +
-> +       list_for_each_entry_safe(shmem, tmp, &vgdev->vgshrinker.list, madv_list) {
-> +               if (freed >= sc->nr_to_scan)
-> +                       break;
-> +
-> +               if (!dma_resv_trylock(shmem->base.resv))
-> +                       continue;
-> +
-> +               if (!mutex_trylock(&shmem->pages_lock))
-> +                       goto resv_unlock;
-> +
-> +               if (virtio_gpu_gem_shrinker_purge(vgdev, &shmem->base))
-> +                       freed += shmem->base.size >> PAGE_SHIFT;
-> +
-> +               mutex_unlock(&shmem->pages_lock);
-> +resv_unlock:
-> +               dma_resv_unlock(shmem->base.resv);
-> +       }
-> +
-> +       mutex_unlock(&vgdev->mm_lock);
-> +
-> +       return freed;
-> +}
-> +
-> +int virtio_gpu_gem_shrinker_init(struct virtio_gpu_device *vgdev)
-> +{
-> +       struct shrinker *shrinker = &vgdev->vgshrinker.shrinker;
-> +
-> +       shrinker->count_objects = virtio_gpu_gem_shrinker_count_objects;
-> +       shrinker->scan_objects = virtio_gpu_gem_shrinker_scan_objects;
-> +       shrinker->seeks = DEFAULT_SEEKS;
-> +
-> +       INIT_LIST_HEAD(&vgdev->vgshrinker.list);
-> +
-> +       return register_shrinker(shrinker);
-> +}
-> +
-> +void virtio_gpu_gem_shrinker_fini(struct virtio_gpu_device *vgdev)
-> +{
-> +       struct shrinker *shrinker = &vgdev->vgshrinker.shrinker;
-> +
-> +       unregister_shrinker(shrinker);
-> +}
+The current spec says that opcode uses 4k today. What about some time in
+the future? And why are you focusing on Identify anyway? The same
+potential for abuse exists with any of the other numerous opcodes that
+don't have a fixed transfer size, most of which the driver couldn't
+possibly ever know what the transfer length is supposed to be. This is a
+priviledged operation; the applications get to own the fallout if they
+misuse it.
