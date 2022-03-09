@@ -2,71 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A21D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237328AbiCITOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:14:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35240 "EHLO
+        id S237339AbiCITPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:15:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236906AbiCITOv (ORCPT
+        with ESMTP id S236906AbiCITPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:14:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D35F9F88
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:13:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EE59B8233E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:13:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E60AC340E8;
-        Wed,  9 Mar 2022 19:13:47 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Paul Semel <semelpaul@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     Will Deacon <will@kernel.org>, andreyknvl@google.com,
-        vincenzo.frascino@arm.com, linux-arm-kernel@lists.infradead.org,
-        paul.semel@datadoghq.com
-Subject: Re: [PATCH] arm64: kasan: fix include error in MTE functions
-Date:   Wed,  9 Mar 2022 19:13:44 +0000
-Message-Id: <164685321610.1881623.15201030675764693420.b4-ty@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <bacb5387-2992-97e4-0c48-1ed925905bee@gmail.com>
-References: <bacb5387-2992-97e4-0c48-1ed925905bee@gmail.com>
+        Wed, 9 Mar 2022 14:15:37 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7510DA6E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:14:37 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id q4so2561732qki.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:14:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aNqfcNEZGjceg+UV7MiCwR4m/+vO50KsZYIOCuJEo8c=;
+        b=36TrIEKdsMjnR7Chc525qevaBESCl1mKL2De489X86GnsLdsf4+mvQ1ZMcNIROMSYO
+         yCGltj6ZHmV85LAY5X414jSI2M/X7EfReqYx80ZB/lbKZ1isvIgHAPVIFhlizprCE4ie
+         Rv93uyCm/H5c37PhSni5oMcTlfdNeprBpFPl7p/siwSBpl+kCtHyK0kbv3lUG8mnKnom
+         GAvEvDWMFHbGqzSwiuB8gkgYut4pT3apuanO8FxlqpXDlX/5tFjUmE2Tq4oH6Yvim8ce
+         dtQ39d8dHPjJiTABTKoBL0erxyMfA2nDOSqWW6viiYnWIOLaybhG0+AxgBbt8+zKuhK8
+         QhFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aNqfcNEZGjceg+UV7MiCwR4m/+vO50KsZYIOCuJEo8c=;
+        b=MUKwldYKhDEumROKyUJNtacpaK1Gby7C2VC0JjnI6QW84Iz4+GjbfUmKJhoaTpTznA
+         iQ6ZFIvLp4yI4YKN8GoCbIMjBR/Wfo1aAsI0hMap7pNSm6NC+DRo8VZZnlru9mVfR2VE
+         77jLN75Bg44YBFyb7JsIZ7G5paHBoHACva+3KrQv94WhzePNNtXjGvZHibEfC608oUrG
+         6T3FEjUiMWVRvXQNzlHl7mmAa/fhp1IU8dYf5PV1RYHeSWyQY5WeiyBt+y/5/qrRAZmN
+         a6KyCoPeIG2Hv2f/s6yQ0/5AW8LVcY5GBhHdOwFpB9cLiTgMGygb4EqRA0zTF/HywAHZ
+         EfXw==
+X-Gm-Message-State: AOAM531kJo7lTnzp2+ImHXcJcH3x9jNuhOTE8v0gwZ/xAlaL6A8TjAlo
+        IErWHNn4PTdlIiRtUbGb6gDamw==
+X-Google-Smtp-Source: ABdhPJxEad5S6wPK7a2NTjRrfC58JrsVr52wJnsXTsUalVv0RC3OWfazfcQbMinjlmvU76c5q/g2lg==
+X-Received: by 2002:a05:620a:2941:b0:67d:243d:3b7d with SMTP id n1-20020a05620a294100b0067d243d3b7dmr802338qkp.46.1646853276922;
+        Wed, 09 Mar 2022 11:14:36 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id n13-20020ac85b4d000000b002de6fe91d2fsm1795510qtw.68.2022.03.09.11.14.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 11:14:36 -0800 (PST)
+Date:   Wed, 9 Mar 2022 14:14:35 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     corbet@lwn.net, mingo@redhat.com, peterz@infradead.org,
+        surenb@google.com, ebiggers@google.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        Martin Steigerwald <Martin.Steigerwald@proact.de>
+Subject: Re: [PATCH v2] psi: report zeroes for CPU full at the system level
+Message-ID: <Yij8m9qHtvNKyGMK@cmpxchg.org>
+References: <20220309111445.86484-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309111445.86484-1-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Mar 2022 10:30:58 +0100, Paul Semel wrote:
-> Fix `error: expected string literal in 'asm'`.
-> This happens when compiling an ebpf object file that includes
-> `net/net_namespace.h` from linux kernel headers.
+On Wed, Mar 09, 2022 at 07:14:45PM +0800, Chengming Zhou wrote:
+> Martin find it confusing when look at the /proc/pressure/cpu output,
+> and found no hint about that CPU "full" line in psi Documentation.
 > 
-> Include trace:
->      include/net/net_namespace.h:10
->      include/linux/workqueue.h:9
->      include/linux/timer.h:8
->      include/linux/debugobjects.h:6
->      include/linux/spinlock.h:90
->      include/linux/workqueue.h:9
->      arch/arm64/include/asm/spinlock.h:9
->      arch/arm64/include/generated/asm/qrwlock.h:1
->      include/asm-generic/qrwlock.h:14
->      arch/arm64/include/asm/processor.h:33
->      arch/arm64/include/asm/kasan.h:9
->      arch/arm64/include/asm/mte-kasan.h:45
->      arch/arm64/include/asm/mte-def.h:14
+> % cat /proc/pressure/cpu
+> some avg10=0.92 avg60=0.91 avg300=0.73 total=933490489
+> full avg10=0.22 avg60=0.23 avg300=0.16 total=358783277
 > 
-> [...]
+> The PSI_CPU_FULL state is introduced by commit e7fcd7622823
+> ("psi: Add PSI_CPU_FULL state"), which mainly for cgroup level,
+> but also counted at the system level as a side effect.
+> 
+> Naturally, the FULL state doesn't exist for the CPU resource at
+> the system level. These "full" numbers can come from CPU idle
+> schedule latency. For example, t1 is the time when task wakeup
+> on an idle CPU, t2 is the time when CPU pick and switch to it.
+> The delta of (t2 - t1) will be in CPU_FULL state.
+> 
+> Another case all processes can be stalled is when all cgroups
+> have been throttled at the same time, which unlikely to happen.
+> 
+> Anyway, CPU_FULL metric is meaningless and confusing at the
+> system level. So this patch will report zeroes for CPU full
+> at the system level, and update psi Documentation accordingly.
+> 
+> Fixes: e7fcd7622823 ("psi: Add PSI_CPU_FULL state")
+> Reported-by: Martin Steigerwald <Martin.Steigerwald@proact.de>
+> Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-Applied to arm64 (for-next/fixes), thanks!
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
 
-[1/1] arm64: kasan: fix include error in MTE functions
-      https://git.kernel.org/arm64/c/b859ebedd1e7
+Peter, would you mind picking this up for 5.18?
 
--- 
-Catalin
-
+Thanks!
