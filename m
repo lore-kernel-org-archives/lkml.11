@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D11AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 107E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiCIJW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
+        id S232016AbiCIJXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:23:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbiCIJW0 (ORCPT
+        with ESMTP id S231792AbiCIJX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:22:26 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA381662E8
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:21:27 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KD65J6dCKz1GCJ4;
-        Wed,  9 Mar 2022 17:16:36 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
- 2022 17:21:25 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <cl@linux.com>, <penberg@kernel.org>,
-        <rientjes@google.com>, <iamjoonsoo.kim@lge.com>, <vbabka@suse.cz>
-CC:     <roman.gushchin@linux.dev>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH] mm/slub: remove forced_order parameter in calculate_sizes
-Date:   Wed, 9 Mar 2022 17:20:36 +0800
-Message-ID: <20220309092036.50844-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+        Wed, 9 Mar 2022 04:23:29 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5820C2DF9;
+        Wed,  9 Mar 2022 01:22:31 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id m22so1838635pja.0;
+        Wed, 09 Mar 2022 01:22:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=kBC32u2ogQlH4HEXRWs9S+Rg6olRvmlFhO2KCjmnIcg=;
+        b=RrtidET1m5TLgd0yHXsgj6NxmHQvuSQHbhT729edKluDynumIV4TuE7jEh84pismxv
+         6UIh5/uY+u8MKLJSIDrunE0DxnowSTPj9T2GX+QQGMCGxbqVsw0uy1iu+8/qSSbFJ53D
+         pbVkIFzCYXKo9eNC+XT5Z+9SHhQysu2bIhjD5JhwkoG9qkD+BOUieeiBD+e8k1WtWNW7
+         DEUR6zqLpX6U1upYKNriDW5zCjoaU9g0tR5wSsHTLhRa87avElWzjE9PE/G8+mm2qI/Z
+         cCoX61Wu3gZ0KXZB8lhMr19QPojuV2G/ppNlfD22dFv2x038V6ge35jkTEGEKWuSSFuo
+         SNtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kBC32u2ogQlH4HEXRWs9S+Rg6olRvmlFhO2KCjmnIcg=;
+        b=FhtVhvxGGtHNgalgLZArm5TPiY3brghWeLKoAxqsTYz3zrvw2rYCGpULUIcMFwSJXj
+         jGNfjNY6P6P45MjBNTBMuKbw2y2CoYpHXyQVk1lnAZhV6fNGv7IYcOxej5zpiStHs1wP
+         82Gyjns5VYHjLZvrR/5UzQZu1UDuaY2S5nKkqfEPFS/g7v4GiQ4U7T5Repc/uTHMX2Wn
+         EqqfnzJYpT0yAFzQcbJebv0n3VhO3l5e6x60RvJKdwl1wSHW8iOmzSSXHVIGKt56Fi8e
+         8I68wTH/1AAfojZVXz3qKZj6bk4gdeRZk2FFaHDG0JItXpD0VQAXMf+WSSUDiTYWBTD/
+         1dDg==
+X-Gm-Message-State: AOAM5337XhXIAiKh5ZNY+N8x292WWazd1VU31fCdXYl6n3FdJdTq/PXX
+        oECWIJ9beqIaANayd4MW3sNgxhjKfme8LV12bAN0Mg==
+X-Google-Smtp-Source: ABdhPJyieel0AiUVEPltiT/fQejzCzNmgj7kH0pTVTYL/XXGSm7DXmoFDD3auujWgDGUtF2WD8QyfQ==
+X-Received: by 2002:a17:90b:314:b0:1be:dc22:62f2 with SMTP id ay20-20020a17090b031400b001bedc2262f2mr9347868pjb.102.1646817750778;
+        Wed, 09 Mar 2022 01:22:30 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id d4-20020aa78e44000000b004f6aaa184c9sm2003574pfr.71.2022.03.09.01.22.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 01:22:30 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] rtc: gamecube: Fix refcount leak in gamecube_rtc_read_offset_from_sram
+Date:   Wed,  9 Mar 2022 09:22:25 +0000
+Message-Id: <20220309092225.6930-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 32a6f409b693 ("mm, slub: remove runtime allocation order
-changes"), forced_order is always -1. Remove this unneeded parameter
-to simplify the code.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: 86559400b3ef ("rtc: gamecube: Add a RTC driver for the GameCube, Wii and Wii U")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- mm/slub.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/rtc/rtc-gamecube.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/slub.c b/mm/slub.c
-index 180354d7e741..7f09901ae6b2 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -4038,7 +4038,7 @@ static void set_cpu_partial(struct kmem_cache *s)
-  * calculate_sizes() determines the order and the distribution of data within
-  * a slab object.
-  */
--static int calculate_sizes(struct kmem_cache *s, int forced_order)
-+static int calculate_sizes(struct kmem_cache *s)
- {
- 	slab_flags_t flags = s->flags;
- 	unsigned int size = s->object_size;
-@@ -4142,10 +4142,7 @@ static int calculate_sizes(struct kmem_cache *s, int forced_order)
- 	size = ALIGN(size, s->align);
- 	s->size = size;
- 	s->reciprocal_size = reciprocal_value(size);
--	if (forced_order >= 0)
--		order = forced_order;
--	else
--		order = calculate_order(size);
-+	order = calculate_order(size);
- 
- 	if ((int)order < 0)
- 		return 0;
-@@ -4181,7 +4178,7 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
- 	s->random = get_random_long();
- #endif
- 
--	if (!calculate_sizes(s, -1))
-+	if (!calculate_sizes(s))
- 		goto error;
- 	if (disable_higher_order_debug) {
- 		/*
-@@ -4191,7 +4188,7 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
- 		if (get_order(s->size) > get_order(s->object_size)) {
- 			s->flags &= ~DEBUG_METADATA_FLAGS;
- 			s->offset = 0;
--			if (!calculate_sizes(s, -1))
-+			if (!calculate_sizes(s))
- 				goto error;
- 		}
+diff --git a/drivers/rtc/rtc-gamecube.c b/drivers/rtc/rtc-gamecube.c
+index f717b36f4738..18ca3b38b2d0 100644
+--- a/drivers/rtc/rtc-gamecube.c
++++ b/drivers/rtc/rtc-gamecube.c
+@@ -235,6 +235,7 @@ static int gamecube_rtc_read_offset_from_sram(struct priv *d)
  	}
+ 
+ 	ret = of_address_to_resource(np, 0, &res);
++	of_node_put(np);
+ 	if (ret) {
+ 		pr_err("no io memory range found\n");
+ 		return -1;
 -- 
-2.23.0
+2.17.1
 
