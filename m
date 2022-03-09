@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC35AC35274
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD079C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235305AbiCIQNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:13:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
+        id S233815AbiCIQNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:13:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235478AbiCIQIx (ORCPT
+        with ESMTP id S235297AbiCIQIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:53 -0500
+        Wed, 9 Mar 2022 11:08:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4C318F233;
-        Wed,  9 Mar 2022 08:06:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B98618DAA8;
+        Wed,  9 Mar 2022 08:05:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5EA16176B;
-        Wed,  9 Mar 2022 16:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB54FC340F3;
-        Wed,  9 Mar 2022 16:05:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9618261798;
+        Wed,  9 Mar 2022 16:05:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D440C340E8;
+        Wed,  9 Mar 2022 16:05:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841959;
-        bh=Qz6t2IobnC8RCnxQbuaAbH5Pkqhth068M/VMGtTIl+E=;
+        s=korg; t=1646841934;
+        bh=A6oXWWdywzHZKFb4f9k7sQK6E39VRSRYq5LVYyv73hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YrYEG2msCt7TfTTCxeTxRD6jdLKXX+dQmMl6VI3oDbozoLxBUr2wp6t8kpuhfBBAo
-         AwHsz2WVPhri7AFz6EhIC4/uS6MDKfjxFtumT7YQcGphILais8fvPnS3piJhm8V51S
-         q2xgABjPvg9lF+VHfKmNtVgEbPDWt7qZSAEEx2Fc=
+        b=TNrjtzcKJnPujBOVHx8hAFRRsKrbn3ZU2hYpLYThJSnHdVqD9IaL7+lAXuMUJIOyQ
+         StSTtwirTVVqyIcIIvhhG8L8EFvtJ+7HGovJqRpBCHK0ufRlvUn3AzW1ps4EMBhkLk
+         a81WU88/DXjSpp3cQSxvva0jMxdBMcBasaX64dv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 35/43] arm64: entry: Add macro for reading symbol addresses from the trampoline
-Date:   Wed,  9 Mar 2022 17:00:08 +0100
-Message-Id: <20220309155900.255720515@linuxfoundation.org>
+Subject: [PATCH 5.10 26/43] arm64: entry: Free up another register on kptis tramp_exit path
+Date:   Wed,  9 Mar 2022 16:59:59 +0100
+Message-Id: <20220309155859.999209132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -50,101 +52,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
+commit 03aff3a77a58b5b52a77e00537a42090ad57b80b upstream.
 
-The trampoline code needs to use the address of symbols in the wider
-kernel, e.g. vectors. PC-relative addressing wouldn't work as the
-trampoline code doesn't run at the address the linker expected.
+Kpti stashes x30 in far_el1 while it uses x30 for all its work.
 
-tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
-set, in which case it uses the data page as a literal pool because
-the data page can be unmapped when running in user-space, which is
-required for CPUs vulnerable to meltdown.
+Making the vectors a per-cpu data structure will require a second
+register.
 
-Pull this logic out as a macro, instead of adding a third copy
-of it.
+Allow tramp_exit two registers before it unmaps the kernel, by
+leaving x30 on the stack, and stashing x29 in far_el1.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   36 ++++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 20 deletions(-)
+ arch/arm64/kernel/entry.S |   19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -816,6 +816,15 @@ alternative_else_nop_endif
- 	sub	\dst, \dst, PAGE_SIZE
+@@ -357,14 +357,16 @@ alternative_else_nop_endif
+ 	ldp	x24, x25, [sp, #16 * 12]
+ 	ldp	x26, x27, [sp, #16 * 13]
+ 	ldp	x28, x29, [sp, #16 * 14]
+-	ldr	lr, [sp, #S_LR]
+-	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 
+ 	.if	\el == 0
+-alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
++alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
++	eret
++alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+-	msr	far_el1, x30
++	msr	far_el1, x29
+ 	tramp_alias	x30, tramp_exit_native
+ 	br	x30
+ 4:
+@@ -372,6 +374,9 @@ alternative_insn eret, nop, ARM64_UNMAP_
+ 	br	x30
+ #endif
+ 	.else
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
++
+ 	/* Ensure any device/NC reads complete */
+ 	alternative_insn nop, "dmb sy", ARM64_WORKAROUND_1508412
+ 
+@@ -844,10 +849,12 @@ alternative_else_nop_endif
+ 	.macro tramp_exit, regsize = 64
+ 	adr	x30, tramp_vectors
+ 	msr	vbar_el1, x30
+-	tramp_unmap_kernel	x30
++	ldr	lr, [sp, #S_LR]
++	tramp_unmap_kernel	x29
+ 	.if	\regsize == 64
+-	mrs	x30, far_el1
++	mrs	x29, far_el1
+ 	.endif
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 	eret
+ 	sb
  	.endm
- 
-+	.macro tramp_data_read_var	dst, var
-+#ifdef CONFIG_RANDOMIZE_BASE
-+	tramp_data_page		\dst
-+	add	\dst, \dst, #:lo12:__entry_tramp_data_\var
-+	ldr	\dst, [\dst]
-+#else
-+	ldr	\dst, =\var
-+#endif
-+	.endm
- 
- #define BHB_MITIGATION_NONE	0
- #define BHB_MITIGATION_LOOP	1
-@@ -846,13 +855,8 @@ alternative_else_nop_endif
- 	b	.
- 2:
- 	tramp_map_kernel	x30
--#ifdef CONFIG_RANDOMIZE_BASE
--	tramp_data_page		x30
- alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
--	ldr	x30, [x30]
--#else
--	ldr	x30, =vectors
--#endif
-+	tramp_data_read_var	x30, vectors
- alternative_if_not ARM64_WORKAROUND_CAVIUM_TX2_219_PRFM
- 	prfm	plil1strm, [x30, #(1b - \vector_start)]
- alternative_else_nop_endif
-@@ -935,7 +939,12 @@ SYM_CODE_END(tramp_exit_compat)
- 	.pushsection ".rodata", "a"
- 	.align PAGE_SHIFT
- SYM_DATA_START(__entry_tramp_data_start)
-+__entry_tramp_data_vectors:
- 	.quad	vectors
-+#ifdef CONFIG_ARM_SDE_INTERFACE
-+__entry_tramp_data___sdei_asm_handler:
-+	.quad	__sdei_asm_handler
-+#endif /* CONFIG_ARM_SDE_INTERFACE */
- SYM_DATA_END(__entry_tramp_data_start)
- 	.popsection				// .rodata
- #endif /* CONFIG_RANDOMIZE_BASE */
-@@ -1066,13 +1075,7 @@ SYM_CODE_START(__sdei_asm_entry_trampoli
- 	 */
- 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
- 
--#ifdef CONFIG_RANDOMIZE_BASE
--	tramp_data_page		x4
--	add	x4, x4, #:lo12:__sdei_asm_trampoline_next_handler
--	ldr	x4, [x4]
--#else
--	ldr	x4, =__sdei_asm_handler
--#endif
-+	tramp_data_read_var     x4, __sdei_asm_handler
- 	br	x4
- SYM_CODE_END(__sdei_asm_entry_trampoline)
- NOKPROBE(__sdei_asm_entry_trampoline)
-@@ -1095,13 +1098,6 @@ SYM_CODE_END(__sdei_asm_exit_trampoline)
- NOKPROBE(__sdei_asm_exit_trampoline)
- 	.ltorg
- .popsection		// .entry.tramp.text
--#ifdef CONFIG_RANDOMIZE_BASE
--.pushsection ".rodata", "a"
--SYM_DATA_START(__sdei_asm_trampoline_next_handler)
--	.quad	__sdei_asm_handler
--SYM_DATA_END(__sdei_asm_trampoline_next_handler)
--.popsection		// .rodata
--#endif /* CONFIG_RANDOMIZE_BASE */
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
- 
- /*
 
 
