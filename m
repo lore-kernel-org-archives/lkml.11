@@ -2,196 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99943C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 601C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbiCIBEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:04:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        id S229835AbiCIBFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:05:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiCIBEj (ORCPT
+        with ESMTP id S229793AbiCIBEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:04:39 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730B42BB0D;
-        Tue,  8 Mar 2022 16:42:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646786524; x=1678322524;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=uVYTo3zmAFmOrPCTNEi6PNR2yQWPKzEW4c6l7/SRtPU=;
-  b=C6R0hZnW0JUw4WHzQLhrEeG207YWcNnEixm1LXeiPW/9N2B3/W6Gq63d
-   uCR7bpW5nWY4p7c4Ffe2AVgk80zP1Dy6vOnmMu9m2+JkggC1XSgCVOiaM
-   ANpE06qq0P2ggqWYJrlgBN8zkEViiOVVBPPaalQHSAFXYJko9Frjcjv0v
-   U=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Mar 2022 16:42:04 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:42:03 -0800
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 8 Mar 2022 16:42:02 -0800
-Received: from wcheng-linux.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 8 Mar 2022 16:42:02 -0800
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_jackp@quicinc.com>, <Thinh.Nguyen@synopsys.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH] usb: dwc3: gadget: Wait for ep0 xfers to complete during dequeue
-Date:   Tue, 8 Mar 2022 16:41:48 -0800
-Message-ID: <20220309004148.12061-1-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.33.1
+        Tue, 8 Mar 2022 20:04:42 -0500
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF57D131F74;
+        Tue,  8 Mar 2022 16:42:16 -0800 (PST)
+Received: from in01.mta.xmission.com ([166.70.13.51]:34420)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRjy1-00AoKs-FO; Tue, 08 Mar 2022 17:14:13 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34136 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRjy0-00EJ6q-01; Tue, 08 Mar 2022 17:14:13 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     <linux-kernel@vger.kernel.org>
+Cc:     <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>, <linux-api@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
+        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Tue, 08 Mar 2022 18:13:34 -0600
+In-Reply-To: <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Mon, 03 Jan 2022 15:30:02 -0600")
+Message-ID: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+X-XM-SPF: eid=1nRjy0-00EJ6q-01;;;mid=<87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19JrCxd+AEL/F62BtJfkuZkeiMsizbIS8Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 00/13] Removing tracehook.h
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-If the request being dequeued is currently active, then the current
-logic is to issue a stop transfer command, and allow the command
-completion to cleanup the cancelled list.  The DWC3 controller will
-run into an end transfer command timeout if there is an ongoing EP0
-transaction.  If this is the case, wait for the EP0 completion event
-before proceeding to retry the endxfer command again.
+While working on cleaning up do_exit I have been having to deal with the
+code in tracehook.h.  Unfortunately the code in tracehook.h does not
+make sense as organized.
 
-Co-developed-by: Wesley Cheng <quic_wcheng@quicinc.com>
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
----
- Patch discussion below:
-   https://lore.kernel.org/linux-usb/1644836933-141376-1-git-send-email-dh10.jung@samsung.com/T/#t
+This set of changes reorganizes things so that tracehook.h no longer
+exists, and so that it's current contents are organized in a fashion
+that is a little easier to understand.
 
- drivers/usb/dwc3/core.h   |  2 +-
- drivers/usb/dwc3/ep0.c    | 14 ++++++++++++++
- drivers/usb/dwc3/gadget.c | 13 ++++++++-----
- drivers/usb/dwc3/gadget.h |  1 +
- 4 files changed, 24 insertions(+), 6 deletions(-)
+The biggest change is that I lean into the fact that get_signal
+always calls task_work_run and removes the logic that tried to
+be smart and decouple task_work_run and get_signal as it has proven
+to not be effective.
 
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index eb9c1efced05..f557f5f36a7f 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -736,7 +736,7 @@ struct dwc3_ep {
- #define DWC3_EP_FIRST_STREAM_PRIMED	BIT(10)
- #define DWC3_EP_PENDING_CLEAR_STALL	BIT(11)
- #define DWC3_EP_TXFIFO_RESIZED		BIT(12)
--
-+#define DWC3_EP_DELAY_STOP             BIT(13)
- 	/* This last one is specific to EP0 */
- #define DWC3_EP0_DIR_IN			BIT(31)
- 
-diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
-index 658739410992..1064be5518f6 100644
---- a/drivers/usb/dwc3/ep0.c
-+++ b/drivers/usb/dwc3/ep0.c
-@@ -271,6 +271,7 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
- {
- 	struct dwc3_ep			*dep;
- 	int				ret;
-+	int                             i;
- 
- 	complete(&dwc->ep0_in_setup);
- 
-@@ -279,6 +280,19 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
- 			DWC3_TRBCTL_CONTROL_SETUP, false);
- 	ret = dwc3_ep0_start_trans(dep);
- 	WARN_ON(ret < 0);
-+	for (i = 2; i < DWC3_ENDPOINTS_NUM; i++) {
-+		struct dwc3_ep *dwc3_ep;
-+
-+		dwc3_ep = dwc->eps[i];
-+		if (!dwc3_ep)
-+			continue;
-+
-+		if (!(dwc3_ep->flags & DWC3_EP_DELAY_STOP))
-+			continue;
-+
-+		dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
-+		dwc3_stop_active_transfer(dwc3_ep, true, true);
-+	}
- }
- 
- static struct dwc3_ep *dwc3_wIndex_to_dep(struct dwc3 *dwc, __le16 wIndex_le)
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index a0c883f19a41..ccef508b1296 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -654,9 +654,6 @@ static int dwc3_gadget_set_ep_config(struct dwc3_ep *dep, unsigned int action)
- 	return dwc3_send_gadget_ep_cmd(dep, DWC3_DEPCMD_SETEPCONFIG, &params);
- }
- 
--static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
--		bool interrupt);
--
- /**
-  * dwc3_gadget_calc_tx_fifo_size - calculates the txfifo size value
-  * @dwc: pointer to the DWC3 context
-@@ -1899,6 +1896,7 @@ static int __dwc3_gadget_ep_queue(struct dwc3_ep *dep, struct dwc3_request *req)
- 	 */
- 	if ((dep->flags & DWC3_EP_END_TRANSFER_PENDING) ||
- 	    (dep->flags & DWC3_EP_WEDGE) ||
-+	    (dep->flags & DWC3_EP_DELAY_STOP) ||
- 	    (dep->flags & DWC3_EP_STALL)) {
- 		dep->flags |= DWC3_EP_DELAY_START;
- 		return 0;
-@@ -2033,6 +2031,9 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
- 		if (r == req) {
- 			struct dwc3_request *t;
- 
-+			if (dwc->ep0state != EP0_SETUP_PHASE && !dwc->delayed_status)
-+				dep->flags |= DWC3_EP_DELAY_STOP;
-+
- 			/* wait until it is processed */
- 			dwc3_stop_active_transfer(dep, true, true);
- 
-@@ -2116,7 +2117,8 @@ int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol)
- 		list_for_each_entry_safe(req, tmp, &dep->started_list, list)
- 			dwc3_gadget_move_cancelled_request(req, DWC3_REQUEST_STATUS_STALLED);
- 
--		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING) {
-+		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING ||
-+		    (dep->flags & DWC3_EP_DELAY_STOP)) {
- 			dep->flags |= DWC3_EP_PENDING_CLEAR_STALL;
- 			return 0;
- 		}
-@@ -3596,7 +3598,7 @@ static void dwc3_reset_gadget(struct dwc3 *dwc)
- 	}
- }
- 
--static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
-+void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	bool interrupt)
- {
- 	struct dwc3_gadget_ep_cmd_params params;
-@@ -3604,6 +3606,7 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	int ret;
- 
- 	if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
-+		(dep->flags & DWC3_EP_DELAY_STOP) ||
- 	    (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
- 		return;
- 
-diff --git a/drivers/usb/dwc3/gadget.h b/drivers/usb/dwc3/gadget.h
-index 77df4b6d6c13..f763380e672e 100644
---- a/drivers/usb/dwc3/gadget.h
-+++ b/drivers/usb/dwc3/gadget.h
-@@ -116,6 +116,7 @@ int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
- 		gfp_t gfp_flags);
- int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol);
- void dwc3_ep0_send_delayed_status(struct dwc3 *dwc);
-+void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force, bool interrupt);
- 
- /**
-  * dwc3_gadget_ep_get_transfer_index - Gets transfer index from HW
+This is a conservative change and I am not changing the how things
+like signal_pending operate (although it is probably justified).
+
+A new header resume_user_mode.h is added to hold resume_user_mode_work
+which was previously known as tracehook_notify_resume.
+
+Eric W. Biederman (13):
+      ptrace: Move ptrace_report_syscall into ptrace.h
+      ptrace/arm: Rename tracehook_report_syscall report_syscall
+      ptrace: Create ptrace_report_syscall_{entry,exit} in ptrace.h
+      ptrace: Remove arch_syscall_{enter,exit}_tracehook
+      ptrace: Remove tracehook_signal_handler
+      task_work: Remove unnecessary include from posix_timers.h
+      task_work: Introduce task_work_pending
+      task_work: Call tracehook_notify_signal from get_signal on all architectures
+      task_work: Decouple TIF_NOTIFY_SIGNAL and task_work
+      signal: Move set_notify_signal and clear_notify_signal into sched/signal.h
+      resume_user_mode: Remove #ifdef TIF_NOTIFY_RESUME in set_notify_resume
+      resume_user_mode: Move to resume_user_mode.h
+      tracehook: Remove tracehook.h
+
+ MAINTAINERS                          |   1 -
+ arch/Kconfig                         |   5 +-
+ arch/alpha/kernel/ptrace.c           |   5 +-
+ arch/alpha/kernel/signal.c           |   4 +-
+ arch/arc/kernel/ptrace.c             |   5 +-
+ arch/arc/kernel/signal.c             |   4 +-
+ arch/arm/kernel/ptrace.c             |  12 +-
+ arch/arm/kernel/signal.c             |   4 +-
+ arch/arm64/kernel/ptrace.c           |  14 +--
+ arch/arm64/kernel/signal.c           |   4 +-
+ arch/csky/kernel/ptrace.c            |   5 +-
+ arch/csky/kernel/signal.c            |   4 +-
+ arch/h8300/kernel/ptrace.c           |   5 +-
+ arch/h8300/kernel/signal.c           |   4 +-
+ arch/hexagon/kernel/process.c        |   4 +-
+ arch/hexagon/kernel/signal.c         |   1 -
+ arch/hexagon/kernel/traps.c          |   6 +-
+ arch/ia64/kernel/process.c           |   4 +-
+ arch/ia64/kernel/ptrace.c            |   6 +-
+ arch/ia64/kernel/signal.c            |   1 -
+ arch/m68k/kernel/ptrace.c            |   6 +-
+ arch/m68k/kernel/signal.c            |   4 +-
+ arch/microblaze/kernel/ptrace.c      |   5 +-
+ arch/microblaze/kernel/signal.c      |   4 +-
+ arch/mips/kernel/ptrace.c            |   5 +-
+ arch/mips/kernel/signal.c            |   4 +-
+ arch/nds32/include/asm/syscall.h     |   2 +-
+ arch/nds32/kernel/ptrace.c           |   5 +-
+ arch/nds32/kernel/signal.c           |   4 +-
+ arch/nios2/kernel/ptrace.c           |   5 +-
+ arch/nios2/kernel/signal.c           |   4 +-
+ arch/openrisc/kernel/ptrace.c        |   5 +-
+ arch/openrisc/kernel/signal.c        |   4 +-
+ arch/parisc/kernel/ptrace.c          |   7 +-
+ arch/parisc/kernel/signal.c          |   4 +-
+ arch/powerpc/kernel/ptrace/ptrace.c  |   8 +-
+ arch/powerpc/kernel/signal.c         |   4 +-
+ arch/riscv/kernel/ptrace.c           |   5 +-
+ arch/riscv/kernel/signal.c           |   4 +-
+ arch/s390/include/asm/entry-common.h |   1 -
+ arch/s390/kernel/ptrace.c            |   1 -
+ arch/s390/kernel/signal.c            |   5 +-
+ arch/sh/kernel/ptrace_32.c           |   5 +-
+ arch/sh/kernel/signal_32.c           |   4 +-
+ arch/sparc/kernel/ptrace_32.c        |   5 +-
+ arch/sparc/kernel/ptrace_64.c        |   5 +-
+ arch/sparc/kernel/signal32.c         |   1 -
+ arch/sparc/kernel/signal_32.c        |   4 +-
+ arch/sparc/kernel/signal_64.c        |   4 +-
+ arch/um/kernel/process.c             |   4 +-
+ arch/um/kernel/ptrace.c              |   5 +-
+ arch/x86/kernel/ptrace.c             |   1 -
+ arch/x86/kernel/signal.c             |   5 +-
+ arch/x86/mm/tlb.c                    |   1 +
+ arch/xtensa/kernel/ptrace.c          |   5 +-
+ arch/xtensa/kernel/signal.c          |   4 +-
+ block/blk-cgroup.c                   |   2 +-
+ fs/coredump.c                        |   1 -
+ fs/exec.c                            |   1 -
+ fs/io-wq.c                           |   6 +-
+ fs/io_uring.c                        |  11 +-
+ fs/proc/array.c                      |   1 -
+ fs/proc/base.c                       |   1 -
+ include/asm-generic/syscall.h        |   2 +-
+ include/linux/entry-common.h         |  47 +-------
+ include/linux/entry-kvm.h            |   2 +-
+ include/linux/posix-timers.h         |   1 -
+ include/linux/ptrace.h               |  78 ++++++++++++
+ include/linux/resume_user_mode.h     |  64 ++++++++++
+ include/linux/sched/signal.h         |  17 +++
+ include/linux/task_work.h            |   5 +
+ include/linux/tracehook.h            | 226 -----------------------------------
+ include/uapi/linux/ptrace.h          |   2 +-
+ kernel/entry/common.c                |  19 +--
+ kernel/entry/kvm.c                   |   9 +-
+ kernel/exit.c                        |   3 +-
+ kernel/livepatch/transition.c        |   1 -
+ kernel/seccomp.c                     |   1 -
+ kernel/signal.c                      |  23 ++--
+ kernel/task_work.c                   |   4 +-
+ kernel/time/posix-cpu-timers.c       |   1 +
+ mm/memcontrol.c                      |   2 +-
+ security/apparmor/domain.c           |   1 -
+ security/selinux/hooks.c             |   1 -
+ 84 files changed, 317 insertions(+), 462 deletions(-)
+
+Eric
