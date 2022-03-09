@@ -2,206 +2,509 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F31FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF047C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234286AbiCIQC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:02:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S234312AbiCIQDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234153AbiCIQCf (ORCPT
+        with ESMTP id S234142AbiCIQCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:02:35 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEFB179A07
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:01:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646841695; x=1678377695;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wWyQ3wDorksAUUBimUaK4nYjrniECjqzO2hqii717Wc=;
-  b=RGGKTyxefzjyXsGO7pIHRLGkgJNP68pSMbC397wZDlUj9lHyKZj5FhH5
-   LZ5Ksqz6Q06V6lQPB6UNcc3w+/lE3JLxZVr1cZ+juuROapwGcX9yoVdj3
-   3caLrm3iQhos6ixH0L4IIA83Rj+BJz2iLJO9WdN6PNeO/oilhITCOuXAf
-   apS3MOX083yjCZDJWE3aQHpSGu/ZnUpjti/0P6lZhT5uFw/fBAlGfHGF0
-   962PjLYDt5ms0nREcrxAEpgRWmzdCS9hqQZ81msAJwfEc8kD2HyyDfrgD
-   LuDf6zlIc2RMxkJMWjgJ/s/M6LN509yn8SZxRSyR5BPHLtk4MvzWa70oG
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242449020"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="242449020"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:01:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="611401781"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Mar 2022 08:01:25 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id B92A994; Wed,  9 Mar 2022 18:01:43 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     dave.hansen@intel.com
-Cc:     aarcange@redhat.com, ak@linux.intel.com, bp@alien8.de,
-        brijesh.singh@amd.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com,
-        kirill.shutemov@linux.intel.com, knsathya@kernel.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
-        pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-Subject: [PATCHv5.1 04/30] x86/tdx: Extend the confidential computing API to support TDX guests
-Date:   Wed,  9 Mar 2022 19:01:39 +0300
-Message-Id: <20220309160139.22831-1-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <e39f4ae8-b75d-6b84-1971-d9e27199877e@intel.com>
-References: <e39f4ae8-b75d-6b84-1971-d9e27199877e@intel.com>
+        Wed, 9 Mar 2022 11:02:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9909317F69A;
+        Wed,  9 Mar 2022 08:01:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EB296166E;
+        Wed,  9 Mar 2022 16:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C373C340E8;
+        Wed,  9 Mar 2022 16:01:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646841689;
+        bh=OgF8TbwGd4aSmbfnxgEjoIOjJq74WAN0aIYMHi0ZsJE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LpfDmoh4g7PsDJ4i9g5TIvslJ/yErOAtPtgTf+m+MmUtPoqRcz4xxIlW6Lh+2bmt3
+         6u7vpMytPLBDuBsVzeTk90P+FltlfGprNn9+qy/RvguMds6+yZAVH8mpfH8QKuAvre
+         RalaqTs+YdDS+xOMyhU2fPxbczsgnGq31TMDHDZs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.9 22/24] ARM: Spectre-BHB workaround
+Date:   Wed,  9 Mar 2022 16:59:35 +0100
+Message-Id: <20220309155856.952925667@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309155856.295480966@linuxfoundation.org>
+References: <20220309155856.295480966@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Confidential Computing (CC) features (like string I/O unroll support,
-memory encryption/decryption support, etc) are conditionally enabled
-in the kernel using cc_platform_has() API. Since TDX guests also need
-to use these CC features, extend cc_platform_has() API and add TDX
-guest-specific CC attributes support.
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-CC API also provides an interface to deal with encryption mask. Extend
-it to cover TDX.
+comomit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
 
-Details about which bit in the page table entry to be used to indicate
-shared/private state is determined by using the TDINFO TDCALL.
+Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
+Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
+well to be safe, which is affected by Spectre V2 in the same ways as
+Cortex-A15.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+[changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/Kconfig     |  1 +
- arch/x86/coco/core.c | 12 ++++++++++++
- arch/x86/coco/tdx.c  | 42 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 55 insertions(+)
+ arch/arm/include/asm/assembler.h  |   10 ++++
+ arch/arm/include/asm/spectre.h    |    4 +
+ arch/arm/kernel/entry-armv.S      |   79 +++++++++++++++++++++++++++++++++++---
+ arch/arm/kernel/entry-common.S    |   24 +++++++++++
+ arch/arm/kernel/spectre.c         |    4 +
+ arch/arm/kernel/traps.c           |   38 ++++++++++++++++++
+ arch/arm/kernel/vmlinux-xip.lds.S |   18 +++++++-
+ arch/arm/kernel/vmlinux.lds.S     |   18 +++++++-
+ arch/arm/mm/Kconfig               |   10 ++++
+ arch/arm/mm/proc-v7-bugs.c        |   76 ++++++++++++++++++++++++++++++++++++
+ 10 files changed, 269 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index c346d66b51fc..93e67842e369 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
- 	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
- 	depends on X86_64 && CPU_SUP_INTEL
- 	depends on X86_X2APIC
-+	select ARCH_HAS_CC_PLATFORM
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index fc1365dd927e..6529db059938 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -87,9 +87,18 @@ EXPORT_SYMBOL_GPL(cc_platform_has);
+--- a/arch/arm/include/asm/assembler.h
++++ b/arch/arm/include/asm/assembler.h
+@@ -108,6 +108,16 @@
+ 	.endm
+ #endif
  
- u64 cc_mkenc(u64 val)
- {
-+	/*
-+	 * Both AMD and Intel use a bit in page table to indicate encryption
-+	 * status of the page.
-+	 *
-+	 * - for AMD, bit *set* means the page is encrypted
-+	 * - for Intel *clear* means encrypted.
-+	 */
- 	switch (vendor) {
- 	case CC_VENDOR_AMD:
- 		return val | cc_mask;
-+	case CC_VENDOR_INTEL:
-+		return val & ~cc_mask;
- 	default:
- 		return val;
- 	}
-@@ -97,9 +106,12 @@ u64 cc_mkenc(u64 val)
- 
- u64 cc_mkdec(u64 val)
- {
-+	/* See comment in cc_mkenc() */
- 	switch (vendor) {
- 	case CC_VENDOR_AMD:
- 		return val & ~cc_mask;
-+	case CC_VENDOR_INTEL:
-+		return val | cc_mask;
- 	default:
- 		return val;
- 	}
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index d1ce35c1ac18..38b5a56f007f 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -5,8 +5,12 @@
- #define pr_fmt(fmt)     "tdx: " fmt
- 
- #include <linux/cpufeature.h>
-+#include <asm/coco.h>
- #include <asm/tdx.h>
- 
-+/* TDX module Call Leaf IDs */
-+#define TDX_GET_INFO			1
++#if __LINUX_ARM_ARCH__ < 7
++	.macro	dsb, args
++	mcr	p15, 0, r0, c7, c10, 4
++	.endm
 +
- /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -25,8 +29,36 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
- 	return __tdx_hypercall(&args, 0);
++	.macro	isb, args
++	mcr	p15, 0, r0, c7, r5, 4
++	.endm
++#endif
++
+ 	.macro asm_trace_hardirqs_off, save=1
+ #if defined(CONFIG_TRACE_IRQFLAGS)
+ 	.if \save
+--- a/arch/arm/include/asm/spectre.h
++++ b/arch/arm/include/asm/spectre.h
+@@ -14,6 +14,7 @@ enum {
+ 	__SPECTRE_V2_METHOD_ICIALLU,
+ 	__SPECTRE_V2_METHOD_SMC,
+ 	__SPECTRE_V2_METHOD_HVC,
++	__SPECTRE_V2_METHOD_LOOP8,
+ };
+ 
+ enum {
+@@ -21,8 +22,11 @@ enum {
+ 	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
+ 	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
+ 	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
++	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
+ };
+ 
+ void spectre_v2_update_state(unsigned int state, unsigned int methods);
+ 
++int spectre_bhb_update_vectors(unsigned int method);
++
+ #endif
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1036,12 +1036,11 @@ vector_\name:
+ 	sub	lr, lr, #\correction
+ 	.endif
+ 
+-	@
+-	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
+-	@ (parent CPSR)
+-	@
++	@ Save r0, lr_<exception> (parent PC)
+ 	stmia	sp, {r0, lr}		@ save r0, lr
+-	mrs	lr, spsr
++
++	@ Save spsr_<exception> (parent CPSR)
++2:	mrs	lr, spsr
+ 	str	lr, [sp, #8]		@ save spsr
+ 
+ 	@
+@@ -1062,6 +1061,44 @@ vector_\name:
+ 	movs	pc, lr			@ branch to handler in SVC mode
+ ENDPROC(vector_\name)
+ 
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++	.subsection 1
++	.align 5
++vector_bhb_loop8_\name:
++	.if \correction
++	sub	lr, lr, #\correction
++	.endif
++
++	@ Save r0, lr_<exception> (parent PC)
++	stmia	sp, {r0, lr}
++
++	@ bhb workaround
++	mov	r0, #8
++1:	b	. + 4
++	subs	r0, r0, #1
++	bne	1b
++	dsb
++	isb
++	b	2b
++ENDPROC(vector_bhb_loop8_\name)
++
++vector_bhb_bpiall_\name:
++	.if \correction
++	sub	lr, lr, #\correction
++	.endif
++
++	@ Save r0, lr_<exception> (parent PC)
++	stmia	sp, {r0, lr}
++
++	@ bhb workaround
++	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
++	@ isb not needed due to "movs pc, lr" in the vector stub
++	@ which gives a "context synchronisation".
++	b	2b
++ENDPROC(vector_bhb_bpiall_\name)
++	.previous
++#endif
++
+ 	.align	2
+ 	@ handler addresses follow this label
+ 1:
+@@ -1070,6 +1107,10 @@ ENDPROC(vector_\name)
+ 	.section .stubs, "ax", %progbits
+ 	@ This must be the first word
+ 	.word	vector_swi
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++	.word	vector_bhb_loop8_swi
++	.word	vector_bhb_bpiall_swi
++#endif
+ 
+ vector_rst:
+  ARM(	swi	SYS_ERROR0	)
+@@ -1184,8 +1225,10 @@ vector_addrexcptn:
+  * FIQ "NMI" handler
+  *-----------------------------------------------------------------------------
+  * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
+- * systems.
++ * systems. This must be the last vector stub, so lets place it in its own
++ * subsection.
+  */
++	.subsection 2
+ 	vector_stub	fiq, FIQ_MODE, 4
+ 
+ 	.long	__fiq_usr			@  0  (USR_26 / USR_32)
+@@ -1218,6 +1261,30 @@ vector_addrexcptn:
+ 	W(b)	vector_irq
+ 	W(b)	vector_fiq
+ 
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++	.section .vectors.bhb.loop8, "ax", %progbits
++.L__vectors_bhb_loop8_start:
++	W(b)	vector_rst
++	W(b)	vector_bhb_loop8_und
++	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
++	W(b)	vector_bhb_loop8_pabt
++	W(b)	vector_bhb_loop8_dabt
++	W(b)	vector_addrexcptn
++	W(b)	vector_bhb_loop8_irq
++	W(b)	vector_bhb_loop8_fiq
++
++	.section .vectors.bhb.bpiall, "ax", %progbits
++.L__vectors_bhb_bpiall_start:
++	W(b)	vector_rst
++	W(b)	vector_bhb_bpiall_und
++	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
++	W(b)	vector_bhb_bpiall_pabt
++	W(b)	vector_bhb_bpiall_dabt
++	W(b)	vector_addrexcptn
++	W(b)	vector_bhb_bpiall_irq
++	W(b)	vector_bhb_bpiall_fiq
++#endif
++
+ 	.data
+ 
+ 	.globl	cr_alignment
+--- a/arch/arm/kernel/entry-common.S
++++ b/arch/arm/kernel/entry-common.S
+@@ -143,12 +143,36 @@ ENDPROC(ret_from_fork)
+  */
+ 
+ 	.align	5
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++ENTRY(vector_bhb_loop8_swi)
++	sub	sp, sp, #PT_REGS_SIZE
++	stmia	sp, {r0 - r12}
++	mov	r8, #8
++1:	b	2f
++2:	subs	r8, r8, #1
++	bne	1b
++	dsb
++	isb
++	b	3f
++ENDPROC(vector_bhb_loop8_swi)
++
++	.align	5
++ENTRY(vector_bhb_bpiall_swi)
++	sub	sp, sp, #PT_REGS_SIZE
++	stmia	sp, {r0 - r12}
++	mcr	p15, 0, r8, c7, c5, 6	@ BPIALL
++	isb
++	b	3f
++ENDPROC(vector_bhb_bpiall_swi)
++#endif
++	.align	5
+ ENTRY(vector_swi)
+ #ifdef CONFIG_CPU_V7M
+ 	v7m_exception_entry
+ #else
+ 	sub	sp, sp, #PT_REGS_SIZE
+ 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
++3:
+  ARM(	add	r8, sp, #S_PC		)
+  ARM(	stmdb	r8, {sp, lr}^		)	@ Calling sp, lr
+  THUMB(	mov	r8, sp			)
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -45,6 +45,10 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 		method = "Firmware call";
+ 		break;
+ 
++	case SPECTRE_V2_METHOD_LOOP8:
++		method = "History overwrite";
++		break;
++
+ 	default:
+ 		method = "Multiple mitigations";
+ 		break;
+--- a/arch/arm/kernel/traps.c
++++ b/arch/arm/kernel/traps.c
+@@ -31,6 +31,7 @@
+ #include <linux/atomic.h>
+ #include <asm/cacheflush.h>
+ #include <asm/exception.h>
++#include <asm/spectre.h>
+ #include <asm/unistd.h>
+ #include <asm/traps.h>
+ #include <asm/ptrace.h>
+@@ -833,6 +834,43 @@ static void flush_vectors(void *vma, siz
+ 	flush_icache_range(start, end);
  }
  
-+/*
-+ * Wrapper for __tdx_module_call() for cases when the call doesn't suppose to
-+ * fail. Panic if the call fails.
-+ */
-+static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+				   struct tdx_module_output *out)
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++int spectre_bhb_update_vectors(unsigned int method)
 +{
-+	if (__tdx_module_call(fn, rcx, rdx, r8, r9, out))
-+		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
++	extern char __vectors_bhb_bpiall_start[], __vectors_bhb_bpiall_end[];
++	extern char __vectors_bhb_loop8_start[], __vectors_bhb_loop8_end[];
++	void *vec_start, *vec_end;
++
++	if (system_state >= SYSTEM_RUNNING) {
++		pr_err("CPU%u: Spectre BHB workaround too late - system vulnerable\n",
++		       smp_processor_id());
++		return SPECTRE_VULNERABLE;
++	}
++
++	switch (method) {
++	case SPECTRE_V2_METHOD_LOOP8:
++		vec_start = __vectors_bhb_loop8_start;
++		vec_end = __vectors_bhb_loop8_end;
++		break;
++
++	case SPECTRE_V2_METHOD_BPIALL:
++		vec_start = __vectors_bhb_bpiall_start;
++		vec_end = __vectors_bhb_bpiall_end;
++		break;
++
++	default:
++		pr_err("CPU%u: unknown Spectre BHB state %d\n",
++		       smp_processor_id(), method);
++		return SPECTRE_VULNERABLE;
++	}
++
++	copy_from_lma(vectors_page, vec_start, vec_end);
++	flush_vectors(vectors_page, 0, vec_end - vec_start);
++
++	return SPECTRE_MITIGATED;
 +}
++#endif
 +
-+static void get_info(unsigned int *gpa_width)
-+{
-+	struct tdx_module_output out;
-+
-+	/*
-+	 * TDINFO TDX module call is used to get the TD execution environment
-+	 * information like GPA width, number of available vcpus, debug mode
-+	 * information, etc. More details about the ABI can be found in TDX
-+	 * Guest-Host-Communication Interface (GHCI), section 2.4.2 TDCALL
-+	 * [TDG.VP.INFO].
-+	 */
-+	tdx_module_call(TDX_GET_INFO, 0, 0, 0, 0, &out);
-+
-+	*gpa_width = out.rcx & GENMASK(5, 0);
-+}
-+
- void __init tdx_early_init(void)
+ void __init early_trap_init(void *vectors_base)
  {
-+	unsigned int gpa_width;
- 	u32 eax, sig[3];
+ 	extern char __stubs_start[], __stubs_end[];
+--- a/arch/arm/kernel/vmlinux-xip.lds.S
++++ b/arch/arm/kernel/vmlinux-xip.lds.S
+@@ -154,11 +154,23 @@ SECTIONS
+ 	 * only thing that matters is their relative offsets
+ 	 */
+ 	__vectors_lma = .;
+-	.vectors 0xffff0000 : AT(__vectors_start) {
+-		*(.vectors)
++	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
++		.vectors {
++			*(.vectors)
++		}
++		.vectors.bhb.loop8 {
++			*(.vectors.bhb.loop8)
++		}
++		.vectors.bhb.bpiall {
++			*(.vectors.bhb.bpiall)
++		}
+ 	}
+ 	ARM_LMA(__vectors, .vectors);
+-	. = __vectors_lma + SIZEOF(.vectors);
++	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
++	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
++	. = __vectors_lma + SIZEOF(.vectors) +
++		SIZEOF(.vectors.bhb.loop8) +
++		SIZEOF(.vectors.bhb.bpiall);
  
- 	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
-@@ -36,5 +68,15 @@ void __init tdx_early_init(void)
+ 	__stubs_lma = .;
+ 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
+--- a/arch/arm/kernel/vmlinux.lds.S
++++ b/arch/arm/kernel/vmlinux.lds.S
+@@ -175,11 +175,23 @@ SECTIONS
+ 	 * only thing that matters is their relative offsets
+ 	 */
+ 	__vectors_lma = .;
+-	.vectors 0xffff0000 : AT(__vectors_start) {
+-		*(.vectors)
++	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
++		.vectors {
++			*(.vectors)
++		}
++		.vectors.bhb.loop8 {
++			*(.vectors.bhb.loop8)
++		}
++		.vectors.bhb.bpiall {
++			*(.vectors.bhb.bpiall)
++		}
+ 	}
+ 	ARM_LMA(__vectors, .vectors);
+-	. = __vectors_lma + SIZEOF(.vectors);
++	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
++	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
++	. = __vectors_lma + SIZEOF(.vectors) +
++		SIZEOF(.vectors.bhb.loop8) +
++		SIZEOF(.vectors.bhb.bpiall);
  
- 	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
+ 	__stubs_lma = .;
+ 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
+--- a/arch/arm/mm/Kconfig
++++ b/arch/arm/mm/Kconfig
+@@ -824,6 +824,16 @@ config HARDEN_BRANCH_PREDICTOR
  
-+	get_info(&gpa_width);
+ 	   If unsure, say Y.
+ 
++config HARDEN_BRANCH_HISTORY
++	bool "Harden Spectre style attacks against branch history" if EXPERT
++	depends on CPU_SPECTRE
++	default y
++	help
++	  Speculation attacks against some high-performance processors can
++	  make use of branch history to influence future speculation. When
++	  taking an exception, a sequence of branches overwrites the branch
++	  history, or branch history is invalidated.
 +
-+	cc_set_vendor(CC_VENDOR_INTEL);
-+
-+	/*
-+	 * The highest bit of a guest physical address is the "sharing" bit.
-+	 * Set it for shared pages and clear it for private pages.
-+	 */
-+	cc_set_mask(BIT_ULL(gpa_width - 1));
-+
- 	pr_info("Guest detected\n");
+ config TLS_REG_EMUL
+ 	bool
+ 	select NEED_KUSER_HELPERS
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -186,6 +186,81 @@ static void cpu_v7_spectre_v2_init(void)
+ 	spectre_v2_update_state(state, method);
  }
--- 
-2.34.1
+ 
++#ifdef CONFIG_HARDEN_BRANCH_HISTORY
++static int spectre_bhb_method;
++
++static const char *spectre_bhb_method_name(int method)
++{
++	switch (method) {
++	case SPECTRE_V2_METHOD_LOOP8:
++		return "loop";
++
++	case SPECTRE_V2_METHOD_BPIALL:
++		return "BPIALL";
++
++	default:
++		return "unknown";
++	}
++}
++
++static int spectre_bhb_install_workaround(int method)
++{
++	if (spectre_bhb_method != method) {
++		if (spectre_bhb_method) {
++			pr_err("CPU%u: Spectre BHB: method disagreement, system vulnerable\n",
++			       smp_processor_id());
++
++			return SPECTRE_VULNERABLE;
++		}
++
++		if (spectre_bhb_update_vectors(method) == SPECTRE_VULNERABLE)
++			return SPECTRE_VULNERABLE;
++
++		spectre_bhb_method = method;
++	}
++
++	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
++		smp_processor_id(), spectre_bhb_method_name(method));
++
++	return SPECTRE_MITIGATED;
++}
++#else
++static int spectre_bhb_install_workaround(int method)
++{
++	return SPECTRE_VULNERABLE;
++}
++#endif
++
++static void cpu_v7_spectre_bhb_init(void)
++{
++	unsigned int state, method = 0;
++
++	switch (read_cpuid_part()) {
++	case ARM_CPU_PART_CORTEX_A15:
++	case ARM_CPU_PART_BRAHMA_B15:
++	case ARM_CPU_PART_CORTEX_A57:
++	case ARM_CPU_PART_CORTEX_A72:
++		state = SPECTRE_MITIGATED;
++		method = SPECTRE_V2_METHOD_LOOP8;
++		break;
++
++	case ARM_CPU_PART_CORTEX_A73:
++	case ARM_CPU_PART_CORTEX_A75:
++		state = SPECTRE_MITIGATED;
++		method = SPECTRE_V2_METHOD_BPIALL;
++		break;
++
++	default:
++		state = SPECTRE_UNAFFECTED;
++		break;
++	}
++
++	if (state == SPECTRE_MITIGATED)
++		state = spectre_bhb_install_workaround(method);
++
++	spectre_v2_update_state(state, method);
++}
++
+ static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
+ 						  u32 mask, const char *msg)
+ {
+@@ -226,4 +301,5 @@ void cpu_v7_ca15_ibe(void)
+ void cpu_v7_bugs_init(void)
+ {
+ 	cpu_v7_spectre_v2_init();
++	cpu_v7_spectre_bhb_init();
+ }
+
 
