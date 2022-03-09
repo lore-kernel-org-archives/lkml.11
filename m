@@ -2,91 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B37EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EC3C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbiCIQsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        id S236837AbiCIQsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbiCIQaY (ORCPT
+        with ESMTP id S237374AbiCIQao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:24 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26273E2363;
-        Wed,  9 Mar 2022 08:23:41 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A393D240019;
-        Wed,  9 Mar 2022 16:23:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646843008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aUotff3zpT1sC8hzBqBp8VQHTf/m2FqGZrZW1U0mj9k=;
-        b=G+ngI32dI1uVwTxIzHcDRECjcX8vfjipgxtV+AwdgRfVJ+CO125DPI2Wya4w3MWeOMtx4+
-        nFgj8LyQRKD+oWDXKXPziTot9BtHnTg83+fZd3bfDxYGOsXANk5mX9gBr51VaPtSFjkwPw
-        gWUlAVJv7ts01jh+StzHudPcKSVH6HnjuydXDriHJDPSK8ypJt5zB5M0GbNwrh+pIKVsWd
-        28WRSquVGrlZsvwhlKVQ9lVipt2rvGd5m8he2TPOAOkQh+vg+NlG2yPgTK13+4t6xgwZlM
-        c2uaT5yzE4f4rVdQMJ/sIENhjdHuNDV0gst7dDbP1xSnk0/KI1TQIPwY+R6cfQ==
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 16/29] rtc: pcf8563: let the core handle the alarm resolution
-Date:   Wed,  9 Mar 2022 17:22:47 +0100
-Message-Id: <20220309162301.61679-16-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
-References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+        Wed, 9 Mar 2022 11:30:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C03165C18;
+        Wed,  9 Mar 2022 08:24:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F649616F3;
+        Wed,  9 Mar 2022 16:24:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF9CC340E8;
+        Wed,  9 Mar 2022 16:23:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646843039;
+        bh=aRujg7DCfCwhUQUnKt+v2yJpA3gL/esTSYaKgC2Yn6A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=giR57gYHXZ/dHIWrDA6F2YuFk2FfrHibYfIpMTYjLXJwIII3ZXbg55QHilb7Dcsi9
+         dprhduAAtIzFHcYJnOWkqHWclhlgDIV23jL20UR/TarRwxdJuC3AbvvpcEcKq8j2Rz
+         igpNlj5u4zBMJVvXhS9l0BsZOzuN6mEF72uvMv8jGn2fvbj3VxLBF7c2T7YQxNlrTt
+         k+1z499y9+goqlC3SmJSjUsilk7xd0vDv2w86PfrRq12NEDGHHBcBzWHw3YqnBimuS
+         I/uGRCiRBRMpYdgntqwXGmw8u3oGeN1vyWVo05QHfBZCUpMy4dcq03Mn/dDC309dAM
+         8j9E8i1DTmIPw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        jbx6244@gmail.com, helen.koike@collabora.com, knaerzche@gmail.com,
+        zhangqing@rock-chips.com, briannorris@chromium.org,
+        daniel.lezcano@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 04/19] arm64: dts: rockchip: reorder rk3399 hdmi clocks
+Date:   Wed,  9 Mar 2022 11:23:21 -0500
+Message-Id: <20220309162337.136773-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
+References: <20220309162337.136773-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set RTC_FEATURE_ALARM_RES_MINUTE, so the core knows alarms have a
-resolution of a minute. Also, the core will properly round down the alarm
-instead of up.
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+[ Upstream commit 2e8a8b5955a000cc655f7e368670518cbb77fe58 ]
+
+The binding specifies the clock order to "cec", "grf", "vpll". Reorder
+the clocks accordingly.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Link: https://lore.kernel.org/r/20220126145549.617165-19-s.hauer@pengutronix.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-pcf8563.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/rtc/rtc-pcf8563.c b/drivers/rtc/rtc-pcf8563.c
-index c8bddfb94129..530f06c810fa 100644
---- a/drivers/rtc/rtc-pcf8563.c
-+++ b/drivers/rtc/rtc-pcf8563.c
-@@ -330,19 +330,6 @@ static int pcf8563_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *tm)
- 	unsigned char buf[4];
- 	int err;
- 
--	/* The alarm has no seconds, round up to nearest minute */
--	if (tm->time.tm_sec) {
--		time64_t alarm_time = rtc_tm_to_time64(&tm->time);
--
--		alarm_time += 60 - tm->time.tm_sec;
--		rtc_time64_to_tm(alarm_time, &tm->time);
--	}
--
--	dev_dbg(dev, "%s, min=%d hour=%d wday=%d mday=%d "
--		"enabled=%d pending=%d\n", __func__,
--		tm->time.tm_min, tm->time.tm_hour, tm->time.tm_wday,
--		tm->time.tm_mday, tm->enabled, tm->pending);
--
- 	buf[0] = bin2bcd(tm->time.tm_min);
- 	buf[1] = bin2bcd(tm->time.tm_hour);
- 	buf[2] = bin2bcd(tm->time.tm_mday);
-@@ -566,6 +553,7 @@ static int pcf8563_probe(struct i2c_client *client,
- 	pcf8563->rtc->ops = &pcf8563_rtc_ops;
- 	/* the pcf8563 alarm only supports a minute accuracy */
- 	pcf8563->rtc->uie_unsupported = 1;
-+	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, pcf8563->rtc->features);
- 	pcf8563->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
- 	pcf8563->rtc->range_max = RTC_TIMESTAMP_END_2099;
- 	pcf8563->rtc->set_start_time = true;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 750dad0d1740..95942d917de5 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1746,10 +1746,10 @@ hdmi: hdmi@ff940000 {
+ 		interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH 0>;
+ 		clocks = <&cru PCLK_HDMI_CTRL>,
+ 			 <&cru SCLK_HDMI_SFR>,
+-			 <&cru PLL_VPLL>,
++			 <&cru SCLK_HDMI_CEC>,
+ 			 <&cru PCLK_VIO_GRF>,
+-			 <&cru SCLK_HDMI_CEC>;
+-		clock-names = "iahb", "isfr", "vpll", "grf", "cec";
++			 <&cru PLL_VPLL>;
++		clock-names = "iahb", "isfr", "cec", "grf", "vpll";
+ 		power-domains = <&power RK3399_PD_HDCP>;
+ 		reg-io-width = <4>;
+ 		rockchip,grf = <&grf>;
 -- 
-2.35.1
+2.34.1
 
