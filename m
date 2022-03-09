@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0DEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5BAC4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234204AbiCIQDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S234259AbiCIQDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:03:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234177AbiCIQCh (ORCPT
+        with ESMTP id S234130AbiCIQCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:02:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B226B170D51;
-        Wed,  9 Mar 2022 08:01:38 -0800 (PST)
+        Wed, 9 Mar 2022 11:02:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F7C17F68A;
+        Wed,  9 Mar 2022 08:01:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FF2C6167E;
-        Wed,  9 Mar 2022 16:01:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585EAC340F3;
-        Wed,  9 Mar 2022 16:01:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D08661674;
+        Wed,  9 Mar 2022 16:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57784C340E8;
+        Wed,  9 Mar 2022 16:01:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841697;
-        bh=46jo3Lac9ZQVbErqXQpZ2hY92m8kz18vN57CNImpM3g=;
+        s=korg; t=1646841686;
+        bh=a/dB2UmD78+I6BqAfk2Y/X4e14BkMc2n+CsySWaMTLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KBsom5iJ7wNqsoDwHKDHEKubM7PAZ3/GZVR0hlKrg5fJP05YIZ/NzGQ7a/vnsTNSG
-         dtxWj+FSH63lgZowIAd2ui3DWDTSOm5SYgqaAhzk0mftS3hnTbVd7+dFezm07ONIhe
-         rIskyEL87LOykhKbX5lk83qA7RrFbUxPDQJ4E9/o=
+        b=Fto8OmoYXWSPy1UzZoTtzJD2Zagsmy/2KjK2eXQQ3vb4iDjo1vFqz+ntDvdikW/20
+         GEOzvbmlRC3kgzHgF3or9SyFB7CbjpDSh2IO3SJXmzrJtX/JI/NSBgJ5emPJxI4tnC
+         1Bfv0CrHAROmw+GA643Yne29+IXXc2SSBLN/iHKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 13/24] x86/speculation: Use generic retpoline by default on AMD
-Date:   Wed,  9 Mar 2022 16:59:26 +0100
-Message-Id: <20220309155856.690698640@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.9 21/24] ARM: use LOADADDR() to get load address of sections
+Date:   Wed,  9 Mar 2022 16:59:34 +0100
+Message-Id: <20220309155856.924148773@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.295480966@linuxfoundation.org>
 References: <20220309155856.295480966@linuxfoundation.org>
@@ -49,42 +48,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-commit 244d00b5dd4755f8df892c86cab35fb2cfd4f14b upstream.
+commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
 
-AMD retpoline may be susceptible to speculation. The speculation
-execution window for an incorrect indirect branch prediction using
-LFENCE/JMP sequence may potentially be large enough to allow
-exploitation using Spectre V2.
+Use the linker's LOADADDR() macro to get the load address of the
+sections, and provide a macro to set the start and end symbols.
 
-By default, don't use retpoline,lfence on AMD.  Instead, use the
-generic retpoline.
-
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    8 --------
- 1 file changed, 8 deletions(-)
+ arch/arm/kernel/vmlinux-xip.lds.S |   19 ++++++++++++-------
+ arch/arm/kernel/vmlinux.lds.S     |   19 ++++++++++++-------
+ 2 files changed, 24 insertions(+), 14 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -897,14 +897,6 @@ static enum spectre_v2_mitigation __init
- 		return SPECTRE_V2_NONE;
- 	}
+--- a/arch/arm/kernel/vmlinux-xip.lds.S
++++ b/arch/arm/kernel/vmlinux-xip.lds.S
+@@ -12,6 +12,11 @@
+ #include <asm/memory.h>
+ #include <asm/page.h>
  
--	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
--		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
--			pr_err("LFENCE not serializing, switching to generic retpoline\n");
--			return SPECTRE_V2_RETPOLINE;
--		}
--		return SPECTRE_V2_LFENCE;
--	}
--
- 	return SPECTRE_V2_RETPOLINE;
- }
++/* Set start/end symbol names to the LMA for the section */
++#define ARM_LMA(sym, section)						\
++	sym##_start = LOADADDR(section);				\
++	sym##_end = LOADADDR(section) + SIZEOF(section)
++
+ #define PROC_INFO							\
+ 	. = ALIGN(4);							\
+ 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
+@@ -148,19 +153,19 @@ SECTIONS
+ 	 * The vectors and stubs are relocatable code, and the
+ 	 * only thing that matters is their relative offsets
+ 	 */
+-	__vectors_start = .;
++	__vectors_lma = .;
+ 	.vectors 0xffff0000 : AT(__vectors_start) {
+ 		*(.vectors)
+ 	}
+-	. = __vectors_start + SIZEOF(.vectors);
+-	__vectors_end = .;
++	ARM_LMA(__vectors, .vectors);
++	. = __vectors_lma + SIZEOF(.vectors);
+ 
+-	__stubs_start = .;
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {
++	__stubs_lma = .;
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
+ 		*(.stubs)
+ 	}
+-	. = __stubs_start + SIZEOF(.stubs);
+-	__stubs_end = .;
++	ARM_LMA(__stubs, .stubs);
++	. = __stubs_lma + SIZEOF(.stubs);
+ 
+ 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
+ 
+--- a/arch/arm/kernel/vmlinux.lds.S
++++ b/arch/arm/kernel/vmlinux.lds.S
+@@ -14,6 +14,11 @@
+ #include <asm/page.h>
+ #include <asm/pgtable.h>
+ 
++/* Set start/end symbol names to the LMA for the section */
++#define ARM_LMA(sym, section)						\
++	sym##_start = LOADADDR(section);				\
++	sym##_end = LOADADDR(section) + SIZEOF(section)
++
+ #define PROC_INFO							\
+ 	. = ALIGN(4);							\
+ 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
+@@ -169,19 +174,19 @@ SECTIONS
+ 	 * The vectors and stubs are relocatable code, and the
+ 	 * only thing that matters is their relative offsets
+ 	 */
+-	__vectors_start = .;
++	__vectors_lma = .;
+ 	.vectors 0xffff0000 : AT(__vectors_start) {
+ 		*(.vectors)
+ 	}
+-	. = __vectors_start + SIZEOF(.vectors);
+-	__vectors_end = .;
++	ARM_LMA(__vectors, .vectors);
++	. = __vectors_lma + SIZEOF(.vectors);
+ 
+-	__stubs_start = .;
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {
++	__stubs_lma = .;
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
+ 		*(.stubs)
+ 	}
+-	. = __stubs_start + SIZEOF(.stubs);
+-	__stubs_end = .;
++	ARM_LMA(__stubs, .stubs);
++	. = __stubs_lma + SIZEOF(.stubs);
+ 
+ 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
  
 
 
