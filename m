@@ -2,313 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA30DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A556C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232705AbiCIMJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:09:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S232192AbiCIMLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:11:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiCIMI5 (ORCPT
+        with ESMTP id S229878AbiCIMLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:08:57 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6034B561D;
-        Wed,  9 Mar 2022 04:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646827678; x=1678363678;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9Byu8P78w96N4rhS6oryyUAAOHS75SicuioSZJ5/sOU=;
-  b=k+JBI5yCytnkpmixavPTmX81/UHpdOyi+PYfjiNFqH79aUh2Iod2wKnQ
-   7vmFgceG33CABhCU9+Aw9y15M3GqpVjktJaNiiIMyO7LtX6Imm/SZEAZX
-   HbRCXi/jJAL+KVSoeS0APkyNy/bd7Cucdykha4CtYqlsTAcdG88CLhRBf
-   H0gmSkhLUp5VzCPylpyfX/vpR19NUQDISnWvWLv8bccoX6BSrcJiHqSG4
-   vBGcGX8I6rYhyGdVdCyyaTlo7F3Jppk5n+AmjoeeFFTYzQnEIMbMr40+r
-   MKO9rTCqW6VmzYqAkeBk05KCWsHHrNcNXjcRTcX7MIKFlrNqjfM5XvJ5b
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="156252247"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 05:07:43 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 05:07:42 -0700
-Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 05:07:39 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH 2/3] dt-bindings: i2c: convert i2c-at91 to json-schema
-Date:   Wed, 9 Mar 2022 14:07:13 +0200
-Message-ID: <20220309120714.51393-3-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220309120714.51393-1-sergiu.moga@microchip.com>
-References: <20220309120714.51393-1-sergiu.moga@microchip.com>
+        Wed, 9 Mar 2022 07:11:10 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5188B3C703
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:10:12 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id u61so3831437ybi.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:10:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cQLvcGskf9flSlq3jr8x/SzuljCHGLtYRtMn9KIcb0k=;
+        b=Y4QGOQ/6gZ1wN+BlJhrW6wUPKAoZias17oNdcpoJWoxIJLC+iFhWtFn6D8LW8u5fSJ
+         jvsztDkw8ZwUtTCUPH80/BRYh97f8dfU6M9FZGSH6q2RLl6Tm0NpGzs5JS3JAYihh8cq
+         BtmaASX7TYZKx2uh/04/OCIYu+8m/WUw51vxxZ5NMr+oZ7PgJP6PPwauEBh2UhgV5hmH
+         JNxWaK7l+w2GyxebZNw9ld8AgtUGa4g7E3vPGAjZ6HT8/XrVQ4mhRdWPp8IQnUHb6sfx
+         QPSsbToua1NUGFKAZMbC1+nb5PHSnG9e6iQimeBWx2c/f6pRfZKBJfsdlHp+a3SJZ1or
+         VeLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cQLvcGskf9flSlq3jr8x/SzuljCHGLtYRtMn9KIcb0k=;
+        b=ECVW4vdIWKtYHlrVVvMxlIojFcn5OHxQEm/8Tm0drqhd6GbGI2f2vRpevcvSJ3F5wy
+         0rfUbswWZZVuvsriacW1+zaxFKNPIMi4VpixxS8iBxffhl9wJu2czTqt9jjauuciXaX9
+         kSWXsmU+BHceK0JcbGMgS2QIHqlXUN6uCO6BgkjRYS/3zEWwClDxns0FAAh6/2qeFmVP
+         rsc/hcFvyZIuledye95taooOijHfnq+Id9XA1qHOga53zIbpr1oufOiXiVM0IF8RgEj5
+         cFXbpayYaRJPcYzKP6zATyOO7b5dOzQTSTC2F6Or9/poGxKGdK3bl2cU7PX1eAmccDpl
+         Wgsw==
+X-Gm-Message-State: AOAM530lGFLUZP172wlb9N3V/D/YTeM6SyWR7Rcz8wNxM+XBtaSq7Aqc
+        uSYoiR8tIlCpuYLyrFjfu4qvmZOM72RyVWZQvls=
+X-Google-Smtp-Source: ABdhPJzUt/vPIMAvKkMw9ZoQ1VV2XKJQz1l0qtx5xTgNbD+luDDCu86K2stqgGNGAEKdP9v2HRLn2nb8LvKQnWJwHRg=
+X-Received: by 2002:a25:8289:0:b0:623:dc4d:28e5 with SMTP id
+ r9-20020a258289000000b00623dc4d28e5mr15263229ybk.182.1646827811466; Wed, 09
+ Mar 2022 04:10:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20211224161334.31123-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211224161334.31123-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20211224161334.31123-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Wed, 9 Mar 2022 12:09:45 +0000
+Message-ID: <CA+V-a8viRAW+YxhU=Krmc+zF3ixDOV8nL72PG7CP0iYU9onOhw@mail.gmail.com>
+Subject: Re: [PATCH] platform: goldfish: pipe: Use platform_get_irq() to get
+ the interrupt
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert I2C binding for Atmel/Microchip SoCs to Device Tree Schema
-format.
+Hi Greg,
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- .../bindings/i2c/atmel,at91sam-i2c.yaml       | 144 ++++++++++++++++++
- .../devicetree/bindings/i2c/i2c-at91.txt      |  82 ----------
- 2 files changed, 144 insertions(+), 82 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
- delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-at91.txt
+I'm not sure how I missed you to add in the to list.
 
-diff --git a/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml b/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
-new file mode 100644
-index 000000000000..d4aadbbd1a11
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
-@@ -0,0 +1,144 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i2c/atmel,at91sam-i2c.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: I2C for Atmel/Microchip platforms
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+allOf:
-+  - $ref: "i2c-controller.yaml"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - atmel,sama5d4-i2c
-+              - atmel,sama5d2-i2c
-+              - microchip,sam9x60-i2c
-+    then:
-+      properties:
-+        i2c-sda-hold-time-ns:
-+          description:
-+            TWD hold time
-+          maxItems: 1
-+
-+properties:
-+  compatible:
-+    enum:
-+      - atmel,at91rm9200-i2c
-+      - atmel,at91sam9261-i2c
-+      - atmel,at91sam9260-i2c
-+      - atmel,at91sam9g20-i2c
-+      - atmel,at91sam9g10-i2c
-+      - atmel,at91sam9x5-i2c
-+      - atmel,sama5d4-i2c
-+      - atmel,sama5d2-i2c
-+      - microchip,sam9x60-i2c
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-frequency:
-+    default: 100000
-+
-+  dmas:
-+    items:
-+      - description: TX DMA Channel Specifier
-+      - description: RX DMA Channel Specifier
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  atmel,fifo-size:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Maximum number of data the RX and TX FIFOs can store for
-+      FIFO capable I2C controllers.
-+
-+  scl-gpios: true
-+
-+  sda-gpios: true
-+
-+  pinctrl:
-+    description: |
-+      Add extra pinctrl to configure i2c pins to gpio function for i2c
-+      bus recovery, call it "gpio" state
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - "#address-cells"
-+  - "#size-cells"
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/dma/at91.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    i2c0: i2c@fff84000 {
-+        compatible = "atmel,at91sam9g20-i2c";
-+        reg = <0xfff84000 0x100>;
-+        interrupts = <12 IRQ_TYPE_LEVEL_HIGH 6>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        clocks = <&twi0_clk>;
-+        clock-frequency = <400000>;
-+
-+        eeprom@50 {
-+            compatible = "atmel,24c512";
-+            reg = <0x50>;
-+            pagesize = <128>;
-+        };
-+    };
-+
-+    i2c1: i2c@f8034600 {
-+        compatible = "atmel,sama5d2-i2c";
-+        reg = <0xf8034600 0x100>;
-+        interrupts = <19 IRQ_TYPE_LEVEL_HIGH 7>;
-+        dmas = <&dma0
-+            (AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1))
-+            AT91_XDMAC_DT_PERID(11)>,
-+               <&dma0
-+            (AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1))
-+            AT91_XDMAC_DT_PERID(12)>;
-+        dma-names = "tx", "rx";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        clocks = <&flx0>;
-+        atmel,fifo-size = <16>;
-+        i2c-sda-hold-time-ns = <336>;
-+        pinctrl-names = "default", "gpio";
-+        pinctrl-0 = <&pinctrl_i2c0>;
-+        pinctrl-1 = <&pinctrl_i2c0_gpio>;
-+        sda-gpios = <&pioA 30 GPIO_ACTIVE_HIGH>;
-+        scl-gpios = <&pioA 31 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+
-+        eeprom@1a {
-+            compatible = "wm8731";
-+            reg = <0x1a>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-at91.txt b/Documentation/devicetree/bindings/i2c/i2c-at91.txt
-deleted file mode 100644
-index 2015f50aed0f..000000000000
---- a/Documentation/devicetree/bindings/i2c/i2c-at91.txt
-+++ /dev/null
-@@ -1,82 +0,0 @@
--I2C for Atmel platforms
--
--Required properties :
--- compatible : Must be one of:
--	"atmel,at91rm9200-i2c",
--	"atmel,at91sam9261-i2c",
--	"atmel,at91sam9260-i2c",
--	"atmel,at91sam9g20-i2c",
--	"atmel,at91sam9g10-i2c",
--	"atmel,at91sam9x5-i2c",
--	"atmel,sama5d4-i2c",
--	"atmel,sama5d2-i2c",
--	"microchip,sam9x60-i2c".
--- reg: physical base address of the controller and length of memory mapped
--     region.
--- interrupts: interrupt number to the cpu.
--- #address-cells = <1>;
--- #size-cells = <0>;
--- clocks: phandles to input clocks.
--
--Optional properties:
--- clock-frequency: Desired I2C bus frequency in Hz, otherwise defaults to 100000
--- dmas: A list of two dma specifiers, one for each entry in dma-names.
--- dma-names: should contain "tx" and "rx".
--- atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
--  capable I2C controllers.
--- i2c-sda-hold-time-ns: TWD hold time, only available for:
--	"atmel,sama5d4-i2c",
--	"atmel,sama5d2-i2c",
--	"microchip,sam9x60-i2c".
--- scl-gpios: specify the gpio related to SCL pin
--- sda-gpios: specify the gpio related to SDA pin
--- pinctrl: add extra pinctrl to configure i2c pins to gpio function for i2c
--  bus recovery, call it "gpio" state
--- Child nodes conforming to i2c bus binding
--
--
--Examples :
--
--i2c0: i2c@fff84000 {
--	compatible = "atmel,at91sam9g20-i2c";
--	reg = <0xfff84000 0x100>;
--	interrupts = <12 4 6>;
--	#address-cells = <1>;
--	#size-cells = <0>;
--	clocks = <&twi0_clk>;
--	clock-frequency = <400000>;
--
--	24c512@50 {
--		compatible = "atmel,24c512";
--		reg = <0x50>;
--		pagesize = <128>;
--	}
--}
--
--i2c0: i2c@f8034600 {
--	compatible = "atmel,sama5d2-i2c";
--	reg = <0xf8034600 0x100>;
--	interrupts = <19 IRQ_TYPE_LEVEL_HIGH 7>;
--	dmas = <&dma0
--		(AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1))
--		AT91_XDMAC_DT_PERID(11)>,
--	       <&dma0
--		(AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1))
--		AT91_XDMAC_DT_PERID(12)>;
--	dma-names = "tx", "rx";
--	#address-cells = <1>;
--	#size-cells = <0>;
--	clocks = <&flx0>;
--	atmel,fifo-size = <16>;
--	i2c-sda-hold-time-ns = <336>;
--	pinctrl-names = "default", "gpio";
--	pinctrl-0 = <&pinctrl_i2c0>;
--	pinctrl-1 = <&pinctrl_i2c0_gpio>;
--	sda-gpios = <&pioA 30 GPIO_ACTIVE_HIGH>;
--	scl-gpios = <&pioA 31 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
--
--	wm8731: wm8731@1a {
--		compatible = "wm8731";
--		reg = <0x1a>;
--	};
--};
--- 
-2.25.1
+On Fri, Dec 24, 2021 at 4:13 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> allocation of IRQ resources in DT core code, this causes an issue
+> when using hierarchical interrupt domains using "interrupts" property
+> in the node as this bypasses the hierarchical setup and messes up the
+> irq chaining.
+>
+> In preparation for removal of static setup of IRQ resource from DT core
+> code use platform_get_irq().
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> Hi,
+>
+> Dropping usage of platform_get_resource() was agreed based on
+> the discussion [0].
+>
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/
+> patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+>
+> Cheers,
+> Prabhakar
+> ---
+>  drivers/platform/goldfish/goldfish_pipe.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+>
+Do you want me to resend this patch?
 
+Cheers,
+Prabhakar
+
+> diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/goldfish/goldfish_pipe.c
+> index b67539f9848c..7737d56191d7 100644
+> --- a/drivers/platform/goldfish/goldfish_pipe.c
+> +++ b/drivers/platform/goldfish/goldfish_pipe.c
+> @@ -896,11 +896,9 @@ static int goldfish_pipe_probe(struct platform_device *pdev)
+>                 return -EINVAL;
+>         }
+>
+> -       r = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+> -       if (!r)
+> -               return -EINVAL;
+> -
+> -       dev->irq = r->start;
+> +       dev->irq = platform_get_irq(pdev, 0);
+> +       if (dev->irq < 0)
+> +               return dev->irq;
+>
+>         /*
+>          * Exchange the versions with the host device
+> --
+> 2.17.1
+>
