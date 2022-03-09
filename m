@@ -2,91 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE42FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4469C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232667AbiCIQgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48758 "EHLO
+        id S235100AbiCIQgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:36:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236661AbiCIQaG (ORCPT
+        with ESMTP id S236673AbiCIQaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A6FC117C;
-        Wed,  9 Mar 2022 08:23:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4872B82212;
-        Wed,  9 Mar 2022 16:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1250CC340E8;
-        Wed,  9 Mar 2022 16:23:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843000;
-        bh=vfkEJc4ylCqd1yNANLqxBaki/v7RtDs/YuDQdWSkMhs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jk6mxNM1GMJ/2aOg4NtiJvwqGa9MotWtEzhWarybAoOIroqWg4F6h4SNfgIV7qtXg
-         UUUFXmN/Wkv+M4Bk0jsau26t2XvK544l3oNYrrv37cvDb0XmXxwCahTh9/tZ2n3X9u
-         cEKZq5ge2sWNYUJiZkvclYCB2Cm4kBrMmx8Kx1+v1i0+vR0SizuknnJI//xSWp2td4
-         XEal9UySALyYVgnnLbBwTJRaxB5YeuT4fRp4VEct317XKCco4FmpMyR99mmyVHKWv8
-         mSA+yK4qgnuDt7TsEztqBoMWmpXE7bJ+A9pokQfdUDTmgdUpa9xcTfKZQVOfeVzHIn
-         bps8Z+kByNCgg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sreeramya Soratkal <quic_ssramya@quicinc.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 16/20] nl80211: Update bss channel on channel switch for P2P_CLIENT
-Date:   Wed,  9 Mar 2022 11:21:54 -0500
-Message-Id: <20220309162158.136467-16-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
-References: <20220309162158.136467-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:30:07 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B948EC12F0;
+        Wed,  9 Mar 2022 08:23:26 -0800 (PST)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ED3CA20008;
+        Wed,  9 Mar 2022 16:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646843003;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1Q6+mVQDp96Q+sU1LASE6V01IcuUw+y3QODc3UaLejY=;
+        b=GLO7DLWz6VrmfRr4rebVIQLSHULndEaghcLtFDMeR53F2tmcx+/OmcHTLMfulrDcLWCTXA
+        4VOasWQTi5e/NsnLYzPVjehvLwnV/42x5NDF8M98EAtIZXNz/EwalHiFQht5YpOrCz3/eG
+        ovfu4UYB2sJ12rc1DDM+9hgj80XxSE+PM6CGNvo0bOAeUfNF7AYmqFLEiqSqbbtpz9Mkzy
+        WU2qLB5MQFnqgIx3M15DhPIq6GFBR4pG8uuUlAUXPxF6ps5NaVg+3PPtbOkPoHZbYxsOyZ
+        A3PiEs3F0T7iqqJwp+/H91V1C+ykpL7P1FuaVt3Y+OLsFK5wOq/GCqyy2dQZjQ==
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 09/29] rtc: pcf2123: set RTC_FEATURE_ALARM_RES_MINUTE
+Date:   Wed,  9 Mar 2022 17:22:40 +0100
+Message-Id: <20220309162301.61679-9-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreeramya Soratkal <quic_ssramya@quicinc.com>
+Alarms have a resolution of a minute.
 
-[ Upstream commit e50b88c4f076242358b66ddb67482b96947438f2 ]
-
-The wdev channel information is updated post channel switch only for
-the station mode and not for the other modes. Due to this, the P2P client
-still points to the old value though it moved to the new channel
-when the channel change is induced from the P2P GO.
-
-Update the bss channel after CSA channel switch completion for P2P client
-interface as well.
-
-Signed-off-by: Sreeramya Soratkal <quic_ssramya@quicinc.com>
-Link: https://lore.kernel.org/r/1646114600-31479-1-git-send-email-quic_ssramya@quicinc.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- net/wireless/nl80211.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-pcf2123.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 07bd7b00b56d..0df8b9a19952 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -17127,7 +17127,8 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
- 	wdev->chandef = *chandef;
- 	wdev->preset_chandef = *chandef;
- 
--	if (wdev->iftype == NL80211_IFTYPE_STATION &&
-+	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
-+	     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
- 	    !WARN_ON(!wdev->current_bss))
- 		cfg80211_update_assoc_bss_entry(wdev, chandef->chan);
- 
+diff --git a/drivers/rtc/rtc-pcf2123.c b/drivers/rtc/rtc-pcf2123.c
+index da0e4066ef45..e13b5e695d06 100644
+--- a/drivers/rtc/rtc-pcf2123.c
++++ b/drivers/rtc/rtc-pcf2123.c
+@@ -427,6 +427,7 @@ static int pcf2123_probe(struct spi_device *spi)
+ 	 * support to this driver to generate interrupts more than once
+ 	 * per minute.
+ 	 */
++	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->features);
+ 	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->features);
+ 	rtc->ops = &pcf2123_rtc_ops;
+ 	rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
 -- 
-2.34.1
+2.35.1
 
