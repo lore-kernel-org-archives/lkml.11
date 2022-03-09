@@ -2,127 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 08:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 08:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbiCIIDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 03:03:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        id S230399AbiCIID5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 03:03:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiCIIDC (ORCPT
+        with ESMTP id S230474AbiCIIDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 03:03:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F45314CC97;
-        Wed,  9 Mar 2022 00:02:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0792EB81EA0;
-        Wed,  9 Mar 2022 08:02:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A102C340E8;
-        Wed,  9 Mar 2022 08:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646812921;
-        bh=Cfr19P9SP1R7zJ9J1a4BDOPpbOGBYdEhzLA2WG9WWJ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=isNV1LXjqaCsYQBMI6d599yCQUTKjNX37a/8sc2iAFHN5pNR0NL/RrsEgRPeLsiit
-         9D40wPq76w4owzq/8nK6bmcyY8woCl02YeKNNrvYZQrqKQ/hdJYnfWant+LdvnX31F
-         T2VBiMwCFaN7saoRuAcYM6HSQws04TUwJccPzEm/N0LdRHs0usa9mZ56fWB4qQLyH0
-         j5jgLnTzrxvxbBxJ4Rln9iBEcVaZQtAQTXce4YH7GN/xXpq3aLv27dFHSYaWAh5zuG
-         OTNhJjgN6O51RBOlk9KbOHVAWLAl16qDD9NcLAqKjoTBalSR3yG15fJj+Eil3iU5n/
-         Huud267loJ3EQ==
-Date:   Wed, 9 Mar 2022 10:01:17 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] x86/sgx: Free backing memory after faulting the
- enclave page
-Message-ID: <YihezQsQca0RBuxT@iki.fi>
-References: <20220303223859.273187-1-jarkko@kernel.org>
- <d476aa51-f855-bfb8-0738-3190439a2f72@intel.com>
-MIME-Version: 1.0
+        Wed, 9 Mar 2022 03:03:53 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EDE2656B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 00:02:51 -0800 (PST)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2294EfSw021312;
+        Wed, 9 Mar 2022 08:02:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=PqWx/RT8JosIXlBZpP28a4bfpbU7IyCt6/Zy3SQaDPE=;
+ b=OjgsHnKwnv3EKOXV7DOz0mng/vs6MLuk/3Tbw37plsZ8HcnknKe0Ymf4NmcPWiKAj1Xh
+ TisMKM869FR3pD+FZPQsvM+ds4t4X7V5MhAcZ0AERcAsYqmnaBQCo0e01aAdaGc8pFaC
+ /c3i//ALaCofcYAwsv9iFMnioZ2L7PSfCbYPDeT3856G8pF2nwBN0FdFAcW2peHVa4yF
+ E5RdMZ1hJtyhU6bybEPvDhudmGfFYJMrrcj/pHbM2WCVKSf8TxRTEDlG/Up/O5tIkOA7
+ 6Nal0997QTPzEX9peg0YEAo+u7JjQ+qRuM1KMWWOPLFZx2n9gIYcJ4sPyDrfAUIZHldM qA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ekyfsharh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 09 Mar 2022 08:02:44 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22982KVY023901;
+        Wed, 9 Mar 2022 08:02:43 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2172.outbound.protection.outlook.com [104.47.73.172])
+        by userp3020.oracle.com with ESMTP id 3envvm9x20-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 09 Mar 2022 08:02:42 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dgCwifQ3l8jmdV8MBegH6IOT9IVH6Dwf97qjv3w1tkEC65es62EHv/Uigo6j/N8T5QqmsIZ+/5FUIqnakN8gJ7sNGaL0STpSmOqIG9hYbrl1bBzyX10/5viRZXVIneGd6qhaMAavBeq+t45hH9yLWIVlmhcRNtCsaKvdQIvhdfkHpOwB4z2sLb/Y4k36ffjV28YJE9aYqHSDx0HbjnlXji5kkU2qvfQJGpAMyGSNiBoNWAKgMnVj6cAuFsd5xKdkWZGDyPfq1PnvYvzIslA17uUv+GphYJzfOGF+dsQYE12qWryfleRu1/NDUCXc6INOuSuBYOxvZXkaPjbr8kRLqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PqWx/RT8JosIXlBZpP28a4bfpbU7IyCt6/Zy3SQaDPE=;
+ b=dU++HDdqV/hEH0r4m7EyDT63O5QhHqHKo8Vdd8ZNarGV76jSBY+Vp3u9rsQ8r/hMarRz1rDQ7aUekL79R5QD3PJpRfeU4vhTZ6jOcdVjfvAglclM/9VXchvbtAx3bBMBFXtiaKkPl5jt42+Ezo2Z2HsWI79mfQ6pcVnvOr7SWNvvMz88QRrYYP84Fp0u/ZguQJ5e/4ds3Uy0JLYtbZykXyJQ80HrH9duYySMc9odVkGHMV0w4WNYvslVX+J/clu2I6Rr5N6ztMyYCYhH1cvIYWRB3i8aY0rTfgqtaCINvUtJ5QCm3MX+VJC9OMYJzkU2Wwu69fvl2Sz+LfGJJiipjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PqWx/RT8JosIXlBZpP28a4bfpbU7IyCt6/Zy3SQaDPE=;
+ b=vvGOqwqGFZq3nas7E6y5Q0I80W2gFVK4jofsUhn5E1o5m65S+TwNnzZv4fDL2iwrxideWG9ze1m3SjbMpTVYm8gYYzj9tqgojzwbcXyex07v+55ijbdKprq/jfORe4rALLlQ1XZ4xdICl4SHMXPfKa2fYRRDYn8vAsRnTEizIos=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by SJ0PR10MB4686.namprd10.prod.outlook.com
+ (2603:10b6:a03:2d7::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Wed, 9 Mar
+ 2022 08:02:40 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.5038.026; Wed, 9 Mar 2022
+ 08:02:40 +0000
+Date:   Wed, 9 Mar 2022 11:02:19 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vihas Makwana <makvihas@gmail.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: r8188eu: proper error handling in
+ rtw_init_drv_sw
+Message-ID: <20220309080219.GG3293@kadam>
+References: <20220308205510.48431-1-makvihas@gmail.com>
+ <20220308205510.48431-3-makvihas@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d476aa51-f855-bfb8-0738-3190439a2f72@intel.com>
+In-Reply-To: <20220308205510.48431-3-makvihas@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0002.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::7)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 402cec38-40e6-4265-277c-08da01a32e5d
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB4686:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB46868395F1668341D6DC47928E0A9@SJ0PR10MB4686.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qVyVHsoXZpf6AOcvHzudhT9eawJaNXOABAxB82rliovebM7R4EBi2MFNJpI51T5p9fH2cpBPLooOjE67xI42hcllImla9J6EwPQSzIe43/cC/H++ljfKjcnATc6HkGCVarZFA5tRjZU/sqW3R1+sacVVGfWVnPAmTkW/mw1sbLFwFd5o8bQ15qbYaV2ja4YyhybP7lkjrDnA5Ob/it5hJhDKS/kiiCq+cL5prhNhzfczu7YmVcPrQI/tSZ8ZiBlLZwSztaJLwLaoBFl2kJQA2/W5FACCFckzxj4Ej0fG0QSxr/1UGDsKPfNt3ikikgM8j+lP38F3S7dzzYoDi/5en8f89rbsAr9UrIvEcEcpZpNP7SYG9ME2c0lXKFpC6OQQtsKvNhYG9CPTaPmTg4PeN9Z2JhMS6UxoE0Vdk058tsZzhRvP7oxD4FMhlKoGWqykFPBhxzDX/XF1HvTa2o3QoQMcg1+6qGQayAhjuepAkA5dvaa5fjP3c1EXVdRUqsSNOI0hAkHFquOQahHtkEikg9KTvik+5SC+p5LB4dq/DYzoUvf1qaOvc+UwsknussegzLnfuSVgWkjNtqLT+kC4qMIKTFnZDeOuEiBE6tDuWKcj83exKIo3+kvcQi0xcLQt5k8NjmuXpdvp7iOHcVOXMnjrjTFMJjN2dr2DFuylK8e/z3FJKQtEaIqaw/N2SVLcnv2A6SoLv52vmobv/BSWjQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(5660300002)(2906002)(9686003)(6512007)(33716001)(86362001)(6666004)(4326008)(8676002)(66556008)(66946007)(66476007)(26005)(186003)(1076003)(8936002)(44832011)(52116002)(6506007)(508600001)(83380400001)(6916009)(33656002)(38350700002)(38100700002)(316002)(54906003)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RYqfNK9g33wuXy930hh1BjmndT1cz9zQDyLBa32hcVRuCJQIKpDnRcRXm9cz?=
+ =?us-ascii?Q?x9ERK2oDcs1Vwb1j0LP4qjpzgkYTpfeR9L1pl/h1AggXlsCjH8Fu5YPMA8jV?=
+ =?us-ascii?Q?4FRHmW6VqzBZLKO7PyHkNJF5pTK6UA6SJEK5wPVFIG5HDXdZ1GEyiUDiK6Dq?=
+ =?us-ascii?Q?XxVJIfWOCY/YAKixKd36ZM+5zTjAp9ZlyYDzRMl1t5MfyG06Jl+vOTWrAlqM?=
+ =?us-ascii?Q?eF3Nuk0Eg325mfuuxXgDI6jQE4p8Ox9hddqsf041yButxy0Sn6D0DJ6UOC2h?=
+ =?us-ascii?Q?MRuqjc2FHxe0Vtp4MqYuxVxeyIG6duccOarf5YLWdVncv7LpD8gUEVfRr+yv?=
+ =?us-ascii?Q?IWpnpXF78OXtiQgxVGVHWjApP3UPjBXLGULjwq+lv8h5l2g4UFxOGC4E5ubv?=
+ =?us-ascii?Q?QSVFS1EunfWkwnnF72UheYHyoqmOZlEewkq/2G5L2ifQ+nM+IM4A008xDKUP?=
+ =?us-ascii?Q?Y9k6GbEuNfAh/R34MAHTXKbH06vu/QcWJQkwYRXLdrqLgt4X9+RA2N2XaVht?=
+ =?us-ascii?Q?86lq1Xs9Q2z9mhFYarYw2N0hv0dKilyfbefJ/3Tb759ieRchZW4AjgBN1MN6?=
+ =?us-ascii?Q?Sdp+jFwNxg92RdV8p9NHh7nIRIQfXu38tyE+Hvc0nlHOzqi1RzbFU2EQsaMn?=
+ =?us-ascii?Q?v3Ju6yZXpVtX/+WgZdWVmc1fO6yXY0uaMhr0tdseMiCdWJEBEmrki4cnlYXV?=
+ =?us-ascii?Q?+2IXzYcmKayzc+ttO0J0mgp+CoLl3F+wZCcy2LQZiQKdni8mfHafJqL6P2J5?=
+ =?us-ascii?Q?AbjoOagKPnWTYjO+i9ae/CE062f4BFnORSp31D5rMx0RyJwIapOKFPIUgVh1?=
+ =?us-ascii?Q?HrWUn7nHmh2VoLB3aPcmdSjxyIK9u9XMLoUxXDuvIT7A212lXPXf0xGUtP26?=
+ =?us-ascii?Q?bmPLhX7+wBICO1kUnh7DQfFUALV1HavE+qnZyEgmv2bw9ImqmBPKo31V/Ci+?=
+ =?us-ascii?Q?64qQ267ww/VknehYzJpnrrrZ/nqn0GGrJvR7rbhUjwv3FdlPkqlnm8yIZ+Lw?=
+ =?us-ascii?Q?FOsZl7dwtUG7SdcxtcCrRaY8DEPXDZICoEcCHijW3Z19L19nLyVcyR5bS3ug?=
+ =?us-ascii?Q?aZsJx5JLfzEOQFTufUfrfYW27MHuNZb2qY9eS6tPxVsYH11JWDwsYpmQdUzE?=
+ =?us-ascii?Q?zsESiHpBVIPk39O2MWmtsl0caRXkq6WWwsadT6VUXfFDje3qJSUkYQlNpllT?=
+ =?us-ascii?Q?+JMG7tNuaZ0VuxWWVIkXD4nXqLtV3MENxM0xaRKBKnXahD4Dvo8msCfEka9d?=
+ =?us-ascii?Q?lurXA2hzGtS+N7yLiU0ShDp3JMFFSPX8yIu4a1By9mr0PxYFk1FGZGshGFCC?=
+ =?us-ascii?Q?DmbONLzpALFhj/8hxKjD/4v5mQ+2nSnHA0+zeUrAqMHR6L8SOxFrEAGe6qQz?=
+ =?us-ascii?Q?u7LARHa9pFigI2P7axPtgr8C0Hn3TANXzSexI1QbXdQ5TZhDG9UaiB1RuVtt?=
+ =?us-ascii?Q?RXKfGMskppF8dgsAUGkbo6SNi/KdfxEgmI9vpNa8G5HliFay4CX/CoQFFcY4?=
+ =?us-ascii?Q?C/3aeC3Jox5+edSG1Q/zC1JSkYmYip+AeuIjGEDEetVRigfBfYxwEErKNIYz?=
+ =?us-ascii?Q?pI3Z9AHzPsLfodaFQgiAqi+yAf8M8LDf3wG6/8PlgufVYnTAnQW06S1hxVXr?=
+ =?us-ascii?Q?2TBsWV4jqbsAK2OIlCjp/VkFNWFq9voU1I+LzWGuqe/mFJrd6cprWxxLgCmj?=
+ =?us-ascii?Q?oHoDNQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 402cec38-40e6-4265-277c-08da01a32e5d
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 08:02:40.0031
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WNU60DxSiaDapfNBlQ8Bl1iS5R+zkIWHM2BaLAootHsG5iA5PV1aISaTBEs9y4WxsgExMKxJQPe16y3swEReTTFpYawW30pv9Gno4zYP2LE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4686
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10280 signatures=690848
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 malwarescore=0 suspectscore=0 mlxscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203090042
+X-Proofpoint-GUID: Zaez0iYpRmemajFpuju8cb-9ZxSOcrHA
+X-Proofpoint-ORIG-GUID: Zaez0iYpRmemajFpuju8cb-9ZxSOcrHA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:16:19AM -0800, Reinette Chatre wrote:
-> Hi,
+On Wed, Mar 09, 2022 at 02:25:10AM +0530, Vihas Makwana wrote:
+> The code inside rtw_init_drv_sw() calls various init functions to
+> populate the padapter structure and checks for their return values
+> respectively.
+> But if one of the functions in middle fails then it simply returns 
+> _FAIL instead of proper logging and calling freeing counterparts
+> of previous init functions.
+> This leads to various memory leaks and can be found in 
+> /sys/kernel/debug/kmemleak if kernel is compiled with DEBUG_KMEMLEAK=y.
 > 
-> On 3/3/2022 2:38 PM, Jarkko Sakkinen wrote:
-> > There is a limited amount of SGX memory (EPC) on each system.  When that
-> > memory is used up, SGX has its own swapping mechanism which is similar
-> > in concept but totally separate from the core mm/* code.  Instead of
-> > swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
-> > comes from a shared memory pseudo-file and can itself be swapped by the
-> > core mm code.  There is a hierarchy like this:
-> > 
-> > 	EPC <-> shmem <-> disk
-> > 
-> > After data is swapped back in from shmem to EPC, the shmem backing
-> > storage needs to be freed.  Currently, the backing shmem is not freed.
-> > This effectively wastes the shmem while the enclave is running.  The
-> > memory is recovered when the enclave is destroyed and the backing
-> > storage freed.
-> > 
-> > Sort this out by freeing memory with shmem_truncate_range(), as soon as
-> > a page is faulted back to the EPC.  In addition, free the memory for
-> > PCMD pages as soon as all PCMD's in a page have been marked as unused
-> > by zeroing its contents.
-> > 
-> > Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
-> > Cc: stable@vger.kernel.org
-> > Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+> Fix this and keep the success and error separate.
 > 
-> I can reliably reproduce the issue this patch aims to solve by creating
-> a virtual machine that has a significant portion of its memory consumed
-> by EPC:
-> 
-> qemu-system-x86_64 -smp 4 -m 4G\
->  -enable-kvm \
->  -cpu host,+sgx-provisionkey \
->  -object memory-backend-ram,size=2G,host-nodes=0,policy=bind,id=node0 \
->  -object memory-backend-epc,id=mem0,size=1536M,prealloc=on,host-nodes=0,policy=bind \
->  -numa node,nodeid=0,cpus=0-1,memdev=node0 \
->  -object memory-backend-ram,size=2G,host-nodes=1,policy=bind,id=node1 \
->  -object memory-backend-epc,id=mem1,size=1536M,prealloc=on,host-nodes=1,policy=bind \
->  -numa node,nodeid=1,cpus=2-3,memdev=node1 \
->  -M sgx-epc.0.memdev=mem0,sgx-epc.0.node=0,sgx-epc.1.memdev=mem1,sgx-epc.1.node=1 \
->  ...
-> 
-> Before this patch, running the very stressful SGX2 over subscription test case
-> (unclobbered_vdso_oversubscribed_remove) in this environment always triggers 
-> the oom-killer but no amount of tasks killed can save the system
-> with it always ending deadlocked on memory:
-> 
-> [   58.642719] Tasks state (memory values in pages):
-> [   58.644324] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
-> [   58.647237] [    195]     0   195     3153      197    45056        0         -1000 systemd-udevd
-> [   58.650238] [    281]     0   281  1836367        0 10817536        0             0 test_sgx
-> [   58.653088] Out of memory and no killable processes...
-> [   58.654832] Kernel panic - not syncing: System is deadlocked on memory
-> 
-> After applying this patch I was able to run SGX2 selftest
-> unclobbered_vdso_oversubscribed_remove ten times successfully.
-> 
-> Tested-by: Reinette Chatre <reinette.chatre@intel.com>
 
-Thank you.
+Delete the extra blank line.  Feel free to add a Fixes tag which points
+to the driver add commit.
 
-> Reinette
+Looks good.
 
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-BR, Jarkko
+> 
+> Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+> ---
+> Tested on Comfast CF-WU810N RTL8188EUS wireless adapter.
+> This patch depends on "[PATCH 1/2] staging: r8188eu: call _cancel_timer_ex from
+>  _rtw_free_recv_priv"
+
+This is a patchset so that's assumed.  No need to say it.  Also it's not
+really true.  Those patches are independent and can be applied in any
+order.
+
+regards,
+dan carpenter
+
