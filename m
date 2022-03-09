@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB3BC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2DFC35278
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiCIQ3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:29:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S236059AbiCIQ2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:28:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238290AbiCIQVs (ORCPT
+        with ESMTP id S238164AbiCIQVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:48 -0500
-Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60DC3A5;
-        Wed,  9 Mar 2022 08:20:46 -0800 (PST)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru B5CC8209A0EF
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH] docs/kernel-parameters: update description of mem=
-To:     Mike Rapoport <rppt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        <linux-doc@vger.kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220309122446.1118738-1-rppt@kernel.org>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <d3679148-598e-4b58-96be-e3ab255ab8d9@omp.ru>
-Date:   Wed, 9 Mar 2022 19:20:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 9 Mar 2022 11:21:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4629A149979;
+        Wed,  9 Mar 2022 08:19:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1B9EB82221;
+        Wed,  9 Mar 2022 16:19:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1831C340E8;
+        Wed,  9 Mar 2022 16:19:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646842794;
+        bh=Y/AzchoFpdLn6g8WkJT0uKS4BVm0X//JoewFAWcfMvk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XSV6AM7vzZFLqYyU1n7HWW6ahG9lO2FniA14hp8whdwYWh4c3K2cAKv2FTKJJBzCj
+         B9nWQvn2CiS/hyXrv4nsWBAaWnUY44Kqkc8yaEsgF04VNGzByzm07boG4sh/QZt6mv
+         rzjlrLSqq01qnziQwHsmt2FueQvcdiwT5xiiK0iWEPvf7b2YLqQ3tIfI5HFzuCXEiC
+         Xm6g1QL2KBh/gHCccjSKtHp1wSI9tyuQc6kbr7qCYUs2ZlvZvxPmF55xIr1wtnNqlw
+         Z44tCVTqZfD4VsASYpPbUIXXo5fiqrsGXVCjsdc9K1xMv4zpXF2P2oTqi6VdsmCw5V
+         u+I/f0a+ZPieQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Quentin Schulz <foss+kernel@0leil.net>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        jakob.unterwurzacher@theobroma-systems.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 01/24] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
+Date:   Wed,  9 Mar 2022 11:19:20 -0500
+Message-Id: <20220309161946.136122-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20220309122446.1118738-1-rppt@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/9/22 3:24 PM, Mike Rapoport wrote:
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-> From: Mike Rapoport <rppt@linux.ibm.com>
-> 
-> The existing description of mem= does not cover all the cases and
-> differences between how architectures treat it.
-> 
-> Extend the description to match the code.
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
-> 
-> This is in a way a followup for the discussion of mem= usage on MIPS:
-> 
-> https://lore.kernel.org/all/1646461289-31992-1-git-send-email-yangtiezhu@loongson.cn
-> 
->  .../admin-guide/kernel-parameters.txt         | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index f5a27f067db9..f3597841a031 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -2834,6 +2834,15 @@
->  			2 when the kernel is not able to see the whole system memory;
->  			3 memory that lies after 'mem=' boundary is excluded from
->  			 the hypervisor, then assigned to KVM guests.
-> +			4 to limit the memory available for kdump kernel.
-> +
-> +			[ARC,MICROBLAZE] - the limit applies only to low memory,
-> +			high memory is not affected.
-> +
-> +			[ARM64] - only limits memory covered by the linear
-> +			mapping. The NOMAP regions are not affected.
-> +
-> +			[HEXAGON] - must be use
+[ Upstream commit ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd ]
 
-   Used?
+The micro USB3.0 port available on the Haikou evaluation kit for Puma
+RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
+was broken until now because of missing logic around the ID pin.
 
-> to set the memory size, there is
+This adds proper support for USB OTG on Puma Haikou by "connecting" the
+GPIO used for USB ID to the USB3 controller device.
 
-   What? :-)
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220120125156.16217-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+)
 
-[...]
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
+index 292bb7e80cf3..3ae5d727e367 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
+@@ -232,6 +232,7 @@ &usbdrd3_0 {
+ 
+ &usbdrd_dwc3_0 {
+ 	dr_mode = "otg";
++	extcon = <&extcon_usb3>;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index fb67db4619ea..002ece51c3ba 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -25,6 +25,13 @@ module_led: led-0 {
+ 		};
+ 	};
+ 
++	extcon_usb3: extcon-usb3 {
++		compatible = "linux,extcon-usb-gpio";
++		id-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usb3_id>;
++	};
++
+ 	clkin_gmac: external-gmac-clock {
+ 		compatible = "fixed-clock";
+ 		clock-frequency = <125000000>;
+@@ -422,6 +429,13 @@ vcc5v0_host_en: vcc5v0-host-en {
+ 			  <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
++
++	usb3 {
++		usb3_id: usb3-id {
++			rockchip,pins =
++			  <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
+ };
+ 
+ &sdhci {
+-- 
+2.34.1
 
-MBR, Sergey
