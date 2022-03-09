@@ -2,177 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15710C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 08:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A59FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231631AbiCIJAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        id S231660AbiCIJBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbiCIJAU (ORCPT
+        with ESMTP id S231642AbiCIJBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:00:20 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E823F8A2
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 00:59:21 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CB9C81F382;
-        Wed,  9 Mar 2022 08:59:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1646816359; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wLJltizetGHjLy0bZkVmUTitFEvO6Iw9LN4l/yyRS9g=;
-        b=xJMU4JKBSqycf0f11ZqQDeTWq8g0sgu8sXlzxDvY3ymXsnEjo2mL3To6E1LhAjb3XPzIN3
-        5CAUmI3rligO9NMeQ9QbqUSIZmntFRr7OlIAUumTmUJrFwRet1a4g1lgiy7C2ZmD7VVxmb
-        FfE2tY0p/LbhZKpRBCZ7S8QXYzSmHqw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1646816359;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wLJltizetGHjLy0bZkVmUTitFEvO6Iw9LN4l/yyRS9g=;
-        b=FVf+aJpycFvcYs5csUbOIGvtOk4h/lSiBWKtewL8ZuNuCp//g+2yxksSChU0hjt780ptOA
-        X+8qpbgpPd8ebIBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 75B1F13B71;
-        Wed,  9 Mar 2022 08:59:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zqAWG2dsKGLzGAAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Wed, 09 Mar 2022 08:59:19 +0000
-Message-ID: <4ce1e172-799c-cba3-0a72-4a6fdf2c6d2f@suse.de>
-Date:   Wed, 9 Mar 2022 09:59:18 +0100
+        Wed, 9 Mar 2022 04:01:00 -0500
+Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603A64755D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:00:01 -0800 (PST)
+Received: by mail.olerise.pl (Postfix, from userid 1001)
+        id 52E5843816; Wed,  9 Mar 2022 09:56:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
+        t=1646816170; bh=ZNYiuZLXlxCdAPtstEG/gwJieB5RBwA/cHj1SZ3Mpl0=;
+        h=Date:From:To:Subject:From;
+        b=gQO9qom8Eu++LMq7qufPDKGn5BlO+1wEKZPKLi0Mz3UsFjmCV6fc/jbJkHAA/BnGC
+         ZLx3QR+jaN/sTvHOPXJjOxfGfW1vL5wmeJfBFCpZmq2BYeiVtZO803QJ7DXqNhiwXx
+         A1dnYN3d4Jj1ORROQdz6mRpZoblAOlNoqHUAvSgFSdNORF+jPSPnJOMtwFlQUJ15Vu
+         YCmRkg+5bLp3DhfNp+Vv08jFXNjk4dtAIfMF1bV2QjzLAOb9arrkcNA4aNCHiKRSud
+         8gExlBXOGUYn5ITaNqKXEubo0XZ/YyehVx+AGtHi2EG/JWiKz1K3md/ndsmsSIMlZv
+         9stTHyOphJVEQ==
+Received: by mail.olerise.pl for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:55:55 GMT
+Message-ID: <20220309084500-0.1.27.nrt2.0.9b48fc5dod@olerise.pl>
+Date:   Wed,  9 Mar 2022 08:55:55 GMT
+From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= <mikolaj.rudzik@olerise.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
+X-Mailer: mail.olerise.pl
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
-Content-Language: en-US
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>
-Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel@lists.freedesktop.org, Dmitry Osipenko <digetx@gmail.com>
-References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------m91zCDjNLtfE3G4JVLYLEQQq"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------m91zCDjNLtfE3G4JVLYLEQQq
-Content-Type: multipart/mixed; boundary="------------OBPBu7VXBcmaoAijlAdrHv6p";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Dmitry Osipenko <dmitry.osipenko@collabora.com>,
- David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
- Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
- <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Gert Wollny <gert.wollny@collabora.com>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org,
- Gustavo Padovan <gustavo.padovan@collabora.com>,
- dri-devel@lists.freedesktop.org, Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <4ce1e172-799c-cba3-0a72-4a6fdf2c6d2f@suse.de>
-Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
-References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
-In-Reply-To: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+Dzie=C5=84 dobry,
 
---------------OBPBu7VXBcmaoAijlAdrHv6p
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
+skania nowych zlece=C5=84 ze strony www.
 
-SGkNCg0KQW0gMDguMDMuMjIgdW0gMTQ6MTcgc2NocmllYiBEbWl0cnkgT3NpcGVua286DQo+
-IEhlbGxvLA0KPiANCj4gVGhpcyBwYXRjaHNldCBpbnRyb2R1Y2VzIG1lbW9yeSBzaHJpbmtl
-ciBmb3IgdGhlIFZpcnRJTy1HUFUgRFJNIGRyaXZlci4NCj4gRHVyaW5nIE9PTSwgdGhlIHNo
-cmlua2VyIHdpbGwgcmVsZWFzZSBCT3MgdGhhdCBhcmUgbWFya2VkIGFzICJub3QgbmVlZGVk
-Ig0KPiBieSB1c2Vyc3BhY2UgdXNpbmcgdGhlIG5ldyBtYWR2aXNlIElPQ1RMLiBUaGUgdXNl
-cnNwYWNlIGluIHRoaXMgY2FzZSBpcw0KPiB0aGUgTWVzYSBWaXJHTCBkcml2ZXIsIGl0IHdp
-bGwgbWFyayB0aGUgY2FjaGVkIEJPcyBhcyAibm90IG5lZWRlZCIsDQo+IGFsbG93aW5nIGtl
-cm5lbCBkcml2ZXIgdG8gcmVsZWFzZSBtZW1vcnkgb2YgdGhlIGNhY2hlZCBzaG1lbSBCT3Mg
-b24gbG93bWVtDQo+IHNpdHVhdGlvbnMsIHByZXZlbnRpbmcgT09NIGtpbGxzLg0KDQpWaXJ0
-aW8tZ3B1IGlzIGJ1aWxkIG9uIHRvcCBvZiBHRU0gc2htZW0gaGVscGVycy4gSSBoYXZlIGEg
-cHJvdG90eXBlIA0KcGF0Y2hzZXQgdGhhdCBhZGRzIGEgc2hyaW5rZXIgdG8gdGhlc2UgaGVs
-cGVycy4gSWYgeW91IHdhbnQgdG8gZ28gDQpmdXJ0aGVyLCB5b3UgY291bGQgaW1wbGVtZW50
-IHNvbWV0aGluZyBsaWtlIHRoYXQgaW5zdGVhZC4gUGFuZnJvc3QgYW5kIA0KbGltYSBhbHNv
-IGhhdmUgdGhlaXIgb3duIHNocmlua2VyIGFuZCBjb3VsZCBjZXJ0YWlubHkgYmUgY29udmVy
-dGVkIHRvIA0KdGhlIGdlbS1zaG1lbSBzaHJpbmtlci4NCg0KQmVzdCByZWdhcmRzDQpUaG9t
-YXMNCg0KPiANCj4gVGhpcyBwYXRjaHNldCBpbmNsdWRlcyBjb3VwbGUgZml4ZXMgZm9yIHBy
-b2JsZW1zIEkgZm91bmQgd2hpbGUgd2FzIHdvcmtpbmcNCj4gb24gdGhlIHNocmlua2VyLCBp
-dCBhbHNvIGluY2x1ZGVzIHByZXJlcXVpc2l0ZSBETUEgQVBJIHVzYWdlIGltcHJvdmVtZW50
-DQo+IG5lZWRlZCBieSB0aGUgc2hyaW5rZXIuDQo+IA0KPiBUaGUgTWVzYSBhbmQgSUdUIHBh
-dGNoZXMgd2lsbCBiZSBrZXB0IG9uIGhvbGQgdW50aWwgdGhpcyBrZXJuZWwgc2VyaWVzDQo+
-IHdpbGwgYmUgYXBwcm92ZWQgYW5kIGFwcGxpZWQuDQo+IA0KPiBUaGlzIHBhdGNoc2V0IHdh
-cyB0ZXN0ZWQgdXNpbmcgUWVtdSBhbmQgY3Jvc3ZtLCBpbmNsdWRpbmcgYm90aCBjYXNlcyBv
-Zg0KPiBJT01NVSBvZmYvb24uDQo+IA0KPiBNZXNhOiBodHRwczovL2dpdGxhYi5mcmVlZGVz
-a3RvcC5vcmcvZGlnZXR4L21lc2EvLS9jb21taXRzL3ZpcmdsLW1hZHZpc2UNCj4gSUdUOiAg
-aHR0cHM6Ly9naXRsYWIuZnJlZWRlc2t0b3Aub3JnL2RpZ2V0eC9pZ3QtZ3B1LXRvb2xzLy0v
-dHJlZS92aXJ0aW8tbWFkdmlzZQ0KPiANCj4gRG1pdHJ5IE9zaXBlbmtvICg1KToNCj4gICAg
-ZHJtL3ZpcnRpbzogQ29ycmVjdCBkcm1fZ2VtX3NobWVtX2dldF9zZ190YWJsZSgpIGVycm9y
-IGhhbmRsaW5nDQo+ICAgIGRybS92aXJ0aW86IENoZWNrIHdoZXRoZXIgdHJhbnNmZXJyZWQg
-MkQgQk8gaXMgc2htZW0NCj4gICAgZHJtL3ZpcnRpbzogVW5sb2NrIEdFTSByZXNlcnZhdGlv
-bnMgaW4gZXJyb3IgY29kZSBwYXRoDQo+ICAgIGRybS92aXJ0aW86IEltcHJvdmUgRE1BIEFQ
-SSB1c2FnZSBmb3Igc2htZW0gQk9zDQo+ICAgIGRybS92aXJ0aW86IEFkZCBtZW1vcnkgc2hy
-aW5rZXINCj4gDQo+ICAgZHJpdmVycy9ncHUvZHJtL3ZpcnRpby9NYWtlZmlsZSAgICAgICAg
-ICAgICAgIHwgICAzICstDQo+ICAgZHJpdmVycy9ncHUvZHJtL3ZpcnRpby92aXJ0Z3B1X2Ry
-di5jICAgICAgICAgIHwgIDIyICsrKy0NCj4gICBkcml2ZXJzL2dwdS9kcm0vdmlydGlvL3Zp
-cnRncHVfZHJ2LmggICAgICAgICAgfCAgMzEgKysrKy0NCj4gICBkcml2ZXJzL2dwdS9kcm0v
-dmlydGlvL3ZpcnRncHVfZ2VtLmMgICAgICAgICAgfCAgODQgKysrKysrKysrKysrDQo+ICAg
-ZHJpdmVycy9ncHUvZHJtL3ZpcnRpby92aXJ0Z3B1X2dlbV9zaHJpbmtlci5jIHwgMTI0ICsr
-KysrKysrKysrKysrKysrKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS92aXJ0aW8vdmlydGdwdV9p
-b2N0bC5jICAgICAgICB8ICAzNyArKysrKysNCj4gICBkcml2ZXJzL2dwdS9kcm0vdmlydGlv
-L3ZpcnRncHVfa21zLmMgICAgICAgICAgfCAgMTcgKystDQo+ICAgZHJpdmVycy9ncHUvZHJt
-L3ZpcnRpby92aXJ0Z3B1X29iamVjdC5jICAgICAgIHwgIDYzICsrKy0tLS0tLQ0KPiAgIGRy
-aXZlcnMvZ3B1L2RybS92aXJ0aW8vdmlydGdwdV9wbGFuZS5jICAgICAgICB8ICAxNyArKy0N
-Cj4gICBkcml2ZXJzL2dwdS9kcm0vdmlydGlvL3ZpcnRncHVfdnEuYyAgICAgICAgICAgfCAg
-MzAgKysrLS0NCj4gICBpbmNsdWRlL3VhcGkvZHJtL3ZpcnRncHVfZHJtLmggICAgICAgICAg
-ICAgICAgfCAgMTQgKysNCj4gICAxMSBmaWxlcyBjaGFuZ2VkLCAzNzMgaW5zZXJ0aW9ucygr
-KSwgNjkgZGVsZXRpb25zKC0pDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1
-L2RybS92aXJ0aW8vdmlydGdwdV9nZW1fc2hyaW5rZXIuYw0KPiANCg0KLS0gDQpUaG9tYXMg
-WmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBT
-b2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcs
-IEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVy
-OiBJdm8gVG90ZXYNCg==
+Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
+, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
+=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
+jonowania strony w Google.
 
---------------OBPBu7VXBcmaoAijlAdrHv6p--
+Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
 
---------------m91zCDjNLtfE3G4JVLYLEQQq
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
 
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIobGYFAwAAAAAACgkQlh/E3EQov+Aw
-Xw/+NZ6+Z4Hl4awSRJX+RCgDRUdZJFYUtQZRGGoyqG9NxUsqZDkH5VWiCEXdj23sf+yR5fk1lI/Y
-Ofo7kkmJ7UOSkDgtsi3H9W20kawjK191fopEOL64v7eSvLfOOGzMM6h77c3rrWhclcoVsTD/pQCL
-XH3hRYI/SMN8yO13tuzFEvcVBUIFDXPR/4+WeFzc3WiscvLM8QhvgtfoQUz3A15JYJ/e9r2YBSyQ
-Ohw3bsomzQa+5HZRabVbYaZWjn+VP49s9F+gltcFTt6y6uRpRMulGOjpOBkEty8JwxK0kguLLnKE
-QLNfleigSzzE5IdAtWirJHX8BCLf2CZaK8Vk2tT0EiE7IM5exJ3KxPzhvuT62JJ0cK5MCtNhjBY6
-VtmJDJrYD10KgEBLu3R+7iXD61wZ/mw7LvJFjxQ06u9eicmzInFMZE1pgTuynj4apjqy2SQYck4P
-1bjpr1tRxC/60NIJ87DNkQAT1aRhRs2guYNNMgoTSQzjVgjRqRAnaAQ1OfHgOSjuYBqEjdoWgh2p
-MfwAdsf17+JrA9fwifgUqiAXZTZens8sH2TILyOkzQ3tcKCpt567iaytn6jn/3Cb2xqNDTwD7BKC
-8dkEeoi3sVGuUMfqncGrYzx7EABPmZltDU3fnemEf1XOAyevBg/msIx75tXIO0B+ndtd62VP4b8E
-zOg=
-=c7Ll
------END PGP SIGNATURE-----
-
---------------m91zCDjNLtfE3G4JVLYLEQQq--
+Pozdrawiam
+Miko=C5=82aj Rudzik
