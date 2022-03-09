@@ -2,283 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56339C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233626AbiCIOno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:43:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        id S233619AbiCIOns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 09:43:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233617AbiCIOne (ORCPT
+        with ESMTP id S233628AbiCIOnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:43:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD03BC7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:42:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DA8960EA5
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4170C340F6;
-        Wed,  9 Mar 2022 14:42:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646836948;
-        bh=/IOE9q8yo2NZlvwDe/DVbTQPPU3AcAWQOmaN09MF3ds=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JAYul9PoPEfDWMBeCdNiNUwJTibarEbYXVrQU9Qb2clrADYsp4BMJfuZtdDtnfI5y
-         M0M9CgT3+IbHvKCpqrXsb80DY9AbY2h5r2w+ZPszArbcyoSwMetTgzigfNsDOeFB49
-         eHruOFUCPnOVRGPzMy7ELfJ89Hk2at0zrmGvkG2K9JHHnqxveT58ooxLO/WDMehuTb
-         EhlRWpzNAOWO9AHpmygrRqrXdWppRR8ATvAt/ZWNifbP53Sqbh0BdoqUjKHc0l8tIP
-         HMwY2MQNapTLtQ70ITgnlLUACUZjmfiUZ+28lGaAyu6e/EM5xThDIIh+/25Y0wOLum
-         BPb5u4KzVt3eA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
-Date:   Wed,  9 Mar 2022 15:40:48 +0100
-Message-Id: <20220309144138.360482-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220309144138.360482-1-arnd@kernel.org>
-References: <20220309144138.360482-1-arnd@kernel.org>
+        Wed, 9 Mar 2022 09:43:35 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1D7F39
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:42:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646836951; x=1678372951;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=t2LKPixQNCEbNxRbIvjtc/abLj2E3NE0mNcxvQXI5FU=;
+  b=ufXWNF6rgBZm9vhEQnmx4nOPH+2iMxUGZtyQbnHh4bITpmJy0bXzfIZa
+   R++GKrTvqOT1KdfquxV+YpMDHrCJLUZNrU13994mDXu/JH7WRHQ4hqTbx
+   fYIMLrrRvNeVlB2CKSSFHxk70CRp5C+u4LfSiRUfV4LQnHh2vIjseLwWe
+   lt6Z3nHm9M1XguIX733KloeWCREv7p/12vrMrxEgl9r3pwv33v3GFDYxY
+   QfC1nTOvnmA647NsP+59krVCTG8U58dkzvBug8Owgs6HjMudD/US6DncB
+   V4eR2nqd8LQ3j8tACmWARAPyXTEFdKuJpFDbBnUZQKUFDjM/w0TGKwb3T
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
+   d="scan'208";a="165101978"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 07:42:30 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 07:42:30 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 07:42:28 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <p.yadav@ti.com>, <michael@walle.cc>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <nicolas.ferre@microchip.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH v2 3/4] mtd: spi-nor: Favor the BFPT-parsed set_4byte_addr_mode method
+Date:   Wed, 9 Mar 2022 16:42:14 +0200
+Message-ID: <20220309144215.179449-4-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220309144215.179449-1-tudor.ambarus@microchip.com>
+References: <20220309144215.179449-1-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+JESD216 SFDP defines in the BFPT standard methods to enter and exit the
+4-Byte Address Mode. The flash parameters and settings that are retrieved
+from SFDP have higher precedence than the static initialized ones, because
+they should be more accurate and less error prone than those initialized
+statically. Favor the BFPT-parsed set_4byte_addr_mode method and use the
+generic core methods where possible.
+This patch may introduce regressions in case BFPT contains wrong data. The
+fix is to introduce a post_bfpt() fixup hook and update the wrong BFPT
+data.
 
-It is possible to build MMU-less kernels for Cortex-M base
-microcrontrollers as well as a couple of older platforms that
-have not been converted to CONFIG_ARCH_MULTIPLATFORM,
-specifically ep93xx, footbridge, dove, sa1100 and s3c24xx.
-
-It seems unlikely that anybody has tested those configurations
-in recent years, as even building them is frequently broken.
-A patch I submitted caused another build time regression
-in this configuration. I sent a patch for that, but it seems
-better to also remove the option entirely, leaving ARMv7-M
-as the only supported Arm NOMMU target for simplicity.
-
-This addresses several build failures in randconfig builds that
-have accumulated over the years.
-
-Cc: Vladimir Murzin <vladimir.murzin@arm.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
-If there are no objections, I'd apply this patch to the soc
-tree for 5.18 as a cleanup.
----
- arch/arm/Kconfig                              | 34 +++++++------------
- .../mach-footbridge/include/mach/hardware.h   | 20 ++++-------
- arch/arm/mach-footbridge/include/mach/io.h    | 20 -----------
- arch/arm/mach-integrator/hardware.h           |  5 ---
- 4 files changed, 20 insertions(+), 59 deletions(-)
- delete mode 100644 arch/arm/mach-footbridge/include/mach/io.h
+ drivers/mtd/spi-nor/core.c      |  7 ++++++-
+ drivers/mtd/spi-nor/macronix.c  | 10 ++++++++--
+ drivers/mtd/spi-nor/micron-st.c |  9 ++++++---
+ 3 files changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 5f0b40bab4fb..d184377ce2ae 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -304,6 +304,17 @@ config MMU
- 	  Select if you want MMU-based virtualised addressing space
- 	  support by paged memory management. If unsure, say 'Y'.
- 
-+config ARM_SINGLE_ARMV7M
-+	def_bool !MMU
-+	select ARM_NVIC
-+	select AUTO_ZRELADDR
-+	select TIMER_OF
-+	select COMMON_CLK
-+	select CPU_V7M
-+	select NO_IOPORT_MAP
-+	select SPARSE_IRQ
-+	select USE_OF
-+
- config ARCH_MMAP_RND_BITS_MIN
- 	default 8
- 
-@@ -318,12 +329,11 @@ config ARCH_MMAP_RND_BITS_MAX
- #
- choice
- 	prompt "ARM system type"
--	default ARM_SINGLE_ARMV7M if !MMU
--	default ARCH_MULTIPLATFORM if MMU
-+	depends on MMU
-+	default ARCH_MULTIPLATFORM
- 
- config ARCH_MULTIPLATFORM
- 	bool "Allow multiple platforms to be selected"
--	depends on MMU
- 	select ARCH_FLATMEM_ENABLE
- 	select ARCH_SPARSEMEM_ENABLE
- 	select ARCH_SELECT_MEMORY_MODEL
-@@ -337,18 +347,6 @@ config ARCH_MULTIPLATFORM
- 	select SPARSE_IRQ
- 	select USE_OF
- 
--config ARM_SINGLE_ARMV7M
--	bool "ARMv7-M based platforms (Cortex-M0/M3/M4)"
--	depends on !MMU
--	select ARM_NVIC
--	select AUTO_ZRELADDR
--	select TIMER_OF
--	select COMMON_CLK
--	select CPU_V7M
--	select NO_IOPORT_MAP
--	select SPARSE_IRQ
--	select USE_OF
--
- config ARCH_EP93XX
- 	bool "EP93xx-based"
- 	select ARCH_SPARSEMEM_ENABLE
-@@ -367,7 +365,6 @@ config ARCH_FOOTBRIDGE
- 	bool "FootBridge"
- 	select CPU_SA110
- 	select FOOTBRIDGE
--	select NEED_MACH_IO_H if !MMU
- 	select NEED_MACH_MEMORY_H
- 	help
- 	  Support for systems based on the DC21285 companion chip
-@@ -375,7 +372,6 @@ config ARCH_FOOTBRIDGE
- 
- config ARCH_IOP32X
- 	bool "IOP32x-based"
--	depends on MMU
- 	select CPU_XSCALE
- 	select GPIO_IOP
- 	select GPIOLIB
-@@ -387,7 +383,6 @@ config ARCH_IOP32X
- 
- config ARCH_IXP4XX
- 	bool "IXP4xx-based"
--	depends on MMU
- 	select ARCH_SUPPORTS_BIG_ENDIAN
- 	select ARM_PATCH_PHYS_VIRT
- 	select CPU_XSCALE
-@@ -418,7 +413,6 @@ config ARCH_DOVE
- 
- config ARCH_PXA
- 	bool "PXA2xx/PXA3xx-based"
--	depends on MMU
- 	select ARCH_MTD_XIP
- 	select ARM_CPU_SUSPEND if PM
- 	select AUTO_ZRELADDR
-@@ -437,7 +431,6 @@ config ARCH_PXA
- 
- config ARCH_RPC
- 	bool "RiscPC"
--	depends on MMU
- 	depends on !CC_IS_CLANG && GCC_VERSION < 90100 && GCC_VERSION >= 60000
- 	select ARCH_ACORN
- 	select ARCH_MAY_HAVE_PC_FDC
-@@ -493,7 +486,6 @@ config ARCH_S3C24XX
- 
- config ARCH_OMAP1
- 	bool "TI OMAP1"
--	depends on MMU
- 	select ARCH_OMAP
- 	select CLKSRC_MMIO
- 	select GENERIC_IRQ_CHIP
-diff --git a/arch/arm/mach-footbridge/include/mach/hardware.h b/arch/arm/mach-footbridge/include/mach/hardware.h
-index ecaf6e7388d9..985ad3a95671 100644
---- a/arch/arm/mach-footbridge/include/mach/hardware.h
-+++ b/arch/arm/mach-footbridge/include/mach/hardware.h
-@@ -21,32 +21,26 @@
-  * 0xf0000000	0x80000000	16MB	ISA memory
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 91d3754baa59..5de46a786cc5 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -2418,6 +2418,8 @@ static void spi_nor_init_fixup_flags(struct spi_nor *nor)
   */
+ static void spi_nor_late_init_params(struct spi_nor *nor)
+ {
++	struct spi_nor_flash_parameter *params = nor->params;
++
+ 	if (nor->manufacturer && nor->manufacturer->fixups &&
+ 	    nor->manufacturer->fixups->late_init)
+ 		nor->manufacturer->fixups->late_init(nor);
+@@ -2425,6 +2427,10 @@ static void spi_nor_late_init_params(struct spi_nor *nor)
+ 	if (nor->info->fixups && nor->info->fixups->late_init)
+ 		nor->info->fixups->late_init(nor);
  
--#ifdef CONFIG_MMU
--#define MMU_IO(a, b)	(a)
--#else
--#define MMU_IO(a, b)	(b)
--#endif
--
- #define XBUS_SIZE		0x00100000
--#define XBUS_BASE		MMU_IO(0xff800000, 0x40000000)
-+#define XBUS_BASE		0xff800000
++	/* Default method kept for backward compatibility. */
++	if (!params->set_4byte_addr_mode)
++		params->set_4byte_addr_mode = spi_nor_set_4byte_addr_mode_brwr;
++
+ 	spi_nor_init_flags(nor);
+ 	spi_nor_init_fixup_flags(nor);
  
- #define ARMCSR_SIZE		0x00100000
--#define ARMCSR_BASE		MMU_IO(0xfe000000, 0x42000000)
-+#define ARMCSR_BASE		0xfe000000
+@@ -2492,7 +2498,6 @@ static void spi_nor_init_default_params(struct spi_nor *nor)
+ 	struct device_node *np = spi_nor_get_flash_node(nor);
  
- #define WFLUSH_SIZE		0x00100000
--#define WFLUSH_BASE		MMU_IO(0xfd000000, 0x78000000)
-+#define WFLUSH_BASE		0xfd000000
+ 	params->quad_enable = spi_nor_sr2_bit1_quad_enable;
+-	params->set_4byte_addr_mode = spi_nor_set_4byte_addr_mode_brwr;
+ 	params->otp.org = &info->otp_org;
  
- #define PCIIACK_SIZE		0x00100000
--#define PCIIACK_BASE		MMU_IO(0xfc000000, 0x79000000)
-+#define PCIIACK_BASE		0xfc000000
+ 	/* Default to 16-bit Write Status (01h) Command */
+diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
+index 85e8655d362c..c267cbcc7f1d 100644
+--- a/drivers/mtd/spi-nor/macronix.c
++++ b/drivers/mtd/spi-nor/macronix.c
+@@ -105,12 +105,18 @@ static const struct flash_info macronix_nor_parts[] = {
+ static void macronix_nor_default_init(struct spi_nor *nor)
+ {
+ 	nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;
+-	nor->params->set_4byte_addr_mode =
+-		spi_nor_set_4byte_addr_mode_en4b_ex4b;
++}
++
++static void macronix_nor_late_init(struct spi_nor *nor)
++{
++	if (!nor->params->set_4byte_addr_mode)
++		nor->params->set_4byte_addr_mode =
++			spi_nor_set_4byte_addr_mode_en4b_ex4b;
+ }
  
- #define PCICFG1_SIZE		0x01000000
--#define PCICFG1_BASE		MMU_IO(0xfb000000, 0x7a000000)
-+#define PCICFG1_BASE		0xfb000000
+ static const struct spi_nor_fixups macronix_nor_fixups = {
+ 	.default_init = macronix_nor_default_init,
++	.late_init = macronix_nor_late_init,
+ };
  
- #define PCICFG0_SIZE		0x01000000
--#define PCICFG0_BASE		MMU_IO(0xfa000000, 0x7b000000)
-+#define PCICFG0_BASE		0xfa000000
+ const struct spi_nor_manufacturer spi_nor_macronix = {
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index 4baa9dce04f9..a23d2774f166 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -410,14 +410,17 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
+ 	nor->flags |= SNOR_F_HAS_LOCK;
+ 	nor->flags &= ~SNOR_F_HAS_16BIT_SR;
+ 	nor->params->quad_enable = NULL;
+-	nor->params->set_4byte_addr_mode =
+-		spi_nor_set_4byte_addr_mode_wren_en4b_ex4b;
+ }
  
- #define PCIMEM_SIZE		0x01000000
--#define PCIMEM_BASE		MMU_IO(0xf0000000, 0x80000000)
-+#define PCIMEM_BASE		0xf0000000
+ static void micron_st_nor_late_init(struct spi_nor *nor)
+ {
++	struct spi_nor_flash_parameter *params = nor->params;
++
+ 	if (nor->info->mfr_flags & USE_FSR)
+-		nor->params->ready = micron_st_nor_ready;
++		params->ready = micron_st_nor_ready;
++	if (!params->set_4byte_addr_mode)
++		params->set_4byte_addr_mode =
++			spi_nor_set_4byte_addr_mode_wren_en4b_ex4b;
+ }
  
- #define XBUS_CS2		0x40012000
- 
-diff --git a/arch/arm/mach-footbridge/include/mach/io.h b/arch/arm/mach-footbridge/include/mach/io.h
-deleted file mode 100644
-index 4e18b921373f..000000000000
---- a/arch/arm/mach-footbridge/include/mach/io.h
-+++ /dev/null
-@@ -1,20 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- *  arch/arm/mach-footbridge/include/mach/io.h
-- *
-- *  Copyright (C) 1997-1999 Russell King
-- *
-- *  Modifications:
-- *   06-12-1997	RMK	Created.
-- *   07-04-1999	RMK	Major cleanup
-- */
--#ifndef __ASM_ARM_ARCH_IO_H
--#define __ASM_ARM_ARCH_IO_H
--
--/*
-- * Translation of various i/o addresses to host addresses for !CONFIG_MMU
-- */
--#define PCIO_BASE       0x7c000000
--#define __io(a)			((void __iomem *)(PCIO_BASE + (a)))
--
--#endif
-diff --git a/arch/arm/mach-integrator/hardware.h b/arch/arm/mach-integrator/hardware.h
-index 4d6ade3dd4ee..81ce09e3ad45 100644
---- a/arch/arm/mach-integrator/hardware.h
-+++ b/arch/arm/mach-integrator/hardware.h
-@@ -16,12 +16,7 @@
- #define IO_START		INTEGRATOR_HDR_BASE        // PA of IO
- 
- /* macro to get at IO space when running virtually */
--#ifdef CONFIG_MMU
- #define IO_ADDRESS(x)	(((x) & 0x000fffff) | (((x) >> 4) & 0x0ff00000) | IO_BASE)
--#else
--#define IO_ADDRESS(x)	(x)
--#endif
--
- #define __io_address(n)		((void __iomem *)IO_ADDRESS(n))
- 
- /*
+ static const struct spi_nor_fixups micron_st_nor_fixups = {
 -- 
-2.29.2
+2.25.1
 
