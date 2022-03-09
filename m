@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA04CC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232182AbiCIJg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S232197AbiCIJhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiCIJg6 (ORCPT
+        with ESMTP id S229924AbiCIJhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:36:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6CB16F94E;
-        Wed,  9 Mar 2022 01:35:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 9 Mar 2022 04:37:13 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E482939E7
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:36:15 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFD5A61633;
-        Wed,  9 Mar 2022 09:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90883C340E8;
-        Wed,  9 Mar 2022 09:35:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646818558;
-        bh=ap3IEN9WI5D+Wgpg4vty70KterEBnX5GNImrGJ+LBJo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gI2/a/YEZeybZGVlUbgVYJv1aPXi1imBbSmLpKrUEcVrKR/vK/SKI3gQJ23HPqWQB
-         oQj4dHxxMSqHEAzGvaWeLia0mjnyEd4Czd8UuJlbjtSWsj/dMzPLOo0s6wUSyGHKkh
-         mm/libqAZ0/oCdUR2bKYtmzeYpmnbjbDCUwUVIJz+3vrId5DHejdfOl/O9yCYxRuMa
-         pIxy/SZUem7wJv2ttBf/fhTLfH01+9qki4C2WXrCsY9DAOW2HxD4Qj9PDTBKzMy/RG
-         LKx2LL0Wpdfoln2GXVQp35GxwINMjrLx6h0b7qPr7JuaNjnEz1V/tQHTCT26ARb7mF
-         MkFvLoOnLi9Bw==
-Date:   Wed, 9 Mar 2022 11:35:14 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.org
-Cc:     Nathaniel McCallum <nathaniel@profian.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v2.1 14/30] x86/sgx: Support restricting of enclave
- page permissions
-Message-ID: <Yih00gFMaJhLIgxa@iki.fi>
-References: <20220304093524.397485-1-jarkko@kernel.org>
- <20220304093524.397485-14-jarkko@kernel.org>
- <YihqwiU3Dr5mvMQx@iki.fi>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 1A50C3F1C5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:36:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646818574;
+        bh=vgJXPJxV0L+vAaGNHZUa0pyZRilCw3Wji1ihg6t2p5g=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=pYKMWNXmR681ZhCslMiROvJkXFM0yK7Z4FqkFaXpgaGx5AOJ2BpdEv65sPMwkIDj2
+         C/qQQRzwMMX7LV31vK9azVXyuYIbsUNZ4dGf+oNKszE1S8qaWuwiQrtyV+lrth1Qgg
+         RU8TQM218qVREfBHELS8iEHnPpQ3o186uxQFG95rLiYYOBpu7pPIAEWX4HSbGWbn1T
+         X5erYCpC6LXEfkZMnYCjVfarm4e1sSZFny9kzPInLrVLY/pCZFIshGNaQj/zRyOQEv
+         iDZDhq/RMXmspqBsRN7ffQ3xSskhpCmhFbr6JSUhs5x5rUO7oecJWymy0G60rCb36u
+         N3TCMMf9d3uKw==
+Received: by mail-ed1-f72.google.com with SMTP id n11-20020a50cc4b000000b00415e939bf9eso953856edi.22
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:36:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vgJXPJxV0L+vAaGNHZUa0pyZRilCw3Wji1ihg6t2p5g=;
+        b=36ntxRtmSqPLzUTELOGuQuUbwOjcBVVOJGhYcPCaqO8AOT83ly5HD2KjwNwcP+pnOE
+         3Ol9b9wKc8fVaRO3yD/Fg4ArUV/MdWHWsFx/pd77JzNUbAEE1R7+ine2qI0e/KvCsryh
+         gILDsfUbXWqdf55GBjteLcCup1dD36fR8lAdJzik4YcjewclQQrqzLwcdmFaT7nkBAZC
+         3gk3pApZcJpXlEYtokwlP+5xG3381BuK+0pzhZsbvwmUxlkcAravRcDfwykCHN+uQwt3
+         gi6gOJw8Guk82Oz/oCj2oSzxOeYIEhUvEm05jRS+RZ46NH1i8AO9Uk/zWXkX2+4b8fwD
+         8YqQ==
+X-Gm-Message-State: AOAM531w6u+qGNqjIEBKsI6jxvTHmXihJb4S2j6EBtlG4HdQ3BhvOY+0
+        wCqPhCGFgjNhTw/d6jVjVzaXWCxSapj9bcNP0QgvzAmqpnT4XHIjAEUql3c5hSWsipwu6uU1aPD
+        WGSyyCePoseuESPl/nCdI4dH+9lzcdtrKfTh35ovvyA==
+X-Received: by 2002:a17:906:f41:b0:6d5:c6bc:fbc7 with SMTP id h1-20020a1709060f4100b006d5c6bcfbc7mr16234670ejj.541.1646818573802;
+        Wed, 09 Mar 2022 01:36:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxqJfkq2ncyoyHFJqrP5yMmZhK6ZJIwjOk5HnVSwV0BZkhtpkJH5FaPNRu22hHODgSjQwGtxA==
+X-Received: by 2002:a17:906:f41:b0:6d5:c6bc:fbc7 with SMTP id h1-20020a1709060f4100b006d5c6bcfbc7mr16234652ejj.541.1646818573591;
+        Wed, 09 Mar 2022 01:36:13 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id a7-20020a170906468700b006da636fdbe3sm496370ejr.105.2022.03.09.01.36.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 01:36:13 -0800 (PST)
+Message-ID: <a96004cf-155f-22e7-8b1d-7168f3187598@canonical.com>
+Date:   Wed, 9 Mar 2022 10:36:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YihqwiU3Dr5mvMQx@iki.fi>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: gpu: mali-bifrost: Document RZ/V2L SoC
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220308211543.3081-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220308211543.3081-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:52:22AM +0200, Jarkko Sakkinen wrote:
-> On Fri, Mar 04, 2022 at 11:35:08AM +0200, Jarkko Sakkinen wrote:
-> > +#define SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS \
-> > +	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_restrict_perm)
+On 08/03/2022 22:15, Lad Prabhakar wrote:
+> The Renesas RZ/V2L SoC (a.k.a R9A07G054) has a Bifrost Mali-G31 GPU,
+> add a compatible string for it.
 > 
-> What if this was replaced with just SGX_IOC_ENCLAVE_RESET_PAGES, which
-> would simply do EMODPR with PROT_NONE? The main ingredient of EMODPR is to
-> flush out the TLB's, and move a page to pending state, which cannot be done
-> from inside the enclave.
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> It's there because of microarchitecture constraints, and less so to work as
-> a reasonable permission control mechanism (actually it does terrible job on
-> that side and only confuses).
-> 
-> Once you have this magic TLB reset button in place you can just do one
-> EACCEPT and EMODPE inside the enclave and you're done.
-> 
-> This is also kind of atomic in the sense that EACCEPT free's a page with no
-> rights so no misuse can happend before EMODPE has tuned EPCM.
 
-I wonder if this type of pattern could be made work out for Graphene:
 
-1. SGX_IOC_ENCLAVE_RESET_PAGES
-2. EACCEPT + EMODPE
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-This kind of delivers EMODP that everyone has been looking for.
 
-BR, Jarkko
+Best regards,
+Krzysztof
