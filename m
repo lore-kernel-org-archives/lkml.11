@@ -2,103 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2258C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237832AbiCITX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:23:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
+        id S237875AbiCITYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:24:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238174AbiCITXG (ORCPT
+        with ESMTP id S237847AbiCITYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:23:06 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECE0403D5;
-        Wed,  9 Mar 2022 11:22:04 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 5150B41EA7;
-        Wed,  9 Mar 2022 19:21:59 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v3 0/7] irqchip/apple-aic: Add support for AICv2
-Date:   Thu, 10 Mar 2022 04:21:16 +0900
-Message-Id: <20220309192123.152028-1-marcan@marcan.st>
-X-Mailer: git-send-email 2.33.0
+        Wed, 9 Mar 2022 14:24:02 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF7262DD
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:22:38 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id mv5-20020a17090b198500b001bf2a039831so6170848pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:22:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EGDyT1tV4o9cHKMKOSJ3P2N73OyIn36r8ZT+WWtaSJM=;
+        b=P3jlJdlcuRzTGM75HGWF/LMggRln9TBb5LmJMnvuIOGvG3qun+eTmyDhrv/uDFhR4x
+         2rRPgGPDonzNxn9Kdz38C3xhATNJF0sWHhN17OSHklZtpgB0nyUGry6M7NH8Mz82PkWp
+         PNkSZetwAWx9v8zeTEYzobhRIH0eyUHBeTkVU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EGDyT1tV4o9cHKMKOSJ3P2N73OyIn36r8ZT+WWtaSJM=;
+        b=bCjj55Ik5GxI+8uUQiOWYk+Hz7XaDZWgnbQ9H9Q8XRvho5xRugPkvQqVMLfimA3/d8
+         3/yxFnQDj5GdjnvKZncPay21FhGpYt4shJ6FmTmmMhnzrDarPsO5p1ZQT6teFKfflmCl
+         /KBK73a/yI/SLcVUy/8TNfTJcKBKci+r0Q+tBH6v2CFxq9YPOliwqrmKWkiz3IezwPaY
+         b4zEqg9jBrJpqLSuCu2rLeGLwrhsPSnKrnu60drYpMK8XWttgKGQeKYSQuFcjE4j0mUR
+         0nJkg5f1v7b6NHru2JaKeD5Mm/FpbLhrG14xsYD7EvKiqCBuMEwl75zxywwPgfAuncQj
+         W4Iw==
+X-Gm-Message-State: AOAM532jxINkxXlIliFD/sMQuRIvAp7/CjevH6V20eIGNg/PYPgcIOje
+        nSItByTBrgiSWKGno8u3Ae+2Bg==
+X-Google-Smtp-Source: ABdhPJw5gr8lbO9F2RqImWEl0bBFwqjL2c9fLYlBLZjv04LnRfLSQ8pP+jqGmegKk7VNUOlTqTF6iA==
+X-Received: by 2002:a17:90a:2d0:b0:1bc:4fc0:6fb7 with SMTP id d16-20020a17090a02d000b001bc4fc06fb7mr1047827pjd.196.1646853758046;
+        Wed, 09 Mar 2022 11:22:38 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k19-20020a056a00135300b004f734327960sm4129111pfu.106.2022.03.09.11.22.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 11:22:37 -0800 (PST)
+Date:   Wed, 9 Mar 2022 11:22:37 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
+        kernelci@groups.io,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] selftests/lkdtm: add config and turn off
+ CFI_FORWARD_PROTO
+Message-ID: <202203091122.A51B31230A@keescook>
+References: <20220217205620.2512094-1-usama.anjum@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217205620.2512094-1-usama.anjum@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks,
+On Fri, Feb 18, 2022 at 01:56:19AM +0500, Muhammad Usama Anjum wrote:
+> Add config options which are needed for LKDTM sub-tests.
+> STACKLEAK_ERASING test needs GCC_PLUGIN_STACKLEAK config.
+> READ_AFTER_FREE and READ_BUDDY_AFTER_FREE tests need
+> INIT_ON_FREE_DEFAULT_ON config.
+> 
+> CFI_FORWARD_PROTO always fails as there is no active CFI system of some
+> kind. Turn it off for now by default until proper support.
 
-In the t6000/t6001 (M1 Pro / Max) SoCs, Apple introduced a new version
-of their interrupt controller. This is a significant departure from
-AICv1 and seems designed to better scale to larger chips. This series
-adds support for it to the existing AIC driver.
+Building under LTO Clang on arm64, this is available. What's the right
+way to add a CONFIG that isn't always available?
 
-Gone are CPU affinities; instead there seems to be some kind of
-"automagic" dispatch to willing CPU cores, and cores can also opt-out
-via an IMP-DEF sysreg (!). Right now the bootloader just sets up all
-cores to accept IRQs, and we ignore all this and let the magic
-algorithm pick a CPU to accept the IRQ. In the future, we might start
-making use of these finer-grained capabilities for e.g. better
-real-time guarantees (CPUs running RT threads might opt out of IRQs).
+-Kees
 
-Legacy IPI support is also gone, so this implements Fast IPI support.
-Fast IPIs are implemented entirely in the CPU core complexes, using
-FIQs and IMP-DEF sysregs. This is also supported on t8103/M1, so we
-enable it there too, but we keep the legacy AIC IPI codepath in case
-it is useful for backporting to older chips.
-
-This also adds support for multi-die AIC2 controllers. While no
-multi-die products exist yet, the AIC2 in t600x is built to support
-up to 2 dies, and it's pretty clear how it works, so let's implement
-it. If we're lucky, when multi-die products roll around, this will
-let us support them with only DT changes. In order to support the
-extra die dimension, this introduces a 4-argument IRQ phandle form
-(3-argument is always supported and just implies die 0).
-
-All register offsets are computed based on capability register values,
-which should allow forward-compatibility with future AIC2 variants...
-except for one. For some inexplicable reason, the number of actually
-implemented die register sets is nowhere to be found (t600x has 2,
-but claims 1 die in use and 8 dies max, neither of which is what we
-need), and this is necessary to compute the event register offset,
-which is page-aligned after the die register sets. We have no choice
-but to split this out in the device tree as its own reg entry. Apple
-also specify this offset in their ADT explicitly...
-
-Changes since v2:
-- Changed the DT binding to move the event register to its own reg entry
-- Minor error cleanup rework in patch 7
-
-Hector Martin (7):
-  PCI: apple: Change MSI handling to handle 4-cell AIC fwspec form
-  dt-bindings: interrupt-controller: apple,aic2: New binding for AICv2
-  irqchip/apple-aic: Add Fast IPI support
-  irqchip/apple-aic: Switch to irq_domain_create_tree and sparse hwirqs
-  irqchip/apple-aic: Dynamically compute register offsets
-  irqchip/apple-aic: Support multiple dies
-  irqchip/apple-aic: Add support for AICv2
-
- .../interrupt-controller/apple,aic2.yaml      |  98 ++++
- MAINTAINERS                                   |   2 +-
- drivers/irqchip/irq-apple-aic.c               | 459 ++++++++++++++----
- drivers/pci/controller/pcie-apple.c           |   2 +-
- 4 files changed, 473 insertions(+), 88 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+> 
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Fixes: 46d1a0f03d66 ("selftests/lkdtm: Add tests for LKDTM targets")
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+>  tools/testing/selftests/lkdtm/config    | 2 ++
+>  tools/testing/selftests/lkdtm/tests.txt | 2 +-
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/lkdtm/config b/tools/testing/selftests/lkdtm/config
+> index 46f39ee762086..adc9fa60057c5 100644
+> --- a/tools/testing/selftests/lkdtm/config
+> +++ b/tools/testing/selftests/lkdtm/config
+> @@ -2,8 +2,10 @@ CONFIG_LKDTM=y
+>  CONFIG_DEBUG_LIST=y
+>  CONFIG_SLAB_FREELIST_HARDENED=y
+>  CONFIG_FORTIFY_SOURCE=y
+> +CONFIG_GCC_PLUGIN_STACKLEAK=y
+>  CONFIG_HARDENED_USERCOPY=y
+>  CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
+> +CONFIG_INIT_ON_FREE_DEFAULT_ON=y
+>  CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
+>  CONFIG_UBSAN=y
+>  CONFIG_UBSAN_BOUNDS=y
+> diff --git a/tools/testing/selftests/lkdtm/tests.txt b/tools/testing/selftests/lkdtm/tests.txt
+> index 6b36b7f5dcf96..aa947b0ce1eeb 100644
+> --- a/tools/testing/selftests/lkdtm/tests.txt
+> +++ b/tools/testing/selftests/lkdtm/tests.txt
+> @@ -72,7 +72,7 @@ USERCOPY_STACK_FRAME_FROM
+>  USERCOPY_STACK_BEYOND
+>  USERCOPY_KERNEL
+>  STACKLEAK_ERASING OK: the rest of the thread stack is properly erased
+> -CFI_FORWARD_PROTO
+> +#CFI_FORWARD_PROTO
+>  FORTIFIED_STRSCPY
+>  FORTIFIED_OBJECT
+>  FORTIFIED_SUBOBJECT
+> -- 
+> 2.30.2
+> 
 
 -- 
-2.33.0
-
+Kees Cook
