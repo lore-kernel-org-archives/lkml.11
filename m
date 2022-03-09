@@ -2,56 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A59FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A18BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbiCIJBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:01:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
+        id S231687AbiCIJBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:01:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiCIJBA (ORCPT
+        with ESMTP id S231688AbiCIJBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:01:00 -0500
-Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603A64755D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:00:01 -0800 (PST)
-Received: by mail.olerise.pl (Postfix, from userid 1001)
-        id 52E5843816; Wed,  9 Mar 2022 09:56:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
-        t=1646816170; bh=ZNYiuZLXlxCdAPtstEG/gwJieB5RBwA/cHj1SZ3Mpl0=;
-        h=Date:From:To:Subject:From;
-        b=gQO9qom8Eu++LMq7qufPDKGn5BlO+1wEKZPKLi0Mz3UsFjmCV6fc/jbJkHAA/BnGC
-         ZLx3QR+jaN/sTvHOPXJjOxfGfW1vL5wmeJfBFCpZmq2BYeiVtZO803QJ7DXqNhiwXx
-         A1dnYN3d4Jj1ORROQdz6mRpZoblAOlNoqHUAvSgFSdNORF+jPSPnJOMtwFlQUJ15Vu
-         YCmRkg+5bLp3DhfNp+Vv08jFXNjk4dtAIfMF1bV2QjzLAOb9arrkcNA4aNCHiKRSud
-         8gExlBXOGUYn5ITaNqKXEubo0XZ/YyehVx+AGtHi2EG/JWiKz1K3md/ndsmsSIMlZv
-         9stTHyOphJVEQ==
-Received: by mail.olerise.pl for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:55:55 GMT
-Message-ID: <20220309084500-0.1.27.nrt2.0.9b48fc5dod@olerise.pl>
-Date:   Wed,  9 Mar 2022 08:55:55 GMT
-From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= <mikolaj.rudzik@olerise.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
-X-Mailer: mail.olerise.pl
+        Wed, 9 Mar 2022 04:01:10 -0500
+Received: from mxout01.lancloud.ru (mxout01.lancloud.ru [45.84.86.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F06F8483A0;
+        Wed,  9 Mar 2022 01:00:07 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 111E120DCBD4
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Message-ID: <45fa6cff-948f-93e0-388c-42da30e70efb@omp.ru>
+Date:   Wed, 9 Mar 2022 12:00:03 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH V3] ata: pata_pxa: Use platform_get_irq() to get the
+ interrupt
+Content-Language: en-US
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <cgel.zte@gmail.com>
+CC:     <chi.minghao@zte.com.cn>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <zealci@zte.com.cn>
+References: <d1dfb244-eda3-b5c6-c6bd-c0294a9a4a94@opensource.wdc.com>
+ <20220309072834.2081944-1-chi.minghao@zte.com.cn>
+ <4ce9ad67-7102-1ad8-2726-5e96aecfde80@opensource.wdc.com>
+ <d4f60079-9a99-c8e6-4a3c-4c77597cc151@gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+In-Reply-To: <d4f60079-9a99-c8e6-4a3c-4c77597cc151@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On 09.03.2022 11:55, Sergei Shtylyov wrote:
 
-chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
-skania nowych zlece=C5=84 ze strony www.
+>>> From: Minghao Chi <chi.minghao@zte.com.cn>
+>>>
+>>> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+>>> allocation of IRQ resources in DT core code, this causes an issue
+>>> when using hierarchical interrupt domains using "interrupts" property
+>>> in the node as this bypasses the hierarchical setup and messes up the
+>>> irq chaining.
+>>>
+>>> In preparation for removal of static setup of IRQ resource from DT core
+>>> code use platform_get_irq().
+>>>
+>>> v1->v2:
+>>>      - Use more specific in the subject: ata: pata_pxa:
+>>>      - Switch to returning 'irq'
+>>> v2->v3:
+>>>      - drop the unlikely()
+>>
+>> Looks good. FYI, the changelog above should be placed under the "---"
+>> after your Signed-off-by so that it does not stay as part of the commit
+>> message. No need to resend, I will remove this when applying.
+>>
+>> Sergey,
+>>
+>> Review OK ?
+> 
+>     Yes.
 
-Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
-, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
-=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
-jonowania strony w Google.
+    Ugh, replied from the wrong account. I had provided my Reviewed-by: tag 
+already...
 
-Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+>     Although, strictly speaking, we still need to check for IRQ0 as well...
 
+    The platform_get_irq() patch preventing IRQ0 hasn't landed still...
 
-Pozdrawiam
-Miko=C5=82aj Rudzik
+MBR, Sergey
