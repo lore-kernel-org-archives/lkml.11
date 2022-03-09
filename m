@@ -2,188 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A474C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6345AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237556AbiCITTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53310 "EHLO
+        id S230219AbiCITUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:20:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237621AbiCITTa (ORCPT
+        with ESMTP id S238392AbiCITSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:19:30 -0500
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5101168FB
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:18:26 -0800 (PST)
-Received: by mail-oo1-xc32.google.com with SMTP id j7-20020a4ad6c7000000b0031c690e4123so4044863oot.11
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:18:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=RTkHcVtz6Xj+gST8HDWpAZrHsZcT5ReHhL3eO1pEfMs=;
-        b=z4Oq8hg5oMUC/28l4I7mskqErza640vBkufG2k65W2hvzZ7DIoDp3bIAvrMNmm5Cv/
-         slGBQW64NT9dnHPHly3gphqYVHfaBpsn9o/EKnAcayNpZtN4V09r5V5ibuQlNIY062YR
-         KoAEffvGuuHIF/I/Kk3owWwANF2DW1ZrB191OuewOirfI/0ZxbxFx0QJPEQx7rM5Znpz
-         H7eVzsNkZ1+wWexOG7Kfq79Kjk7H1FmFlm3XlENVb5KqGjlLodYVRh8RG0FwRKnwlEFu
-         HiUmlfblpD1d7oViQwfrKtwcg6N35SKPVQE2Npbpskwei4/bvTnzpI4WxHR4lyCuW5ZF
-         idBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=RTkHcVtz6Xj+gST8HDWpAZrHsZcT5ReHhL3eO1pEfMs=;
-        b=0nUdubk7kDNa0DlMnlPkddCtj0I86L24qN/T5aAAQILCXpDyYZhJbgEBACHB3t62GA
-         6w5t5LoX+diZ2A2nFd3/vIuK92el4RA6iLZvr4i89D+R00K/AeH75vrRmZnxG0lTG/kc
-         M0/9MoIfVUUTxm++plqokyujXpYnim/Xatyy08Yw4NSoiAUZC9y07GpRk2SaLQGwnnId
-         9zlUCLvCd6m+VqWi7Dmmit9MXqarJXQfKiEqwRZ/33o35WjPEMr4X3FouPgsfdqP+yvK
-         N471sNY2zC47G6p6gXO0qlY7nquC2XpL6CNn3/+/dC5yLWnVeV3/zgbRthrkaXQalljl
-         7ayg==
-X-Gm-Message-State: AOAM5335qMSzoDC/M2+nWc51gBXYO6Md2c6oMLWSjkhHp/wqKTpbl/E7
-        cBz9lrys8EExjPmkS8Xk2j7AUw==
-X-Google-Smtp-Source: ABdhPJzDE/5CGA3LZQsgx1FDGKFVh6iantpGNAhQgr1CqxPTN17zW+Uucq3WVOE6mYNTtMFU5jp3nQ==
-X-Received: by 2002:a4a:907:0:b0:320:f948:a8dc with SMTP id 7-20020a4a0907000000b00320f948a8dcmr591034ooa.61.1646853505295;
-        Wed, 09 Mar 2022 11:18:25 -0800 (PST)
-Received: from [192.168.17.16] ([189.219.74.147])
-        by smtp.gmail.com with ESMTPSA id m21-20020a056820051500b0031d0841b87esm1403489ooj.34.2022.03.09.11.18.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 11:18:24 -0800 (PST)
-Message-ID: <322280c2-8673-949c-ffd4-4e804a030b89@linaro.org>
-Date:   Wed, 9 Mar 2022 13:18:23 -0600
+        Wed, 9 Mar 2022 14:18:30 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 330E8108BF5;
+        Wed,  9 Mar 2022 11:17:25 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 981B71691;
+        Wed,  9 Mar 2022 11:17:24 -0800 (PST)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFD953FA27;
+        Wed,  9 Mar 2022 11:17:22 -0800 (PST)
+Date:   Wed, 9 Mar 2022 19:17:20 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     rafael@kernel.org, viresh.kumar@linaro.org, robh+dt@kernel.org,
+        Sudeep Holla <sudeep.holla@arm.com>, krzk+dt@kernel.org,
+        bjorn.andersson@linaro.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        angelogioacchino.delregno@somainline.org,
+        Hector Yuan <hector.yuan@mediatek.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: dvfs: Use MediaTek CPUFREQ HW as an
+ example
+Message-ID: <Yij9QBWFe5z9Ze23@bogus>
+References: <20220309151541.139511-1-manivannan.sadhasivam@linaro.org>
+ <20220309151541.139511-2-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4.9 00/24] 4.9.306-rc1 review
-Content-Language: en-US
-From:   =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220309155856.295480966@linuxfoundation.org>
- <2f501345-e847-668e-7ca3-23af49b69224@linaro.org>
-In-Reply-To: <2f501345-e847-668e-7ca3-23af49b69224@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309151541.139511-2-manivannan.sadhasivam@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
-
-On 09/03/22 12:40, Daniel Díaz wrote:
-> Hello!
+On Wed, Mar 09, 2022 at 08:45:40PM +0530, Manivannan Sadhasivam wrote:
+> Qcom CPUFREQ HW don't have the support for generic performance domains yet.
+> So use MediaTek CPUFREQ HW that has the support available in mainline.
 > 
-> On 09/03/22 09:59, Greg Kroah-Hartman wrote:
->> This is the start of the stable review cycle for the 4.9.306 release.
->> There are 24 patches in this series, all will be posted as a response
->> to this one.  If anyone has any issues with these being applied, please
->> let me know.
->>
->> Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
->> Anything received after that time might be too late.
->>
->> The whole patch series can be found in one patch at:
->>     https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.306-rc1.gz
->> or in the git tree and branch at:
->>     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
->> and the diffstat can be found below.
->>
->> thanks,
->>
->> greg k-h
+> This also silences the below dtschema warnings for "cpufreq-qcom-hw.yaml":
 > 
-> Regressions found.
+> Documentation/devicetree/bindings/dvfs/performance-domain.example.dt.yaml: performance-controller@12340000: reg: [[305397760, 4096]] is too short
+>         From schema: Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+> Documentation/devicetree/bindings/dvfs/performance-domain.example.dt.yaml: performance-controller@12340000: 'clocks' is a required property
+>         From schema: Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+> Documentation/devicetree/bindings/dvfs/performance-domain.example.dt.yaml: performance-controller@12340000: 'clock-names' is a required property
+>         From schema: Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+> Documentation/devicetree/bindings/dvfs/performance-domain.example.dt.yaml: performance-controller@12340000: '#freq-domain-cells' is a required property
+>         From schema: Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
+> Documentation/devicetree/bindings/dvfs/performance-domain.example.dt.yaml: performance-controller@12340000: '#performance-domain-cells' does not match any of the regexes: 'pinctrl-[0-9]+'
+>         From schema: Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
 > 
-> The following Arm combinations fail to build:
-> - arm-gcc-8-bcm2835_defconfig
-> - arm-gcc-8-imx_v6_v7_defconfig
-> - arm-gcc-8-omap2plus_defconfig
-> - arm-gcc-9-bcm2835_defconfig
-> - arm-gcc-9-imx_v6_v7_defconfig
-> - arm-gcc-9-omap2plus_defconfig
-> - arm-gcc-10-bcm2835_defconfig
-> - arm-gcc-10-imx_v6_v7_defconfig
-> - arm-gcc-10-omap2plus_defconfig
-> - arm-gcc-11-bcm2835_defconfig
-> - arm-gcc-11-imx_v6_v7_defconfig
-> - arm-gcc-11-omap2plus_defconfig
-> 
-> Messages look like this:
-> 
->    /builds/linux/arch/arm/kernel/entry-common.S: Assembler messages:
->    /builds/linux/arch/arm/kernel/entry-common.S:155: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/kernel/entry-common.S:164: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    make[2]: *** [/builds/linux/scripts/Makefile.build:407: arch/arm/kernel/entry-common.o] Error 1
->    /builds/linux/arch/arm/kernel/entry-armv.S: Assembler messages:
->    /builds/linux/arch/arm/kernel/entry-armv.S:1124: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/kernel/entry-armv.S:1147: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/kernel/entry-armv.S:1170: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/kernel/entry-armv.S:1193: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/kernel/entry-armv.S:1232: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    make[2]: *** [/builds/linux/scripts/Makefile.build:407: arch/arm/kernel/entry-armv.o] Error 1
->    /builds/linux/arch/arm/mm/cache-v7.S: Assembler messages:
->    /builds/linux/arch/arm/mm/cache-v7.S:63: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/mm/cache-v7.S:136: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/mm/cache-v7.S:170: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/mm/cache-v7.S:298: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    make[2]: *** [/builds/linux/scripts/Makefile.build:407: arch/arm/mm/cache-v7.o] Error 1
->    /builds/linux/arch/arm/mm/tlb-v7.S: Assembler messages:
->    /builds/linux/arch/arm/mm/tlb-v7.S:88: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    make[2]: *** [/builds/linux/scripts/Makefile.build:407: arch/arm/mm/tlb-v7.o] Error 1
->    /builds/linux/arch/arm/mm/proc-v7-2level.S: Assembler messages:
->    /builds/linux/arch/arm/mm/proc-v7-2level.S:58: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/mm/proc-v7-2level.S:60: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    /builds/linux/arch/arm/mm/proc-v7.S:61: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
->    make[2]: *** [/builds/linux/scripts/Makefile.build:407: arch/arm/mm/proc-v7.o] Error 1
->    make[2]: Target '__build' not remade because of errors.
+> Cc: Hector Yuan <hector.yuan@mediatek.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
 
-Here's what the bisection throws for this one:
+Thanks for fixing this. It seem to have slipped through the cracks. I had
+plans to push this once Mediatek driver was merged but totally forgot about
+it.
 
-# bad: [2ef7c55895217efa8183111969710960a529d3cd] Linux 4.9.306-rc1
-# good: [41b13534ea8aa554d4e987650e24da5510258752] ARM: use LOADADDR() to get load address of sections
-git bisect start '2ef7c55895217efa8183111969710960a529d3cd' '41b13534ea8aa554d4e987650e24da5510258752'
-# bad: [fd723e642aacb60567beda736ebb062db44b8349] ARM: include unprivileged BPF status in Spectre V2 reporting
-git bisect bad fd723e642aacb60567beda736ebb062db44b8349
-# bad: [d0002ea56072220ddab72bb6e31a32350c01b44e] ARM: Spectre-BHB workaround
-git bisect bad d0002ea56072220ddab72bb6e31a32350c01b44e
-# first bad commit: [d0002ea56072220ddab72bb6e31a32350c01b44e] ARM: Spectre-BHB workaround
-commit d0002ea56072220ddab72bb6e31a32350c01b44e
-Author: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Date:   Thu Feb 10 16:05:45 2022 +0000
-     ARM: Spectre-BHB workaround
-     
-     comomit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
-     
-     Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
-     Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
-     well to be safe, which is affected by Spectre V2 in the same ways as
-     Cortex-A15.
-     
-     Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-     Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-     [changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
-     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  arch/arm/include/asm/assembler.h  | 10 +++++
-  arch/arm/include/asm/spectre.h    |  4 ++
-  arch/arm/kernel/entry-armv.S      | 79 ++++++++++++++++++++++++++++++++++++---
-  arch/arm/kernel/entry-common.S    | 24 ++++++++++++
-  arch/arm/kernel/spectre.c         |  4 ++
-  arch/arm/kernel/traps.c           | 38 +++++++++++++++++++
-  arch/arm/kernel/vmlinux-xip.lds.S | 18 +++++++--
-  arch/arm/kernel/vmlinux.lds.S     | 18 +++++++--
-  arch/arm/mm/Kconfig               | 10 +++++
-  arch/arm/mm/proc-v7-bugs.c        | 76 +++++++++++++++++++++++++++++++++++++
-  10 files changed, 269 insertions(+), 12 deletions(-)
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
 
-
-Reverting made the build pass.
-
-Greetings!
-
-Daniel Díaz
-daniel.diaz@linaro.org
+-- 
+Regards,
+Sudeep
