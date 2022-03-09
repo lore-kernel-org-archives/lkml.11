@@ -2,94 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF036C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236456AbiCIQfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:35:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
+        id S236479AbiCIQfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:35:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236584AbiCIQaD (ORCPT
+        with ESMTP id S236615AbiCIQaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01D5B0A42;
+        Wed, 9 Mar 2022 11:30:04 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1A2B0EAF;
         Wed,  9 Mar 2022 08:23:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 485F1B81EE7;
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5C349240018;
         Wed,  9 Mar 2022 16:23:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876D1C36AE3;
-        Wed,  9 Mar 2022 16:23:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842995;
-        bh=74fUNjecR8fdqL28kcqYW3B5dHuRd/wXLz1YjF6Q8wE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QSgeuGQjd3yJSpiHmgyoApfBNOzIxOm9i6kBXgWJvxDhw7EF7CTicGTzYuKFaTePQ
-         5DKqV4rza+yPFgMdPibnQ1oqebJd4gczxOw9w9q2LXDCHhWZKy9abpDO0rJk2kp3Ke
-         +6pNJS9Jb9oiqVq5Bk1ugJPSlIrPItxsejCso/IRpslUdfQq1vFKA1tSyE6DsIeAKs
-         CzvWe+DXbEs4L4a55z4FMHyVNrxYmv2J30WkBIwJcfWOrcOcXG3ZFrLf7MPTeQpfkJ
-         vSeDqJ80MyNLCGMEPjRLKdhm/pbq0ecSc4RYq1M7MGt8o8FYShPXkI2tWa8RURwG30
-         VQZwxHe5ic1rA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manasi Navare <manasi.d.navare@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, dri-devel@lists.freedesktop.org,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
-Subject: [PATCH AUTOSEL 5.10 15/20] drm/vrr: Set VRR capable prop only if it is attached to connector
-Date:   Wed,  9 Mar 2022 11:21:53 -0500
-Message-Id: <20220309162158.136467-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
-References: <20220309162158.136467-1-sashal@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646842997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NOlnjRHH1Pg0SxcAT/bRjwNg7mPNtt7xa8173YuzdBo=;
+        b=eVchWAd/VoUMSm31LMHNxSpEy/d9UeDv2CRwtceSCxBocAI3kUmaua1HekR1zcpUOALaW/
+        jt+uVpd8oNRb/8oyzQnZiyt/y4HaNAAJEvafm8m2wUmyw6Djig7xSm5u9QXR5jsuBmWwOF
+        4I4qSZ8SggfC4CUVzFoEfDlvxeKF5sfMV2JhpmcODs0n0w9+c+B7JmIph3dcOOIfVdxwlB
+        VlHQkdHpYRmUDjcg0AIbY5ee7hzTX+b0JAPBTNuQolxLmO0TPRlPlgXal/avikActk0EnI
+        Dpi5u+2bIN9UInFJE0ssGl+m6Ko6yIlEOQRaibxDPrAdeQNGWZSMWd3TAf9a3g==
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 04/29] rtc: mpc5121: let the core handle the alarm resolution
+Date:   Wed,  9 Mar 2022 17:22:35 +0100
+Message-Id: <20220309162301.61679-4-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manasi Navare <manasi.d.navare@intel.com>
+Set RTC_FEATURE_ALARM_RES_MINUTE, so the core knows alarms have a
+resolution of a minute. Also, the core will properly round down the alarm
+instead of up.
 
-[ Upstream commit 62929726ef0ec72cbbe9440c5d125d4278b99894 ]
-
-VRR capable property is not attached by default to the connector
-It is attached only if VRR is supported.
-So if the driver tries to call drm core set prop function without
-it being attached that causes NULL dereference.
-
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Manasi Navare <manasi.d.navare@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220225013055.9282-1-manasi.d.navare@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/gpu/drm/drm_connector.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/rtc/rtc-mpc5121.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index 717c4e7271b0..5163433ac561 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -2155,6 +2155,9 @@ EXPORT_SYMBOL(drm_connector_attach_max_bpc_property);
- void drm_connector_set_vrr_capable_property(
- 		struct drm_connector *connector, bool capable)
- {
-+	if (!connector->vrr_capable_property)
-+		return;
-+
- 	drm_object_property_set_value(&connector->base,
- 				      connector->vrr_capable_property,
- 				      capable);
+diff --git a/drivers/rtc/rtc-mpc5121.c b/drivers/rtc/rtc-mpc5121.c
+index bb2ea9bc56f2..6bd9779da3c6 100644
+--- a/drivers/rtc/rtc-mpc5121.c
++++ b/drivers/rtc/rtc-mpc5121.c
+@@ -210,20 +210,6 @@ static int mpc5121_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
+ 	struct mpc5121_rtc_data *rtc = dev_get_drvdata(dev);
+ 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
+ 
+-	/*
+-	 * the alarm has no seconds so deal with it
+-	 */
+-	if (alarm->time.tm_sec) {
+-		alarm->time.tm_sec = 0;
+-		alarm->time.tm_min++;
+-		if (alarm->time.tm_min >= 60) {
+-			alarm->time.tm_min = 0;
+-			alarm->time.tm_hour++;
+-			if (alarm->time.tm_hour >= 24)
+-				alarm->time.tm_hour = 0;
+-		}
+-	}
+-
+ 	alarm->time.tm_mday = -1;
+ 	alarm->time.tm_mon = -1;
+ 	alarm->time.tm_year = -1;
+@@ -349,6 +335,7 @@ static int mpc5121_rtc_probe(struct platform_device *op)
+ 	}
+ 
+ 	rtc->rtc->ops = &mpc5200_rtc_ops;
++	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->rtc->features);
+ 	rtc->rtc->uie_unsupported = 1;
+ 	rtc->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
+ 	rtc->rtc->range_max = 65733206399ULL; /* 4052-12-31 23:59:59 */
 -- 
-2.34.1
+2.35.1
 
