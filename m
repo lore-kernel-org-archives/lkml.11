@@ -2,193 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED73AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8983BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231534AbiCIJf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:35:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        id S232172AbiCIJgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:36:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiCIJfy (ORCPT
+        with ESMTP id S229623AbiCIJgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:35:54 -0500
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557356AA7D;
-        Wed,  9 Mar 2022 01:34:54 -0800 (PST)
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 2299YNeB029111;
-        Wed, 9 Mar 2022 18:34:23 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2299YNeB029111
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646818464;
-        bh=ecQr6qIvWdbKOOftT0P5bw/2I4nX2mhfpun9h1TgUeg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=T3m02rMsnkG8ueOBQKJ+9EZUCgrBL0yxlqORHIdYbLJmwC+kyR+foPAE2CDaC9fTH
-         Lg33gby+NPDwlEIRnu63aMCybVu2qSFerzNxmInEjbacq05fo39qwIVZjKUsGkVlKT
-         +FUwzBplWXwfFKYGV2qr8r97p0IdzPUf2SPv6a9f02uNS0prdIIC9J85QugH99UKcl
-         V1hbPHDYwzlaZpsfmnAWEstKvWRGVnv2l6Cx6xSXc+bjt2YH1v0BGwQsLVd6L3Gj4+
-         /rBrYlfcxcr8sNWuVV2u1XsX24PdeAa9+Q3ZWgSFsusRfqUpl+tx9HZiEnpfNayTLE
-         QMOI2sSbr/1/Q==
-X-Nifty-SrcIP: [209.85.214.172]
-Received: by mail-pl1-f172.google.com with SMTP id p17so1443074plo.9;
-        Wed, 09 Mar 2022 01:34:23 -0800 (PST)
-X-Gm-Message-State: AOAM533yO7hA7wHcDBhTBG0MVOfueSiqLdRD5wbdzE4EWRV3mYPYDova
-        Cu2DS3fuIYIhz3HdP6stg9MVpxNhQVu65idsalw=
-X-Google-Smtp-Source: ABdhPJz2CczPHj/qvuG++hUUJmOu8k6TahMuAauT21WWVlzprNBuAo3FW0eZmY/eannNxGvP75auJcjlLg4O/GXMSf4=
-X-Received: by 2002:a17:90a:1108:b0:1be:e1bd:e2f0 with SMTP id
- d8-20020a17090a110800b001bee1bde2f0mr9463553pja.144.1646818462899; Wed, 09
- Mar 2022 01:34:22 -0800 (PST)
+        Wed, 9 Mar 2022 04:36:35 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A789A6519
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:35:37 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DDA5F3F1FC
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646818535;
+        bh=vZNj5AOQLPTuv9G9otKx/fIrGoW3MMRzM1nMje3Rtek=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Zo01VIQ9JO2uFZDHCKLby/yT3BJGb/t16uEaH4pYB/urGn1Fp49gLVI/X2DZTsbEo
+         5AKfIE2MJJAUhJOMuUyUH7z7lGvvD0l4DKCf+tCp1j5cV0hT5Otx2pzx4BgovEpcoz
+         GocvWy8ySa8mOc+Oa+CDGDMHXh+h5jp6mbL29zk9BylXm8fXQ7MsIPrUvoGZ/qy9un
+         5YXPkghy/zl40Mm6GtIhVvB0GbIAJ0PPPf2rX1IslMOmwldfyizX2/kMz/BWttNsOU
+         vhwcNeDwMvZhU37/QCO7sMcqAnJ61eJIfxDtm/xqdfC4ipOq7xY5xBOHL4+zU5d0Qe
+         xDue8wH2HHmvw==
+Received: by mail-ej1-f70.google.com with SMTP id ey18-20020a1709070b9200b006da9614af58so987987ejc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:35:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vZNj5AOQLPTuv9G9otKx/fIrGoW3MMRzM1nMje3Rtek=;
+        b=HCVlpVFCUhhiKH/lazBF+tl/uIuBJes5e5eXjTJ8fKzaNKChu1yJXfqhnb61rsJbdH
+         MnMdSnsR9yHY2wfyYBwDSNUXGRQB7SHi48sHDK9DEY3SfubjSJnI2JO3gfaMOXIaxIQG
+         03Q8jCF46c5hSM9qdVmfy6HmELmRJA3qpkAOcATNPM0TGQXM48MvUG9GNnyNKJhC7dtn
+         ziek+Rsa7Ku4BtdYCrg1gSkEa4AM9V6hPvtsctu3Qi6nTmYNVqTXsHRuJ+AvCC7omlEc
+         fqJDU/BB0gR4BXSJpLp8BU1R2+PVZxY+WoYEiXJHxl5tE38/cVsNB4Zl0QvFjx3ON+3S
+         t49g==
+X-Gm-Message-State: AOAM530ouQgKZOVjuGyVe19z7pCkxpMA+mzgDDcd9WKZ+O/P0uBcFEyM
+        cQKLmr66aawfOJ3SWSDRkwYhr9OoNqYL1kjCTEXVEritPVIxAVGk/EIa/0aWTiai/fcvB/qNPJX
+        Wl1aSatLU/T5uxr0U6+jxKt8u0hqPt53uxguS99F6pg==
+X-Received: by 2002:a05:6402:7cb:b0:415:f059:c817 with SMTP id u11-20020a05640207cb00b00415f059c817mr20177215edy.364.1646818535452;
+        Wed, 09 Mar 2022 01:35:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwXuptgodm9OL5uPUDYx9cNzg0ceJIG4EMX1apioKtXckPfC/v1b6SG5RCfGXrS472kMiCZlw==
+X-Received: by 2002:a05:6402:7cb:b0:415:f059:c817 with SMTP id u11-20020a05640207cb00b00415f059c817mr20177199edy.364.1646818535293;
+        Wed, 09 Mar 2022 01:35:35 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id m25-20020a170906161900b006d43be5b95fsm510405ejd.118.2022.03.09.01.35.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 01:35:34 -0800 (PST)
+Message-ID: <caf415f2-7b85-1653-7db1-623048a23b3e@canonical.com>
+Date:   Wed, 9 Mar 2022 10:35:34 +0100
 MIME-Version: 1.0
-References: <20220304170813.1689186-1-nathan@kernel.org> <CAKwvOd=Q-7vPaRPj1wQagFsY3txcAKzrqU_D2UAX3h4ym91uUA@mail.gmail.com>
- <Yid6eS7YV4Oxj+hx@dev-arch.thelio-3990X>
-In-Reply-To: <Yid6eS7YV4Oxj+hx@dev-arch.thelio-3990X>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 9 Mar 2022 18:33:40 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAThknb0=-XhfB6zspke-sNHMEmTbGy8WVeg20ntT72wqA@mail.gmail.com>
-Message-ID: <CAK7LNAThknb0=-XhfB6zspke-sNHMEmTbGy8WVeg20ntT72wqA@mail.gmail.com>
-Subject: Re: [PATCH v2] kbuild: Make $(LLVM) more flexible
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>, llvm@lists.linux.dev,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: thermal: rzg2l-thermal: Document RZ/V2L
+ bindings
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220308212315.4551-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220308212315.4551-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 12:47 AM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> On Mon, Mar 07, 2022 at 11:08:29AM -0800, Nick Desaulniers wrote:
-> > On Fri, Mar 4, 2022 at 9:14 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> > >
-> > > diff --git a/Documentation/kbuild/llvm.rst b/Documentation/kbuild/llvm.rst
-> > > index d32616891dcf..68b74416ec48 100644
-> > > --- a/Documentation/kbuild/llvm.rst
-> > > +++ b/Documentation/kbuild/llvm.rst
-> > > @@ -49,17 +49,36 @@ example: ::
-> > >  LLVM Utilities
-> > >  --------------
-> > >
-> > > -LLVM has substitutes for GNU binutils utilities. Kbuild supports ``LLVM=1``
-> > > -to enable them. ::
-> > > -
-> > > -       make LLVM=1
-> > > -
-> > > -They can be enabled individually. The full list of the parameters: ::
-> > > +LLVM has substitutes for GNU binutils utilities. They can be enabled individually.
-> > > +The full list of supported make variables: ::
-> > >
-> > >         make CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip \
-> > >           OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf \
-> > >           HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld
-> > >
-> > > +To simplify the above command, Kbuild supports the ``LLVM`` variable: ::
-> > > +
-> > > +       make LLVM=1
-> > > +
-> > > +If your LLVM tools are not available in your PATH, you can supply their
-> > > +location using the LLVM variable with a trailing slash: ::
-> > > +
-> > > +       make LLVM=/path/to/llvm/
-> > > +
-> > > +which will use ``/path/to/llvm/clang``, ``/path/to/llvm/ld.lld``, etc.
-> >
-> > I don't think we should do this; `PATH=/path/to/llvm/ make LLVM=1`
-> > works and (my interpretation of what) Masahiro said "if anyone asks
-> > for this, here's how we could do that."  I don't think I've seen an
-> > explicit ask for that. I'd rather LLVM= have 2 behaviors than 3, but I
-> > won't hold this patch up over that.  Either way:
->
-> Right, there has not been an explicit ask for the prefix support yet,
-> although I know I personally would use it, but I think that it is worth
-> doing now instead of later for a few reasons:
->
-> 1. It makes path goofs easier to spot. If you do
->
->      $ PATH=/path/to/llvm:$PATH make LLVM=1 ...
->
->    with a path to LLVM that does not exist (maybe you are bisecting an
->    issue and using a temporary build of LLVM and you forgot the path it
->    was in), you fall back to the LLVM tools that are in other places in
->    your PATH, which is not what the developer intended. I know that I
->    have messed up bisects that way. If you did
->
->      $ make LLVM=/path/to/llvm/
->
->    with a path that does not exist, there will be an error much earlier:
->
->      $ make LLVM=/this/path/does/not/exist/ defconfig
->      /bin/sh: line 1: /this/path/does/not/exist/clang: No such file or directory
->
-> 2. It does not take that much more code or documentation to support. It
->    is the same amount of code as the suffix and the documentation is
->    roughly the same amount of lines as well.
->
-> 3. If we wait to implement the path-based use of $(LLVM), we have three
->    "sequence" points: the initial support of $(LLVM), the suffix
->    support, and the prefix support. As we are constantly working with
->    various trees, it would make it harder to know what to use when. If
->    we just do it in the same patch, we know 5.18+ can use both of these
->    methods.
->
-> However, at the end of the day, we are a team and if you feel like we
-> should only have suffix support, I am more than happy to push a v3 that
-> does just that and we can revist prefix support in the future. Just let
-> me know!
+On 08/03/2022 22:23, Lad Prabhakar wrote:
+> Document RZ/V2L TSU bindings. The TSU block on RZ/V2L is identical to one
+> found on RZ/G2L SoC. No driver changes are required as generic compatible
+> string "renesas,rzg2l-tsu" will be used as a fallback.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/thermal/rzg2l-thermal.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
 
-I do not have a strong opinion about this.
-(I just mentioned the LLVM=/path/to/llvm/ form because I guessed
-somebody would request this sooner or later.)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 
-If you want me to pick up this version, I will apply it with fixing up
-a nit pointed out by Kees   (": ::" -> "::")
-
-If you want to send v3, that is fine with me as well.
-
-Please let me know your thoughts.
-
-
-
-
-
-
-
-
->
-> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> >
-> > > +
-> > > +If your LLVM tools have a version suffix and you want to test with that
-> > > +explicit version rather than the unsuffixed executables like ``LLVM=1``, you
-> > > +can pass the suffix using the ``LLVM`` variable: ::
-> > > +
-> > > +       make LLVM=-14
-> > > +
-> > > +which will use ``clang-14``, ``ld.lld-14``, etc.
-> > > +
-> > > +``LLVM=0`` is not the same as omitting ``LLVM`` altogether, it will behave like
-> > > +``LLVM=1``.
-> >
-> > Hmm... I can see someone's build wrappers setting LLVM=1, then them
-> > being surprised that appending LLVM=0 doesn't disable LLVM=1 as they
-> > might expect.  But Masahiro says let's fix this later which is fine.
->
-> Sure, I guess that is a reasonable case to support. I'll see if I can
-> come up with something that makes sense after this change lands.
->
-> Cheers,
-> Nathan
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
