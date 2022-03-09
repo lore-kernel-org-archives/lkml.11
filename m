@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E67C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B37EC43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236930AbiCIQsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
+        id S236702AbiCIQsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:48:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbiCIQan (ORCPT
+        with ESMTP id S236863AbiCIQaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:43 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871551637D8;
-        Wed,  9 Mar 2022 08:24:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CBE08CE1F9B;
-        Wed,  9 Mar 2022 16:24:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D5E8C36AE2;
-        Wed,  9 Mar 2022 16:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843054;
-        bh=Jfcq61gqf9CXq2ZHuQFRQVZPk1VmB2ZeZedHRCCDDxA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mtlgg8i96wSDHMOmZ6Q2Sd/LGp3eFDzIJPrtBcznxo/4mGmU32yx1ehDFKKvHE1Al
-         u0yfmN0eMAJ564m74bnOb7El4cLNgqeVg5uqEfmId5Djs/NjcuZ3oGMF0MRxoZYBd4
-         R6//OqeNdXAOLp3h6XsTk3208pBuNP/d2Dx4eiWhq+ILgraUJxaQdcYQhwQEgFozO3
-         s8DhzY6CSxdnR0yWBg/3j22US9d61gjEZE3ooxO7JAbFnTskGYloKfNFQC00rePirS
-         RPliwgfNUn8O+qDFyFkz6OXInfCGL00V9FrM9jN3gdwausEs8b70E6lQ0OkMf+TWDj
-         SPm9oyPKwuJ6g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 08/19] mac80211: refuse aggregations sessions before authorized
-Date:   Wed,  9 Mar 2022 11:23:25 -0500
-Message-Id: <20220309162337.136773-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
-References: <20220309162337.136773-1-sashal@kernel.org>
+        Wed, 9 Mar 2022 11:30:24 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26273E2363;
+        Wed,  9 Mar 2022 08:23:41 -0800 (PST)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A393D240019;
+        Wed,  9 Mar 2022 16:23:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646843008;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aUotff3zpT1sC8hzBqBp8VQHTf/m2FqGZrZW1U0mj9k=;
+        b=G+ngI32dI1uVwTxIzHcDRECjcX8vfjipgxtV+AwdgRfVJ+CO125DPI2Wya4w3MWeOMtx4+
+        nFgj8LyQRKD+oWDXKXPziTot9BtHnTg83+fZd3bfDxYGOsXANk5mX9gBr51VaPtSFjkwPw
+        gWUlAVJv7ts01jh+StzHudPcKSVH6HnjuydXDriHJDPSK8ypJt5zB5M0GbNwrh+pIKVsWd
+        28WRSquVGrlZsvwhlKVQ9lVipt2rvGd5m8he2TPOAOkQh+vg+NlG2yPgTK13+4t6xgwZlM
+        c2uaT5yzE4f4rVdQMJ/sIENhjdHuNDV0gst7dDbP1xSnk0/KI1TQIPwY+R6cfQ==
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 16/29] rtc: pcf8563: let the core handle the alarm resolution
+Date:   Wed,  9 Mar 2022 17:22:47 +0100
+Message-Id: <20220309162301.61679-16-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
+References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+Set RTC_FEATURE_ALARM_RES_MINUTE, so the core knows alarms have a
+resolution of a minute. Also, the core will properly round down the alarm
+instead of up.
 
-[ Upstream commit a6bce78262f5dd4b50510f0aa47f3995f7b185f3 ]
-
-If an MFP station isn't authorized, the receiver will (or
-at least should) drop the action frame since it's a robust
-management frame, but if we're not authorized we haven't
-installed keys yet. Refuse attempts to start a session as
-they'd just time out.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220203201528.ff4d5679dce9.I34bb1f2bc341e161af2d6faf74f91b332ba11285@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- net/mac80211/agg-tx.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-pcf8563.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index f140c2b94b2c..f30cdd7f3a73 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -9,7 +9,7 @@
-  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
-  * Copyright 2007-2010, Intel Corporation
-  * Copyright(c) 2015-2017 Intel Deutschland GmbH
-- * Copyright (C) 2018 - 2021 Intel Corporation
-+ * Copyright (C) 2018 - 2022 Intel Corporation
-  */
+diff --git a/drivers/rtc/rtc-pcf8563.c b/drivers/rtc/rtc-pcf8563.c
+index c8bddfb94129..530f06c810fa 100644
+--- a/drivers/rtc/rtc-pcf8563.c
++++ b/drivers/rtc/rtc-pcf8563.c
+@@ -330,19 +330,6 @@ static int pcf8563_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *tm)
+ 	unsigned char buf[4];
+ 	int err;
  
- #include <linux/ieee80211.h>
-@@ -615,6 +615,14 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
- 		return -EINVAL;
- 	}
- 
-+	if (test_sta_flag(sta, WLAN_STA_MFP) &&
-+	    !test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
-+		ht_dbg(sdata,
-+		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
-+		       sta->sta.addr, tid);
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * 802.11n-2009 11.5.1.1: If the initiating STA is an HT STA, is a
- 	 * member of an IBSS, and has no other existing Block Ack agreement
+-	/* The alarm has no seconds, round up to nearest minute */
+-	if (tm->time.tm_sec) {
+-		time64_t alarm_time = rtc_tm_to_time64(&tm->time);
+-
+-		alarm_time += 60 - tm->time.tm_sec;
+-		rtc_time64_to_tm(alarm_time, &tm->time);
+-	}
+-
+-	dev_dbg(dev, "%s, min=%d hour=%d wday=%d mday=%d "
+-		"enabled=%d pending=%d\n", __func__,
+-		tm->time.tm_min, tm->time.tm_hour, tm->time.tm_wday,
+-		tm->time.tm_mday, tm->enabled, tm->pending);
+-
+ 	buf[0] = bin2bcd(tm->time.tm_min);
+ 	buf[1] = bin2bcd(tm->time.tm_hour);
+ 	buf[2] = bin2bcd(tm->time.tm_mday);
+@@ -566,6 +553,7 @@ static int pcf8563_probe(struct i2c_client *client,
+ 	pcf8563->rtc->ops = &pcf8563_rtc_ops;
+ 	/* the pcf8563 alarm only supports a minute accuracy */
+ 	pcf8563->rtc->uie_unsupported = 1;
++	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, pcf8563->rtc->features);
+ 	pcf8563->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
+ 	pcf8563->rtc->range_max = RTC_TIMESTAMP_END_2099;
+ 	pcf8563->rtc->set_start_time = true;
 -- 
-2.34.1
+2.35.1
 
