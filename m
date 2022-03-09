@@ -2,111 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6500C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiCIJdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:33:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
+        id S232125AbiCIJeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:34:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbiCIJcx (ORCPT
+        with ESMTP id S229601AbiCIJep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:32:53 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648C416EAB6;
-        Wed,  9 Mar 2022 01:31:55 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2297bamd017891;
-        Wed, 9 Mar 2022 03:31:51 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=LU6ra/x8Comd366qKb7HlBcqW7QO6rSI98+zATfJXSI=;
- b=oaYry1US0Yjcv2FRHy5u272eWoElD/VRJmzhk605WNms/9KrLil9n1fA/hX3h8OAMWMY
- Ye5e33Jv9YoYrFZjSYIiN32Y7EyfshN/TZ07MgvQnD40WhmuxVu/n7YUCdSuJdN1msD3
- s39IXEnpLYzRtxYHS8P1fkDEa5CVovOoEoNiAgpEGMHVFhUtnVm9LZwbZAYCvnedoZ7X
- +tALIWg+HuYe9yXqjnyWkZMTirSGjLXVB/bCcNIQI5xDQDy1C2jAOg0FUSbjB2Lj6MvC
- 1HEqlTdM9NR9lyjcXvCGj6fL4QqOdgJ41jHMhtPkDTjMWkBm5Ok5Zw1VjAvhKZmj+iFP yQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3em656nec2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 09 Mar 2022 03:31:51 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 9 Mar
- 2022 09:31:49 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 9 Mar 2022 09:31:49 +0000
-Received: from aryzen.ad.cirrus.com (unknown [198.61.65.38])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C870E46C;
-        Wed,  9 Mar 2022 09:31:48 +0000 (UTC)
-From:   Lucas Tanure <tanureal@opensource.cirrus.com>
-To:     Michal Simek <michal.simek@xilinx.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH] i2c: cadence: Increase timeout per message if necessary
-Date:   Wed, 9 Mar 2022 09:31:47 +0000
-Message-ID: <20220309093147.102385-1-tanureal@opensource.cirrus.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Mar 2022 04:34:45 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A8B6AA5F;
+        Wed,  9 Mar 2022 01:33:46 -0800 (PST)
+Received: from zn.tnic (p200300ea97193859a096270e94cb9aa6.dip0.t-ipconnect.de [IPv6:2003:ea:9719:3859:a096:270e:94cb:9aa6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2371A1EC02B9;
+        Wed,  9 Mar 2022 10:33:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646818421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=69vdQtTpsHh6zZFEeXCX5VhdZ9ZJr7n91rFwrjF4ThI=;
+        b=gGKcL5wjP1iEsYL8UifJPnDRaz6VQGQdC2gxJ+ZnfOpB3TX0VJaOUtSZBMGo3Y1j3ZT7Yd
+        YB3ClgB36HpRo6qQOHgmDFa4eq6ia9NprJlj00FiSpvBn4G8EpGJfbg9C+h7UhmUSS/JQo
+        Hkxyc2doodJ4B+pByfXpsKJdLLafdY4=
+Date:   Wed, 9 Mar 2022 10:33:43 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Juergen Gross <jgross@suse.com>,
+        Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Youquan Song <youquan.song@intel.com>,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gwml@vger.gnuweeb.org, x86@kernel.org
+Subject: Re: [PATCH v1 0/2] x86: Avoid using INC and DEC instructions on hot
+ paths
+Message-ID: <Yih0d4Red0ICo/MO@zn.tnic>
+References: <20220307114558.1234494-1-ammarfaizi2@gnuweeb.org>
+ <YiX81kD/668UdFBr@nazgul.tnic>
+ <11dec988-0b4f-00f2-6fa6-8d08be95d106@gnuweeb.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: pqeXHhEFS0n-R2cFZj4_o1cNQf7Xnrr6
-X-Proofpoint-GUID: pqeXHhEFS0n-R2cFZj4_o1cNQf7Xnrr6
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <11dec988-0b4f-00f2-6fa6-8d08be95d106@gnuweeb.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Timeout as 1 second sets a upper limit on the length of
-the transfer executed, but there is no maximum length of
-a write or read message set in i2c_adapter_quirks for this
-controller.
+On Mon, Mar 07, 2022 at 08:37:59PM +0700, Ammar Faizi wrote:
+> > Also, I'd advise going over Documentation/process/ if you're new to this.
+> > Especially Documentation/process/submitting-patches.rst.
+> I might've missed the benchmark backup part. Will review those documents again.
 
-To remove that limitation calculate the minimal time
-necessary, plus some wiggle room, for every message
-and use it instead of the default one second, if
-more than one second.
+The "Describe your changes" section in the abovementioned file has some
+good explanations on what to pay attention to.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
----
- drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 805c77143a0f..b4c1ad19cdae 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -760,7 +760,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
- static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 		struct i2c_adapter *adap)
- {
--	unsigned long time_left;
-+	unsigned long time_left, msg_timeout;
- 	u32 reg;
- 
- 	id->p_msg = msg;
-@@ -785,8 +785,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	else
- 		cdns_i2c_msend(id);
- 
-+	/* Minimal time to execute this message */
-+	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
-+	/* Plus some wiggle room */
-+	msg_timeout += msecs_to_jiffies(500);
-+
-+	if (msg_timeout < adap->timeout)
-+		msg_timeout = adap->timeout;
-+
- 	/* Wait for the signal of completion */
--	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
-+	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
- 	if (time_left == 0) {
- 		cdns_i2c_master_reset(adap);
- 		dev_err(id->adap.dev.parent,
 -- 
-2.35.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
