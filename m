@@ -2,146 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB49C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76158C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:19:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbiCIJTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S231968AbiCIJUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:20:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiCIJTw (ORCPT
+        with ESMTP id S231233AbiCIJUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:19:52 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EAF2AC41
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:18:54 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 7075B3F79C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:18:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646817533;
-        bh=8BjTP/+1yUB9Aiej+vTJ+iAQ4nFO9laQpO6aipSI9Uo=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=mmaQZV1R9nHyKXKVjvd7HBHUGO8/qsu3d7DgPEIHv5zxOnqHF7I5U9dKxZ8hsynV0
-         2cBInbF4L5CcxzO3Ad+hR9zPnggQ96qdND5Y/q8rVPduw26vXOG/Oy0ba7ioHN4bJy
-         nBp9shWy3rf68VtM71rFSsFr6HR7XBVH+vTfLIJ+Adzhs5PqolY/6yDCA5sFtwFcxb
-         mDLUwvQ8np7ylp+fbXNLd1TpypMpfV1nWNZn5KGzDRoM1C0fq1EXHg/f7q7e/YQnEP
-         hlFhpphKbpet88uGBLRyNyq6i8xh//LhVZqVXuVvjM0A18jzklwD9xPBtzq/fQkfVI
-         jtKz+cFWZAFdA==
-Received: by mail-ed1-f72.google.com with SMTP id l8-20020a056402028800b0041636072ef0so938001edv.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:18:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8BjTP/+1yUB9Aiej+vTJ+iAQ4nFO9laQpO6aipSI9Uo=;
-        b=VPQx02mp/vC0GGnG1g63UTI0jYSp921EeE/Gwt4zDpcj9EhPoW6CXhbEYKYLc1+RTY
-         Mkkj7Scy+fDJP/j0xr4CtN0k8BRp9QSh5T0kHx6FPk4SPfgydqHTok3twMdLG06yWLlv
-         S4bJcYDERjyOYlO9cChML4QtLsK75zPKQJRxGyjwph3krADdeSHZZiMeeKfhFEzhXG7K
-         upV15VH6MK3zYmVbDvNC7zqZCdxq9ex6ahhQ+a5sPOou/2nDQcyGMo+0U1PvrZkhGwin
-         Ibj7csQUee+ET9pptzaMTAKOzQRjINV065Q7mA8OTEqshpWz/wCDt7pismIjmUKUnCLl
-         UlYA==
-X-Gm-Message-State: AOAM530L/JjTDJN2s2Up7GEye5E1Roqkqe9eVScfDH72AB3Z9GPSHOZG
-        WDxaWiM6Nzko3511wd3vVx0wFsdzBgFr5a1eTq7QiFjeI3RSEokBQ4sC4ouzg5RoYyN1DFkNY3I
-        Ll3oeq4918RborV00OkFFvHAeq1Sl2mGv/hn7TAQLYg==
-X-Received: by 2002:a05:6402:42c6:b0:415:fe7d:4963 with SMTP id i6-20020a05640242c600b00415fe7d4963mr20366880edc.317.1646817533109;
-        Wed, 09 Mar 2022 01:18:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwKBgYsIlQkmTPZZedYYFZfkqd0y8tOMc44J8WrRfvbA7BIK5mWKSKmpE5UARw9e0KjYHAZ0w==
-X-Received: by 2002:a05:6402:42c6:b0:415:fe7d:4963 with SMTP id i6-20020a05640242c600b00415fe7d4963mr20366870edc.317.1646817532959;
-        Wed, 09 Mar 2022 01:18:52 -0800 (PST)
-Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id m1-20020a056402430100b004167e4606a8sm541596edc.74.2022.03.09.01.18.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 01:18:52 -0800 (PST)
-Message-ID: <a177b16a-c55e-8338-f34f-c7b9edcd94c0@canonical.com>
-Date:   Wed, 9 Mar 2022 10:18:51 +0100
+        Wed, 9 Mar 2022 04:20:18 -0500
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17318D687;
+        Wed,  9 Mar 2022 01:19:19 -0800 (PST)
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 2299J1WV016568;
+        Wed, 9 Mar 2022 18:19:02 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 2299J1WV016568
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1646817542;
+        bh=7ptQH0F5J9d2jeE9K6DKb/RLQ+CHx4kcW97GHNeRP3w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=T4cDgIb4RLnxUgURlNEoy0XiX1b5w5wP2ymh2l/tihLJRfcawn5UOwTbwaVfKs1yf
+         aO99wh2upm1yiFpMTxZGcKNWgFABdA1wCh0JyKUAZb/PIr3+oGT0WiftG83z4HoPiI
+         FGMn93hKKPNrbI/TqTrNaYBditOy1DVm+OePsWFHJMQPsXI62RVZDIlBdOEBxJYMYS
+         NIWtDcZ48+ImDxwwS7Twmm3re4d81/zF+XFxhGFycArjgmFFOjEV5e+4z5lHawCVHm
+         2x997056suRTIM1eJyIrFhucXQV4KLMY/SdNN0iETtyXXmbk/KC2hxnNa/adUWVqw1
+         0m+Pp7O78Tdqw==
+X-Nifty-SrcIP: [209.85.210.179]
+Received: by mail-pf1-f179.google.com with SMTP id g1so1734531pfv.1;
+        Wed, 09 Mar 2022 01:19:02 -0800 (PST)
+X-Gm-Message-State: AOAM5328vrmA8ZwzRnp5HBFfA83O2fvErvNrW2xFgV3kP/503Y6571b0
+        JAidGLWR2mwlLgClf2NgFOzw0giRXWgrq6IUYn4=
+X-Google-Smtp-Source: ABdhPJy5QRSZE5cwpNSu1+QJNGk0tz8koEoXrMBDbCx6hK3tNuVOPYULhzCSvBtKznnLBYsWpukwoAxtPjMqBOgCDqk=
+X-Received: by 2002:a63:1d44:0:b0:373:5612:629b with SMTP id
+ d4-20020a631d44000000b003735612629bmr17462393pgm.352.1646817541465; Wed, 09
+ Mar 2022 01:19:01 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: linux-next: manual merge of the mfd tree with the arm-soc tree
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>, Olof Johansson <olof@lixom.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+References: <20220308215615.14183-1-arnd@kernel.org> <CAHk-=wjsCrVxToP0Zx+cUAVZmSKi=Y6NP1+VnBcoPyPPEBfonQ@mail.gmail.com>
+ <CAK7LNAQoFFVLfkhA7FC9vDbvc4wdLginYeRHL0xHVAumu6p=uw@mail.gmail.com>
+In-Reply-To: <CAK7LNAQoFFVLfkhA7FC9vDbvc4wdLginYeRHL0xHVAumu6p=uw@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 9 Mar 2022 18:18:18 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASuy5hSOU7Y7Tr8_6Ks1ZqEeUKv_-c6fDjMubq0_ENRaw@mail.gmail.com>
+Message-ID: <CAK7LNASuy5hSOU7Y7Tr8_6Ks1ZqEeUKv_-c6fDjMubq0_ENRaw@mail.gmail.com>
+Subject: Re: [PATCH 0/4] [v4] Kbuild: std=gnu11 changes
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Alex Shi <alexs@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, David Sterba <dsterba@suse.com>,
+        Marco Elver <elver@google.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20220309132952.525b3aa4@canb.auug.org.au>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220309132952.525b3aa4@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        llvm@lists.linux.dev, Mark Rutland <mark.rutland@arm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 9, 2022 at 11:16 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> On Wed, Mar 9, 2022 at 9:09 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > On Tue, Mar 8, 2022 at 1:56 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > >
+> > > From: Arnd Bergmann <arnd@arndb.de>
+> > >
+> > > I've incorporated the feedback from Masahiro Yamada in this
+> > > version, splitting out one more patch, rebasing on top of
+> > > the kbuild tree, and changing the order of the patches.
+> > >
+> > > Please apply to the kbuild tree.
+> >
+> > I'd actually like to see this as a separate branch, so that I can
+> > merge it early - or other peoples git branches end up depending on it.
+>
+>
+> OK, I can apply this to a separate branch, kbuild-gnu11.
+> (and I will queue this up shortly because it is already -rc7)
+>
+> Then, I will send two pull reqs in the next MW,
+> but please note they will conflict with each other,
+> between this gnu11 patch set and the following
+> one in my usual kbuild branch:
+>
+> https://patchwork.kernel.org/project/linux-kbuild/patch/20220201213542.2808035-1-quic_eberman@quicinc.com/
+>
+>
+> I hope this is not a complex conflict, but please let me know
+> if you have any requests to me.
+>
+>
+>
+>
+>
 
-On 09/03/2022 03:29, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the mfd tree got a conflict in:
-> 
->   Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
-> 
-> between commit:
-> 
->   e465ea5cc05d ("dt-bindings: soc: samsung: usi: refer to dtschema for children")
-> 
-> from the arm-soc tree and commit:
-> 
->   0ff4827ed66f ("spi: dt-bindings: samsung: Convert to dtschema")
-> 
-> from the mfd tree.
-> 
-> I fixed it up (I just used the former version) and can carry the fix as
-> necessary. 
 
-Hi Arnd, Lee and Olof,
+All, applied to linux-kbuild/kbuild-gnu11.
 
-This conflict will pop-up when sending to Linus. I propose to resolve it
-slightly different - just remove the conflicting lines. After merge
-window I will properly reference the other schema inside properties (not
-description). This can look like:
-################
---- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+If somebody wants to give Reviewed-by, Acked-by, Tested-by, please.
 
-+++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+I will append them later.
 
-@@ -17,13 +17,6 @@ description: |
 
-   child nodes, each representing a serial sub-node device. The mode setting
 
-   selects which particular function will be used.
 
- 
 
--  Refer to next bindings documentation for information on protocol subnodes that
 
--  can exist under USI node:
 
--
 
--  [1] Documentation/devicetree/bindings/serial/samsung_uart.yaml
-
--  [2] Documentation/devicetree/bindings/i2c/i2c-exynos5.txt
-
--  [3] Documentation/devicetree/bindings/spi/samsung,spi.yaml
-
--
-
- properties:
-
-   $nodename:
-
-     pattern: "^usi@[0-9a-f]+$"
-
-################
-
-Best regards,
-Krzysztof
+-- 
+Best Regards
+Masahiro Yamada
