@@ -2,133 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BED0C352A8
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9806C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238352AbiCIQvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:51:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S238301AbiCIQu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235812AbiCIQd4 (ORCPT
+        with ESMTP id S239506AbiCIQck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:33:56 -0500
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72969E9C6;
-        Wed,  9 Mar 2022 08:29:27 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:35982)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRzBm-0032OW-NN; Wed, 09 Mar 2022 09:29:26 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34582 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRzBl-005i1Z-OH; Wed, 09 Mar 2022 09:29:26 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <liam.howlett@oracle.com>,
-        Jann Horn <jannh@google.com>, linux-mm@kvack.org
-References: <20220131153740.2396974-1-willy@infradead.org>
-        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
-        <YfgKw5z2uswzMVRQ@casper.infradead.org>
-        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
-        <YfgPwPvopO1aqcVC@casper.infradead.org>
-        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
-        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
-        <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
-        <202203081342.1924AD9@keescook>
-Date:   Wed, 09 Mar 2022 10:29:10 -0600
-In-Reply-To: <202203081342.1924AD9@keescook> (Kees Cook's message of "Tue, 8
-        Mar 2022 13:49:32 -0800")
-Message-ID: <877d93dr8p.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 9 Mar 2022 11:32:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242F844758;
+        Wed,  9 Mar 2022 08:27:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBBC4619CC;
+        Wed,  9 Mar 2022 16:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7809C340EC;
+        Wed,  9 Mar 2022 16:27:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646843224;
+        bh=9UTHSdHsMxTSqtDc4h9uay8BvRiMDiW4mvc8DvxMn4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pwXVeeA4VEkYitGQ7EuZfuhxiOltGhsxZHAa4CSVZgPgpnkC2N3J8+kmUH7r92der
+         tgp4zh5otkae16qDzswRr6r+KHQMafYwWcm83/XeEzxhgo1eyt2oudd3lHdLklyiUj
+         vFoJF8vcWKtvaSxldQAFaY/iJOQeTAwc5FPosabb8dzr46x0c9UjEGuCFq12tSdQW6
+         aW2xrFcckfAbemzc6zJOC+5Ujjj2SrdNfte9NG3awL7P5YFPMjO4wNlnGmu72Gkp3d
+         gnrRx2YwC6N1+68wV8OVqXFZMlRPsCajLpa77REpYT/8Z63ai4ezxYm6JJgxoGJGA5
+         HZL80q+wyAxiQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 09/12] tcp: make tcp_read_sock() more robust
+Date:   Wed,  9 Mar 2022 11:26:14 -0500
+Message-Id: <20220309162618.137226-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
+References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nRzBl-005i1Z-OH;;;mid=<877d93dr8p.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+n6dmJ5h9NeMXTcHx08GyxJ8itHy6uo48=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [GIT PULL] Fix fill_files_note
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+From: Eric Dumazet <edumazet@google.com>
 
-> On Tue, Mar 08, 2022 at 01:35:03PM -0600, Eric W. Biederman wrote:
->> 
->> Kees,
->> 
->> Please pull the coredump-vma-snapshot-fix branch from the git tree:
->> 
->>   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
->> 
->>   HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
->> 
->> Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
->> which could cause trouble.
->> 
->> Refactor the code and clean it up so that the vma snapshot makes
->> it to fill_files_note, and then use the vma snapshot in fill_files_note.
->> 
->> Eric W. Biederman (5):
->>       coredump: Move definition of struct coredump_params into coredump.h
->>       coredump: Snapshot the vmas in do_coredump
->>       coredump: Remove the WARN_ON in dump_vma_snapshot
->>       coredump/elf: Pass coredump_params into fill_note_info
->>       coredump: Use the vma snapshot in fill_files_note
->> 
->>  fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
->>  fs/binfmt_elf_fdpic.c    | 18 +++++--------
->>  fs/binfmt_flat.c         |  1 +
->>  fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
->>  include/linux/binfmts.h  | 13 +---------
->>  include/linux/coredump.h | 20 ++++++++++++---
->>  6 files changed, 93 insertions(+), 84 deletions(-)
->> 
->> ---
->> 
->> Kees I realized I needed to rebase this on Jann Horn's commit
->> 84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
->> libraries").  Unfortunately before I got that done I got distracted and
->> these changes have been sitting in limbo for most of the development
->> cycle.  Since you are running a tree that is including changes like this
->> including Jann's can you please pull these changes into your tree.
->
-> Sure! Can you make a signed tag for this pull?
+[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
 
-Not yet.
+If recv_actor() returns an incorrect value, tcp_read_sock()
+might loop forever.
 
-Hopefully I will get the time to set that up soon, but I am not at all
-setup to do signed tags at this point.
+Instead, issue a one time warning and make sure to make progress.
 
-> If it helps, my workflow look like this, though I assume there might be
-> better ways. (tl;dr: "git tag -s TAG BRANCH")
->
->
-> PULL_BRANCH=name-of-branch
-> BASE=sha-of-base
-> FOR=someone
-> TOPIC=topic-name
->
-> TAG="for-$FOR/$TOPIC"
-> SIGNED=~/.pull-request-signed-"$TAG"
-> echo "$TOPIC update" > "$SIGNED"
-> git request-pull "$BASE" git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git "$PULL_BRANCH" | awk '{print "# " $0}' >> "$SIGNED"
-> vi "$SIGNED"
->
-> git tag -sF "$SIGNED" "$TAG" "$PULL_BRANCH"
-> git push origin "$PULL_BRANCH"
-> git push origin +"$TAG"
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/tcp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Thanks.  That looks like a good place to start.
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index c9f6f28e54f3..a0fd9ef2d2c6 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1657,11 +1657,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 				if (!copied)
+ 					copied = used;
+ 				break;
+-			} else if (used <= len) {
+-				seq += used;
+-				copied += used;
+-				offset += used;
+ 			}
++			if (WARN_ON_ONCE(used > len))
++				used = len;
++			seq += used;
++			copied += used;
++			offset += used;
++
+ 			/* If recv_actor drops the lock (e.g. TCP splice
+ 			 * receive) the skb pointer might be invalid when
+ 			 * getting here: tcp_collapse might have deleted it
+-- 
+2.34.1
 
-Eric
