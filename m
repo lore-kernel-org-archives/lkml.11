@@ -2,90 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7770C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 10:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7875C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 10:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231515AbiCIKrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 05:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        id S231572AbiCIKsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 05:48:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiCIKrq (ORCPT
+        with ESMTP id S231469AbiCIKsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 05:47:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D55C6C941;
-        Wed,  9 Mar 2022 02:46:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C878BB82021;
-        Wed,  9 Mar 2022 10:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E3B8C340F5;
-        Wed,  9 Mar 2022 10:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646822805;
-        bh=GvTSs4P6z3GIxElft6y3pJ5+df73IMKa3LB60AFyHIo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aErSMPJJ6BLrUbfxJ4lK0iPuz5ZuRX8lqChT4uFXgldtX75U6Qr9UF9jajFgG84mp
-         9CPa16zaTn6UbfEgN9IoDS8ZYf+nMiDaDfl+QCFpc8JWV8ldt7SdBhhgO/0U9XCz9I
-         ntncqIBXDiF2WfbW2rHZIdjX6tFXtZAEvwboN27Du4f+3MU7MxFWW18CHbOWuci9hs
-         YrO7DJc2IRWpMc7W4dGPoo3rbg5mLqSHXpQgSuK5BPai26DOFtpBgDlnW5n+1QG39C
-         hVDx7ZGfsLbpbVJA45FWQjaU2VoN+02ua/ClUNlteYNfAKHbCAv8JyKR018tahxO0M
-         dt71slNyClHkA==
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2d07ae0b1c4so17630087b3.11;
-        Wed, 09 Mar 2022 02:46:45 -0800 (PST)
-X-Gm-Message-State: AOAM530fbUalr2mYeELCCLc9Fm95ALfggsmHKw4NfbuIB72XRgZxeQaH
-        EJmy6RtwU1OdOnbGZ1CXhaVY6wCZG3p6Gw6288E=
-X-Google-Smtp-Source: ABdhPJxebShjEm9UHUIQxwem6w1TszlWZWcH9CKYz0YyIgdmSyNqydFUrpONgEXdLimdVAv3xZM5ZuE9kunQrOg0sNg=
-X-Received: by 2002:a81:e90c:0:b0:2db:d63e:56ff with SMTP id
- d12-20020a81e90c000000b002dbd63e56ffmr16991596ywm.60.1646822804316; Wed, 09
- Mar 2022 02:46:44 -0800 (PST)
-MIME-Version: 1.0
-References: <CA+G9fYtpy8VgK+ag6OsA9TDrwi5YGU4hu7GM8xwpO7v6LrCD4Q@mail.gmail.com>
- <YiiDZ7jjG38gqP+Q@shell.armlinux.org.uk>
-In-Reply-To: <YiiDZ7jjG38gqP+Q@shell.armlinux.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 9 Mar 2022 11:46:33 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
-Message-ID: <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
-Subject: Re: [next] arm: Internal error: Oops: 5 PC is at __read_once_word_nocheck
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 9 Mar 2022 05:48:21 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7E7A94CC
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 02:47:22 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BA5E9201254;
+        Wed,  9 Mar 2022 11:47:20 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 820E420090D;
+        Wed,  9 Mar 2022 11:47:20 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id F2A26183ACDE;
+        Wed,  9 Mar 2022 18:47:18 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_rpmsg: Remove SET_SYSTEM_SLEEP_PM_OPS callback
+Date:   Wed,  9 Mar 2022 18:38:13 +0800
+Message-Id: <1646822293-26965-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 at 11:37, Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Mar 09, 2022 at 03:18:12PM +0530, Naresh Kamboju wrote:
-> > While boting linux next-20220308 on BeagleBoard-X15 and qemu arm the following
-> > kernel crash reported which is CONFIG_KASAN enabled build [1] & [2].
->
-> The unwinder is currently broken in linux-next. Please try reverting
-> 532319b9c418 ("ARM: unwind: disregard unwind info before stack frame is
-> set up")
->
+For sound need to be continuously output at suspend with rpmsg
+sound card, so need to keep the clock always on at suspend,
+then suspend & resume callback is not needed.
 
-Yeah.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_rpmsg.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-This is the same spot Corentin hit before, where the double
-dereference of vsp is not guarded by anything like
-get_kernel_nofault(). We should probably fix that, but that doesn't
-address the underlying issue, of course.
+diff --git a/sound/soc/fsl/fsl_rpmsg.c b/sound/soc/fsl/fsl_rpmsg.c
+index 8508bc7f239d..19fd31250883 100644
+--- a/sound/soc/fsl/fsl_rpmsg.c
++++ b/sound/soc/fsl/fsl_rpmsg.c
+@@ -297,8 +297,6 @@ static const struct dev_pm_ops fsl_rpmsg_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(fsl_rpmsg_runtime_suspend,
+ 			   fsl_rpmsg_runtime_resume,
+ 			   NULL)
+-	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+-				pm_runtime_force_resume)
+ };
+ 
+ static struct platform_driver fsl_rpmsg_driver = {
+-- 
+2.17.1
 
-I'm a bit puzzled, though, that this appears now, and didn't before.
-
-Naresh, I take it you did not see this occurring on earlier linux-nexts?
-
-I'll try to reproduce this, and see if I can make sense of it. In the
-mean time, please do the revert Russell suggested, and if that doesn't
-help, maybe try a bisect?
