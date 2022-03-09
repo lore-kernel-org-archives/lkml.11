@@ -2,245 +2,620 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237543AbiCIRFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:05:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
+        id S237021AbiCIRFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238844AbiCIREI (ORCPT
+        with ESMTP id S238926AbiCIREM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:04:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3F39AD8A;
-        Wed,  9 Mar 2022 08:52:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C30E61B45;
-        Wed,  9 Mar 2022 16:52:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07F6CC340EC;
-        Wed,  9 Mar 2022 16:52:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646844755;
-        bh=wIeGbE6Q41oIhTY+lLUbah8qqKEMzvsX86DStRQLx9g=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ajZf+msEiuAWYsEHyAa1la9mmAEWm9CLYkJ001PCn+OQvcazGSJy3d9bN2D8B8QOl
-         5AmoJJMr61AzJpz/9+Ut/VwC1v4hD8jL5NrR+B7Tcg/own5k4BGYTnt/h4otdOlDEa
-         5nzPVdlP12f35p/OQIYWEAYEpd+EMx+VJpxJ9RwcIpFERATK2geEjU5UtMXmU3dMTt
-         8+VCsgjtIlQWdTx6ECnl08vIoCehsmH4HavcgIT1iTq9WjSopxA4kmJQ4PjDaBaak/
-         zxymJkFfufPzJLXiDgcXeJwV6wBNC7DrdpaFm2CX46qY7OsD49zaSn1Xoof0/8QlTi
-         63TkLPMr13Wtg==
-Message-ID: <4cbb2bb06eafb8f03135fc377ced779102004ea7.camel@kernel.org>
-Subject: Re: [PATCH v2 11/19] netfs: Change ->init_request() to return an
- error code
-From:   Jeff Layton <jlayton@kernel.org>
-To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com
-Cc:     Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        David Wysochanski <dwysocha@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 09 Mar 2022 11:52:32 -0500
-In-Reply-To: <164678212401.1200972.16537041523832944934.stgit@warthog.procyon.org.uk>
-References: <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk>
-         <164678212401.1200972.16537041523832944934.stgit@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Mar 2022 12:04:12 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37671B60B7
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:52:56 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc44b6dc9dso18777257b3.23
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:52:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=UmU6sI76GZbXk6wC8vwHaoIhH+sqK51YaZKa3zn+yg0=;
+        b=L6RrUUg6AleHliPPCSb/Og6BCcO+9ZzZi0gcaKY0umFXOat44tvD7z/jU9mqR7Ings
+         PgFRGbbdu8fru49qpAi97DKO2y8ZDu+JlEJ8xgJtSTkw+DXs968vNir6XXQ1FxAt957m
+         QHncNNeJMj2PtwXp5OQ6PnIsLjsx7Tu4BXeI6WjTsRmH7gK2gEw1PQCXDSLg7TJAP6K4
+         ZJ598TwhS889TkJPlJAuT9QjtKlxSaH5rOQdrlSOXCFWyl1uc9DV4hZSPg6YJVBvAkVS
+         qJG3a3EgY37YyECjlfQEaz4wC7yuU5plA9DnUCIi9jjebE7Ib+RQ630qh/lf2/+WxxRM
+         3efg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=UmU6sI76GZbXk6wC8vwHaoIhH+sqK51YaZKa3zn+yg0=;
+        b=CYptuggx/7YwUm3AHpvgT7z/nizqkD2GZuFAg7+rTUQQNZ5hQ4AEocnawtT8SIuwz0
+         F+tgj4kOvtIswr+jdAdYKveTI8WDyYwvYuCotzpyS/sXWYwhOiycPtk+UBRxuzFMCZek
+         ceQY36Q/wIhaN+Rg7uds8JDYCTT+Pv7U61ksR3YE10jKuKn3C03+G2KKV7IIuXLmKSVH
+         /GrqON5w/IEqnunIhSG9zcs/N8P8SuTD+sidHj9roo4RTamWwaXuw6a8JW5Mw6LumYOA
+         9l9q6gKvFqCJfqZsUGSMTn6mhzjqa/kjSm85ZhaepFBX+xR+PD+6aR1TD1KbDGDvB9EM
+         2lZA==
+X-Gm-Message-State: AOAM533NbYbuDscVh0h9OM0UvYe35YHVh7YVLrAdkqiRykWozGX6dFYz
+        tdnfra6SsNJDgJPOjmR0H3wCLQpQHxuQ2fg=
+X-Google-Smtp-Source: ABdhPJz4v8Nl1z6VFTztlW3DgRgbu30AKkGbzRNMpCuN3WpXl4uwiSk23B71cFgXYinRlhL8WjIvp+XoXSM3+7g=
+X-Received: from tj2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:187])
+ (user=tjmercier job=sendgmr) by 2002:a0d:c283:0:b0:2db:c5f9:b519 with SMTP id
+ e125-20020a0dc283000000b002dbc5f9b519mr563142ywd.171.1646844756481; Wed, 09
+ Mar 2022 08:52:36 -0800 (PST)
+Date:   Wed,  9 Mar 2022 16:52:12 +0000
+In-Reply-To: <20220309165222.2843651-1-tjmercier@google.com>
+Message-Id: <20220309165222.2843651-3-tjmercier@google.com>
+Mime-Version: 1.0
+References: <20220309165222.2843651-1-tjmercier@google.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+Subject: [RFC v3 2/8] cgroup: gpu: Add a cgroup controller for allocator
+ attribution of GPU memory
+From:   "T.J. Mercier" <tjmercier@google.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     kaleshsingh@google.com, Kenny.Ho@amd.com,
+        "T.J. Mercier" <tjmercier@google.com>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-08 at 23:28 +0000, David Howells wrote:
-> Change the request initialisation function to return an error code so that
-> the network filesystem can return a failure (ENOMEM, for example).
-> 
-> This will also allow ceph to abort a ->readahead() op if the server refuses
-> to give it a cap allowing local caching from within the netfslib framework
-> (errors aren't passed back through ->readahead(), so returning, say,
-> -ENOBUFS will cause the op to be aborted).
-> 
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: linux-cachefs@redhat.com
-> ---
-> 
->  fs/9p/vfs_addr.c       |    3 ++-
->  fs/afs/file.c          |    3 ++-
->  fs/netfs/objects.c     |   41 ++++++++++++++++++++++++-----------------
->  fs/netfs/read_helper.c |   20 ++++++++++++--------
->  include/linux/netfs.h  |    2 +-
->  5 files changed, 41 insertions(+), 28 deletions(-)
-> 
-> diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
-> index fdc1033a1546..91d3926c9559 100644
-> --- a/fs/9p/vfs_addr.c
-> +++ b/fs/9p/vfs_addr.c
-> @@ -56,12 +56,13 @@ static void v9fs_issue_read(struct netfs_io_subrequest *subreq)
->   * @rreq: The read request
->   * @file: The file being read from
->   */
-> -static void v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
-> +static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
->  {
->  	struct p9_fid *fid = file->private_data;
->  
->  	refcount_inc(&fid->count);
->  	rreq->netfs_priv = fid;
-> +	return 0;
->  }
->  
->  /**
-> diff --git a/fs/afs/file.c b/fs/afs/file.c
-> index b19d635eed12..6469d7f98ef5 100644
-> --- a/fs/afs/file.c
-> +++ b/fs/afs/file.c
-> @@ -359,9 +359,10 @@ static int afs_symlink_readpage(struct file *file, struct page *page)
->  	return ret;
->  }
->  
-> -static void afs_init_request(struct netfs_io_request *rreq, struct file *file)
-> +static int afs_init_request(struct netfs_io_request *rreq, struct file *file)
->  {
->  	rreq->netfs_priv = key_get(afs_file_key(file));
-> +	return 0;
->  }
->  
->  static bool afs_is_cache_enabled(struct inode *inode)
-> diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
-> index 986d7a9d25dd..ae18827e156b 100644
-> --- a/fs/netfs/objects.c
-> +++ b/fs/netfs/objects.c
-> @@ -20,27 +20,34 @@ struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
->  {
->  	static atomic_t debug_ids;
->  	struct netfs_io_request *rreq;
-> +	int ret;
->  
->  	rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
-> -	if (rreq) {
-> -		rreq->start	= start;
-> -		rreq->len	= len;
-> -		rreq->origin	= origin;
-> -		rreq->netfs_ops	= ops;
-> -		rreq->netfs_priv = netfs_priv;
-> -		rreq->mapping	= mapping;
-> -		rreq->inode	= file_inode(file);
-> -		rreq->i_size	= i_size_read(rreq->inode);
-> -		rreq->debug_id	= atomic_inc_return(&debug_ids);
-> -		INIT_LIST_HEAD(&rreq->subrequests);
-> -		INIT_WORK(&rreq->work, netfs_rreq_work);
-> -		refcount_set(&rreq->ref, 1);
-> -		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
-> -		if (ops->init_request)
-> -			ops->init_request(rreq, file);
-> -		netfs_stat(&netfs_n_rh_rreq);
-> +	if (!rreq)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	rreq->start	= start;
-> +	rreq->len	= len;
-> +	rreq->origin	= origin;
-> +	rreq->netfs_ops	= ops;
-> +	rreq->netfs_priv = netfs_priv;
-> +	rreq->mapping	= mapping;
-> +	rreq->inode	= file_inode(file);
-> +	rreq->i_size	= i_size_read(rreq->inode);
-> +	rreq->debug_id	= atomic_inc_return(&debug_ids);
-> +	INIT_LIST_HEAD(&rreq->subrequests);
-> +	INIT_WORK(&rreq->work, netfs_rreq_work);
-> +	refcount_set(&rreq->ref, 1);
-> +	__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
-> +	if (rreq->netfs_ops->init_request) {
-> +		ret = rreq->netfs_ops->init_request(rreq, file);
-> +		if (ret < 0) {
-> +			kfree(rreq);
-> +			return ERR_PTR(ret);
-> +		}
->  	}
->  
-> +	netfs_stat(&netfs_n_rh_rreq);
->  	return rreq;
->  }
->  
-> diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
-> index dea085715286..b5176f4320f4 100644
-> --- a/fs/netfs/read_helper.c
-> +++ b/fs/netfs/read_helper.c
-> @@ -768,7 +768,7 @@ void netfs_readahead(struct readahead_control *ractl,
->  				   readahead_pos(ractl),
->  				   readahead_length(ractl),
->  				   NETFS_READAHEAD);
-> -	if (!rreq)
-> +	if (IS_ERR(rreq))
->  		goto cleanup;
->  
->  	if (ops->begin_cache_operation) {
-> @@ -842,11 +842,9 @@ int netfs_readpage(struct file *file,
->  	rreq = netfs_alloc_request(folio->mapping, file, ops, netfs_priv,
->  				   folio_file_pos(folio), folio_size(folio),
->  				   NETFS_READPAGE);
-> -	if (!rreq) {
-> -		if (netfs_priv)
-> -			ops->cleanup(folio_file_mapping(folio), netfs_priv);
-> -		folio_unlock(folio);
-> -		return -ENOMEM;
-> +	if (IS_ERR(rreq)) {
-> +		ret = PTR_ERR(rreq);
-> +		goto alloc_error;
->  	}
->  
->  	if (ops->begin_cache_operation) {
-> @@ -887,6 +885,11 @@ int netfs_readpage(struct file *file,
->  out:
->  	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
->  	return ret;
-> +alloc_error:
-> +	if (netfs_priv)
-> +		ops->cleanup(folio_file_mapping(folio), netfs_priv);
-> +	folio_unlock(folio);
-> +	return ret;
->  }
->  EXPORT_SYMBOL(netfs_readpage);
->  
-> @@ -1007,12 +1010,13 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
->  		goto have_folio_no_wait;
->  	}
->  
-> -	ret = -ENOMEM;
->  	rreq = netfs_alloc_request(mapping, file, ops, netfs_priv,
->  				   folio_file_pos(folio), folio_size(folio),
->  				   NETFS_READ_FOR_WRITE);
-> -	if (!rreq)
-> +	if (IS_ERR(rreq)) {
-> +		ret = PTR_ERR(rreq);
->  		goto error;
-> +	}
->  	rreq->no_unlock_folio	= folio_index(folio);
->  	__set_bit(NETFS_RREQ_NO_UNLOCK_FOLIO, &rreq->flags);
->  	netfs_priv = NULL;
-> diff --git a/include/linux/netfs.h b/include/linux/netfs.h
-> index 7dc741d9b21b..4b99e38f73d9 100644
-> --- a/include/linux/netfs.h
-> +++ b/include/linux/netfs.h
-> @@ -193,7 +193,7 @@ struct netfs_io_request {
->   */
->  struct netfs_request_ops {
->  	bool (*is_cache_enabled)(struct inode *inode);
-> -	void (*init_request)(struct netfs_io_request *rreq, struct file *file);
-> +	int (*init_request)(struct netfs_io_request *rreq, struct file *file);
->  	int (*begin_cache_operation)(struct netfs_io_request *rreq);
->  	void (*expand_readahead)(struct netfs_io_request *rreq);
->  	bool (*clamp_length)(struct netfs_io_subrequest *subreq);
-> 
-> 
+From: Hridya Valsaraju <hridya@google.com>
 
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+The cgroup controller provides accounting for GPU and GPU-related
+memory allocations. The memory being accounted can be device memory or
+memory allocated from pools dedicated to serve GPU-related tasks.
+
+This patch adds APIs to:
+-allow a device to register for memory accounting using the GPU cgroup
+controller.
+-charge and uncharge allocated memory to a cgroup.
+
+When the cgroup controller is enabled, it would expose information about
+the memory allocated by each device(registered for GPU cgroup memory
+accounting) for each cgroup.
+
+The API/UAPI can be extended to set per-device/total allocation limits
+in the future.
+
+The cgroup controller has been named following the discussion in [1].
+
+[1]: https://lore.kernel.org/amd-gfx/YCJp%2F%2FkMC7YjVMXv@phenom.ffwll.local/
+
+Signed-off-by: Hridya Valsaraju <hridya@google.com>
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
+
+---
+v3 changes
+Use more common dual author commit message format per John Stultz.
+
+v2 changes
+Fix incorrect Kconfig help section indentation per Randy Dunlap.
+---
+ include/linux/cgroup_gpu.h    | 127 ++++++++++++++
+ include/linux/cgroup_subsys.h |   4 +
+ init/Kconfig                  |   7 +
+ kernel/cgroup/Makefile        |   1 +
+ kernel/cgroup/gpu.c           | 304 ++++++++++++++++++++++++++++++++++
+ 5 files changed, 443 insertions(+)
+ create mode 100644 include/linux/cgroup_gpu.h
+ create mode 100644 kernel/cgroup/gpu.c
+
+diff --git a/include/linux/cgroup_gpu.h b/include/linux/cgroup_gpu.h
+new file mode 100644
+index 000000000000..c5bc2b882783
+--- /dev/null
++++ b/include/linux/cgroup_gpu.h
+@@ -0,0 +1,127 @@
++/* SPDX-License-Identifier: MIT
++ * Copyright 2019 Advanced Micro Devices, Inc.
++ * Copyright (C) 2022 Google LLC.
++ */
++#ifndef _CGROUP_GPU_H
++#define _CGROUP_GPU_H
++
++#include <linux/cgroup.h>
++#include <linux/page_counter.h>
++
++#ifdef CONFIG_CGROUP_GPU
++ /* The GPU cgroup controller data structure */
++struct gpucg {
++	struct cgroup_subsys_state css;
++
++	/* list of all resource pools that belong to this cgroup */
++	struct list_head rpools;
++};
++
++struct gpucg_device {
++	/*
++	 * list  of various resource pools in various cgroups that the device is
++	 * part of.
++	 */
++	struct list_head rpools;
++
++	/* list of all devices registered for GPU cgroup accounting */
++	struct list_head dev_node;
++
++	/*
++	 * pointer to string literal to be used as identifier for accounting and
++	 * limit setting
++	 */
++	const char *name;
++};
++
++/**
++ * css_to_gpucg - get the corresponding gpucg ref from a cgroup_subsys_state
++ * @css: the target cgroup_subsys_state
++ *
++ * Returns: gpu cgroup that contains the @css
++ */
++static inline struct gpucg *css_to_gpucg(struct cgroup_subsys_state *css)
++{
++	return css ? container_of(css, struct gpucg, css) : NULL;
++}
++
++/**
++ * gpucg_get - get the gpucg reference that a task belongs to
++ * @task: the target task
++ *
++ * This increases the reference count of the css that the @task belongs to.
++ *
++ * Returns: reference to the gpu cgroup the task belongs to.
++ */
++static inline struct gpucg *gpucg_get(struct task_struct *task)
++{
++	if (!cgroup_subsys_enabled(gpu_cgrp_subsys))
++		return NULL;
++	return css_to_gpucg(task_get_css(task, gpu_cgrp_id));
++}
++
++/**
++ * gpucg_put - put a gpucg reference
++ * @gpucg: the target gpucg
++ *
++ * Put a reference obtained via gpucg_get
++ */
++static inline void gpucg_put(struct gpucg *gpucg)
++{
++	if (gpucg)
++		css_put(&gpucg->css);
++}
++
++/**
++ * gpucg_parent - find the parent of a gpu cgroup
++ * @cg: the target gpucg
++ *
++ * This does not increase the reference count of the parent cgroup
++ *
++ * Returns: parent gpu cgroup of @cg
++ */
++static inline struct gpucg *gpucg_parent(struct gpucg *cg)
++{
++	return css_to_gpucg(cg->css.parent);
++}
++
++int gpucg_try_charge(struct gpucg *gpucg, struct gpucg_device *device, u64 usage);
++void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_device *device, u64 usage);
++void gpucg_register_device(struct gpucg_device *gpucg_dev, const char *name);
++#else /* CONFIG_CGROUP_GPU */
++
++struct gpucg;
++struct gpucg_device;
++
++static inline struct gpucg *css_to_gpucg(struct cgroup_subsys_state *css)
++{
++	return NULL;
++}
++
++static inline struct gpucg *gpucg_get(struct task_struct *task)
++{
++	return NULL;
++}
++
++static inline void gpucg_put(struct gpucg *gpucg) {}
++
++static inline struct gpucg *gpucg_parent(struct gpucg *cg)
++{
++	return NULL;
++}
++
++static inline int gpucg_try_charge(struct gpucg *gpucg,
++				   struct gpucg_device *device,
++				   u64 usage)
++{
++	return 0;
++}
++
++static inline void gpucg_uncharge(struct gpucg *gpucg,
++				  struct gpucg_device *device,
++				  u64 usage) {}
++
++static inline void gpucg_register_device(struct gpucg_device *gpucg_dev,
++					 const char *name) {}
++#endif /* CONFIG_CGROUP_GPU */
++#endif /* _CGROUP_GPU_H */
+diff --git a/include/linux/cgroup_subsys.h b/include/linux/cgroup_subsys.h
+index 445235487230..46a2a7b93c41 100644
+--- a/include/linux/cgroup_subsys.h
++++ b/include/linux/cgroup_subsys.h
+@@ -65,6 +65,10 @@ SUBSYS(rdma)
+ SUBSYS(misc)
+ #endif
+ 
++#if IS_ENABLED(CONFIG_CGROUP_GPU)
++SUBSYS(gpu)
++#endif
++
+ /*
+  * The following subsystems are not supported on the default hierarchy.
+  */
+diff --git a/init/Kconfig b/init/Kconfig
+index e9119bf54b1f..43568472930a 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -980,6 +980,13 @@ config BLK_CGROUP
+ 
+ 	See Documentation/admin-guide/cgroup-v1/blkio-controller.rst for more information.
+ 
++config CGROUP_GPU
++	bool "gpu cgroup controller (EXPERIMENTAL)"
++	select PAGE_COUNTER
++	help
++	  Provides accounting and limit setting for memory allocations by the GPU and
++	  GPU-related subsystems.
++
+ config CGROUP_WRITEBACK
+ 	bool
+ 	depends on MEMCG && BLK_CGROUP
+diff --git a/kernel/cgroup/Makefile b/kernel/cgroup/Makefile
+index 12f8457ad1f9..be95a5a532fc 100644
+--- a/kernel/cgroup/Makefile
++++ b/kernel/cgroup/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_CGROUP_RDMA) += rdma.o
+ obj-$(CONFIG_CPUSETS) += cpuset.o
+ obj-$(CONFIG_CGROUP_MISC) += misc.o
+ obj-$(CONFIG_CGROUP_DEBUG) += debug.o
++obj-$(CONFIG_CGROUP_GPU) += gpu.o
+diff --git a/kernel/cgroup/gpu.c b/kernel/cgroup/gpu.c
+new file mode 100644
+index 000000000000..3e9bfb45c6af
+--- /dev/null
++++ b/kernel/cgroup/gpu.c
+@@ -0,0 +1,304 @@
++// SPDX-License-Identifier: MIT
++// Copyright 2019 Advanced Micro Devices, Inc.
++// Copyright (C) 2022 Google LLC.
++
++#include <linux/cgroup.h>
++#include <linux/cgroup_gpu.h>
++#include <linux/mm.h>
++#include <linux/page_counter.h>
++#include <linux/seq_file.h>
++#include <linux/slab.h>
++
++static struct gpucg *root_gpucg __read_mostly;
++
++/*
++ * Protects list of resource pools maintained on per cgroup basis
++ * and list of devices registered for memory accounting using the GPU cgroup
++ * controller.
++ */
++static DEFINE_MUTEX(gpucg_mutex);
++static LIST_HEAD(gpucg_devices);
++
++struct gpucg_resource_pool {
++	/* The device whose resource usage is tracked by this resource pool */
++	struct gpucg_device *device;
++
++	/* list of all resource pools for the cgroup */
++	struct list_head cg_node;
++
++	/*
++	 * list maintained by the gpucg_device to keep track of its
++	 * resource pools
++	 */
++	struct list_head dev_node;
++
++	/* tracks memory usage of the resource pool */
++	struct page_counter total;
++};
++
++static void free_cg_rpool_locked(struct gpucg_resource_pool *rpool)
++{
++	lockdep_assert_held(&gpucg_mutex);
++
++	list_del(&rpool->cg_node);
++	list_del(&rpool->dev_node);
++	kfree(rpool);
++}
++
++static void gpucg_css_free(struct cgroup_subsys_state *css)
++{
++	struct gpucg_resource_pool *rpool, *tmp;
++	struct gpucg *gpucg = css_to_gpucg(css);
++
++	// delete all resource pools
++	mutex_lock(&gpucg_mutex);
++	list_for_each_entry_safe(rpool, tmp, &gpucg->rpools, cg_node)
++		free_cg_rpool_locked(rpool);
++	mutex_unlock(&gpucg_mutex);
++
++	kfree(gpucg);
++}
++
++static struct cgroup_subsys_state *
++gpucg_css_alloc(struct cgroup_subsys_state *parent_css)
++{
++	struct gpucg *gpucg, *parent;
++
++	gpucg = kzalloc(sizeof(struct gpucg), GFP_KERNEL);
++	if (!gpucg)
++		return ERR_PTR(-ENOMEM);
++
++	parent = css_to_gpucg(parent_css);
++	if (!parent)
++		root_gpucg = gpucg;
++
++	INIT_LIST_HEAD(&gpucg->rpools);
++
++	return &gpucg->css;
++}
++
++static struct gpucg_resource_pool *find_cg_rpool_locked(
++	struct gpucg *cg,
++	struct gpucg_device *device)
++{
++	struct gpucg_resource_pool *pool;
++
++	lockdep_assert_held(&gpucg_mutex);
++
++	list_for_each_entry(pool, &cg->rpools, cg_node)
++		if (pool->device == device)
++			return pool;
++
++	return NULL;
++}
++
++static struct gpucg_resource_pool *init_cg_rpool(struct gpucg *cg,
++						 struct gpucg_device *device)
++{
++	struct gpucg_resource_pool *rpool = kzalloc(sizeof(*rpool),
++							GFP_KERNEL);
++	if (!rpool)
++		return ERR_PTR(-ENOMEM);
++
++	rpool->device = device;
++
++	page_counter_init(&rpool->total, NULL);
++	INIT_LIST_HEAD(&rpool->cg_node);
++	INIT_LIST_HEAD(&rpool->dev_node);
++	list_add_tail(&rpool->cg_node, &cg->rpools);
++	list_add_tail(&rpool->dev_node, &device->rpools);
++
++	return rpool;
++}
++
++/**
++ * get_cg_rpool_locked - find the resource pool for the specified device and
++ * specified cgroup. If the resource pool does not exist for the cg, it is
++ * created in a hierarchical manner in the cgroup and its ancestor cgroups who
++ * do not already have a resource pool entry for the device.
++ *
++ * @cg: The cgroup to find the resource pool for.
++ * @device: The device associated with the returned resource pool.
++ *
++ * Return: return resource pool entry corresponding to the specified device in
++ * the specified cgroup (hierarchically creating them if not existing already).
++ *
++ */
++static struct gpucg_resource_pool *
++get_cg_rpool_locked(struct gpucg *cg, struct gpucg_device *device)
++{
++	struct gpucg *parent_cg, *p, *stop_cg;
++	struct gpucg_resource_pool *rpool, *tmp_rpool;
++	struct gpucg_resource_pool *parent_rpool = NULL, *leaf_rpool = NULL;
++
++	rpool = find_cg_rpool_locked(cg, device);
++	if (rpool)
++		return rpool;
++
++	stop_cg = cg;
++	do {
++		rpool = init_cg_rpool(stop_cg, device);
++		if (IS_ERR(rpool))
++			goto err;
++
++		if (!leaf_rpool)
++			leaf_rpool = rpool;
++
++		stop_cg = gpucg_parent(stop_cg);
++		if (!stop_cg)
++			break;
++
++		rpool = find_cg_rpool_locked(stop_cg, device);
++	} while (!rpool);
++
++	/*
++	 * Re-initialize page counters of all rpools created in this invocation
++	 * to enable hierarchical charging.
++	 * stop_cg is the first ancestor cg who already had a resource pool for
++	 * the device. It can also be NULL if no ancestors had a pre-existing
++	 * resource pool for the device before this invocation.
++	 */
++	rpool = leaf_rpool;
++	for (p = cg; p != stop_cg; p = parent_cg) {
++		parent_cg = gpucg_parent(p);
++		if (!parent_cg)
++			break;
++		parent_rpool = find_cg_rpool_locked(parent_cg, device);
++		page_counter_init(&rpool->total, &parent_rpool->total);
++
++		rpool = parent_rpool;
++	}
++
++	return leaf_rpool;
++err:
++	for (p = cg; p != stop_cg; p = gpucg_parent(p)) {
++		tmp_rpool = find_cg_rpool_locked(p, device);
++		free_cg_rpool_locked(tmp_rpool);
++	}
++	return rpool;
++}
++
++/**
++ * gpucg_try_charge - charge memory to the specified gpucg and gpucg_device.
++ * Caller must hold a reference to @gpucg obtained through gpucg_get(). The size
++ * of the memory is rounded up to be a multiple of the page size.
++ *
++ * @gpucg: The gpu cgroup to charge the memory to.
++ * @device: The device to charge the memory to.
++ * @usage: size of memory to charge in bytes.
++ *
++ * Return: returns 0 if the charging is successful and otherwise returns an
++ * error code.
++ */
++int gpucg_try_charge(struct gpucg *gpucg, struct gpucg_device *device, u64 usage)
++{
++	struct page_counter *counter;
++	u64 nr_pages;
++	struct gpucg_resource_pool *rp;
++	int ret = 0;
++
++	mutex_lock(&gpucg_mutex);
++	rp = get_cg_rpool_locked(gpucg, device);
++	/*
++	 * gpucg_mutex can be unlocked here, rp will stay valid until gpucg is
++	 * freed and the caller is holding a reference to the gpucg.
++	 */
++	mutex_unlock(&gpucg_mutex);
++
++	if (IS_ERR(rp))
++		return PTR_ERR(rp);
++
++	nr_pages = PAGE_ALIGN(usage) >> PAGE_SHIFT;
++	if (page_counter_try_charge(&rp->total, nr_pages, &counter))
++		css_get_many(&gpucg->css, nr_pages);
++	else
++		ret = -ENOMEM;
++
++	return ret;
++}
++
++/**
++ * gpucg_uncharge - uncharge memory from the specified gpucg and gpucg_device.
++ * The caller must hold a reference to @gpucg obtained through gpucg_get().
++ *
++ * @gpucg: The gpu cgroup to uncharge the memory from.
++ * @device: The device to uncharge the memory from.
++ * @usage: size of memory to uncharge in bytes.
++ */
++void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_device *device, u64 usage)
++{
++	u64 nr_pages;
++	struct gpucg_resource_pool *rp;
++
++	mutex_lock(&gpucg_mutex);
++	rp = find_cg_rpool_locked(gpucg, device);
++	/*
++	 * gpucg_mutex can be unlocked here, rp will stay valid until gpucg is
++	 * freed and there are active refs on gpucg.
++	 */
++	mutex_unlock(&gpucg_mutex);
++
++	if (unlikely(!rp)) {
++		pr_err("Resource pool not found, incorrect charge/uncharge ordering?\n");
++		return;
++	}
++
++	nr_pages = PAGE_ALIGN(usage) >> PAGE_SHIFT;
++	page_counter_uncharge(&rp->total, nr_pages);
++	css_put_many(&gpucg->css, nr_pages);
++}
++
++/**
++ * gpucg_register_device - Registers a device for memory accounting using the
++ * GPU cgroup controller.
++ *
++ * @device: The device to register for memory accounting.
++ * @name: Pointer to a string literal to denote the name of the device.
++ *
++ * Both @device andd @name must remain valid.
++ */
++void gpucg_register_device(struct gpucg_device *device, const char *name)
++{
++	if (!device)
++		return;
++
++	INIT_LIST_HEAD(&device->dev_node);
++	INIT_LIST_HEAD(&device->rpools);
++
++	mutex_lock(&gpucg_mutex);
++	list_add_tail(&device->dev_node, &gpucg_devices);
++	mutex_unlock(&gpucg_mutex);
++
++	device->name = name;
++}
++
++static int gpucg_resource_show(struct seq_file *sf, void *v)
++{
++	struct gpucg_resource_pool *rpool;
++	struct gpucg *cg = css_to_gpucg(seq_css(sf));
++
++	mutex_lock(&gpucg_mutex);
++	list_for_each_entry(rpool, &cg->rpools, cg_node) {
++		seq_printf(sf, "%s %lu\n", rpool->device->name,
++			   page_counter_read(&rpool->total) * PAGE_SIZE);
++	}
++	mutex_unlock(&gpucg_mutex);
++
++	return 0;
++}
++
++struct cftype files[] = {
++	{
++		.name = "memory.current",
++		.seq_show = gpucg_resource_show,
++	},
++	{ }     /* terminate */
++};
++
++struct cgroup_subsys gpu_cgrp_subsys = {
++	.css_alloc      = gpucg_css_alloc,
++	.css_free       = gpucg_css_free,
++	.early_init     = false,
++	.legacy_cftypes = files,
++	.dfl_cftypes    = files,
++};
+-- 
+2.35.1.616.g0bdcbb4464-goog
+
