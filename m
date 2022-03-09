@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 04:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbiCIE6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 23:58:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
+        id S229561AbiCIFCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 00:02:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCIE6w (ORCPT
+        with ESMTP id S229460AbiCIFC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 23:58:52 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C888DE8
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 20:57:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646801874; x=1678337874;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4+tpppr2nS3z3jqvQ18eYrd8CDvGD+af7zUmyFkKqOM=;
-  b=dwacL0R33tFthWwCBDO8gqzEfqy+uqZ2aYCodcgr+K3wVrBmPoaJAYfn
-   WSDT+UGRb7keKEtnQuaK7UUJ2LVIucg3VdqvlHB/L3fhdYJ+24OwrRhJK
-   kbeygL1QXQExTdmUeOe4cp0tREkYkeb2Z/9QIUPOxCMAP6lSHLrYKAA5Y
-   2dzaI22Z+66od9ysbhE8OtZcZrOzO2SkDrqFoL+D24IbKGlqTcSEAT4bD
-   lCCpY/Jj+zCs1PgBzDgsmXoJIPrnI9VzhGiOHvvjV3DhnDLSr7bFB0iEk
-   3tLdphXONablYHLsSJwcBR5WHVYzgHDInZROKmDNN8fxg2WKd7QsQqnxI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318114731"
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="318114731"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 20:57:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="643913005"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Mar 2022 20:57:52 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRoOV-0002c8-6N; Wed, 09 Mar 2022 04:57:51 +0000
-Date:   Wed, 9 Mar 2022 12:57:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [linux-stable-rc:queue/5.10 9971/9999]
- arch/arm/kernel/spectre.c:13:14: error: expected ';' after return statement
-Message-ID: <202203091205.qc6V73C4-lkp@intel.com>
+        Wed, 9 Mar 2022 00:02:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB9610BBC9;
+        Tue,  8 Mar 2022 21:01:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCD66189F;
+        Wed,  9 Mar 2022 05:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD7EC340E8;
+        Wed,  9 Mar 2022 05:01:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646802090;
+        bh=u9AmhLjdiMXokE3skjPX/ILUo3bIn8slqzpW3UOIBlA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ru9BR2NmSn2/u7Ecwepa5h03WaDRzPvnoHxzDKws3BGyKBx19D8fsYu3cUwUeVGSU
+         WFLjc5s2ikPFp2FimuYhyt3tmbdWG+yKEQC24QGJeiZA8TbZerfqKyYczV5swN3/16
+         Ka1Mf3l99L4NnOlBo3M2KOk5ZLOtm70aZavnFUMdCuESwsLC/ffBeEz6p1BKBtzQCO
+         NGsj2TPRb+KOA5UO5fkz5h0QPRJvW5EogZ+z41LK5HyKoGoKk5j1WoYufKaKfZDke2
+         5w83RohUFDDJLuMGkI1HCmDShSJ558YDfiaBjRcD3l5Zw2lVDJnNW+8DCpOWd/r8do
+         yJzLbqG1GyPCw==
+Message-ID: <ff2e1007-5883-5178-6415-326d6ae69c34@kernel.org>
+Date:   Tue, 8 Mar 2022 22:01:27 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
+Content-Language: en-US
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
+        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
+References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
+ <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
+ <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
+ <66463e26-8564-9f58-ce41-9a2843891d1a@kernel.org>
+ <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.10
-head:   fbf58a03f7a4df716d2470b8badfa0cada9e6fde
-commit: 06036e20ed2d16694cd91fd64fe6f031756c138c [9971/9999] ARM: include unprivileged BPF status in Spectre V2 reporting
-config: arm-milbeaut_m10v_defconfig (https://download.01.org/0day-ci/archive/20220309/202203091205.qc6V73C4-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=06036e20ed2d16694cd91fd64fe6f031756c138c
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/5.10
-        git checkout 06036e20ed2d16694cd91fd64fe6f031756c138c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/
+On 3/8/22 12:46 PM, Tadeusz Struk wrote:
+> That fails in the same way:
+> 
+> skbuff: skb_over_panic: text:ffffffff83e7b48b len:65575 put:65575
+> head:ffff888101f8a000 data:ffff888101f8a088 tail:0x100af end:0x6c0
+> dev:<NULL>
+> ------------[ cut here ]------------
+> kernel BUG at net/core/skbuff.c:113!
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 1852 Comm: repro Not tainted
+> 5.17.0-rc7-00020-gea4424be1688-dirty #19
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
+> RIP: 0010:skb_panic+0x173/0x175
+> 
+> I'm not sure how it supposed to help since it doesn't change the
+> alloclen at all.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> arch/arm/kernel/spectre.c:13:14: error: expected ';' after return statement
-           return false
-                       ^
-                       ;
-   1 error generated.
+alloclen is a function of fraglen and fraglen is a function of datalen.
 
 
-vim +13 arch/arm/kernel/spectre.c
-
-     7	
-     8	static bool _unprivileged_ebpf_enabled(void)
-     9	{
-    10	#ifdef CONFIG_BPF_SYSCALL
-    11		return !sysctl_unprivileged_bpf_disabled;
-    12	#else
-  > 13		return false
-    14	#endif
-    15	}
-    16	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
