@@ -2,200 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3799AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37874C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiCIBGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:06:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
+        id S229707AbiCIBGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:06:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbiCIBF4 (ORCPT
+        with ESMTP id S229645AbiCIBF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 20:05:56 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A1FD5566
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:44:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E79D555E;
+        Tue,  8 Mar 2022 16:44:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JWRnRAXSj1KYbRLgyTpp+qOfp9s6oy6noKV18zlkBxs=; b=jmgnrLWJT3+j+/K9nTLQtOmVv1
-        0Pjv/cN3hSSqgvioOZSUKVk/HXwdjcxqRqKSGNSECikcc4AswCoR7XStRH2wpxCthhZ/u0kRhmd90
-        98O0UjPACa4S3R4BGnOPCzO8J80TAsSr0xprVpKBwQcimy3bYLCcw/WCIYlDNq9aclfvdMZ9LJBKZ
-        UuUf4qGA/rZ7Z+Mtw1TGzQHbyEtR95sefLNs5nVT6uuV24ZejUie70qhx+SqbLszuYMdNmCnxs8iq
-        78wDY7gh/74kW9zx0RYI+XFVu1U2iet5gGJxwvutEpNw/w59rYWiON6QZ+1apwqsb9LFXDsiWHPC9
-        +5AfYJaQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57726)
+        bh=L9e08i3DItUQuyDe2VxAmhXOyMvqb9ieclWvN98wlFQ=; b=odNoSo01fjvZjs9AFVZGAoVrEf
+        HXN4gT8/e7RFLfP/gLG/DVJGuGd2hVuMrox0/RYoEKyP0oJmax9cE2YwiBg2wC09Td/eyIvNoJxTx
+        we7+5oFFwBLi0g05GbYZElSTyW+5ItWg0dLxlQBj3DnFZD+EaYwpVzwDRSJEk+g56xXUJIMHiF9Ks
+        JGK1OA/HAYAHuTkHb0ZSI7vfEDwKVyduCDAAiwd84xDgdlAl0HNchPNHBn46RyNehrmJsgSsADRMb
+        0vVV0q/4Z4K0kZjEPMW86ksBxjzkufXHgPCQgbEObFJ9BxVik18r37FV/0fI9v8PzcIVvViuJzGji
+        CWm1D7fg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57728)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1nRjlg-00017j-CG; Wed, 09 Mar 2022 00:01:28 +0000
+        id 1nRjxD-00018V-QB; Wed, 09 Mar 2022 00:13:23 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nRjle-0007LU-Gs; Wed, 09 Mar 2022 00:01:26 +0000
-Date:   Wed, 9 Mar 2022 00:01:26 +0000
+        id 1nRjxB-0007Mi-PF; Wed, 09 Mar 2022 00:13:21 +0000
+Date:   Wed, 9 Mar 2022 00:13:21 +0000
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: boot flooded with unwind: Index not found
-Message-ID: <YifuVmkcb1ie7bzk@shell.armlinux.org.uk>
-References: <CAMj1kXGRTM99F_Q29Q4G2Q4L6WSHn2YY+_QZCXQGmw=yWPe1mQ@mail.gmail.com>
- <CAMj1kXEy6n3zZ8Z51kP=tTuOU0xCXLLfC-b6BMpdsjMoM7zGBg@mail.gmail.com>
- <Yh8tWdiWPgZLyQtx@Red>
- <CAMj1kXGRtdftpoqmd7HBonBBS67jO=YWzoESPAagGfQBZUDQWg@mail.gmail.com>
- <Yh8w7ldudhmbYv4N@Red>
- <CAMj1kXHri2_tnYhu2gE9xTUOxLY9v1=zODCo1BGfjFTKukiedA@mail.gmail.com>
- <Yh9CbcrfDvN2Z9Y9@Red>
- <Yh9RI64fThQfnJgS@shell.armlinux.org.uk>
- <CAMj1kXGVwXzAAyDeJqAi+eK1hOB3uShiBb_LORL-_YNvikbsAw@mail.gmail.com>
- <Yh9TdbWwHX/5Bhmt@shell.armlinux.org.uk>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH] net: phy: correct spelling error of media in
+ documentation
+Message-ID: <YifxIeVdQzJ3lqEI@shell.armlinux.org.uk>
+References: <20220309062544.3073-1-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yh9TdbWwHX/5Bhmt@shell.armlinux.org.uk>
+In-Reply-To: <20220309062544.3073-1-colin.foster@in-advantage.com>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 11:22:29AM +0000, Russell King (Oracle) wrote:
-> On Wed, Mar 02, 2022 at 12:19:40PM +0100, Ard Biesheuvel wrote:
-> > On Wed, 2 Mar 2022 at 12:12, Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Wed, Mar 02, 2022 at 11:09:49AM +0100, Corentin Labbe wrote:
-> > > > The crash disappeared (but the suspicious RCU usage is still here).
-> > >
-> > > As the trace on those is:
-> > >
-> > > [    0.239629]  unwind_backtrace from show_stack+0x10/0x14
-> > > [    0.239654]  show_stack from init_stack+0x1c54/0x2000
-> > >
-> > > unwind_backtrace() and show_stack() are both C code, the compiler will
-> > > emit the unwind information for it. show_stack() isn't called from
-> > > assembly code, only from C code, so the next function's unwind
-> > > information should also be generated by the compiler.
-> > >
-> > > However, init_stack is not a function - it's an array of unsigned long.
-> > > There is no way this should appear in the trace, and this suggests that
-> > > the unwind of show_stack() has gone wrong.
-> > >
-> > > I don't see anything obvious in Ard's changes that would cause that
-> > > though.
-> > >
-> > > Did it used to work fine with previous versions of linux-next - those
-> > > versions where we had Ard's "arm-vmap-stacks-v6" tag merged in
-> > > (commit 2fa394824493) and did this only appear when I merged
-> > > "arm-ftrace-for-rmk" (commit 74aaaa1e9bba) ? Did merging
-> > > "arm-ftrace-for-rmk" cause any change in your .config?
-> > >
-> > 
-> > I can reproduce the RCU warnings, and I have tracked this down to the
-> > change I made to return_address() for the graph tracer, which I
-> > thought was justified after removing the call to
-> > kernel_text_address():
-> > 
-> > --- a/arch/arm/include/asm/ftrace.h
-> > +++ b/arch/arm/include/asm/ftrace.h
-> > @@ -35,26 +35,8 @@ static inline unsigned long
-> > ftrace_call_adjust(unsigned long addr)
-> > 
-> >  #ifndef __ASSEMBLY__
-> > 
-> > -#if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND)
-> > -/*
-> > - * return_address uses walk_stackframe to do it's work.  If both
-> > - * CONFIG_FRAME_POINTER=y and CONFIG_ARM_UNWIND=y walk_stackframe uses unwind
-> > - * information.  For this to work in the function tracer many functions would
-> > - * have to be marked with __notrace.  So for now just depend on
-> > - * !CONFIG_ARM_UNWIND.
-> > - */
-> > -
-> >  void *return_address(unsigned int);
-> > 
-> > -#else
-> > -
-> > -static inline void *return_address(unsigned int level)
-> > -{
-> > -       return NULL;
-> > -}
-> > -
-> > -#endif
-> > -
-> >  #define ftrace_return_address(n) return_address(n)
-> > 
-> >  #define ARCH_HAS_SYSCALL_MATCH_SYM_NAME
-> > 
-> > However, the function graph tracer works happily with this bit
-> > reverted, and so that is probably the best course of action here.
-> > 
-> > I have already sent the patch that reintroduces the
-> > kernel_text_address() check - would you prefer a v2 of that one with
-> > this change incorporated? Or a second patch that just reverts the
-> > above? (Given that the bogus dereference was invoked from
-> > return_address() as well, I suspect that this change would make the
-> > get_kernel_nofault() change I proposed in this thread redundant)
+On Tue, Mar 08, 2022 at 10:25:44PM -0800, Colin Foster wrote:
+> The header file incorrectly referenced "median-independant interface"
+> instead of media. Correct this typo.
 > 
-> I'd prefer patches on top of my devel-stable branch, thanks.
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Fixes: 4069a572d423 ("net: phy: Document core PHY structures")
 
-To reinterate what I've just put on IRC - we have not got to the bottom
-of this problem yet - it still very much exists.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-There seems to be something of a fundamental issue with the unwinder,
-it now appears to be going wrong and failing to unwind beyond a
-couple of functions, and the address it's coming out with appears to
-be incorrect. I've only just discovered this because I created my very
-own bug, and yet again, the timing sucks with the proximity of the
-merge window.
-
-I'm getting:
-
-[   13.198803] [<c0017728>] (unwind_backtrace) from [<c0012828>] (show_stack+0x10/0x14)
-[   13.198820] [<c0012828>] (show_stack) from [<c2be78d4>] (0xc2be78d4)
-
-for the WARN_ON() stacktrace, and that address that apparently called
-show_stack() is most definitely rubbish and incorrect. This makes any
-WARN_ON() condition undebuggable.
-
-This is with both 9183/1 and 9184/1 applied on top of pulling your
-"arm-ftrace-for-rmk" tag and also with just the "arm-vmap-stacks-v6"
-tag. This seems to point at one of these patches breaking the
-unwinder:
-
-a1c510d0adc6 ARM: implement support for vmap'ed stacks
-532319b9c418 ARM: unwind: disregard unwind info before stack frame is set up
-4ab6827081c6 ARM: unwind: dump exception stack from calling frame
-b6506981f880 ARM: unwind: support unwinding across multiple stacks
-
-Given that the unwinder is broken, I wonder whether 0183/1 and 9184/1
-are actually required.
-
-I did try to point this problem out a few emails back:
-
-"As the trace on those is:
-
-[    0.239629]  unwind_backtrace from show_stack+0x10/0x14
-[    0.239654]  show_stack from init_stack+0x1c54/0x2000                        
-
-unwind_backtrace() and show_stack() are both C code, the compiler will
-emit the unwind information for it. show_stack() isn't called from
-assembly code, only from C code, so the next function's unwind
-information should also be generated by the compiler.
-
-However, init_stack is not a function - it's an array of unsigned long.
-There is no way this should appear in the trace, and this suggests that
-the unwind of show_stack() has gone wrong."
-
-In Corentin's case, there is no way init_stack should ever appear in
-the stack trace. In my case, it's not init_stack, but 0xc2be78d4.
-
-Can you try testing out a dummy WARN_ON(1) test in your kernel please?
+Thanks!
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
