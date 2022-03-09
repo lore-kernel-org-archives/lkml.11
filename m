@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FE3C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AFBC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235586AbiCIQdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:33:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S235862AbiCIQeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:34:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235408AbiCIQ1a (ORCPT
+        with ESMTP id S235339AbiCIQ13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:27:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924412BB1A;
-        Wed,  9 Mar 2022 08:22:31 -0800 (PST)
+        Wed, 9 Mar 2022 11:27:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D847425FD;
+        Wed,  9 Mar 2022 08:22:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F121B82224;
-        Wed,  9 Mar 2022 16:22:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C87DBC340F5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70A506194A;
+        Wed,  9 Mar 2022 16:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CD3C340F3;
         Wed,  9 Mar 2022 16:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646842948;
-        bh=Yu0TsGuK32wvpI2+J3C3f/SaYvUuvXGxBS3dMIFnfLU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=h2MtXokjWYFs0We/K82MchVDJRT1q2LJL8bcsbZCMfN5nEsD6B+w9AxkaN1rlEnqu
-         WSb9e+zw67BL7Gx33sqqqjc8SfbrYHCzjzJDJZzLrq3c70IQaRzteA5VdXj8y+TS0N
-         d/LxuzQRymJujghUd2UKHCaeE3MCFl3FhDwEWhzl9X/5sQsYSdTeOSzeaz6mltrBXy
-         rljTXKzcUASWuiuzfVi2RChiUxTRg/0V2o1/Akok3DZN+ZPyNtS+IlUCPuIFeIM+m/
-         S7uryCUvdbPHrSA2jjRWhdH/e2q5yJ8VSgvAvhLcnC9SXCW2JLqG3vtWxwWwk2KgrH
-         w+HAoifCtfwaA==
+        bh=oo9xuTopnDeaYjwi7l3v1e6htB3VyexeBkNhxNnIHC0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cy5qQKoZDRTEEzf4FZjUIjpMAYzRFS+VgoR/9wdi7RZ6ASeJeQF2+UG6GlKt8K/iv
+         S0rBO1qOQes2p7rd6Rh654NrRcsBkaYv2CAE7GSrrt31MqUlpfhqgxpRU6PoXsArDU
+         OgtjsKMwTxccJfs9q08mvo3yvnqOcBft24qTEsAAqtt8eTmMwdPgAp2g+0zb0rZv4P
+         9XCIP/7bI7wm7rvvoaAImIcAZ1S0NsmT1RBsDNfzKfKmbRyxKY8Ekvl4zZxCcNEmkV
+         WgwXCp7O7NeFihZ4bf4F71Jm3orq9sfQYmycLu60xgb0XL6/yLv8OhzXzPZvp3dy99
+         okRSOUdon/ImQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nRz50-00E6Ab-6y; Wed, 09 Mar 2022 17:22:26 +0100
+        id 1nRz50-00E6Ai-Bh; Wed, 09 Mar 2022 17:22:26 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andy Walls <awalls@md.metrocast.net>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Michael Krufky <mkrufky@linuxtv.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Tomasz Figa <tfiga@chromium.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux1394-devel@lists.sourceforge.net
-Subject: [PATCH 0/5] media: sort Makefile entries
-Date:   Wed,  9 Mar 2022 17:22:20 +0100
-Message-Id: <cover.1646842741.git.mchehab@kernel.org>
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH 2/5] media: platform: Makefile: group some Makefile options
+Date:   Wed,  9 Mar 2022 17:22:22 +0100
+Message-Id: <30661693e9b8f5e084bbbf96043aaf49f0b40db5.1646842741.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1646842741.git.mchehab@kernel.org>
+References: <cover.1646842741.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Entries at Makefiles end being merged on random order. 
+When there are multiple Kconfig entries inside a Makefile, just
+include the makefile, as the per-Kconfig option will already
+be inside platform/*/Makefile.
 
-Sort them on alphabetical order. I'm preparing similar changes for Kconfig
-entries too.
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 0/5] at: https://lore.kernel.org/all/cover.1646842741.git.mchehab@kernel.org/
 
-Mauro Carvalho Chehab (5):
-  media: xc2028: rename the driver from tuner-xc2028
-  media: platform: Makefile: group some Makefile options
-  media: Makefiles: remove extra spaces
-  media: dvb-frontend: remove TUNER_ from some DVB frontend Kconfig
-    options
-  media: Makefiles: sort entries where it fits
+ drivers/media/platform/Makefile | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
- .../admin-guide/media/i2c-cardlist.rst        |   2 +-
- MAINTAINERS                                   |   2 +-
- drivers/media/Makefile                        |   4 +-
- drivers/media/cec/platform/Makefile           |  16 +-
- drivers/media/common/Makefile                 |   4 +-
- drivers/media/common/b2c2/Kconfig             |   4 +-
- drivers/media/common/videobuf2/Makefile       |   6 +-
- drivers/media/dvb-frontends/Kconfig           |   8 +-
- drivers/media/dvb-frontends/Makefile          | 192 +++++++++---------
- drivers/media/dvb-frontends/cx24113.h         |   2 +-
- drivers/media/dvb-frontends/dib0070.h         |   2 +-
- drivers/media/dvb-frontends/dib0090.h         |   2 +-
- drivers/media/dvb-frontends/itd1000.h         |   2 +-
- drivers/media/firewire/Makefile               |   2 +-
- drivers/media/i2c/Makefile                    |  92 ++++-----
- drivers/media/pci/Makefile                    |  18 +-
- drivers/media/pci/cx18/cx18-driver.c          |   2 +-
- drivers/media/pci/cx18/cx18-dvb.c             |   2 +-
- drivers/media/pci/cx18/cx18-gpio.c            |   2 +-
- drivers/media/pci/cx23885/Kconfig             |   2 +-
- drivers/media/pci/cx23885/cx23885-cards.c     |   2 +-
- drivers/media/pci/cx23885/cx23885-dvb.c       |   2 +-
- drivers/media/pci/cx23885/cx23885-video.c     |   2 +-
- drivers/media/pci/cx88/cx88.h                 |   2 +-
- drivers/media/pci/ivtv/ivtv-driver.c          |   2 +-
- drivers/media/pci/ivtv/ivtv-gpio.c            |   2 +-
- drivers/media/pci/saa7134/saa7134-cards.c     |   2 +-
- drivers/media/pci/saa7134/saa7134-dvb.c       |   2 +-
- drivers/media/platform/Makefile               | 147 ++++++--------
- drivers/media/radio/Makefile                  |  42 ++--
- drivers/media/rc/Makefile                     |  45 ++--
- drivers/media/rc/keymaps/Makefile             |  33 +--
- drivers/media/spi/Makefile                    |   5 +-
- drivers/media/test-drivers/Makefile           |  13 +-
- drivers/media/tuners/Makefile                 |  66 +++---
- drivers/media/tuners/tuner-types.c            |   2 +-
- .../{tuner-xc2028-types.h => xc2028-types.h}  |   6 +-
- .../media/tuners/{tuner-xc2028.c => xc2028.c} |   6 +-
- .../media/tuners/{tuner-xc2028.h => xc2028.h} |   2 +-
- drivers/media/tuners/xc4000.c                 |   2 +-
- drivers/media/usb/Makefile                    |  25 +--
- drivers/media/usb/dvb-usb/Kconfig             |   6 +-
- drivers/media/usb/dvb-usb/cxusb.c             |   2 +-
- drivers/media/usb/dvb-usb/dib0700_devices.c   |   2 +-
- drivers/media/usb/em28xx/em28xx-i2c.c         |   2 +-
- drivers/media/usb/em28xx/em28xx.h             |   2 +-
- drivers/media/usb/gspca/Makefile              |  88 ++++----
- drivers/media/usb/tm6000/tm6000-cards.c       |   2 +-
- drivers/media/usb/tm6000/tm6000-dvb.c         |   2 +-
- drivers/media/usb/tm6000/tm6000-i2c.c         |   2 +-
- drivers/media/v4l2-core/Makefile              |  29 ++-
- drivers/media/v4l2-core/tuner-core.c          |   2 +-
- 52 files changed, 450 insertions(+), 465 deletions(-)
- rename drivers/media/tuners/{tuner-xc2028-types.h => xc2028-types.h} (96%)
- rename drivers/media/tuners/{tuner-xc2028.c => xc2028.c} (99%)
- rename drivers/media/tuners/{tuner-xc2028.h => xc2028.h} (99%)
-
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index 4032816f8e8a..764b5bf45e5a 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -7,8 +7,7 @@ obj-$(CONFIG_VIDEO_ALLEGRO_DVT)		+= allegro-dvt/
+ obj-$(CONFIG_VIDEO_ASPEED)		+= aspeed-video.o
+ obj-$(CONFIG_VIDEO_CADENCE)		+= cadence/
+ obj-$(CONFIG_VIDEO_VIA_CAMERA) += via-camera.o
+-obj-$(CONFIG_VIDEO_CAFE_CCIC) += marvell-ccic/
+-obj-$(CONFIG_VIDEO_MMP_CAMERA) += marvell-ccic/
++obj-y += marvell-ccic/
+ 
+ obj-$(CONFIG_VIDEO_OMAP3)	+= omap3isp/
+ obj-$(CONFIG_VIDEO_PXA27x)	+= pxa_camera.o
+@@ -67,13 +66,9 @@ obj-$(CONFIG_VIDEO_XILINX)		+= xilinx/
+ obj-$(CONFIG_VIDEO_RCAR_ISP)		+= rcar-isp.o
+ obj-$(CONFIG_VIDEO_RCAR_VIN)		+= rcar-vin/
+ 
+-obj-$(CONFIG_VIDEO_ATMEL_ISC)		+= atmel/
+-obj-$(CONFIG_VIDEO_ATMEL_ISI)		+= atmel/
+-obj-$(CONFIG_VIDEO_ATMEL_XISC)		+= atmel/
+-obj-$(CONFIG_VIDEO_MICROCHIP_CSI2DC)	+= atmel/
++obj-y	+= atmel/
+ 
+-obj-$(CONFIG_VIDEO_STM32_DCMI)		+= stm32/
+-obj-$(CONFIG_VIDEO_STM32_DMA2D)		+= stm32/
++obj-y	+= stm32/
+ 
+ obj-$(CONFIG_VIDEO_MEDIATEK_VPU)	+= mtk-vpu/
+ 
 -- 
 2.35.1
-
 
