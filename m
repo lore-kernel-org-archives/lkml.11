@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27B0C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC693C35274
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235831AbiCIQ2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
+        id S236304AbiCIQ3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238460AbiCIQWU (ORCPT
+        with ESMTP id S235234AbiCIQW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:22:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7813A5;
-        Wed,  9 Mar 2022 08:21:21 -0800 (PST)
+        Wed, 9 Mar 2022 11:22:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CEB2B1BE;
+        Wed,  9 Mar 2022 08:21:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA1261926;
-        Wed,  9 Mar 2022 16:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E384EC340F3;
-        Wed,  9 Mar 2022 16:21:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6B0BB82020;
+        Wed,  9 Mar 2022 16:21:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EE78C340E8;
+        Wed,  9 Mar 2022 16:21:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842880;
-        bh=18sop7HHeHWk2N9tOaxxTwb116X8umHAw2ytwpnKPGs=;
+        s=k20201202; t=1646842896;
+        bh=uupnt2lHilMC53ou54V1UvD3QXZW+C7+LxzkOSFd6Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYtLvgTJLxiMmeqCQT/vN6heovbBXanmo3fIiuJNqk1dkWBhYPEXcTlbZMmhdCUeE
-         7ULuNdIOUsCU6NEh/adXMmCsZLazTOBMF9WSgSjzQolw/rA1ViUENElG3OtQlp0bz3
-         Pmt/+Yb2aNmWkeg8yhCLY01aRw6ve+JtyGUJOfSrtmHH06zGrZnWPfIskMoZQgWzi5
-         QGz09ofUnyScg3cxuR7vGgIv/1kgILu5jLnswk3mPgKXsJWt8rG0U0DMw/IzxBLbGr
-         ir2p9QEgaHTwLI0ltbHjvPojhWji0obP+GrCuG5NDgo2B2nwYqbHU+ycjaD89KE5lW
-         l4+GBavRoI8tg==
+        b=c4BtVJkyNWni7tFEx54Wh/ZInPD734LTpTu3ya8kssLhwe/pDIWgDXxWVCQRtgT2v
+         hvxRxm+/WTwgeQuHhxPAnrG0s6vLc66NVopP8WMHrwm7qkn0YR8ONgOFVs0Ct68FdN
+         f042xZ+xZOP0oAT80ab+sY2fj8PbsIJ/5yiinogmVkq2bopo4ZkkLw2j7o8fGmpF0o
+         P/zeMUIjypXt941l1tt/ui7xcuv6YzgyiP80WVCzLI5V/ozEw/bW1NNZlvKJV0aGvg
+         aNZqaeHa97gq4rH6cmwqOyyMaSOEgyKdoYl+z4fJ5EulJIbvWbhZj/TM4PngdS/xJV
+         y+xHOVxUTM2yQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/24] atm: firestream: check the return value of ioremap() in fs_init()
-Date:   Wed,  9 Mar 2022 11:19:35 -0500
-Message-Id: <20220309161946.136122-16-sashal@kernel.org>
+Cc:     Manasi Navare <manasi.d.navare@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, dri-devel@lists.freedesktop.org,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch
+Subject: [PATCH AUTOSEL 5.15 19/24] drm/vrr: Set VRR capable prop only if it is attached to connector
+Date:   Wed,  9 Mar 2022 11:19:38 -0500
+Message-Id: <20220309161946.136122-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
 References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,34 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Manasi Navare <manasi.d.navare@intel.com>
 
-[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
+[ Upstream commit 62929726ef0ec72cbbe9440c5d125d4278b99894 ]
 
-The function ioremap() in fs_init() can fail, so its return value should
-be checked.
+VRR capable property is not attached by default to the connector
+It is attached only if VRR is supported.
+So if the driver tries to call drm core set prop function without
+it being attached that causes NULL dereference.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Manasi Navare <manasi.d.navare@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220225013055.9282-1-manasi.d.navare@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/firestream.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/drm_connector.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 3bc3c314a467..4f67404fe64c 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
- 	dev->hw_base = pci_resource_start(pci_dev, 0);
- 
- 	dev->base = ioremap(dev->hw_base, 0x1000);
-+	if (!dev->base)
-+		return 1;
- 
- 	reset_chip (dev);
-   
+diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+index 2ba257b1ae20..e9b7926d9b66 100644
+--- a/drivers/gpu/drm/drm_connector.c
++++ b/drivers/gpu/drm/drm_connector.c
+@@ -2233,6 +2233,9 @@ EXPORT_SYMBOL(drm_connector_atomic_hdr_metadata_equal);
+ void drm_connector_set_vrr_capable_property(
+ 		struct drm_connector *connector, bool capable)
+ {
++	if (!connector->vrr_capable_property)
++		return;
++
+ 	drm_object_property_set_value(&connector->base,
+ 				      connector->vrr_capable_property,
+ 				      capable);
 -- 
 2.34.1
 
