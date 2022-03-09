@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AFBC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235862AbiCIQeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:34:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
+        id S235269AbiCIQeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:34:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235339AbiCIQ13 (ORCPT
+        with ESMTP id S235446AbiCIQ1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:27:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D847425FD;
-        Wed,  9 Mar 2022 08:22:29 -0800 (PST)
+        Wed, 9 Mar 2022 11:27:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E7322B2E;
+        Wed,  9 Mar 2022 08:22:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70A506194A;
-        Wed,  9 Mar 2022 16:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CD3C340F3;
-        Wed,  9 Mar 2022 16:22:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 768346195B;
+        Wed,  9 Mar 2022 16:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B7AC340EC;
+        Wed,  9 Mar 2022 16:22:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842948;
-        bh=oo9xuTopnDeaYjwi7l3v1e6htB3VyexeBkNhxNnIHC0=;
+        s=k20201202; t=1646842953;
+        bh=qtVI9Cpd/e0wDOAuOUqA6KYatzZqKbix78JA/VnYFI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cy5qQKoZDRTEEzf4FZjUIjpMAYzRFS+VgoR/9wdi7RZ6ASeJeQF2+UG6GlKt8K/iv
-         S0rBO1qOQes2p7rd6Rh654NrRcsBkaYv2CAE7GSrrt31MqUlpfhqgxpRU6PoXsArDU
-         OgtjsKMwTxccJfs9q08mvo3yvnqOcBft24qTEsAAqtt8eTmMwdPgAp2g+0zb0rZv4P
-         9XCIP/7bI7wm7rvvoaAImIcAZ1S0NsmT1RBsDNfzKfKmbRyxKY8Ekvl4zZxCcNEmkV
-         WgwXCp7O7NeFihZ4bf4F71Jm3orq9sfQYmycLu60xgb0XL6/yLv8OhzXzPZvp3dy99
-         okRSOUdon/ImQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nRz50-00E6Ai-Bh; Wed, 09 Mar 2022 17:22:26 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH 2/5] media: platform: Makefile: group some Makefile options
-Date:   Wed,  9 Mar 2022 17:22:22 +0100
-Message-Id: <30661693e9b8f5e084bbbf96043aaf49f0b40db5.1646842741.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1646842741.git.mchehab@kernel.org>
-References: <cover.1646842741.git.mchehab@kernel.org>
+        b=KqA/Kt/wWJEoVAZQ6Dt9/298TqFoI0YPIxC/yrxLyIFTe+i1PyROAZJu5TJkjoM5K
+         2xq0d31+IDL7aKrxa5eAixHlrW7eSTu0ut3NoskjB++94uf/5aYyeoZwQqgE7TfVag
+         HmW5hP4bXeoINwmF4hniMyrC4pa14tP6UYGVDuXmz8D386KoAPz0sr/NITi6/yNxFr
+         YmI/ApxsDkH5AO4aBPNlRiVpzYZ+Qwf6b0RSCo8m/VrG2bxfkJ7q1jSiXXKD0hDocT
+         /aK1I+bHA/Ex6MP6OmB5mUd3YKiYUQVVmjHNHq0lDbimHxcGgjLTb4uJwge1lefhYF
+         1TU3Su66xUaxg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/20] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+Date:   Wed,  9 Mar 2022 11:21:45 -0500
+Message-Id: <20220309162158.136467-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309162158.136467-1-sashal@kernel.org>
+References: <20220309162158.136467-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When there are multiple Kconfig entries inside a Makefile, just
-include the makefile, as the per-Kconfig option will already
-be inside platform/*/Makefile.
+From: Corentin Labbe <clabbe@baylibre.com>
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
+
+crypto-controller had a typo, fix it.
+In the same time, rename it to just crypto
+
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ arch/arm/boot/dts/rk3288.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH 0/5] at: https://lore.kernel.org/all/cover.1646842741.git.mchehab@kernel.org/
-
- drivers/media/platform/Makefile | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 4032816f8e8a..764b5bf45e5a 100644
---- a/drivers/media/platform/Makefile
-+++ b/drivers/media/platform/Makefile
-@@ -7,8 +7,7 @@ obj-$(CONFIG_VIDEO_ALLEGRO_DVT)		+= allegro-dvt/
- obj-$(CONFIG_VIDEO_ASPEED)		+= aspeed-video.o
- obj-$(CONFIG_VIDEO_CADENCE)		+= cadence/
- obj-$(CONFIG_VIDEO_VIA_CAMERA) += via-camera.o
--obj-$(CONFIG_VIDEO_CAFE_CCIC) += marvell-ccic/
--obj-$(CONFIG_VIDEO_MMP_CAMERA) += marvell-ccic/
-+obj-y += marvell-ccic/
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index 0d89ad274268..9051fb4a267d 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -990,7 +990,7 @@ i2s: i2s@ff890000 {
+ 		status = "disabled";
+ 	};
  
- obj-$(CONFIG_VIDEO_OMAP3)	+= omap3isp/
- obj-$(CONFIG_VIDEO_PXA27x)	+= pxa_camera.o
-@@ -67,13 +66,9 @@ obj-$(CONFIG_VIDEO_XILINX)		+= xilinx/
- obj-$(CONFIG_VIDEO_RCAR_ISP)		+= rcar-isp.o
- obj-$(CONFIG_VIDEO_RCAR_VIN)		+= rcar-vin/
- 
--obj-$(CONFIG_VIDEO_ATMEL_ISC)		+= atmel/
--obj-$(CONFIG_VIDEO_ATMEL_ISI)		+= atmel/
--obj-$(CONFIG_VIDEO_ATMEL_XISC)		+= atmel/
--obj-$(CONFIG_VIDEO_MICROCHIP_CSI2DC)	+= atmel/
-+obj-y	+= atmel/
- 
--obj-$(CONFIG_VIDEO_STM32_DCMI)		+= stm32/
--obj-$(CONFIG_VIDEO_STM32_DMA2D)		+= stm32/
-+obj-y	+= stm32/
- 
- obj-$(CONFIG_VIDEO_MEDIATEK_VPU)	+= mtk-vpu/
- 
+-	crypto: cypto-controller@ff8a0000 {
++	crypto: crypto@ff8a0000 {
+ 		compatible = "rockchip,rk3288-crypto";
+ 		reg = <0x0 0xff8a0000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
 -- 
-2.35.1
+2.34.1
 
