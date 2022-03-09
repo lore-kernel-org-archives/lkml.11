@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 611E6C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F53C35278
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237456AbiCIQtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:49:06 -0500
+        id S237514AbiCIQtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:49:15 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238759AbiCIQbr (ORCPT
+        with ESMTP id S239052AbiCIQcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC2A1A06C8;
-        Wed,  9 Mar 2022 08:26:21 -0800 (PST)
+        Wed, 9 Mar 2022 11:32:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893E81A8062;
+        Wed,  9 Mar 2022 08:27:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40AABB82253;
-        Wed,  9 Mar 2022 16:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD28AC340EC;
-        Wed,  9 Mar 2022 16:26:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDE10619C9;
+        Wed,  9 Mar 2022 16:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A458EC340F6;
+        Wed,  9 Mar 2022 16:26:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843177;
-        bh=wEoJkZLmzdMrIsHPFU3oRk0kM0mMwx+PzxnxITksLjg=;
+        s=k20201202; t=1646843205;
+        bh=qkttfvUkMX8pixr/UYRauWVmlsHrV8EzgM73QaxlJqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ctfj+KRo6x8UcDkQxLkzoON8UNj65F18r+wgWoGtHM34hcwdszqivHiIwjbLRPEHV
-         rcFNN3wJjAQKx1Xl+rJvYvWEFOOAsZyYmiJn8+A5h0KOLtzJrbJAKpKsivAvZkUmYU
-         H4jINJNxhxxxN9vkr6YTeMacBoAUsykAld0cjXnO10kLvvRYmUR4DMARCFgoCEwRTH
-         FF1ylDPmovak65oYHl4N9OeYUwFNrD6UMyu0QLkyf1Yc6Kndfj1jrp42PlJzqTmqe3
-         fOgHAs8V0HrFfdgWbz7AbF8WOi+zGM1XjsTEVGjzSggf9Swc2g0U5gb2wo+9Ahuj2P
-         QfxJdOjrO58Vg==
+        b=NVoZ3E1SPIW0yJb6kvvQ7aikwbffkEMDWEqoJVzLPwOEmC4EE1IKrCAE/mMa7ZVEx
+         aerov6bJYZQjHS3/jCb/fueVM3EpAF0rVEasWBKA1paDlgpk9kSNMC3qWKJV9P6ROD
+         v2wDhD0JietmmPtj72NgRziwlsOJaJrttfkfXrWEosxitsZwYtI+a+Rhfum37vWUTT
+         9WuVGKjAeUuTghBwIemuS2YwFziqhle91zfL0ARs7Gmq4m9gkeuDc9pyMB5jvVUqH5
+         fq4USasWLYbS5zW7Hfqn5Z268p8XgIqLJIAzpf2UAD+fWjoLNMfezL2/t2eRh/Yxff
+         df1eP7ij8I+UQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 14/14] kselftest/vm: fix tests build with old libc
-Date:   Wed,  9 Mar 2022 11:25:07 -0500
-Message-Id: <20220309162508.137035-14-sashal@kernel.org>
+Cc:     Julian Braha <julianbraha@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, jarkko@kernel.org,
+        deller@gmx.de, johannes.berg@intel.com,
+        James.Bottomley@HansenPartnership.com, mcroce@microsoft.com,
+        arnd@arndb.de
+Subject: [PATCH AUTOSEL 4.14 05/12] ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
+Date:   Wed,  9 Mar 2022 11:26:10 -0500
+Message-Id: <20220309162618.137226-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
-References: <20220309162508.137035-1-sashal@kernel.org>
+In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
+References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,45 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Julian Braha <julianbraha@gmail.com>
 
-[ Upstream commit b773827e361952b3f53ac6fa4c4e39ccd632102e ]
+[ Upstream commit 11c57c3ba94da74c3446924260e34e0b1950b5d7 ]
 
-The error message when I build vm tests on debian10 (GLIBC 2.28):
+Resending this to properly add it to the patch tracker - thanks for letting
+me know, Arnd :)
 
-    userfaultfd.c: In function `userfaultfd_pagemap_test':
-    userfaultfd.c:1393:37: error: `MADV_PAGEOUT' undeclared (first use
-    in this function); did you mean `MADV_RANDOM'?
-      if (madvise(area_dst, test_pgsize, MADV_PAGEOUT))
-                                         ^~~~~~~~~~~~
-                                         MADV_RANDOM
+When ARM is enabled, and BITREVERSE is disabled,
+Kbuild gives the following warning:
 
-This patch includes these newer definitions from UAPI linux/mman.h, is
-useful to fix tests build on systems without these definitions in glibc
-sys/mman.h.
+WARNING: unmet direct dependencies detected for HAVE_ARCH_BITREVERSE
+  Depends on [n]: BITREVERSE [=n]
+  Selected by [y]:
+  - ARM [=y] && (CPU_32v7M [=n] || CPU_32v7 [=y]) && !CPU_32v6 [=n]
 
-Link: https://lkml.kernel.org/r/20220227055330.43087-2-zhouchengming@bytedance.com
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+This is because ARM selects HAVE_ARCH_BITREVERSE
+without selecting BITREVERSE, despite
+HAVE_ARCH_BITREVERSE depending on BITREVERSE.
+
+This unmet dependency bug was found by Kismet,
+a static analysis tool for Kconfig. Please advise if this
+is not the appropriate solution.
+
+Signed-off-by: Julian Braha <julianbraha@gmail.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/userfaultfd.c | 1 +
- 1 file changed, 1 insertion(+)
+ lib/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index 1963440f6725..b2c7043c0c30 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -60,6 +60,7 @@
- #include <signal.h>
- #include <poll.h>
- #include <string.h>
-+#include <linux/mman.h>
- #include <sys/mman.h>
- #include <sys/syscall.h>
- #include <sys/ioctl.h>
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 8396c4cfa1ab..1a33e9365951 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -16,7 +16,6 @@ config BITREVERSE
+ config HAVE_ARCH_BITREVERSE
+ 	bool
+ 	default n
+-	depends on BITREVERSE
+ 	help
+ 	  This option enables the use of hardware bit-reversal instructions on
+ 	  architectures which support such operations.
 -- 
 2.34.1
 
