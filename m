@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6189C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234803AbiCIQQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:16:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
+        id S233219AbiCIQQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236061AbiCIQJe (ORCPT
+        with ESMTP id S236260AbiCIQJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0780B1470C4;
-        Wed,  9 Mar 2022 08:07:14 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E905611C1E;
+        Wed,  9 Mar 2022 08:08:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00480B82224;
-        Wed,  9 Mar 2022 16:07:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AC6C36AE2;
-        Wed,  9 Mar 2022 16:07:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D35EB8221D;
+        Wed,  9 Mar 2022 16:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F4FC340E8;
+        Wed,  9 Mar 2022 16:08:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842027;
-        bh=QdtSi/Doybz5un3fgzCVDkxmY7jN+aTKxr9KnUbl8UY=;
+        s=korg; t=1646842126;
+        bh=MVUpH4wQOhB1LrkX5Y7uE2030ESLq60pzHrS05oXtu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cDlfLmGtL0/Af7Ve/qaPJ+WOkF4zkTtFHcJrZLL2fVdD3QeJp5pi9crXAIKlg4vLL
-         iwlz1AFTb+wdzKh4VYKYYz3t3cZIei+kbu7u4OSp5Cq6N2a19OUjwOcSeO2JKr1ksd
-         A8vud6fmXp98Cps2ld7jGuujtS2R5hsIvisklpTU=
+        b=Qk7KuQP8M/6CI6qeOsWVzQ0NuutxKYeQiU5ttXudvjrekLQo33qC8Be6YGLj6/Zn4
+         Sbs5qQgwhaDHLSGIpLJvDBa5n07fDYH6PVRTWctbv42L48fAmi+CczqXgHdsTkIolR
+         0zHHOoEpT48tsMhnoAwy8Y+a4uRhLQwPhdYui4l4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.15 16/43] arm64: Add HWCAP for self-synchronising virtual counter
-Date:   Wed,  9 Mar 2022 17:00:00 +0100
-Message-Id: <20220309155900.208244845@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 37/43] arm64: Mitigate spectre style branch history side channels
+Date:   Wed,  9 Mar 2022 17:00:21 +0100
+Message-Id: <20220309155900.806215274@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -48,116 +48,574 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: James Morse <james.morse@arm.com>
 
-commit fee29f008aa3f2aff01117f28b57b1145d92cb9b upstream.
+commit 558c303c9734af5a813739cd284879227f7297d2 upstream.
 
-Since userspace can make use of the CNTVSS_EL0 instruction, expose
-it via a HWCAP.
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation.
+When taking an exception from user-space, a sequence of branches
+or a firmware call overwrites or invalidates the branch history.
 
-Suggested-by: Will Deacon <will@kernel.org>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211017124225.3018098-18-maz@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+The sequence of branches is added to the vectors, and should appear
+before the first indirect branch. For systems using KPTI the sequence
+is added to the kpti trampoline where it has a free register as the exit
+from the trampoline is via a 'ret'. For systems not using KPTI, the same
+register tricks are used to free up a register in the vectors.
+
+For the firmware call, arch-workaround-3 clobbers 4 registers, so
+there is no choice but to save them to the EL1 stack. This only happens
+for entry from EL0, so if we take an exception due to the stack access,
+it will not become re-entrant.
+
+For KVM, the existing branch-predictor-hardening vectors are used.
+When a spectre version of these vectors is in use, the firmware call
+is sufficient to mitigate against Spectre-BHB. For the non-spectre
+versions, the sequence of branches is added to the indirect vector.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/arm64/cpu-feature-registers.rst |   12 ++++++++++--
- Documentation/arm64/elf_hwcaps.rst            |    4 ++++
- arch/arm64/include/asm/hwcap.h                |    1 +
- arch/arm64/include/uapi/asm/hwcap.h           |    1 +
- arch/arm64/kernel/cpufeature.c                |    3 ++-
- arch/arm64/kernel/cpuinfo.c                   |    1 +
- 6 files changed, 19 insertions(+), 3 deletions(-)
+ arch/arm64/Kconfig                  |    9 +
+ arch/arm64/include/asm/assembler.h  |   14 +
+ arch/arm64/include/asm/cpufeature.h |   16 ++
+ arch/arm64/include/asm/cputype.h    |    8 +
+ arch/arm64/include/asm/spectre.h    |    4 
+ arch/arm64/include/asm/sysreg.h     |    1 
+ arch/arm64/include/asm/vectors.h    |    5 
+ arch/arm64/kernel/cpu_errata.c      |    7 
+ arch/arm64/kernel/image-vars.h      |    3 
+ arch/arm64/kernel/proton-pack.c     |  278 ++++++++++++++++++++++++++++++++++++
+ arch/arm64/kvm/hyp/hyp-entry.S      |    8 +
+ arch/arm64/tools/cpucaps            |    1 
+ 12 files changed, 352 insertions(+), 2 deletions(-)
 
---- a/Documentation/arm64/cpu-feature-registers.rst
-+++ b/Documentation/arm64/cpu-feature-registers.rst
-@@ -235,7 +235,15 @@ infrastructure:
-      | DPB                          | [3-0]   |    y    |
-      +------------------------------+---------+---------+
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1184,6 +1184,15 @@ config UNMAP_KERNEL_AT_EL0
  
--  6) ID_AA64MMFR2_EL1 - Memory model feature register 2
-+  6) ID_AA64MMFR0_EL1 - Memory model feature register 0
+ 	  If unsure, say Y.
+ 
++config MITIGATE_SPECTRE_BRANCH_HISTORY
++	bool "Mitigate Spectre style attacks against branch history" if EXPERT
++	default y
++	help
++	  Speculation attacks against some high-performance processors can
++	  make use of branch history to influence future speculation.
++	  When taking an exception from user-space, a sequence of branches
++	  or a firmware call overwrites the branch history.
 +
-+     +------------------------------+---------+---------+
-+     | Name                         |  bits   | visible |
-+     +------------------------------+---------+---------+
-+     | ECV                          | [63-60] |    y    |
-+     +------------------------------+---------+---------+
+ config RODATA_FULL_DEFAULT_ENABLED
+ 	bool "Apply r/o permissions of VM areas also to their linear aliases"
+ 	default y
+--- a/arch/arm64/include/asm/assembler.h
++++ b/arch/arm64/include/asm/assembler.h
+@@ -832,7 +832,9 @@ alternative_endif
+ 
+ 	.macro __mitigate_spectre_bhb_loop      tmp
+ #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+-	mov	\tmp, #32
++alternative_cb  spectre_bhb_patch_loop_iter
++	mov	\tmp, #32		// Patched to correct the immediate
++alternative_cb_end
+ .Lspectre_bhb_loop\@:
+ 	b	. + 4
+ 	subs	\tmp, \tmp, #1
+@@ -841,6 +843,16 @@ alternative_endif
+ #endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
+ 	.endm
+ 
++	.macro mitigate_spectre_bhb_loop	tmp
++#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
++alternative_cb	spectre_bhb_patch_loop_mitigation_enable
++	b	.L_spectre_bhb_loop_done\@	// Patched to NOP
++alternative_cb_end
++	__mitigate_spectre_bhb_loop	\tmp
++.L_spectre_bhb_loop_done\@:
++#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
++	.endm
 +
-+  7) ID_AA64MMFR2_EL1 - Memory model feature register 2
+ 	/* Save/restores x0-x3 to the stack */
+ 	.macro __mitigate_spectre_bhb_fw
+ #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -637,6 +637,22 @@ static inline bool cpu_supports_mixed_en
+ 	return id_aa64mmfr0_mixed_endian_el0(read_cpuid(ID_AA64MMFR0_EL1));
+ }
  
-      +------------------------------+---------+---------+
-      | Name                         |  bits   | visible |
-@@ -243,7 +251,7 @@ infrastructure:
-      | AT                           | [35-32] |    y    |
-      +------------------------------+---------+---------+
- 
--  7) ID_AA64ZFR0_EL1 - SVE feature ID register 0
-+  8) ID_AA64ZFR0_EL1 - SVE feature ID register 0
- 
-      +------------------------------+---------+---------+
-      | Name                         |  bits   | visible |
---- a/Documentation/arm64/elf_hwcaps.rst
-+++ b/Documentation/arm64/elf_hwcaps.rst
-@@ -247,6 +247,10 @@ HWCAP2_MTE
-     Functionality implied by ID_AA64PFR1_EL1.MTE == 0b0010, as described
-     by Documentation/arm64/memory-tagging-extension.rst.
- 
-+HWCAP2_ECV
 +
-+    Functionality implied by ID_AA64MMFR0_EL1.ECV == 0b0001.
++static inline bool supports_csv2p3(int scope)
++{
++	u64 pfr0;
++	u8 csv2_val;
 +
- 4. Unused AT_HWCAP bits
- -----------------------
++	if (scope == SCOPE_LOCAL_CPU)
++		pfr0 = read_sysreg_s(SYS_ID_AA64PFR0_EL1);
++	else
++		pfr0 = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
++
++	csv2_val = cpuid_feature_extract_unsigned_field(pfr0,
++							ID_AA64PFR0_CSV2_SHIFT);
++	return csv2_val == 3;
++}
++
+ const struct cpumask *system_32bit_el0_cpumask(void);
+ DECLARE_STATIC_KEY_FALSE(arm64_mismatched_32bit_el0);
  
---- a/arch/arm64/include/asm/hwcap.h
-+++ b/arch/arm64/include/asm/hwcap.h
-@@ -105,6 +105,7 @@
- #define KERNEL_HWCAP_RNG		__khwcap2_feature(RNG)
- #define KERNEL_HWCAP_BTI		__khwcap2_feature(BTI)
- #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
-+#define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -73,10 +73,14 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_NEOVERSE_V1	0xD40
++#define ARM_CPU_PART_CORTEX_A78		0xD41
++#define ARM_CPU_PART_CORTEX_X1		0xD44
+ #define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+ #define ARM_CPU_PART_CORTEX_X2		0xD48
+ #define ARM_CPU_PART_NEOVERSE_N2	0xD49
++#define ARM_CPU_PART_CORTEX_A78C	0xD4B
+ 
+ #define APM_CPU_PART_POTENZA		0x000
+ 
+@@ -117,10 +121,14 @@
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
++#define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
++#define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
+ #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+ #define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
+ #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
++#define MIDR_CORTEX_A78C	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78C)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -94,6 +94,8 @@ void spectre_v4_enable_task_mitigation(s
+ enum mitigation_state arm64_get_meltdown_state(void);
+ 
+ enum mitigation_state arm64_get_spectre_bhb_state(void);
+-
++bool is_spectre_bhb_affected(const struct arm64_cpu_capabilities *entry, int scope);
++u8 spectre_bhb_loop_affected(int scope);
++void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *__unused);
+ #endif	/* __ASSEMBLY__ */
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -896,6 +896,7 @@
+ #endif
+ 
+ /* id_aa64mmfr1 */
++#define ID_AA64MMFR1_ECBHB_SHIFT	60
+ #define ID_AA64MMFR1_AFP_SHIFT		44
+ #define ID_AA64MMFR1_ETS_SHIFT		36
+ #define ID_AA64MMFR1_TWED_SHIFT		32
+--- a/arch/arm64/include/asm/vectors.h
++++ b/arch/arm64/include/asm/vectors.h
+@@ -40,6 +40,11 @@ enum arm64_bp_harden_el1_vectors {
+ 	EL1_VECTOR_KPTI,
+ };
+ 
++#ifndef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
++#define EL1_VECTOR_BHB_LOOP		-1
++#define EL1_VECTOR_BHB_FW		-1
++#endif /* !CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
++
+ /* The vectors to use on return from EL0. e.g. to remap the kernel */
+ DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
+ 
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -464,6 +464,13 @@ const struct arm64_cpu_capabilities arm6
+ 		.matches = has_spectre_v4,
+ 		.cpu_enable = spectre_v4_enable_mitigation,
+ 	},
++	{
++		.desc = "Spectre-BHB",
++		.capability = ARM64_SPECTRE_BHB,
++		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
++		.matches = is_spectre_bhb_affected,
++		.cpu_enable = spectre_bhb_enable_mitigation,
++	},
+ #ifdef CONFIG_ARM64_ERRATUM_1418040
+ 	{
+ 		.desc = "ARM erratum 1418040",
+--- a/arch/arm64/kernel/image-vars.h
++++ b/arch/arm64/kernel/image-vars.h
+@@ -66,6 +66,9 @@ KVM_NVHE_ALIAS(kvm_patch_vector_branch);
+ KVM_NVHE_ALIAS(kvm_update_va_mask);
+ KVM_NVHE_ALIAS(kvm_get_kimage_voffset);
+ KVM_NVHE_ALIAS(kvm_compute_final_ctr_el0);
++KVM_NVHE_ALIAS(spectre_bhb_patch_loop_iter);
++KVM_NVHE_ALIAS(spectre_bhb_patch_loop_mitigation_enable);
++KVM_NVHE_ALIAS(spectre_bhb_patch_wa3);
+ 
+ /* Global kernel state accessed by nVHE hyp code. */
+ KVM_NVHE_ALIAS(kvm_vgic_global_state);
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -24,9 +24,11 @@
+ #include <linux/prctl.h>
+ #include <linux/sched/task_stack.h>
+ 
++#include <asm/debug-monitors.h>
+ #include <asm/insn.h>
+ #include <asm/spectre.h>
+ #include <asm/traps.h>
++#include <asm/vectors.h>
+ #include <asm/virt.h>
  
  /*
-  * This yields a mask that user programs can use to figure out what
---- a/arch/arm64/include/uapi/asm/hwcap.h
-+++ b/arch/arm64/include/uapi/asm/hwcap.h
-@@ -75,5 +75,6 @@
- #define HWCAP2_RNG		(1 << 16)
- #define HWCAP2_BTI		(1 << 17)
- #define HWCAP2_MTE		(1 << 18)
-+#define HWCAP2_ECV		(1 << 19)
+@@ -796,6 +798,17 @@ int arch_prctl_spec_ctrl_get(struct task
+ 	}
+ }
  
- #endif /* _UAPI__ASM_HWCAP_H */
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -279,7 +279,7 @@ static const struct arm64_ftr_bits ftr_i
- };
++/*
++ * Spectre BHB.
++ *
++ * A CPU is either:
++ * - Mitigated by a branchy loop a CPU specific number of times, and listed
++ *   in our "loop mitigated list".
++ * - Mitigated in software by the firmware Spectre v2 call.
++ * - Has the 'Exception Clears Branch History Buffer' (ECBHB) feature, so no
++ *   software mitigation in the vectors is needed.
++ * - Has CSV2.3, so is unaffected.
++ */
+ static enum mitigation_state spectre_bhb_state;
  
- static const struct arm64_ftr_bits ftr_id_aa64mmfr0[] = {
--	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_ECV_SHIFT, 4, 0),
-+	ARM64_FTR_BITS(FTR_VISIBLE, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_ECV_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_FGT_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR0_EXS_SHIFT, 4, 0),
- 	/*
-@@ -2455,6 +2455,7 @@ static const struct arm64_cpu_capabiliti
- #ifdef CONFIG_ARM64_MTE
- 	HWCAP_CAP(SYS_ID_AA64PFR1_EL1, ID_AA64PFR1_MTE_SHIFT, FTR_UNSIGNED, ID_AA64PFR1_MTE, CAP_HWCAP, KERNEL_HWCAP_MTE),
- #endif /* CONFIG_ARM64_MTE */
-+	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
- 	{},
- };
+ enum mitigation_state arm64_get_spectre_bhb_state(void)
+@@ -803,12 +816,227 @@ enum mitigation_state arm64_get_spectre_
+ 	return spectre_bhb_state;
+ }
  
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -94,6 +94,7 @@ static const char *const hwcap_str[] = {
- 	[KERNEL_HWCAP_RNG]		= "rng",
- 	[KERNEL_HWCAP_BTI]		= "bti",
- 	[KERNEL_HWCAP_MTE]		= "mte",
-+	[KERNEL_HWCAP_ECV]		= "ecv",
- };
++enum bhb_mitigation_bits {
++	BHB_LOOP,
++	BHB_FW,
++	BHB_HW,
++};
++static unsigned long system_bhb_mitigations;
++
++/*
++ * This must be called with SCOPE_LOCAL_CPU for each type of CPU, before any
++ * SCOPE_SYSTEM call will give the right answer.
++ */
++u8 spectre_bhb_loop_affected(int scope)
++{
++	u8 k = 0;
++	static u8 max_bhb_k;
++
++	if (scope == SCOPE_LOCAL_CPU) {
++		static const struct midr_range spectre_bhb_k32_list[] = {
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_X2),
++			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
++			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_V1),
++			{},
++		};
++		static const struct midr_range spectre_bhb_k24_list[] = {
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A76),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A77),
++			MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N1),
++			{},
++		};
++		static const struct midr_range spectre_bhb_k8_list[] = {
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
++			{},
++		};
++
++		if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k32_list))
++			k = 32;
++		else if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k24_list))
++			k = 24;
++		else if (is_midr_in_range_list(read_cpuid_id(), spectre_bhb_k8_list))
++			k =  8;
++
++		max_bhb_k = max(max_bhb_k, k);
++	} else {
++		k = max_bhb_k;
++	}
++
++	return k;
++}
++
++static enum mitigation_state spectre_bhb_get_cpu_fw_mitigation_state(void)
++{
++	int ret;
++	struct arm_smccc_res res;
++
++	arm_smccc_1_1_invoke(ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
++			     ARM_SMCCC_ARCH_WORKAROUND_3, &res);
++
++	ret = res.a0;
++	switch (ret) {
++	case SMCCC_RET_SUCCESS:
++		return SPECTRE_MITIGATED;
++	case SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED:
++		return SPECTRE_UNAFFECTED;
++	default:
++		fallthrough;
++	case SMCCC_RET_NOT_SUPPORTED:
++		return SPECTRE_VULNERABLE;
++	}
++}
++
++static bool is_spectre_bhb_fw_affected(int scope)
++{
++	static bool system_affected;
++	enum mitigation_state fw_state;
++	bool has_smccc = arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_NONE;
++	static const struct midr_range spectre_bhb_firmware_mitigated_list[] = {
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
++		{},
++	};
++	bool cpu_in_list = is_midr_in_range_list(read_cpuid_id(),
++					 spectre_bhb_firmware_mitigated_list);
++
++	if (scope != SCOPE_LOCAL_CPU)
++		return system_affected;
++
++	fw_state = spectre_bhb_get_cpu_fw_mitigation_state();
++	if (cpu_in_list || (has_smccc && fw_state == SPECTRE_MITIGATED)) {
++		system_affected = true;
++		return true;
++	}
++
++	return false;
++}
++
++static bool supports_ecbhb(int scope)
++{
++	u64 mmfr1;
++
++	if (scope == SCOPE_LOCAL_CPU)
++		mmfr1 = read_sysreg_s(SYS_ID_AA64MMFR1_EL1);
++	else
++		mmfr1 = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
++
++	return cpuid_feature_extract_unsigned_field(mmfr1,
++						    ID_AA64MMFR1_ECBHB_SHIFT);
++}
++
++bool is_spectre_bhb_affected(const struct arm64_cpu_capabilities *entry,
++			     int scope)
++{
++	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
++
++	if (supports_csv2p3(scope))
++		return false;
++
++	if (spectre_bhb_loop_affected(scope))
++		return true;
++
++	if (is_spectre_bhb_fw_affected(scope))
++		return true;
++
++	return false;
++}
++
++static void this_cpu_set_vectors(enum arm64_bp_harden_el1_vectors slot)
++{
++	const char *v = arm64_get_bp_hardening_vector(slot);
++
++	if (slot < 0)
++		return;
++
++	__this_cpu_write(this_cpu_vector, v);
++
++	/*
++	 * When KPTI is in use, the vectors are switched when exiting to
++	 * user-space.
++	 */
++	if (arm64_kernel_unmapped_at_el0())
++		return;
++
++	write_sysreg(v, vbar_el1);
++	isb();
++}
++
++void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
++{
++	bp_hardening_cb_t cpu_cb;
++	enum mitigation_state fw_state, state = SPECTRE_VULNERABLE;
++	struct bp_hardening_data *data = this_cpu_ptr(&bp_hardening_data);
++
++	if (!is_spectre_bhb_affected(entry, SCOPE_LOCAL_CPU))
++		return;
++
++	if (arm64_get_spectre_v2_state() == SPECTRE_VULNERABLE) {
++		/* No point mitigating Spectre-BHB alone. */
++	} else if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)) {
++		pr_info_once("spectre-bhb mitigation disabled by compile time option\n");
++	} else if (cpu_mitigations_off()) {
++		pr_info_once("spectre-bhb mitigation disabled by command line option\n");
++	} else if (supports_ecbhb(SCOPE_LOCAL_CPU)) {
++		state = SPECTRE_MITIGATED;
++		set_bit(BHB_HW, &system_bhb_mitigations);
++	} else if (spectre_bhb_loop_affected(SCOPE_LOCAL_CPU)) {
++		/*
++		 * Ensure KVM uses the indirect vector which will have the
++		 * branchy-loop added. A57/A72-r0 will already have selected
++		 * the spectre-indirect vector, which is sufficient for BHB
++		 * too.
++		 */
++		if (!data->slot)
++			data->slot = HYP_VECTOR_INDIRECT;
++
++		this_cpu_set_vectors(EL1_VECTOR_BHB_LOOP);
++		state = SPECTRE_MITIGATED;
++		set_bit(BHB_LOOP, &system_bhb_mitigations);
++	} else if (is_spectre_bhb_fw_affected(SCOPE_LOCAL_CPU)) {
++		fw_state = spectre_bhb_get_cpu_fw_mitigation_state();
++		if (fw_state == SPECTRE_MITIGATED) {
++			/*
++			 * Ensure KVM uses one of the spectre bp_hardening
++			 * vectors. The indirect vector doesn't include the EL3
++			 * call, so needs upgrading to
++			 * HYP_VECTOR_SPECTRE_INDIRECT.
++			 */
++			if (!data->slot || data->slot == HYP_VECTOR_INDIRECT)
++				data->slot += 1;
++
++			this_cpu_set_vectors(EL1_VECTOR_BHB_FW);
++
++			/*
++			 * The WA3 call in the vectors supersedes the WA1 call
++			 * made during context-switch. Uninstall any firmware
++			 * bp_hardening callback.
++			 */
++			cpu_cb = spectre_v2_get_sw_mitigation_cb();
++			if (__this_cpu_read(bp_hardening_data.fn) != cpu_cb)
++				__this_cpu_write(bp_hardening_data.fn, NULL);
++
++			state = SPECTRE_MITIGATED;
++			set_bit(BHB_FW, &system_bhb_mitigations);
++		}
++	}
++
++	update_mitigation_state(&spectre_bhb_state, state);
++}
++
+ /* Patched to NOP when enabled */
+ void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
+ 						     __le32 *origptr,
+ 						      __le32 *updptr, int nr_inst)
+ {
+ 	BUG_ON(nr_inst != 1);
++
++	if (test_bit(BHB_LOOP, &system_bhb_mitigations))
++		*updptr++ = cpu_to_le32(aarch64_insn_gen_nop());
+ }
  
- #ifdef CONFIG_COMPAT
+ /* Patched to NOP when enabled */
+@@ -817,4 +1045,54 @@ void noinstr spectre_bhb_patch_fw_mitiga
+ 						   __le32 *updptr, int nr_inst)
+ {
+ 	BUG_ON(nr_inst != 1);
++
++	if (test_bit(BHB_FW, &system_bhb_mitigations))
++		*updptr++ = cpu_to_le32(aarch64_insn_gen_nop());
++}
++
++/* Patched to correct the immediate */
++void noinstr spectre_bhb_patch_loop_iter(struct alt_instr *alt,
++				   __le32 *origptr, __le32 *updptr, int nr_inst)
++{
++	u8 rd;
++	u32 insn;
++	u16 loop_count = spectre_bhb_loop_affected(SCOPE_SYSTEM);
++
++	BUG_ON(nr_inst != 1); /* MOV -> MOV */
++
++	if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY))
++		return;
++
++	insn = le32_to_cpu(*origptr);
++	rd = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RD, insn);
++	insn = aarch64_insn_gen_movewide(rd, loop_count, 0,
++					 AARCH64_INSN_VARIANT_64BIT,
++					 AARCH64_INSN_MOVEWIDE_ZERO);
++	*updptr++ = cpu_to_le32(insn);
++}
++
++/* Patched to mov WA3 when supported */
++void noinstr spectre_bhb_patch_wa3(struct alt_instr *alt,
++				   __le32 *origptr, __le32 *updptr, int nr_inst)
++{
++	u8 rd;
++	u32 insn;
++
++	BUG_ON(nr_inst != 1); /* MOV -> MOV */
++
++	if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY) ||
++	    !test_bit(BHB_FW, &system_bhb_mitigations))
++		return;
++
++	insn = le32_to_cpu(*origptr);
++	rd = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RD, insn);
++
++	insn = aarch64_insn_gen_logical_immediate(AARCH64_INSN_LOGIC_ORR,
++						  AARCH64_INSN_VARIANT_32BIT,
++						  AARCH64_INSN_REG_ZR, rd,
++						  ARM_SMCCC_ARCH_WORKAROUND_3);
++	if (WARN_ON_ONCE(insn == AARCH64_BREAK_FAULT))
++		return;
++
++	*updptr++ = cpu_to_le32(insn);
+ }
+--- a/arch/arm64/kvm/hyp/hyp-entry.S
++++ b/arch/arm64/kvm/hyp/hyp-entry.S
+@@ -62,6 +62,10 @@ el1_sync:				// Guest trapped into EL2
+ 	/* ARM_SMCCC_ARCH_WORKAROUND_2 handling */
+ 	eor	w1, w1, #(ARM_SMCCC_ARCH_WORKAROUND_1 ^ \
+ 			  ARM_SMCCC_ARCH_WORKAROUND_2)
++	cbz	w1, wa_epilogue
++
++	eor	w1, w1, #(ARM_SMCCC_ARCH_WORKAROUND_2 ^ \
++			  ARM_SMCCC_ARCH_WORKAROUND_3)
+ 	cbnz	w1, el1_trap
+ 
+ wa_epilogue:
+@@ -192,7 +196,10 @@ SYM_CODE_END(__kvm_hyp_vector)
+ 	sub	sp, sp, #(8 * 4)
+ 	stp	x2, x3, [sp, #(8 * 0)]
+ 	stp	x0, x1, [sp, #(8 * 2)]
++	alternative_cb spectre_bhb_patch_wa3
++	/* Patched to mov WA3 when supported */
+ 	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_1
++	alternative_cb_end
+ 	smc	#0
+ 	ldp	x2, x3, [sp, #(8 * 0)]
+ 	add	sp, sp, #(8 * 2)
+@@ -205,6 +212,7 @@ SYM_CODE_END(__kvm_hyp_vector)
+ 	spectrev2_smccc_wa1_smc
+ 	.else
+ 	stp	x0, x1, [sp, #-16]!
++	mitigate_spectre_bhb_loop	x0
+ 	.endif
+ 	.if \indirect != 0
+ 	alternative_cb  kvm_patch_vector_branch
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -42,6 +42,7 @@ MTE
+ SPECTRE_V2
+ SPECTRE_V3A
+ SPECTRE_V4
++SPECTRE_BHB
+ SSBS
+ SVE
+ UNMAP_KERNEL_AT_EL0
 
 
