@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DCEC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE56C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234730AbiCIQMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
+        id S235223AbiCIQNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:13:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235381AbiCIQIp (ORCPT
+        with ESMTP id S235439AbiCIQIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3749F18E40B;
-        Wed,  9 Mar 2022 08:05:48 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD18418E43C;
+        Wed,  9 Mar 2022 08:05:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFC016166E;
-        Wed,  9 Mar 2022 16:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B95ABC340EF;
-        Wed,  9 Mar 2022 16:05:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B07BB8221D;
+        Wed,  9 Mar 2022 16:05:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D00C340E8;
+        Wed,  9 Mar 2022 16:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841917;
-        bh=dqDpI/5xQ7Av+jQXodxQtvhlZ6BRecM6BgdEoxb4u4Y=;
+        s=korg; t=1646841923;
+        bh=KehoIr6yz70C9INH4cXgl326hlvCsnsKZSidzApz9l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCm05//u8iwNXNuHJalMPUx9TdEiclpUe8rqn0u2kj71FAkjZ5AL8JQXG4qT9wbO2
-         //WuHRiV9d7wiSUWf7lN+EJ+Ej3lzSmsotZCPajbdQYJOyPgLpAfgE/3zQtbFy7Gim
-         Id9tQmwEh6tcxvTxwjxqlMsFuTTL9l/rxt0dcBl4=
+        b=kKiUw4cPKYHs8p3lw7aOw1PJBRiD97qfRLCN4lYgdiYTKG9VL6FokUqhU4LuEigEQ
+         INz8tSiyUB+jS7uzB1JTgpTFJCKifeGPvqVufUUrb/87hns6qiCjnIOIYVO2B3GXNQ
+         wgVuLMY7lVZfXwk776DCMjlTb24SZ5MKn0iPVBNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.10 21/43] arm64: cpufeature: add HWCAP for FEAT_AFP
-Date:   Wed,  9 Mar 2022 16:59:54 +0100
-Message-Id: <20220309155859.857413006@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 23/43] arm64: entry.S: Add ventry overflow sanity checks
+Date:   Wed,  9 Mar 2022 16:59:56 +0100
+Message-Id: <20220309155859.914656586@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -49,118 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit 5c13f042e73200b50573ace63e1a6b94e2917616 upstream.
+commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
 
-Add a new HWCAP to detect the Alternate Floating-point Behaviour
-feature (FEAT_AFP), introduced in Armv8.7.
+Subsequent patches add even more code to the ventry slots.
+Ensure kernels that overflow a ventry slot don't get built.
 
-Also expose this to userspace in the ID_AA64MMFR1_EL1 feature register.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-2-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/arm64/cpu-feature-registers.rst |    9 +++++++++
- Documentation/arm64/elf_hwcaps.rst            |    4 ++++
- arch/arm64/include/asm/hwcap.h                |    1 +
- arch/arm64/include/asm/sysreg.h               |    1 +
- arch/arm64/include/uapi/asm/hwcap.h           |    1 +
- arch/arm64/kernel/cpufeature.c                |    2 ++
- arch/arm64/kernel/cpuinfo.c                   |    1 +
- 7 files changed, 19 insertions(+)
+ arch/arm64/kernel/entry.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/Documentation/arm64/cpu-feature-registers.rst
-+++ b/Documentation/arm64/cpu-feature-registers.rst
-@@ -275,6 +275,15 @@ infrastructure:
-      | SVEVer                       | [3-0]   |    y    |
-      +------------------------------+---------+---------+
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -62,6 +62,7 @@
  
-+  8) ID_AA64MMFR1_EL1 - Memory model feature register 1
-+
-+     +------------------------------+---------+---------+
-+     | Name                         |  bits   | visible |
-+     +------------------------------+---------+---------+
-+     | AFP                          | [47-44] |    y    |
-+     +------------------------------+---------+---------+
-+
-+
- Appendix I: Example
- -------------------
- 
---- a/Documentation/arm64/elf_hwcaps.rst
-+++ b/Documentation/arm64/elf_hwcaps.rst
-@@ -249,6 +249,10 @@ HWCAP2_ECV
- 
-     Functionality implied by ID_AA64MMFR0_EL1.ECV == 0b0001.
- 
-+HWCAP2_AFP
-+
-+    Functionality implied by ID_AA64MFR1_EL1.AFP == 0b0001.
-+
- 4. Unused AT_HWCAP bits
- -----------------------
- 
---- a/arch/arm64/include/asm/hwcap.h
-+++ b/arch/arm64/include/asm/hwcap.h
-@@ -106,6 +106,7 @@
- #define KERNEL_HWCAP_BTI		__khwcap2_feature(BTI)
- #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
- #define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
-+#define KERNEL_HWCAP_AFP		__khwcap2_feature(AFP)
- 
- /*
-  * This yields a mask that user programs can use to figure out what
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -801,6 +801,7 @@
+ 	.macro kernel_ventry, el, label, regsize = 64
+ 	.align 7
++.Lventry_start\@:
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
+ alternative_if ARM64_UNMAP_KERNEL_AT_EL0
+@@ -120,6 +121,7 @@ alternative_else_nop_endif
+ 	mrs	x0, tpidrro_el0
  #endif
+ 	b	el\()\el\()_\label
++.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
+ 	.endm
  
- /* id_aa64mmfr1 */
-+#define ID_AA64MMFR1_AFP_SHIFT		44
- #define ID_AA64MMFR1_ETS_SHIFT		36
- #define ID_AA64MMFR1_TWED_SHIFT		32
- #define ID_AA64MMFR1_XNX_SHIFT		28
---- a/arch/arm64/include/uapi/asm/hwcap.h
-+++ b/arch/arm64/include/uapi/asm/hwcap.h
-@@ -76,5 +76,6 @@
- #define HWCAP2_BTI		(1 << 17)
- #define HWCAP2_MTE		(1 << 18)
- #define HWCAP2_ECV		(1 << 19)
-+#define HWCAP2_AFP		(1 << 20)
+ 	.macro tramp_alias, dst, sym
+@@ -832,6 +834,7 @@ alternative_else_nop_endif
+ 	add	x30, x30, #(1b - tramp_vectors)
+ 	isb
+ 	ret
++.org 1b + 128	// Did we overflow the ventry slot?
+ 	.endm
  
- #endif /* _UAPI__ASM_HWCAP_H */
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -309,6 +309,7 @@ static const struct arm64_ftr_bits ftr_i
- };
- 
- static const struct arm64_ftr_bits ftr_id_aa64mmfr1[] = {
-+	ARM64_FTR_BITS(FTR_VISIBLE, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_AFP_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_ETS_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_TWED_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_XNX_SHIFT, 4, 0),
-@@ -2262,6 +2263,7 @@ static const struct arm64_cpu_capabiliti
- 	HWCAP_CAP(SYS_ID_AA64PFR1_EL1, ID_AA64PFR1_MTE_SHIFT, FTR_UNSIGNED, ID_AA64PFR1_MTE, CAP_HWCAP, KERNEL_HWCAP_MTE),
- #endif /* CONFIG_ARM64_MTE */
- 	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
-+	HWCAP_CAP(SYS_ID_AA64MMFR1_EL1, ID_AA64MMFR1_AFP_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_AFP),
- 	{},
- };
- 
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -95,6 +95,7 @@ static const char *const hwcap_str[] = {
- 	[KERNEL_HWCAP_BTI]		= "bti",
- 	[KERNEL_HWCAP_MTE]		= "mte",
- 	[KERNEL_HWCAP_ECV]		= "ecv",
-+	[KERNEL_HWCAP_AFP]		= "afp",
- };
- 
- #ifdef CONFIG_COMPAT
+ 	.macro tramp_exit, regsize = 64
 
 
