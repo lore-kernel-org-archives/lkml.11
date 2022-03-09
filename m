@@ -2,194 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD70C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237280AbiCITKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:10:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
+        id S237304AbiCITLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237304AbiCITKa (ORCPT
+        with ESMTP id S232890AbiCITLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:10:30 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00691405FD;
-        Wed,  9 Mar 2022 11:09:23 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id q13so2778949plk.12;
-        Wed, 09 Mar 2022 11:09:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/nVY7Pv0jOp1vE8P2rLSzVj8Q/vteoulCeG/Iqc/qo0=;
-        b=fs9AQdUqAMDAgQxlCnTIwCd/kC/S8fOKLkoWKRx6jhTp65OiAG5qwAib95SE2OGZj6
-         nH+0FojPkjHntv34O76aevt/ZzjBvB7Hu6JkBvBiXa4WSz+eDUxGzb1bbGagNqNwzEMp
-         EqjE7z9Ea3atmJISfGLwWhTZxCFLHhn3Ezn1haslV1EnD7FHrw2lxW02f0DN4InGoMLc
-         //Rv2YkLBmJKwgEMaKJlI+odrPCDZhEsPuJIFC2+VVWXXy+bXbvixpk62RMBZuLAtTYb
-         yRcx/EN4QeAWP5SArZS5LcsvzSg7n0vLHw08MAr6bozZsz3q1Ff5xpi4uV/LM+EvveOH
-         Rxbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/nVY7Pv0jOp1vE8P2rLSzVj8Q/vteoulCeG/Iqc/qo0=;
-        b=OW2gXmwEX6ZczeBc2nTgB8desbyy5ntO8v5awadDpJQrZbfB6nBhuLZ0f2vnBoDxWZ
-         9jRvuq7yIB00MYsGHeh3JqbhP4WlSIkuYZ3vPpJllrqW6jk6tFsCj5u7BrPOu1UNHl6n
-         iQjzCdRJt59wuQJef4hS/ktZDTJFzzu4vyF8ElKA90Al3CV4Wf0rJIgO1PVXHIB6QSL5
-         n9SzY6gcTva6+VJ9mpVcVRkhOXKAjhrOrTdE09OHwZt+eO1fj8lBm1474woHiHqBcwiO
-         MXW59oIxAm2BG+LkemxiB5OYjnw+2DiuZ1Job7NkQs5R5ruZZOmtHGD/ie04FPYCxOXs
-         pO8A==
-X-Gm-Message-State: AOAM530M4+NxBUKkkvyfzjxMbYON5BuIgjx1ezwKjzCLcj3pEs5SNL+b
-        XUip+B0sLdQO2e1e2xMZkSlPTeo702g=
-X-Google-Smtp-Source: ABdhPJzqbJ+3ZPvgt8XUva6AZh6mj0Ha7NHPXhdAi5NJNBMM9ZgzXXRGIeMWAceiG1AJV7MRKhR0/Q==
-X-Received: by 2002:a17:902:be14:b0:14f:ce67:d0a1 with SMTP id r20-20020a170902be1400b0014fce67d0a1mr950100pls.29.1646852963052;
-        Wed, 09 Mar 2022 11:09:23 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:500::2:db4e])
-        by smtp.gmail.com with ESMTPSA id g7-20020a056a000b8700b004e1bed5c3bfsm3968629pfj.68.2022.03.09.11.09.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 11:09:22 -0800 (PST)
-Date:   Wed, 9 Mar 2022 11:09:17 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
-References: <20220308153011.021123062@infradead.org>
- <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
- <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net>
- <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
- <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
+        Wed, 9 Mar 2022 14:11:16 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D043141FC8;
+        Wed,  9 Mar 2022 11:10:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646853016; x=1678389016;
+  h=message-id:date:subject:from:to:cc:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=gpU10WDAU+BeImAoHnsY1t27mbtIVjh2Mwm2zI++Yu8=;
+  b=n5+Ubc6ySufVFKYp8n3K6AUgqm1joLcYOuP32nW7Kv9xXtzQj4e8tHxG
+   pYSxKgRzkr2uOTgC1ygyDXYCdfkAiVvs09n78UELA3oDwssZbUB/smYkb
+   zqsqHwie3WWxTonwgSGrwMliec2dRQS6eDzsM3ZHwN/+isouO4QpnCFq1
+   k6aY6xBbK5ot5ubVpMvJt6rvbUuM9F7SxyBW4WYrJtJjJptS2iCNIxMHj
+   Xx5iQvZi6ZyL3tezQpFeyOmWtVSQLPqmF8MqaAuokV/0cT2tYhF1XXDYH
+   34eMjYTkt9eybxp9hap/qS+ztLZ5Za4pQowYxXi7PBFc/P+9fDe1uyuqW
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="235017651"
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="235017651"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:10:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="554254177"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2022 11:10:15 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Mar 2022 11:10:15 -0800
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Mar 2022 11:10:14 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Wed, 9 Mar 2022 11:10:14 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Wed, 9 Mar 2022 11:10:14 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SOvpImeFZA2Q5Ox/6Bihq6Rq046lF/OqQRLMR/N75E9yPxA6TKkR3J+odq+O77lUseFAL87YDuAkRkxRa8Cl5ImmrOt/HDe9/TV/yS58B2vy4AepJZ/9JGTZtgRIO73r4W/mmsdfS7bYf8ScpDP4fC9eIGRkg/zDW7AP7XXMLZSSHYozMndjgCLIZBcqJiz2oEYtGOfcPeKuhvf58ai2E0aAUKwPpeGxL0oljwqaMR7rxaepUAignD4jIMF6Z6T2JgCaivs9/dNXuVkzfTziPlySt6i6WUQJ6SPc66sHH+zyWVhxGb2HOL1CL5ZbMXJPmdE2R6JehGp64om5WP7emg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lmxj9hlf2PLASe8wmpdcBAuGq7KiF7ZGl9rLCspVbkw=;
+ b=fco3OimsXT1dVISiU/a4XyDgrwlW9AHEGhmjjboI3PvpYkPGrNsYMzLCDNkUqC5e4eo5bf3X9SqifSXRYjAwI7afbOBwbf03b1OraK0b82A4z7ZhuFF/dAqh+Ws6JQTQe+YGr/yy5BsI0p0B00CjRMtv2zX2bao8uuLYm/6khCV773T6p0zM4sWTIcirsWu/CXc05eCvkiF3LGCJ0uRP9NjmquvQoKvZsm21XLzuptKFCyCPjoAQYxMASj/dq48V387DKVOdxtCDOO5QxDyQtQmlyOae5XRPoXcK3yXbz9Gvv2asWDQcJkD7von/dC6t0XhvDivs9FQ57wgzmkPLXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
+ by MWHPR11MB1712.namprd11.prod.outlook.com (2603:10b6:300:29::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
+ 2022 19:10:11 +0000
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::55e4:9a32:8e6f:4774]) by BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::55e4:9a32:8e6f:4774%5]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
+ 19:10:11 +0000
+Message-ID: <a79df871-5c7c-ff25-1cdf-508750c8d802@intel.com>
+Date:   Wed, 9 Mar 2022 11:10:07 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [RFC PATCH v2.1 14/30] x86/sgx: Support restricting of enclave
+ page permissions
+Content-Language: en-US
+From:   Reinette Chatre <reinette.chatre@intel.com>
+To:     Jarkko Sakkinen <jarkko@kernel.org>, <linux-sgx@vger.kernel.org>
+CC:     Nathaniel McCallum <nathaniel@profian.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+References: <20220304093524.397485-1-jarkko@kernel.org>
+ <20220304093524.397485-14-jarkko@kernel.org> <YihqwiU3Dr5mvMQx@iki.fi>
+ <Yih00gFMaJhLIgxa@iki.fi> <5e89a3be-0760-b1b4-7693-2f3d9ac5066b@intel.com>
+In-Reply-To: <5e89a3be-0760-b1b4-7693-2f3d9ac5066b@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR21CA0064.namprd21.prod.outlook.com
+ (2603:10b6:300:db::26) To BN0PR11MB5744.namprd11.prod.outlook.com
+ (2603:10b6:408:166::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 826c1113-1927-440c-221c-08da02006f14
+X-MS-TrafficTypeDiagnostic: MWHPR11MB1712:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR11MB1712C0A2C7C195BA9B66515AF80A9@MWHPR11MB1712.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7BLhu4zYqZiscUY5DgfOa9s8QslOaWHhNukCI9oPbA8G+BnSnnIzpuzVwSzFfcZXwTXHhuhaEOUmWZn+iFWaG3cwrSEnuhx4eKpgCVeb7qXde064SKclh6oru3l7ylFGkwsDhaXDAmsByNhaoi62qj5XRbZ5xDrCINdy0y8AKzsYO5wTY8FEjqjKaEn/aEUSPkqOaudJP8ufmldXpt9yvMj/c62A7fjway6WIVjjXFHtjzrO/k0iSbb8VLu8u4uQZLvCYdZL1hthcfvxYDxtbxW7UZjXM2/HSW6JCBvKhpt2P8/gop4LdoMiCFKISZ8bA3d+ykCJ40uSEQaKq965DxJpUc9axE/LnyyMcEPXW1330X9M8E+ZqOuZSfjXGOMB4gJ2NNX5QwvQJvAzCIjj5eD42Jz2o8E8dIgS/BFS9ZeRU9b+mlXOaYBDc32m1iF1QpZLUe53bMzEX17wxHqsgXQ/3syxPUSnUbzBOHEWTzi5dQJm6hVH3WIMsP5GXFwhuSA0Gg8m95gRrd24Ms4ort5XhKXsw5X0KXB8DPU8BeSHBbVmQs6IRD+2v5DFcsZS2VDErsIRzkE3JyU/N4bZQCnn1/MVa6cdhxo4ACTao4lYziIhgQCqaRLLshOpCo/gje0nVdgLkuLx0ChlMbTyRmIvSQze+jvQdrIu0Reco5II3GaSuP7e3JbiixTEQmzTSINv4rHMWx0i2YuP2oNR8JFqfQ23GUz94xNDW+lZnVgsz1vXAGKSEVVoZq2OI3cqEO2j04ArAHcxvO3fFZH68+M7ASTdpUHdmmclA5Ge+6VyE/l4J5ysVMglSkl5NX9j
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(8676002)(8936002)(5660300002)(2616005)(7416002)(66556008)(6512007)(66476007)(4326008)(66946007)(83380400001)(54906003)(53546011)(6506007)(26005)(2906002)(186003)(44832011)(86362001)(316002)(38100700002)(82960400001)(508600001)(966005)(6486002)(31686004)(31696002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N0M4b2p2WGd2NldJQTh4NngzUUMwUXhveUNhYnlkcURyTlBWajkzb0VpTmto?=
+ =?utf-8?B?dnZ2S0VVWGxqNS9sWG1DaGxFUkZXRS8vVjV6U0RlZWF2N0JPSGRZSXc5cjlI?=
+ =?utf-8?B?T0ZaTFZVWkhtelFlamN0WnBzdXNuK1dxK2QyRWFUZC8xM1hqa291WUFaUEpW?=
+ =?utf-8?B?SnJUOFRzRzg0YVhmYll2NXVsT3VBUDhLOFdTUUU3dnhXaVl0QUpRaXNSaFhm?=
+ =?utf-8?B?a2E0azFXSTBjSldPdUtzdkhWMUdzc2Z6djhwZnY5N1dUdjZyempDb3hWNDNK?=
+ =?utf-8?B?d01wN1MzMHR4SVJpYTNxc3FQU0hpUm4rVzZyQmpTVU15QU5paWNFdUhuN093?=
+ =?utf-8?B?aDJqdjBrZmdkL0JNUGpUcTY4aFdYSHBmUlZZVHl2ZXY1N0NHY2I2YWoxeWIy?=
+ =?utf-8?B?ZERoaEl1SU50LzRBVEJWWVZQdWEyckFScmJUMzlPUkkrNWdRS0xCZHhDZWhx?=
+ =?utf-8?B?Y1Y0bEUyUnZtZlhzUEtqOFpPcThDV09qMjAwZlltc1N3NU0xeWRHK0JkZHJE?=
+ =?utf-8?B?alFBNkt1NzlXZVVPdW5FaVNRcENsdENqVTV6WU14SmZMOVl5S05nUmJWY3NW?=
+ =?utf-8?B?RUkrRTNUaWUwbWxDWVRtdnNnenRhZjBENVdzSTNqQVh1NWhQZlZvWkxEYTBO?=
+ =?utf-8?B?cXhGN0JkdGowOXdkWjhiK1AyblVNMVRmR3BaaGtPdncva0J5akRlOExNTDBF?=
+ =?utf-8?B?aGduckVxQ0RkQU9YODRndU1sQkh6QTVOSzBtUXplbElPN2N2VTZkUElBcW1p?=
+ =?utf-8?B?Skw1dUFCVHBCNGx5SU9DQ1diY2QwaTk3RWtKMlJhY214UXFjN0ZyQ095NENH?=
+ =?utf-8?B?N2l2ZDYxd1I0ejZiUWQ0dVRXZjJJWWwvai9KQ1JkU2pOR2gvT1Z6cE1MS2Rz?=
+ =?utf-8?B?Q3dKQ0hJSEE5RjVZektLYnRZZGUzcFFZRTlBMGxWSFhXWFNnYTdHZUNTNlUv?=
+ =?utf-8?B?WS9NTk81bUllWUpsZi9vb2RVaEVEVWJqb3ROUmVxRGI3elMvdDFMVW1GQ003?=
+ =?utf-8?B?L1g5cEVpTkt6aUFJNU5ERXNZQjNVZ2wwaFBPMHQwbWt6TEFVNmFHdExmYzZT?=
+ =?utf-8?B?SVFLZXZJaExoZk5WRTduVXFmZ3ZaUDcwNmNaUnR2RktlYXFLRjdQL1ZFQ1Vp?=
+ =?utf-8?B?NUloNWQwMjlwZW5GMXJNMUJPMFlWTjNNa0dFbEsvSU92cHpJZUExNElUZ3l3?=
+ =?utf-8?B?eTdpbVVXTUt5RERIU29Gd3ppVlpuVzRXRFkrT0xCYk1zTUR4clhrWEN1dklW?=
+ =?utf-8?B?N1pGMWczTS80NnBPdWpkSzcxaXcxN2VGOXlSWmM3M0dzcEVveGRXQU1veXli?=
+ =?utf-8?B?dUNISGJoQmxwYnJsQUR2cHNKRG1qREZEdXlwLzFLcENQWitYR2p3MitHb1dR?=
+ =?utf-8?B?cHRDVVB6ODdpV3MyaFV6dktualJGb3dNaFFuOFdsZzRnU0h4R2UrUGNNUG83?=
+ =?utf-8?B?clg1eHg1N09ncG5pbG1GVUtGcUNXVDhxOGxEM0lZcTVybUpzaTNnaGJJYTZz?=
+ =?utf-8?B?eERMVHZuVk0zc1Q0R2JZMGFVWHhIN293Snd3VFRLL2ZEU0VSeE1CZ2Y5S2dK?=
+ =?utf-8?B?MXEyUTZKYzhvNzRkZ0cwekFtUThUV0o1R2VmejlqOUlZMU95YThSSXdSVzlB?=
+ =?utf-8?B?RWxlVmpJcEl4eFA3VklMS1VnNW5JOG1ZVWhLRTZGRzh5UkR0ZFo4MUw3N1Z3?=
+ =?utf-8?B?K1VVTjRmaEZoS2luVkNORk1qNllrTkJmZTlwd0RpNTNKMVBIWVZaZkpaTnQ3?=
+ =?utf-8?B?aktXS2ZmVEM0aURQK2w1dU0vL1JBYjkrWmdnN3FJMmMzVDl4emRXb2hYbkJU?=
+ =?utf-8?B?RVVmNDRBVWtBWFN0UlJwYkhFaUQzcHRIMjh5dDNTTnJDSDNMd0duUUM4NXFp?=
+ =?utf-8?B?YVVSNityNVNuSk9EdU1oTjhwOGYvWENsaFlaN2JjbjZpbTY5alM2a2FScnRn?=
+ =?utf-8?B?ZENFRk1MYTd4NnEvUnBlN2JRNzBhWWU2TUlsMi95WTU0dWlwMlZlTUpzZDNy?=
+ =?utf-8?B?OXRXVHVZMldzd3FxT3pRN1dmd3hveU1nQUxHRThXM2ZvWC9Oa2ZSOFVFS2hR?=
+ =?utf-8?B?bzBJWVE1anlxcEdEWTZEVjR0M3ZtcTRnVlVMSzc3aDF4UHpneXJIRDVnd2E3?=
+ =?utf-8?B?YnQ4NC9ua1BRbWJlUDhBS3hTQmNFVXFQeGtvSXRvWlRkRzMzcHJieEFpeWZ2?=
+ =?utf-8?B?NkJMTTRYUHo3aHNwVkhycExrNlNFOGJwUklSTXB1YXpKTHVVNWZzN3FEdXEw?=
+ =?utf-8?Q?kaBZ396aekiqA4V7t1ctYhNxz/iQquTgzr1hDRox78=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 826c1113-1927-440c-221c-08da02006f14
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 19:10:11.6473
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kur6AUFjq324CAGG/SiaBowVc9pZ0XKepE4lAmPM6MtK1fEqRDKrPubDcOzkTRLj/jQbBJcnK3ZeS7ADZAGD9t6Ng5pVljQPkAUw8FnW7Bg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1712
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 02:02:20AM +0100, Peter Zijlstra wrote:
-> On Tue, Mar 08, 2022 at 11:32:37PM +0100, Peter Zijlstra wrote:
-> > On Tue, Mar 08, 2022 at 11:01:04PM +0100, Peter Zijlstra wrote:
-> > > On Tue, Mar 08, 2022 at 12:00:52PM -0800, Alexei Starovoitov wrote:
-> > > > On Tue, Mar 08, 2022 at 04:30:11PM +0100, Peter Zijlstra wrote:
-> > > > > Hopefully last posting...
-> > > > > 
-> > > > > Since last time:
-> > > > > 
-> > > > >  - updated the ftrace_location() patch (naveen, rostedt)
-> > > > >  - added a few comments and clarifications (bpetkov)
-> > > > >  - disable jump-tables (joao)
-> > > > >  - verified clang-14-rc2 works
-> > > > >  - fixed a whole bunch of objtool unreachable insn issue
-> > > > >  - picked up a few more tags
-> > > > > 
-> > > > > Patches go on top of tip/master + arm64/for-next/linkage. Also available here:
-> > > > > 
-> > > > >   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-> > > > 
-> > > > I've tried to test it.
-> > > 
-> > > I could cleanly do:
-> > > 
-> > > git checkout tip/master
-> > > git merge bpf-next/master
-> > > git merge queue/x86/wip.ibt
-> > > 
-> > > You want me to push out that result somewhere?
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/ibt
-> > 
-> > includes bpf-next/master.
+Hi Jarkko,
+
+Apologies, after thinking about this more I believe that I misunderstood
+your proposal in my original answer.
+
+On 3/9/2022 8:59 AM, Reinette Chatre wrote:
+> Hi Jarkko,
 > 
-> I just managed to run bpf selftests with that kernel on a tigerlake
-> platform.  Seems to still work.
+> On 3/9/2022 1:35 AM, Jarkko Sakkinen wrote:
+>> On Wed, Mar 09, 2022 at 10:52:22AM +0200, Jarkko Sakkinen wrote:
+>>> On Fri, Mar 04, 2022 at 11:35:08AM +0200, Jarkko Sakkinen wrote:
+>>>> +#define SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS \
+>>>> +	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_restrict_perm)
+>>>
+>>> What if this was replaced with just SGX_IOC_ENCLAVE_RESET_PAGES, which
+>>> would simply do EMODPR with PROT_NONE? The main ingredient of EMODPR is to
+>>> flush out the TLB's, and move a page to pending state, which cannot be done
+>>> from inside the enclave.
 
-Pulled above and it got even worse.
-With kasan and lockdep during qemu boot I see:
-[    1.147498] rcu_scheduler_active = 1, debug_locks = 1
-[    1.147498] 2 locks held by kthreadd/2:
-[    1.147498]  #0: ffff888100362b80 (&p->pi_lock){....}-{2:2}, at: task_rq_lock+0x71/0x380
-[    1.147498]  #1: ffff8881f6a3a218 (&rq->__lock){-...}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x40
-[    1.147498]
-[    1.147498] stack backtrace:
-[    1.147498] CPU: 0 PID: 2 Comm: kthreadd Not tainted 5.17.0-rc7-02289-gc958c6aae879 #1
-[    1.147498] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    1.147498] Call Trace:
-[    1.147498]  <TASK>
-[    1.147498]  dump_stack_lvl+0x48/0x5b
-[    1.147498]  cpuacct_charge+0x2b3/0x390
-[    1.147498]  update_curr+0x33e/0x7d0
-[    1.147498]  dequeue_entity+0x28/0xdf0
-[    1.147498]  ? rcu_read_lock_bh_held+0xa0/0xa0
-[    1.147498]  dequeue_task_fair+0x1fa/0xd60
-[    1.147498]  __do_set_cpus_allowed+0x253/0x620
-[    1.147498]  __set_cpus_allowed_ptr_locked+0x25f/0x450
-[    1.147498]  __set_cpus_allowed_ptr+0x7c/0xa0
-[    1.147498]  ? __set_cpus_allowed_ptr_locked+0x450/0x450
-[    1.147498]  ? _raw_spin_unlock_irqrestore+0x34/0x60
-[    1.147498]  ? lockdep_hardirqs_on+0x7d/0x100
-[    1.147498]  kthreadd+0x48/0x610
-[    1.147498]  ? _raw_spin_unlock_irq+0x28/0x50
-[    1.147498]  ? kthread_is_per_cpu+0xc0/0xc0
-[    1.147498]  ret_from_fork+0x1f/0x30
+Why not keep the flexibility of supporting all permission restrictions?
 
-[    6.698206] ======================================================
-[    6.698209] WARNING: possible circular locking dependency detected
-[    6.698211] 5.17.0-rc7-02289-gc958c6aae879 #1 Not tainted
-[    6.698213] ------------------------------------------------------
-[    6.698214] scsi_eh_1/401 is trying to acquire lock:
-[    6.698216] ffff888100360900 (&p->pi_lock){-.-.}-{2:2}, at: try_to_wake_up+0xb6/0x1570
-[    6.698241]
-[    6.698241] but task is already holding lock:
-[    6.698241] ffffffff854439f8 ((console_sem).lock){-...}-{2:2}, at: up+0x1b/0xe0
-[    6.698253]
-[    6.698253] which lock already depends on the new lock.
-[    6.698253]
-[    6.698254]
-[    6.698254] the existing dependency chain (in reverse order) is:
-[    6.698255]
-[    6.698255] -> #2 ((console_sem).lock){-...}-{2:2}:
-[    6.698259]        _raw_spin_lock_irqsave+0x3c/0x60
-[    6.698270]        down_trylock+0x17/0x70
-[    6.698274]        __down_trylock_console_sem+0x23/0x90
-[    6.698278]        console_trylock+0x17/0x70
-[    6.698281]        vprintk_emit+0x72/0x290
-[    6.698288]        _printk+0x9a/0xb4
-[    6.698296]        lockdep_rcu_suspicious+0x60/0x158
-[    6.698299]        cpuacct_charge+0x2b3/0x390
-[    6.698302]        update_curr+0x33e/0x7d0
-[    6.698306]        dequeue_entity+0x28/0xdf0
-[    6.698308]        dequeue_task_fair+0x1fa/0xd60
+It is already possible to call SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS with PROT_NONE, no?
 
-Most of the time it hangs during the boot.
-I'm using gcc 8.5 and qemu -smp 8
+> I see the main ingredient as running EMODPR to restrict the EPCM permissions. If
+> the user wants to use SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS just to flush TLB it is
+> already possible since attempting to use EMODPR to relax permissions does not
+> change any permissions (although it still sets EPCM.PR) but yet will still
+> flush the TLB.
+> 
+> Even so, you have a very good point that removing SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
+> removes the ability for users to flush the TLB after an EMODPE. If there are
+> thus PTEs present at the time the user runs EMODPE the pages would not be
+> accessible with the new permissions.
+> 
+> Repurposing SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS with PROT_NONE to accomplish
+> this is not efficient because:
+> - For the OS to flush the TLB the enclave pages need not be in the EPC but
+>   in order to run EMODPR the enclave page needs to be in the EPC. In an 
+>   oversubscribed environment running EMODPR unnecessarily can thus introduce
+>   a significant delay. Please see the performance comparison I did in
+>   https://lore.kernel.org/linux-sgx/77e81306-6b03-4b09-2df2-48e09e2e79d5@intel.com/
+>   The test shows that running EMODPR unnecessarily can be orders of magnitude slower.
+> - Running EMODPR on an enclave page sets the EPCM.PR bin in the enclave page
+>   that needs to be cleared with an EACCEPT from within the enclave.
+>   If the user just wants to reset the TLB after running EMODPE then it should
+>   not be necessary to run EACCEPT again to reset EPCM.PR.
+> 
+> Resetting the TLB is exactly what SGX_IOC_ENCLAVE_RELAX_PERMISSIONS did in an 
+> efficient way - it is quick (no need to load pages into EPC) and it does not
+> require EACCEPT to clear EPCM.PR. 
+> 
+> It looks like we need SGX_IOC_ENCLAVE_RELAX_PERMISSIONS back. We could
+> rename it to SGX_IOC_ENCLAVE_RESET_PAGES if you prefer.
+> 
+>>> It's there because of microarchitecture constraints, and less so to work as
+>>> a reasonable permission control mechanism (actually it does terrible job on
+>>> that side and only confuses).
+>>>
+>>> Once you have this magic TLB reset button in place you can just do one
+>>> EACCEPT and EMODPE inside the enclave and you're done.
+>>>
+>>> This is also kind of atomic in the sense that EACCEPT free's a page with no
+>>> rights so no misuse can happend before EMODPE has tuned EPCM.
+>>
+>> I wonder if this type of pattern could be made work out for Graphene:
+>>
+>> 1. SGX_IOC_ENCLAVE_RESET_PAGES
+>> 2. EACCEPT + EMODPE
+>>
+>> This kind of delivers EMODP that everyone has been looking for.
+> 
 
-With qemu -smp 1 it luckly boots.
-Then I run test_progs and see:
-Summary: 215/1115 PASSED, 4 SKIPPED, 18 FAILED
-All trampoline tests fail.
-Here is one:
-$ test_progs -t fentry
-test_fentry_fexit:PASS:fentry_skel_load 0 nsec
-test_fentry_fexit:PASS:fexit_skel_load 0 nsec
-test_fentry_fexit:PASS:fentry_attach 0 nsec
-test_fentry_fexit:FAIL:fexit_attach unexpected error: -1 (errno 19)
-#54 fentry_fexit:FAIL
+As I understand it this is currently possible with
+SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS.
 
-or
-
-./test_progs -t xdp_bpf
-test_xdp_bpf2bpf:PASS:test_xdp__open_and_load 0 nsec
-test_xdp_bpf2bpf:PASS:test_xdp_bpf2bpf__open 0 nsec
-test_xdp_bpf2bpf:PASS:test_xdp_bpf2bpf__load 0 nsec
-libbpf: prog 'trace_on_entry': failed to attach: Device or resource busy
-libbpf: prog 'trace_on_entry': failed to auto-attach: -16
-test_xdp_bpf2bpf:FAIL:test_xdp_bpf2bpf__attach unexpected error: -16 (errno 16)
-#225 xdp_bpf2bpf:FAIL
+Reinette
 
