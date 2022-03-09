@@ -2,155 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C697AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235404AbiCIQpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S235314AbiCIQpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:45:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238451AbiCIQb1 (ORCPT
+        with ESMTP id S238445AbiCIQb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 11:31:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF821959DC;
-        Wed,  9 Mar 2022 08:25:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21E65619BD;
-        Wed,  9 Mar 2022 16:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10930C340EC;
-        Wed,  9 Mar 2022 16:25:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843141;
-        bh=tegnjstHRZ4PFUmQDBGU4OOYTLpKn/6uFKjMgDVgs8Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bsBktMPh6ZSsv9NqxJ5mFWhXBe+esy/jYuodk68DEPJDCiXcUlxO3j+3DIRGJiAx2
-         TUoF8kBGFhkiPYg6IIoR0B45FSbc25UExhJbQ3nP1yaNvqBJ54eYcUbaZ6MuFTiMV5
-         Bf+h+dGRZfa8CBGuOLfH8x3rjpikUudxCN5nXig7eXEwsZ7Un7ZnF6wQh5x4gWqVBm
-         55nZ9gVqy2/Uw6rEQMg27Ee7op46IXW0yx11Wrtm/IO1vu0WKrXDLP4xavn/cDbPUG
-         Ik1pdJSNiM5cS8FwRYBE/Vim6rHJA/SrwTk3HIrQzbcMfMS6Xmxj+a6awLZ+0L7qAb
-         na4H1/1v656zg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@kernel.org,
-        peterz@infradead.org, valentin.schneider@arm.com,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/14] MIPS: smp: fill in sibling and core maps earlier
-Date:   Wed,  9 Mar 2022 11:24:59 -0500
-Message-Id: <20220309162508.137035-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
-References: <20220309162508.137035-1-sashal@kernel.org>
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABAD190C17
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:25:49 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:35780)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz89-00CNAK-HE; Wed, 09 Mar 2022 09:25:41 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34572 helo=localhost.localdomain)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nRz86-005hAS-5s; Wed, 09 Mar 2022 09:25:41 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Date:   Wed,  9 Mar 2022 10:24:48 -0600
+Message-Id: <20220309162454.123006-7-ebiederm@xmission.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+References: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-XM-SPF: eid=1nRz86-005hAS-5s;;;mid=<20220309162454.123006-7-ebiederm@xmission.com>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18pJwd2lf+RP9kvKgOhhWVsNfjktPzgMEY=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 07/13] task_work: Introduce task_work_pending
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
+Wrap the test of task->task_works in a helper function to make
+it clear what is being tested.
 
-[ Upstream commit f2703def339c793674010cc9f01bfe4980231808 ]
-
-After enabling CONFIG_SCHED_CORE (landed during 5.14 cycle),
-2-core 2-thread-per-core interAptiv (CPS-driven) started emitting
-the following:
-
-[    0.025698] CPU1 revision is: 0001a120 (MIPS interAptiv (multi))
-[    0.048183] ------------[ cut here ]------------
-[    0.048187] WARNING: CPU: 1 PID: 0 at kernel/sched/core.c:6025 sched_core_cpu_starting+0x198/0x240
-[    0.048220] Modules linked in:
-[    0.048233] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc3+ #35 b7b319f24073fd9a3c2aa7ad15fb7993eec0b26f
-[    0.048247] Stack : 817f0000 00000004 327804c8 810eb050 00000000 00000004 00000000 c314fdd1
-[    0.048278]         830cbd64 819c0000 81800000 817f0000 83070bf4 00000001 830cbd08 00000000
-[    0.048307]         00000000 00000000 815fcbc4 00000000 00000000 00000000 00000000 00000000
-[    0.048334]         00000000 00000000 00000000 00000000 817f0000 00000000 00000000 817f6f34
-[    0.048361]         817f0000 818a3c00 817f0000 00000004 00000000 00000000 4dc33260 0018c933
-[    0.048389]         ...
-[    0.048396] Call Trace:
-[    0.048399] [<8105a7bc>] show_stack+0x3c/0x140
-[    0.048424] [<8131c2a0>] dump_stack_lvl+0x60/0x80
-[    0.048440] [<8108b5c0>] __warn+0xc0/0xf4
-[    0.048454] [<8108b658>] warn_slowpath_fmt+0x64/0x10c
-[    0.048467] [<810bd418>] sched_core_cpu_starting+0x198/0x240
-[    0.048483] [<810c6514>] sched_cpu_starting+0x14/0x80
-[    0.048497] [<8108c0f8>] cpuhp_invoke_callback_range+0x78/0x140
-[    0.048510] [<8108d914>] notify_cpu_starting+0x94/0x140
-[    0.048523] [<8106593c>] start_secondary+0xbc/0x280
-[    0.048539]
-[    0.048543] ---[ end trace 0000000000000000 ]---
-[    0.048636] Synchronize counters for CPU 1: done.
-
-...for each but CPU 0/boot.
-Basic debug printks right before the mentioned line say:
-
-[    0.048170] CPU: 1, smt_mask:
-
-So smt_mask, which is sibling mask obviously, is empty when entering
-the function.
-This is critical, as sched_core_cpu_starting() calculates
-core-scheduling parameters only once per CPU start, and it's crucial
-to have all the parameters filled in at that moment (at least it
-uses cpu_smt_mask() which in fact is `&cpu_sibling_map[cpu]` on
-MIPS).
-
-A bit of debugging led me to that set_cpu_sibling_map() performing
-the actual map calculation, was being invocated after
-notify_cpu_start(), and exactly the latter function starts CPU HP
-callback round (sched_core_cpu_starting() is basically a CPU HP
-callback).
-While the flow is same on ARM64 (maps after the notifier, although
-before calling set_cpu_online()), x86 started calculating sibling
-maps earlier than starting the CPU HP callbacks in Linux 4.14 (see
-[0] for the reference). Neither me nor my brief tests couldn't find
-any potential caveats in calculating the maps right after performing
-delay calibration, but the WARN splat is now gone.
-The very same debug prints now yield exactly what I expected from
-them:
-
-[    0.048433] CPU: 1, smt_mask: 0-1
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/commit/?id=76ce7cfe35ef
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/mips/kernel/smp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/io_uring.c             | 6 +++---
+ include/linux/task_work.h | 5 +++++
+ include/linux/tracehook.h | 4 ++--
+ kernel/signal.c           | 4 ++--
+ kernel/task_work.c        | 2 +-
+ 5 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/arch/mips/kernel/smp.c b/arch/mips/kernel/smp.c
-index d84b9066b465..7206a6977be9 100644
---- a/arch/mips/kernel/smp.c
-+++ b/arch/mips/kernel/smp.c
-@@ -372,6 +372,9 @@ asmlinkage void start_secondary(void)
- 	cpu = smp_processor_id();
- 	cpu_data[cpu].udelay_val = loops_per_jiffy;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e54c4127422e..e85261079a78 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -2590,7 +2590,7 @@ static inline unsigned int io_sqring_entries(struct io_ring_ctx *ctx)
  
-+	set_cpu_sibling_map(cpu);
-+	set_cpu_core_map(cpu);
+ static inline bool io_run_task_work(void)
+ {
+-	if (test_thread_flag(TIF_NOTIFY_SIGNAL) || current->task_works) {
++	if (test_thread_flag(TIF_NOTIFY_SIGNAL) || task_work_pending(current)) {
+ 		__set_current_state(TASK_RUNNING);
+ 		tracehook_notify_signal();
+ 		return true;
+@@ -7602,7 +7602,7 @@ static int io_sq_thread(void *data)
+ 		}
+ 
+ 		prepare_to_wait(&sqd->wait, &wait, TASK_INTERRUPTIBLE);
+-		if (!io_sqd_events_pending(sqd) && !current->task_works) {
++		if (!io_sqd_events_pending(sqd) && !task_work_pending(current)) {
+ 			bool needs_sched = true;
+ 
+ 			list_for_each_entry(ctx, &sqd->ctx_list, sqd_list) {
+@@ -10321,7 +10321,7 @@ static __cold void __io_uring_show_fdinfo(struct io_ring_ctx *ctx,
+ 
+ 		hlist_for_each_entry(req, list, hash_node)
+ 			seq_printf(m, "  op=%d, task_works=%d\n", req->opcode,
+-					req->task->task_works != NULL);
++					task_work_pending(req->task));
+ 	}
+ 
+ 	seq_puts(m, "CqOverflowList:\n");
+diff --git a/include/linux/task_work.h b/include/linux/task_work.h
+index 5b8a93f288bb..897494b597ba 100644
+--- a/include/linux/task_work.h
++++ b/include/linux/task_work.h
+@@ -19,6 +19,11 @@ enum task_work_notify_mode {
+ 	TWA_SIGNAL,
+ };
+ 
++static inline bool task_work_pending(struct task_struct *task)
++{
++	return READ_ONCE(task->task_works);
++}
 +
- 	cpumask_set_cpu(cpu, &cpu_coherent_mask);
- 	notify_cpu_starting(cpu);
+ int task_work_add(struct task_struct *task, struct callback_head *twork,
+ 			enum task_work_notify_mode mode);
  
-@@ -383,9 +386,6 @@ asmlinkage void start_secondary(void)
- 	/* The CPU is running and counters synchronised, now mark it online */
- 	set_cpu_online(cpu, true);
+diff --git a/include/linux/tracehook.h b/include/linux/tracehook.h
+index b77bf4917196..fa834a22e86e 100644
+--- a/include/linux/tracehook.h
++++ b/include/linux/tracehook.h
+@@ -90,7 +90,7 @@ static inline void tracehook_notify_resume(struct pt_regs *regs)
+ 	 * hlist_add_head(task->task_works);
+ 	 */
+ 	smp_mb__after_atomic();
+-	if (unlikely(current->task_works))
++	if (unlikely(task_work_pending(current)))
+ 		task_work_run();
  
--	set_cpu_sibling_map(cpu);
--	set_cpu_core_map(cpu);
--
- 	calculate_cpu_foreign_map();
+ #ifdef CONFIG_KEYS_REQUEST_CACHE
+@@ -115,7 +115,7 @@ static inline void tracehook_notify_signal(void)
+ {
+ 	clear_thread_flag(TIF_NOTIFY_SIGNAL);
+ 	smp_mb__after_atomic();
+-	if (current->task_works)
++	if (task_work_pending(current))
+ 		task_work_run();
+ }
+ 
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 0e0bd1c1068b..3b4cf25fb9b3 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2344,7 +2344,7 @@ static void ptrace_do_notify(int signr, int exit_code, int why)
+ void ptrace_notify(int exit_code)
+ {
+ 	BUG_ON((exit_code & (0x7f | ~0xffff)) != SIGTRAP);
+-	if (unlikely(current->task_works))
++	if (unlikely(task_work_pending(current)))
+ 		task_work_run();
+ 
+ 	spin_lock_irq(&current->sighand->siglock);
+@@ -2626,7 +2626,7 @@ bool get_signal(struct ksignal *ksig)
+ 	struct signal_struct *signal = current->signal;
+ 	int signr;
+ 
+-	if (unlikely(current->task_works))
++	if (unlikely(task_work_pending(current)))
+ 		task_work_run();
  
  	/*
+diff --git a/kernel/task_work.c b/kernel/task_work.c
+index 1698fbe6f0e1..cc6fccb0e24d 100644
+--- a/kernel/task_work.c
++++ b/kernel/task_work.c
+@@ -78,7 +78,7 @@ task_work_cancel_match(struct task_struct *task,
+ 	struct callback_head *work;
+ 	unsigned long flags;
+ 
+-	if (likely(!task->task_works))
++	if (likely(!task_work_pending(task)))
+ 		return NULL;
+ 	/*
+ 	 * If cmpxchg() fails we continue without updating pprev.
 -- 
-2.34.1
+2.29.2
 
