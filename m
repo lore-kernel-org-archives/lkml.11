@@ -2,126 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07530C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF94C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235131AbiCIQRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:17:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        id S235206AbiCIQRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234736AbiCIQIA (ORCPT
+        with ESMTP id S234953AbiCIQIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:00 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D4515471A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:04:17 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id yy13so6143420ejb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:04:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fZqCvAf0xgF95WkOEHDGm/vV6tt9EczTXGvjsdd1WwE=;
-        b=OrxNHdDIFcqZV/a5MLxU2Ga+L+3AhRk/xIdWG4X6CSM8T9JSvLsWCzqG2gdhBVtm+w
-         I2R5dYX3JEgvMByVLyxwG5LU9G7iMJGA2/St5e+WlHM3UHASFMB+Be4NEXN3uJRfKZt4
-         fqSO0EYAd4ll6cQJ3PUK1BZcENVS1MwedBTio=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fZqCvAf0xgF95WkOEHDGm/vV6tt9EczTXGvjsdd1WwE=;
-        b=7ZwxnbnmEVAcg06jKZm03Nzt4dRfb1ZtJPMIowmODWh9zKZ/9dfzuMuVbbiVwfpaxR
-         o5PRRtnP5iyGVYzYZFC2tosUJaXHp0/oEUXZTObMeu8WImiuDJKsLyAJgMcyVHme79Pb
-         2IuWBqQV/GEEw4i5gevWFOwvBtXKtkyi8mpAhPdYu/YrxEqvFCUMkgn1Ii14ZTVr3lne
-         Eew0HU2PqKKPN8AHTy3sfpmRH77U+Nt9qWm4pGCzXhEyzfalXMTGL0JV0RazTxmOp3Xp
-         ZpnDcIftSJNxJP/hrh0dFSr5YDNHUW7Ll0w/D+j/dOalqRqIUWUnVughqn4Gd4O2L7Vt
-         gzYA==
-X-Gm-Message-State: AOAM532r2JC0Pj/BX7po1g8WPQXhxVyjt4O2uJIM2x2ISYBYthvcg7wV
-        LnU6YfXiKUGsgtVkeKUbKTpwNuk/oFKOoace
-X-Google-Smtp-Source: ABdhPJwCwNGzTrc2uL3k35CMppIcITRIi9eTCN9NFlLIaFnytiHNHyKQfQ7hjgi2Z7BgiyNlu0W6lA==
-X-Received: by 2002:a17:906:2a50:b0:6da:ed06:b029 with SMTP id k16-20020a1709062a5000b006daed06b029mr421665eje.506.1646841855363;
-        Wed, 09 Mar 2022 08:04:15 -0800 (PST)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
-        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm1043133eda.2.2022.03.09.08.04.14
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 08:04:14 -0800 (PST)
-Received: by mail-wm1-f44.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so1752615wmp.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:04:14 -0800 (PST)
-X-Received: by 2002:a1c:7518:0:b0:37c:7eb:f255 with SMTP id
- o24-20020a1c7518000000b0037c07ebf255mr8067411wmc.29.1646841853982; Wed, 09
- Mar 2022 08:04:13 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A486186413;
+        Wed,  9 Mar 2022 08:04:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E38F5B82191;
+        Wed,  9 Mar 2022 16:04:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5685EC340F3;
+        Wed,  9 Mar 2022 16:04:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646841885;
+        bh=sHBaHcUjLV8fVZHhrO9dbiOsJRcm/xEqOES3gSji6w8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sknuoweO7AZsmNyOD6VGMe4m5QlB6tvfcgwuXaZQfOzWEttnPlitD5WQLvvfVKk+A
+         8aBiY8c3ad5NxLQu6nC/3xr6LHZLDfZRAe+4jiOFWKGojo20lq3A7AMWmMsIbkWuK3
+         njWQoCIVAxsnVu9ZoJb0iaUJk6oq+Qe+71XD6sqE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.10 02/43] x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+Date:   Wed,  9 Mar 2022 16:59:35 +0100
+Message-Id: <20220309155859.312825779@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309155859.239810747@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
- <20220301181107.v4.2.I48b18ab197c9b649d376cf8cfd934e59d338f86d@changeid> <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
-In-Reply-To: <CAD=FV=X6jf-UbCzB23MjBWwfs0HcHuoE9ozd3FZxN1U-H_8Saw@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 9 Mar 2022 08:04:01 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=V+HNSihpg+nMS52w9VWhfkbv+HR4F-XfS+GZ8JdSJBJw@mail.gmail.com>
-Message-ID: <CAD=FV=V+HNSihpg+nMS52w9VWhfkbv+HR4F-XfS+GZ8JdSJBJw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] drm/bridge: analogix_dp: Enable autosuspend
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, Sean Paul <sean@poorly.run>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
 
-On Thu, Mar 3, 2022 at 3:02 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Tue, Mar 1, 2022 at 6:11 PM Brian Norris <briannorris@chromium.org> wrote:
-> >
-> > DP AUX transactions can consist of many short operations. There's no
-> > need to power things up/down in short intervals.
-> >
-> > I pick an arbitrary 100ms; for the systems I'm testing (Rockchip
-> > RK3399), runtime-PM transitions only take a few microseconds.
-> >
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > ---
-> >
-> > Changes in v4:
-> >  - call pm_runtime_mark_last_busy() and
-> >    pm_runtime_dont_use_autosuspend()
-> >  - drop excess pm references around drm_get_edid(), now that we grab and
-> >    hold in the dp-aux helper
-> >
-> > Changes in v3:
-> >  - New in v3
-> >
-> >  drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 9 ++++++---
-> >  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> This looks great to me now, thanks.
->
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
->
-> Though I'm not a massive expert on the Analogix DP driver, I'm pretty
-> confident about the DP AUX stuff that Brian is touching. I just
-> checked and I see that this driver isn't changing lots and the last
-> change landed in drm-misc, which means that I can commit this. Thus,
-> unless someone else shouts, I'll plan to wait until next week and
-> commit these two patches to drm-misc.
->
-> The first of the two patches is a "Fix" but since it's been broken
-> since 2016 I'll assume that nobody is chomping at the bit for these to
-> get into stable and that it would be easier to land both in
-> "drm-misc-next". Please yell if someone disagrees.
+commit d45476d9832409371537013ebdd8dc1a7781f97a upstream.
 
-Pushed both to drm-misc-next:
+The RETPOLINE_AMD name is unfortunate since it isn't necessarily
+AMD only, in fact Hygon also uses it. Furthermore it will likely be
+sufficient for some Intel processors. Therefore rename the thing to
+RETPOLINE_LFENCE to better describe what it is.
 
-f28dd5075675 drm/bridge: analogix_dp: Enable autosuspend
-8fb6c44fe846 drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Add the spectre_v2=retpoline,lfence option as an alias to
+spectre_v2=retpoline,amd to preserve existing setups. However, the output
+of /sys/devices/system/cpu/vulnerabilities/spectre_v2 will be changed.
 
--Doug
+  [ bp: Fix typos, massage. ]
+
+Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 5.10]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/cpufeatures.h       |    2 +-
+ arch/x86/include/asm/nospec-branch.h     |   12 ++++++------
+ arch/x86/kernel/cpu/bugs.c               |   29 ++++++++++++++++++-----------
+ tools/arch/x86/include/asm/cpufeatures.h |    2 +-
+ 4 files changed, 26 insertions(+), 19 deletions(-)
+
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -204,7 +204,7 @@
+ #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
+ #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
+ #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
+ #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
+ #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -82,7 +82,7 @@
+ #ifdef CONFIG_RETPOLINE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
+ 		      __stringify(jmp __x86_retpoline_\reg), X86_FEATURE_RETPOLINE, \
+-		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_AMD
++		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	jmp	*%\reg
+ #endif
+@@ -92,7 +92,7 @@
+ #ifdef CONFIG_RETPOLINE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; call *%\reg), \
+ 		      __stringify(call __x86_retpoline_\reg), X86_FEATURE_RETPOLINE, \
+-		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *%\reg), X86_FEATURE_RETPOLINE_AMD
++		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *%\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	call	*%\reg
+ #endif
+@@ -134,7 +134,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ 
+ # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
+ 
+@@ -164,7 +164,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ 
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
+ #endif
+@@ -176,8 +176,8 @@
+ /* The Spectre V2 mitigation variants */
+ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_NONE,
+-	SPECTRE_V2_RETPOLINE_GENERIC,
+-	SPECTRE_V2_RETPOLINE_AMD,
++	SPECTRE_V2_RETPOLINE,
++	SPECTRE_V2_LFENCE,
+ 	SPECTRE_V2_IBRS_ENHANCED,
+ };
+ 
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -627,7 +627,7 @@ enum spectre_v2_mitigation_cmd {
+ 	SPECTRE_V2_CMD_FORCE,
+ 	SPECTRE_V2_CMD_RETPOLINE,
+ 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
+-	SPECTRE_V2_CMD_RETPOLINE_AMD,
++	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
+ };
+ 
+ enum spectre_v2_user_cmd {
+@@ -787,8 +787,8 @@ set_mode:
+ 
+ static const char * const spectre_v2_strings[] = {
+ 	[SPECTRE_V2_NONE]			= "Vulnerable",
+-	[SPECTRE_V2_RETPOLINE_GENERIC]		= "Mitigation: Full generic retpoline",
+-	[SPECTRE_V2_RETPOLINE_AMD]		= "Mitigation: Full AMD retpoline",
++	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
++	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
+ 	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
+ };
+ 
+@@ -800,7 +800,8 @@ static const struct {
+ 	{ "off",		SPECTRE_V2_CMD_NONE,		  false },
+ 	{ "on",			SPECTRE_V2_CMD_FORCE,		  true  },
+ 	{ "retpoline",		SPECTRE_V2_CMD_RETPOLINE,	  false },
+-	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_AMD,	  false },
++	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
++	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
+ 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
+ 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
+ };
+@@ -838,13 +839,19 @@ static enum spectre_v2_mitigation_cmd __
+ 	}
+ 
+ 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
+-	     cmd == SPECTRE_V2_CMD_RETPOLINE_AMD ||
++	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
+ 	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
+ 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
+ 		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
++	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
++	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
++		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
++
+ 	spec_v2_print_cond(mitigation_options[i].option,
+ 			   mitigation_options[i].secure);
+ 	return cmd;
+@@ -879,9 +886,9 @@ static void __init spectre_v2_select_mit
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+ 			goto retpoline_auto;
+ 		break;
+-	case SPECTRE_V2_CMD_RETPOLINE_AMD:
++	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_amd;
++			goto retpoline_lfence;
+ 		break;
+ 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+@@ -898,17 +905,17 @@ static void __init spectre_v2_select_mit
+ retpoline_auto:
+ 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ 	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-	retpoline_amd:
++	retpoline_lfence:
+ 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+ 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
+ 			goto retpoline_generic;
+ 		}
+-		mode = SPECTRE_V2_RETPOLINE_AMD;
+-		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
++		mode = SPECTRE_V2_LFENCE;
++		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+ 	} else {
+ 	retpoline_generic:
+-		mode = SPECTRE_V2_RETPOLINE_GENERIC;
++		mode = SPECTRE_V2_RETPOLINE;
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+ 	}
+ 
+--- a/tools/arch/x86/include/asm/cpufeatures.h
++++ b/tools/arch/x86/include/asm/cpufeatures.h
+@@ -204,7 +204,7 @@
+ #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
+ #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
+ #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
+ #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
+ #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+
+
