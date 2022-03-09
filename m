@@ -2,95 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230438AbiCIBUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:20:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34626 "EHLO
+        id S230248AbiCIBUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:20:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbiCIBT5 (ORCPT
+        with ESMTP id S230460AbiCIBUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:19:57 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF5D30A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:12:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=XqYDQ0sO8lLcFH38iNpLV9+za02YSz1bbsT0KsfeIP8=; b=Pjh/y28/PAdf3s2neTwwwFdFwP
-        q2hbcI7URxbuj/rRtMJv+J+/zMaLs1xfegdV5hwwbn1TReO6VUZYFQnesEN9d+VS0DOtvRupX2AFL
-        /mUpbgjG/CCa7zHYIUoIzvf8WvNFHOqK1IZwm9Di9sCZeI0Lm4LS+hVkMc2BvMzeIGDVh/UahgjdK
-        XIoO1f3XX9cgSrxPjX1Flc9HQNbdxAWjNZ//HopeZIxaOmZdaxNOpObW2kc49+SOEWA7BEKrXyQIa
-        NF+qhPF3PZU0H16aajB15UWjkI8Sr3HbdSJ+y1e8cUydVc42gBfRxZXIRbCHDaX/Cvi8OTKS226+A
-        xqE1CzsQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRjJc-00GaWd-EZ; Tue, 08 Mar 2022 23:32:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 149C030027B;
-        Wed,  9 Mar 2022 00:32:25 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AE5D0203C81E0; Wed,  9 Mar 2022 00:32:25 +0100 (CET)
-Date:   Wed, 9 Mar 2022 00:32:25 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        vincent.guittot@linaro.org, bristot@redhat.com,
-        zhaolei@cn.fujitsu.com, tj@kernel.org, lizefan.x@bytedance.com,
-        hannes@cmpxchg.org, linux-kernel@vger.kernel.org,
-        Paul McKenney <paulmck@kernel.org>
-Subject: Re: [PATCH v3 2/3] sched/cpuacct: optimize away RCU read lock
-Message-ID: <YifniVyoJ9NNU+pv@hirez.programming.kicks-ass.net>
-References: <20220220051426.5274-1-zhouchengming@bytedance.com>
- <20220220051426.5274-2-zhouchengming@bytedance.com>
- <CGME20220308232034eucas1p2b0f39cee0f462af6004ebdfbe5bacb9f@eucas1p2.samsung.com>
- <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
+        Tue, 8 Mar 2022 20:20:41 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D044A1409F9
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:14:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646788465; x=1678324465;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=oE02vI4yneAw15d53fN+S9tmER+pyOaZpag7Z2NIsfk=;
+  b=PbfDpeO/KhFym1Kf293DvFgKFUrFuLzJgQHFQ+weubQFGcTgRCmtyKyn
+   eZBe99nin94p27zZ0WmoZDJBxqsiC+05YthsDjieZvbcHNqgnUNwfhsgN
+   btOeNXlbt35QVyuCYD+cjbFWd96YN2OKGoyQcB2C4uUWAeqV+YJ0gGdNp
+   SftnubO+0ySDwrNVCGL0YyYZxSVtQWLS+xsYROGF982xwjVyZEV+i3fh6
+   CReP1IOCgBhFuejUrYZPXjIXJN8y8GkALXIVub5RsXauq/Thm8i7p9w/N
+   wOA6uoIlQbbHPIMbhvfpxarjUEcPgywX7ph4In2Z75zJ9NRz8PQUgyRTR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341286923"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="341286923"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 17:12:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="711754590"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 17:12:45 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRksf-0002IZ-19; Wed, 09 Mar 2022 01:12:45 +0000
+Date:   Wed, 9 Mar 2022 09:12:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liam Mark <lmark@codeaurora.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Saravana Kannan <saravanak@google.com>,
+        Laura Abbott <lauraa@codeaurora.org>,
+        Patrick Daly <pdaly@codeaurora.org>,
+        Mark Salyzyn <salyzyn@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.19-stable
+ 552/9999] arch/xtensa/kernel/pci-dma.c:205:17: error: too few arguments to
+ function 'dma_common_free_remap'
+Message-ID: <202203090909.9xSg55aP-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f4bc652b-115f-35b5-91db-bad3b30fed9b@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 12:20:33AM +0100, Marek Szyprowski wrote:
-> On 20.02.2022 06:14, Chengming Zhou wrote:
-> > Since cpuacct_charge() is called from the scheduler update_curr(),
-> > we must already have rq lock held, then the RCU read lock can
-> > be optimized away.
-> >
-> > And do the same thing in it's wrapper cgroup_account_cputime(),
-> > but we can't use lockdep_assert_rq_held() there, which defined
-> > in kernel/sched/sched.h.
-> >
-> > Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> 
-> This patch landed recently in linux-next as commit dc6e0818bc9a 
-> ("sched/cpuacct: Optimize away RCU read lock"). On my test systems I 
-> found that it triggers a following warning in the early boot stage:
-> 
-> Calibrating delay loop (skipped), value calculated using timer 
-> frequency.. 48.00 BogoMIPS (lpj=240000)
-> pid_max: default: 32768 minimum: 301
-> Mount-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
-> Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes, linear)
-> CPU: Testing write buffer coherency: ok
-> CPU0: Spectre v2: using BPIALL workaround
-> 
-> =============================
-> WARNING: suspicious RCU usage
-> 5.17.0-rc5-00050-gdc6e0818bc9a #11458 Not tainted
-> -----------------------------
-> ./include/linux/cgroup.h:481 suspicious rcu_dereference_check() usage!
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-stable
+head:   3fba6c6e70994eff4dcc5be475c9d2bd3848b83d
+commit: 9257548d3c05e6fe98399729a796a23d801e027e [552/9999] ANDROID: GKI: dma-mapping: Add dma_remap functions
+config: xtensa-buildonly-randconfig-r001-20220307 (https://download.01.org/0day-ci/archive/20220309/202203090909.9xSg55aP-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/9257548d3c05e6fe98399729a796a23d801e027e
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-stable
+        git checkout 9257548d3c05e6fe98399729a796a23d801e027e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash
 
-Arguably, with the flavours folded again, rcu_dereference_check() ought
-to default include rcu_read_lock_sched_held() or its equivalent I
-suppose.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Paul?
+All errors (new ones prefixed by >>):
+
+   In file included from include/linux/ioport.h:13,
+                    from include/linux/device.h:15,
+                    from include/linux/dma-contiguous.h:56,
+                    from arch/xtensa/kernel/pci-dma.c:18:
+   include/linux/dma-mapping.h: In function 'dma_map_resource':
+   arch/xtensa/include/asm/page.h:182:16: warning: comparison of unsigned expression in '>= 0' is always true [-Wtype-limits]
+     182 |         ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+         |                ^~
+   include/linux/compiler.h:77:45: note: in definition of macro 'unlikely'
+      77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+         |                                             ^
+   include/linux/dma-mapping.h:339:9: note: in expansion of macro 'BUG_ON'
+     339 |         BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
+         |         ^~~~~~
+   include/linux/dma-mapping.h:339:16: note: in expansion of macro 'pfn_valid'
+     339 |         BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
+         |                ^~~~~~~~~
+   arch/xtensa/kernel/pci-dma.c: In function 'arch_dma_free':
+>> arch/xtensa/kernel/pci-dma.c:205:17: error: too few arguments to function 'dma_common_free_remap'
+     205 |                 dma_common_free_remap(vaddr, size, VM_MAP);
+         |                 ^~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/dma-noncoherent.h:5,
+                    from arch/xtensa/kernel/pci-dma.c:19:
+   include/linux/dma-mapping.h:467:6: note: declared here
+     467 | void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags,
+         |      ^~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/dma_common_free_remap +205 arch/xtensa/kernel/pci-dma.c
+
+5a0015d62668e64 Chris Zankel        2005-06-23  192  
+3f2bbf443e21584 Christoph Hellwig   2018-06-19  193  void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+00085f1efa387a8 Krzysztof Kozlowski 2016-08-03  194  		dma_addr_t dma_handle, unsigned long attrs)
+5a0015d62668e64 Chris Zankel        2005-06-23  195  {
+9d2ffe5c62554f2 Max Filippov        2016-04-25  196  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+6137e4166004e2e Max Filippov        2018-02-14  197  	struct page *page;
+6137e4166004e2e Max Filippov        2018-02-14  198  
+adbfa4e6f996895 Max Filippov        2018-02-14  199  	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
+adbfa4e6f996895 Max Filippov        2018-02-14  200  		page = vaddr;
+2cc15e802b250a1 Max Filippov        2018-07-11  201  	} else if (platform_vaddr_uncached(vaddr)) {
+2cc15e802b250a1 Max Filippov        2018-07-11  202  		page = virt_to_page(platform_vaddr_to_cached(vaddr));
+6137e4166004e2e Max Filippov        2018-02-14  203  	} else {
+6137e4166004e2e Max Filippov        2018-02-14  204  #ifdef CONFIG_MMU
+6137e4166004e2e Max Filippov        2018-02-14 @205  		dma_common_free_remap(vaddr, size, VM_MAP);
+
+:::::: The code at line 205 was first introduced by commit
+:::::: 6137e4166004e2ec383ac05d5ca15831f4668806 xtensa: support DMA buffers in high memory
+
+:::::: TO: Max Filippov <jcmvbkbc@gmail.com>
+:::::: CC: Max Filippov <jcmvbkbc@gmail.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
