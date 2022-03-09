@@ -2,110 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37688C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C111C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238818AbiCIWlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:41:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
+        id S238829AbiCIWno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:43:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiCIWln (ORCPT
+        with ESMTP id S229908AbiCIWnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:41:43 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AE712220F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:40:44 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id g19so3493483pfc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:40:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pvPyQOUK1Gw9CokGjQgnCkQhkHHplgDsrtGMviZ3X7A=;
-        b=BaBvApgiq6eKkKHjV5y9VNHSX8YDVNOkXj5MayW95Bs0iCadLeVSVrBWCSdznB/PA4
-         0gKQ2wbaRy7xLMnNrIapT0t2YDCwEkZbX6Z2RsTW+Vxjk9bX0Nl42o76dLzzL3OdIF+b
-         8qXFqJI1VXyVwT/F93OTri8tbdhSHqlQOdcASY9uXy8RcNqd6XwZwMCNRWhyh2QG/Nea
-         9XCa2PeR7oijZX6OcHOj3mt6MMzGw0+QbQea2MlyfD7hGKunuDfDz2l+8uzuyyeBH6fr
-         TBk2OQETxmRVJeM0n+PhbCEGu8kAyfbQXYuQNAAZ2ouSFjKQ+gE076+73neyZ7eCz52M
-         wcCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=pvPyQOUK1Gw9CokGjQgnCkQhkHHplgDsrtGMviZ3X7A=;
-        b=iMcOhwtH+Off9uiIP4pGERoxZUFR5Pc/LN/v8KYU8g7IkcUsQR1NiFbd4cAJE8IOjG
-         sxQ8xF//tyc/mhax3I3dFvCrJ1ZMai3+Q/kuse+D19xLUVZM35Itut/Tk6/zU0boS0Qj
-         91CeWRDm7DB6SODU9+up3vLVIuXwJPO8iaAqpHyCPmSWP+HC5SNqg7F3xibWU6CEebl/
-         KST59KEZsGb0us5vqdyAEJUkceG7runt/ng7C0GbMEV6oVZJTTBYzgCaGCcstA9sQIU4
-         SdvmmNohUo3B5J8ndgjLeQOveZ4Q2iyLD/5oBamZ+N5eJ+KM17A18j6iEguTXbqgatRB
-         h9bA==
-X-Gm-Message-State: AOAM532PE52OzgmBjTz/LqFUawq1NS0ogWSIjIoKkYdicdMgRdf36Tmc
-        7ryj56MfvAzjYeOmRwMqVvU=
-X-Google-Smtp-Source: ABdhPJw3G9FAPbU5cZQShJnDrdis4xALn9ruAKxBY0EJXFu4TjXvyQ0wqkxKipN1LGB2EDM5nIH+dg==
-X-Received: by 2002:a65:61ad:0:b0:378:8f01:7674 with SMTP id i13-20020a6561ad000000b003788f017674mr1576104pgv.314.1646865643638;
-        Wed, 09 Mar 2022 14:40:43 -0800 (PST)
-Received: from google.com ([2620:15c:211:201:aee3:831e:b1d0:905f])
-        by smtp.gmail.com with ESMTPSA id 2-20020a631342000000b0037487b6b018sm3166928pgt.0.2022.03.09.14.40.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 14:40:43 -0800 (PST)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 9 Mar 2022 14:40:41 -0800
-From:   Minchan Kim <minchan@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Chris Goldsworthy <cgoldswo@codeaurora.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        John Dias <joaodias@google.com>
-Subject: Re: [PATCH] mm: fs: fix lru_cache_disabled race in bh_lru
-Message-ID: <Yiks6WHATBtLZtmM@google.com>
-References: <20220308180709.2017638-1-minchan@kernel.org>
- <20220309140627.eeaa069daa921dbef64f8970@linux-foundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309140627.eeaa069daa921dbef64f8970@linux-foundation.org>
+        Wed, 9 Mar 2022 17:43:42 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFC511C38;
+        Wed,  9 Mar 2022 14:42:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646865761; x=1678401761;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=ruPtGiXXQdOvROYpaC01TgDVkmf4NhGWvn3Yv1zkvtA=;
+  b=OpbbHWCLJ2/kOG1K5Hkrcrf8ObXjd6DDzMZO8olHqmyM3buekI5hmLMe
+   vn9MnLWEIU5N3zpjiyHYd2ow48SOvJew3UCYgfg0yigtzsFAzZHB+VLYA
+   SQ/fdZqWyB3Ca0ZA1Ic62VZ9LcNZYPtu0S9bvgf+aLoTB49Dx7FwspRyY
+   QuMgEDIC7w/dHKrMEe6MJ1URAviRqZj7OBZxtn+JJlXsXxmAsbkkwgtiQ
+   fKIcK7Tf6jlVFLOn9NpPFerY1zWeFMpRTfXXmxnaBD290NEpq5USU/yGg
+   7XmfdYTZxOC+fADCQUTJoXaKWhszqyTUAe4Txrtksh3BIpAAvFU/WtBCs
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="253938954"
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="253938954"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 14:42:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="554329567"
+Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
+  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2022 14:42:39 -0800
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-pm@vger.kernel.org
+Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
+        peterz@infradead.org, bp@alien8.de, rafael@kernel.org,
+        ravi.v.shankar@intel.com, chang.seok.bae@intel.com
+Subject: [PATCH v2 1/2] x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
+Date:   Wed,  9 Mar 2022 14:34:30 -0800
+Message-Id: <20220309223431.26560-2-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220309223431.26560-1-chang.seok.bae@intel.com>
+References: <20220309223431.26560-1-chang.seok.bae@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 02:06:27PM -0800, Andrew Morton wrote:
-> On Tue,  8 Mar 2022 10:07:09 -0800 Minchan Kim <minchan@kernel.org> wrote:
-> 
-> > Check lru_cache_disabled under bh_lru_lock. Otherwise, it could
-> > introduce race below and it fails to migrate pages containing
-> > buffer_head.
-> > 
-> >    CPU 0					CPU 1
-> > 
-> > bh_lru_install
-> >                                        lru_cache_disable
-> >   lru_cache_disabled = false
-> >                                        atomic_inc(&lru_disable_count);
-> > 				       invalidate_bh_lrus_cpu of CPU 0
-> > 				       bh_lru_lock
-> > 				       __invalidate_bh_lrus
-> > 				       bh_lru_unlock
-> >   bh_lru_lock
-> >   install the bh
-> >   bh_lru_unlock
-> 
-> What are the user-visible runtime effects of this bug?
+When a CPU enters an idle state, non-initialized states left in large
+registers may be the cause of preventing deeper low-power states.
 
-Once the race happens, CMA allocation fails, which is critical for
-the workload CMA allocation depends.
+The new helper ensures the AMX state is initialized to make the CPU
+ready for low-power states. It will be used by the intel idle driver.
 
-> 
-> Is a cc:stable needed?
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Cc: x86@kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+Changes from v1:
+* Check the dynamic state flag first, to avoid #UD with XGETBV(1).
 
-Ah, missed it. I think it would be rare to trigger the race considering
-how CMA allocation would be rare but once it happens, it makes the CMA
-allocation failure, which is critical for some. And the patch size is
-small enough so I think it's worth to add in the stable.
+Dependency on the opcode map update:
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?h=x86/misc&id=9dd94df75b30eca03ed2151dd5bbc152a6f19abf
+---
+ arch/x86/include/asm/fpu/api.h       |  2 ++
+ arch/x86/include/asm/special_insns.h |  9 +++++++++
+ arch/x86/kernel/fpu/core.c           | 15 +++++++++++++++
+ 3 files changed, 26 insertions(+)
 
-> 
-> Should there be a reported-by?
+diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
+index c83b3020350a..df48912fd1c8 100644
+--- a/arch/x86/include/asm/fpu/api.h
++++ b/arch/x86/include/asm/fpu/api.h
+@@ -165,4 +165,6 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
+ struct task_struct;
+ extern long fpu_xstate_prctl(struct task_struct *tsk, int option, unsigned long arg2);
+ 
++extern void fpu_idle_fpregs(void);
++
+ #endif /* _ASM_X86_FPU_API_H */
+diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
+index 68c257a3de0d..d434fbaeb3ff 100644
+--- a/arch/x86/include/asm/special_insns.h
++++ b/arch/x86/include/asm/special_insns.h
+@@ -294,6 +294,15 @@ static inline int enqcmds(void __iomem *dst, const void *src)
+ 	return 0;
+ }
+ 
++static inline void tile_release(void)
++{
++	/*
++	 * Instruction opcode for TILERELEASE; supported in binutils
++	 * version >= 2.36.
++	 */
++	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
++}
++
+ #endif /* __KERNEL__ */
+ 
+ #endif /* _ASM_X86_SPECIAL_INSNS_H */
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 8dea01ffc5c1..572dfa962b7b 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -847,3 +847,18 @@ int fpu__exception_code(struct fpu *fpu, int trap_nr)
+ 	 */
+ 	return 0;
+ }
++
++/*
++ * Initialize register state that may prevent from entering low-power idle.
++ * This function will be invoked from the cpuidle driver only when needed.
++ */
++void fpu_idle_fpregs(void)
++{
++	if (!fpu_state_size_dynamic())
++		return;
++
++	if (xfeatures_in_use() & XFEATURE_MASK_XTILE) {
++		tile_release();
++		fpregs_deactivate(&current->thread.fpu);
++	}
++}
+-- 
+2.17.1
 
-I found it on my own while I reviewed Marcelo's other patchset so
-I don't think we need to add my reported-by.
-
-Andrew, please tell me if you want me resend it.
