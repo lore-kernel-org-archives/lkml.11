@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4A5C3527B
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D625C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237740AbiCIQtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:49:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S237800AbiCIQtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:49:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239188AbiCIQcT (ORCPT
+        with ESMTP id S239198AbiCIQcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:32:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D54E1A907C;
-        Wed,  9 Mar 2022 08:27:19 -0800 (PST)
+        Wed, 9 Mar 2022 11:32:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC851567BE;
+        Wed,  9 Mar 2022 08:27:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F143B82020;
-        Wed,  9 Mar 2022 16:26:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1E58C340EC;
-        Wed,  9 Mar 2022 16:26:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36C1761985;
+        Wed,  9 Mar 2022 16:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D46C340E8;
+        Wed,  9 Mar 2022 16:26:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843215;
-        bh=dORWSbmUuQnkXIifjMZm1D83BGzCjw0RGmaor/Jk/98=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DDB2y88N5fXy9+BQG9j+TB+MhnvVshrgqSomuIJVK4VSr7zHDqkyQH8EofREwIdBr
-         jwKRb0eG3oPfSbu5IlAYMRC8GZfWiHZphWdxPIsQ2KbqHOzQ+1UEOwB2iSGg5x8K0/
-         X2PUVuFabxteA2+gE1NM1TsrJXgOOXegxggzpqPRRXhOYInkkegwaJ1Ex0HG2sy0GK
-         jniaCjG6w1xuXBjh/83eZ/WfECDCaqNoDpsgJT8csWDJZnYBNJLb272t5ydLe+3j1L
-         QtK647QwNKBEu2XXq8hAtCEA0JjZy6OpauSFIWY+pfEsqrlp3vpq+s2CPBIyoewnie
-         ra88AzXT9/J4w==
+        s=k20201202; t=1646843184;
+        bh=F4/YiigTOpulnpghrf0n/n9Hmkg+iZYZBi052GhOdxs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=THvhRB6X7cVOGZD9461S+U4qKu1fiEY0YT28/TuH3lCJqIffW0BQ0VedT9PAhnOYH
+         vMCQcu+yxrOug78GolfV0qgTIXdk6JoqbEeQcCqkwfB1Rua2XlAn31A8EPnFU0AV5N
+         Gb3kpHstFjP+q9CvYrJydS+wlWtifxQ73VtLTUuOv7GNmICPLInM71+ByrjqcsYhUK
+         PTYsukbyLFgUE6J+ZPjehNkL3+m6T82GCOwWws0DY2DhG6BnQOgfVLyKxIaVTOAZwH
+         pqKb7d+LNkhE0LqwXFLY8gEBXWDvWRDRyOEyoXj/4zPCmnQga0PardY/n3efkM0EHB
+         LZ5qoymnYes7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/12] atm: firestream: check the return value of ioremap() in fs_init()
-Date:   Wed,  9 Mar 2022 11:26:12 -0500
-Message-Id: <20220309162618.137226-7-sashal@kernel.org>
+Cc:     Yan Yan <evitayan@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 01/12] xfrm: Fix xfrm migrate issues when address family changes
+Date:   Wed,  9 Mar 2022 11:26:06 -0500
+Message-Id: <20220309162618.137226-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
-References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,34 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Yan Yan <evitayan@google.com>
 
-[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
+[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
 
-The function ioremap() in fs_init() can fail, so its return value should
-be checked.
+xfrm_migrate cannot handle address family change of an xfrm_state.
+The symptons are the xfrm_state will be migrated to a wrong address,
+and sending as well as receiving packets wil be broken.
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This commit fixes it by breaking the original xfrm_state_clone
+method into two steps so as to update the props.family before
+running xfrm_init_state. As the result, xfrm_state's inner mode,
+outer mode, type and IP header length in xfrm_state_migrate can
+be updated with the new address family.
+
+Tested with additions to Android's kernel unit test suite:
+https://android-review.googlesource.com/c/kernel/tests/+/1885354
+
+Signed-off-by: Yan Yan <evitayan@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/firestream.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/xfrm/xfrm_state.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index e7cffd0cc361..3557ff9ecd82 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1692,6 +1692,8 @@ static int fs_init(struct fs_dev *dev)
- 	dev->hw_base = pci_resource_start(pci_dev, 0);
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 5164dfe0aa09..2c17fbdd2366 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1421,9 +1421,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
  
- 	dev->base = ioremap(dev->hw_base, 0x1000);
-+	if (!dev->base)
-+		return 1;
+ 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
  
- 	reset_chip (dev);
-   
+-	if (xfrm_init_state(x) < 0)
+-		goto error;
+-
+ 	x->props.flags = orig->props.flags;
+ 	x->props.extra_flags = orig->props.extra_flags;
+ 
+@@ -1501,6 +1498,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
+ 	if (!xc)
+ 		return NULL;
+ 
++	xc->props.family = m->new_family;
++
++	if (xfrm_init_state(xc) < 0)
++		goto error;
++
+ 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
+ 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
+ 
 -- 
 2.34.1
 
