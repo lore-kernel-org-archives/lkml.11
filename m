@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93C8C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8253C35274
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237536AbiCIQUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:20:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        id S237427AbiCIQUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:20:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234680AbiCIQLH (ORCPT
+        with ESMTP id S234592AbiCIQKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:11:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505B1139807;
-        Wed,  9 Mar 2022 08:09:18 -0800 (PST)
+        Wed, 9 Mar 2022 11:10:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62ECB0C4A;
+        Wed,  9 Mar 2022 08:09:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D211A61797;
-        Wed,  9 Mar 2022 16:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC92BC340E8;
-        Wed,  9 Mar 2022 16:09:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37D8D61797;
+        Wed,  9 Mar 2022 16:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 402EBC340E8;
+        Wed,  9 Mar 2022 16:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842157;
-        bh=EPZxsixiCZjs6ziUXvhGG6X9Ka3rBtJn1D845WN6Y/k=;
+        s=korg; t=1646842148;
+        bh=MiFC8q9O411o7BpK+5Y1vmS3uAtITiFo3JE5jvXYZFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VVBRxry2lQjzKsgoneKGuNEQaF34p7O11jPrEiEqfcI6o3XSV9+E6VnEDxOZXRqMy
-         ddb5/jp3Z9E2fhB6N1p78k2syWIEofyKhLVXph2Q5fgSTsyZJtTXC97JCyB7kTDYC0
-         y1B7Dl3jU4XfW+Vn0fq9Yx5W97eWcSo/ENQGet7A=
+        b=TwPxYNvRf0pmOWVaU66Jw8Wuep0j7k2RnZhPqoxhsKoelxFEhKVMjxgZBatFdygCB
+         UWmupGw5DQZtDuq/Ysf6OH0vcxAdwmYX5cKWpH7hFTLt84PD0oPjhczdouX5Zchhva
+         uEeuLWfDHj/bF2INpEyOHOWp/rUEbgiBndyH7mFY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.16 18/37] arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
-Date:   Wed,  9 Mar 2022 17:00:19 +0100
-Message-Id: <20220309155859.617502086@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.16 15/37] arm64: cpufeature: add HWCAP for FEAT_AFP
+Date:   Wed,  9 Mar 2022 17:00:16 +0100
+Message-Id: <20220309155859.531938469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
 References: <20220309155859.086952723@linuxfoundation.org>
@@ -50,51 +49,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-commit 1b33d4860deaecf1d8eec3061b7e7ed7ab0bae8d upstream.
+commit 5c13f042e73200b50573ace63e1a6b94e2917616 upstream.
 
-The spectre-v4 sequence includes an SMC from the assembly entry code.
-spectre_v4_patch_fw_mitigation_conduit is the patching callback that
-generates an HVC or SMC depending on the SMCCC conduit type.
+Add a new HWCAP to detect the Alternate Floating-point Behaviour
+feature (FEAT_AFP), introduced in Armv8.7.
 
-As this isn't specific to spectre-v4, rename it
-smccc_patch_fw_mitigation_conduit so it can be re-used.
+Also expose this to userspace in the ID_AA64MMFR1_EL1 feature register.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211210165432.8106-2-joey.gouly@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S       |    2 +-
- arch/arm64/kernel/proton-pack.c |    6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ Documentation/arm64/cpu-feature-registers.rst |    9 +++++++++
+ Documentation/arm64/elf_hwcaps.rst            |    4 ++++
+ arch/arm64/include/asm/hwcap.h                |    1 +
+ arch/arm64/include/asm/sysreg.h               |    1 +
+ arch/arm64/include/uapi/asm/hwcap.h           |    1 +
+ arch/arm64/kernel/cpufeature.c                |    2 ++
+ arch/arm64/kernel/cpuinfo.c                   |    1 +
+ 7 files changed, 19 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -118,7 +118,7 @@ alternative_cb_end
- 	tbnz	\tmp2, #TIF_SSBD, .L__asm_ssbd_skip\@
- 	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_2
- 	mov	w1, #\state
--alternative_cb	spectre_v4_patch_fw_mitigation_conduit
-+alternative_cb	smccc_patch_fw_mitigation_conduit
- 	nop					// Patched to SMC/HVC #0
- alternative_cb_end
- .L__asm_ssbd_skip\@:
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -554,9 +554,9 @@ void __init spectre_v4_patch_fw_mitigati
-  * Patch a NOP in the Spectre-v4 mitigation code with an SMC/HVC instruction
-  * to call into firmware to adjust the mitigation state.
-  */
--void __init spectre_v4_patch_fw_mitigation_conduit(struct alt_instr *alt,
--						   __le32 *origptr,
--						   __le32 *updptr, int nr_inst)
-+void __init smccc_patch_fw_mitigation_conduit(struct alt_instr *alt,
-+					       __le32 *origptr,
-+					       __le32 *updptr, int nr_inst)
- {
- 	u32 insn;
+--- a/Documentation/arm64/cpu-feature-registers.rst
++++ b/Documentation/arm64/cpu-feature-registers.rst
+@@ -275,6 +275,15 @@ infrastructure:
+      | SVEVer                       | [3-0]   |    y    |
+      +------------------------------+---------+---------+
  
++  8) ID_AA64MMFR1_EL1 - Memory model feature register 1
++
++     +------------------------------+---------+---------+
++     | Name                         |  bits   | visible |
++     +------------------------------+---------+---------+
++     | AFP                          | [47-44] |    y    |
++     +------------------------------+---------+---------+
++
++
+ Appendix I: Example
+ -------------------
+ 
+--- a/Documentation/arm64/elf_hwcaps.rst
++++ b/Documentation/arm64/elf_hwcaps.rst
+@@ -251,6 +251,10 @@ HWCAP2_ECV
+ 
+     Functionality implied by ID_AA64MMFR0_EL1.ECV == 0b0001.
+ 
++HWCAP2_AFP
++
++    Functionality implied by ID_AA64MFR1_EL1.AFP == 0b0001.
++
+ 4. Unused AT_HWCAP bits
+ -----------------------
+ 
+--- a/arch/arm64/include/asm/hwcap.h
++++ b/arch/arm64/include/asm/hwcap.h
+@@ -106,6 +106,7 @@
+ #define KERNEL_HWCAP_BTI		__khwcap2_feature(BTI)
+ #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
+ #define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
++#define KERNEL_HWCAP_AFP		__khwcap2_feature(AFP)
+ 
+ /*
+  * This yields a mask that user programs can use to figure out what
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -904,6 +904,7 @@
+ #endif
+ 
+ /* id_aa64mmfr1 */
++#define ID_AA64MMFR1_AFP_SHIFT		44
+ #define ID_AA64MMFR1_ETS_SHIFT		36
+ #define ID_AA64MMFR1_TWED_SHIFT		32
+ #define ID_AA64MMFR1_XNX_SHIFT		28
+--- a/arch/arm64/include/uapi/asm/hwcap.h
++++ b/arch/arm64/include/uapi/asm/hwcap.h
+@@ -76,5 +76,6 @@
+ #define HWCAP2_BTI		(1 << 17)
+ #define HWCAP2_MTE		(1 << 18)
+ #define HWCAP2_ECV		(1 << 19)
++#define HWCAP2_AFP		(1 << 20)
+ 
+ #endif /* _UAPI__ASM_HWCAP_H */
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -329,6 +329,7 @@ static const struct arm64_ftr_bits ftr_i
+ };
+ 
+ static const struct arm64_ftr_bits ftr_id_aa64mmfr1[] = {
++	ARM64_FTR_BITS(FTR_VISIBLE, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_AFP_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_ETS_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_TWED_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_XNX_SHIFT, 4, 0),
+@@ -2488,6 +2489,7 @@ static const struct arm64_cpu_capabiliti
+ 	HWCAP_CAP(SYS_ID_AA64PFR1_EL1, ID_AA64PFR1_MTE_SHIFT, FTR_UNSIGNED, ID_AA64PFR1_MTE, CAP_HWCAP, KERNEL_HWCAP_MTE),
+ #endif /* CONFIG_ARM64_MTE */
+ 	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
++	HWCAP_CAP(SYS_ID_AA64MMFR1_EL1, ID_AA64MMFR1_AFP_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_AFP),
+ 	{},
+ };
+ 
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -95,6 +95,7 @@ static const char *const hwcap_str[] = {
+ 	[KERNEL_HWCAP_BTI]		= "bti",
+ 	[KERNEL_HWCAP_MTE]		= "mte",
+ 	[KERNEL_HWCAP_ECV]		= "ecv",
++	[KERNEL_HWCAP_AFP]		= "afp",
+ };
+ 
+ #ifdef CONFIG_COMPAT
 
 
