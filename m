@@ -2,148 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B743C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137C5C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235890AbiCIQSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:18:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        id S235307AbiCIQR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:17:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235767AbiCIQJJ (ORCPT
+        with ESMTP id S235351AbiCIQIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:09 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CCB141FD2;
-        Wed,  9 Mar 2022 08:06:40 -0800 (PST)
-Date:   Wed, 09 Mar 2022 16:06:09 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646841970;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2g65x9ztxAkTmxo73uRO4aFARnGFyHbVJ087622A2Ok=;
-        b=jmdQpad5VseS6hwyAXD8a8jBDMN0kcIQdJu154U5pMayON69DaI6jQnBBCgS93lWYIfjTM
-        SGePqAnljpwIuHc8qEIsih0AzONxCenAqUeSfEc4UuLMlVQEmJiy1tsVofr/gdtzuvrII1
-        kJP34XkVEqXKrgwXe/mc7Ua5PpDvCbPA8nFZxQRc42HLuKcfC11lCtuQ9CYeQZOPB+bj/E
-        uvff3cSSSW2MZunbpss871RD97idHAHVBUUpZf8dlwTy3CO+iFzWHmmsmfNUSm1uYEqrNN
-        HYWb8kFsrME09kubk/ZW1pKTjgm2zKDxIg5sL8/RtRYW3Z3FjZSnm9gY+U4Gww==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646841970;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2g65x9ztxAkTmxo73uRO4aFARnGFyHbVJ087622A2Ok=;
-        b=WEITcfV4TrSdeFAnQvLVAdZ6RJuXGKSnxuLX7A/8NpXOcarOHgIfS6xxlEbMfPxrNakVaB
-        30i6DAtk8/hKlwDA==
-From:   "tip-bot2 for Ross Philipson" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/boot: Add setup_indirect support in
- early_memremap_is_setup_data()
-Cc:     Ross Philipson <ross.philipson@oracle.com>,
-        Borislav Petkov <bp@suse.de>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        <stable@vger.kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <1645668456-22036-3-git-send-email-ross.philipson@oracle.com>
-References: <1645668456-22036-3-git-send-email-ross.philipson@oracle.com>
+        Wed, 9 Mar 2022 11:08:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB9918CC4A;
+        Wed,  9 Mar 2022 08:05:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D784DB82220;
+        Wed,  9 Mar 2022 16:05:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37101C36AE2;
+        Wed,  9 Mar 2022 16:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646841908;
+        bh=UcH8Zzvo0iQZ5Rax9GLIymn0QqKccpjDo791IEfgOr8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IEA8EA8x46GgIWlMluSCAaGzkWlUIaRnmxyXT/od8TE6j3Afd1awjpxNw2COn37eS
+         OW3iksyjTB670wiSA55WKDIwdUMd1Uq5T92lUBDzbBZUih41MdmshUZn4kVOcwvmmF
+         SW1LlVaQpBSEe/cQ9CLPSxw0YcEL1/yqYhj08/GU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: [PATCH 5.10 18/43] arm64: Add Cortex-A510 CPU part definition
+Date:   Wed,  9 Mar 2022 16:59:51 +0100
+Message-Id: <20220309155859.771122955@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309155859.239810747@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164684196918.16921.3379747739770954386.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-Commit-ID:     445c1470b6ef96440e7cfc42dfc160f5004fd149
-Gitweb:        https://git.kernel.org/tip/445c1470b6ef96440e7cfc42dfc160f5004fd149
-Author:        Ross Philipson <ross.philipson@oracle.com>
-AuthorDate:    Wed, 23 Feb 2022 21:07:36 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 09 Mar 2022 12:49:46 +01:00
+commit 53960faf2b731dd2f9ed6e1334634b8ba6286850 upstream.
 
-x86/boot: Add setup_indirect support in early_memremap_is_setup_data()
+Add the CPU Partnumbers for the new Arm designs.
 
-The x86 boot documentation describes the setup_indirect structures and
-how they are used. Only one of the two functions in ioremap.c that needed
-to be modified to be aware of the introduction of setup_indirect
-functionality was updated. Adds comparable support to the other function
-where it was missing.
-
-Fixes: b3c72fc9a78e ("x86/boot: Introduce setup_indirect")
-Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1645668456-22036-3-git-send-email-ross.philipson@oracle.com
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Link: https://lore.kernel.org/r/1643120437-14352-2-git-send-email-anshuman.khandual@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/mm/ioremap.c | 33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-index ab666c4..17a492c 100644
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -676,22 +676,51 @@ static bool memremap_is_setup_data(resource_size_t phys_addr,
- static bool __init early_memremap_is_setup_data(resource_size_t phys_addr,
- 						unsigned long size)
- {
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
- 	u64 paddr, paddr_next;
- 
- 	paddr = boot_params.hdr.setup_data;
- 	while (paddr) {
--		unsigned int len;
-+		unsigned int len, size;
- 
- 		if (phys_addr == paddr)
- 			return true;
- 
- 		data = early_memremap_decrypted(paddr, sizeof(*data));
-+		if (!data) {
-+			pr_warn("failed to early memremap setup_data entry\n");
-+			return false;
-+		}
-+
-+		size = sizeof(*data);
- 
- 		paddr_next = data->next;
- 		len = data->len;
- 
--		early_memunmap(data, sizeof(*data));
-+		if ((phys_addr > paddr) && (phys_addr < (paddr + len))) {
-+			early_memunmap(data, sizeof(*data));
-+			return true;
-+		}
-+
-+		if (data->type == SETUP_INDIRECT) {
-+			size += len;
-+			early_memunmap(data, sizeof(*data));
-+			data = early_memremap_decrypted(paddr, size);
-+			if (!data) {
-+				pr_warn("failed to early memremap indirect setup_data\n");
-+				return false;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT) {
-+				paddr = indirect->addr;
-+				len = indirect->len;
-+			}
-+		}
-+
-+		early_memunmap(data, size);
- 
- 		if ((phys_addr > paddr) && (phys_addr < (paddr + len)))
- 			return true;
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -73,6 +73,7 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+ #define ARM_CPU_PART_CORTEX_X2		0xD48
+ #define ARM_CPU_PART_NEOVERSE_N2	0xD49
+@@ -116,6 +117,7 @@
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+ #define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
+ #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
+
+
