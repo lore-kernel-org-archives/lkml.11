@@ -2,142 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC97C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238847AbiCIWnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:43:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
+        id S238827AbiCIWoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:44:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238827AbiCIWno (ORCPT
+        with ESMTP id S233039AbiCIWoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:43:44 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A4113D39;
-        Wed,  9 Mar 2022 14:42:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646865763; x=1678401763;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=nc9NHwoQwBBQNYgcwM//RctMraOspWMvCblxlAXdVpY=;
-  b=XoQ4Vias+FQxwh0GEnN98bMhWB5E7nMTzf2mACXGnVFxHgKIFI81HoYf
-   ImjPEWE28baMWWhu6VWcrv13dGRjnzsKbtcaaIFeseLDoHnn0sQdOsp7v
-   Zrwan/z16zECEGaWB4EiPImy6P35gjynquiWjIh0o+fqUmyszihLl7max
-   /mZ37Bpg9YV15jw7XcVxA8dh3ZFbEFbj6ZiuzQpAaX0UHBp4WHdcz4S1S
-   CxpHn+mBzmWdW/U+rqclnc2Uij2kdt/S7wbBmxaJhABiVDXqsCGqFStEM
-   OUSfiFkz/kGOyI4wd8eee5wwKYPDK7TGyih8d0XxUOrLy8p7GgTzu4FSL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="253938955"
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="253938955"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 14:42:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="554329571"
-Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
-  by orsmga008.jf.intel.com with ESMTP; 09 Mar 2022 14:42:39 -0800
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-pm@vger.kernel.org
-Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
-        peterz@infradead.org, bp@alien8.de, rafael@kernel.org,
-        ravi.v.shankar@intel.com, chang.seok.bae@intel.com,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-Subject: [PATCH v2 2/2] intel_idle: Add a new flag to initialize the AMX state
-Date:   Wed,  9 Mar 2022 14:34:31 -0800
-Message-Id: <20220309223431.26560-3-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220309223431.26560-1-chang.seok.bae@intel.com>
-References: <20220309223431.26560-1-chang.seok.bae@intel.com>
+        Wed, 9 Mar 2022 17:44:07 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9D348E57
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:43:07 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id BF8BE1F40661
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646865785;
+        bh=jsjzbcmTnfVGkp3QHzcBzKjX2sCnocD0pKPWjEy4458=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YNLTTZpG7z2VY1gTHKOwcdIQtHX7dEHDiMwfH2V+6v+TGwxpzf4t2YsPUrgVPkeDe
+         bu4h4nEFokW+YEmKwiXmucWHGLyE0pv9OeNZybfs+hNZepNFkalNT/hpAy7b+f1kUT
+         N8EUJ89x5gY/yohavW0kBmYJ9MrkYWGwCVZwzB0UNhPlu05ELkcMgk7cBE/3uASnuL
+         k79eaenyTax2o85pGQfuLzWwdQ+qJRlCbDvTsKc0/nGJaA6WLZPRrufAQc8U7SmF2/
+         rH4hFdf5Z9gPpM6gn65YBInoRzkP5nsNT46WwwOdxk7nsiIu608i97Vb7tySICvnB8
+         t2iHOlETzllew==
+Message-ID: <285bf619-8c05-f2f4-3aeb-e013fba8754a@collabora.com>
+Date:   Thu, 10 Mar 2022 01:43:01 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Rob Clark <robdclark@chromium.org>
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+ <CAF6AEGt=aVJ9nR+Wv+bJEFZrn-cNOSNXG1TaJr=Cx-FTgutwKA@mail.gmail.com>
+ <d2290971-ea22-8203-631e-b896c76a994b@collabora.com>
+ <CAF6AEGuR8B6z+z=VFQ6y01wbboYS_qpkghD1GYdLES_RZOW1wA@mail.gmail.com>
+ <42facae5-8f2c-9c1f-5144-4ebb99c798bd@collabora.com>
+ <CAF6AEGtebAbWhkvrxzi4UBLdv2LJPQVPBzH-sXcACs7cxznQ8A@mail.gmail.com>
+ <05e1fe61-1c29-152f-414b-cd6a44525af0@collabora.com>
+ <CAF6AEGvf81epGOs7Zh4WK-7mkXRApO2p-h4g8dTuk4xtc1HOeg@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAF6AEGvf81epGOs7Zh4WK-7mkXRApO2p-h4g8dTuk4xtc1HOeg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The non-initialized AMX state can be the cause of C-state demotion from C6
-to C1E. This low-power idle state may improve power savings and thus result
-in a higher available turbo frequency budget.
+On 3/10/22 00:51, Rob Clark wrote:
+> On Wed, Mar 9, 2022 at 12:06 PM Dmitry Osipenko
+> <dmitry.osipenko@collabora.com> wrote:
+>>
+>> On 3/9/22 03:56, Rob Clark wrote:
+>>>> If we really can't track madvise state in the guest for dealing with
+>>>> host memory pressure, I think the better option is to introduce
+>>>> MADV:WILLNEED_REPLACE, ie. something to tell the host kernel that the
+>>>> buffer is needed but the previous contents are not (as long as the GPU
+>>>> VA remains the same).  With this the host could allocate new pages if
+>>>> needed, and the guest would not need to wait for a reply from host.
+>>> If variant with the memory ballooning will work, then it will be
+>>> possible to track the state within guest-only. Let's consider the
+>>> simplest variant for now.
+>>>
+>>> I'll try to implement the balloon driver support in the v2 and will get
+>>> back to you.
+>>>
+>>
+>> I looked at the generic balloon driver and looks like this not what we
+>> want because:
+>>
+>> 1. Memory ballooning is primarily about handling memory overcommit
+>> situations. I.e. when there are multiple VMs consuming more memory than
+>> available in the system. Ballooning allows host to ask guest to give
+>> unused pages back to host and host could give pages to other VMs.
+>>
+>> 2. Memory ballooning operates with guest memory pages only. I.e. each
+>> ballooned page is reported to/from host in a form of page's DMA address.
+>>
+>> 3. There is no direct connection between host's OOM events and the
+>> balloon manager. I guess host could watch system's memory pressure and
+>> inflate VMs' balloons on low memory, releasing the guest's memory to the
+>> system, but apparently this use-case not supported by anyone today, at
+>> least I don't see Qemu supporting it.
+>>
+> 
+> hmm, on CrOS I do see balloon getting used to balance host vs guest
+> memory.. but admittedly I've not yet looked closely at how that works,
+> and it does seem like we have some things that are not yet upstream
+> all over the place (not to mention crosvm vs qemu)
 
-This behavior is implementation-specific. Initialize the state for the C6
-entrance of Sapphire Rapids as needed.
+That's interesting, I missed that CrOS uses a customized ballooning.
 
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Tested-by : Zhang Rui <rui.zhang@intel.com>
-Cc: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-Cc: linux-pm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Changes from v1:
-* Simplify the code with a new flag (Rui).
-* Rebase on Artem's patches for SPR intel_idle.
-* Massage the changelog.
+>> So the virtio-balloon driver isn't very useful for us as-is.
+>>
+>> One possible solution could be to create something like a new
+>> virtio-shrinker device or add shrinker functionality to the virtio-gpu
+>> device, allowing host to ask guests to drop shared caches. Host then
+>> should become a PSI handler. I think this should be doable in a case of
+>> crosvm. In a case of GNU world, it could take a lot of effort to get
+>> everything to upstreamable state, at first there is a need to
+>> demonstrate real problem being solved by this solution.
+> 
+> I guess with 4GB chromebooks running one or more VMs in addition to
+> lots of browser tabs in the host, it shouldn't be too hard to
+> demonstrate a problem ;-)
 
-Dependency on the new C-state table for SPR:
-https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=9edf3c0ffef0ec1bed8300315852b5c6a0997130
----
- drivers/idle/intel_idle.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+But then guest also should have a significant amount of BOs in cache to
+purge, which potentially could be solved using a timer approach.
 
-diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index 1c7c25909e54..6ecbeffdf785 100644
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -54,6 +54,7 @@
- #include <asm/intel-family.h>
- #include <asm/mwait.h>
- #include <asm/msr.h>
-+#include <asm/fpu/api.h>
- 
- #define INTEL_IDLE_VERSION "0.5.1"
- 
-@@ -99,6 +100,11 @@ static unsigned int mwait_substates __initdata;
-  */
- #define CPUIDLE_FLAG_ALWAYS_ENABLE	BIT(15)
- 
-+/*
-+ * Initialize large xstate for the C6-state entrance.
-+ */
-+#define CPUIDLE_FLAG_INIT_XSTATE	BIT(16)
-+
- /*
-  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
-  * the C-state (top nibble) and sub-state (bottom nibble)
-@@ -136,6 +142,9 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
- 	if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
- 		local_irq_enable();
- 
-+	if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
-+		fpu_idle_fpregs();
-+
- 	mwait_idle_with_hints(eax, ecx);
- 
- 	return index;
-@@ -156,8 +165,12 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
- static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
- 				       struct cpuidle_driver *drv, int index)
- {
--	unsigned long eax = flg2MWAIT(drv->states[index].flags);
- 	unsigned long ecx = 1; /* break on interrupt flag */
-+	struct cpuidle_state *state = &drv->states[index];
-+	unsigned long eax = flg2MWAIT(state->flags);
-+
-+	if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
-+		fpu_idle_fpregs();
- 
- 	mwait_idle_with_hints(eax, ecx);
- 
-@@ -792,7 +805,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
- 	{
- 		.name = "C6",
- 		.desc = "MWAIT 0x20",
--		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | \
-+					   CPUIDLE_FLAG_INIT_XSTATE,
- 		.exit_latency = 290,
- 		.target_residency = 800,
- 		.enter = &intel_idle,
--- 
-2.17.1
+> (but also, however we end up solving that, certainly shouldn't block
+> this series)
 
+Sure, there is no problem with extending shrinker functionality with
+more features later on, so the host's shrinker isn't a blocker.
+
+>> The other minor issue is that only integrated GPUs may use system's
+>> memory and even then they could use a dedicated memory carveout, i.e.
+>> releasing VRAM BOs may not help with host's OOM. In case of virgl
+>> context we have no clue about where buffers are physically located. On
+>> the other hand, in the worst case dropping host caches just won't help
+>> with OOM.
+> 
+> Userspace should know whether the BO has CPU storage, so I don't think
+> this should be a problem virtio_gpu needs to worry about
+> 
+>> It's now unclear how we should proceed with the host-side shrinker
+>> support. Thoughts?
+>>
+>> We may start easy and instead of thinking about host-side shrinker, we
+>> could make VirtIO-GPU driver to expire cached BOs after a certain
+>> timeout. Mesa already uses timeout-based BO caching, but it doesn't have
+>> an alarm timer and simply checks expiration when BO is allocated. Should
+>> be too much trouble to handle timers within Mesa since it's executed in
+>> application context, easier to do it in kernel, like VC4 driver does it
+>> for example. This is not good as a proper memory shrinker, but could be
+>> good enough in practice.
+> 
+> I think that, given virgl uses host storage, guest shrinker should be
+> still useful.. so I think continue with this series.
+
+Guest shrinker indeed will be useful for virgl today. I was already
+questioning why virgl needs both host and guest storages, maybe it will
+move to a host-only storage approach in the future.
+
+I think the variant with the timer expiration actually could be
+interesting to try because it should allow host to purge its VM BOs by
+itself, preventing host OOMs.
+
+> For host shrinker, I'll have to look more at when crosvm triggers
+> balloon inflation.  I could still go the MADV:WILLNEED_REPLACE
+> approach instead, which does have the advantage of host kernel not
+> relying on host userspace or vm having a chance to run in order to
+> release pages.  The downside (perhaps?) is it would be more specific
+> to virtgpu-native-context and less so to virgl or venus (but I guess
+> there doesn't currently exist a way for madvise to be useful for vk
+> drivers).
+
+I'll also take a look at what CrOS does, maybe it has some interesting
+ideas.
