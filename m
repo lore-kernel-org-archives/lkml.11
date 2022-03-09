@@ -2,129 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE8FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E616C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 18:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235565AbiCISQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 13:16:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S233757AbiCISS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 13:18:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235549AbiCISQo (ORCPT
+        with ESMTP id S231778AbiCISSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 13:16:44 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573AFD7618;
-        Wed,  9 Mar 2022 10:15:45 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id f38so6149496ybi.3;
-        Wed, 09 Mar 2022 10:15:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sDz8T9zb6ypCUEX3xOaIeOdgYtahx3JXRhE56Io75p0=;
-        b=j7zVimmQAWZRnSVP+SAw8FANfkWopEvfFCIk6YfAqQAUXovgsJwY2uB+CmPuPJr2tH
-         FebOJD7t+BwRksjpXPrYcBJqec3bdTxIRi5xyzOIHCT7YOkiJ7ZGrMAvWbICB44CFUc4
-         nIXPZk33WxfdoviKYpB++Ip26KXlpj6WhybqNYVUhrn4R0dW0hXffhNsi90PvO9NSn8I
-         0O/8e/dMsIhXU4iGpXdEu/Kf5tBuWv4bcrt4TQcgjG8NFf2nJY/YuFuAVR48sAYG0wJA
-         sNysDJQ/jC9cvpcO8qOBiOBV2jVzSZj85DSmrE8yV5tvT7IN+B1OCb0740zvzEul0z6d
-         dRCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sDz8T9zb6ypCUEX3xOaIeOdgYtahx3JXRhE56Io75p0=;
-        b=eVVgnPVUqkueOrxMZr+RjnlZdks7qINpLQKzn2r2OQ2CNy83QHDJkcIPet0+FS6S1N
-         DJ7aEs8pZrIAkkOF9RrzOkZXzdg5ZHxlbeOzSx3lxTzvkB1PGHF3DA0SZjGJ85YlqGaE
-         35qykNsOiD3eLX10+0omdqASHDiY84//9RTriztUa6Muw81etUQpAX6cRPXZIRc3wZ/y
-         8LTNKjFWf50N/IUB0sgd5FBD9jLI28YSLPRTZAlb+qAfVP5Tu7TzFsS/h8uvWY26i1I8
-         Bza1apc8YcKxt+6JBbiBS6IZtvtlGsltd+80PvPmGfFSco0ix6FHC8d3gzpMR4ebcJKn
-         zmVw==
-X-Gm-Message-State: AOAM530SpNeqZGEDTZmmmZZfXMGVI7cEInQDgwsCn/iM9v4lpK9iV/yc
-        vO05u9lVGpBQf7z5M94Z3xZ3WNpunLm9Wlob1SkUYh5YR/B33c1t
-X-Google-Smtp-Source: ABdhPJyon186DdZxNlgiTp4IznNkh+2++6lG0SWy+eWnl4lbN9MuoPKxH9OB4Ge2VQ1FFNf+vqMwpzHhqNZWyAuuJz0=
-X-Received: by 2002:a25:d606:0:b0:629:187c:e514 with SMTP id
- n6-20020a25d606000000b00629187ce514mr902790ybg.158.1646849744473; Wed, 09 Mar
- 2022 10:15:44 -0800 (PST)
+        Wed, 9 Mar 2022 13:18:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DB845062;
+        Wed,  9 Mar 2022 10:17:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F31FBB82260;
+        Wed,  9 Mar 2022 18:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CA0CC340E8;
+        Wed,  9 Mar 2022 18:17:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646849873;
+        bh=DLoe9VsBm1F5UzhArWcsKKlXI8dGWPQnv2PJBF5BIkQ=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=C0corbsnPk/WFeTGDO46Rpd2dABZegqC73qGcYDlbcI24PuScZmZwvBxBXGBY/liA
+         sdYviwmkoqm8QROwEq9nlzRAVbjfJUrH13w/QEgweGJxWIFk7Dx7ORRKN5qRALnaO4
+         hE1chMKOD2N6vWgPkdcFZ4Jao05uOU/Ca9CRdkHTIAGIG+MNr5HjtHuaqGQg5DoZmz
+         oqCMxJltrDbVengM62OhagqlkSPBgfIBYpMVqZta69rVoDz2PODrx9MxVWjTkpd3ke
+         67aYrqhqdQwROZRflaqifw1Y43UHhLv23sRVeO2vrx4A02zR2tUS8w+EKCRZG7azTc
+         z8VJbndZxRxow==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220309155856.155540075@linuxfoundation.org> <CADVatmMODnr1vQ3VGLOACT16wLEFA6hFrTzY44VdPO2M7gX+iw@mail.gmail.com>
-In-Reply-To: <CADVatmMODnr1vQ3VGLOACT16wLEFA6hFrTzY44VdPO2M7gX+iw@mail.gmail.com>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed, 9 Mar 2022 18:15:08 +0000
-Message-ID: <CADVatmMceoHeQqFDEJND_3GmSeQqgefeP0Z9_Zi=UTAVfZ71RQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/18] 4.19.234-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220308152657.30651-1-nicolas.ferre@microchip.com>
+References: <20220308152657.30651-1-nicolas.ferre@microchip.com>
+Subject: Re: [GIT PULL] clk: at91: clk for 5.18
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Linux Kernel list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     linux-clk@vger.kernel.org, mturquette@baylibre.com,
+        nicolas.ferre@microchip.com
+Date:   Wed, 09 Mar 2022 10:17:49 -0800
+User-Agent: alot/0.10
+Message-Id: <20220309181753.8CA0CC340E8@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 6:08 PM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi Greg,
->
-> On Wed, Mar 9, 2022 at 4:03 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 4.19.234 release.
-> > There are 18 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
-> > Anything received after that time might be too late.
->
-> My tests are still running, but just an initial result for you,
->
-> x86_64 defconfig fails with:
-> arch/x86/kernel/cpu/bugs.c: In function 'spectre_v2_select_mitigation':
-> arch/x86/kernel/cpu/bugs.c:973:41: error: implicit declaration of
-> function 'unprivileged_ebpf_enabled'
-> [-Werror=implicit-function-declaration]
->   973 |         if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
+Quoting nicolas.ferre@microchip.com (2022-03-08 07:26:57)
+> From: Nicolas Ferre <nicolas.ferre@microchip.com>
+>=20
+> Stephen,
+>=20
+> Here are a couple more clk changes for 5.18. This Pull-Request is made on=
+ top
+> of what you already have for at91 targeting 5.18 on your clk-at91 existing
+> branch. Hopefully, we are aligned on this.
+> this.
+>=20
+> Please pull.
+>=20
+> Thanks, best regards,
+>   Nicolas
+>=20
+> The following changes since commit a5ab04af49434aef532bf6cd4baa08a13665d6=
+08:
+>=20
+>   clk: at91: sama7g5: Allow MCK1 to be exported and referenced in DT (202=
+2-01-24 17:05:45 -0800)
+>=20
+> are available in the Git repository at:
+>=20
+>   git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/clk-a=
+t91-5.18
+>=20
+> for you to fetch changes up to 8e842f02af7e2f6225d52d78cd25b465a98d344b:
+>=20
+>   clk: at91: clk-master: remove dead code (2022-03-08 15:37:08 +0100)
+>=20
+> ----------------------------------------------------------------
 
-And, lots of failures in arm builds also.
-Error:
-arch/arm/common/secure_cntvoff.S: Assembler messages:
-arch/arm/common/secure_cntvoff.S:24: Error: co-processor register
-expected -- `mcr p15,0,r0,c7,r5,4'
-arch/arm/common/secure_cntvoff.S:27: Error: co-processor register
-expected -- `mcr p15,0,r0,c7,r5,4'
-arch/arm/common/secure_cntvoff.S:29: Error: co-processor register
-expected -- `mcr p15,0,r0,c7,r5,4'
-make[1]: *** [scripts/Makefile.build:403:
-arch/arm/common/secure_cntvoff.o] Error 1
-make[1]: *** Waiting for unfinished jobs....
-arch/arm/kernel/entry-common.S: Assembler messages:
-arch/arm/kernel/entry-common.S:178: Error: co-processor register
-expected -- `mcr p15,0,r0,c7,r5,4'
-arch/arm/kernel/entry-common.S:187: Error: co-processor register
-expected -- `mcr p15,0,r0,c7,r5,4'
-make[1]: *** [scripts/Makefile.build:403:
-arch/arm/kernel/entry-common.o] Error 1
-make[1]: *** Waiting for unfinished jobs....
-arch/arm/mm/cache-v7.S: Assembler messages:
-arch/arm/mm/cache-v7.S:64: Error: co-processor register expected --
-`mcr p15,0,r0,c7,r5,4'
-arch/arm/mm/cache-v7.S:137: Error: co-processor register expected --
-`mcr p15,0,r0,c7,r5,4'
-arch/arm/mm/cache-v7.S:171: Error: co-processor register expected --
-`mcr p15,0,r0,c7,r5,4'
-arch/arm/mm/cache-v7.S:299: Error: co-processor register expected --
-`mcr p15,0,r0,c7,r5,4'
-make[1]: *** [scripts/Makefile.build:403: arch/arm/mm/cache-v7.o] Error 1
-
-
-
--- 
-Regards
-Sudip
+Thanks. Pulled into clk-next
