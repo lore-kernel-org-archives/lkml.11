@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C70CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98291C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237137AbiCIRGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:06:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
+        id S237187AbiCIRGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:06:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238803AbiCIREE (ORCPT
+        with ESMTP id S238974AbiCIREQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:04:04 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42DFE869C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:52:34 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2dbf4238d6bso19404507b3.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:52:34 -0800 (PST)
+        Wed, 9 Mar 2022 12:04:16 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C632419E73B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:53:03 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b70-20020a253449000000b0062c16d950c5so2132456yba.9
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:53:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc:content-transfer-encoding;
-        bh=x8m7SXGR83/SdOdqn7l1+FIZ1cxwPNd4HTN6OzKaqJk=;
-        b=J9yUUK6ijZr6eIlL2BkUPNKezNNqJ7Usl7l5NfD4UexBDWRVHWzo2vGRPlARJ4lHvo
-         4uYgUvWM74wcdGxJ3HNGAbRITNE9V2gJbWuY8AXNQD9mUbg9OMwopeX+XM2CspXyjbUx
-         KTAkX+QzE2yF1OB/IdQd8SiGEF22/Hb7Tn/8priJRWTDMnnKvFpslUhl6ZS1sRjtMuyk
-         ms5lStmtJDChjDoxemZ4MHYvgS7/ztUsuap9pHbthk/R4at7QOLEDSwostK2OW3tPjvk
-         RVrsobyQqAP/RQLUZyTdKdy9gn7B01mgiOcE/nZ9hRBnG1RosXrI8mDculT4ZVlfoDZ4
-         Yi8w==
+        bh=ArtryYFgH5mlYpraW6Z9pzBKDmlE5B7N8QDWxuF8nCw=;
+        b=ET2G8YAxigglCgwH9ORXjYEpMOwkLAxVMGluElrrT20Iij1J38dmr6UP8EdlHvk4DN
+         azfkhu/4N5mTJEJm6TVVmQy58D9W8S5IKUZrU96emS4lJxesAiyxiaL+UhI4peXvb1ET
+         2NfRSubT3bKB7llEizgDSk5WlvkFPBL2wIZ+UrsonprCR0wGscERyJLQ5lFI6A7C+Mqr
+         bBt/5MUBkAllxZeIaBAydEb4kU5tR1u3dOU4OHuIMqo5beiURrjjfEoxT78k7cZx6CKK
+         JslptEply/Lv5cfDpBB3GPPAcjhXmY9D9nxBJ4PiqVjPoV/QbfVEvtvJmrpZObB+eaR2
+         BMJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc:content-transfer-encoding;
-        bh=x8m7SXGR83/SdOdqn7l1+FIZ1cxwPNd4HTN6OzKaqJk=;
-        b=A5xHK7M/nSYPfflq9/lhOVLdFHGc/Hl1Wsil/F0T5qs+puPLdPsrgKNhzNQqcRRs8z
-         E3+X8QY7quzSXhEpCbPL1H1AAfhJsPoEJt+VamJVZJc3Bv7sjuh8incKjE9OtoNxqcsr
-         wmNTlDldmCfj3AvsDLNzmWxXbH0yOgKsbr2ps9qzBBDxQp39sgT6FuxUHtgwTDi7L+5Y
-         yqhjonAfjnCnsdlOjSaK/JQZAMClfE5oPkwZ8RRBH9gQqqy8T6IT8ixtemqfXzSlUi6M
-         KdImBsY0ix3n31dvgshZ3Q57ZWehtyA93kr1cOkDCMGARdUg7+bGwOgGnojMyJdvM0TX
-         HhTw==
-X-Gm-Message-State: AOAM530d2G0Ftf9Pfur7yHVhgqTCo34JrUKe7LP953iAF1uJH7pNqIlN
-        4q1jKOKt8fUUGZdI3eExWpgt/Bk968YmGtE=
-X-Google-Smtp-Source: ABdhPJwhBefo0Jr5ct437h23DSuj+1FDWXw/dIZxPZqGgOkSXpfDO+Ep1nC/b2QBICxQ0J7BmZdbcopBhFv+RU4=
+        bh=ArtryYFgH5mlYpraW6Z9pzBKDmlE5B7N8QDWxuF8nCw=;
+        b=zEoJ+UbS2Py+B7nSo4otmNZqCypO5j5vmBvfb6Hbu7KmFJ3DYeGXBQoTFgPCBmPg0m
+         0R9N7f6yMFGuVIx+wL4tu6HCYGdIzODJXTrSCuL5dvrcMARiJBo4c71A7kve8pzb/SF7
+         PPe7/Iu34m8WSjM/3uCrNlEcP08koZMvGmziJmluDLrN6ZU6Hju0+6dSvL9Uv/FszTLi
+         JWWq+Ouy0pOY9vGxhdkKUrEbPa0Dr7LpaX3St1DBQa3gLN6N0WU1QO8nqB1A0CoCM9Lk
+         9my9A9LRLfJFNTvJyNMBqPKOiL9xhvbS8DiZ95HiX3FzLIv3Qma/tcVuGohsi5pWI3Aq
+         XG0w==
+X-Gm-Message-State: AOAM531FVuwsXijvjfrs1uawdwtfhGRY5URykbGi6AbEXqTHsMLhNMes
+        BZVkSwKFpbVOiV6u3lbRkOFjCI1mQOk8QCU=
+X-Google-Smtp-Source: ABdhPJwhCCM8fnCv/YYjH2ItlE07Kq6zIIhQQNOdvRKBR0On1xzyi6be0Wrkn7kWsIBobS2Z6B4GB8mh7xehQH8=
 X-Received: from tj2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:187])
- (user=tjmercier job=sendgmr) by 2002:a81:90d:0:b0:2db:fc82:ef40 with SMTP id
- 13-20020a81090d000000b002dbfc82ef40mr592122ywj.384.1646844751396; Wed, 09 Mar
- 2022 08:52:31 -0800 (PST)
-Date:   Wed,  9 Mar 2022 16:52:11 +0000
+ (user=tjmercier job=sendgmr) by 2002:a25:3403:0:b0:628:a2e4:ae8a with SMTP id
+ b3-20020a253403000000b00628a2e4ae8amr504446yba.219.1646844771702; Wed, 09 Mar
+ 2022 08:52:51 -0800 (PST)
+Date:   Wed,  9 Mar 2022 16:52:16 +0000
 In-Reply-To: <20220309165222.2843651-1-tjmercier@google.com>
-Message-Id: <20220309165222.2843651-2-tjmercier@google.com>
+Message-Id: <20220309165222.2843651-7-tjmercier@google.com>
 Mime-Version: 1.0
 References: <20220309165222.2843651-1-tjmercier@google.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [RFC v3 1/8] gpu: rfc: Proposal for a GPU cgroup controller
+Subject: [RFC v3 6/8] binder: Add a buffer flag to relinquish ownership of fds
 From:   "T.J. Mercier" <tjmercier@google.com>
 To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -92,284 +92,148 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hridya Valsaraju <hridya@google.com>
 
-This patch adds a proposal for a new GPU cgroup controller for
-accounting/limiting GPU and GPU-related memory allocations.
-The proposed controller is based on the DRM cgroup controller[1] and
-follows the design of the RDMA cgroup controller.
+This patch introduces a buffer flag BINDER_BUFFER_FLAG_SENDER_NO_NEED
+that a process sending an fd array to another process over binder IPC
+can set to relinquish ownership of the fds being sent for memory
+accounting purposes. If the flag is found to be set during the fd array
+translation and the fd is for a DMA-BUF, the buffer is uncharged from
+the sender's cgroup and charged to the receiving process's cgroup
+instead.
 
-The new cgroup controller would:
-* Allow setting per-cgroup limits on the total size of buffers charged
-  to it.
-* Allow setting per-device limits on the total size of buffers
-  allocated by device within a cgroup.
-* Expose a per-device/allocator breakdown of the buffers charged to a
-  cgroup.
+It is up to the sending process to ensure that it closes the fds
+regardless of whether the transfer failed or succeeded.
 
-The prototype in the following patches is only for memory accounting
-using the GPU cgroup controller and does not implement limit setting.
+Most graphics shared memory allocations in Android are done by the
+graphics allocator HAL process. On requests from clients, the HAL process
+allocates memory and sends the fds to the clients over binder IPC.
+The graphics allocator HAL will not retain any references to the
+buffers. When the HAL sets the BINDER_BUFFER_FLAG_SENDER_NO_NEED for fd
+arrays holding DMA-BUF fds, the gpu cgroup controller will be able to
+correctly charge the buffers to the client processes instead of the
+graphics allocator HAL.
 
-[1]: https://lore.kernel.org/amd-gfx/20210126214626.16260-1-brian.welty@int=
-el.com/
+Since this is a new feature exposed to userspace, the kernel and userspace
+must be compatible for the accounting to work for transfers. In all cases
+the allocation and transport of DMA buffers via binder will succeed, but
+only when both the kernel supports, and userspace depends on this feature
+will the transfer accounting work. The possible scenarios are detailed
+below:
+
+1. new kernel + old userspace
+The kernel supports the feature but userspace does not use it. The old
+userspace won't mount the new cgroup controller, accounting is not
+performed, charge is not transferred.
+
+2. old kernel + new userspace
+The new cgroup controller is not supported by the kernel, accounting is
+not performed, charge is not transferred.
+
+3. old kernel + old userspace
+Same as #2
+
+4. new kernel + new userspace
+Cgroup is mounted, feature is supported and used.
 
 Signed-off-by: Hridya Valsaraju <hridya@google.com>
 Signed-off-by: T.J. Mercier <tjmercier@google.com>
 
 ---
 v3 changes
-Remove Upstreaming Plan from gpu-cgroup.rst per John Stultz.
+Remove android from title per Todd Kjos.
 
 Use more common dual author commit message format per John Stultz.
----
- Documentation/gpu/rfc/gpu-cgroup.rst | 183 +++++++++++++++++++++++++++
- Documentation/gpu/rfc/index.rst      |   4 +
- 2 files changed, 187 insertions(+)
- create mode 100644 Documentation/gpu/rfc/gpu-cgroup.rst
 
-diff --git a/Documentation/gpu/rfc/gpu-cgroup.rst b/Documentation/gpu/rfc/g=
-pu-cgroup.rst
-new file mode 100644
-index 000000000000..5b40d5518a5e
---- /dev/null
-+++ b/Documentation/gpu/rfc/gpu-cgroup.rst
-@@ -0,0 +1,183 @@
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+GPU cgroup controller
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+
-+Goals
-+=3D=3D=3D=3D=3D
-+This document intends to outline a plan to create a cgroup v2 controller s=
-ubsystem
-+for the per-cgroup accounting of device and system memory allocated by the=
- GPU
-+and related subsystems.
-+
-+The new cgroup controller would:
-+
-+* Allow setting per-cgroup limits on the total size of buffers charged to =
-it.
-+
-+* Allow setting per-device limits on the total size of buffers allocated b=
-y a
-+  device/allocator within a cgroup.
-+
-+* Expose a per-device/allocator breakdown of the buffers charged to a cgro=
-up.
-+
-+Alternatives Considered
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+
-+The following alternatives were considered:
-+
-+The memory cgroup controller
-+____________________________
-+
-+1. As was noted in [1], memory accounting provided by the GPU cgroup
-+controller is not a good fit for integration into memcg due to the
-+differences in how accounting is performed. It implements a mechanism
-+for the allocator attribution of GPU and GPU-related memory by
-+charging each buffer to the cgroup of the process on behalf of which
-+the memory was allocated. The buffer stays charged to the cgroup until
-+it is freed regardless of whether the process retains any references
-+to it. On the other hand, the memory cgroup controller offers a more
-+fine-grained charging and uncharging behavior depending on the kind of
-+page being accounted.
-+
-+2. Memcg performs accounting in units of pages. In the DMA-BUF buffer shar=
-ing model,
-+a process takes a reference to the entire buffer(hence keeping it alive) e=
-ven if
-+it is only accessing parts of it. Therefore, per-page memory tracking for =
-DMA-BUF
-+memory accounting would only introduce additional overhead without any ben=
-efits.
-+
-+[1]: https://patchwork.kernel.org/project/dri-devel/cover/20190501140438.9=
-506-1-brian.welty@intel.com/#22624705
-+
-+Userspace service to keep track of buffer allocations and releases
-+__________________________________________________________________
-+
-+1. There is no way for a userspace service to intercept all allocations an=
-d releases.
-+2. In case the process gets killed or restarted, we lose all accounting so=
- far.
-+
-+UAPI
-+=3D=3D=3D=3D
-+When enabled, the new cgroup controller would create the following files i=
-n every cgroup.
-+
-+::
-+
-+        gpu.memory.current (R)
-+        gpu.memory.max (R/W)
-+
-+gpu.memory.current is a read-only file and would contain per-device memory=
- allocations
-+in a key-value format where key is a string representing the device name
-+and the value is the size of memory charged to the device in the cgroup in=
- bytes.
-+
-+For example:
-+
-+::
-+
-+        cat /sys/kernel/fs/cgroup1/gpu.memory.current
-+        dev1 4194304
-+        dev2 4194304
-+
-+The string key for each device is set by the device driver when the device=
- registers
-+with the GPU cgroup controller to participate in resource accounting(see s=
-ection
-+'Design and Implementation' for more details).
-+
-+gpu.memory.max is a read/write file. It would show the current total
-+size limits on memory usage for the cgroup and the limits on total memory =
-usage
-+for each allocator/device.
-+
-+Setting a total limit for a cgroup can be done as follows:
-+
-+::
-+
-+        echo =E2=80=9Ctotal 41943040=E2=80=9D > /sys/kernel/fs/cgroup1/gpu=
-.memory.max
-+
-+Setting a total limit for a particular device/allocator can be done as fol=
-lows:
-+
-+::
-+
-+        echo =E2=80=9Cdev1 4194304=E2=80=9D >  /sys/kernel/fs/cgroup1/gpu.=
-memory.max
-+
-+In this example, 'dev1' is the string key set by the device driver during
-+registration.
-+
-+Design and Implementation
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-+
-+The cgroup controller would closely follow the design of the RDMA cgroup c=
-ontroller
-+subsystem where each cgroup maintains a list of resource pools.
-+Each resource pool contains a struct device and the counter to track curre=
-nt total,
-+and the maximum limit set for the device.
-+
-+The below code block is a preliminary estimation on how the core kernel da=
-ta structures
-+and APIs would look like.
-+
-+.. code-block:: c
-+
-+        /**
-+         * The GPU cgroup controller data structure.
-+         */
-+        struct gpucg {
-+                struct cgroup_subsys_state css;
-+
-+                /* list of all resource pools that belong to this cgroup *=
-/
-+                struct list_head rpools;
-+        };
-+
-+        struct gpucg_device {
-+                /*
-+                 * list  of various resource pools in various cgroups that=
- the device is
-+                 * part of.
-+                 */
-+                struct list_head rpools;
-+
-+                /* list of all devices registered for GPU cgroup accountin=
-g */
-+                struct list_head dev_node;
-+
-+                /* name to be used as identifier for accounting and limit =
-setting */
-+                const char *name;
-+        };
-+
-+        struct gpucg_resource_pool {
-+                /* The device whose resource usage is tracked by this reso=
-urce pool */
-+                struct gpucg_device *device;
-+
-+                /* list of all resource pools for the cgroup */
-+                struct list_head cg_node;
-+
-+                /*
-+                 * list maintained by the gpucg_device to keep track of it=
-s
-+                 * resource pools
-+                 */
-+                struct list_head dev_node;
-+
-+                /* tracks memory usage of the resource pool */
-+                struct page_counter total;
-+        };
-+
-+        /**
-+         * gpucg_register_device - Registers a device for memory accountin=
-g using the
-+         * GPU cgroup controller.
-+         *
-+         * @device: The device to register for memory accounting. Must rem=
-ain valid
-+         * after registration.
-+         * @name: Pointer to a string literal to denote the name of the de=
-vice.
-+         */
-+        void gpucg_register_device(struct gpucg_device *gpucg_dev, const c=
-har *name);
-+
-+        /**
-+         * gpucg_try_charge - charge memory to the specified gpucg and gpu=
-cg_device.
-+         *
-+         * @gpucg: The gpu cgroup to charge the memory to.
-+         * @device: The device to charge the memory to.
-+         * @usage: size of memory to charge in bytes.
-+         *
-+         * Return: returns 0 if the charging is successful and otherwise r=
-eturns an
-+         * error code.
-+         */
-+        int gpucg_try_charge(struct gpucg *gpucg, struct gpucg_device *dev=
-ice, u64 usage);
-+
-+        /**
-+         * gpucg_uncharge - uncharge memory from the specified gpucg and g=
-pucg_device.
-+         *
-+         * @gpucg: The gpu cgroup to uncharge the memory from.
-+         * @device: The device to charge the memory from.
-+         * @usage: size of memory to uncharge in bytes.
-+         */
-+        void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_device *devi=
-ce, u64 usage);
-+
-+Future Work
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+Additional GPU resources can be supported by adding new controller files.
-diff --git a/Documentation/gpu/rfc/index.rst b/Documentation/gpu/rfc/index.=
-rst
-index 91e93a705230..0a9bcd94e95d 100644
---- a/Documentation/gpu/rfc/index.rst
-+++ b/Documentation/gpu/rfc/index.rst
-@@ -23,3 +23,7 @@ host such documentation:
- .. toctree::
+Include details on behavior for all combinations of kernel/userspace
+versions in changelog (thanks Suren Baghdasaryan) per Greg Kroah-Hartman.
+
+v2 changes
+Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
+heap to a single dma-buf function for all heaps per Daniel Vetter and
+Christian K=C3=B6nig.
+---
+ drivers/android/binder.c            | 26 ++++++++++++++++++++++++++
+ include/uapi/linux/android/binder.h |  1 +
+ 2 files changed, 27 insertions(+)
+
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 8351c5638880..f50d88ded188 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -42,6 +42,7 @@
 =20
-     i915_scheduler.rst
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+=20
++#include <linux/dma-buf.h>
+ #include <linux/fdtable.h>
+ #include <linux/file.h>
+ #include <linux/freezer.h>
+@@ -2482,8 +2483,10 @@ static int binder_translate_fd_array(struct list_hea=
+d *pf_head,
+ {
+ 	binder_size_t fdi, fd_buf_size;
+ 	binder_size_t fda_offset;
++	bool transfer_gpu_charge =3D false;
+ 	const void __user *sender_ufda_base;
+ 	struct binder_proc *proc =3D thread->proc;
++	struct binder_proc *target_proc =3D t->to_proc;
+ 	int ret;
+=20
+ 	fd_buf_size =3D sizeof(u32) * fda->num_fds;
+@@ -2521,8 +2524,15 @@ static int binder_translate_fd_array(struct list_hea=
+d *pf_head,
+ 	if (ret)
+ 		return ret;
+=20
++	if (IS_ENABLED(CONFIG_CGROUP_GPU) &&
++		parent->flags & BINDER_BUFFER_FLAG_SENDER_NO_NEED)
++		transfer_gpu_charge =3D true;
 +
-+.. toctree::
+ 	for (fdi =3D 0; fdi < fda->num_fds; fdi++) {
+ 		u32 fd;
++		struct dma_buf *dmabuf;
++		struct gpucg *gpucg;
 +
-+    gpu-cgroup.rst
+ 		binder_size_t offset =3D fda_offset + fdi * sizeof(fd);
+ 		binder_size_t sender_uoffset =3D fdi * sizeof(fd);
+=20
+@@ -2532,6 +2542,22 @@ static int binder_translate_fd_array(struct list_hea=
+d *pf_head,
+ 						  in_reply_to);
+ 		if (ret)
+ 			return ret > 0 ? -EINVAL : ret;
++
++		if (!transfer_gpu_charge)
++			continue;
++
++		dmabuf =3D dma_buf_get(fd);
++		if (IS_ERR(dmabuf))
++			continue;
++
++		gpucg =3D gpucg_get(target_proc->tsk);
++		ret =3D dma_buf_charge_transfer(dmabuf, gpucg);
++		if (ret) {
++			pr_warn("%d:%d Unable to transfer DMA-BUF fd charge to %d",
++				proc->pid, thread->pid, target_proc->pid);
++			gpucg_put(gpucg);
++		}
++		dma_buf_put(dmabuf);
+ 	}
+ 	return 0;
+ }
+diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/andro=
+id/binder.h
+index 3246f2c74696..169fd5069a1a 100644
+--- a/include/uapi/linux/android/binder.h
++++ b/include/uapi/linux/android/binder.h
+@@ -137,6 +137,7 @@ struct binder_buffer_object {
+=20
+ enum {
+ 	BINDER_BUFFER_FLAG_HAS_PARENT =3D 0x01,
++	BINDER_BUFFER_FLAG_SENDER_NO_NEED =3D 0x02,
+ };
+=20
+ /* struct binder_fd_array_object - object describing an array of fds in a =
+buffer
 --=20
 2.35.1.616.g0bdcbb4464-goog
 
