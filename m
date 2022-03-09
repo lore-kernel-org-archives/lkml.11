@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F846C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235359AbiCIQq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:46:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
+        id S235449AbiCIQqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:46:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238827AbiCIQbv (ORCPT
+        with ESMTP id S238727AbiCIQbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE191A276C;
-        Wed,  9 Mar 2022 08:26:31 -0800 (PST)
+        Wed, 9 Mar 2022 11:31:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B289B19E09C;
+        Wed,  9 Mar 2022 08:26:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A77EE616F3;
-        Wed,  9 Mar 2022 16:26:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0EFC340E8;
-        Wed,  9 Mar 2022 16:26:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC61B821FD;
+        Wed,  9 Mar 2022 16:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FE6C340E8;
+        Wed,  9 Mar 2022 16:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843190;
-        bh=rl1icRboHEyesR24+3jywPHSGv79vG6tiCm8J9VLWLY=;
+        s=k20201202; t=1646843173;
+        bh=xJBSn76E9PKCTLlarn4j0dJ68y7h4PCKxgMJLeDjSko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lw9LJzjLcJiQz++swD0ySDkzLfH/GvOcHtOMCm7Aqb0yPkJbrk5TnORH+Q1L1lg9E
-         5uXr7mgUQgZjwZ9MfZNCSr3zaP4p/zsGdWU+aidiOvdSV0YSOOR6IyZGv4KPn01Icg
-         hMqh7/R+86pmH6Hx9HnnGo3DACktwucDaS3R8usTdMYcupQWIEl+mfrEvZx/SjqP1+
-         GzUYFKkH9y2Zm0MSCdf43s7ZqXOhnXOe1WvP5jJH1hHmBl64nNiEjtT0GSMELpsSj5
-         /PDOGzmaFyx9TME1lqOdetryvBuCse8vDKj7LEoydKBXD/9yPnZCQ2zOWUlPqITY6o
-         GsiYJCpmJLGGg==
+        b=Q+6cCVJg2cgVPG+x8vBMAB7AILDZmPfZgocXCTUXFtSeKKinfAGWiJvWDuSrl1IGA
+         SQaEkz+NRq0AKHIw2G5ocv4HnYSf5BBRmFX923Wgb9QUJXrm7H0TU5t/a0W6RKMbw1
+         kdjUtUftndNhDDl0Pje9FXx6Go1NBrlfbuZIHpEOn+f3aAXpBAkcrckA+QKEvdjPzA
+         OCC/vAS0T1sf+GGCI9j++Gw+slCk3HVnOueDYe7qRhAuXIDcNM2rSCCtlG6w3Yd6cT
+         Byjzp2ijW4EfMI/Yfvo0oSpPFK71iXYthaaWu0RZdawfGbOalhTXmsqxHcZEsUdUf4
+         8lD/N8oUBWntw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
-        Quentin Schulz <foss+kernel@0leil.net>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 02/12] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
-Date:   Wed,  9 Mar 2022 11:26:07 -0500
-Message-Id: <20220309162618.137226-2-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, rmody@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/14] bnx2: Fix an error message
+Date:   Wed,  9 Mar 2022 11:25:06 -0500
+Message-Id: <20220309162508.137035-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
-References: <20220309162618.137226-1-sashal@kernel.org>
+In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
+References: <20220309162508.137035-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,47 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
+[ Upstream commit 8ccffe9ac3239e549beaa0a9d5e1a1eac94e866c ]
 
-There are signal integrity issues running the eMMC at 200MHz on Puma
-RK3399-Q7.
+Fix an error message and report the correct failing function.
 
-Similar to the work-around found for RK3399 Gru boards, lowering the
-frequency to 100MHz made the eMMC much more stable, so let's lower the
-frequency to 100MHz.
-
-It might be possible to run at 150MHz as on RK3399 Gru boards but only
-100MHz was extensively tested.
-
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/broadcom/bnx2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index 0d5679380b2a..70fe6013d17c 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -484,6 +484,12 @@ vcc5v0_host_en: vcc5v0-host-en {
- };
- 
- &sdhci {
-+	/*
-+	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
-+	 * enough.
-+	 */
-+	max-frequency = <100000000>;
-+
- 	bus-width = <8>;
- 	mmc-hs400-1_8v;
- 	mmc-hs400-enhanced-strobe;
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 9993f1162ac6..65acffc90010 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8235,7 +8235,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+-				"pci_set_consistent_dma_mask failed, aborting\n");
++				"dma_set_coherent_mask failed, aborting\n");
+ 			goto err_out_unmap;
+ 		}
+ 	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
 -- 
 2.34.1
 
