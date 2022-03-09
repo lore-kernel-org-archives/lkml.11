@@ -2,165 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09049C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237373AbiCIRI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:08:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
+        id S236356AbiCIRJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237604AbiCIRIi (ORCPT
+        with ESMTP id S237715AbiCIRIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:08:38 -0500
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000355A14C;
-        Wed,  9 Mar 2022 08:58:11 -0800 (PST)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nRzdI-0001mC-K3; Wed, 09 Mar 2022 17:57:52 +0100
-Message-ID: <421f4fba-3e1c-b676-d74c-02c6c3f804d2@maciej.szmigiero.name>
-Date:   Wed, 9 Mar 2022 17:57:46 +0100
+        Wed, 9 Mar 2022 12:08:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 890E3120F54
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:59:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646845140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qb1iDD9O8GakHXVHRPxQppvhosdQztyNQTb+YOxevjU=;
+        b=ErpzaAGFnxmNePdq84ylUhPWB6Mx5fOps10/C8LVYtuFnzT/EjpimLWhcnmqGDcMUItkN6
+        KHXo/lE+YGktafMGC0QcprzCtL8GqnJRzPGRXjWUXlJB6I9gqkvvXsmaNsMRSFLH+P2zTu
+        X+fKY7KjokT5WYocTu1r9P5U3qDo40U=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-31-_Z0ZIdLNPxOZxWFew0sN_g-1; Wed, 09 Mar 2022 11:58:59 -0500
+X-MC-Unique: _Z0ZIdLNPxOZxWFew0sN_g-1
+Received: by mail-ej1-f72.google.com with SMTP id y5-20020a1709060a8500b006da9258a34cso1603653ejf.21
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:58:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qb1iDD9O8GakHXVHRPxQppvhosdQztyNQTb+YOxevjU=;
+        b=XXfk1z6mNGykWLiSPYC3VH+5IWGnAO/xBMG6dDASy7ep0e8/evzZnPAw22G4kAzCCI
+         d/D+29u7+R/r++7zrGXJvY5f6YXsNhL3wLnKiSRgEKSfmdt9VsG8VfPwAB+KgzHrZGS0
+         hQEn7frYE40RGoN/82d5vHGnei0/O2eOV69is1QkQqkLwdzVCMPdkg4MS+P3wpFVWPzx
+         gcn0fds53TQbyMoFDv44r+2N3YPob5HoKx3cz8gmRAHBV5O0zB4WSYOuC8wzMOSXYe1l
+         m/MSnxuDd02Gl+pfqjyZa4QsZ7jETg1Ylr94hgr0F8XTle7Lsnamiha3DMJGCzgPxAAR
+         T94A==
+X-Gm-Message-State: AOAM533gou7l7CIhkSRrYwNyWgba5c3IyBN1LTBpoLIBENRmu+3+6yYh
+        jYn+q+OF0y8/J+P2knBjh1hrN2kV7pPj3D+x92BfQVZ1Tj7gZrvPAEiGv9ktqiyNuGZh9kGVLzZ
+        BrDoHNIIXwBT3QGHGsE6wTnGo
+X-Received: by 2002:a17:906:3ad1:b0:6ce:a880:7745 with SMTP id z17-20020a1709063ad100b006cea8807745mr677336ejd.46.1646845137826;
+        Wed, 09 Mar 2022 08:58:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxYMTYVMUjRo+NSdRia5ez2xyId2oubQ9K+g2W7NICPyo05bYmdoMaHKAZcsV1AE6fuWkD3BA==
+X-Received: by 2002:a17:906:3ad1:b0:6ce:a880:7745 with SMTP id z17-20020a1709063ad100b006cea8807745mr677322ejd.46.1646845137600;
+        Wed, 09 Mar 2022 08:58:57 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:cdb2:2781:c55:5db0? (2001-1c00-0c1e-bf00-cdb2-2781-0c55-5db0.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:cdb2:2781:c55:5db0])
+        by smtp.gmail.com with ESMTPSA id a9-20020a1709066d4900b006da888c3ef0sm945780ejt.108.2022.03.09.08.58.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 08:58:57 -0800 (PST)
+Message-ID: <0d4cdbbb-993b-55f3-355a-e0826ab45f46@redhat.com>
+Date:   Wed, 9 Mar 2022 17:58:56 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
+ Thunderbird/91.4.0
+Subject: Re: linux-next: build failure after merge of the kspp tree
 Content-Language: en-US
-To:     Nikunj A Dadhania <nikunj@amd.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Peter Gonda <pgonda@google.com>,
-        Bharata B Rao <bharata@amd.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-References: <20220308043857.13652-1-nikunj@amd.com>
- <20220308043857.13652-10-nikunj@amd.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: [PATCH RFC v1 9/9] KVM: SVM: Pin SEV pages in MMU during
- sev_launch_update_data()
-In-Reply-To: <20220308043857.13652-10-nikunj@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Kees Cook <keescook@chromium.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Mark Gross <markgross@kernel.org>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220309211029.0c766cac@canb.auug.org.au>
+ <202203090847.81E8862@keescook>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <202203090847.81E8862@keescook>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8.03.2022 05:38, Nikunj A Dadhania wrote:
-> From: Sean Christopherson <sean.j.christopherson@intel.com>
-> 
-> Pin the memory for the data being passed to launch_update_data()
-> because it gets encrypted before the guest is first run and must
-> not be moved which would corrupt it.
-> 
-> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-> [ * Use kvm_for_each_memslot_in_hva_range() to find slot and iterate
->    * Updated sev_pin_memory_in_mmu() error handling.
->    * As pinning/unpining pages is handled within MMU, removed
->      {get,put}_user(). ]
-> Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
-> ---
->   arch/x86/kvm/svm/sev.c | 146 +++++++++++++++++++++++++++++++++++++----
->   1 file changed, 134 insertions(+), 12 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> index 7e39320fc65d..1c371268934b 100644
-> --- a/arch/x86/kvm/svm/sev.c
-> +++ b/arch/x86/kvm/svm/sev.c
-> @@ -22,6 +22,7 @@
->   #include <asm/trapnr.h>
->   #include <asm/fpu/xcr.h>
->   
-> +#include "mmu.h"
->   #include "x86.h"
->   #include "svm.h"
->   #include "svm_ops.h"
-> @@ -428,9 +429,93 @@ static void *sev_alloc_pages(struct kvm_sev_info *sev, unsigned long uaddr,
->   	return pages;
->   }
->   
-> +#define SEV_PFERR_RO (PFERR_USER_MASK)
-> +#define SEV_PFERR_RW (PFERR_WRITE_MASK | PFERR_USER_MASK)
-> +
-> +static struct page **sev_pin_memory_in_mmu(struct kvm *kvm, unsigned long addr,
-> +					   unsigned long size,
-> +					   unsigned long *npages)
-> +{
-> +	unsigned long hva_start, hva_end, uaddr, end, slot_start, slot_end;
-> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-> +	struct interval_tree_node *node;
-> +	struct kvm_memory_slot *slot;
-> +	struct kvm_memslots *slots;
-> +	int idx, ret = 0, i = 0;
-> +	struct kvm_vcpu *vcpu;
-> +	struct page **pages;
-> +	kvm_pfn_t pfn;
-> +	u32 err_code;
-> +	gfn_t gfn;
-> +
-> +	pages = sev_alloc_pages(sev, addr, size, npages);
-> +	if (IS_ERR(pages))
-> +		return pages;
-> +
-> +	vcpu = kvm_get_vcpu(kvm, 0);
-> +	if (mutex_lock_killable(&vcpu->mutex)) {
-> +		kvfree(pages);
-> +		return ERR_PTR(-EINTR);
-> +	}
-> +
-> +	vcpu_load(vcpu);
-> +	idx = srcu_read_lock(&kvm->srcu);
-> +
-> +	kvm_mmu_load(vcpu);
-> +
-> +	end = addr + (*npages << PAGE_SHIFT);
-> +	slots = kvm_memslots(kvm);
-> +
-> +	kvm_for_each_memslot_in_hva_range(node, slots, addr, end) {
-> +		slot = container_of(node, struct kvm_memory_slot,
-> +				    hva_node[slots->node_idx]);
-> +		slot_start = slot->userspace_addr;
-> +		slot_end = slot_start + (slot->npages << PAGE_SHIFT);
-> +		hva_start = max(addr, slot_start);
-> +		hva_end = min(end, slot_end);
-> +
-> +		err_code = (slot->flags & KVM_MEM_READONLY) ?
-> +			SEV_PFERR_RO : SEV_PFERR_RW;
-> +
-> +		for (uaddr = hva_start; uaddr < hva_end; uaddr += PAGE_SIZE) {
-> +			if (signal_pending(current)) {
-> +				ret = -ERESTARTSYS;
-> +				break;
-> +			}
-> +
-> +			if (need_resched())
-> +				cond_resched();
-> +
-> +			/*
-> +			 * Fault in the page and sev_pin_page() will handle the
-> +			 * pinning
-> +			 */
-> +			gfn = hva_to_gfn_memslot(uaddr, slot);
-> +			pfn = kvm_mmu_map_tdp_page(vcpu, gfn_to_gpa(gfn),
-> +						   err_code, PG_LEVEL_4K);
-> +			if (is_error_noslot_pfn(pfn)) {
-> +				ret = -EFAULT;
-> +				break;
-> +			}
-> +			pages[i++] = pfn_to_page(pfn);
-> +		}
-> +	}
+Hi,
 
-This algorithm looks much better than the previews one - thanks!
+On 3/9/22 17:52, Kees Cook wrote:
+> On Wed, Mar 09, 2022 at 09:10:29PM +1100, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> After merging the kspp tree, today's linux-next build (x86_64
+>> allmodconfig) failed like this:
+>>
+>> In file included from include/linux/bitops.h:33,
+>>                  from include/linux/kernel.h:22,
+>>                  from drivers/platform/x86/thinkpad_acpi.c:37:
+>> drivers/platform/x86/thinkpad_acpi.c: In function 'tpacpi_dytc_profile_init':
+>> arch/x86/include/asm/bitops.h:207:22: error: array subscript 'long unsigned int[0]' is partly outside array bounds of 'int[1]' [-Werror=array-bounds]
+>>   207 |                 (addr[nr >> _BITOPS_LONG_SHIFT])) != 0;
+>>       |                 ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/platform/x86/thinkpad_acpi.c:10385:18: note: while referencing 'output'
+>> 10385 |         int err, output;
+>>       |                  ^~~~~~
+>>
+>> Actually the test_bit() in line 10409.
+>>
+>> Caused by commit
+>>
+>>   e1c21608e3cf ("platform/x86: thinkpad_acpi: Add PSC mode support")
+>>
+>> from the drivers-x86 tree interacting with the enablement of
+>> -Werror=array-bounds.
+>>
+>> I have reverted that commit for today.
 
-By the way, as far as I know, there could be duplicates in the "page" array
-above since the same hva can be mapped to multiple gfns (in different memslots).
-Is the code prepared to deal with this possibility?
+Thank you.
 
-Thanks,
-Maciej
+> Looking at https://lore.kernel.org/all/20220225182505.7234-1-markpearson@lenovo.com/
+> 
+> The problem is with the cast of "int output" to "unsigned long". Past
+> fixes have either made the variable unsigned long, or adding a new
+> variable and removal of casts. e.g. this pseudo-patch:
+> 
+> +	unsigned long bits;
+> 
+> 	...
+> +	bits = output;
+> -	if (test_bit(DYTC_FC_MMC, (void *)&output)) { /* MMC MODE */
+> +	if (test_bit(DYTC_FC_MMC, &bits)) { /* MMC MODE */
+> 
+> ...
+> 
+> -	} else if (test_bit(DYTC_FC_PSC, (void *)&output)) { /*PSC MODE */
+> +	} else if (test_bit(DYTC_FC_PSC, &bits)) { /*PSC MODE */
+
+Right I was just preparing a patch for this, I've gone with:
+
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index 7016c7fc3440..c476a78599d6 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -10399,7 +10399,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
+ 	if (err)
+ 		return err;
+ 
+-	if (test_bit(DYTC_FC_MMC, (void *)&output)) { /* MMC MODE */
++	if (output & BIT(DYTC_FC_MMC)) { /* MMC MODE */
+ 		dytc_profile_available = DYTC_FUNCMODE_MMC;
+ 
+ 		/*
+@@ -10412,7 +10412,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
+ 			if (!err && ((output & DYTC_ERR_MASK) == DYTC_ERR_SUCCESS))
+ 				dytc_mmc_get_available = true;
+ 		}
+-	} else if (test_bit(DYTC_FC_PSC, (void *)&output)) { /*PSC MODE */
++	} else if (output & BIT(DYTC_FC_PSC)) { /* PSC MODE */
+ 		dytc_profile_available = DYTC_FUNCMODE_PSC;
+ 	} else {
+ 		dbg_printk(TPACPI_DBG_INIT, "No DYTC support available\n");
+
+I'll push this to the drivers-x86 tree for-next branch.
+
+Regards,
+
+Hans
+
+
