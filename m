@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD99C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F587C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236591AbiCIQTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:19:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        id S236531AbiCIQTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:19:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236231AbiCIQJn (ORCPT
+        with ESMTP id S236195AbiCIQJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842B913FAC4;
-        Wed,  9 Mar 2022 08:08:20 -0800 (PST)
+        Wed, 9 Mar 2022 11:09:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56AFB6D27;
+        Wed,  9 Mar 2022 08:08:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2262FB82220;
-        Wed,  9 Mar 2022 16:08:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A925C340E8;
-        Wed,  9 Mar 2022 16:08:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 610E561644;
+        Wed,  9 Mar 2022 16:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9E1C340E8;
+        Wed,  9 Mar 2022 16:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842097;
-        bh=dBM59trElM9mKdvh5X3TAf3lhidiLDUO/YzmBUoNg2U=;
+        s=korg; t=1646842086;
+        bh=BQM6yHpMDK0Tpuk2e3Gr783l4lRRVOUjiG3mBdAMFjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04Wny4uCXKCvKNc/figCzG7Y1dfHHc/TEZkJkZGcR5hnyiKWI+yaqM7AKK9QNyOAo
-         hJWdOFF2sJmFns2Q9ZueD8ZKu90RVdq8dh3gZmhUycyI7UXu6rY2mMpK4Ukbj2hRnY
-         vuzPfOQzTCk5C+Tl9eA+xyVHjT4kjOg1Ah2QI2R0=
+        b=l1a1RY+a16Wo1yK915I/4EWlhJIpz482WFiUMC/uVVEf4IALuEhlNEUhGXtDh+msQ
+         BuRWn/Y1LiHoUlIe/xIaFz6YoX586VoidR9EJU3HNDWnnXolEstEFBGISxF51iURbt
+         /5C77FI380KkBAOT+xQbtTwstKYWaEUzpzDymqVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 41/43] ARM: fix build error when BPF_SYSCALL is disabled
-Date:   Wed,  9 Mar 2022 17:00:25 +0100
-Message-Id: <20220309155900.918816489@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 29/43] arm64: entry: Move trampoline macros out of ifdefd section
+Date:   Wed,  9 Mar 2022 17:00:13 +0100
+Message-Id: <20220309155900.579232688@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
 References: <20220309155859.734715884@linuxfoundation.org>
@@ -50,31 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+From: James Morse <james.morse@arm.com>
 
-commit 330f4c53d3c2d8b11d86ec03a964b86dc81452f5 upstream.
+commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
 
-It was missing a semicolon.
+The macros for building the kpti trampoline are all behind
+CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
+.entry.tramp.text section.
 
-Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Fixes: 25875aa71dfe ("ARM: include unprivileged BPF status in Spectre V2 reporting").
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Move the macros out so they can be used to generate other kinds of
+trampoline. Only the symbols need to be guarded by
+CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/entry.S |   11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(v
- #ifdef CONFIG_BPF_SYSCALL
- 	return !sysctl_unprivileged_bpf_disabled;
- #else
--	return false
-+	return false;
- #endif
- }
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -608,12 +608,6 @@ SYM_CODE_END(ret_to_user)
  
+ 	.popsection				// .entry.text
+ 
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-/*
+- * Exception vectors trampoline.
+- */
+-	.pushsection ".entry.tramp.text", "ax"
+-
+ 	// Move from tramp_pg_dir to swapper_pg_dir
+ 	.macro tramp_map_kernel, tmp
+ 	mrs	\tmp, ttbr1_el1
+@@ -709,6 +703,11 @@ alternative_else_nop_endif
+ 	.endr
+ 	.endm
+ 
++#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
++/*
++ * Exception vectors trampoline.
++ */
++	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ SYM_CODE_START_NOALIGN(tramp_vectors)
+ 	generate_tramp_vector
 
 
