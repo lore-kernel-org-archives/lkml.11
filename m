@@ -2,186 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A7D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231436AbiCIJow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:44:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        id S232115AbiCIJpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:45:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiCIJov (ORCPT
+        with ESMTP id S229886AbiCIJo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:44:51 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DA21405FF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:43:52 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2297OacC007454;
-        Wed, 9 Mar 2022 09:43:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : mime-version : content-type
- : in-reply-to; s=pp1; bh=0xrZJ3hhJSYU8H8btUMOcHQ4xjx05w8m9CFoUXpogLY=;
- b=nQMjy4vfMjxzr602x/gp2Xj9LRf1YrulMXunUGG2Db6cn8zQ+mjdm6sLJbGv7tDNo+9i
- W+N9fZLLSKxlW6zhNnGpVCZ2fHWZ4Qkx5ETP9tWhC9Pd8Rrrfx4sNtaiHr8lflUOx9TH
- Tb1VBczhP2AAmjKRFSvPc2XePPZUe68DB3zwpm4eBWaQbYJw4vKrlXHFjFjpf/mjGWMM
- e40N1ldCR6JB2C9CIZCF4av2eSOzpghnoQqL+HaLfDBWuHUTMAFKOZffiZGLsTl967RE
- ScDYWKKuK5VUjHpS6DY9VUxH+xYIAfXmtj/XX8s8p1XhZjzYiQfu/8Q/SlYWcKjUyeB6 iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3env4uucmm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:43:30 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2298EipB013786;
-        Wed, 9 Mar 2022 09:43:29 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3env4uucke-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:43:29 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2299ggIq006418;
-        Wed, 9 Mar 2022 09:43:27 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3ekyg8g9v7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Mar 2022 09:43:27 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2299hOET45678916
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Mar 2022 09:43:24 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 88FB652051;
-        Wed,  9 Mar 2022 09:43:24 +0000 (GMT)
-Received: from linux.vnet.ibm.com (unknown [9.126.150.29])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id C41045204E;
-        Wed,  9 Mar 2022 09:43:21 +0000 (GMT)
-Date:   Wed, 9 Mar 2022 15:13:20 +0530
-From:   Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-To:     K Prateek Nayak <kprateek.nayak@amd.com>
-Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
-        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
-        mgorman@techsingularity.net, mingo@kernel.org,
-        song.bao.hua@hisilicon.com, valentin.schneider@arm.com,
-        vincent.guittot@linaro.org
-Subject: Re: [PATCH v6] sched/fair: Consider cpu affinity when allowing NUMA
- imbalance in find_idlest_group
-Message-ID: <20220309094320.GL618915@linux.vnet.ibm.com>
-Reply-To: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-References: <20220308063749.6929-1-kprateek.nayak@amd.com>
- <20220308092944.GJ618915@linux.vnet.ibm.com>
- <7e5bdc95-a30a-58bc-fc67-98b03fe1fa22@amd.com>
- <20220309052554.GK618915@linux.vnet.ibm.com>
- <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
+        Wed, 9 Mar 2022 04:44:59 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04991151D34;
+        Wed,  9 Mar 2022 01:44:01 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id 85so1253110qkm.9;
+        Wed, 09 Mar 2022 01:44:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QJcsiCvuU0LEpDBG3YLrgQ6iZjq8OgfZ7I3Jt2iwnik=;
+        b=nTpovFHqrUcu1YKcuKeMad3NEJIkWsFY4E1ZGaZ//DzOuXb+Hck7Et4RZVgZVhAs0X
+         6Y08wfQM6QYvyHqwC25iJp+tF+xc9F63LDowZuGLP5NYb00ZzhJMqj25x/XLhKknYwDj
+         S9BFdw3xPSpBUmcFSA2TcnRrbsDs3wzleTmwDfKND8MGrZncr/Dk28KsaK8KROuiKnaO
+         IotL5w88jCfOngXO3t1WKpldiiTqwjKj7JGhSOV1rLE7aJyYoQJ+O2e79NlBjHVShfeF
+         TTcTAnduzWNdBtxEk8sA4bv75Eb/gXxWGtkD0c0x3hxSbHl1wsxGlO0s5er2psdjNNwm
+         DuTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QJcsiCvuU0LEpDBG3YLrgQ6iZjq8OgfZ7I3Jt2iwnik=;
+        b=4xEiJ+/axTysFsCMALrs+/GEfmzRdHP6z8jrQVe0DPmM1Cl56nRnVIgBmu6WeC94VH
+         j43lD7grbepoav8QY/I4JXE6jmXJoslzM5rU70AbceddYgrON04M1FbzJeOyM+dgs6Gp
+         p15yq7DuLwWGimJeJI+aqEinXH370FI2JanGDoKiTYPtVtSOAWdFz5NeRwPKyXtL4BX+
+         wTcgVjTXKiCiRVnKOsCLEoHR4XPnSwbf942gio3Em4iMl1uVgLqUUYAGP48GUh1JmqTm
+         z0GLUNDuFIgjcTeM7X2YKTAJlv4Vni2NZEcZ3H9rKwFZ2F+jwN92Rpt5fogbMrK0+G20
+         zt5A==
+X-Gm-Message-State: AOAM531TkNsZM5R9z2kfXVAxejswYFSUALFMpNko5BGK3/jUJZRuLmxq
+        6cezB2tXJPTr6yYISD5Wxs4=
+X-Google-Smtp-Source: ABdhPJxSzeWLjN6BZeTA6KKMjZewlgWBNGOkEKArl+PeihcsKPe75rN9ajFH+ag+rHi5hO7Jyoi0LA==
+X-Received: by 2002:a05:620a:14ab:b0:60d:d5cf:627a with SMTP id x11-20020a05620a14ab00b0060dd5cf627amr12731999qkj.103.1646819039769;
+        Wed, 09 Mar 2022 01:43:59 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f19-20020ac859d3000000b002de4d014733sm974987qtf.13.2022.03.09.01.43.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 01:43:59 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: yang.yang29@zte.com.cn
+To:     axboe@kernel.dk, viro@zeniv.linux.org.uk, hannes@cmpxchg.org
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: [PATCH] block/psi: remove PSI annotations from submit_bio
+Date:   Wed,  9 Mar 2022 09:43:24 +0000
+Message-Id: <20220309094323.2082884-1-yang.yang29@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: F_d2i3xt3f8CgZD4OzpR37ErkqQWFq23
-X-Proofpoint-ORIG-GUID: o46rAGquczgeokd1M-WmjiNeO2FftCiG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-09_04,2022-03-04_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- phishscore=0 spamscore=0 mlxlogscore=999 malwarescore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203090051
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-09 12:42:51]:
+From: Yang Yang <yang.yang29@zte.com.cn>
 
-Hi Prateek,
+psi tracks the time spent submitting the IO of refaulting pages[1].
+But after we tracks refault stalls from swap_readpage[2][3], there
+is no need to do so anymore. Since swap_readpage already includes
+IO submitting time.
 
-> Hello Srikar,
-> 
-> On 3/9/2022 10:55 AM, Srikar Dronamraju wrote:
-> > * K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-08 17:18:16]:
-> > [..snip..]
-> >> Yes. We've tested stream with 8 and 16 stream threads on a Zen3 system
-> >> with 16 LLCs and in both cases, with unbound runs, we've seen each
-> >> Stream thread get a separate LLC and we didn't observe any stacking.
-> > If the problem is only happening with pinned case, then it means that in the
-> > in unpinned case, the load balancer is able to do the load balancing
-> > correctly and quickly but for some reason may not be able to do the same in
-> > pinned case. Without the patch, even in the unpinned case, the initial CPU
-> > range is more less the same number of LLCs as the pinned. However its able
-> > to spread better.
-> The problem this patch is trying to solve is that of the initial placement
-> of task when they are pinned to a subset of cpu in a way that number of
-> allowed cpus in a NUMA domain is less than the imb_numa_nr.
-> 
+[1] commit b8e24a9300b0 ("block: annotate refault stalls from IO submission")
+[2] commit 937790699be9 ("mm/page_io.c: annotate refault stalls from swap_readpage")
+[3] commit 2b413a1a728f ("mm: page_io: fix psi memory pressure error on cold swapins")
 
-I completely understand your problem. The only missing piece is why is this
-initial placement *not a problem for the unpinned case*. If we are able to
-articulate how the current code works well for the unpinned case, I would
-be fine.
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
+---
+ block/bio.c               |  8 --------
+ block/blk-core.c          | 17 -----------------
+ fs/direct-io.c            |  2 --
+ include/linux/blk_types.h |  1 -
+ 4 files changed, 28 deletions(-)
 
-> Consider the same example of Stream running 8 threads with pinning as follows
-> on the dual socket Zen3 system (0-63,128-191 in one socket, 64-127,192-255 in
-> another socket) with 8 LLCs per socket:
-> 
-> numactl -C 0,16,32,48,64,80,96,112 ./stream8
-> 
-> Number of cpus available in each socket for this task is 4. However, each
-> socket consists of 8 LLCs. According to current scheduler, all the LLCs are
-> available for task to use but in reality, it can only use 4. Hence, all
-> the stream threads are put on same socket and they have to initially share
-> LLCs and the same set of cpus. This is why we see stacking initially and
-> this is what we are addressing.
-> 
-> We've observed that load balancer does kick in and is able to spread the tasks
-> apart but this takes a while and quite a few migrations before a stable state
-> is reached.
-> 
-> Following is the output of the tracepoint sched_migrate_task on 5.17-rc1
-> tip sched/core for stream running 8 threads with the same pinning pattern:
-> (Output has been slightly modified for readability)
-> 
-> 167.928338: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=32 dest_cpu=48 START - {8}{0}
-> ... 9 migrations
-> 168.595632: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=16 dest_cpu=64 * {7}{1}
-> 168.595634: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=16 dest_cpu=64 * {6}{2}
-> ... 3 migrations
-> 168.625803: sched_migrate_task: comm=stream pid=5052 prio=120 orig_cpu=0 dest_cpu=64 * {5}{3}
-> 168.626146: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=16 dest_cpu=0
-> 168.650832: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=0 dest_cpu=48
-> 168.651009: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=64 dest_cpu=32 * {6}{2}
-> 168.677314: sched_migrate_task: comm=stream pid=5048 prio=120 orig_cpu=32 dest_cpu=80 * {5}{3}
-> 168.677320: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=48 dest_cpu=64 * {4}{4}
-> 168.735707: sched_migrate_task: comm=stream pid=5050 prio=120 orig_cpu=64 dest_cpu=96
-> 168.775510: sched_migrate_task: comm=stream pid=5051 prio=120 orig_cpu=80 dest_cpu=0 * {5}{3}
-> ... 39 migrations
-> 170.232105: sched_migrate_task: comm=stream pid=5049 prio=120 orig_cpu=0 dest_cpu=64 END {4}{4}
-> 
-> As we can see, 63 migrations are arecorded during the runtime of the
-> program that can be avoided by the correct initial placement.
-> 
-> As you highlight, there may be areas in the load balancer path that
-> can be optimized too for such a case.
-> > I believe the problem could be in can_migrate_task() checking for
-> > !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr)
-> >
-> > i.e dst_cpu is doing a load balance on behalf of the entire LLC, however it
-> > only will pull tasks that can be pulled into it.
-> Please correct me if I'm wrong but don't we scan the entire sched group
-> and check if there is a compatible cpu for pinned tasks in can_migrate_task()
-> when !cpumask_test_cpu(env->dst_cpu, p->cpus_ptr) ?
-> 
-
-> If a compatible cpu is found in the group, it is stored in new_dst_cpu
-> member of lb_env to be used later in the load balancing path if my
-> understanding is correct.
-
-Yes, this is the LBF_DST_PINNED logic, So I am wondering if that is kicking
-in correctly because this is the only difference I see between pinned and
-unpinned.
-
-> --
-> Thanks and Regards,
-> Prateek
-
+diff --git a/block/bio.c b/block/bio.c
+index 3c57b3ba727d..efbbeed348e3 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1034,9 +1034,6 @@ void __bio_add_page(struct bio *bio, struct page *page,
+ 
+ 	bio->bi_iter.bi_size += len;
+ 	bio->bi_vcnt++;
+-
+-	if (!bio_flagged(bio, BIO_WORKINGSET) && unlikely(PageWorkingset(page)))
+-		bio_set_flag(bio, BIO_WORKINGSET);
+ }
+ EXPORT_SYMBOL_GPL(__bio_add_page);
+ 
+@@ -1252,9 +1249,6 @@ static int __bio_iov_append_get_pages(struct bio *bio, struct iov_iter *iter)
+  * fit into the bio, or are requested in @iter, whatever is smaller. If
+  * MM encounters an error pinning the requested pages, it stops. Error
+  * is returned only if 0 pages could be pinned.
+- *
+- * It's intended for direct IO, so doesn't do PSI tracking, the caller is
+- * responsible for setting BIO_WORKINGSET if necessary.
+  */
+ int bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ {
+@@ -1273,8 +1267,6 @@ int bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 			ret = __bio_iov_iter_get_pages(bio, iter);
+ 	} while (!ret && iov_iter_count(iter) && !bio_full(bio, 0));
+ 
+-	/* don't account direct I/O as memory stall */
+-	bio_clear_flag(bio, BIO_WORKINGSET);
+ 	return bio->bi_vcnt ? 0 : ret;
+ }
+ EXPORT_SYMBOL_GPL(bio_iov_iter_get_pages);
+diff --git a/block/blk-core.c b/block/blk-core.c
+index ddac62aebc55..faf7d950a4d5 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -37,7 +37,6 @@
+ #include <linux/t10-pi.h>
+ #include <linux/debugfs.h>
+ #include <linux/bpf.h>
+-#include <linux/psi.h>
+ #include <linux/part_stat.h>
+ #include <linux/sched/sysctl.h>
+ #include <linux/blk-crypto.h>
+@@ -911,22 +910,6 @@ void submit_bio(struct bio *bio)
+ 		}
+ 	}
+ 
+-	/*
+-	 * If we're reading data that is part of the userspace workingset, count
+-	 * submission time as memory stall.  When the device is congested, or
+-	 * the submitting cgroup IO-throttled, submission can be a significant
+-	 * part of overall IO time.
+-	 */
+-	if (unlikely(bio_op(bio) == REQ_OP_READ &&
+-	    bio_flagged(bio, BIO_WORKINGSET))) {
+-		unsigned long pflags;
+-
+-		psi_memstall_enter(&pflags);
+-		submit_bio_noacct(bio);
+-		psi_memstall_leave(&pflags);
+-		return;
+-	}
+-
+ 	submit_bio_noacct(bio);
+ }
+ EXPORT_SYMBOL(submit_bio);
+diff --git a/fs/direct-io.c b/fs/direct-io.c
+index aef06e607b40..5cac8c8869c5 100644
+--- a/fs/direct-io.c
++++ b/fs/direct-io.c
+@@ -419,8 +419,6 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
+ 	unsigned long flags;
+ 
+ 	bio->bi_private = dio;
+-	/* don't account direct I/O as memory stall */
+-	bio_clear_flag(bio, BIO_WORKINGSET);
+ 
+ 	spin_lock_irqsave(&dio->bio_lock, flags);
+ 	dio->refcount++;
+diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
+index 0c7a9a1f06c8..ab50c59b02ce 100644
+--- a/include/linux/blk_types.h
++++ b/include/linux/blk_types.h
+@@ -314,7 +314,6 @@ enum {
+ 	BIO_NO_PAGE_REF,	/* don't put release vec pages */
+ 	BIO_CLONED,		/* doesn't own data */
+ 	BIO_BOUNCED,		/* bio is a bounce bio */
+-	BIO_WORKINGSET,		/* contains userspace workingset pages */
+ 	BIO_QUIET,		/* Make BIO Quiet */
+ 	BIO_CHAIN,		/* chained bio, ->bi_remaining in effect */
+ 	BIO_REFFED,		/* bio has elevated ->bi_cnt */
 -- 
-Thanks and Regards
-Srikar Dronamraju
+2.25.1
+
