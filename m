@@ -2,222 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD126C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D81C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237005AbiCITCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:02:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        id S237066AbiCITDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233972AbiCITCS (ORCPT
+        with ESMTP id S233594AbiCITDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:02:18 -0500
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 894FBD8859
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:01:19 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1646852479; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: From: From: References: Cc: To: To: Subject: Subject:
- MIME-Version: Date: Message-ID: Sender: Sender;
- bh=8C+xvbuy9RSAyuvBy0Tm2WB0XWQS+wESHMb9s4mczek=; b=jwJgT9q/FjszCZkynYwKJZQ43AVCy8WCi2Sk2dcEVVihyrRSisSJlTrzibbr25oO1cA4g+22
- 86rsdu6AtiBICiiNOFDUuD+TqZkNXa8D8xx9bq8Nxl/rsC67WLl5lmlyFuxMQQu6BcMSRO+w
- fTLn4olMNG91ZlVL9HXGPwFLpK8=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 6228f97ea1f319ec73aeae5c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 09 Mar 2022 19:01:18
- GMT
-Sender: wcheng=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 605B1C4360D; Wed,  9 Mar 2022 19:01:17 +0000 (UTC)
-Received: from [192.168.1.17] (cpe-75-80-185-151.san.res.rr.com [75.80.185.151])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Wed, 9 Mar 2022 14:03:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA709E57D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:02:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: wcheng)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B0D4FC4338F;
-        Wed,  9 Mar 2022 19:01:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org B0D4FC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-Message-ID: <d8eb4c9d-3c68-b7f0-2dd6-600a542a64d1@codeaurora.org>
-Date:   Wed, 9 Mar 2022 11:01:14 -0800
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0264CB82224
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:02:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B078C340E8;
+        Wed,  9 Mar 2022 19:02:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646852526;
+        bh=AcspJPuA9dNvJicZK/m3TDHAU3/5ThUWIdTSCDAT74c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=padBPJSwctZLSS5FlBkT17NAXaJT6Jme+aHd6O9qpHWjAaoXMOfsrF1s4MlXpCilJ
+         g01VVX3j2ShVXz6lWLD+AdKeHafB58+XgrqzN/jFfLBO0N0Ve46+4FIlxlJ38xqe+X
+         zPh7SlnB3e1bfqDey4YXVAUjy3VKs+NuMLQ/KNnE796RIY9oRhO19jL2d0oK2TxIAN
+         bqOadgOZCAI0rIKOK4oVOyKjmXvvZTMFpSnmcNhguGyYA9zYB3zwAeTTRrqC97AgMm
+         zN8iUX7QMCce5auwQTv8tu398rvPbjZftWkwj90zSuo6cGNMQ8/5Kf8MD4sh3ETXVQ
+         mZDbmdqKFog6g==
+Date:   Wed, 9 Mar 2022 12:01:59 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Fangrui Song <maskray@google.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] powerpc: Replace ppc64 DT_RELACOUNT usage with
+ DT_RELASZ/24
+Message-ID: <Yij5p+TanPYnUM5V@dev-arch.thelio-3990X>
+References: <20220309055118.1551013-1-maskray@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] usb: dwc3: gadget: Wait for ep0 xfers to complete during
- dequeue
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>
-Cc:     balbi@kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_jackp@quicinc.com,
-        Thinh.Nguyen@synopsys.com
-References: <20220309004148.12061-1-quic_wcheng@quicinc.com>
- <Yih/tapu/JMRgBqT@kroah.com>
-From:   Wesley Cheng <wcheng@codeaurora.org>
-In-Reply-To: <Yih/tapu/JMRgBqT@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309055118.1551013-1-maskray@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Tue, Mar 08, 2022 at 09:51:18PM -0800, Fangrui Song wrote:
+> DT_RELACOUNT is an ELF dynamic tag inherited from SunOS indicating the
+> number of R_*_RELATIVE relocations. It is optional but {ld.lld,ld.lld}
 
-On 3/9/2022 2:21 AM, Greg KH wrote:
-> On Tue, Mar 08, 2022 at 04:41:48PM -0800, Wesley Cheng wrote:
->> From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
->>
->> If the request being dequeued is currently active, then the current
->> logic is to issue a stop transfer command, and allow the command
->> completion to cleanup the cancelled list.  The DWC3 controller will
->> run into an end transfer command timeout if there is an ongoing EP0
->> transaction.  If this is the case, wait for the EP0 completion event
->> before proceeding to retry the endxfer command again.
->>
->> Co-developed-by: Wesley Cheng <quic_wcheng@quicinc.com>
->> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
->> Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-> 
-> 
-> You sent this twice?  What is the differences between the patches?
-> 
-Sorry for sending it twice.  It was a mistake on my end, where I thought
-the patch wasn't getting sent out by our email server, so I sent it out
-several times to check.  Ended up just showing up after 30 mins or so :/.
-> And as you sent it, your signed-off-by needs to be at the end, as per
-> the kernel documentation.
-> 
-I'll fix this.
->> ---
->>  Patch discussion below:
->>    https://lore.kernel.org/linux-usb/1644836933-141376-1-git-send-email-dh10.jung@samsung.com/T/#t
-> 
-> So this is a v2?
-> 
-> 
-This is an entirely different change, but the change was discussed in
-the above thread.
->>
->>  drivers/usb/dwc3/core.h   |  2 +-
->>  drivers/usb/dwc3/ep0.c    | 14 ++++++++++++++
->>  drivers/usb/dwc3/gadget.c | 13 ++++++++-----
->>  drivers/usb/dwc3/gadget.h |  1 +
->>  4 files changed, 24 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
->> index eb9c1efced05..f557f5f36a7f 100644
->> --- a/drivers/usb/dwc3/core.h
->> +++ b/drivers/usb/dwc3/core.h
->> @@ -736,7 +736,7 @@ struct dwc3_ep {
->>  #define DWC3_EP_FIRST_STREAM_PRIMED	BIT(10)
->>  #define DWC3_EP_PENDING_CLEAR_STALL	BIT(11)
->>  #define DWC3_EP_TXFIFO_RESIZED		BIT(12)
->> -
->> +#define DWC3_EP_DELAY_STOP             BIT(13)
-> 
-> Why did you loose the blank line?
-> 
-I can add that back in.
+                                                         ^ ld.{bfd,lld} ?
 
-Thanks
-Wesley Cheng
+> -z combreloc always creates it (if non-zero) to slightly speed up glibc
+> ld.so relocation resolving by avoiding R_*R_PPC64_RELATIVE type
+> comparison. The tag is otherwise nearly unused in the wild and I'd
+> recommend that software avoids using it.
+> 
+> lld>=14.0.0 (since commit da0e5b885b25cf4ded0fa89b965dc6979ac02ca9)
+> underestimates DT_RELACOUNT for ppc64 when position-independent long
+> branch thunks are used. Correcting it needs non-trivial arch-specific
+> complexity which I'd prefer to avoid. Since our code always compares the
+> relocation type with R_PPC64_RELATIVE, replacing every occurrence of
+> DT_RELACOUNT with DT_RELASZ/sizeof(Elf64_Rela)=DT_RELASZ/24 is a correct
+> alternative.
+> 
+> DT_RELASZ is in practice bounded by an uint32_t. Dividing x by 24 can be
+> implemented as (uint32_t)(x*0xaaaaaaab) >> 4.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1581
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Fangrui Song <maskray@google.com>
 
->>  	/* This last one is specific to EP0 */
->>  #define DWC3_EP0_DIR_IN			BIT(31)
->>  
->> diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
->> index 658739410992..1064be5518f6 100644
->> --- a/drivers/usb/dwc3/ep0.c
->> +++ b/drivers/usb/dwc3/ep0.c
->> @@ -271,6 +271,7 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
->>  {
->>  	struct dwc3_ep			*dep;
->>  	int				ret;
->> +	int                             i;
->>  
->>  	complete(&dwc->ep0_in_setup);
->>  
->> @@ -279,6 +280,19 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
->>  			DWC3_TRBCTL_CONTROL_SETUP, false);
->>  	ret = dwc3_ep0_start_trans(dep);
->>  	WARN_ON(ret < 0);
->> +	for (i = 2; i < DWC3_ENDPOINTS_NUM; i++) {
->> +		struct dwc3_ep *dwc3_ep;
->> +
->> +		dwc3_ep = dwc->eps[i];
->> +		if (!dwc3_ep)
->> +			continue;
->> +
->> +		if (!(dwc3_ep->flags & DWC3_EP_DELAY_STOP))
->> +			continue;
->> +
->> +		dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
->> +		dwc3_stop_active_transfer(dwc3_ep, true, true);
->> +	}
->>  }
->>  
->>  static struct dwc3_ep *dwc3_wIndex_to_dep(struct dwc3 *dwc, __le16 wIndex_le)
->> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
->> index a0c883f19a41..ccef508b1296 100644
->> --- a/drivers/usb/dwc3/gadget.c
->> +++ b/drivers/usb/dwc3/gadget.c
->> @@ -654,9 +654,6 @@ static int dwc3_gadget_set_ep_config(struct dwc3_ep *dep, unsigned int action)
->>  	return dwc3_send_gadget_ep_cmd(dep, DWC3_DEPCMD_SETEPCONFIG, &params);
->>  }
->>  
->> -static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
->> -		bool interrupt);
->> -
->>  /**
->>   * dwc3_gadget_calc_tx_fifo_size - calculates the txfifo size value
->>   * @dwc: pointer to the DWC3 context
->> @@ -1899,6 +1896,7 @@ static int __dwc3_gadget_ep_queue(struct dwc3_ep *dep, struct dwc3_request *req)
->>  	 */
->>  	if ((dep->flags & DWC3_EP_END_TRANSFER_PENDING) ||
->>  	    (dep->flags & DWC3_EP_WEDGE) ||
->> +	    (dep->flags & DWC3_EP_DELAY_STOP) ||
->>  	    (dep->flags & DWC3_EP_STALL)) {
->>  		dep->flags |= DWC3_EP_DELAY_START;
->>  		return 0;
->> @@ -2033,6 +2031,9 @@ static int dwc3_gadget_ep_dequeue(struct usb_ep *ep,
->>  		if (r == req) {
->>  			struct dwc3_request *t;
->>  
->> +			if (dwc->ep0state != EP0_SETUP_PHASE && !dwc->delayed_status)
->> +				dep->flags |= DWC3_EP_DELAY_STOP;
->> +
->>  			/* wait until it is processed */
->>  			dwc3_stop_active_transfer(dep, true, true);
->>  
->> @@ -2116,7 +2117,8 @@ int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol)
->>  		list_for_each_entry_safe(req, tmp, &dep->started_list, list)
->>  			dwc3_gadget_move_cancelled_request(req, DWC3_REQUEST_STATUS_STALLED);
->>  
->> -		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING) {
->> +		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING ||
->> +		    (dep->flags & DWC3_EP_DELAY_STOP)) {
->>  			dep->flags |= DWC3_EP_PENDING_CLEAR_STALL;
->>  			return 0;
->>  		}
->> @@ -3596,7 +3598,7 @@ static void dwc3_reset_gadget(struct dwc3 *dwc)
->>  	}
->>  }
->>  
->> -static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
->> +void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
->>  	bool interrupt)
-> 
-> This is a horrid api (2 booleans?)  But you aren't adding it so I guess
-> we can live with it :(
-> 
-> thanks,
-> 
-> greg k-h
+Thank you a lot for the fix! I tested this with several different
+configurations with tip of tree LLVM and they all booted in QEMU. I also
+tested one configuration with GCC 5.4 (we support GCC 5.x as a minimum)
+and it booted as well.
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+
+> ---
+>  arch/powerpc/boot/crt0.S       | 28 +++++++++++++++++-----------
+>  arch/powerpc/kernel/reloc_64.S | 15 +++++++++------
+>  2 files changed, 26 insertions(+), 17 deletions(-)
+> 
+> diff --git a/arch/powerpc/boot/crt0.S b/arch/powerpc/boot/crt0.S
+> index feadee18e271..1c96ebe7ef1a 100644
+> --- a/arch/powerpc/boot/crt0.S
+> +++ b/arch/powerpc/boot/crt0.S
+> @@ -8,7 +8,7 @@
+>  #include "ppc_asm.h"
+>  
+>  RELA = 7
+> -RELACOUNT = 0x6ffffff9
+> +RELASZ = 8
+>  
+>  	.data
+>  	/* A procedure descriptor used when booting this as a COFF file.
+> @@ -65,7 +65,7 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
+>  	subf	r11,r11,r12	/* runtime - linktime offset */
+>  
+>  	/* The dynamic section contains a series of tagged entries.
+> -	 * We need the RELA and RELACOUNT entries. */
+> +	 * We need the RELA and RELASZ entries. */
+>  	li	r9,0
+>  	li	r0,0
+>  9:	lwz	r8,0(r12)	/* get tag */
+> @@ -75,18 +75,21 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
+>  	bne	11f
+>  	lwz	r9,4(r12)	/* get RELA pointer in r9 */
+>  	b	12f
+> -11:	addis	r8,r8,(-RELACOUNT)@ha
+> -	cmpwi	r8,RELACOUNT@l
+> +11:	cmpwi	r8,RELASZ
+>  	bne	12f
+> -	lwz	r0,4(r12)	/* get RELACOUNT value in r0 */
+> +	lwz	r0,4(r12)	/* get RELASZ / 24 in r0 */
+> +	lis     r8,0xaaaa
+> +	ori     r8,r8,0xaaab
+> +	mulhwu  r0,r0,r8
+> +	srwi    r0,r0,4
+>  12:	addi	r12,r12,8
+>  	b	9b
+>  
+>  	/* The relocation section contains a list of relocations.
+>  	 * We now do the R_PPC_RELATIVE ones, which point to words
+>  	 * which need to be initialized with addend + offset.
+> -	 * The R_PPC_RELATIVE ones come first and there are RELACOUNT
+> -	 * of them. */
+> +	 * The R_PPC_RELATIVE ones come first and there are at most
+> +         * RELASZ/24 of them. */
+>  10:	/* skip relocation if we don't have both */
+>  	cmpwi	r0,0
+>  	beq	3f
+> @@ -160,14 +163,17 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
+>  	bne	10f
+>  	ld	r13,8(r11)       /* get RELA pointer in r13 */
+>  	b	11f
+> -10:	addis	r12,r12,(-RELACOUNT)@ha
+> -	cmpdi	r12,RELACOUNT@l
+> +10:	cmpdi	r12,RELASZ
+>  	bne	11f
+> -	ld	r8,8(r11)       /* get RELACOUNT value in r8 */
+> +	ld	r8,8(r11)       /* get RELASZ / 24 in r8 */
+> +	lis     r0,0xaaaa
+> +	ori     r0,r0,0xaaab
+> +	mulhwu  r8,r8,r0
+> +	srwi    r8,r8,4
+>  11:	addi	r11,r11,16
+>  	b	9b
+>  12:
+> -	cmpdi	r13,0            /* check we have both RELA and RELACOUNT */
+> +	cmpdi	r13,0            /* check we have both RELA and RELASZ */
+>  	cmpdi	cr1,r8,0
+>  	beq	3f
+>  	beq	cr1,3f
+> diff --git a/arch/powerpc/kernel/reloc_64.S b/arch/powerpc/kernel/reloc_64.S
+> index 02d4719bf43a..362be759609f 100644
+> --- a/arch/powerpc/kernel/reloc_64.S
+> +++ b/arch/powerpc/kernel/reloc_64.S
+> @@ -8,7 +8,7 @@
+>  #include <asm/ppc_asm.h>
+>  
+>  RELA = 7
+> -RELACOUNT = 0x6ffffff9
+> +RELASZ = 8
+>  R_PPC64_RELATIVE = 22
+>  
+>  /*
+> @@ -27,7 +27,7 @@ _GLOBAL(relocate)
+>  	add	r10,r10,r12	/* r10 has runtime addr of _stext */
+>  
+>  	/*
+> -	 * Scan the dynamic section for the RELA and RELACOUNT entries.
+> +	 * Scan the dynamic section for the RELA and RELASZ entries.
+>  	 */
+>  	li	r7,0
+>  	li	r8,0
+> @@ -38,13 +38,16 @@ _GLOBAL(relocate)
+>  	bne	2f
+>  	ld	r7,8(r11)	/* get RELA pointer in r7 */
+>  	b	3f
+> -2:	addis	r6,r6,(-RELACOUNT)@ha
+> -	cmpdi	r6,RELACOUNT@l
+> +2:	cmpdi	r6,RELASZ
+>  	bne	3f
+> -	ld	r8,8(r11)	/* get RELACOUNT value in r8 */
+> +	ld	r8,8(r11)	/* get RELA / 24 in r8 */
+> +	lis     r0,0xaaaa
+> +	ori     r0,r0,0xaaab
+> +	mulhwu  r8,r8,r0
+> +	srwi    r8,r8,4
+>  3:	addi	r11,r11,16
+>  	b	1b
+> -4:	cmpdi	r7,0		/* check we have both RELA and RELACOUNT */
+> +4:	cmpdi	r7,0		/* check we have both RELA and RELASZ */
+>  	cmpdi	cr1,r8,0
+>  	beq	6f
+>  	beq	cr1,6f
+> -- 
+> 2.35.1.616.g0bdcbb4464-goog
+> 
