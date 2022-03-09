@@ -2,55 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3869EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbiCIH5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
+        id S230434AbiCIH5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbiCIH42 (ORCPT
+        with ESMTP id S230520AbiCIH42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 02:56:28 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FE3164D3A;
-        Tue,  8 Mar 2022 23:55:05 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:55:03 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4FE165C18;
+        Tue,  8 Mar 2022 23:55:08 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:55:05 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812504;
+        s=2020; t=1646812507;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hssnMil8EA8/AkoAtXfbVyTfq0CygciXhtiWvAcGihQ=;
-        b=CRBAUgkaWxhSFYlpII/QJeSLt667ZJEW8oRI8CzArANZWmkja2LWfAPe4MklrwO4XYXvP/
-        JDms4KsgNgANIdbtZUOZEU1eTAnFK92KzSUZvuphlTwN5ti2fnzrYdyA7ly6IMbshgOW0i
-        yELjdY6W6jB0cIPUb6tk91++mt3uB8dwb9KCC3UIZlXEp+ihORBjIPfnqpd5GU8tFIhPwe
-        76DjrHmSvpcEna2GWzGVVuLKWhPsAEQ0890cIMf4WJMaJnyVOO4yXQE47SZ9fg9HL4/xm9
-        4qh7Zi+9vd5ol76UCH2DI9LT75LWWboEpFPkoy4n4TVcgnp/keLS/XVW3mWcSg==
+        bh=AZGTylkZAhZzNF4wpe36GCvyfUNNZZsQtsAXyO2whyo=;
+        b=mqT1mPefyzUDBXTt+BY7mHfavotieTXqgy0Z9VKjLjEbWfjyx8K3cHfrPW76oKJkK/MVck
+        rRRapv5S/+zxP1ppf60n+7UX2Vx4lQvtC1TXr5pb7aJOI4GQ29XbuIaet93W/nBLlX/rB5
+        USOyec9ic9AdpcPA+nDs+jIwcTLhCBu5yTVka4uHzGRfSchmbIczMp/s8ylzzlE2jWOCxQ
+        XnkP6k7+DuH4O85y8su0dk79YJENSA83MRItErfvsXHUDaGp9UjjakylH1MdcmTWeMzrcB
+        oRE9awewmECyVIxZAJtoZhbpasa4kIj68r35g/vVKeJLicEf/YFucW3HG4xU9A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812504;
+        s=2020e; t=1646812507;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hssnMil8EA8/AkoAtXfbVyTfq0CygciXhtiWvAcGihQ=;
-        b=U8N50WpoJufi1/A8gFFQHP6c4PH9IBrtKe/EfdA/lBBq/Hj8rUDnUE4bIyKpmBe/ntvACv
-        U+Tw2DPONRJZ12Bw==
+        bh=AZGTylkZAhZzNF4wpe36GCvyfUNNZZsQtsAXyO2whyo=;
+        b=uzSd/WIu+J1Jal+dqCuOzmbo54lA52yf2ixnn+hQEj+k8usM+/v977ro7KAcNESRBgIZUs
+        FFRc426qTG2KSZAg==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt,kvm: Add ENDBR to fastops
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+Subject: [tip: x86/core] x86/linkage: Add ENDBR to SYM_FUNC_START*()
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154318.168850084@infradead.org>
-References: <20220308154318.168850084@infradead.org>
+In-Reply-To: <20220308154317.992708941@infradead.org>
+References: <20220308154317.992708941@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164681250354.16921.10239828603069597736.tip-bot2@tip-bot2>
+Message-ID: <164681250587.16921.1614693055243927648.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,50 +63,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     598b53d261c1f9aeedc375a66e5e77ef952bb857
-Gitweb:        https://git.kernel.org/tip/598b53d261c1f9aeedc375a66e5e77ef952bb857
+Commit-ID:     1d295d6e83f8ce357cafe11a86dab1deecb13963
+Gitweb:        https://git.kernel.org/tip/1d295d6e83f8ce357cafe11a86dab1deecb13963
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:28 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:25 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:31 +01:00
+CommitterDate: Tue, 08 Mar 2022 23:53:30 +01:00
 
-x86/ibt,kvm: Add ENDBR to fastops
+x86/linkage: Add ENDBR to SYM_FUNC_START*()
 
+Ensure the ASM functions have ENDBR on for IBT builds, this follows
+the ARM64 example. Unlike ARM64, we'll likely end up overwriting them
+with poison.
+
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154318.168850084@infradead.org
+Link: https://lore.kernel.org/r/20220308154317.992708941@infradead.org
 ---
- arch/x86/kvm/emulate.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/linkage.h | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 5719d8c..08c4e9c 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -189,7 +189,7 @@
- #define X16(x...) X8(x), X8(x)
+diff --git a/arch/x86/include/asm/linkage.h b/arch/x86/include/asm/linkage.h
+index 0309079..85865f1 100644
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -3,6 +3,7 @@
+ #define _ASM_X86_LINKAGE_H
  
- #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
--#define FASTOP_SIZE 8
-+#define FASTOP_SIZE (8 * (1 + HAS_KERNEL_IBT))
+ #include <linux/stringify.h>
++#include <asm/ibt.h>
  
- struct opcode {
- 	u64 flags;
-@@ -311,7 +311,8 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
- #define __FOP_FUNC(name) \
- 	".align " __stringify(FASTOP_SIZE) " \n\t" \
- 	".type " name ", @function \n\t" \
--	name ":\n\t"
-+	name ":\n\t" \
-+	ASM_ENDBR
+ #undef notrace
+ #define notrace __attribute__((no_instrument_function))
+@@ -34,5 +35,35 @@
  
- #define FOP_FUNC(name) \
- 	__FOP_FUNC(#name)
-@@ -433,6 +434,7 @@ static int fastop(struct x86_emulate_ctxt *ctxt, fastop_t fop);
- 	".align 4 \n\t" \
- 	".type " #op ", @function \n\t" \
- 	#op ": \n\t" \
-+	ASM_ENDBR \
- 	#op " %al \n\t" \
- 	__FOP_RET(#op)
+ #endif /* __ASSEMBLY__ */
+ 
++/* SYM_FUNC_START -- use for global functions */
++#define SYM_FUNC_START(name)				\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
++#define SYM_FUNC_START_NOALIGN(name)			\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL -- use for local functions */
++#define SYM_FUNC_START_LOCAL(name)			\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
++#define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK -- use for weak functions */
++#define SYM_FUNC_START_WEAK(name)			\
++	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
++#define SYM_FUNC_START_WEAK_NOALIGN(name)		\
++	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
++	ENDBR
++
+ #endif /* _ASM_X86_LINKAGE_H */
  
