@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B03C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235665AbiCIQSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:18:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36440 "EHLO
+        id S235486AbiCIQSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235502AbiCIQIy (ORCPT
+        with ESMTP id S235452AbiCIQIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F003618FACC;
-        Wed,  9 Mar 2022 08:06:03 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A45B18F20F;
+        Wed,  9 Mar 2022 08:05:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EF12B82226;
-        Wed,  9 Mar 2022 16:06:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB78CC340EF;
-        Wed,  9 Mar 2022 16:06:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AAC46169D;
+        Wed,  9 Mar 2022 16:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777AAC340F5;
+        Wed,  9 Mar 2022 16:05:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841962;
-        bh=PrzkUSJfjRah5bDqvxlns5Yo150NQElLN2igS09Mj4k=;
+        s=korg; t=1646841925;
+        bh=eNC2LoRSShxShPBQOu9Ekx31Np/dRyimoxlehhvsvm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fygGtsCHYHi129ZxZ4pVrxFTZdDkEs/9ioKDobaCX+tA3YDr+iTI2iQGtFnAuQbwk
-         8hG6VcdUs4Ft0e5CY+g8nxmqaWAs1k8AtCwpeRPsw/9pEe97RQCKtGo33DP1dB9STE
-         MkEK7QVJ6XDBMuj2a+uGk2UZwSG70mxGI2LlQHnY=
+        b=d+n53AonqfQZbLzNbUwOP/2qfT9mySH6iW/dt9+2q2afAO51FhdGWea9ZPIZkBpUE
+         2WUatAL0HnpMenkFNGiMpqfzqntSv1SImajVLVpwy3CEqgpZmcv7KBTxq1iv4MjmHX
+         Ml6pLpvzYFsuD6Scm9JU2XHlyeV2I5uxIDV3VkcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 09/43] x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
-Date:   Wed,  9 Mar 2022 16:59:42 +0100
-Message-Id: <20220309155859.513265723@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 24/43] arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+Date:   Wed,  9 Mar 2022 16:59:57 +0100
+Message-Id: <20220309155859.942802365@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -50,93 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: James Morse <james.morse@arm.com>
 
-commit 0de05d056afdb00eca8c7bbb0c79a3438daf700c upstream.
+commit 1b33d4860deaecf1d8eec3061b7e7ed7ab0bae8d upstream.
 
-The commit
+The spectre-v4 sequence includes an SMC from the assembly entry code.
+spectre_v4_patch_fw_mitigation_conduit is the patching callback that
+generates an HVC or SMC depending on the SMCCC conduit type.
 
-   44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
+As this isn't specific to spectre-v4, rename it
+smccc_patch_fw_mitigation_conduit so it can be re-used.
 
-added a warning for the "eIBRS + unprivileged eBPF" combination, which
-has been shown to be vulnerable against Spectre v2 BHB-based attacks.
-
-However, there's no warning about the "eIBRS + LFENCE retpoline +
-unprivileged eBPF" combo. The LFENCE adds more protection by shortening
-the speculation window after a mispredicted branch. That makes an attack
-significantly more difficult, even with unprivileged eBPF. So at least
-for now the logic doesn't warn about that combination.
-
-But if you then add SMT into the mix, the SMT attack angle weakens the
-effectiveness of the LFENCE considerably.
-
-So extend the "eIBRS + unprivileged eBPF" warning to also include the
-"eIBRS + LFENCE + unprivileged eBPF + SMT" case.
-
-  [ bp: Massage commit message. ]
-
-Suggested-by: Alyssa Milburn <alyssa.milburn@linux.intel.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/entry.S       |    2 +-
+ arch/arm64/kernel/proton-pack.c |    6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -616,12 +616,27 @@ static inline const char *spectre_v2_mod
- 
- #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
-+#define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
- 
- #ifdef CONFIG_BPF_SYSCALL
- void unpriv_ebpf_notify(int new_state)
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -143,7 +143,7 @@ alternative_cb_end
+ 	tbnz	\tmp2, #TIF_SSBD, .L__asm_ssbd_skip\@
+ 	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_2
+ 	mov	w1, #\state
+-alternative_cb	spectre_v4_patch_fw_mitigation_conduit
++alternative_cb	smccc_patch_fw_mitigation_conduit
+ 	nop					// Patched to SMC/HVC #0
+ alternative_cb_end
+ .L__asm_ssbd_skip\@:
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -571,9 +571,9 @@ void __init spectre_v4_patch_fw_mitigati
+  * Patch a NOP in the Spectre-v4 mitigation code with an SMC/HVC instruction
+  * to call into firmware to adjust the mitigation state.
+  */
+-void __init spectre_v4_patch_fw_mitigation_conduit(struct alt_instr *alt,
+-						   __le32 *origptr,
+-						   __le32 *updptr, int nr_inst)
++void __init smccc_patch_fw_mitigation_conduit(struct alt_instr *alt,
++					       __le32 *origptr,
++					       __le32 *updptr, int nr_inst)
  {
--	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+	if (new_state)
-+		return;
-+
-+	/* Unprivileged eBPF is enabled */
-+
-+	switch (spectre_v2_enabled) {
-+	case SPECTRE_V2_EIBRS:
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+		break;
-+	case SPECTRE_V2_EIBRS_LFENCE:
-+		if (sched_smt_active())
-+			pr_err(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
-+		break;
-+	default:
-+		break;
-+	}
- }
- #endif
+ 	u32 insn;
  
-@@ -1081,6 +1096,10 @@ void cpu_bugs_smt_update(void)
- {
- 	mutex_lock(&spec_ctrl_mutex);
- 
-+	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
-+	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
-+		pr_warn_once(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
-+
- 	switch (spectre_v2_user_stibp) {
- 	case SPECTRE_V2_USER_NONE:
- 		break;
-@@ -1723,7 +1742,11 @@ static ssize_t spectre_v2_show_state(cha
- 		return sprintf(buf, "Vulnerable: LFENCE\n");
- 
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
--		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+		return sprintf(buf, "Vulnerable: eIBRS with unprivileged eBPF\n");
-+
-+	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
-+	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
-+		return sprintf(buf, "Vulnerable: eIBRS+LFENCE with unprivileged eBPF and SMT\n");
- 
- 	return sprintf(buf, "%s%s%s%s%s%s\n",
- 		       spectre_v2_strings[spectre_v2_enabled],
 
 
