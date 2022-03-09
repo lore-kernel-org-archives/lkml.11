@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B289DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbiCIJOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:14:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S231814AbiCIJPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:15:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231912AbiCIJOn (ORCPT
+        with ESMTP id S230322AbiCIJPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:14:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C7A9986D1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:13:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646817224;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mOG/PAqse9zSZ2yDOcQfN7jOgLfXTKKr0q59fyoMcwk=;
-        b=SnLNvXkLc3ZAkrnRXLk1YE1dZ9FdMB1l8OCFROiMK6MKyBpmHoQWfmOalO1KGUiL2fppGU
-        QLELloxrO3O5TmEtKOjUdWzUvC1BJ0zWP4BLGjVHwqyyRtGvz6ZVQmkozWTUHpjcfY+Lyw
-        I6aLxLs9lCOZpZd4RV7Uq1x+sA1eOOI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-oGiPHFRUPniWP8K0EM3Etg-1; Wed, 09 Mar 2022 04:13:42 -0500
-X-MC-Unique: oGiPHFRUPniWP8K0EM3Etg-1
-Received: by mail-wr1-f71.google.com with SMTP id n4-20020a5d4844000000b001f1ed76e943so536347wrs.22
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:13:42 -0800 (PST)
+        Wed, 9 Mar 2022 04:15:50 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6291015721B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:14:52 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id b8so1765539pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:14:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=beOK8LcrpNIYxKGHWeVR9pv2W0RzrKRTl8AZ7GHaXos=;
+        b=jBqEWkQU5UX4HEI5ow+RV02EDbId1BdW1x9Y/br/jcsO/GwOar1x2/mlXrIDYYc/9Q
+         HhRLqkbuxhyPlBwYBO8rBYy5oD3lqG9YlC3+lVdhv8+D8XI98xA4G+7x2mSmpfDJenQl
+         CxRlT+T7gPZHDCO0shUM689V+DexdKc62yZ6hlGoSA4xZHbcDq+1F29SDYGO8R8Km92v
+         wIjVVVzjzu7ttBIBaWem6u77RcLC3596PDbqoCJZjHoA8PwJbbqf+EcTb9QcoF8xtF4o
+         GTqz7Sy5L5yfWQ4HApsqXLMK3RMfvX5/XpRXucWoMFQoUbfERVU2fnE6Zyoa+KUQ+HZp
+         vfrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=mOG/PAqse9zSZ2yDOcQfN7jOgLfXTKKr0q59fyoMcwk=;
-        b=hx6Vo1zFI52ulu0WTzstZmbZVTS0/sn0dqbVJ+Bomznf+GpB6B1ovBTAj0reu4VhoG
-         36WehHRdWrTUhFa4HQgnmB82okC/KZ+/igI7c1yuPRwk+VdDJ8cRS/sNkea6twIHMF4I
-         oXhzQCV2MhOepDtFlJr4idY+LBHeqZ5a0LyNrd3xdgEgXbZaXKFFHgZ1sYXLp/yz6Pf5
-         hE1pst9d7f54B8eyiCwO5CzWUpvE2NJLpdiec5OpKBML2bB4/HLboS1DGi6bFwPNjUw1
-         sKj/b0q6guE7pi4Yf8Cf1U4VEub19AJhwJnh5cQPDGareksdjlhxnV/dPqgmc+JCVPWD
-         nIDA==
-X-Gm-Message-State: AOAM533zwBQs4kttKY1Ck2HDzy0iufk20AD9FutBwu5iNRjXJaaXgw8n
-        Z2Pa20oe+csyW+v0krlx7iChrXew8v/sfSjCur7R+hIxz7u7ee31UArWAWVrKbchdItKfbqtCQa
-        mScVc8sHmmLhOL1nrin8RtseS
-X-Received: by 2002:a05:6000:168e:b0:1f1:faf1:23b7 with SMTP id y14-20020a056000168e00b001f1faf123b7mr9640373wrd.150.1646817221588;
-        Wed, 09 Mar 2022 01:13:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJweaBimAyyZrv7VWly/q07XyzC7p7a2C8mkUhFK+5TKB0vl3lp2QMtC0tGVt1RE5UTRPIOE3w==
-X-Received: by 2002:a05:6000:168e:b0:1f1:faf1:23b7 with SMTP id y14-20020a056000168e00b001f1faf123b7mr9640353wrd.150.1646817221338;
-        Wed, 09 Mar 2022 01:13:41 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id i8-20020a7bc948000000b003898dfd7990sm1227337wml.29.2022.03.09.01.13.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=beOK8LcrpNIYxKGHWeVR9pv2W0RzrKRTl8AZ7GHaXos=;
+        b=K3Mt3JypvqyuPng4jPzx+N3lykt/sndLRCtl0D5t2MPpE1vvEmXf2XcYnTxtRoKEWn
+         +uEA4obD6zxA5yzw0rWlbCurBXxNc6tQEAKmjnQ0mCqII9AZ6XiTz/SNvKF4/kGOHud1
+         fvAb0N3wcBYVOLmIvUnCRIjMQA9CW5vhEUEH/97tEK1HrgB6pDWF7DDQNu9UZq1jAeCS
+         1Ud2ITb01AhwSo4y2iXGD4gRL3PsJpd+kk+4qy2kgGdum6dXIXk7GJq2swxJ71FHS/1S
+         tv+OABdRO7sxcC+Smr4TWlN+Pob1sP05KuaFX7f1TNmca6jBbJ1YlHCsUxmAhFWJl0Cq
+         CEZw==
+X-Gm-Message-State: AOAM53211UcMgLpV1i+MHXWUCWK4Ex5pW54FADTwBVo25wv4n3IXCmez
+        tODxjYR6+MRUHrn2oA7siwQ=
+X-Google-Smtp-Source: ABdhPJxxLHSCqMw3qJsOgKLX0VzKOjKXq0movyQleTGzWe0eovbbdZ9wvpBmqv1zB4cE+bDlh4ZIWQ==
+X-Received: by 2002:a17:90a:3e42:b0:1bf:53ce:f1ef with SMTP id t2-20020a17090a3e4200b001bf53cef1efmr9294168pjm.33.1646817291893;
+        Wed, 09 Mar 2022 01:14:51 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id v24-20020a634818000000b0036407db4728sm1619625pga.26.2022.03.09.01.14.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 01:13:40 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Wei Liu <wei.liu@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 1/1] x86/hyperv: Output host build info as normal
- Windows version number
-In-Reply-To: <20220308204657.v2xdbtx6qsx6n44s@liuwe-devbox-debian-v2>
-References: <1646767364-2234-1-git-send-email-mikelley@microsoft.com>
- <20220308204657.v2xdbtx6qsx6n44s@liuwe-devbox-debian-v2>
-Date:   Wed, 09 Mar 2022 10:13:39 +0100
-Message-ID: <87ee3ba3p8.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Wed, 09 Mar 2022 01:14:51 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Li Yang <leoyang.li@nxp.com>, Biwen Li <biwen.li@nxp.com>,
+        Ran Wang <ran.wang_1@nxp.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] soc: fsl: rcpm: Fix refcount leak in copy_ippdexpcr1_setting
+Date:   Wed,  9 Mar 2022 09:14:46 +0000
+Message-Id: <20220309091446.2420-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wei Liu <wei.liu@kernel.org> writes:
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-> (Cc Vitaly)
->
-> On Tue, Mar 08, 2022 at 11:22:44AM -0800, Michael Kelley wrote:
->> Hyper-V provides host version number information that is output in
->> text form by a Linux guest when it boots. For whatever reason, the
->> formatting has historically been non-standard. Change it to output
->> in normal Windows version format for better readability.
->> 
->> Similar code for ARM64 guests already outputs in normal Windows
->> version format.
->> 
->> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Fixes: e95f287deed2 ("soc: fsl: handle RCPM errata A-008646 on SoC LS1021A")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/soc/fsl/rcpm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Works for me, thanks!
-
->
-> Applied to hyperv-next. Thanks.
-
+diff --git a/drivers/soc/fsl/rcpm.c b/drivers/soc/fsl/rcpm.c
+index 3d0cae30c769..06bd94b29fb3 100644
+--- a/drivers/soc/fsl/rcpm.c
++++ b/drivers/soc/fsl/rcpm.c
+@@ -36,6 +36,7 @@ static void copy_ippdexpcr1_setting(u32 val)
+ 		return;
+ 
+ 	regs = of_iomap(np, 0);
++	of_node_put(np);
+ 	if (!regs)
+ 		return;
+ 
 -- 
-Vitaly
+2.17.1
 
