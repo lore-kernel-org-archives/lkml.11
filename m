@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 917B0C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B8FC46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236950AbiCIQs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
+        id S237219AbiCIQss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237509AbiCIQat (ORCPT
+        with ESMTP id S238006AbiCIQbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C99177753;
-        Wed,  9 Mar 2022 08:24:43 -0800 (PST)
+        Wed, 9 Mar 2022 11:31:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16AF192C95;
+        Wed,  9 Mar 2022 08:25:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B720619C9;
-        Wed,  9 Mar 2022 16:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E1DC340E8;
-        Wed,  9 Mar 2022 16:24:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2567B82020;
+        Wed,  9 Mar 2022 16:25:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E701C340E8;
+        Wed,  9 Mar 2022 16:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843082;
-        bh=tnE90IB6LR3XgPsa47TXjDRPFMPyJOgNoQJRfk99q+0=;
+        s=k20201202; t=1646843125;
+        bh=K9gceViHzNAZRZsRqEmIjzn7fQTvsVlXZG/p6NcdhHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbCC1+9plPDZ39IIxUYVN0WkWozX167aZQKIwaDWrfjkF2IdXCPVUAA3vSR0fnlRn
-         3F4S9nWmdjwEtTuMgAFsKzQyUGtV0DUSzxF6XD6OEkjKg1UEowrRJPVpqfSVe0N/8+
-         jmUBTWix0W34yW0slH8d7/FZmVysk13A4iVXWKMM9NaCUxsvxJqK0vUI3NeeFMrezy
-         NctU8HD7rZhDS6BQKkEFc7pc/5VgDLHo/QfajtNhOjvO388J8EVsJ5Ca3disOjEM8G
-         FYrCacp0vO23W506vBJyohgAOrQuYkX77ew9bOmcOVKsukI/UMbXUI1Jxf7TTNVwf8
-         gCR5Yy4/vGFsA==
+        b=oNqnmikp8Wio4YDMmGaqZ4TqlScAIaJ8FpJZMCCGYIjdxfK4i1lGYLWXRpWH7vT/i
+         +2qnVjSRNvi/gzIdyeqxIJ9DvRkdoYyrP3b+ZI9CPK7lDze9roZrSEXWMQQWExUVs0
+         yORXtyGjk/GT6jDup4sis083EFQf4mMwCvferP7FZV+fmyS2un2/AduGfbOlrwOHID
+         5//yL3budJFyTBFvvzymcNT6xb4AK1yC9YA3633A46iZ6PUuEPLzNFwM1Mc52JWasu
+         kjYhEoIkH0x83kZ6Imc4A2BzbxRJE0m724DHM++eqqEtD4WywWl/XY0/ze8myqxN+j
+         1PKKY/Oy13P5g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Golan Ben Ami <golan.ben.ami@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        miriam.rachel.korenblit@intel.com, ilan.peer@intel.com,
-        mordechay.goodstein@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/19] iwlwifi: don't advertise TWT support
-Date:   Wed,  9 Mar 2022 11:23:30 -0500
-Message-Id: <20220309162337.136773-13-sashal@kernel.org>
+Cc:     Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <foss+kernel@0leil.net>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 03/14] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Wed,  9 Mar 2022 11:24:56 -0500
+Message-Id: <20220309162508.137035-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
-References: <20220309162337.136773-1-sashal@kernel.org>
+In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
+References: <20220309162508.137035-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,53 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Golan Ben Ami <golan.ben.ami@intel.com>
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-Some APs misbehave when TWT is used and cause our firmware to crash.
-We don't know a reasonable way to detect and work around this problem
-in the FW yet.  To prevent these crashes, disable TWT in the driver by
-stopping to advertise TWT support.
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
-Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
-[reworded the commit message]
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
+
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
+
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-index 022f2faccab4..4a433e34ee7a 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
-@@ -519,8 +519,7 @@ static struct ieee80211_sband_iftype_data iwl_he_capa[] = {
- 			.has_he = true,
- 			.he_cap_elem = {
- 				.mac_cap_info[0] =
--					IEEE80211_HE_MAC_CAP0_HTC_HE |
--					IEEE80211_HE_MAC_CAP0_TWT_REQ,
-+					IEEE80211_HE_MAC_CAP0_HTC_HE,
- 				.mac_cap_info[1] =
- 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
- 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 29ad7804d77a..3c523774ef0e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -343,7 +343,6 @@ const static u8 he_if_types_ext_capa_sta[] = {
- 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
- 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
- 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
--	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index b155f657292b..ce1320e4c106 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -468,6 +468,12 @@ vcc5v0_host_en: vcc5v0-host-en {
  };
  
- const static struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
++	 */
++	max-frequency = <100000000>;
++
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
 -- 
 2.34.1
 
