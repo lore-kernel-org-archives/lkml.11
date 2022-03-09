@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2952EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A89C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236560AbiCIRrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:47:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        id S229659AbiCIRrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:47:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236591AbiCIRrK (ORCPT
+        with ESMTP id S235167AbiCIRrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:47:10 -0500
+        Wed, 9 Mar 2022 12:47:01 -0500
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1B411E3D9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:46:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94C311C7F0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:46:00 -0800 (PST)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KDKNF0fN3z9sTS;
-        Wed,  9 Mar 2022 18:45:17 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4KDKND34Fqz9sTR;
+        Wed,  9 Mar 2022 18:45:16 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id bw4yrIEQ2HL5; Wed,  9 Mar 2022 18:45:17 +0100 (CET)
+        with ESMTP id vUE12mIGNtHT; Wed,  9 Mar 2022 18:45:16 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN10vz1z9sTV;
-        Wed,  9 Mar 2022 18:45:05 +0100 (CET)
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN05rCxz9sTT;
+        Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0A5388B763;
-        Wed,  9 Mar 2022 18:45:05 +0100 (CET)
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id AE3F28B763;
+        Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id RunPUUwNT2DJ; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
+        with ESMTP id ebhRHuSMbydx; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.27])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E7B6F8B78B;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D6A968B781;
         Wed,  9 Mar 2022 18:45:02 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229HiuXO3619026
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229Hiw7r3619046
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 9 Mar 2022 18:44:56 +0100
+        Wed, 9 Mar 2022 18:44:58 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229Hit9h3619025;
-        Wed, 9 Mar 2022 18:44:55 +0100
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229HiwDs3619045;
+        Wed, 9 Mar 2022 18:44:58 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -53,187 +53,216 @@ Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         catalin.marinas@arm.com, will@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Nicholas Piggin <npiggin@gmail.com>
-Subject: [PATCH v8 03/14] mm, hugetlbfs: Allow an arch to always use generic versions of get_unmapped_area functions
-Date:   Wed,  9 Mar 2022 18:44:37 +0100
-Message-Id: <82ebdfa2f2244d286a2f97a16549ff334438261b.1646847561.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v8 08/14] powerpc/mm: Remove CONFIG_PPC_MM_SLICES
+Date:   Wed,  9 Mar 2022 18:44:42 +0100
+Message-Id: <7d4ed01f5425fcd4083e402fd74052115c5dd843.1646847562.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 References: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847882; l=6083; s=20211009; h=from:subject:message-id; bh=thpAysBeMixL/GwjpD3NdHaQCVCGsiEZQtTYyQo5FGA=; b=ZJQoobZAfE0OgcobH4551vlxvjOSA/UDrvkLYVLZY5o3CuyKIArtP/7CQu5EwD/j8V3CsJYmbT5o xs6hdFEEB8SAt5qJUh2aHzmLPt/6KoieZL8Vw3efATPOAebAWGoP
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847882; l=7009; s=20211009; h=from:subject:message-id; bh=xCZrv1mmpIOWXul1KGoNbcqIe0WAzcWiFaOPQ13u8gQ=; b=r1ciVDVEgCjtwxa/9+Yl/xVl1WJPMI5wLQk3HjHHj0LxXeLX+ztXJdKWe6F5ZZktZYPAk1Xit1tH kwssDvYpA6pbjAr2nljoLsHMYgUQ2xKoKtwHus8gsJgKhWi9klRD
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unlike most architectures, powerpc can only define at runtime
-if it is going to use the generic arch_get_unmapped_area() or not.
+CONFIG_PPC_MM_SLICES is always selected by hash book3s/64.
+CONFIG_PPC_MM_SLICES is never selected by other platforms.
 
-Today, powerpc has a copy of the generic arch_get_unmapped_area()
-because when selection HAVE_ARCH_UNMAPPED_AREA the generic
-arch_get_unmapped_area() is not available.
-
-Rename it generic_get_unmapped_area() and make it independent of
-HAVE_ARCH_UNMAPPED_AREA.
-
-Do the same for arch_get_unmapped_area_topdown() versus
-HAVE_ARCH_UNMAPPED_AREA_TOPDOWN.
-
-Do the same for hugetlb_get_unmapped_area() versus
-HAVE_ARCH_HUGETLB_UNMAPPED_AREA.
+Remove it.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
 ---
- fs/hugetlbfs/inode.c     | 17 +++++++++++++----
- include/linux/hugetlb.h  |  5 +++++
- include/linux/sched/mm.h |  9 +++++++++
- mm/mmap.c                | 31 ++++++++++++++++++++++++-------
- 4 files changed, 51 insertions(+), 11 deletions(-)
+ arch/powerpc/include/asm/hugetlb.h     |  2 +-
+ arch/powerpc/include/asm/paca.h        |  7 -------
+ arch/powerpc/kernel/paca.c             |  5 -----
+ arch/powerpc/mm/book3s64/Makefile      |  3 +--
+ arch/powerpc/mm/book3s64/hash_utils.c  | 14 --------------
+ arch/powerpc/mm/hugetlbpage.c          |  2 +-
+ arch/powerpc/mm/mmap.c                 |  4 ++--
+ arch/powerpc/platforms/Kconfig.cputype |  4 ----
+ 8 files changed, 5 insertions(+), 36 deletions(-)
 
-diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
-index a7c6c7498be0..ba15a85c7dfb 100644
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -195,7 +195,6 @@ static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
-  * Called under mmap_write_lock(mm).
-  */
- 
--#ifndef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
- static unsigned long
- hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
- 		unsigned long len, unsigned long pgoff, unsigned long flags)
-@@ -244,9 +243,10 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
- 	return addr;
- }
- 
--static unsigned long
--hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
--		unsigned long len, unsigned long pgoff, unsigned long flags)
-+unsigned long
-+generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
-+				  unsigned long len, unsigned long pgoff,
-+				  unsigned long flags)
+diff --git a/arch/powerpc/include/asm/hugetlb.h b/arch/powerpc/include/asm/hugetlb.h
+index 6a1a1ac5743b..ef86197d1c0a 100644
+--- a/arch/powerpc/include/asm/hugetlb.h
++++ b/arch/powerpc/include/asm/hugetlb.h
+@@ -24,7 +24,7 @@ static inline int is_hugepage_only_range(struct mm_struct *mm,
+ 					 unsigned long addr,
+ 					 unsigned long len)
  {
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma;
-@@ -282,6 +282,15 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	return hugetlb_get_unmapped_area_bottomup(file, addr, len,
- 			pgoff, flags);
+-	if (IS_ENABLED(CONFIG_PPC_MM_SLICES) && !radix_enabled())
++	if (IS_ENABLED(CONFIG_PPC_64S_HASH_MMU) && !radix_enabled())
+ 		return slice_is_hugepage_only_range(mm, addr, len);
+ 	return 0;
  }
-+
-+#ifndef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
-+static unsigned long
-+hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
-+			  unsigned long len, unsigned long pgoff,
-+			  unsigned long flags)
-+{
-+	return generic_hugetlb_get_unmapped_area(file, addr, len, pgoff, flags);
-+}
+diff --git a/arch/powerpc/include/asm/paca.h b/arch/powerpc/include/asm/paca.h
+index 8330968ca346..03330b7d835f 100644
+--- a/arch/powerpc/include/asm/paca.h
++++ b/arch/powerpc/include/asm/paca.h
+@@ -152,16 +152,9 @@ struct paca_struct {
+ 	struct tlb_core_data tcd;
+ #endif /* CONFIG_PPC_BOOK3E */
+ 
+-#ifdef CONFIG_PPC_BOOK3S
+ #ifdef CONFIG_PPC_64S_HASH_MMU
+-#ifdef CONFIG_PPC_MM_SLICES
+ 	unsigned char mm_ctx_low_slices_psize[BITS_PER_LONG / BITS_PER_BYTE];
+ 	unsigned char mm_ctx_high_slices_psize[SLICE_ARRAY_SIZE];
+-#else
+-	u16 mm_ctx_user_psize;
+-	u16 mm_ctx_sllp;
+-#endif
+-#endif
  #endif
  
- static size_t
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index d1897a69c540..d9ce1fe3a403 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -513,6 +513,11 @@ unsigned long hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 					unsigned long flags);
- #endif /* HAVE_ARCH_HUGETLB_UNMAPPED_AREA */
+ 	/*
+diff --git a/arch/powerpc/kernel/paca.c b/arch/powerpc/kernel/paca.c
+index 39da688a9455..ba593fd60124 100644
+--- a/arch/powerpc/kernel/paca.c
++++ b/arch/powerpc/kernel/paca.c
+@@ -344,15 +344,10 @@ void copy_mm_to_paca(struct mm_struct *mm)
+ {
+ 	mm_context_t *context = &mm->context;
  
-+unsigned long
-+generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
-+				  unsigned long len, unsigned long pgoff,
-+				  unsigned long flags);
-+
+-#ifdef CONFIG_PPC_MM_SLICES
+ 	VM_BUG_ON(!mm_ctx_slb_addr_limit(context));
+ 	memcpy(&get_paca()->mm_ctx_low_slices_psize, mm_ctx_low_slices(context),
+ 	       LOW_SLICE_ARRAY_SZ);
+ 	memcpy(&get_paca()->mm_ctx_high_slices_psize, mm_ctx_high_slices(context),
+ 	       TASK_SLICE_ARRAY_SZ(context));
+-#else /* CONFIG_PPC_MM_SLICES */
+-	get_paca()->mm_ctx_user_psize = context->user_psize;
+-	get_paca()->mm_ctx_sllp = context->sllp;
+-#endif
+ }
+ #endif /* CONFIG_PPC_64S_HASH_MMU */
+diff --git a/arch/powerpc/mm/book3s64/Makefile b/arch/powerpc/mm/book3s64/Makefile
+index af2f3e75d458..d527dc8e30a8 100644
+--- a/arch/powerpc/mm/book3s64/Makefile
++++ b/arch/powerpc/mm/book3s64/Makefile
+@@ -5,7 +5,7 @@ ccflags-y	:= $(NO_MINIMAL_TOC)
+ obj-y				+= mmu_context.o pgtable.o trace.o
+ ifdef CONFIG_PPC_64S_HASH_MMU
+ CFLAGS_REMOVE_slb.o = $(CC_FLAGS_FTRACE)
+-obj-y				+= hash_pgtable.o hash_utils.o hash_tlb.o slb.o
++obj-y				+= hash_pgtable.o hash_utils.o hash_tlb.o slb.o slice.o
+ obj-$(CONFIG_PPC_HASH_MMU_NATIVE)	+= hash_native.o
+ obj-$(CONFIG_PPC_4K_PAGES)	+= hash_4k.o
+ obj-$(CONFIG_PPC_64K_PAGES)	+= hash_64k.o
+@@ -21,7 +21,6 @@ obj-$(CONFIG_PPC_RADIX_MMU)	+= radix_hugetlbpage.o
+ endif
+ obj-$(CONFIG_SPAPR_TCE_IOMMU)	+= iommu_api.o
+ obj-$(CONFIG_PPC_PKEY)	+= pkeys.o
+-obj-$(CONFIG_PPC_MM_SLICES)	+= slice.o
+ 
+ # Instrumenting the SLB fault path can lead to duplicate SLB entries
+ KCOV_INSTRUMENT_slb.o := n
+diff --git a/arch/powerpc/mm/book3s64/hash_utils.c b/arch/powerpc/mm/book3s64/hash_utils.c
+index 985cabdd7f67..43ecad8f9564 100644
+--- a/arch/powerpc/mm/book3s64/hash_utils.c
++++ b/arch/powerpc/mm/book3s64/hash_utils.c
+@@ -1264,7 +1264,6 @@ unsigned int hash_page_do_lazy_icache(unsigned int pp, pte_t pte, int trap)
+ 	return pp;
+ }
+ 
+-#ifdef CONFIG_PPC_MM_SLICES
+ static unsigned int get_paca_psize(unsigned long addr)
+ {
+ 	unsigned char *psizes;
+@@ -1281,12 +1280,6 @@ static unsigned int get_paca_psize(unsigned long addr)
+ 	return (psizes[index >> 1] >> (mask_index * 4)) & 0xF;
+ }
+ 
+-#else
+-unsigned int get_paca_psize(unsigned long addr)
+-{
+-	return get_paca()->mm_ctx_user_psize;
+-}
+-#endif
+ 
  /*
-  * huegtlb page specific state flags.  These flags are located in page.private
-  * of the hugetlb head page.  Functions created via the below macros should be
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index aa5f09ca5bcf..1dcf54360aea 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -144,6 +144,15 @@ extern unsigned long
- arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
- 			  unsigned long len, unsigned long pgoff,
- 			  unsigned long flags);
-+
-+unsigned long
-+generic_get_unmapped_area(struct file *filp, unsigned long addr,
-+			  unsigned long len, unsigned long pgoff,
-+			  unsigned long flags);
-+unsigned long
-+generic_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
-+				  unsigned long len, unsigned long pgoff,
-+				  unsigned long flags);
+  * Demote a segment to using 4k pages.
+@@ -1680,7 +1673,6 @@ DEFINE_INTERRUPT_HANDLER(do_hash_fault)
+ 	}
+ }
+ 
+-#ifdef CONFIG_PPC_MM_SLICES
+ static bool should_hash_preload(struct mm_struct *mm, unsigned long ea)
+ {
+ 	int psize = get_slice_psize(mm, ea);
+@@ -1697,12 +1689,6 @@ static bool should_hash_preload(struct mm_struct *mm, unsigned long ea)
+ 
+ 	return true;
+ }
+-#else
+-static bool should_hash_preload(struct mm_struct *mm, unsigned long ea)
+-{
+-	return true;
+-}
+-#endif
+ 
+ static void hash_preload(struct mm_struct *mm, pte_t *ptep, unsigned long ea,
+ 			 bool is_exec, unsigned long trap)
+diff --git a/arch/powerpc/mm/hugetlbpage.c b/arch/powerpc/mm/hugetlbpage.c
+index 7b89f0799d82..f71ac14018e2 100644
+--- a/arch/powerpc/mm/hugetlbpage.c
++++ b/arch/powerpc/mm/hugetlbpage.c
+@@ -558,7 +558,7 @@ unsigned long hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
+ 		return radix__hugetlb_get_unmapped_area(file, addr, len,
+ 						       pgoff, flags);
+ #endif
+-#ifdef CONFIG_PPC_MM_SLICES
++#ifdef CONFIG_PPC_64S_HASH_MMU
+ 	return slice_get_unmapped_area(addr, len, flags, file_to_psize(file), 1);
+ #endif
+ 	BUG();
+diff --git a/arch/powerpc/mm/mmap.c b/arch/powerpc/mm/mmap.c
+index c475cf810aa8..9b0d6e395bc0 100644
+--- a/arch/powerpc/mm/mmap.c
++++ b/arch/powerpc/mm/mmap.c
+@@ -190,7 +190,7 @@ unsigned long arch_get_unmapped_area(struct file *filp,
+ 				     unsigned long pgoff,
+ 				     unsigned long flags)
+ {
+-#ifdef CONFIG_PPC_MM_SLICES
++#ifdef CONFIG_PPC_64S_HASH_MMU
+ 	return slice_get_unmapped_area(addr, len, flags,
+ 				       mm_ctx_user_psize(&current->mm->context), 0);
  #else
- static inline void arch_pick_mmap_layout(struct mm_struct *mm,
- 					 struct rlimit *rlim_stack) {}
-diff --git a/mm/mmap.c b/mm/mmap.c
-index d445c1b9d606..e062a4462db5 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2138,10 +2138,10 @@ unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info)
-  *
-  * This function "knows" that -ENOMEM has the bits set.
-  */
--#ifndef HAVE_ARCH_UNMAPPED_AREA
- unsigned long
--arch_get_unmapped_area(struct file *filp, unsigned long addr,
--		unsigned long len, unsigned long pgoff, unsigned long flags)
-+generic_get_unmapped_area(struct file *filp, unsigned long addr,
-+			  unsigned long len, unsigned long pgoff,
-+			  unsigned long flags)
+@@ -204,7 +204,7 @@ unsigned long arch_get_unmapped_area_topdown(struct file *filp,
+ 					     const unsigned long pgoff,
+ 					     const unsigned long flags)
  {
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma, *prev;
-@@ -2171,17 +2171,25 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
- 	info.align_offset = 0;
- 	return vm_unmapped_area(&info);
- }
-+
-+#ifndef HAVE_ARCH_UNMAPPED_AREA
-+unsigned long
-+arch_get_unmapped_area(struct file *filp, unsigned long addr,
-+		       unsigned long len, unsigned long pgoff,
-+		       unsigned long flags)
-+{
-+	return generic_get_unmapped_area(filp, addr, len, pgoff, flags);
-+}
- #endif
+-#ifdef CONFIG_PPC_MM_SLICES
++#ifdef CONFIG_PPC_64S_HASH_MMU
+ 	return slice_get_unmapped_area(addr0, len, flags,
+ 				       mm_ctx_user_psize(&current->mm->context), 1);
+ #else
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index e2e1fec91c6e..9d099dc75e8b 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -377,7 +377,6 @@ config SPE
+ config PPC_64S_HASH_MMU
+ 	bool "Hash MMU Support"
+ 	depends on PPC_BOOK3S_64
+-	select PPC_MM_SLICES
+ 	default y
+ 	help
+ 	  Enable support for the Power ISA Hash style MMU. This is implemented
+@@ -451,9 +450,6 @@ config PPC_BOOK3E_MMU
+ 	def_bool y
+ 	depends on FSL_BOOKE || PPC_BOOK3E
  
- /*
-  * This mmap-allocator allocates new areas top-down from below the
-  * stack's low limit (the base):
-  */
--#ifndef HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
- unsigned long
--arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
--			  unsigned long len, unsigned long pgoff,
--			  unsigned long flags)
-+generic_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
-+				  unsigned long len, unsigned long pgoff,
-+				  unsigned long flags)
- {
- 	struct vm_area_struct *vma, *prev;
- 	struct mm_struct *mm = current->mm;
-@@ -2229,6 +2237,15 @@ arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
+-config PPC_MM_SLICES
+-	bool
+-
+ config PPC_HAVE_PMU_SUPPORT
+ 	bool
  
- 	return addr;
- }
-+
-+#ifndef HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
-+unsigned long
-+arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
-+			       unsigned long len, unsigned long pgoff,
-+			       unsigned long flags)
-+{
-+	return generic_get_unmapped_area_topdown(filp, addr, len, pgoff, flags);
-+}
- #endif
- 
- unsigned long
 -- 
 2.34.1
 
