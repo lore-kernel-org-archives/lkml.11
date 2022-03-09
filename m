@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE95C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbiCIQnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:43:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
+        id S235411AbiCIQnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237676AbiCIQbE (ORCPT
+        with ESMTP id S237694AbiCIQbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:31:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89EF145E25;
-        Wed,  9 Mar 2022 08:24:58 -0800 (PST)
+        Wed, 9 Mar 2022 11:31:05 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564C114893D;
+        Wed,  9 Mar 2022 08:25:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34E41B82222;
-        Wed,  9 Mar 2022 16:24:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A1D2C340E8;
-        Wed,  9 Mar 2022 16:24:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1196CE1FCB;
+        Wed,  9 Mar 2022 16:24:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1881BC340EC;
+        Wed,  9 Mar 2022 16:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843072;
-        bh=DS1Q7YDfa5cQlvAG52m1EPyp6K26+bOqkCOC/XXA3n4=;
+        s=k20201202; t=1646843096;
+        bh=Us0ddea7M4LNimZ1TRqKszvcE3LyqV9O8BoBA/Mrw4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kA2lHJ6Q32Jvls1JeatYX9xhAA9MxTDF8xkna06AD/4Hg+doT4OgoFOwDIg49tg3Z
-         GFY6HfuIRPZNl9F7nWetdvpuGIpya8iOC2HsDBmQHccQSMfhziXDQBrxE+3GlJelpT
-         a44yCqhtQXYyLWzlu8sO9sGbK3zyvGBAJU8xNGYP5+QPrzTI7g/MjZoiRtIHer7fqj
-         4QYiEk48+bHuZZC2VpD1SnE2kATaBJYJ/X7sXbTk2jXqMr9ZKUabE+Ki2ds70n7+Nc
-         LqHseJJPsL47xw02LxUnMOSBgvx4BvwdmYVZtO4Sj8wvh3JxbrF58cO9xGN2SM8oqY
-         v245og4FR/UeQ==
+        b=jIKRAHqJCdh/w9vYFXnjz2mbnvEHhfLoVWsLGWU/Uq0ZtOwfIgNXleZSOMIXUSCaR
+         QMK3rlBT4iKudVeaD+WTbDLod3BVxOBNYABBqlek2FvHGFEDxxpEBd1BHBSyGH1ZoF
+         /TlElIOzIf3IF3AoRm/RNzjm8CQQOeXt+cCO2LZteKRA1lL4zsE/RwaOpyZdZiOIHM
+         HMWgPBmvF91/2l7s/JXI/0dNFnKA1xuXr1SdbzOmxwMDHeC4nvHvqKklmcALlPaLcN
+         5pHIKWFrau3Fc9G6gHQPl+wN0RriPmpgKG4dqt3GvWyod7tzYWex+ZbxfY/t5GBhVO
+         rlPEErfKWn/cA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr,
-        stefan.maetje@esd.eu, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/19] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-Date:   Wed,  9 Mar 2022 11:23:28 -0500
-Message-Id: <20220309162337.136773-11-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 16/19] tcp: make tcp_read_sock() more robust
+Date:   Wed,  9 Mar 2022 11:23:33 -0500
+Message-Id: <20220309162337.136773-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162337.136773-1-sashal@kernel.org>
 References: <20220309162337.136773-1-sashal@kernel.org>
@@ -56,48 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
+[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
 
-Register the CAN device only when all the necessary initialization is
-completed. This patch makes sure all the data structures and locks are
-initialized before registering the CAN device.
+If recv_actor() returns an incorrect value, tcp_read_sock()
+might loop forever.
 
-Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Pavel Machek <pavel@denx.de>
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Instead, issue a one time warning and make sure to make progress.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_canfd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/tcp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index edaa1ca972c1..d4e9815ca26f 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1598,15 +1598,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
- 
- 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
- 		       RCANFD_NAPI_WEIGHT);
-+	spin_lock_init(&priv->tx_lock);
-+	devm_can_led_init(ndev);
-+	gpriv->ch[priv->channel] = priv;
- 	err = register_candev(ndev);
- 	if (err) {
- 		dev_err(&pdev->dev,
- 			"register_candev() failed, error %d\n", err);
- 		goto fail_candev;
- 	}
--	spin_lock_init(&priv->tx_lock);
--	devm_can_led_init(ndev);
--	gpriv->ch[priv->channel] = priv;
- 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
- 	return 0;
- 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 9f53d25e047e..4815cf72569e 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1652,11 +1652,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 				if (!copied)
+ 					copied = used;
+ 				break;
+-			} else if (used <= len) {
+-				seq += used;
+-				copied += used;
+-				offset += used;
+ 			}
++			if (WARN_ON_ONCE(used > len))
++				used = len;
++			seq += used;
++			copied += used;
++			offset += used;
++
+ 			/* If recv_actor drops the lock (e.g. TCP splice
+ 			 * receive) the skb pointer might be invalid when
+ 			 * getting here: tcp_collapse might have deleted it
 -- 
 2.34.1
 
