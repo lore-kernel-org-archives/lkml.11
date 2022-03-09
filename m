@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59185C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7346DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234655AbiCITXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:23:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        id S237771AbiCITXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238312AbiCITXN (ORCPT
+        with ESMTP id S238375AbiCITXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:23:13 -0500
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE7843498;
-        Wed,  9 Mar 2022 11:22:13 -0800 (PST)
+        Wed, 9 Mar 2022 14:23:19 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8F72AE;
+        Wed,  9 Mar 2022 11:22:20 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 5B51F425C8;
-        Wed,  9 Mar 2022 19:22:09 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 4299241EA7;
+        Wed,  9 Mar 2022 19:22:16 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>
@@ -30,9 +30,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         Mark Kettenis <mark.kettenis@xs4all.nl>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v3 3/7] irqchip/apple-aic: Add Fast IPI support
-Date:   Thu, 10 Mar 2022 04:21:19 +0900
-Message-Id: <20220309192123.152028-4-marcan@marcan.st>
+Subject: [PATCH v3 5/7] irqchip/apple-aic: Dynamically compute register offsets
+Date:   Thu, 10 Mar 2022 04:21:21 +0900
+Message-Id: <20220309192123.152028-6-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220309192123.152028-1-marcan@marcan.st>
 References: <20220309192123.152028-1-marcan@marcan.st>
@@ -42,266 +42,200 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The newer AICv2 present in t600x SoCs does not have legacy IPI support
-at all. Since t8103 also supports Fast IPIs, implement support for this
-first. The legacy IPI code is left as a fallback, so it can be
-potentially used by older SoCs in the future.
-
-The vIPI code is shared; only the IPI firing/acking bits change for Fast
-IPIs.
+This allows us to support AIC variants with different numbers of IRQs
+based on capability registers.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/irqchip/irq-apple-aic.c | 122 ++++++++++++++++++++++++++++----
- 1 file changed, 109 insertions(+), 13 deletions(-)
+ drivers/irqchip/irq-apple-aic.c | 72 +++++++++++++++++++++++++--------
+ 1 file changed, 55 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
-index 38091ebb9403..613e0ebdabdc 100644
+index 96480389195d..4b1ba732f476 100644
 --- a/drivers/irqchip/irq-apple-aic.c
 +++ b/drivers/irqchip/irq-apple-aic.c
-@@ -24,7 +24,7 @@
-  * - Default "this CPU" register view and explicit per-CPU views
-  *
-  * In addition, this driver also handles FIQs, as these are routed to the same
-- * IRQ vector. These are used for Fast IPIs (TODO), the ARMv8 timer IRQs, and
-+ * IRQ vector. These are used for Fast IPIs, the ARMv8 timer IRQs, and
-  * performance counters (TODO).
-  *
-  * Implementation notes:
-@@ -52,9 +52,11 @@
- #include <linux/irqchip.h>
- #include <linux/irqchip/arm-vgic-info.h>
- #include <linux/irqdomain.h>
-+#include <linux/jump_label.h>
- #include <linux/limits.h>
- #include <linux/of_address.h>
- #include <linux/slab.h>
-+#include <asm/cputype.h>
- #include <asm/exception.h>
- #include <asm/sysreg.h>
- #include <asm/virt.h>
-@@ -106,7 +108,6 @@
+@@ -64,7 +64,7 @@
+ #include <dt-bindings/interrupt-controller/apple-aic.h>
  
  /*
-  * IMP-DEF sysregs that control FIQ sources
-- * Note: sysreg-based IPIs are not supported yet.
+- * AIC registers (MMIO)
++ * AIC v1 registers (MMIO)
   */
  
- /* Core PMC control register */
-@@ -155,6 +156,10 @@
- #define SYS_IMP_APL_UPMSR_EL1		sys_reg(3, 7, 15, 6, 4)
- #define UPMSR_IACT			BIT(0)
+ #define AIC_INFO		0x0004
+@@ -94,16 +94,14 @@
+ #define AIC_IPI_SELF		BIT(31)
  
-+/* MPIDR fields */
-+#define MPIDR_CPU(x)			MPIDR_AFFINITY_LEVEL(x, 0)
-+#define MPIDR_CLUSTER(x)		MPIDR_AFFINITY_LEVEL(x, 1)
-+
- #define AIC_NR_FIQ		4
- #define AIC_NR_SWIPI		32
+ #define AIC_TARGET_CPU		0x3000
+-#define AIC_SW_SET		0x4000
+-#define AIC_SW_CLR		0x4080
+-#define AIC_MASK_SET		0x4100
+-#define AIC_MASK_CLR		0x4180
  
-@@ -173,11 +178,44 @@
- #define AIC_TMR_EL02_PHYS	AIC_TMR_GUEST_PHYS
- #define AIC_TMR_EL02_VIRT	AIC_TMR_GUEST_VIRT
+ #define AIC_CPU_IPI_SET(cpu)	(0x5008 + ((cpu) << 7))
+ #define AIC_CPU_IPI_CLR(cpu)	(0x500c + ((cpu) << 7))
+ #define AIC_CPU_IPI_MASK_SET(cpu) (0x5024 + ((cpu) << 7))
+ #define AIC_CPU_IPI_MASK_CLR(cpu) (0x5028 + ((cpu) << 7))
  
-+DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
++#define AIC_MAX_IRQ		0x400
 +
-+struct aic_info {
-+	int version;
+ #define MASK_REG(x)		(4 * ((x) >> 5))
+ #define MASK_BIT(x)		BIT((x) & GENMASK(4, 0))
+ 
+@@ -189,17 +187,31 @@ DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
+ struct aic_info {
+ 	int version;
+ 
++	/* Register offsets */
++	u32 event;
++	u32 target_cpu;
++	u32 sw_set;
++	u32 sw_clr;
++	u32 mask_set;
++	u32 mask_clr;
 +
-+	/* Features */
-+	bool fast_ipi;
-+};
+ 	/* Features */
+ 	bool fast_ipi;
+ };
+ 
+ static const struct aic_info aic1_info = {
+ 	.version	= 1,
 +
-+static const struct aic_info aic1_info = {
-+	.version	= 1,
-+};
++	.event		= AIC_EVENT,
++	.target_cpu	= AIC_TARGET_CPU,
+ };
+ 
+ static const struct aic_info aic1_fipi_info = {
+ 	.version	= 1,
+ 
++	.event		= AIC_EVENT,
++	.target_cpu	= AIC_TARGET_CPU,
 +
-+static const struct aic_info aic1_fipi_info = {
-+	.version	= 1,
-+
-+	.fast_ipi	= true,
-+};
-+
-+static const struct of_device_id aic_info_match[] = {
-+	{
-+		.compatible = "apple,t8103-aic",
-+		.data = &aic1_fipi_info,
-+	},
-+	{
-+		.compatible = "apple,aic",
-+		.data = &aic1_info,
-+	},
-+	{}
-+};
-+
- struct aic_irq_chip {
+ 	.fast_ipi	= true,
+ };
+ 
+@@ -219,7 +231,9 @@ struct aic_irq_chip {
  	void __iomem *base;
  	struct irq_domain *hw_domain;
  	struct irq_domain *ipi_domain;
- 	int nr_hw;
 +
-+	struct aic_info info;
+ 	int nr_irq;
++	int max_irq;
+ 
+ 	struct aic_info info;
  };
+@@ -254,7 +268,7 @@ static void aic_irq_mask(struct irq_data *d)
  
- static DEFINE_PER_CPU(uint32_t, aic_fiq_unmasked);
-@@ -386,8 +424,12 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
- 	 */
+ 	u32 irq = AIC_HWIRQ_IRQ(hwirq);
  
- 	if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
--		pr_err_ratelimited("Fast IPI fired. Acking.\n");
--		write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+		if (static_branch_likely(&use_fast_ipi)) {
-+			aic_handle_ipi(regs);
-+		} else {
-+			pr_err_ratelimited("Fast IPI fired. Acking.\n");
-+			write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+		}
- 	}
+-	aic_ic_write(ic, AIC_MASK_SET + MASK_REG(irq), MASK_BIT(irq));
++	aic_ic_write(ic, ic->info.mask_set + MASK_REG(irq), MASK_BIT(irq));
+ }
  
- 	if (TIMER_FIRING(read_sysreg(cntp_ctl_el0)))
-@@ -563,6 +605,22 @@ static const struct irq_domain_ops aic_irq_domain_ops = {
-  * IPI irqchip
-  */
+ static void aic_irq_unmask(struct irq_data *d)
+@@ -264,7 +278,7 @@ static void aic_irq_unmask(struct irq_data *d)
  
-+static void aic_ipi_send_fast(int cpu)
-+{
-+	u64 mpidr = cpu_logical_map(cpu);
-+	u64 my_mpidr = read_cpuid_mpidr();
-+	u64 cluster = MPIDR_CLUSTER(mpidr);
-+	u64 idx = MPIDR_CPU(mpidr);
+ 	u32 irq = AIC_HWIRQ_IRQ(hwirq);
+ 
+-	aic_ic_write(ic, AIC_MASK_CLR + MASK_REG(irq), MASK_BIT(irq));
++	aic_ic_write(ic, ic->info.mask_clr + MASK_REG(irq), MASK_BIT(irq));
+ }
+ 
+ static void aic_irq_eoi(struct irq_data *d)
+@@ -287,7 +301,7 @@ static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
+ 		 * We cannot use a relaxed read here, as reads from DMA buffers
+ 		 * need to be ordered after the IRQ fires.
+ 		 */
+-		event = readl(ic->base + AIC_EVENT);
++		event = readl(ic->base + ic->info.event);
+ 		type = FIELD_GET(AIC_EVENT_TYPE, event);
+ 		irq = FIELD_GET(AIC_EVENT_NUM, event);
+ 
+@@ -319,12 +333,14 @@ static int aic_irq_set_affinity(struct irq_data *d,
+ 	struct aic_irq_chip *ic = irq_data_get_irq_chip_data(d);
+ 	int cpu;
+ 
++	BUG_ON(!ic->info.target_cpu);
 +
-+	if (MPIDR_CLUSTER(my_mpidr) == cluster)
-+		write_sysreg_s(FIELD_PREP(IPI_RR_CPU, idx),
-+			       SYS_IMP_APL_IPI_RR_LOCAL_EL1);
-+	else
-+		write_sysreg_s(FIELD_PREP(IPI_RR_CPU, idx) | FIELD_PREP(IPI_RR_CLUSTER, cluster),
-+			       SYS_IMP_APL_IPI_RR_GLOBAL_EL1);
-+	isb();
-+}
-+
- static void aic_ipi_mask(struct irq_data *d)
+ 	if (force)
+ 		cpu = cpumask_first(mask_val);
+ 	else
+ 		cpu = cpumask_any_and(mask_val, cpu_online_mask);
+ 
+-	aic_ic_write(ic, AIC_TARGET_CPU + AIC_HWIRQ_IRQ(hwirq) * 4, BIT(cpu));
++	aic_ic_write(ic, ic->info.target_cpu + AIC_HWIRQ_IRQ(hwirq) * 4, BIT(cpu));
+ 	irq_data_update_effective_affinity(d, cpumask_of(cpu));
+ 
+ 	return IRQ_SET_MASK_OK;
+@@ -884,8 +900,8 @@ static struct gic_kvm_info vgic_info __initdata = {
+ static int __init aic_of_ic_init(struct device_node *node, struct device_node *parent)
  {
- 	u32 irq_bit = BIT(irqd_to_hwirq(d));
-@@ -588,8 +646,12 @@ static void aic_ipi_unmask(struct irq_data *d)
- 	 * If a pending vIPI was unmasked, raise a HW IPI to ourselves.
- 	 * No barriers needed here since this is a self-IPI.
- 	 */
--	if (atomic_read(this_cpu_ptr(&aic_vipi_flag)) & irq_bit)
--		aic_ic_write(ic, AIC_IPI_SEND, AIC_IPI_SEND_CPU(smp_processor_id()));
-+	if (atomic_read(this_cpu_ptr(&aic_vipi_flag)) & irq_bit) {
-+		if (static_branch_likely(&use_fast_ipi))
-+			aic_ipi_send_fast(smp_processor_id());
-+		else
-+			aic_ic_write(ic, AIC_IPI_SEND, AIC_IPI_SEND_CPU(smp_processor_id()));
-+	}
- }
- 
- static void aic_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
-@@ -617,8 +679,12 @@ static void aic_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
- 		smp_mb__after_atomic();
- 
- 		if (!(pending & irq_bit) &&
--		    (atomic_read(per_cpu_ptr(&aic_vipi_enable, cpu)) & irq_bit))
--			send |= AIC_IPI_SEND_CPU(cpu);
-+		    (atomic_read(per_cpu_ptr(&aic_vipi_enable, cpu)) & irq_bit)) {
-+			if (static_branch_likely(&use_fast_ipi))
-+				aic_ipi_send_fast(cpu);
-+			else
-+				send |= AIC_IPI_SEND_CPU(cpu);
-+		}
- 	}
- 
- 	/*
-@@ -650,8 +716,16 @@ static void aic_handle_ipi(struct pt_regs *regs)
- 	/*
- 	 * Ack the IPI. We need to order this after the AIC event read, but
- 	 * that is enforced by normal MMIO ordering guarantees.
-+	 *
-+	 * For the Fast IPI case, this needs to be ordered before the vIPI
-+	 * handling below, so we need to isb();
- 	 */
--	aic_ic_write(aic_irqc, AIC_IPI_ACK, AIC_IPI_OTHER);
-+	if (static_branch_likely(&use_fast_ipi)) {
-+		write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+		isb();
-+	} else {
-+		aic_ic_write(aic_irqc, AIC_IPI_ACK, AIC_IPI_OTHER);
-+	}
- 
- 	/*
- 	 * The mask read does not need to be ordered. Only we can change
-@@ -679,7 +753,8 @@ static void aic_handle_ipi(struct pt_regs *regs)
- 	 * No ordering needed here; at worst this just changes the timing of
- 	 * when the next IPI will be delivered.
- 	 */
--	aic_ic_write(aic_irqc, AIC_IPI_MASK_CLR, AIC_IPI_OTHER);
-+	if (!static_branch_likely(&use_fast_ipi))
-+		aic_ic_write(aic_irqc, AIC_IPI_MASK_CLR, AIC_IPI_OTHER);
- }
- 
- static int aic_ipi_alloc(struct irq_domain *d, unsigned int virq,
-@@ -776,10 +851,15 @@ static int aic_init_cpu(unsigned int cpu)
- 	/*
- 	 * Always keep IPIs unmasked at the hardware level (except auto-masking
- 	 * by AIC during processing). We manage masks at the vIPI level.
-+	 * These registers only exist on AICv1, AICv2 always uses fast IPIs.
- 	 */
- 	aic_ic_write(aic_irqc, AIC_IPI_ACK, AIC_IPI_SELF | AIC_IPI_OTHER);
--	aic_ic_write(aic_irqc, AIC_IPI_MASK_SET, AIC_IPI_SELF);
--	aic_ic_write(aic_irqc, AIC_IPI_MASK_CLR, AIC_IPI_OTHER);
-+	if (static_branch_likely(&use_fast_ipi)) {
-+		aic_ic_write(aic_irqc, AIC_IPI_MASK_SET, AIC_IPI_SELF | AIC_IPI_OTHER);
-+	} else {
-+		aic_ic_write(aic_irqc, AIC_IPI_MASK_SET, AIC_IPI_SELF);
-+		aic_ic_write(aic_irqc, AIC_IPI_MASK_CLR, AIC_IPI_OTHER);
-+	}
- 
- 	/* Initialize the local mask state */
- 	__this_cpu_write(aic_fiq_unmasked, 0);
-@@ -799,6 +879,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	int i;
++	u32 off;
  	void __iomem *regs;
- 	u32 info;
+-	u32 info;
  	struct aic_irq_chip *irqc;
-+	const struct of_device_id *match;
+ 	const struct of_device_id *match;
  
- 	regs = of_iomap(node, 0);
- 	if (WARN_ON(!regs))
-@@ -808,12 +889,24 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
- 	if (!irqc)
- 		return -ENOMEM;
+@@ -907,8 +923,30 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
  
--	aic_irqc = irqc;
- 	irqc->base = regs;
+ 	aic_irqc = irqc;
  
-+	match = of_match_node(aic_info_match, node);
-+	if (!match)
-+		return -ENODEV;
+-	info = aic_ic_read(irqc, AIC_INFO);
+-	irqc->nr_irq = FIELD_GET(AIC_INFO_NR_IRQ, info);
++	switch (irqc->info.version) {
++	case 1: {
++		u32 info;
 +
-+	irqc->info = *(struct aic_info *)match->data;
++		info = aic_ic_read(irqc, AIC_INFO);
++		irqc->nr_irq = FIELD_GET(AIC_INFO_NR_IRQ, info);
++		irqc->max_irq = AIC_MAX_IRQ;
 +
-+	aic_irqc = irqc;
++		off = irqc->info.target_cpu;
++		off += sizeof(u32) * irqc->max_irq; /* TARGET_CPU */
 +
- 	info = aic_ic_read(irqc, AIC_INFO);
- 	irqc->nr_hw = FIELD_GET(AIC_INFO_NR_HW, info);
++		break;
++	}
++	}
++
++	irqc->info.sw_set = off;
++	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_SET */
++	irqc->info.sw_clr = off;
++	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_CLR */
++	irqc->info.mask_set = off;
++	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_SET */
++	irqc->info.mask_clr = off;
++	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_CLR */
++	off += sizeof(u32) * (irqc->max_irq >> 5); /* HW_STATE */
  
-+	if (irqc->info.fast_ipi)
-+		static_branch_enable(&use_fast_ipi);
-+	else
-+		static_branch_disable(&use_fast_ipi);
-+
- 	irqc->hw_domain = irq_domain_create_linear(of_node_to_fwnode(node),
- 						   irqc->nr_hw + AIC_NR_FIQ,
- 						   &aic_irq_domain_ops, irqc);
-@@ -845,6 +938,9 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	if (irqc->info.fast_ipi)
+ 		static_branch_enable(&use_fast_ipi);
+@@ -936,11 +974,11 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	set_handle_fiq(aic_handle_fiq);
+ 
+ 	for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
+-		aic_ic_write(irqc, AIC_MASK_SET + i * 4, U32_MAX);
++		aic_ic_write(irqc, irqc->info.mask_set + i * 4, U32_MAX);
+ 	for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
+-		aic_ic_write(irqc, AIC_SW_CLR + i * 4, U32_MAX);
++		aic_ic_write(irqc, irqc->info.sw_clr + i * 4, U32_MAX);
+ 	for (i = 0; i < irqc->nr_irq; i++)
+-		aic_ic_write(irqc, AIC_TARGET_CPU + i * 4, 1);
++		aic_ic_write(irqc, irqc->info.target_cpu + i * 4, 1);
+ 
  	if (!is_kernel_in_hyp_mode())
  		pr_info("Kernel running in EL1, mapping interrupts");
+@@ -954,8 +992,8 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
  
-+	if (static_branch_likely(&use_fast_ipi))
-+		pr_info("Using Fast IPIs");
-+
- 	cpuhp_setup_state(CPUHP_AP_IRQ_APPLE_AIC_STARTING,
- 			  "irqchip/apple-aic/ipi:starting",
- 			  aic_init_cpu, NULL);
+ 	vgic_set_kvm_info(&vgic_info);
+ 
+-	pr_info("Initialized with %d IRQs, %d FIQs, %d vIPIs\n",
+-		irqc->nr_irq, AIC_NR_FIQ, AIC_NR_SWIPI);
++	pr_info("Initialized with %d/%d IRQs, %d FIQs, %d vIPIs",
++		irqc->nr_irq, irqc->max_irq, AIC_NR_FIQ, AIC_NR_SWIPI);
+ 
+ 	return 0;
+ }
 -- 
 2.33.0
 
