@@ -2,76 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFF3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A29C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238547AbiCIWL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44994 "EHLO
+        id S238548AbiCIWMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:12:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiCIWLz (ORCPT
+        with ESMTP id S234513AbiCIWMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:11:55 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4B120F44;
-        Wed,  9 Mar 2022 14:10:54 -0800 (PST)
-Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mhl4Q-1o5p7c43JA-00dn4Q; Wed, 09 Mar 2022 23:10:53 +0100
-Received: by mail-wr1-f47.google.com with SMTP id q14so5166270wrc.4;
-        Wed, 09 Mar 2022 14:10:52 -0800 (PST)
-X-Gm-Message-State: AOAM532kejNrbECFCg1pGeByIFYDZ+e6JfGmWP/pDZzWU0A/Iw4Mexkr
-        jrt8ZBSVCsfQ7NJeYmHefQEIQEJkzWogY3XIyyI=
-X-Google-Smtp-Source: ABdhPJxsBGIQNKZzHxQk8oqPdmlG3af8A3l8ciIsInAxxCnaweP10DRaknHvPgyXAEXDv60+d1/JCW6F4HQCVabMjxE=
-X-Received: by 2002:adf:e181:0:b0:1f7:7d5e:c3bb with SMTP id
- az1-20020adfe181000000b001f77d5ec3bbmr1273025wrb.12.1646863852593; Wed, 09
- Mar 2022 14:10:52 -0800 (PST)
+        Wed, 9 Mar 2022 17:12:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C2C120EB6;
+        Wed,  9 Mar 2022 14:11:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F4DC61B7A;
+        Wed,  9 Mar 2022 22:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54141C340E8;
+        Wed,  9 Mar 2022 22:11:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646863898;
+        bh=HmvsiGSQjiI2xl+jRt4WuuLlCbjPYieEVzKyv095jlE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tXQ9MrxxiOVy0rvnjrr+4mCAfLwOshejb+bZvqHFsZ7PzD/IYjZaB308J3WYkBfXl
+         IsDrgMLZBIeJgm+ySMqyQ9fcP8YfCQx0DP61pj8nPEfeTsk1DTyEBKnWoHtZvgv+FU
+         dtDdngC1UoDgsugR9qvosbWHo4KIjIDXa1JNCxPKWMXvUajcBF9lZ9qdtW1F+mHkND
+         XW3z9/ItiXaOMcsXolyFUal6uzgRMK7+JsdwKa4lAW+jOAiDhJo2+mWWQ2DGbEQ30r
+         TftbIrZ+JYmobAG0qQ62IGHS4dcBCQyVVpJjfEcNQq4ks5X87TYGuB7MzjPt0/HKoy
+         1CnAHJ2ZM1kcQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] ARM: Do not use NOCROSSREFS directive with ld.lld
+Date:   Wed,  9 Mar 2022 15:07:27 -0700
+Message-Id: <20220309220726.1525113-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <25d93797bd5a5bae5c7613ec42c01ecd7c69cd17.1646855282.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <25d93797bd5a5bae5c7613ec42c01ecd7c69cd17.1646855282.git.christophe.jaillet@wanadoo.fr>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 9 Mar 2022 23:10:36 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0bwM3fQDGOzRZm09eJ1vgB4ptQxMdo=6XOEfi6B3KTjw@mail.gmail.com>
-Message-ID: <CAK8P3a0bwM3fQDGOzRZm09eJ1vgB4ptQxMdo=6XOEfi6B3KTjw@mail.gmail.com>
-Subject: Re: [PATCH] PCI: Remove the deprecated "pci-dma-compat.h" API
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:3Mo/QZCO4GmcfQLv+pAYUPIQ5X+XcR3FmhkrlcYVicXuNVYmoyS
- O7PygsMPHbjRhwkRLoGWCbMAXvIZ28ruxdGL7jxF2SIH/ADy79kHgmltU6SpF11UUHksPrx
- TsGSgaZAFPIiyAaWgLEtSCTLc5CxLI5MFS1XMdfGLSWokDF8bdTtbg6nn4fRgopLZs4NkRM
- GBpFR9CdeYYOcXKE9WNMw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bODM39m/7Lg=:PMXFlBnLIeLh4TR1+Hu3wP
- //5GYQ4iZ1h+ORqg3tHlSw9j3GY4psYZYhdiaeUUAHqmEdfxFdqhCFjWys8T40nmDvbtYl8Cl
- lKAg4Ca/sJU1l57iyIrC+l/jWhI4RkG59iC0bkY6STojD8ZEI2lpd9GZs4cYPu/rzQuk9akt0
- h2nsJTZXkLr5RGOqMV+zURG+uI5XebRosXBWoY2gs+XEgXGfepAY4e95U81Ah5wbJ8ueR9dcC
- F8AhabhT551kw9GTAqH8YdioCnhmqg68XqW+tWMOmO9C8iPieXXY1Kx2s25nAHuzxXjGtsgA7
- qwfneqpZn8eFyk8EkwP7rwOPgfFt4MGzBQhaRdM2wBtTUYXh/SgOpXEcS31P208dIzW4ruRhs
- Vm2ZuBFoV34yX7YWSrdiGWWndGUQbDfaBjcjxTd2HGfJ07dyfzskbScA75hDF1NTsujpPSJl6
- 5xCkRlRlyKG5cwGzWKaIn3eRqs7uwNXq97QEO0AjTCGzpyoQMAlQR/6cnc9Lc8DA0nJYFquFc
- RtwjtrnD7rpl46QQ4e0oG28866MNtW7ylG2Md9uygTNSigMIGIRcpFxNBsezwd6Yp38vAquGG
- +lzVBhfgmFFqzYaDlxjL3AcYQHkYuL8IANlbQZ8kneLju7OGh+6TFmv0jxdXUd5Dad3hECCUB
- J+Cy54eV7RT6LrKmtCWzl5A1S0EvR58/DC50sgOhDMpMb+bu0jqRA9XmLgzMPMn8Hjuo=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 8:50 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> Now that all usages of the functions defined in "pci-dma-compat.h" have
-> been removed, it is time to remove this file as well.
->
-> In order not to break builds, move the "#include <linux/dma-mapping.h>"
-> that was in "pci-dma-compat.h" into "include/linux/pci.h"
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+ld.lld does not support the NOCROSSREFS directive at the moment, which
+breaks the build after commit b9baf5c8c5c3 ("ARM: Spectre-BHB
+workaround"):
 
-Thanks a lot for following through with this!
+  ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got NOCROSSREFS
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Support for this directive will eventually be implemented, at which
+point a version check can be added. To avoid breaking the build in the
+meantime, just define NOCROSSREFS to nothing when using ld.lld, with a
+link to the issue for tracking.
+
+Cc: stable@vger.kernel.org
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1609
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+
+Since b9baf5c8c5c3 has been backported to stable, I have marked this for
+stable as well, using a Fixes tag to notate that this should go back to
+all releases that have b9baf5c8c5c3, not to indicate any blame of
+b9baf5c8c5c3, as this is clearly an ld.lld deficiency.
+
+It would be nice if this could be applied directly to unblock our CI if
+there are no objections.
+
+ arch/arm/include/asm/vmlinux.lds.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm/include/asm/vmlinux.lds.h b/arch/arm/include/asm/vmlinux.lds.h
+index 0ef21bfae9f6..fad45c884e98 100644
+--- a/arch/arm/include/asm/vmlinux.lds.h
++++ b/arch/arm/include/asm/vmlinux.lds.h
+@@ -26,6 +26,14 @@
+ #define ARM_MMU_DISCARD(x)	x
+ #endif
+ 
++/*
++ * ld.lld does not support NOCROSSREFS:
++ * https://github.com/ClangBuiltLinux/linux/issues/1609
++ */
++#ifdef CONFIG_LD_IS_LLD
++#define NOCROSSREFS
++#endif
++
+ /* Set start/end symbol names to the LMA for the section */
+ #define ARM_LMA(sym, section)						\
+ 	sym##_start = LOADADDR(section);				\
+
+base-commit: e7e19defa57580d679bf0d03f8a34933008a7930
+-- 
+2.35.1
+
