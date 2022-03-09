@@ -2,97 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 15:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233694AbiCIO76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
+        id S233707AbiCIPBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 10:01:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233005AbiCIO7u (ORCPT
+        with ESMTP id S233101AbiCIPBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:59:50 -0500
-Received: from pv50p00im-ztbu10021601.me.com (pv50p00im-ztbu10021601.me.com [17.58.6.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E7414FFFE
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:58:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1646837521; bh=inbORtEEYI6cAOSZdCNjmhz+XI4ePyFwi6WeBbrIyfI=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=sIfng82wzWI7ZZzlB+S38D5Mwe8xNIActZxqXscrS9GlnyrP4ud7CNPdxufqhkDbR
-         GqgRLRTcMmZJKfVpog9EUaamYugNOdptNvCEkj+YIqETSat8NuJiLdIR0RIAXpA+sw
-         PsGoKw844BK19FEYjPPTDzzDtBbo2bzhPgHpjGGKXStX2QLQH7x6H4NSOaSMhPFZR2
-         Nz/Tc4f40QsY+wp2gZDsWcxGTnnlidvJdpF8BsdmynMq1xSNeRYqtSWr8Gk9uW7pDN
-         z3Cqt9/Zc7mRUQAkvAr8XK+ydKxgafLmyQCuQnK6c7h9irftDgkMNRmuW3X1nYQROa
-         ft07QFLsCyLsQ==
-Received: from xiongwei.. (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-ztbu10021601.me.com (Postfix) with ESMTPSA id C8DE980848;
-        Wed,  9 Mar 2022 14:51:56 +0000 (UTC)
-From:   sxwjean@me.com
-To:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        longman@redhat.com, guro@fb.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Xiongwei Song <sxwjean@gmail.com>
-Subject: [PATCH 2/2] mm: slub: Delete useless parameter of alloc_slab_page()
-Date:   Wed,  9 Mar 2022 22:50:52 +0800
-Message-Id: <20220309145052.219138-3-sxwjean@me.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220309145052.219138-1-sxwjean@me.com>
-References: <20220309145052.219138-1-sxwjean@me.com>
+        Wed, 9 Mar 2022 10:01:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BFB151342;
+        Wed,  9 Mar 2022 07:00:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CAEA61157;
+        Wed,  9 Mar 2022 15:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 97C6AC340F8;
+        Wed,  9 Mar 2022 15:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646838014;
+        bh=8+Wwmzha7qMTmPjbOP8MH0J36SecwzQWAPelpOSSfmA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IMqEcARiyeABko3ZvDs9FcpzsfpryKPMZSUCwUldvR5ci5Fr5BH5JsEo4GTark2MQ
+         Vee7KriRYpkTMYA12mXXhYc3oNV/u1ee8MeKdCVpaLjoo1SiTPfSaSOuf/23FL3qhk
+         kE5M+WvmU4Y5fK4jQb3Cffltrn17r+TM3DoMJvso/0NBoXaHUZtzO2EQl6cKov51lv
+         fpjF697uRg2lRvl8nUJ71LFcWTMeD36QcLX5LdGXAclGBpNIkXo/yGRzmRhhH8KHiu
+         1Nl1yyMY667PvnNuVb62AdND6+bdlbbzBfAwI91yYQ5hJo/bnCIDVXnlrnaGZB85Z8
+         mWBwJ626LWdDw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7F177EAC095;
+        Wed,  9 Mar 2022 15:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.816
- definitions=2022-03-09_05:2022-03-09,2022-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 clxscore=1015 mlxscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-2009150000 definitions=main-2203090083
+Subject: Re: [PATCH] net: ethernet: sun: use min_t() to make code cleaner
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164683801451.7970.8378076408639039246.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 15:00:14 +0000
+References: <20220308092106.2079060-1-deng.changcheng@zte.com.cn>
+In-Reply-To: <20220308092106.2079060-1-deng.changcheng@zte.com.cn>
+To:     Lv Ruyi <cgel.zte@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wangqing@vivo.com,
+        jgg@ziepe.ca, arnd@arndb.de, jiapeng.chong@linux.alibaba.com,
+        gustavoars@kernel.org, christophe.jaillet@wanadoo.fr,
+        deng.changcheng@zte.com.cn, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+Hello:
 
-The parameter @s is useless for alloc_slab_page(), let's delete it.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
----
- mm/slub.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+On Tue,  8 Mar 2022 09:21:06 +0000 you wrote:
+> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+> 
+> Use min_t() in order to make code cleaner.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+> 
+> [...]
 
-diff --git a/mm/slub.c b/mm/slub.c
-index 261474092e43..5d273ee04c43 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -1788,8 +1788,8 @@ static void *setup_object(struct kmem_cache *s, struct slab *slab,
- /*
-  * Slab allocation and freeing
-  */
--static inline struct slab *alloc_slab_page(struct kmem_cache *s,
--		gfp_t flags, int node, struct kmem_cache_order_objects oo)
-+static inline struct slab *alloc_slab_page(gfp_t flags, int node,
-+		struct kmem_cache_order_objects oo)
- {
- 	struct folio *folio;
- 	struct slab *slab;
-@@ -1941,7 +1941,7 @@ static struct slab *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
- 	if ((alloc_gfp & __GFP_DIRECT_RECLAIM) && oo_order(oo) > oo_order(s->min))
- 		alloc_gfp = (alloc_gfp | __GFP_NOMEMALLOC) & ~(__GFP_RECLAIM|__GFP_NOFAIL);
- 
--	slab = alloc_slab_page(s, alloc_gfp, node, oo);
-+	slab = alloc_slab_page(alloc_gfp, node, oo);
- 	if (unlikely(!slab)) {
- 		oo = s->min;
- 		alloc_gfp = flags;
-@@ -1949,7 +1949,7 @@ static struct slab *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
- 		 * Allocation may have failed due to fragmentation.
- 		 * Try a lower order alloc if possible
- 		 */
--		slab = alloc_slab_page(s, alloc_gfp, node, oo);
-+		slab = alloc_slab_page(alloc_gfp, node, oo);
- 		if (unlikely(!slab))
- 			goto out;
- 		stat(s, ORDER_FALLBACK);
+Here is the summary with links:
+  - net: ethernet: sun: use min_t() to make code cleaner
+    https://git.kernel.org/netdev/net-next/c/2c9ec169f70b
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
