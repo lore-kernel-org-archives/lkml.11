@@ -2,159 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B65BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4159EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiCIBOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:14:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S229877AbiCIBO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:14:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231246AbiCIBNI (ORCPT
+        with ESMTP id S231245AbiCIBNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 8 Mar 2022 20:13:08 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F05169218
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:02:52 -0800 (PST)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A9B18020C
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:03:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646787772; x=1678323772;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=WqYjw0riMyrcnpYGzd3LwwF0KxaWZQvCdtVqi7q+5xA=;
-  b=GgJtk2hZrmj1cZwgI3jFXwY0P10qfGVucqzbI/VaO2Cvb0QNsoY9IB/V
-   9PXcnWzvjICSQaMce59SR/VFL7FpW/+SYuQ+atcZ6IFIx9pLB5trsUwbl
-   24Zjjvzc+FUUn5L0xh1zU/NReNtd9bDG27w2R5JqzueygMLcBzwb4k6PO
-   8veErQmxMqiUYtXyTBCgdKlnc0qC1/67ECCjL+sr7IAZauErrhUWOyWbU
-   cV2VXxUwSfYwTVZq5OTj2dZocGXSlWyiYQaKA/pe+ElDrQZsGxD8TCrKZ
-   rx7yUHbvpAtJSx2EpS5YdJuxlW6XEoZT76NHbCRhLcaZdPFG2MeAcDFU6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="242298570"
+  t=1646787784; x=1678323784;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=scepsH2Uv6wYPB3QkRsBNH+h+6F589st9pGGxe9r+3I=;
+  b=TCXwdhKa1bdyQnwUq4CvK5rKJIpeGlxDRSCD+1bMKsVFAqGqDNL7ZhL+
+   ktzZkQWmKjV6rLO6UWpfHW11lyjKlnGSEqqueMIfm2nP5uFFKXZj4Chn/
+   Sh8WBdHn+QveD0zhKuCORWSp0cbhEDhAgsab79sEvaSZ/txB5WMTOwvsm
+   uCCMuPb9g3cdIf3LyQa/2mSSUdLMp1XCKaExGzLGbS6QbOJptwZx6hJhr
+   EKUK7E84h73D0K++71k66p1fHD9Bu/SXVCFto56915ro+Rn9UcOAN8NL1
+   mZpLrVBz2qgrF3NA6i4pIsT4PfnHfc0YjthDpm39GC+KvWLs95P/P26BL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318083476"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="242298570"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 17:02:52 -0800
+   d="scan'208";a="318083476"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 17:02:46 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="513330922"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 17:02:47 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <shy828301@gmail.com>, <willy@infradead.org>, <ziy@nvidia.com>,
-        <minchan@kernel.org>, <apopple@nvidia.com>,
-        <ave.hansen@linux.intel.com>, <o451686892@gmail.com>,
-        <almasrymina@google.com>, <jhubbard@nvidia.com>,
-        <rcampbell@nvidia.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        "David Howells" <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 04/16] mm/migration: reduce the rcu lock duration
-References: <20220304093409.25829-1-linmiaohe@huawei.com>
-        <20220304093409.25829-5-linmiaohe@huawei.com>
-        <8735ju7as9.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <2eb3fc34-3c81-394f-3bca-8eb00027afcf@huawei.com>
-Date:   Wed, 09 Mar 2022 09:02:45 +0800
-In-Reply-To: <2eb3fc34-3c81-394f-3bca-8eb00027afcf@huawei.com> (Miaohe Lin's
-        message of "Tue, 8 Mar 2022 20:09:15 +0800")
-Message-ID: <87y21key4q.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+   d="scan'208";a="510312196"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 08 Mar 2022 17:02:45 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRkiy-0002Hl-N9; Wed, 09 Mar 2022 01:02:44 +0000
+Date:   Wed, 9 Mar 2022 09:02:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning:
+ 'strncpy' specified bound depends on the length of the source argument
+Message-ID: <202203090830.THfDfibc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miaohe Lin <linmiaohe@huawei.com> writes:
+Hi Huazhong,
 
-> On 2022/3/7 10:32, Huang, Ying wrote:
->> Miaohe Lin <linmiaohe@huawei.com> writes:
->> 
->>> rcu_read_lock is required by grabbing the task refcount but it's not
->>> needed for ptrace_may_access. So we could release the rcu lock after
->>> task refcount is successfully grabbed to reduce the rcu holding time.
->>>
->>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>> ---
->>>  mm/migrate.c | 3 +--
->>>  1 file changed, 1 insertion(+), 2 deletions(-)
->>>
->>> diff --git a/mm/migrate.c b/mm/migrate.c
->>> index da5a81052468..26943bd819e8 100644
->>> --- a/mm/migrate.c
->>> +++ b/mm/migrate.c
->>> @@ -1907,17 +1907,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
->>>  		return ERR_PTR(-ESRCH);
->>>  	}
->>>  	get_task_struct(task);
->>> +	rcu_read_unlock();
->>>  
->>>  	/*
->>>  	 * Check if this process has the right to modify the specified
->>>  	 * process. Use the regular "ptrace_may_access()" checks.
->>>  	 */
->>>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
->>> -		rcu_read_unlock();
->>>  		mm = ERR_PTR(-EPERM);
->>>  		goto out;
->>>  	}
->>> -	rcu_read_unlock();
->>>  
->>>  	mm = ERR_PTR(security_task_movememory(task));
->>>  	if (IS_ERR(mm))
->> 
->> Digged some history via `git blame`, found that the RCU read lock is
->> extended in the following commit,
->> 
->> "
->> 3268c63eded4612a3d07b56d1e02ce7731e6608e
->> Author:     Christoph Lameter <cl@linux.com>
->> AuthorDate: Wed Mar 21 16:34:06 2012 -0700
->> Commit:     Linus Torvalds <torvalds@linux-foundation.org>
->> CommitDate: Wed Mar 21 17:54:58 2012 -0700
->> 
->> mm: fix move/migrate_pages() race on task struct
->> 
->> Migration functions perform the rcu_read_unlock too early.  As a result
->> the task pointed to may change from under us.  This can result in an oops,
->> as reported by Dave Hansen in https://lkml.org/lkml/2012/2/23/302.
->> 
->> The following patch extend the period of the rcu_read_lock until after the
->> permissions checks are done.  We also take a refcount so that the task
->> reference is stable when calling security check functions and performing
->> cpuset node validation (which takes a mutex).
->> 
->> The refcount is dropped before actual page migration occurs so there is no
->> change to the refcounts held during page migration.
->> 
->> Also move the determination of the mm of the task struct to immediately
->> before the do_migrate*() calls so that it is clear that we switch from
->> handling the task during permission checks to the mm for the actual
->> migration.  Since the determination is only done once and we then no
->> longer use the task_struct we can be sure that we operate on a specific
->> address space that will not change from under us.
->> "
->> 
->> After that, the permission checking has been changed from __task_cred()
->> to ptrace_may_access().  So the situation may change somewhat.  Cced
->
-> In ptrace_may_access, __task_cred is access while holding the rcu read lock.
-> It seems this is ensured by the ptrace_may_access itself.
+FYI, the error/warning still remains.
 
-Please read the patch above.  Before extending rcu_read_lock protected
-region, __task_cred() is protected by rcu_read_lock already.  The patch
-above combines 2 regions into 1.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   92f90cc9fe0e7a984ea3d4bf3d120e30ba8a2118
+commit: 77e9184869c9fb00a482357ea8eef3bd7ae3d45a net: hns3: refactor dump bd info of debugfs
+date:   10 months ago
+config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203090830.THfDfibc-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=77e9184869c9fb00a482357ea8eef3bd7ae3d45a
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 77e9184869c9fb00a482357ea8eef3bd7ae3d45a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/ethernet/hisilicon/hns3/
 
-Best Regards,
-Huang, Ying
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->> some names found in git history to verify.
->
-> Thanks for your carefulness.
->
->> 
->> Best Regards,
->> Huang, Ying
->> .
->> 
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c: In function 'hns3_dbg_fill_content.constprop':
+>> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
+     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:125:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
+     125 |                         strncpy(pos, result[i], strlen(result[i]));
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In function 'hns3_dbg_fill_content',
+       inlined from 'hns3_dbg_tx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:432:2:
+>> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
+     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In function 'hns3_dbg_fill_content',
+       inlined from 'hns3_dbg_rx_bd_info' at drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:358:2:
+>> drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:127:25: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
+     127 |                         strncpy(pos, items[i].name, strlen(items[i].name));
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/strncpy +127 drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+
+   114	
+   115	static void hns3_dbg_fill_content(char *content, u16 len,
+   116					  const struct hns3_dbg_item *items,
+   117					  const char **result, u16 size)
+   118	{
+   119		char *pos = content;
+   120		u16 i;
+   121	
+   122		memset(content, ' ', len);
+   123		for (i = 0; i < size; i++) {
+   124			if (result)
+   125				strncpy(pos, result[i], strlen(result[i]));
+   126			else
+ > 127				strncpy(pos, items[i].name, strlen(items[i].name));
+   128	
+   129			pos += strlen(items[i].name) + items[i].interval;
+   130		}
+   131	
+   132		*pos++ = '\n';
+   133		*pos++ = '\0';
+   134	}
+   135	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
