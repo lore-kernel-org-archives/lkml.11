@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC61C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbiCIX0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
+        id S238734AbiCIX1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:27:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238086AbiCIX0D (ORCPT
+        with ESMTP id S233798AbiCIX1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:26:03 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BA9B16C6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:25:04 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:58064)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS5fy-00DLZt-FH; Wed, 09 Mar 2022 16:25:02 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34678 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS5fw-007XsN-TV; Wed, 09 Mar 2022 16:25:01 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>
-References: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
-        <20220309162454.123006-7-ebiederm@xmission.com>
-        <01459886-2393-665a-43b1-70082ceace0c@kernel.dk>
-Date:   Wed, 09 Mar 2022 17:24:37 -0600
-In-Reply-To: <01459886-2393-665a-43b1-70082ceace0c@kernel.dk> (Jens Axboe's
-        message of "Wed, 9 Mar 2022 14:05:50 -0700")
-Message-ID: <87cziubtfu.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 9 Mar 2022 18:27:16 -0500
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C730122F77;
+        Wed,  9 Mar 2022 15:26:17 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id E745C2CD;
+        Wed,  9 Mar 2022 23:26:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net E745C2CD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1646868377; bh=Wrwgt7HXDmvhrJfZQQLH8FOF8me4AXFD7djPQdhzA+Q=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=XS1pBDUp6cGTSINeE/bJ63FCmGnbpEsE8qTlo3N/SNF5OQSQqTXyC2HCHTG34UWdX
+         JkIscYV6hN/F3emDII1XHgmGMnayvf7XhcQLRFx4dCEVNfEqPgCwYwiejmUMWc6t7F
+         PPcdk4WIB9WLSR7S02WU/62v3YhxBanVT3sxyuguULa0T9zXRwd/C6allnDuul/Tke
+         Tcc2V31aNqdgJ2Nsv3GRCSOUetmAUHVJYf5vqNuwop0POOFiP17G5Uyv6DQO0TwZQK
+         MNll/Z8anQvuxexOHmhqzstk8gvmAeV4uWPH1wgyMlD+9GwpVWqAEMJxZGTULNyBBv
+         TnfJ8cacrDZcQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     YI <afctgo@gmail.com>, trivial@kernel.org
+Cc:     YI <afctgo@gmail.com>, Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Colin Cross <ccross@google.com>,
+        Mike Rapoport <rppt@kernel.org>, Peter Xu <peterx@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] docs: proc.rst: fix wrong time unit
+In-Reply-To: <20220302161122.3984304-1-uuuuuu@protonmail.com>
+References: <20220302161122.3984304-1-uuuuuu@protonmail.com>
+Date:   Wed, 09 Mar 2022 16:26:16 -0700
+Message-ID: <87r17a7lnr.fsf@meer.lwn.net>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1nS5fw-007XsN-TV;;;mid=<87cziubtfu.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1904JK8obr4VAxpJhTYq0MRWEXfEX6zYh4=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 07/13] task_work: Introduce task_work_pending
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jens Axboe <axboe@kernel.dk> writes:
+YI <afctgo@gmail.com> writes:
 
-> On 3/9/22 9:24 AM, Eric W. Biederman wrote:
->> diff --git a/include/linux/task_work.h b/include/linux/task_work.h
->> index 5b8a93f288bb..897494b597ba 100644
->> --- a/include/linux/task_work.h
->> +++ b/include/linux/task_work.h
->> @@ -19,6 +19,11 @@ enum task_work_notify_mode {
->>  	TWA_SIGNAL,
->>  };
->>  
->> +static inline bool task_work_pending(struct task_struct *task)
->> +{
->> +	return READ_ONCE(task->task_works);
->> +}
->> +
+> From: YI <afctgo@gmail.com>
 >
-> Most of the checks for this is current, do we need READ_ONCE here?
+> Dear Trivial Patch Monkey, 
 
-There is a non-current use in fs/io_uring in __io_uring_show_fdinfo
-and another in task_work_cancel_match.
+The trivial patch monkey has gone into retirement, I'm as close as
+you're going to get.
 
-Beyond that there are quite a few writes that are not at all from
-current so even on current task->task_works can change if you look
-twice.
+> This commit fixes a small documentaion problem reported in
+> https://bugzilla.kernel.org/show_bug.cgi?id=194593.
+>
+> Some fields in the file /proc/$pid/stat represent time.
+> Their units are clock_t, not jiffies as stated in the documentation.
+> This commit fixes https://bugzilla.kernel.org/show_bug.cgi?id=194593.
 
-So if only to keep it from making unwarranted assumptions I think
-READ_ONCE makes sense.
+We certainly don't need to give the bugzilla URL twice; I'm not
+convinced it's needed even once.  The changelog should just say what the
+patch does, please.
 
-Given that READ_ONCE is practically free I don't see where there is
-any harm in using it to document the kind of code we expect the compiler
-to generate.
+Also, "clock_t" isn't really a unit type; what are the actual units of
+the field?
 
-Looking a second time I see all of the other reads of task->task_works
-are already READ_ONCE in kernel/task_work.c, so really I think if we
-don't want READ_ONCE we need a big fat comment about why it is safe
-in a check like task_work_pending and while it is needed everywhere
-else.  At the moment I am not smart enough to write that comment.
+> Reported-by: hujunjie
 
-I will see about adding this bit of discussion in the commit comment to
-make it a little clearer why I am introducing READ_ONCE.
+This isn't a valid reported-by line
 
-Eric
+> Signed-off-by: YI <afctgo@gmail.com>
 
+...and the signoff need to have your full name, please.
+
+Thanks,
+
+jon
