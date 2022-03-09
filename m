@@ -2,94 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4038FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiCIO6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:58:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50928 "EHLO
+        id S233681AbiCIO7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 09:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiCIO6q (ORCPT
+        with ESMTP id S230197AbiCIO7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:58:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D824CBCB7;
-        Wed,  9 Mar 2022 06:57:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9338BB8219D;
-        Wed,  9 Mar 2022 14:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FDECC340F8;
-        Wed,  9 Mar 2022 14:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646837865;
-        bh=6BJrQm2h1J2OY3VK6//zKnwW77BTHtKjFjCTeghGA24=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CsKyANBK4z4QOk3hQM4mL19WS2r/c/+81pSYudaqm6XlDTwNu8/ByTI3DYl4XPEig
-         SN+kg+7HVG4gDAEjJOwoFHsmIzOwUkVqYEOnIaOZ02jZC/kdg4morOGJEOftfYLPkk
-         C0KKEBFOs8cDwnyJBw2OpLq/XrcYTclHyd3P4VE2A0GWNQjbLB9NQMw140iHhYZy9g
-         mFQfSJqLvrs1KCsif3RXSaPkhYOARZRXbrk247hwSbF2slQN5jWnzixgz2cerrF6Y5
-         Af1CFV8EAiwDoFY/AMziNkAYHVzLuH3stF3w5vrMUIvv/PONzG11vYvUGo5dBTsSBN
-         TCxW76RMLaBzQ==
-Received: by mail-yb1-f179.google.com with SMTP id l2so4886717ybe.8;
-        Wed, 09 Mar 2022 06:57:45 -0800 (PST)
-X-Gm-Message-State: AOAM533BIh3CQTN3vMMoYZth/avZHYJo9DljqTFxJAg7eKA49sE4GWIz
-        t6RdKrRInOxff9GdaaXmt8QbQRTwhPq+lCjEX0Y=
-X-Google-Smtp-Source: ABdhPJzpd3QIfptlaX4atYC2iUwUOczKrcEYHMBJ02IWhhij4ZlS3aT9tYdD3uGnF0iP1VVsnn20E+LWbDoMgo3bQCI=
-X-Received: by 2002:a25:53c4:0:b0:628:a0de:b4d6 with SMTP id
- h187-20020a2553c4000000b00628a0deb4d6mr6487ybb.299.1646837864344; Wed, 09 Mar
- 2022 06:57:44 -0800 (PST)
+        Wed, 9 Mar 2022 09:59:50 -0500
+X-Greylist: delayed 428 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 06:58:50 PST
+Received: from pv50p00im-ztbu10021601.me.com (pv50p00im-ztbu10021601.me.com [17.58.6.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C3114F2A4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:58:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1646837512; bh=48jfwMLcGTnlVjxOvNm5ewm9LxTU5N6YqL6r45Mbrxs=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=d8R2OydC9NAiYHlmmugODOUCm37gszXlWfpZgUxR4qcTwzGWWrF6PJMYpOMGIXl6s
+         Y/G1zp8ap8yMYxuiNpUxofPbC+rUwKg72adRkSfGrup/jqlgYsDKYmIHlD5rqqcAv9
+         DjVQf1aTtR7Y3a5jG64X/FT4qwa7wgpevDFpS4A4d2NpjLTiYX17Q+aQ99Ar/ZIWis
+         AOyexzVP+aPEzDBq/EpxrumTsOdpKV1450ryH+uNVbxu918nHJfN23gfvgdfzT1Yp9
+         KBW82RqF9a+0/sOcSYpVFQ2LJPlz/h5OXXi5mNDNs1CuVWOURNnZUVrOsrqk3u0i39
+         eKVFx8PkXERHQ==
+Received: from xiongwei.. (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-ztbu10021601.me.com (Postfix) with ESMTPSA id BF4978043E;
+        Wed,  9 Mar 2022 14:51:47 +0000 (UTC)
+From:   sxwjean@me.com
+To:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
+        longman@redhat.com, guro@fb.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Xiongwei Song <sxwjean@gmail.com>
+Subject: [PATCH 1/2] mm: slab: Delete unused SLAB_DEACTIVATED flag
+Date:   Wed,  9 Mar 2022 22:50:51 +0800
+Message-Id: <20220309145052.219138-2-sxwjean@me.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220309145052.219138-1-sxwjean@me.com>
+References: <20220309145052.219138-1-sxwjean@me.com>
 MIME-Version: 1.0
-References: <CA+G9fYtpy8VgK+ag6OsA9TDrwi5YGU4hu7GM8xwpO7v6LrCD4Q@mail.gmail.com>
- <YiiDZ7jjG38gqP+Q@shell.armlinux.org.uk> <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
- <CA+G9fYvCvBBi+dZ+CnUy=ZK6GhCFhBw72_==Cav=Q8QP5T1r5w@mail.gmail.com> <CA+G9fYt73AYs=z-BeZh22RBp==sf73pKky6m4iPSH7a4FssK7w@mail.gmail.com>
-In-Reply-To: <CA+G9fYt73AYs=z-BeZh22RBp==sf73pKky6m4iPSH7a4FssK7w@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 9 Mar 2022 15:57:32 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
-Message-ID: <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
-Subject: Re: [next] arm: Internal error: Oops: 5 PC is at __read_once_word_nocheck
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.816
+ definitions=2022-03-09_05:2022-03-09,2022-03-09 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 clxscore=1015 mlxscore=0
+ mlxlogscore=656 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-2009150000 definitions=main-2203090083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 at 15:44, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->
-> On Wed, 9 Mar 2022 at 19:37, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> >
-> > On Wed, 9 Mar 2022 at 16:16, Ard Biesheuvel <ardb@kernel.org> wrote:
-> > >
-> > > On Wed, 9 Mar 2022 at 11:37, Russell King (Oracle)
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Wed, Mar 09, 2022 at 03:18:12PM +0530, Naresh Kamboju wrote:
-> > > > > While boting linux next-20220308 on BeagleBoard-X15 and qemu arm the following
-> > > > > kernel crash reported which is CONFIG_KASAN enabled build [1] & [2].
-> > > >
-> > > > The unwinder is currently broken in linux-next. Please try reverting
-> > > > 532319b9c418 ("ARM: unwind: disregard unwind info before stack frame is
-> > > > set up")
->
-> I have reverted the suggested commit and built and boot failed due to reported
-> kernel crash [1].
->
-> - Naresh
->
+From: Xiongwei Song <sxwjean@gmail.com>
 
-Thanks Naresh,
+Since commit 9855609bde03 ("mm: memcg/slab: use a single set of
+kmem_caches for all accounted allocations") deletes all SLAB_DEACTIVATED
+users, therefore this flag is not needed any more, let's delete it.
 
-This looks like it might be related to the issue Russell just sent a fix for:
-https://lore.kernel.org/linux-arm-kernel/CAMj1kXEqp2UmsyUe1eWErtpMk3dGEFZyyno3nqydC_ML0bwTLw@mail.gmail.com/T/#t
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+---
+ include/linux/slab.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Could you please try that?
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 37bde99b74af..b6b3eed6c7c4 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -117,9 +117,6 @@
+ #define SLAB_RECLAIM_ACCOUNT	((slab_flags_t __force)0x00020000U)
+ #define SLAB_TEMPORARY		SLAB_RECLAIM_ACCOUNT	/* Objects are short-lived */
+ 
+-/* Slab deactivation flag */
+-#define SLAB_DEACTIVATED	((slab_flags_t __force)0x10000000U)
+-
+ /*
+  * ZERO_SIZE_PTR will be returned for zero sized kmalloc requests.
+  *
+-- 
+2.30.2
+
