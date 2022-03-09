@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09108C46467
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E6FC3527B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236855AbiCIQT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:19:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        id S237598AbiCIQUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236144AbiCIQJj (ORCPT
+        with ESMTP id S234676AbiCIQLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108185A147;
-        Wed,  9 Mar 2022 08:07:44 -0800 (PST)
+        Wed, 9 Mar 2022 11:11:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C10EC5CC;
+        Wed,  9 Mar 2022 08:09:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A4C0B82220;
-        Wed,  9 Mar 2022 16:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23EFC340E8;
-        Wed,  9 Mar 2022 16:07:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDC58B82191;
+        Wed,  9 Mar 2022 16:09:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1870BC340E8;
+        Wed,  9 Mar 2022 16:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646842061;
-        bh=mQatgqh/6NzDSIrRy2F06cmfP6PjNZfpbO5vp69JtKg=;
+        s=korg; t=1646842154;
+        bh=KCX8P+H2W0agVF1iCpkDtDeNldgE0W8QeXXKrS24w74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ydpuCa+KKB+FhLyy5h32VapSInSirBJ37+vL6obOmegDjMgoi7xE40+ai+u5sFZyS
-         Hg7FhDzbNJWiDiNcgrkLr9YxblvFKhdUdJjyPBeynzAx6Z8eBF4GFbSHtSfrTq56aO
-         /aSjHbvgAkIPje4PJlbrWpWlQH7cGYWDvZnuQqH0=
+        b=DP5Rgw3f6FRnBNF8QxGEcJkd3HeCqLYPTHVupIMR/Mna1s3bArl8v07WIWbKopHxt
+         cfNThyswYi7OHUyXD9u6IMVrwFV7zboPvPWssFaQNnIyd7yiMgHaRlG8isR2m29GW6
+         6/F+Pfs65+FtQ73FP+wLw5vpRXPGkWj8vLORDGUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,12 +36,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 27/43] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-Date:   Wed,  9 Mar 2022 17:00:11 +0100
-Message-Id: <20220309155900.523625225@linuxfoundation.org>
+Subject: [PATCH 5.16 17/37] arm64: entry.S: Add ventry overflow sanity checks
+Date:   Wed,  9 Mar 2022 17:00:18 +0100
+Message-Id: <20220309155859.589327388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309155859.734715884@linuxfoundation.org>
-References: <20220309155859.734715884@linuxfoundation.org>
+In-Reply-To: <20220309155859.086952723@linuxfoundation.org>
+References: <20220309155859.086952723@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,66 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
+commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
 
-Systems using kpti enter and exit the kernel through a trampoline mapping
-that is always mapped, even when the kernel is not. tramp_valias is a macro
-to find the address of a symbol in the trampoline mapping.
-
-Adding extra sets of vectors will expand the size of the entry.tramp.text
-section to beyond 4K. tramp_valias will be unable to generate addresses
-for symbols beyond 4K as it uses the 12 bit immediate of the add
-instruction.
-
-As there are now two registers available when tramp_alias is called,
-use the extra register to avoid the 4K limit of the 12 bit immediate.
+Subsequent patches add even more code to the ventry slots.
+Ensure kernels that overflow a ventry slot don't get built.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/arm64/kernel/entry.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -103,9 +103,12 @@
- .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
+@@ -37,6 +37,7 @@
+ 
+ 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
+ 	.align 7
++.Lventry_start\@:
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
+ alternative_if ARM64_UNMAP_KERNEL_AT_EL0
+@@ -95,6 +96,7 @@ alternative_else_nop_endif
+ 	mrs	x0, tpidrro_el0
+ #endif
+ 	b	el\el\ht\()_\regsize\()_\label
++.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
  	.endm
  
--	.macro tramp_alias, dst, sym
-+	.macro tramp_alias, dst, sym, tmp
- 	mov_q	\dst, TRAMP_VALIAS
--	add	\dst, \dst, #(\sym - .entry.tramp.text)
-+	adr_l	\tmp, \sym
-+	add	\dst, \dst, \tmp
-+	adr_l	\tmp, .entry.tramp.text
-+	sub	\dst, \dst, \tmp
+ 	.macro tramp_alias, dst, sym
+@@ -662,6 +664,7 @@ alternative_else_nop_endif
+ 	add	x30, x30, #(1b - tramp_vectors)
+ 	isb
+ 	ret
++.org 1b + 128	// Did we overflow the ventry slot?
  	.endm
  
- 	/*
-@@ -429,10 +432,10 @@ alternative_else_nop_endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	bne	4f
- 	msr	far_el1, x29
--	tramp_alias	x30, tramp_exit_native
-+	tramp_alias	x30, tramp_exit_native, x29
- 	br	x30
- 4:
--	tramp_alias	x30, tramp_exit_compat
-+	tramp_alias	x30, tramp_exit_compat, x29
- 	br	x30
- #endif
- 	.else
-@@ -998,7 +1001,7 @@ alternative_if_not ARM64_UNMAP_KERNEL_AT
- alternative_else_nop_endif
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline
-+	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline, tmp=x3
- 	br	x5
- #endif
- SYM_CODE_END(__sdei_asm_handler)
+ 	.macro tramp_exit, regsize = 64
 
 
