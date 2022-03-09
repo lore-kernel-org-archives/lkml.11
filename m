@@ -2,118 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 14:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbiCIOtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 09:49:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S233644AbiCIOwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 09:52:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233644AbiCIOtY (ORCPT
+        with ESMTP id S230457AbiCIOwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 09:49:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDA1B4ECDF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:48:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646837304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kNOo8tfVdsLHz4CQT9H/dwfufzZQMSYbZ0RQG+jvDRA=;
-        b=LmxtdvHjuXz259xN0Lwi7/Oc/lqx2hKDSwtT5vomyd+Gx9eyj0hTyUW23BRwWI/4r1W7cN
-        eLjvHyl+qOPtqWj5L6VJczh4QPMZWvlec9m+N5xxSNMqVKcC+mpKS/Xr19QT/Ac8XurnEb
-        zBIxJ53MnFv1XGvZdG+PDpEQl8TYpa8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-Twi0WZCcN3eEsb6D9b_wiA-1; Wed, 09 Mar 2022 09:48:20 -0500
-X-MC-Unique: Twi0WZCcN3eEsb6D9b_wiA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D27221006AA6;
-        Wed,  9 Mar 2022 14:48:19 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 485F2106D5D3;
-        Wed,  9 Mar 2022 14:48:05 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 718D7416D5DC; Wed,  9 Mar 2022 08:24:21 -0300 (-03)
-Date:   Wed, 9 Mar 2022 08:24:21 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     Wanpeng Li <kernellwp@gmail.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>
-Subject: Re: [PATCH v7 1/2] KVM: LAPIC: Make lapic timer unpinned
-Message-ID: <YiiOZaQCf1K653MS@fuller.cnet>
-References: <1562376411-3533-1-git-send-email-wanpengli@tencent.com>
- <1562376411-3533-2-git-send-email-wanpengli@tencent.com>
- <ab523b0e930129a100d306d0959445665eb69457.camel@infradead.org>
+        Wed, 9 Mar 2022 09:52:14 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A092917DBBF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 06:51:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646837475; x=1678373475;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mQpK9Al/CtmcglF/+fe/dahXKGKv7EP/7LIopBJNDQs=;
+  b=Zn37Ck8txnR1DsPGb0Vz/23+fDhclkAZAtYYxUNg66c/3XPriqgzH6EK
+   VR+nfz37fH0AKkuguVpsFUW8Czr8CLp5dgmaRkbO42CtqT2SnJjkwpfzg
+   6NrPqlY+t06jhITkcTJWuuc1MkdeNMaa0/gAYYk3FIt/qh3TdPaKcU3Up
+   8SKwAjpALqce4dQ8Ye00hvdcqU2+KZBYKQ8UPDqwZwhj6/yP0uePw3aRf
+   /2Hlzh4yIES7kWWC8Ysnlz/yVgg/2suIYSHXSwOkakw+7aMqq/nskNK2D
+   0b8YONhaJeIb72zhcgSk5kE8NRwEOWrhaeKCl3eyVRV6GHg83BFNFkEay
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="235597360"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="235597360"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 06:51:14 -0800
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="513543953"
+Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.241.241]) ([10.99.241.241])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 06:51:12 -0800
+Message-ID: <37933410-1bc7-3e27-50e8-3da03e8b5603@linux.intel.com>
+Date:   Wed, 9 Mar 2022 15:51:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ab523b0e930129a100d306d0959445665eb69457.camel@infradead.org>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH V0 1/1] ASoC: msm: fix integer overflow for long duration
+ offload playback
+Content-Language: en-US
+To:     Raghu Bankapur <quic_rbankapu@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krishna Jha <quic_kkishorj@quicinc.com>,
+        Raghu Bankapur <quic_rbankapu@quiinc.com>
+References: <cover.1646835508.git.quic_rbankapu@quicinc.com>
+ <b906dbaf772d0152a3af52d639b090d15fe8c362.1646835508.git.quic_rbankapu@quicinc.com>
+From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+In-Reply-To: <b906dbaf772d0152a3af52d639b090d15fe8c362.1646835508.git.quic_rbankapu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:26:51AM +0100, David Woodhouse wrote:
-> On Sat, 2019-07-06 at 09:26 +0800, Wanpeng Li wrote:
-> > From: Wanpeng Li <wanpengli@tencent.com>
-> > 
-> > Commit 61abdbe0bcc2 ("kvm: x86: make lapic hrtimer pinned") pinned the
-> > lapic timer to avoid to wait until the next kvm exit for the guest to
-> > see KVM_REQ_PENDING_TIMER set. There is another solution to give a kick
-> > after setting the KVM_REQ_PENDING_TIMER bit, make lapic timer unpinned
-> > will be used in follow up patches.
-> > 
-> > Cc: Paolo Bonzini <pbonzini@redhat.com>
-> > Cc: Radim Krčmář <rkrcmar@redhat.com>
-> > Cc: Marcelo Tosatti <mtosatti@redhat.com>
-> > Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> > ---
-> >  arch/x86/kvm/lapic.c | 8 ++++----
-> >  arch/x86/kvm/x86.c   | 6 +-----
-> >  2 files changed, 5 insertions(+), 9 deletions(-)
+On 3/9/2022 3:22 PM, Raghu Bankapur wrote:
+> From: Raghu Bankapur <quic_rbankapu@quiinc.com>
 > 
-> ...
+> 32 bit variable is used for storing number of bytes copied to DSP,
+> which can overflow when playback duration goes beyond 24 hours.
+> Change data type for this variable to uint64_t to prevent overflow
+> and related playback anomaly.
 > 
+> Signed-off-by: Raghu Bankapur <quic_rbankapu@quicinc.com>
+> ---
+>   include/uapi/sound/compress_offload.h | 2 +-
+>   sound/core/compress_offload.c         | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> > @@ -2510,7 +2510,7 @@ void __kvm_migrate_apic_timer(struct kvm_vcpu *vcpu)
-> >  
-> >  	timer = &vcpu->arch.apic->lapic_timer.timer;
-> >  	if (hrtimer_cancel(timer))
-> > -		hrtimer_start_expires(timer, HRTIMER_MODE_ABS_PINNED);
-> > +		hrtimer_start_expires(timer, HRTIMER_MODE_ABS);
-> >  }
-> >  
-> >  /*
-> 
-> Wait, in that case why are we even bothering to cancel and restart the
-> timer? I thought the whole point of that was to pin it to the *new* CPU
-> that this vCPU is running on.
-> 
-> If not, can't we just kill __kvm_migrate_apic_timer() off completely
-> not?
+> diff --git a/include/uapi/sound/compress_offload.h b/include/uapi/sound/compress_offload.h
+> index 9555f31c8425..57d24d89b2f4 100644
+> --- a/include/uapi/sound/compress_offload.h
+> +++ b/include/uapi/sound/compress_offload.h
+> @@ -67,7 +67,7 @@ struct snd_compr_params {
+>    */
+>   struct snd_compr_tstamp {
+>   	__u32 byte_offset;
+> -	__u32 copied_total;
+> +	__u64 copied_total;
+>   	__u32 pcm_frames;
+>   	__u32 pcm_io_frames;
+>   	__u32 sampling_rate;
 
-Current code looks like this:
+I don't think this patch should be merged as is. It changes UAPI header, 
+most likely breaking existing user space tools. Can't overflow be 
+handled somehow instead?
 
-void __kvm_migrate_apic_timer(struct kvm_vcpu *vcpu)
-{
-        struct hrtimer *timer;
+Although having looked around, it makes a bit of sense, as 
+snd_compr_update_tstamp() copies tstamp->copied_total to 64 bit variables...
 
-        if (!lapic_in_kernel(vcpu) ||
-                kvm_can_post_timer_interrupt(vcpu)) <----------
-                return;
+Perhaps raise protocol version? ( 
+https://elixir.bootlin.com/linux/latest/source/include/uapi/sound/compress_offload.h#L34 
+)
 
-        timer = &vcpu->arch.apic->lapic_timer.timer;
-        if (hrtimer_cancel(timer))
-                hrtimer_start_expires(timer, HRTIMER_MODE_ABS_HARD);
-}
-
-Yeah, should be HRTIMER_MODE_ABS_PINNED AFAICS.
+> diff --git a/sound/core/compress_offload.c b/sound/core/compress_offload.c
+> index de514ec8c83d..068376b586be 100644
+> --- a/sound/core/compress_offload.c
+> +++ b/sound/core/compress_offload.c
+> @@ -169,7 +169,7 @@ static int snd_compr_update_tstamp(struct snd_compr_stream *stream,
+>   	if (!stream->ops->pointer)
+>   		return -ENOTSUPP;
+>   	stream->ops->pointer(stream, tstamp);
+> -	pr_debug("dsp consumed till %d total %d bytes\n",
+> +	pr_debug("dsp consumed till %d total %llu bytes\n",
+>   		tstamp->byte_offset, tstamp->copied_total);
+>   	if (stream->direction == SND_COMPRESS_PLAYBACK)
+>   		stream->runtime->total_bytes_transferred = tstamp->copied_total;
 
