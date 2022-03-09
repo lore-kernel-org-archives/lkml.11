@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE17C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90037C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbiCIQEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
+        id S234390AbiCIQEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234369AbiCIQDK (ORCPT
+        with ESMTP id S234395AbiCIQDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:03:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DF9172E77;
-        Wed,  9 Mar 2022 08:02:10 -0800 (PST)
+        Wed, 9 Mar 2022 11:03:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20DB17585A;
+        Wed,  9 Mar 2022 08:02:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 962C1B8214F;
-        Wed,  9 Mar 2022 16:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A952C340EF;
-        Wed,  9 Mar 2022 16:02:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F828B8214F;
+        Wed,  9 Mar 2022 16:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D18C340E8;
+        Wed,  9 Mar 2022 16:02:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841728;
-        bh=O/puTpS0vTBgPhZGErm9BWdP2JhT+u4Mnv+wuMe7TjM=;
+        s=korg; t=1646841731;
+        bh=hgyMPXKpyrjFSr7gjjGkb1FgtZRbJo9afPZLy+xNAuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNqyb2r712XMDCBk86jmIoLVj290DQJqygrkvfp4ehf5MR6Jnvc3xTII0AasRznfM
-         UJHi39gi+8bnlIE3Ajr6mbUI00L8Zr98QeLgH0urApPIiGpQvSO3Saaj/mtvLA0rk+
-         dQvjYBh5XrLNSJiLkQClVX1M8KdPUmtZCZBLrdeE=
+        b=2UqcGqR8FQ4zXQkTAVBPcr39sSEXO4/xgR34gIMp4PztfX5iA6AFNlpRzzjt6/E2x
+         7NuA4Hu0qzBlK7mhT/c1Bfn9HzAcvPLRWtpeM7lBIhpkm+WBEChakx5OvvXuaJzrAN
+         k1Oium8dYQ2eE29YE+bUzIGAQziZ7eU847DLJuh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 4.14 11/18] arm/arm64: Provide a wrapper for SMCCC 1.1 calls
-Date:   Wed,  9 Mar 2022 16:59:41 +0100
-Message-Id: <20220309155856.428109867@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 4.14 12/18] arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
+Date:   Wed,  9 Mar 2022 16:59:42 +0100
+Message-Id: <20220309155856.457434226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.090281301@linuxfoundation.org>
 References: <20220309155856.090281301@linuxfoundation.org>
@@ -48,92 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-commit 541625ac47ce9d0835efaee0fcbaa251b0000a37 upstream.
+commit 6b7fe77c334ae59fed9500140e08f4f896b36871 upstream.
 
-SMCCC 1.1 calls may use either HVC or SMC depending on the PSCI
-conduit. Rather than coding this in every call site, provide a macro
-which uses the correct instruction. The macro also handles the case
-where no conduit is configured/available returning a not supported error
-in res, along with returning the conduit used for the call.
+SMCCC callers are currently amassing a collection of enums for the SMCCC
+conduit, and are having to dig into the PSCI driver's internals in order
+to figure out what to do.
 
-This allow us to remove some duplicated code and will be useful later
-when adding paravirtualized time hypervisor calls.
+Let's clean this up, with common SMCCC_CONDUIT_* definitions, and an
+arm_smccc_1_1_get_conduit() helper that abstracts the PSCI driver's
+internal state.
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+We can kill off the PSCI_CONDUIT_* definitions once we've migrated users
+over to the new interface.
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Acked-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/arm-smccc.h |   58 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ drivers/firmware/psci.c   |   15 +++++++++++++++
+ include/linux/arm-smccc.h |   16 ++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
+--- a/drivers/firmware/psci.c
++++ b/drivers/firmware/psci.c
+@@ -64,6 +64,21 @@ struct psci_operations psci_ops = {
+ 	.smccc_version = SMCCC_VERSION_1_0,
+ };
+ 
++enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void)
++{
++	if (psci_ops.smccc_version < SMCCC_VERSION_1_1)
++		return SMCCC_CONDUIT_NONE;
++
++	switch (psci_ops.conduit) {
++	case PSCI_CONDUIT_SMC:
++		return SMCCC_CONDUIT_SMC;
++	case PSCI_CONDUIT_HVC:
++		return SMCCC_CONDUIT_HVC;
++	default:
++		return SMCCC_CONDUIT_NONE;
++	}
++}
++
+ typedef unsigned long (psci_fn)(unsigned long, unsigned long,
+ 				unsigned long, unsigned long);
+ static psci_fn *invoke_psci_fn;
 --- a/include/linux/arm-smccc.h
 +++ b/include/linux/arm-smccc.h
-@@ -311,5 +311,63 @@ asmlinkage void __arm_smccc_hvc(unsigned
- #define SMCCC_RET_NOT_SUPPORTED			-1
- #define SMCCC_RET_NOT_REQUIRED			-2
+@@ -89,6 +89,22 @@
  
-+/*
-+ * Like arm_smccc_1_1* but always returns SMCCC_RET_NOT_SUPPORTED.
-+ * Used when the SMCCC conduit is not defined. The empty asm statement
-+ * avoids compiler warnings about unused variables.
+ #include <linux/linkage.h>
+ #include <linux/types.h>
++
++enum arm_smccc_conduit {
++	SMCCC_CONDUIT_NONE,
++	SMCCC_CONDUIT_SMC,
++	SMCCC_CONDUIT_HVC,
++};
++
++/**
++ * arm_smccc_1_1_get_conduit()
++ *
++ * Returns the conduit to be used for SMCCCv1.1 or later.
++ *
++ * When SMCCCv1.1 is not present, returns SMCCC_CONDUIT_NONE.
 + */
-+#define __fail_smccc_1_1(...)						\
-+	do {								\
-+		__declare_args(__count_args(__VA_ARGS__), __VA_ARGS__);	\
-+		asm ("" __constraints(__count_args(__VA_ARGS__)));	\
-+		if (___res)						\
-+			___res->a0 = SMCCC_RET_NOT_SUPPORTED;		\
-+	} while (0)
++enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void);
 +
-+/*
-+ * arm_smccc_1_1_invoke() - make an SMCCC v1.1 compliant call
-+ *
-+ * This is a variadic macro taking one to eight source arguments, and
-+ * an optional return structure.
-+ *
-+ * @a0-a7: arguments passed in registers 0 to 7
-+ * @res: result values from registers 0 to 3
-+ *
-+ * This macro will make either an HVC call or an SMC call depending on the
-+ * current SMCCC conduit. If no valid conduit is available then -1
-+ * (SMCCC_RET_NOT_SUPPORTED) is returned in @res.a0 (if supplied).
-+ *
-+ * The return value also provides the conduit that was used.
-+ */
-+#define arm_smccc_1_1_invoke(...) ({					\
-+		int method = arm_smccc_1_1_get_conduit();		\
-+		switch (method) {					\
-+		case SMCCC_CONDUIT_HVC:					\
-+			arm_smccc_1_1_hvc(__VA_ARGS__);			\
-+			break;						\
-+		case SMCCC_CONDUIT_SMC:					\
-+			arm_smccc_1_1_smc(__VA_ARGS__);			\
-+			break;						\
-+		default:						\
-+			__fail_smccc_1_1(__VA_ARGS__);			\
-+			method = SMCCC_CONDUIT_NONE;			\
-+			break;						\
-+		}							\
-+		method;							\
-+	})
-+
-+/* Paravirtualised time calls (defined by ARM DEN0057A) */
-+#define ARM_SMCCC_HV_PV_TIME_FEATURES				\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_64,			\
-+			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-+			   0x20)
-+
-+#define ARM_SMCCC_HV_PV_TIME_ST					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-+			   ARM_SMCCC_SMC_64,			\
-+			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-+			   0x21)
-+
- #endif /*__ASSEMBLY__*/
- #endif /*__LINUX_ARM_SMCCC_H*/
+ /**
+  * struct arm_smccc_res - Result from SMC/HVC call
+  * @a0-a3 result values from registers 0 to 3
 
 
