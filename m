@@ -2,148 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6987BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 05:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbiCIFI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 00:08:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S229593AbiCIFJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 00:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiCIFIz (ORCPT
+        with ESMTP id S229512AbiCIFJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 00:08:55 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070F9637D
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 21:07:54 -0800 (PST)
+        Wed, 9 Mar 2022 00:09:26 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7F26424;
+        Tue,  8 Mar 2022 21:08:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646802475; x=1678338475;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jD8qpVUFnShFh8snyKRJ/SUwDifn2tQekvrmipzgOJI=;
-  b=fNBCVOp9RIkZQVEAlG5Qb4XOS3O9XTkSFRc469MBhRR96Uz7zGP9lSFU
-   y1aHiPPtAXd3LyZ9MfjmAHNH51ymABCREB0SA3m/9SLwVMeyYJhBZjTW8
-   CYRv2Zge0i3+5SaPxaLF0t0F6cfnwI+WBATHObpGb+O5o2RTLx2YN9tKU
-   agggFj5R5EqBtQ/XZ7ajfJgy1S3hRBH+h/6OW3sm60ARpKCVOzZbpoWEy
-   7XbXQudl9i/GKSVyOF8w2gFys5gIKYX5/Z+7wC5LfKG8PtOeCu+sIkS/O
-   MfPv9GYALcJXSc/GSl1VRr3mo6bg5flB2LUtVcu81Q+X/9pD+jvGdWDDp
+  t=1646802508; x=1678338508;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0+sd2pP56VQ690VP+LpLZGMChhV5dm2QjqdC8vtAGUs=;
+  b=aSPixVMtDh8JipF+Mp0LTOVMfde8Zejl59B6DeCA2kbdd1L2AfiNLEyD
+   KiYpOvoqSWZLHfIbgoyieoo/Rh4DTe2B869dXVwnXX7Fcepaz8q83D0mG
+   GnaAvboyjM8MbkuJHGt2LmxFXagPiJ+7oyRyHvaIYmztcnmc+ux0/gbjo
+   mioXHY3O3mIW94Lz9iQO63HtdM4sVHw9lluz2QlySQ+mnOnkdvQMAr3eZ
+   IP1k8oqe3JGpeEnJC845IrFdb9nlPY4t3yva7yC6q91Oc2xo+HMhO6XBQ
+   OEcJSNhDynbrib8kxC1lOFCR19j6zht9M40J3vQvRWDQZEyjQePccdw2j
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="315605801"
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="253718724"
 X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="315605801"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 21:07:54 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="253718724"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 21:08:27 -0800
 X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
-   d="scan'208";a="711805326"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 21:07:52 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRoYB-0002ct-Es; Wed, 09 Mar 2022 05:07:51 +0000
-Date:   Wed, 9 Mar 2022 13:07:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <error27@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: mm/memory.c:709:25: sparse: sparse: cast to non-scalar
-Message-ID: <202203091301.CQlNi3CF-lkp@intel.com>
+   d="scan'208";a="537858342"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 21:08:21 -0800
+Date:   Wed, 9 Mar 2022 13:21:52 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Zeng Guang <guang.zeng@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
+ unconditionally
+Message-ID: <20220309052013.GA2915@gao-cwp>
+References: <20220225082223.18288-1-guang.zeng@intel.com>
+ <20220225082223.18288-7-guang.zeng@intel.com>
+ <Yifg4bea6zYEz1BK@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yifg4bea6zYEz1BK@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   330f4c53d3c2d8b11d86ec03a964b86dc81452f5
-commit: b756a3b5e7ead8f6f4b03cea8ac22478ce04c8a8 mm: device exclusive memory access
-date:   8 months ago
-config: alpha-randconfig-s031-20220308 (https://download.01.org/0day-ci/archive/20220309/202203091301.CQlNi3CF-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b756a3b5e7ead8f6f4b03cea8ac22478ce04c8a8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b756a3b5e7ead8f6f4b03cea8ac22478ce04c8a8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash
+On Tue, Mar 08, 2022 at 11:04:01PM +0000, Sean Christopherson wrote:
+>On Fri, Feb 25, 2022, Zeng Guang wrote:
+>> From: Maxim Levitsky <mlevitsk@redhat.com>
+>> 
+>> No normal guest has any reason to change physical APIC IDs,
+>
+>I don't think we can reasonably assume this, my analysis in the link (that I just
+>realized I deleted from context here) shows it's at least plausible that an existing
+>guest could rely on the APIC ID being writable.  And that's just one kernel, who
+>know what else is out there, especially given that people use KVM to emulate really
+>old stuff, often on really old hardware.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Making xAPIC ID readonly is not only based on your analysis, but also Intel SDM
+clearly saying writable xAPIC ID is processor model specific and ***software should
+avoid writing to xAPIC ID***.
 
+If writable xAPIC ID support should be retained and is tied to a module param,
+live migration would depend on KVM's module params: e.g., migrate a VM with
+modified xAPIC ID (apic_id_readonly off on this system) to one with
+xapic_id_readonly on would fail, right? Is this failure desired? if not, we need to
+have a VM-scope control. e.g., add an inhibitor of APICv (XAPIC_ID_MODIFIED) and
+disable APICv forever for this VM if its vCPUs or QEMU modifies xAPIC ID.
 
-sparse warnings: (new ones prefixed by >>)
->> mm/memory.c:709:25: sparse: sparse: cast to non-scalar
->> mm/memory.c:709:25: sparse: sparse: cast from non-scalar
-   mm/memory.c:1023:17: sparse: sparse: context imbalance in 'copy_pte_range' - different lock contexts for basic block
-   mm/memory.c:1736:16: sparse: sparse: context imbalance in '__get_locked_pte' - different lock contexts for basic block
-   mm/memory.c:1785:9: sparse: sparse: context imbalance in 'insert_page' - different lock contexts for basic block
-   mm/memory.c:2287:17: sparse: sparse: context imbalance in 'remap_pte_range' - different lock contexts for basic block
-   mm/memory.c:2543:17: sparse: sparse: context imbalance in 'apply_to_pte_range' - unexpected unlock
-   mm/memory.c:2831:17: sparse: sparse: context imbalance in 'wp_page_copy' - unexpected unlock
-   mm/memory.c:3180:17: sparse: sparse: context imbalance in 'wp_pfn_shared' - unexpected unlock
-   mm/memory.c:3243:19: sparse: sparse: context imbalance in 'do_wp_page' - different lock contexts for basic block
-   mm/memory.c: note: in included file (through include/linux/mm.h, arch/alpha/include/asm/io.h, include/linux/io.h, include/linux/irq.h, ...):
-   include/linux/pgtable.h:275:16: sparse: sparse: cast to non-scalar
-   include/linux/pgtable.h:275:16: sparse: sparse: cast from non-scalar
-   mm/memory.c:4874:5: sparse: sparse: context imbalance in 'follow_invalidate_pte' - different lock contexts for basic block
-   mm/memory.c:4995:9: sparse: sparse: context imbalance in 'follow_pfn' - unexpected unlock
+>
+>Practically speaking, anyone that wants to deploy IPIv is going to have to make
+>the switch at some point, but that doesn't help people running legacy crud that
+>don't care about IPIv.
+>
+>I was thinking a module param would be trivial, and it is (see below) if the
+>param is off by default.  A module param will also provide a convenient opportunity
+>to resolve the loophole reported by Maxim[1][2], though it's a bit funky.
 
-vim +709 mm/memory.c
+Could you share the links?
 
-   701	
-   702	static void restore_exclusive_pte(struct vm_area_struct *vma,
-   703					  struct page *page, unsigned long address,
-   704					  pte_t *ptep)
-   705	{
-   706		pte_t pte;
-   707		swp_entry_t entry;
-   708	
- > 709		pte = pte_mkold(mk_pte(page, READ_ONCE(vma->vm_page_prot)));
-   710		if (pte_swp_soft_dirty(*ptep))
-   711			pte = pte_mksoft_dirty(pte);
-   712	
-   713		entry = pte_to_swp_entry(*ptep);
-   714		if (pte_swp_uffd_wp(*ptep))
-   715			pte = pte_mkuffd_wp(pte);
-   716		else if (is_writable_device_exclusive_entry(entry))
-   717			pte = maybe_mkwrite(pte_mkdirty(pte), vma);
-   718	
-   719		set_pte_at(vma->vm_mm, address, ptep, pte);
-   720	
-   721		/*
-   722		 * No need to take a page reference as one was already
-   723		 * created when the swap entry was made.
-   724		 */
-   725		if (PageAnon(page))
-   726			page_add_anon_rmap(page, vma, address, false);
-   727		else
-   728			/*
-   729			 * Currently device exclusive access only supports anonymous
-   730			 * memory so the entry shouldn't point to a filebacked page.
-   731			 */
-   732			WARN_ON_ONCE(!PageAnon(page));
-   733	
-   734		if (vma->vm_flags & VM_LOCKED)
-   735			mlock_vma_page(page);
-   736	
-   737		/*
-   738		 * No need to invalidate - it was non-present before. However
-   739		 * secondary CPUs may have mappings that need invalidating.
-   740		 */
-   741		update_mmu_cache(vma, address, ptep);
-   742	}
-   743	
+>
+>Anyways, with an off-by-default module param, we can just do:
+>
+>	if (!enable_apicv || !cpu_has_vmx_ipiv() || !xapic_id_readonly)
+>		enable_ipiv = false;
+>
+>Forcing userspace to take advantage of IPIv is rather annoying, but it's not the
+>end of world.
+>
+>Having the param on by default is a mess.  Either we break userspace (above), or
+>we only kinda break userspace by having it on iff IPIv is on, but then we end up
+>with cyclical dependency hell.  E.g. userspace makes xAPIC ID writable and forces
+>on IPIv, which one "wins"? And if it's on by default, we can't fix the loophole
+>in KVM_SET_LAPIC.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+We are fine with having this param off by default.
