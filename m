@@ -2,122 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC281C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238498AbiCIWDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
+        id S231779AbiCIWDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:03:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiCIWD3 (ORCPT
+        with ESMTP id S232704AbiCIWD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 17:03:29 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A649CB0;
-        Wed,  9 Mar 2022 14:02:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646863345; x=1678399345;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9+Y+W6kPpAhOBsTIr7uplKjRx92r1AT6ix+u1mTH2hM=;
-  b=BdN5dhV4N0WwLDIEZ6bsv/aETPS9ZYvuCrl4UV30Zh5eVtEH40T5OMfg
-   wpkIZyajzEf5frYesVogZMJ1vjSqzog6PcNXarvFLkkZnj4RBh5PwOCkj
-   gZiFKy3QZEL9UuX+AENUR76cU1YGhSee9moAkfv6rrbZzwJYuQC2N6UHK
-   RhO1uqG7KoGKHGLeZtD10e3Rw9HAyqsSFTIpKOwAncsO7wYCB7fvMz4iM
-   PrlShOw9vbIMRsfnWQlmLUqHqOwv58btvywROzn0lxGUg2YQ7fzDPkaRT
-   SAdchBLma3w4p4v3/JPE334GEJkE00CeMerkKpJpNJ0WiU6mZiJ76nryd
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,168,1643698800"; 
-   d="scan'208";a="155874789"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 15:02:24 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 15:02:23 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Mar 2022 15:02:22 -0700
-Date:   Wed, 9 Mar 2022 23:05:16 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Message-ID: <20220309220516.smxhbtikbvctlkeh@soft-dev3-1.localhost>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
- <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
- <YiinmN+VBWRxN5l4@lunn.ch>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4656EBD0;
+        Wed,  9 Mar 2022 14:02:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E989EB823C9;
+        Wed,  9 Mar 2022 22:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BCA4C340EE;
+        Wed,  9 Mar 2022 22:02:24 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="T1fuvT6G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646863339;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=inreFAnh9tqy7Qlx+a012zOsU9dSDc7ob/YEs/Oahuw=;
+        b=T1fuvT6GNklQFVlKRs5Fx3/lhU5a5lY+x4d3BmbJ1TqqIVlkrwaQIbxgmi6jwH9EAOFwCQ
+        rckR7B4h3E1/mdErRIlTDIzh3wvR1gGfJ9wLYG3LURJpc1KOhyCQRKHvDssSim+a8W5OGT
+        Z5JNAqH3kaCA8JlF0U6Vt+/w9ac/tRk=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 168a9f66 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Mar 2022 22:02:19 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id z30so7271091ybi.2;
+        Wed, 09 Mar 2022 14:02:18 -0800 (PST)
+X-Gm-Message-State: AOAM5321QAGWIjalmdN5yIkXmh06FE1GRZ5qPlmzgJxwoyHDGnuFgE6B
+        SosUaNvGpd76yKzRtTrsvQxBOnOylnRykDM4t8k=
+X-Google-Smtp-Source: ABdhPJyCUVD8T4qqYuq1h5ED6rk/6Kw1l+qk/ag1MpB3SuWxlea1B5XdqPkq5wTPm3WvOPgfJuy34sJfOcw4H5dA8AQ=
+X-Received: by 2002:a25:2312:0:b0:629:60d6:7507 with SMTP id
+ j18-20020a252312000000b0062960d67507mr1596488ybj.267.1646863335346; Wed, 09
+ Mar 2022 14:02:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YiinmN+VBWRxN5l4@lunn.ch>
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com> <c5181fb5-38fb-f261-9de5-24655be1c749@amazon.com>
+In-Reply-To: <c5181fb5-38fb-f261-9de5-24655be1c749@amazon.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 9 Mar 2022 15:02:04 -0700
+X-Gmail-Original-Message-ID: <CAHmME9rTMDkE7UA3_wg87mrDVYps+YaHw+dZwF0EbM0zC4pQQw@mail.gmail.com>
+Message-ID: <CAHmME9rTMDkE7UA3_wg87mrDVYps+YaHw+dZwF0EbM0zC4pQQw@mail.gmail.com>
+Subject: Re: propagating vmgenid outward and upward
+To:     Alexander Graf <graf@amazon.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        linux-hyperv@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        adrian@parity.io, Laszlo Ersek <lersek@redhat.com>,
+        =?UTF-8?Q?Daniel_P=2E_Berrang=C3=A9?= <berrange@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/09/2022 14:11, Andrew Lunn wrote:
-> 
-> On Tue, Mar 08, 2022 at 11:30:00PM +0100, Horatiu Vultur wrote:
-> > The 03/08/2022 22:36, Andrew Lunn wrote:
-> > >
-> > > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
-> > > >  {
-> > > > -     u32 val;
-> > > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
-> > > > +     int ret = 0;
-> > > >
-> > > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
-> > > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
-> > > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
-> > > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
-> > > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> > > > +             if (time_after(jiffies, time)) {
-> > > > +                     ret = -ETIMEDOUT;
-> > > > +                     break;
-> > > > +             }
-> > >
-> > > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
-> > > explicitly supports that.
-> >
-> > I have tried but it didn't improve. It was the same as before.
-> 
-> The reason i recommend ipoll.h is that your implementation has the
-> usual bug, which iopoll does not have. Since you are using _atomic()
-> it is less of an issue, but it still exists.
-> 
->      while (!(lan_rd(lan966x, QS_INJ_STATUS) &
->               QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> 
-> Say you take an interrupt here
-> 
->              if (time_after(jiffies, time)) {
->                      ret = -ETIMEDOUT;
->                      break;
->              }
-> 
-> 
-> The interrupt takes a while, so that by the time you get to
-> time_after(), you have reached your timeout. So -ETIMEDOUT is
-> returned. But in fact, the hardware has done its thing, and if you
-> where to read the status the bit would be set, and you should actually
-> return O.K, not an error.
+Hi Alex,
 
-That is a good catch and really nice explanation!
-Then if I add also the check at the end, then it should be also OK.
+On Wed, Mar 9, 2022 at 3:10 AM Alexander Graf <graf@amazon.com> wrote:
+> > The vmgenid driver basically works, though it is racy, because that ACPI
+> > notification can arrive after the system is already running again. This
+>
+>
+> I believe enough people already pointed out that this assumption is
+> incorrect. The thing that is racy about VMGenID is the interrupt based
+> notification.
 
-> 
-> iopoll does another check of the status before deciding to return
-> -ETIMEDOUT or O.K.
-> 
-> If you decide to simply check the status directly after the write, i
-> suggest you then use readx_poll_timeout_atomic() if you do need to
-> poll.
-> 
->         Andrew
+I'm having a hard time figuring out what's different between your
+statement and mine. I said that the race is due to the notification.
+You said that the race is due to the notification. What subtle thing
+am I missing here that would lead you to say that my assumption is
+incorrect? Or did you just misread?
 
--- 
-/Horatiu
+> The actual identifier is updated before the VM resumes
+> from its clone operation, so if you match on that you will know whether
+> you are in a new or old world. And that is enough to create
+> transactions: Save the identifier before a "crypto transaction",
+> validate before you finish, if they don't match, abort, reseed and replay.
+
+Right. But more than just transactions, it's useful to preventing key
+reuse vulnerabilities, in which case, you store the current identifier
+just before an ephemeral key is generated, and then subsequently check
+to see that the identifier hasn't changed before transmitting anything
+related to that key.
+
+> If you follow the logic at the beginning of the mail, you can create
+> something race free if you consume the hardware VMGenID counter. You can
+> not make it race free if you rely on the interrupt mechanism.
+
+Yes, as mentioned and discussed in depth before. However, your use of
+the word "counter" is problematic. Vmgenid is not a counter. It's a
+unique identifier. That means you can't compare it with a single word
+comparison but have to compare all of the 16 bytes. That seems
+potentially expensive. It's for that reason that I suggested
+augmenting the vmgenid spec with an additional word-sized _counter_
+that could be mapped into the kernels and into userspaces.
+
+> So following that train of thought, if you expose the hardware VMGenID
+> to user space, you could allow user space to act race free based on
+> VMGenID. That means consumers of user space RNGs could validate whether
+> the ID is identical between the beginning of the crypto operation and
+> the end.
+
+Right.
+
+> However, there are more complicated cases as well. What do you do with
+> Samba for example? It needs to generate a new SID after the clone.
+> That's a super heavy operation. Do you want to have smbd constantly poll
+> on the VMGenID just to see whether it needs to kick off some
+> administrative actions?
+
+Were it a single word-sized integer, mapped into memory, that wouldn't
+be much of a problem at all. It could constantly read this before and
+after every operation. The problem is that it's 16 bytes and
+understandably applications don't want to deal with that clunkiness.
+
+> In that case, all we would need from the kernel is an easily readable
+> GenID that changes
+
+Actually, no, you need even less than that. All that's required is a
+sysfs/procfs file that can be poll()'d on. It doesn't need to have any
+content. When poll() returns readable, the VM has been forked. Then
+userspace rngs and other things like that can call getrandom() to
+receive a fresh value to mix into whatever their operation is. Since
+all we're talking about here is _event notification_, all we need is
+that event, which is what poll() provides.
+
+> I'm also not a super big fan of putting all that logic into systemd. It
+> means applications need to create their own notification mechanisms to
+> pass that cloning notification into actual processes. Don't we have any
+> mechanism that applications and libraries could use to natively get an
+> event when the GenID changes?
+
+Yes. poll() can do this. For the purposes of discussion, I've posted
+an implementation of this idea here:
+https://lore.kernel.org/lkml/20220309215907.77526-1-Jason@zx2c4.com/
+
+What I'm sort of leaning toward is doing something like that patch,
+and then later if vmgenid ever grows an additional word-sized counter,
+moving to explore the race-free approach. Given the amount of
+programming required to actually implement the race-free approach
+(transactions and careful study of each case), the poll() file
+approach might be a medium-grade compromise for the time being.
+Evidently that's what Microsoft decided too.
+
+Jason
