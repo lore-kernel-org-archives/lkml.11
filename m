@@ -2,54 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B323C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237186AbiCIQxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:53:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        id S237613AbiCIQxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:53:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiCIQpq (ORCPT
+        with ESMTP id S235843AbiCIQpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:45:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6941C7C3A;
-        Wed,  9 Mar 2022 08:39:39 -0800 (PST)
+        Wed, 9 Mar 2022 11:45:44 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04266D87C;
+        Wed,  9 Mar 2022 08:39:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646843980; x=1678379980;
+  t=1646843947; x=1678379947;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=inbCfOApjHcZj6rPnStLuoDA+QTiQF8O+NIL6iLwJf0=;
-  b=grnzG/Ao73HwBdY+9V3WesUA3BeSLrDfozJYUPNBrQLEDWlHUctArzGI
-   a9R3n6lCGkYgv+S0xHYghy5mxeaWC8NDIQMorLgTM+53BvCj7Cg8nuL/0
-   95g5mv7I/OGFb62595C87go2oDUv5TJpJtT4YYrzAcrmRH4WIR+Gw2f8u
-   2b4Ev8HkBtJWIY6ejtUt7tlqBbAc9SXinn0PfsOspCzR5k22nGeqT6axn
-   FfQ7Bp0Kt2ePD7m2eOhII96Oc57Ha5Kcj3DbKK62GZ4VO7jhANetT8ag5
-   TZQI8FYO48hcHWkaQrcYthLIBDHhpDVdqPcr1JNoE83F7EY0lsTEuf9I2
-   w==;
+  bh=Iu9Y9l00LK8qD2HMPVyxqsR2snkJn5NMx606dNlvBmQ=;
+  b=DCXCjW4X9eNeWUeN95Pxe6Fn+nFfrzhlzUqTx0v9zrSLiaJecYxxY3FK
+   cUB+CkTo6lApXeoo+PAim3P4dVsA229ZeftnlSnLrYxTSj1RV4LJYUr3O
+   QFCkjwMkcF8Z5QS+gJd4+tZtnJpGXMMi5OPcqL1TmKc2YWLyVW4fHgQS3
+   KsStjbRdv2fMMTijX3dQkKUMiEL55DXnP5bGFxSo5VjC77ADuPmtcFRUZ
+   2qekBx7sGufJ4OrefQFRqGoxHCgkNPf4eymxEtETEL80ovzTWMjFnefns
+   1H+t18HZaxxQhVgsv3RJW4H6bPbZuRC70Xwh6hOzBFpecaz2rf8c7KxJF
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="148642846"
+   d="scan'208";a="165122975"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 09:39:34 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 09:39:07 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 09:39:29 -0700
+ 15.1.2375.17; Wed, 9 Mar 2022 09:39:06 -0700
 Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 09:39:18 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Mar 2022 09:38:57 -0700
 From:   Eugen Hristev <eugen.hristev@microchip.com>
 To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
 CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
         <nicolas.ferre@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Subject: [PATCH v8 07/13] media: atmel: atmel-isc: compact the controller formats list
-Date:   Wed, 9 Mar 2022 18:37:52 +0200
-Message-ID: <20220309163758.2672727-8-eugen.hristev@microchip.com>
+        Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH v8 05/13] media: atmel: atmel-sama5d2-isc: fix wrong mask in YUYV format check
+Date:   Wed, 9 Mar 2022 18:37:50 +0200
+Message-ID: <20220309163758.2672727-6-eugen.hristev@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220309163758.2672727-1-eugen.hristev@microchip.com>
 References: <20220309163758.2672727-1-eugen.hristev@microchip.com>
@@ -60,184 +59,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Compact the list array to be more readable.
-No other changes, only cosmetic.
+While this does not happen in production, this check should be done
+versus the mask, as checking with the YCYC value may not include
+some bits that may be set.
+Is it correct and safe to check the whole mask.
 
+Fixes: 123aaf816b95 ("media: atmel: atmel-sama5d2-isc: fix YUYV format")
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
 ---
- .../media/platform/atmel/atmel-sama5d2-isc.c  | 51 ++++++----------
- .../media/platform/atmel/atmel-sama7g5-isc.c  | 60 +++++++------------
- 2 files changed, 37 insertions(+), 74 deletions(-)
+ drivers/media/platform/atmel/atmel-sama5d2-isc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index 025c3e8a7e95..d96ee3373889 100644
+index c244682ea22f..025c3e8a7e95 100644
 --- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
 +++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -60,56 +60,39 @@
- static const struct isc_format sama5d2_controller_formats[] = {
- 	{
- 		.fourcc		= V4L2_PIX_FMT_ARGB444,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ARGB555,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_RGB565,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ABGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_XBGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV420,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUYV,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV422P,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_GREY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB10,
- 	},
- };
-diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-index 9dc75eed0098..e07ae188c15f 100644
---- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-@@ -63,65 +63,45 @@
- static const struct isc_format sama7g5_controller_formats[] = {
- 	{
- 		.fourcc		= V4L2_PIX_FMT_ARGB444,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ARGB555,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_RGB565,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_ABGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_XBGR32,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV420,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_UYVY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_VYUY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUYV,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_YUV422P,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_GREY,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_Y16,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB8,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SBGGR10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGBRG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SGRBG10,
--	},
--	{
-+	}, {
- 		.fourcc		= V4L2_PIX_FMT_SRGGB10,
- 	},
- };
+@@ -291,7 +291,7 @@ static void isc_sama5d2_config_rlp(struct isc_device *isc)
+ 	 * Thus, if the YCYC mode is selected, replace it with the
+ 	 * sama5d2-compliant mode which is YYCC .
+ 	 */
+-	if ((rlp_mode & ISC_RLP_CFG_MODE_YCYC) == ISC_RLP_CFG_MODE_YCYC) {
++	if ((rlp_mode & ISC_RLP_CFG_MODE_MASK) == ISC_RLP_CFG_MODE_YCYC) {
+ 		rlp_mode &= ~ISC_RLP_CFG_MODE_MASK;
+ 		rlp_mode |= ISC_RLP_CFG_MODE_YYCC;
+ 	}
 -- 
 2.25.1
 
