@@ -2,105 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 475C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42670C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbiCIJ3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:29:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
+        id S232091AbiCIJaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:30:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232047AbiCIJ3J (ORCPT
+        with ESMTP id S229623AbiCIJ36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:29:09 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E335614D26C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:28:10 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8108B3F1C5
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:28:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646818089;
-        bh=W1ZmGzzIil/BY1tOmvj18fZ/kKQqmwIhZnir6U/EX5w=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=jWt712BXAsHaDWILBo5BVHV2sOALVNfCgNeI70JyW4/lVqLCtvPYo27wthjw8IfCI
-         4KYd3lCERMvbJsDG9JHfH4hIkkbt4mqOOdfmnGGKC8hIONBlei6xtvdrPKb9Esv7OI
-         5jz0pxw8FIto3P3NYL5FxHirxPCHODSRlvHAsljV1zWDN1nVaWtOgt3ybhGBXrs1zx
-         lOG05uUfg36YnNynJnogsSGWadIf2lu7oIkhtNaJd1Os3N2HMlelmFckidido0t2V9
-         yAaEnGAf+6IZ7FTJOykQw8QhW6hFcCIxynP7QA3hHVYuiexD3hcoSzJ86R8CXzPOKW
-         xdjahaSe+z73g==
-Received: by mail-ed1-f71.google.com with SMTP id h17-20020a05640250d100b004133863d836so997061edb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:28:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=W1ZmGzzIil/BY1tOmvj18fZ/kKQqmwIhZnir6U/EX5w=;
-        b=XynkyMF4eBcQWZO4QAtgJQeL8O9g1EBYgVtrgCs1fj0W8V/s+sdrtlqA1g6Q4JbrTm
-         O4J973Q1dOTJ8yY+LPL0BNTJuunUqrngBLQAJJpmpXToB5q+SaaY2Vyi4G1UlNFtDrtG
-         NTGf9uEN/0m0cGVeyDEPYxauDfIRoafoT7RgDEVrNx5Wq+ZnixrzArPR1bV/0PhKSZQN
-         re9kKisPJo1anPWb22c8nPEpUxGUaV82En4thsOwngOHAn0L/yDofE3Ksdlf4FQNHeVF
-         Jv3wyWGPf6C9M2xlnMQnKI/Er+dTPyRfEv1DygvZxJVwQ1gAOXPjWpMsF63gjiDdr+R3
-         EDsw==
-X-Gm-Message-State: AOAM5331YtBLpaDlU690wp2LIwPEsTzuxDhtEvPTpDCi0HX8gqEuH98T
-        tWqS8hJeJu+BKut/GrkakeiUYF1zFWDWE7gd5u3QX6FRQa45//bqKytodcemNxzJ5RXyiRsEbPM
-        RD0fYTJ0HHDloK1FWtQqECmrAtoDFSQxxzbnqoLVcpQ==
-X-Received: by 2002:a17:907:a40a:b0:6db:462:dbe9 with SMTP id sg10-20020a170907a40a00b006db0462dbe9mr15774938ejc.59.1646818088938;
-        Wed, 09 Mar 2022 01:28:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxsMwx6ua3btbQvYyeevwGk42BscQP3xI9D8KoR2lq9SemLHw6dTp3pN5n0R1N/DkOoTtWXhw==
-X-Received: by 2002:a17:907:a40a:b0:6db:462:dbe9 with SMTP id sg10-20020a170907a40a00b006db0462dbe9mr15774923ejc.59.1646818088779;
-        Wed, 09 Mar 2022 01:28:08 -0800 (PST)
-Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id vl11-20020a17090730cb00b006d8121d0fc4sm488489ejb.138.2022.03.09.01.28.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 01:28:08 -0800 (PST)
-Message-ID: <45c682ea-db99-e7b2-fbae-395e214962f4@canonical.com>
-Date:   Wed, 9 Mar 2022 10:28:07 +0100
+        Wed, 9 Mar 2022 04:29:58 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE597EB30C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:29:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646818140; x=1678354140;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=CVn+ZT5avv8HOvgaAaNLsjJaTQhv2nlshh1mq8i1iV0=;
+  b=PtMsaIwJ3kfOyZcsWNiS4AJcVsSadbaZ5ww5MZj22Ng9GedneYnMidbt
+   H64qXkFfc4ATBMgaAbcN7tHruJLZDPLdnMwjN2CkEGZ63AOeCP7s21QFL
+   6bFMiL0yqo3XIk+Ah1WN7RjpIPPUFPVFu9WCesumimVRXZ52ZeiPSxS6v
+   P6cSwLiVEcNV5x7u/9u8veSUQOlISVz9noGAYzeudkJh+A2HcYe3BD7vo
+   T45PVQ1LxE6wJktGiOgEj03kACyaTwhOMryqRT6MiY51QjhVo0qp0tF9v
+   hghqEyUtiixA56xxuCX02+g2F0oxrf9BfSDcXsyv1fALKqYNB4d9qcdlc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="252501840"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="252501840"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 01:29:00 -0800
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="537936493"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 01:28:57 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Mel Gorman <mgorman@techsingularity.net>
+Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        lkp@lists.01.org, lkp@intel.com, fengwei.yin@intel.com,
+        aubrey.li@linux.intel.com, yu.c.chen@intel.com
+Subject: Re: [LKP] Re: [sched/numa]  0fb3978b0a:
+  stress-ng.fstat.ops_per_sec -18.9% regression
+References: <20220302140220.GA32817@xsang-OptiPlex-9020>
+        <87mti7s9xz.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Date:   Wed, 09 Mar 2022 17:28:55 +0800
+In-Reply-To: <87mti7s9xz.fsf@yhuang6-desk2.ccr.corp.intel.com> (Ying Huang's
+        message of "Thu, 03 Mar 2022 16:43:20 +0800")
+Message-ID: <87tuc7fp9k.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: qcom: Add sc8280xp TLMM
- binding
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220308221132.1423218-1-bjorn.andersson@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220308221132.1423218-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/03/2022 23:11, Bjorn Andersson wrote:
-> The Qualcomm SC8280XP platform contains a single block of registers
-> for the TLMM block. This provides pinconf and pinmux for 228 GPIOs, 2
-> UFS_RESET pins and one SDC interface.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
-> Changes since v1:
-> - Dropped $ref: pinctrl.yaml
-> - Dropped reg-names from required list
-> - Fixed spelling mistake in example
-> 
->  .../pinctrl/qcom,sc8280xp-pinctrl.yaml        | 151 ++++++++++++++++++
->  1 file changed, 151 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc8280xp-pinctrl.yaml
-> 
+Hi, All,
 
+"Huang, Ying" <ying.huang@intel.com> writes:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Hi, Oliver,
+>
+> Thanks for report.
+>
+> I still cannot connect the regression with the patch yet.  To double
+> check, I have run test again with "sched_verbose" kernel command line,
+> and verified that the sched_domain isn't changed at all with the patch.
+>
+> kernel test robot <oliver.sang@intel.com> writes:
+>>       0.11   6%      +0.1        0.16   4%  perf-profile.self.cycles-pp.update_rq_clock
+>>       0.00            +0.1        0.06   6%  perf-profile.self.cycles-pp.memset_erms
+>>       0.00            +0.1        0.07   5%  perf-profile.self.cycles-pp.get_pid_task
+>>       0.06   7%      +0.1        0.17   6%  perf-profile.self.cycles-pp.select_task_rq_fair
+>>       0.54   5%      +0.1        0.68        perf-profile.self.cycles-pp.lockref_put_return
+>>       4.26            +1.1        5.33        perf-profile.self.cycles-pp.common_perm_cond
+>>      15.45            +4.9       20.37        perf-profile.self.cycles-pp.lockref_put_or_lock
+>>      20.12            +6.7       26.82        perf-profile.self.cycles-pp.lockref_get_not_dead
+>
+> From the perf-profile above, the most visible change is more cycles in
+> lockref_get_not_dead(), which will loop with cmpxchg on
+> dentry->d_lockref.  So this appears to be related to the memory layout.
+> I will try to debug that.
+>
+> Because stress-ng is a weird "benchmark" although it's a very good
+> functionality test, and I cannot connect the patch with the test case
+> and performance metrics collected.  I think this regression should be a
+> low priority one which shouldn't prevent the merging etc.  But I will
+> continue to investigate the regression to try to root cause it.
 
+Done more investigation for this.  It turns out the sched_domain has
+been changed after commit 0fb3978b0a, although it's not shown in default
+sched_verbose output.  sd->imb_numa_nr of level "NUMA" has been changed
+from 24 to 12 after the commit.  So the following debug patch restore
+the performance.
 
-Best regards,
-Krzysztof
+From 6c79c858248196ea71da4be02a0774bb6e277581 Mon Sep 17 00:00:00 2001
+From: Huang Ying <ying.huang@intel.com>
+Date: Wed, 9 Mar 2022 10:45:18 +0800
+Subject: [PATCH] dbg: restore sd->imb_numa_nr
+
+---
+ kernel/sched/topology.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 5e05fb7a817b..c348747e4166 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -2351,6 +2351,10 @@ build_sched_domains(const struct cpumask *cpu_map, struct sched_domain_attr *att
+ 					sd->name, imb, factor, sd->imb_numa_nr);
+ #endif
+ 			}
++#ifdef CONFIG_SCHED_DEBUG
++			if (!strcmp(sd->name, "NUMA"))
++				sd->imb_numa_nr = 24;
++#endif
+ 		}
+ 	}
+ 
+-- 
+2.30.2
+
+I haven't researched much about the influence of sd->imb_numa_nr.  But
+it seems that commit 0fb3978b0a just follows the behavior of a normal 2
+sockets (2 LLCs) machine.  This is intended.  So the regression report
+isn't important for the commit itself.
+
+About the impact of sd->imb_numa_nr, we will continue work on that.
+
+Best Regards,
+Huang, Ying
