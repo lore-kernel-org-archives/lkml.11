@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A301EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68622C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiCIJNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:13:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
+        id S231906AbiCIJNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:13:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbiCIJMx (ORCPT
+        with ESMTP id S231689AbiCIJNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:12:53 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA85616BFB3;
-        Wed,  9 Mar 2022 01:11:55 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso4710905pjb.0;
-        Wed, 09 Mar 2022 01:11:55 -0800 (PST)
+        Wed, 9 Mar 2022 04:13:17 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C3D16DAD1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:12:18 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id c20so1960095edr.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:12:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=oajkNxPEtUGCoRw60Kh+hjbhxD8g39tgk6M9/aAms/4=;
-        b=B5h5iaT6jAgMvBj4+b8Ifxl1guCDtK2WJTNiON1iyyzH3SZcfdgdbwzZfcFHlQX7CV
-         fJYlLhfpNJUCXfYpEy78XSpNVl9WUsRyKSqXnldVx9rdsJnL8lnQQ7zdAV1IEa7Aadnb
-         F6jLbFCPZOJMDjIefnIuHD68FoIHcaH1Gpev+5EiDfZZQIbJfksrG4G9Occ4nY9yF42Z
-         U+DSc2mt9ywU4ddByvRC1avu9d51Y/oY3+2iU/iDnl1gOnyFm1M/Nz00Al1l6I36djjh
-         EXhBRnAvanWJzxGkrwhiX1ah4BNmQ93ZHmBJGFKcP+/6pXPts1O91JM+J5f8oDC0R2Fa
-         FMfg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQyR0zO7n2luNlcmsiExWGwlTndourCo+FKtAyqqPd0=;
+        b=VqaFBaT1fZWZLqBlrq2LJAEqf+ye6qEFFWoGTWMSlasfydecGesDwwf3QeqrIZ03Hz
+         9cNij4dCoJloGpYyM6wRz+ijmCDSYfvRnlTCjIcF2qsz5VGMfv+Dq/ViajONTqkCB5uE
+         1XVnUguMC3DPc6ers+f8J3kj2oa5Ho5vxETaINyduDtEoIXUFJi8am1K2TW3GML8Z9mH
+         O5gEfgU7r+HKVp665WdnQfudR6IL1MglbGbglPygj9K6j68Vbz+duyG9sUXvtJqxNo5O
+         uPKmiH5vfypTBIGfUdTHxyoxZSqtyTjThx8mZCLOwzlB7efW3+FyeO87C+nKahnV9OAl
+         GGSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oajkNxPEtUGCoRw60Kh+hjbhxD8g39tgk6M9/aAms/4=;
-        b=iLpT6mmGX1aT715btAnUIPqEVgfVUrjGVZDh1gcjEIHf2jISMDU3D96q5krKT8pNhX
-         LjtBIVpRfUWh7mGSkVSpHCmKLq7mUPk0aAo5hSQAY88Rz9N1bTEl0udxOfHlqFdcQpC0
-         UlqaDczhbPEek2fvQ/sLbSa3wuKQRN9q8/Gg6OSdeLQ0C9XeuesJ0hE6haovLTzOn3Z7
-         m0+mD3qrKI+dgmUfIO/x1RevCq1z4uFr8SgbU+iZUHFcTvu5LEpEvGLwKZoZgdGnmD91
-         au/Hcc+LIF2TJp/TnOAwYQ11bDbAhfcbrtzl2rX0+pwlp42copLxGEzzPL4Y+lX9rhkF
-         ibDA==
-X-Gm-Message-State: AOAM532Lms8ysFsqw2MSwUfu+LJxnaxCgbjNxKGclZgo4e+MbaMXH4qL
-        jwEhIQlV5gStH39Ajas2Zok=
-X-Google-Smtp-Source: ABdhPJwTsGkKuYkcqGVbZ+U/xEcW/zM2/FAJtxB8qzCWOCZKC4FB3UB9hs+7kBP0Dxzf8eo8inJnXQ==
-X-Received: by 2002:a17:90b:3a81:b0:1bf:9a17:99b7 with SMTP id om1-20020a17090b3a8100b001bf9a1799b7mr5616183pjb.68.1646817115167;
-        Wed, 09 Mar 2022 01:11:55 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id d10-20020a63360a000000b0037947abe4bbsm1681514pga.34.2022.03.09.01.11.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NQyR0zO7n2luNlcmsiExWGwlTndourCo+FKtAyqqPd0=;
+        b=66St2V4PoGzgf1goOV3Qs0u9aaqIIKXyecXI6ev9ltzM6Bdk7zTXYqaSftVhp+aepi
+         fOTjqnzXRyBiJ6lxn7lQu6c8o8qU6L4pk+IQmVrs3jZHZdDpjuVcWzqcgWBfQpXDcfBW
+         fmq6dT22NvY8T4BkM7zczW5S5UI63oGGCZEgfgDuDKzPOhB/M7xBU6pDqX59pb3BBXZR
+         nVxH67bFRoyemh5c+Fu2uJ39Pbs01JsMBJfADfUJ6Q0zJzudxLiA8Yzl0NzR32XBGFiV
+         UXrTnljTopSPGJr8CN8dfPGwq8V3Qi6K03r5YXVkpLD3n5MhWbITskmzj6cHJ8Oz9g2W
+         WesQ==
+X-Gm-Message-State: AOAM532TbvlM8J8gTXR3ygd7gKuJBJVRaVVI9BaDMYIVMy2iZANZCYQ2
+        h3/KfojeEMSsP0mcxByQv3hBfdpoAlG31vjS
+X-Google-Smtp-Source: ABdhPJxBbjuLDZ/JsxksWzgPVEra5ZeaUsIifGHk4mExu8GbBy/m7CKkufDyTgjZ9bvmRDl2lmHMUg==
+X-Received: by 2002:a05:6402:216:b0:416:279d:b314 with SMTP id t22-20020a056402021600b00416279db314mr18520688edv.75.1646817137179;
+        Wed, 09 Mar 2022 01:12:17 -0800 (PST)
+Received: from localhost.localdomain ([102.126.147.138])
+        by smtp.gmail.com with ESMTPSA id u23-20020a17090626d700b006cfcd39645fsm483253ejc.88.2022.03.09.01.12.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 01:11:54 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] ethtool: Fix refcount leak in gfar_get_ts_info
-Date:   Wed,  9 Mar 2022 09:11:49 +0000
-Message-Id: <20220309091149.775-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 09 Mar 2022 01:12:16 -0800 (PST)
+From:   Hatim Muhammed <hatimmohammed369@gmail.com>
+X-Google-Original-From: Hatim Muhammed
+To:     linux-kernel@vger.kernel.org
+Cc:     greg@kroah.com, abbotti@mev.co.uk, hsweeten@visionengravers.com,
+        Hatim Muhammed <hatimmohammed369@gmail.com>
+Subject: [PATCH 6/8] [Staging]: Removed an unnecessary #if
+Date:   Wed,  9 Mar 2022 11:12:13 +0200
+Message-Id: <20220309091213.13203-1-hatimmohammed369@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+From: Hatim Muhammed <hatimmohammed369@gmail.com>
 
-Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+This removed #if had 1 as its condition, hence it's body will always
+execute and its #else block will never
+
+Signed-off-by: Hatim Muhammed <hatimmohammed369@gmail.com>
 ---
- drivers/net/ethernet/freescale/gianfar_ethtool.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/comedi/drivers/s526.c | 49 -----------------------------------
+ 1 file changed, 49 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-index ff756265d58f..9a2c16d69e2c 100644
---- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
-+++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-@@ -1464,6 +1464,7 @@ static int gfar_get_ts_info(struct net_device *dev,
- 	ptp_node = of_find_compatible_node(NULL, NULL, "fsl,etsec-ptp");
- 	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
- 		if (ptp_dev)
- 			ptp = platform_get_drvdata(ptp_dev);
- 	}
+diff --git a/drivers/comedi/drivers/s526.c b/drivers/comedi/drivers/s526.c
+index 9245c679a3c4..df9d240518ef 100644
+--- a/drivers/comedi/drivers/s526.c
++++ b/drivers/comedi/drivers/s526.c
+@@ -229,7 +229,6 @@ static int s526_gpct_insn_config(struct comedi_device *dev,
+ 		 */
+ 		devpriv->gpct_config[chan] = data[0];
+ 
+-#if 1
+ 		/*  Set Counter Mode Register */
+ 		val = data[1] & 0xffff;
+ 		outw(val, dev->iobase + S526_GPCT_MODE_REG(chan));
+@@ -246,54 +245,6 @@ static int s526_gpct_insn_config(struct comedi_device *dev,
+ 			 *      dev->iobase + S526_GPCT_CTRL_REG(chan));
+ 			 */
+ 		}
+-#else
+-		val = S526_GPCT_MODE_CTDIR_CTRL_QUAD;
+-
+-		/*  data[1] contains GPCT_X1, GPCT_X2 or GPCT_X4 */
+-		if (data[1] == GPCT_X2)
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX2;
+-		else if (data[1] == GPCT_X4)
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX4;
+-		else
+-			val |= S526_GPCT_MODE_CLK_SRC_QUADX1;
+-
+-		/*  When to take into account the indexpulse: */
+-		/*
+-		 * if (data[2] == GPCT_IndexPhaseLowLow) {
+-		 * } else if (data[2] == GPCT_IndexPhaseLowHigh) {
+-		 * } else if (data[2] == GPCT_IndexPhaseHighLow) {
+-		 * } else if (data[2] == GPCT_IndexPhaseHighHigh) {
+-		 * }
+-		 */
+-		/*  Take into account the index pulse? */
+-		if (data[3] == GPCT_RESET_COUNTER_ON_INDEX) {
+-			/*  Auto load with INDEX^ */
+-			val |= S526_GPCT_MODE_AUTOLOAD_IXRISE;
+-		}
+-
+-		/*  Set Counter Mode Register */
+-		val = data[1] & 0xffff;
+-		outw(val, dev->iobase + S526_GPCT_MODE_REG(chan));
+-
+-		/*  Load the pre-load register */
+-		s526_gpct_write(dev, chan, data[2]);
+-
+-		/*  Write the Counter Control Register */
+-		if (data[3])
+-			outw(data[3] & 0xffff,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-
+-		/*  Reset the counter if it is software preload */
+-		if ((val & S526_GPCT_MODE_AUTOLOAD_MASK) ==
+-		    S526_GPCT_MODE_AUTOLOAD_NONE) {
+-			/*  Reset the counter */
+-			outw(S526_GPCT_CTRL_CT_RESET,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-			/*  Load the counter from PR0 */
+-			outw(S526_GPCT_CTRL_CT_LOAD,
+-			     dev->iobase + S526_GPCT_CTRL_REG(chan));
+-		}
+-#endif
+ 		break;
+ 
+ 	case INSN_CONFIG_GPCT_SINGLE_PULSE_GENERATOR:
 -- 
-2.17.1
+2.35.1
 
