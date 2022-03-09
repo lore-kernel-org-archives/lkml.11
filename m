@@ -2,226 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5559EC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E22DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiCIBJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:09:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S229958AbiCIBKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:10:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230254AbiCIBH5 (ORCPT
+        with ESMTP id S230113AbiCIBJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:07:57 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F7BDEF0
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 16:48:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646786938; x=1678322938;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wHOUq6oj52ftb6Lgge3jkOSIeqRGGllnLy57qfnO/iI=;
-  b=SptU/ZWL9vF/+sIglnUdTHEFeVRF+5WauykEQih30z0jxPJbPCyrVr64
-   MIensT65Tz4CQVeKFyUpR+7AXalMJf8TjWj8UVG0TLWfF4W2CH0P9JPbs
-   mB8ewxE43rE0WZokJ2Di9+ZOZmywC/C7717bkVBRNqtGchCrYi6UtxGQD
-   6EtLYKqhsRMErh0k9jdl0lkp7sOhUnlZ/mEViWwjyoj+CJI92T4e6IgVs
-   f2Pysjiu2ZdeimpY3a7yOZD1x+BOteqC2TxU5uQF1euoZRSf8FrCKobWC
-   +Jc+cFNtpB56V83v730UixtGctPAYZmLF3FxGbQ25hz25xL5sKGMfrPCE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318070544"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="318070544"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 15:41:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="688103910"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Mar 2022 15:41:43 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRjSY-0002By-Rm; Tue, 08 Mar 2022 23:41:42 +0000
-Date:   Wed, 9 Mar 2022 07:41:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Saravana Kannan <skannan@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sibi Sankar <sibis@codeaurora.org>
-Subject: [chanwoo:devfreq-testing 2/4] include/linux/devfreq.h:332:1:
- warning: no semicolon at end of struct or union
-Message-ID: <202203090713.yqIkOA2s-lkp@intel.com>
+        Tue, 8 Mar 2022 20:09:13 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1807DD96E;
+        Tue,  8 Mar 2022 16:50:50 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V6gLVjG_1646787034;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V6gLVjG_1646787034)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Mar 2022 08:50:48 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     aacraid@microsemi.com
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] scsi: aacraid: Clean up some inconsistent indenting
+Date:   Wed,  9 Mar 2022 08:50:31 +0800
+Message-Id: <20220309005031.126504-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git devfreq-testing
-head:   3439b6e7ff5704e4f812af746da9f06a6403d796
-commit: ae763e5ef1bcfccbf95119180ee716637b7bb353 [2/4] PM / devfreq: Add cpu based scaling support to passive governor
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220309/202203090713.yqIkOA2s-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/commit/?id=ae763e5ef1bcfccbf95119180ee716637b7bb353
-        git remote add chanwoo https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
-        git fetch --no-tags chanwoo devfreq-testing
-        git checkout ae763e5ef1bcfccbf95119180ee716637b7bb353
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash drivers/devfreq/ drivers/gpu/drm/msm/
+Eliminate the follow smatch warning:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+drivers/scsi/aacraid/linit.c:867 aac_eh_tmf_hard_reset_fib() warn:
+inconsistent indenting.
 
-All error/warnings (new ones prefixed by >>):
-
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_simpleondemand.c:10:
->> arch/um/include/asm/processor-generic.h:103:19: error: expected identifier or '(' before '&' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                   ^
-   include/linux/devfreq.h:331:27: note: in expansion of macro 'cpu_data'
-     331 |  struct devfreq_cpu_data *cpu_data[NR_CPUS];
-         |                           ^~~~~~~~
-   In file included from drivers/devfreq/governor_simpleondemand.c:11:
->> include/linux/devfreq.h:332:1: warning: no semicolon at end of struct or union
-     332 | };
-         | ^
---
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
->> arch/um/include/asm/processor-generic.h:103:19: error: expected identifier or '(' before '&' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                   ^
-   include/linux/devfreq.h:331:27: note: in expansion of macro 'cpu_data'
-     331 |  struct devfreq_cpu_data *cpu_data[NR_CPUS];
-         |                           ^~~~~~~~
-   In file included from drivers/devfreq/governor_passive.c:16:
->> include/linux/devfreq.h:332:1: warning: no semicolon at end of struct or union
-     332 | };
-         | ^
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
-   drivers/devfreq/governor_passive.c: In function 'get_target_freq_with_cpufreq':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:58:29: note: in expansion of macro 'cpu_data'
-      58 |   parent_cpu_data = p_data->cpu_data[cpu];
-         |                             ^~~~~~~~
->> drivers/devfreq/governor_passive.c:50:31: warning: variable 'p_data' set but not used [-Wunused-but-set-variable]
-      50 |  struct devfreq_passive_data *p_data =
-         |                               ^~~~~~
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_notifier_call':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:221:10: note: in expansion of macro 'cpu_data'
-     221 |   !data->cpu_data[freqs->policy->cpu])
-         |          ^~~~~~~~
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:224:26: note: in expansion of macro 'cpu_data'
-     224 |  parent_cpu_data = data->cpu_data[freqs->policy->cpu];
-         |                          ^~~~~~~~
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_unregister_notifier':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:258:29: note: in expansion of macro 'cpu_data'
-     258 |   parent_cpu_data = p_data->cpu_data[cpu];
-         |                             ^~~~~~~~
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_register_notifier':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:291:15: note: in expansion of macro 'cpu_data'
-     291 |   if (p_data->cpu_data[cpu])
-         |               ^~~~~~~~
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:331:11: note: in expansion of macro 'cpu_data'
-     331 |   p_data->cpu_data[cpu] = parent_cpu_data;
-         |           ^~~~~~~~
-
-
-vim +332 include/linux/devfreq.h
-
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  296  
-996133119f57334 Chanwoo Choi          2016-03-22  297  /**
-7a51320ecd39420 Mauro Carvalho Chehab 2020-03-17  298   * struct devfreq_passive_data - ``void *data`` fed to struct devfreq
-996133119f57334 Chanwoo Choi          2016-03-22  299   *	and devfreq_add_device
-996133119f57334 Chanwoo Choi          2016-03-22  300   * @parent:	the devfreq instance of parent device.
-996133119f57334 Chanwoo Choi          2016-03-22  301   * @get_target_freq:	Optional callback, Returns desired operating frequency
-996133119f57334 Chanwoo Choi          2016-03-22  302   *			for the device using passive governor. That is called
-996133119f57334 Chanwoo Choi          2016-03-22  303   *			when passive governor should decide the next frequency
-996133119f57334 Chanwoo Choi          2016-03-22  304   *			by using the new frequency of parent devfreq device
-996133119f57334 Chanwoo Choi          2016-03-22  305   *			using governors except for passive governor.
-996133119f57334 Chanwoo Choi          2016-03-22  306   *			If the devfreq device has the specific method to decide
-996133119f57334 Chanwoo Choi          2016-03-22  307   *			the next frequency, should use this callback.
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  308   + * @parent_type	parent type of the device
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  309   + * @this:		the devfreq instance of own device.
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  310   + * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER list
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  311   + * @cpu_data:		the state min/max/current frequency of all online cpu's
-996133119f57334 Chanwoo Choi          2016-03-22  312   *
-996133119f57334 Chanwoo Choi          2016-03-22  313   * The devfreq_passive_data have to set the devfreq instance of parent
-996133119f57334 Chanwoo Choi          2016-03-22  314   * device with governors except for the passive governor. But, don't need to
-996133119f57334 Chanwoo Choi          2016-03-22  315   * initialize the 'this' and 'nb' field because the devfreq core will handle
-996133119f57334 Chanwoo Choi          2016-03-22  316   * them.
-996133119f57334 Chanwoo Choi          2016-03-22  317   */
-996133119f57334 Chanwoo Choi          2016-03-22  318  struct devfreq_passive_data {
-996133119f57334 Chanwoo Choi          2016-03-22  319  	/* Should set the devfreq instance of parent device */
-996133119f57334 Chanwoo Choi          2016-03-22  320  	struct devfreq *parent;
-996133119f57334 Chanwoo Choi          2016-03-22  321  
-996133119f57334 Chanwoo Choi          2016-03-22  322  	/* Optional callback to decide the next frequency of passvice device */
-996133119f57334 Chanwoo Choi          2016-03-22  323  	int (*get_target_freq)(struct devfreq *this, unsigned long *freq);
-996133119f57334 Chanwoo Choi          2016-03-22  324  
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  325  	/* Should set the type of parent device */
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  326  	enum devfreq_parent_dev_type parent_type;
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  327  
-996133119f57334 Chanwoo Choi          2016-03-22  328  	/* For passive governor's internal use. Don't need to set them */
-996133119f57334 Chanwoo Choi          2016-03-22  329  	struct devfreq *this;
-996133119f57334 Chanwoo Choi          2016-03-22  330  	struct notifier_block nb;
-ae763e5ef1bcfcc Saravana Kannan       2021-03-02  331  	struct devfreq_cpu_data *cpu_data[NR_CPUS];
-996133119f57334 Chanwoo Choi          2016-03-22 @332  };
-996133119f57334 Chanwoo Choi          2016-03-22  333  #endif
-996133119f57334 Chanwoo Choi          2016-03-22  334  
-
-:::::: The code at line 332 was first introduced by commit
-:::::: 996133119f57334c38b020dbfaaac5b5eb127e29 PM / devfreq: Add new passive governor
-
-:::::: TO: Chanwoo Choi <cw00.choi@samsung.com>
-:::::: CC: MyungJoo Ham <myungjoo.ham@samsung.com>
-
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/scsi/aacraid/linit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
+index b91b72b923ec..9c27bc37e5de 100644
+--- a/drivers/scsi/aacraid/linit.c
++++ b/drivers/scsi/aacraid/linit.c
+@@ -864,7 +864,7 @@ static u8 aac_eh_tmf_hard_reset_fib(struct aac_hba_map_info *info,
+ 	rst->error_length = cpu_to_le32(FW_ERROR_BUFFER_SIZE);
+ 	fib->hbacmd_size = sizeof(*rst);
+ 
+-       return HBA_IU_TYPE_SATA_REQ;
++	return HBA_IU_TYPE_SATA_REQ;
+ }
+ 
+ static void aac_tmf_callback(void *context, struct fib *fibptr)
+-- 
+2.20.1.7.g153144c
+
