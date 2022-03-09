@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A088C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 23:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238156AbiCIXoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 18:44:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
+        id S238174AbiCIXpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 18:45:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbiCIXo2 (ORCPT
+        with ESMTP id S234529AbiCIXpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 18:44:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE89119415;
-        Wed,  9 Mar 2022 15:43:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48820B82447;
-        Wed,  9 Mar 2022 23:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 825B8C340EE;
-        Wed,  9 Mar 2022 23:43:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646869405;
-        bh=UdPDKptnwZ1SgF/Ief1UzCmFBhIpSC7zBQ8ZwnyvOcA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z3e+uabSlkJEgLA2lsBn9GohSDanxFS41c7vT+rNkmUEB4IOoA/6y0NNktr19ZuDN
-         Ff10o22zXImsGfFiBGJzKMfTWViGCBI+hGOv6XnThXjMKIZIF2iCoVZ01JnhblaLjt
-         T5LetExE7wBjvC7Cc/B3V3Op8iUK6s+FOWMdRN/JctpqLfVKYAdAG0MoV0Ejwj5YaZ
-         6EVnYmXRkjRAYmlsz9RBYtPwnlcLhpJvqGF4Ygs2ABMqH1l8jjJ2DfKQ4IUhHyCUyP
-         WZ5U+ZPloB3pcFfcKSz9mTQZM686I/k1wI8K/CpRfjZmL3LitdiWtw64W3JTpDMzOz
-         VoRpx3Wjw9xCQ==
-Date:   Thu, 10 Mar 2022 01:42:41 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v2.1 14/30] x86/sgx: Support restricting of enclave
- page permissions
-Message-ID: <Yik7cdUif35yA7ui@iki.fi>
-References: <20220304093524.397485-1-jarkko@kernel.org>
- <20220304093524.397485-14-jarkko@kernel.org>
- <YihqwiU3Dr5mvMQx@iki.fi>
- <Yih00gFMaJhLIgxa@iki.fi>
- <5e89a3be-0760-b1b4-7693-2f3d9ac5066b@intel.com>
- <Yik51tjxXcqamBrO@iki.fi>
+        Wed, 9 Mar 2022 18:45:05 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7EDF9F8E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 15:44:05 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id mv5-20020a17090b198500b001bf2a039831so6685684pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 15:44:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xZ5pk/v6FvmYcF2QqtDQr6YQCEUmF5T9mslVfxhX4lw=;
+        b=1WIbvfAR2a/++7W/4IMTjpVpx4LGXGDFNJUsWx/AtHefzuwYB7Ii+WwpGuhQMBboCJ
+         EBhHmMctx6uCu8JLmONtixIVpWY2QicyiWWkOZrHN4HZwVLR9jox+7AGmkJ7bpRDpKgh
+         JR0lFjc/cdsAShHmi86Ci3WzC1BGJk1B0pLDJpIbBKPRpJFqlEIBPTA/ooSsYOeaDaqu
+         hYnUT+Z7BfiKRquUJ2eETcX3ohj3ZVj/C91brxaCgPkd3dUcw9KdGRN4Q2s8amsMbNsN
+         dxugJoK64vYc8ORt3+Wu/HobFYWIVNp2f4syKjy9A8b9B9MscelgKPHi/z90MyGjrSgn
+         5mSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xZ5pk/v6FvmYcF2QqtDQr6YQCEUmF5T9mslVfxhX4lw=;
+        b=sqLi10gKGKQWZuX8NNf+L1OTgSFf5Yx3CKNoISpJdArTrhbkYIQR49GAGjoYkPJwbs
+         80LmWU/LW1Df0/EZnM6kPcX2aWYWr6lPqQBqEhZzxpP5Y2xHKDvPC9NJ/5QEPsNKX2cY
+         Pqjz6naXFvtlgIWZi6FTvTFa+bV7V9Gprjidb5YPd6CozHm37/C2BMMIMsGPntFN2Rp9
+         k/avNF4l1H//iCdos4uOxP2ylIq/rkcJdrYOQTHrjCEhpYdXafqjyV4aWVkJ3PSNujC3
+         tla9kC42EB9HTJgKTVwTn8or9JdmNVOyKmusSWjGS0ptgd2AcflrJ6u1t22lxCjLXzRu
+         orow==
+X-Gm-Message-State: AOAM531FtzhQA7d4mUhm8XCbmZ7YtlQDzYxMwwMgfWftih6Y/bqDwR6q
+        sslWsZnuUymYuk9Xfl2NrED7Hw==
+X-Google-Smtp-Source: ABdhPJyNpn/jtIzIqkD+JWHBSxj97tNEmql3hwlNlKuZ1KJAAdvaWBVvrzNmqXb6CG5q7048gKxcTQ==
+X-Received: by 2002:a17:90b:3910:b0:1bf:2972:ccea with SMTP id ob16-20020a17090b391000b001bf2972cceamr12778860pjb.221.1646869445175;
+        Wed, 09 Mar 2022 15:44:05 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id a133-20020a621a8b000000b004f6a79008ddsm4370365pfa.45.2022.03.09.15.44.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 15:44:04 -0800 (PST)
+Message-ID: <cde6d338-880b-57c7-d9e5-86d117647e8d@kernel.dk>
+Date:   Wed, 9 Mar 2022 16:44:03 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yik51tjxXcqamBrO@iki.fi>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/2] io_uring: Add support for napi_busy_poll
+Content-Language: en-US
+To:     Olivier Langlois <olivier@trillion01.com>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Hao Xu <haoxu@linux.alibaba.com>,
+        io-uring <io-uring@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <cover.1646777484.git.olivier@trillion01.com>
+ <612546a3-5630-f1d4-f455-ef2bf564c83e@kernel.dk>
+ <b0b2c07eb3b7acad02159e0db145a5b4e825b026.camel@trillion01.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <b0b2c07eb3b7acad02159e0db145a5b4e825b026.camel@trillion01.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 01:35:53AM +0200, Jarkko Sakkinen wrote:
-> On Wed, Mar 09, 2022 at 08:59:42AM -0800, Reinette Chatre wrote:
-> > Hi Jarkko,
-> > 
-> > On 3/9/2022 1:35 AM, Jarkko Sakkinen wrote:
-> > > On Wed, Mar 09, 2022 at 10:52:22AM +0200, Jarkko Sakkinen wrote:
-> > >> On Fri, Mar 04, 2022 at 11:35:08AM +0200, Jarkko Sakkinen wrote:
-> > >>> +#define SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS \
-> > >>> +	_IOWR(SGX_MAGIC, 0x05, struct sgx_enclave_restrict_perm)
-> > >>
-> > >> What if this was replaced with just SGX_IOC_ENCLAVE_RESET_PAGES, which
-> > >> would simply do EMODPR with PROT_NONE? The main ingredient of EMODPR is to
-> > >> flush out the TLB's, and move a page to pending state, which cannot be done
-> > >> from inside the enclave.
-> > 
-> > I see the main ingredient as running EMODPR to restrict the EPCM permissions. If
-> > the user wants to use SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS just to flush TLB it is
-> > already possible since attempting to use EMODPR to relax permissions does not
-> > change any permissions (although it still sets EPCM.PR) but yet will still
-> > flush the TLB.
+On 3/8/22 10:47 PM, Olivier Langlois wrote:
+> On Tue, 2022-03-08 at 17:54 -0700, Jens Axboe wrote:
+>> On 3/8/22 3:17 PM, Olivier Langlois wrote:
+>>> The sqpoll thread can be used for performing the napi busy poll in
+>>> a
+>>> similar way that it does io polling for file systems supporting
+>>> direct
+>>> access bypassing the page cache.
+>>>
+>>> The other way that io_uring can be used for napi busy poll is by
+>>> calling io_uring_enter() to get events.
+>>>
+>>> If the user specify a timeout value, it is distributed between
+>>> polling
+>>> and sleeping by using the systemwide setting
+>>> /proc/sys/net/core/busy_poll.
+>>
+>> I think we should get this queued up, but it doesn't apply to
+>> for-5.18/io_uring at all. I can fix it up, but just curious what you
+>> tested against?
+>>
+> Hi Jens,
 > 
-> It's not just to flush the TLB. It also resets permissions to zero from
-> which it is easy to set the exact permissions with EMODPE.
+> I did wrote the patch from
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 > 
-> > Even so, you have a very good point that removing SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
-> > removes the ability for users to flush the TLB after an EMODPE. If there are
-> > thus PTEs present at the time the user runs EMODPE the pages would not be
-> > accessible with the new permissions.
-> > 
-> > Repurposing SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS with PROT_NONE to accomplish
-> > this is not efficient because:
-> > - For the OS to flush the TLB the enclave pages need not be in the EPC but
-> >   in order to run EMODPR the enclave page needs to be in the EPC. In an 
-> >   oversubscribed environment running EMODPR unnecessarily can thus introduce
-> >   a significant delay. Please see the performance comparison I did in
-> >   https://lore.kernel.org/linux-sgx/77e81306-6b03-4b09-2df2-48e09e2e79d5@intel.com/
-> >   The test shows that running EMODPR unnecessarily can be orders of magnitude slower.
-> > - Running EMODPR on an enclave page sets the EPCM.PR bin in the enclave page
-> >   that needs to be cleared with an EACCEPT from within the enclave.
-> >   If the user just wants to reset the TLB after running EMODPE then it should
-> >   not be necessary to run EACCEPT again to reset EPCM.PR.
-> > 
-> > Resetting the TLB is exactly what SGX_IOC_ENCLAVE_RELAX_PERMISSIONS did in an 
-> > efficient way - it is quick (no need to load pages into EPC) and it does not
-> > require EACCEPT to clear EPCM.PR. 
-> > 
-> > It looks like we need SGX_IOC_ENCLAVE_RELAX_PERMISSIONS back. We could
-> > rename it to SGX_IOC_ENCLAVE_RESET_PAGES if you prefer.
+> My testing systems are based on 5.16. I have backported the patch and
+> compiled 5.16.12 with the patch for my testing.
 > 
-> Please do not add it. We do not have any use for it. It's not only used
-> to flush TLB's so it would not do any good. I just use it with fixed
-> PROT_NONE permissions.
-> 
-> > >> It's there because of microarchitecture constraints, and less so to work as
-> > >> a reasonable permission control mechanism (actually it does terrible job on
-> > >> that side and only confuses).
-> > >>
-> > >> Once you have this magic TLB reset button in place you can just do one
-> > >> EACCEPT and EMODPE inside the enclave and you're done.
-> > >>
-> > >> This is also kind of atomic in the sense that EACCEPT free's a page with no
-> > >> rights so no misuse can happend before EMODPE has tuned EPCM.
-> > > 
-> > > I wonder if this type of pattern could be made work out for Graphene:
-> > > 
-> > > 1. SGX_IOC_ENCLAVE_RESET_PAGES
-> > > 2. EACCEPT + EMODPE
-> > > 
-> > > This kind of delivers EMODP that everyone has been looking for.
-> > 
-> > EACCEPT will result in page table entries created for the enclave page. EMODPE
-> > will be able to relax the permissions but TLB flush would be required to
-> > access the page with the new permissions. SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
-> > (renamed to SGX_IOC_ENCLAVE_RESET_PAGES?) that does just a TLB flush is
-> > required to be after EMODPE.
-> 
-> For EMODPE TLB flush is not required. I even verified this from Mark
-> Shanahan. And since access rights are zero, the page cannot be
-> deferenced by threads before EMODPE.
+> sorry if I didn't use the right repo...
 
-I'm fine of course keeping SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS as it
-is too. It's at least future-proof that way.
+Generally, since the patch is for 5.18, you'd want to base it on my
+for-5.18/io_uring branch as then it would apply on top of what is
+already pending. But I'll see if I can shoe horn it, unfortunately we'll
+hit a merge error but it'll be minor.
 
-BR, Jarkko
+-- 
+Jens Axboe
+
