@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0A2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234446AbiCIQGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:06:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
+        id S234528AbiCIQGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234339AbiCIQEz (ORCPT
+        with ESMTP id S234447AbiCIQFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:04:55 -0500
+        Wed, 9 Mar 2022 11:05:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D522A13C246;
-        Wed,  9 Mar 2022 08:02:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735E913D925;
+        Wed,  9 Mar 2022 08:02:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55D65615FA;
-        Wed,  9 Mar 2022 16:02:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B08CC340EF;
-        Wed,  9 Mar 2022 16:02:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3042761670;
+        Wed,  9 Mar 2022 16:02:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA40C340E8;
+        Wed,  9 Mar 2022 16:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841767;
-        bh=wBLb1JgeLGCmIlJRSZ+nBqsfFArPm7x3PghLmULm8JI=;
+        s=korg; t=1646841770;
+        bh=XLsp/kinIQTkJ2i0QRtYM3XMnLfGdTKwwzZbbZDHJbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ASBnzbHajAIHP+UlN2GO36j4XsjHvBd14Wns1Nv+h1b+qG5dZThW+5ky7lVgdReHb
-         BJfKi/Y+JfOTvnke+Hmmhud0uffqY63mFGgFKXcEK/K/1SquhKg0gZsG/4k0xo/R0R
-         MMiFMEYsqtXJo/P8O+YL2UHsHIWshx6U7PPghML0=
+        b=1rRh9cDhRvaacVrT3M3Ya7QfWd/yrynFSF3QTAEWbyE33rxTk/w4B+C9LdCOlN15l
+         POo7LUCXAZwic1uqV0Wd3ZlXMdKPXeCeQFbmPw3jkui0SWfwqNzAPay+wCISPcLLER
+         yuOXdooDJSxSd3Bgzar7NJnfv7jrAUCQRHgvy5bY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.14 08/18] x86/speculation: Update link to AMD speculation whitepaper
-Date:   Wed,  9 Mar 2022 16:59:38 +0100
-Message-Id: <20220309155856.340997832@linuxfoundation.org>
+Subject: [PATCH 4.14 09/18] x86/speculation: Warn about Spectre v2 LFENCE mitigation
+Date:   Wed,  9 Mar 2022 16:59:39 +0100
+Message-Id: <20220309155856.369423069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155856.090281301@linuxfoundation.org>
 References: <20220309155856.090281301@linuxfoundation.org>
@@ -48,41 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit e9b6013a7ce31535b04b02ba99babefe8a8599fa upstream.
+commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
 
-Update the link to the "Software Techniques for Managing Speculation
-on AMD Processors" whitepaper.
+With:
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
+
+it became possible to enable the LFENCE "retpoline" on Intel. However,
+Intel doesn't recommend it, as it has some weaknesses compared to
+retpoline.
+
+Now AMD doesn't recommend it either.
+
+It can still be left available as a cmdline option. It's faster than
+retpoline but is weaker in certain scenarios -- particularly SMT, but
+even non-SMT may be vulnerable in some cases.
+
+So just unconditionally warn if the user requests it on the cmdline.
+
+  [ bp: Massage commit message. ]
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/spectre.rst |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -60,8 +60,8 @@ privileged data touched during the specu
- Spectre variant 1 attacks take advantage of speculative execution of
- conditional branches, while Spectre variant 2 attacks use speculative
- execution of indirect branches to leak privileged memory.
--See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[7] <spec_ref7>`
--:ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
-+See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[6] <spec_ref6>`
-+:ref:`[7] <spec_ref7>` :ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -608,6 +608,7 @@ static inline const char *spectre_v2_mod
+ static inline const char *spectre_v2_module_string(void) { return ""; }
+ #endif
  
- Spectre variant 1 (Bounds Check Bypass)
- ---------------------------------------
-@@ -746,7 +746,7 @@ AMD white papers:
++#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
  
- .. _spec_ref6:
+ #ifdef CONFIG_BPF_SYSCALL
+@@ -929,6 +930,7 @@ static void __init spectre_v2_select_mit
+ 		break;
  
--[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/90343-B_SoftwareTechniquesforManagingSpeculation_WP_7-18Update_FNL.pdf>`_.
-+[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/Managing-Speculation-on-AMD-Processors.pdf>`_.
+ 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
++		pr_err(SPECTRE_V2_LFENCE_MSG);
+ 		mode = SPECTRE_V2_LFENCE;
+ 		break;
  
- ARM white papers:
+@@ -1693,6 +1695,9 @@ static char *ibpb_state(void)
+ 
+ static ssize_t spectre_v2_show_state(char *buf)
+ {
++	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
++		return sprintf(buf, "Vulnerable: LFENCE\n");
++
+ 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
+ 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
  
 
 
