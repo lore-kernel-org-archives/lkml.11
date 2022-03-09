@@ -2,146 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F86C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E653C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232458AbiCINWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 08:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S232620AbiCINXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 08:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiCINWw (ORCPT
+        with ESMTP id S229738AbiCINXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 08:22:52 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC273179250;
-        Wed,  9 Mar 2022 05:21:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646832112; x=1678368112;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tTDgNztZKtwKkjKcjqCPLfR/uvNtEaC1J22Ey8KVphM=;
-  b=TdQIckVhIfOVQBFKZUoP8+B2dyKJiYAi9DT0imznNlRRdyTtNuyPJ4RJ
-   tXs9B9lMzhzEM5OmYSEQstgkcCecp4z9T2ac4r4Ou+NuQ/iETlDa552TA
-   nt+/7cR1djtEM8hzOYQSiHvQEvlxx+TTqQtKYlwlCdjyl5BvYSX8Np8n5
-   qTxo0QtS9+QBRwTQCT6xJFpSIlCXs+HiWxVFxi0i2CwtcfT0yxUeLI405
-   YR1AD7rtHF45ddr9SclkwUEUrrWXG9a3GqECOUTNPqceXZ1t5C9dX6S4V
-   GT95I7b+uq2pl8s0BA0dWHK75dRedG4jx4e/HwmfaPwIZ2cGjOV+5rNck
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="151404825"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 06:21:51 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 06:21:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Mar 2022 06:21:50 -0700
-Date:   Wed, 9 Mar 2022 14:24:43 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
-References: <20220304093418.31645-3-Divya.Koppera@microchip.com>
- <YiILJ3tXs9Sba42B@lunn.ch>
- <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
- <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
- <YifoltDp4/Fs+9op@lunn.ch>
+        Wed, 9 Mar 2022 08:23:42 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87643377F4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 05:22:43 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id z3so1918485plg.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 05:22:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nFpUu9dr27noPEr7QirbOcRxKdELB7gGpnSLhYA/8gk=;
+        b=u91UGLmWfLry7Qd6UFWNi+UaDteJUJDXdAl658I7tK+Z9YPKkYp1+M814Yrj8LoQkD
+         fYknxzvizgkRxib8MSrjAxFehpP/x5dgDGjjbFsC39p+PHvkvtA1DolgdBAzPJU6SmyG
+         RaNiTUBSrIFpYc1ynXq1YpI377jkv9iEDe9vE3LFtAUV29xTLMZcnaDY/25dFhcIUC+Y
+         d2+TXjv2ruxUWa7In6j5dHHpL91wtEOPc64pDbVhFVS6XyZha9Kjk6E2rUiN5L0PFPmm
+         cxfuvyhePMtYCF6HnQnwHwZQ6ApfixdNaTxIUggcWjdqRRzZy48cG8Nrv70E0rEbe76+
+         yNng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nFpUu9dr27noPEr7QirbOcRxKdELB7gGpnSLhYA/8gk=;
+        b=5pKO1tELWS1HK8RaH6uDl+R+JPduS1spOTAfV3raCjheMe7jAh+2JYWi9a9j/157r6
+         kKNoMbjdxjLdAhtfDPnbn5irLdNpL02cM73iEGlXP0Pytm7Me9ZrRmDsIJHBqsEFRbc0
+         bfMNEzZ+IciNx2Qx2NcSJBp3/COBXcaZrWLMildpAJEj7S6cS6IP3J5Bsrxjse1ZTLtq
+         3sZTMH+LKnEQovMpoglA5PRFvxyfq/j8OxsO6/DdVAuOjRHBRHx8XBuwVEb0QP6fxISZ
+         rHgGQJ5SlQe5RlWXylwd9D9ok5CaDhkvhg4r7m8GF9fhFu0x76YM9sbYIs1qOireswOw
+         6tkg==
+X-Gm-Message-State: AOAM533KCcjt3lzNB/FHURaErB2OPs8miiJOKeoNXZnDv+Ls4a48W26D
+        ek+fXmkE59UctzyHeJVIKQI0BAtkJPpMzSh3MDOXpw==
+X-Google-Smtp-Source: ABdhPJxairSjptuZC/cMBulWljGFXF9/fDim8+cVb5GOFlehI0cit3Yq/MqRNr4EydbX1nuYFckLml5X2cTV8HjYvPc=
+X-Received: by 2002:a17:902:7044:b0:14e:e1b1:bb0e with SMTP id
+ h4-20020a170902704400b0014ee1b1bb0emr22498860plt.65.1646832162896; Wed, 09
+ Mar 2022 05:22:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YifoltDp4/Fs+9op@lunn.ch>
+References: <20220309073637.3591-1-rex-bc.chen@mediatek.com>
+In-Reply-To: <20220309073637.3591-1-rex-bc.chen@mediatek.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Wed, 9 Mar 2022 14:22:31 +0100
+Message-ID: <CAG3jFysXP3vs0uWAykQHckE1KBZr6PfE990mOny-6n=AHP2zHA@mail.gmail.com>
+Subject: Re: [RESEND V11 0/3] force hsa hbp hfp packets multiple of lanenum to
+ avoid screen shift
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     daniel@ffwll.ch, airlied@linux.ie,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, matthias.bgg@gmail.com,
+        andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        xji@analogixsemi.com, jitao.shi@mediatek.com,
+        xinlei.lee@mediatek.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/09/2022 00:36, Andrew Lunn wrote:
-> 
-> On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
-> > The 03/08/2022 19:10, Andrew Lunn wrote:
-> > >
-> > > > > So this is a function of the track length between the MAC and the PHY?
-> > > >
-> > > > Nope.
-> > > > This latency represents the time it takes for the frame to travel from RJ45
-> > > > module to the timestamping unit inside the PHY. To be more precisely,
-> > > > the timestamping unit will do the timestamp when it detects the end of
-> > > > the start of the frame. So it represents the time from when the frame
-> > > > reaches the RJ45 to when the end of start of the frame reaches the
-> > > > timestamping unit inside the PHY.
-> > >
-> > > I must be missing something here. How do you measure the latency
-> > > difference for a 1 meter cable vs a 100m cable?
-> >
-> > In the same way because the end result will be the same.
-> 
-> The latency from the RJ45 to the PHY will be the same. But the latency
-> from the link peer PHY to the local PHY will be much more, 500ns. In
-> order for this RJ45 to PHY delay to be meaningful, don't you also need
-> to know the length of the cable? Is there a configuration knob
-> somewhere for the cable length?
-> 
-> I'm assuming the ptp protocol does not try to measure the cable delay,
-> since if it did, there would be no need to know the RJ45-PHY delay, it
-> would be part of that.
-> 
-> > > Isn't this error all just in the noise?
-> >
-> > I am not sure I follow this question.
-> 
-> At minimum, you expect to have a 1m cable. The RJ45-PHY track length
-> is maybe 2cm? So 2% of the overall length. So you are trying to
-> correct the error this 2% causes. If you have a 100m cable, 0.02% is
-> RJ45-PHY part that you are trying to correct the error on. These
-> numbers seem so small, it seems pointless. It only seems to make sense
-> if you know the length of the cable, and to an accuracy of a few cm.
+On Wed, 9 Mar 2022 at 08:36, Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
+>
+> Resend v11:
+>  - Resend this series for reviewing.
+>  - Rebase to 5.17-rc7.
+>
+> Changes since v10:
+>  - Rebase to 5.17-rc3.
+>  - Add more maintainers.
+>
+> Changes since v9:
+>  - Change description of "MIPI_DSI_HS_PKT_END_ALIGNED".
+>  - Use mode_flags directly instead of another variable on patch [2/3].
+>  - Add explanation of implementation in mtk_dsi.c on commit message of [2/3].
+>
+> Changes since v8:
+>  - Use mode_flags to control this limitation instead of "hs_packet_end_aligned".
+>  - Add new bit definition "MIPI_DSI_HS_PKT_END_ALIGNED" for mode_flags.
+>
+> Changes since v7:
+>  - Rebase to kernel 5.16
+>  - Add tags of reviewed-by and acked-by.
+>  - Add detailed commit message for flag "hs_packet_end_aligned" in DSI common driver.
+>
+> Changes since v6:
+>  - Add "bool hs_packet_end_aligned" in "struct mipi_dsi_device" to control the dsi aligned.
+>  - Config the "hs_packet_end_aligned" in ANX7725 .attach().
+>
+> Changes since v5:
+>  - Search the anx7625 compatible as flag to control dsi output aligned.
+>
+> Changes since v4:
+>  - Move "dt-bindings: drm/bridge: anx7625: add force_dsi_end_without_null" before
+>    "drm/mediatek: force hsa hbp hfp packets multiple of lanenum to avoid".
+>  - Retitle "dt-bindings: drm/bridge: anx7625: add force_dsi_end_without_null".
+>
+> Rex-BC Chen (3):
+>   drm/dsi: transfer DSI HS packets ending at the same time
+>   drm/mediatek: implement the DSI HS packets aligned
+>   drm/bridge: anx7625: config hs packets end aligned to avoid screen
+>     shift
+>
+>  drivers/gpu/drm/bridge/analogix/anx7625.c |  3 ++-
+>  drivers/gpu/drm/mediatek/mtk_dsi.c        | 12 ++++++++++++
+>  include/drm/drm_mipi_dsi.h                |  2 ++
+>  3 files changed, 16 insertions(+), 1 deletion(-)
+>
+> --
+> 2.18.0
+>
 
-I am not trying to adjust for the length of the cable.
-If we have the following drawing:
-
- MAC                     PHY                    RJ45
------       --------------------------       --------
-|   |       |                        |       |       |
-|   |<----->|timestamp | FIFO | GPHY |<----->|       |<------> Peer
-|   |       |   unit                 |       |       |
------       --------------------------       --------
-                 ^                                   ^
-                 |            latency                |
-                 -------------------------------------
-
-I am trying to calculate this latency, which includes a 2cm of track +
-latency inside the PHY. As Richard mentioned also the PHY introduce some
-latency which can be microseconds.
-
-I understand if we consider that this latency should not be in the DT
-and be part of the driver because the latency over the 2cm or 1.5cm of track
-is almost nothing. But then what about the case when we want to add these
-latencies to a MAC? They will depend on the latency inside the PHY so
-those should come from DT.
-
-So it really doesn't matter to me if I use a 1m cable or 100m cable.
-What it matters is to see that mean path delay will be ~5ns for 1m cable
-and ~500ns for 100m cable. And if is not, then I need to update the
-register to calculate correctly the latency from RJ45 to timestamp unit
-in the PHY.
-
-> 
-
->    Andrew
-
--- 
-/Horatiu
+Applied to drm-misc-next
