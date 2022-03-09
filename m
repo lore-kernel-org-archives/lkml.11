@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC80C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8494CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233122AbiCIQ1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:27:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
+        id S236238AbiCIQ3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:29:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiCIQVl (ORCPT
+        with ESMTP id S238447AbiCIQWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA6D3A5;
-        Wed,  9 Mar 2022 08:20:42 -0800 (PST)
+        Wed, 9 Mar 2022 11:22:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95EF3A5;
+        Wed,  9 Mar 2022 08:21:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1EA3616F3;
-        Wed,  9 Mar 2022 16:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44325C340E8;
-        Wed,  9 Mar 2022 16:20:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 547C46194A;
+        Wed,  9 Mar 2022 16:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA42C340E8;
+        Wed,  9 Mar 2022 16:21:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842841;
-        bh=zRZO4C73CEe0cGTlpqWmGRS66SbFnS+B8DijLjV/NHc=;
+        s=k20201202; t=1646842875;
+        bh=moiyWWCvlKZ5DvlGhseaEz8RqE7nWQEU8CCZWeccmlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RDlZcjRstpHZGCfX5fCswaVhkGrOjev85hohmeeNjY8+6O+0Pmg+NMYtLys349RxM
-         Jzq21p058lCrUtHOchoyJkb3qArpKiN2Mm3p3lusYenZlcLw9IgKrrwdiLyCob3LX0
-         ZltBYUnZhg7BdhcsQjtJoGozhGfd6ZUwKS0rrHgFYp90NHsZnNM4BXhhMbFM470pFA
-         CRoxzBki6myN/Q7Cnyij1yW+W8Y/ESRiT+Ybvi4U/G2NGjGTO/9OqknLpWxmc+H+56
-         xqc23j3+z00jbybAaTFDowMahu6v2wb4TrQcAp0AShs3b4y5KMar7z2HAf9TQw/zg4
-         WYvcgGQIWtkWQ==
+        b=bXqDIJz3gPFArmQIKHRPTFEYauJJUBZpw8INfLr5o+0lVA0WHf4XMkAO1odz14fCl
+         mXPliH7aKFhATTgrv8HtJozOU07zTBqSbx48Tum73VEbb3p+n5FyqbCoIBDHANoIhR
+         XC07+uKx6/diZpn8+btJrtukJdIp+M0JSKbNKxY9J4+LIdpWYKdyPSjS0C7wlfmI62
+         PoBgVElFLtDZkOllIkcys2r6b2EmRfHsdWZSTHmX/eygx5CY60mgGvA1tSPIsTbT4G
+         rwKsTE1NCjOGB/gTjk2jNc+Lr5njl8JG+HVQwqyfiu5z0zEUdP4CJXARHbFi0imE9p
+         0CIqrr5Ym5cWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/24] mac80211: refuse aggregations sessions before authorized
-Date:   Wed,  9 Mar 2022 11:19:29 -0500
-Message-Id: <20220309161946.136122-10-sashal@kernel.org>
+Cc:     Casper Andersson <casper.casan@gmail.com>,
+        Joacim Zetterling <joacim.zetterling@westermo.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 15/24] net: sparx5: Add #include to remove warning
+Date:   Wed,  9 Mar 2022 11:19:34 -0500
+Message-Id: <20220309161946.136122-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
 References: <20220309161946.136122-1-sashal@kernel.org>
@@ -52,52 +55,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Casper Andersson <casper.casan@gmail.com>
 
-[ Upstream commit a6bce78262f5dd4b50510f0aa47f3995f7b185f3 ]
+[ Upstream commit 90d4025285748448809701a44cf466a3f5443eaa ]
 
-If an MFP station isn't authorized, the receiver will (or
-at least should) drop the action frame since it's a robust
-management frame, but if we're not authorized we haven't
-installed keys yet. Refuse attempts to start a session as
-they'd just time out.
+main.h uses NUM_TARGETS from main_regs.h, but
+the missing include never causes any errors
+because everywhere main.h is (currently)
+included, main_regs.h is included before.
+But since it is dependent on main_regs.h
+it should always be included.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220203201528.ff4d5679dce9.I34bb1f2bc341e161af2d6faf74f91b332ba11285@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+Reviewed-by: Joacim Zetterling <joacim.zetterling@westermo.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/agg-tx.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_main.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index 74a878f213d3..1deb3d874a4b 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -9,7 +9,7 @@
-  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
-  * Copyright 2007-2010, Intel Corporation
-  * Copyright(c) 2015-2017 Intel Deutschland GmbH
-- * Copyright (C) 2018 - 2021 Intel Corporation
-+ * Copyright (C) 2018 - 2022 Intel Corporation
-  */
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+index a1acc9b461f2..d40e18ce3293 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+@@ -16,6 +16,8 @@
+ #include <linux/phylink.h>
+ #include <linux/hrtimer.h>
  
- #include <linux/ieee80211.h>
-@@ -626,6 +626,14 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
- 		return -EINVAL;
- 	}
- 
-+	if (test_sta_flag(sta, WLAN_STA_MFP) &&
-+	    !test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
-+		ht_dbg(sdata,
-+		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
-+		       sta->sta.addr, tid);
-+		return -EINVAL;
-+	}
++#include "sparx5_main_regs.h"
 +
- 	/*
- 	 * 802.11n-2009 11.5.1.1: If the initiating STA is an HT STA, is a
- 	 * member of an IBSS, and has no other existing Block Ack agreement
+ /* Target chip type */
+ enum spx5_target_chiptype {
+ 	SPX5_TARGET_CT_7546    = 0x7546,  /* SparX-5-64  Enterprise */
 -- 
 2.34.1
 
