@@ -2,151 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 096E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9107EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 03:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbiCIDeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 22:34:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        id S231801AbiCIDgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 22:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbiCIDeS (ORCPT
+        with ESMTP id S231751AbiCIDgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 22:34:18 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEED099690;
-        Tue,  8 Mar 2022 19:33:18 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 228M8nP0016933;
-        Wed, 9 Mar 2022 03:33:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=o0bSxMKo3EDKC2BQ2fPQu76cK4E77Hvy+iGwPq0wVvE=;
- b=T70FhVgK17at8d+X3ndLmWekFfIP7xapQtbG5JnBcH2hsDOf1YbZw6kXhTA2XVzWiOGM
- 8+yhOAyHpPcO7buRGVG0R/VNPXvkbIJZtwjlWc706YjNEnT99fh6bqUgM6Y69EJmLKzc
- Pgecb5X6jcKR6Mz1/oi0WEAy4j5UuYnJSpcOEbrW8zwEiUAu1JzYLenptoGamJKM7HHI
- 6JOFx78T4fK4Hvet733z2OwEgDlsmykvWMBZJJcMt31XCCCgY9Kv2SuQQ6d42ibRlF3H
- vZfJPIDeuvfZ7oHAULWmJyMhmjuz6H2BBCos16oMsUvx7302E1duZJBhZFfjPldkvT5l Bw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ekx9cgmm9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Mar 2022 03:33:09 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2293VvN6185751;
-        Wed, 9 Mar 2022 03:33:08 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
-        by aserp3030.oracle.com with ESMTP id 3ekwwcjahq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Mar 2022 03:33:08 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PDuV0V4EIMbJfGAhrYbpu5j4nv9ElZyyDZ8C9E7dRy3R+v1a63tHUhyeB/JMvfWGTxM+8X+CeW3yeL7kuoZ7Lvt4MMLrsZibEbINdnv4JSCzSyl/I/819UI9HkKdnlxsosax8ML1twSSCw7U87kUiJ9cCJp4/R/rxuWH+UK5iWkg6LcrCr+lW9tX80j8UriKvudEkzYh5ltWkVHqxOg3/W2fz2HwiSLuZUUkULqSrv5MONPqRD14Ja8UmxTBqXyJzp+HtatNW8vdGXABygpxrWrqHJQTBaIJEBf3UHWINtEi6je7Hb+IrX8nBIirdmPXnCWcaaOkdgOyaNgx5DaNbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o0bSxMKo3EDKC2BQ2fPQu76cK4E77Hvy+iGwPq0wVvE=;
- b=SjgR6P7MzVT+MKooVxdJeTjr1G1uwVVXsCYLOEYv3O/sBk6EJZ+hBbG4QrNRAXguvxZfYHSyBWnHBEmZeMGtr9vx5zQpdm2wBn/vjeQqLUqggaZHvcasVudWERMHBWljJNId4OCBT26bcxEeB3FAW5wTbhT2dTJ71iCi1/Uq5pn42Xxtdi2SChtdqwZfbtqmLbgI1T1r33Bjkul0h2BrxDunsF6/Wg9zuENYTGEMCxHjXzCorvo1AY7HQoTsq2OrNdku7pBcMj2kwvsN1/YNPEA+vxbGoGZS/9udXh50hzlWxlXHXx3sdTKXoNir7PoZvdP+lAljh97iNK2Wg+AKJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o0bSxMKo3EDKC2BQ2fPQu76cK4E77Hvy+iGwPq0wVvE=;
- b=dMOSDXL+dIc39iWfeyGNdsnkdJBfbUDRxCyj1hwlyWCi97Q59Bl6KmJlhRj//lJU/g97u2bt6mn2aIDzhXlsTz7lDLDBdj3XlpSq258rBNw2OUpyPPWiqehREkleOEVHppTx4djOfjM+6qSKtVjfTQP8YzUZDT6ynRQ7ax1Tj24=
-Received: from SA2PR10MB4763.namprd10.prod.outlook.com (2603:10b6:806:117::19)
- by DM6PR10MB3259.namprd10.prod.outlook.com (2603:10b6:5:1a9::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Wed, 9 Mar
- 2022 03:33:06 +0000
-Received: from SA2PR10MB4763.namprd10.prod.outlook.com
- ([fe80::a045:e293:518:7604]) by SA2PR10MB4763.namprd10.prod.outlook.com
- ([fe80::a045:e293:518:7604%3]) with mapi id 15.20.5038.026; Wed, 9 Mar 2022
- 03:33:06 +0000
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     hare@suse.de, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq135jrls0p.fsf@ca-mkp.ca.oracle.com>
-References: <20220303015115.459778-1-niejianglei2021@163.com>
-Date:   Tue, 08 Mar 2022 22:33:03 -0500
-In-Reply-To: <20220303015115.459778-1-niejianglei2021@163.com> (Jianglei Nie's
-        message of "Thu, 3 Mar 2022 09:51:15 +0800")
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR07CA0063.namprd07.prod.outlook.com
- (2603:10b6:a03:60::40) To SA2PR10MB4763.namprd10.prod.outlook.com
- (2603:10b6:806:117::19)
+        Tue, 8 Mar 2022 22:36:50 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EA6A0BFA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 19:35:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646796951; x=1678332951;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YoSvj5HoeHQvE8waVX37sXxIAybhr/FWMyV087iEYCc=;
+  b=TTTt/DF4HHC3+z8BuklCkQGlIMh2QM+jYtvYDGxYoHoLROdFl8D5T/Wv
+   oojgReKbzL2a043LYzqLcqNZnA9elDv0OXqC1D18lH84joC9ydacV8xIZ
+   BDco0KUZjr2ijJRU1OP0wLQLoiU1aij1V0EJM5z+Hcwm22xnpI/f3Z1Qy
+   CoMQr3AZvm59uR6Ei27FpvXZksrHH6TEUKBrAT6eDmuFgtF0fajHU8eJd
+   fM/IrhlkKtan+VA6Z3qeXm7Q1R7Jd3nQc2oY/puVqeWdb8/Yf1GMnqIRg
+   Yg04KSB+WM53VZYMwUc+gMZbjyHMaI4nuaPTMGPzVFJpzD5pLB7MYeF8D
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318104367"
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="318104367"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 19:35:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,166,1643702400"; 
+   d="scan'208";a="495696030"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 08 Mar 2022 19:35:49 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRn76-0002Vl-Vx; Wed, 09 Mar 2022 03:35:49 +0000
+Date:   Wed, 9 Mar 2022 11:35:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmerdabbelt@google.com>
+Subject: drivers/video/fbdev/kyro/fbdev.c:725:9: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <202203091150.upB6zd1n-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fecb51df-4bb2-48c8-d9a9-08da017d85d0
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3259:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB32590B04FC5BE1F67A56039C8E0A9@DM6PR10MB3259.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: elJBYBGeqYufrHEX/+OhVxXFlsUWHmlf48IvAAgIfgbPMKkvjVQfDqplXrfYLV1wArXBTpe1EV1J9k9VTBrvCCTvSghYzfQakICvtm1kf3wNPdU2b7DN4Wb+lSFpazXcYyD+LQooPx7ns48pZf9bo1noPaZHwy0LJyXpf/y+1Yf0Zl7vqv/LoMazD+cFdiegCtJjS/F25HzJibpVsqEjA9ILCBgTiMWtB0UrYWZEVHJYZSjoZLodaVaUmj7bo6Mc4HBGDx21bGvTtwRk2KbVL3G694BqZTMU6Dx3NceBkzpeudRdXKC9Kq0WTfhch6VMowydj4otElSCduT9reimCz93Y0Ke8P8o1ukknR3yTjY/pdkuY/QwftXATm1kHxWUVVNJuJOCRKy5Ohf9JNr/R0xo3agjFT0dtCEB0qsZaLEJ3nDnDOT3p+NHvGgm4PtwJZm8u+U6arBi4sP3gYsLYZ8t7r/T50G3mVIBC4FjtasXKzufIsrj7mmBU4tNjUJI3CU1ixUUf3HVBk/g+nLnK5EzKUQRyu+Ic66wQ0Dt6bJHULJKmJMKwsRsmXTXhp2ozy+OFVGksS+pp22MzeMTOLNQ6h+d6DoJfp/W/MXqZZ/+E8Y3my7WDTCLonS0O8b7Ef5jpov8IJMR4W2m5sMTdTHNn4eRUT+YsLdF6UW2neVonKa4NUtAOXDPXCH1+D9oWQATAwB8GtVwciGpFqZRrw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR10MB4763.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(186003)(2906002)(508600001)(316002)(6666004)(5660300002)(6506007)(8936002)(86362001)(6512007)(36916002)(558084003)(52116002)(6916009)(38350700002)(38100700002)(6486002)(8676002)(66476007)(66556008)(4326008)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cme1205luoPwuJuYK0gkan/9fq+j928RCozLjebVvBq3xyyayxl3Bs49GrVC?=
- =?us-ascii?Q?c6C0d0x8yIvdJVMPQzluLhXKGB5/JsNBaKjG/rUi9NR9svDX7HgT/Pk0bvr1?=
- =?us-ascii?Q?A4x/dEpIkW/HZtOYqPVVry66kanlR2fr4SJgE5y1mb3qaNCscm4WWudDGDKW?=
- =?us-ascii?Q?rCrZJKTZlp9HNAxNQShv8sNpooP7e1DmzsBb6IoViarDTDolkj3HIEFPQx/V?=
- =?us-ascii?Q?D8A5zD7r87Cj5JPkrPDkPiFFF/65PT/7HSv54FdefW5/xdbB8u+jpM9FPMG2?=
- =?us-ascii?Q?3uDuR3NbcIREOgcwbKD0Or6qccM2twWWVCzCZ5AYL+OW/4gQVD+JHpidMFk5?=
- =?us-ascii?Q?HLqZOQcPQw2w5YLq/dSsFESPZaAdX651rHZlArhVLnbXQoGCrwHnxgdNT3Tp?=
- =?us-ascii?Q?EJwHhJe9tWEfdssCiK/7uwBotc0OFeXNdSnfoomFjE5+bRWJW5R0oEtvpKO0?=
- =?us-ascii?Q?qt94YAGjffwC119tSvFXZo/ldWQg3kCMayjmFBVA/AEEpGlWVRP3uRHSrLz7?=
- =?us-ascii?Q?APZqPCN18XLN2sW1HyZpJt7vWF1yIPOYkTv5q22pccgueqr+fbTE8nWS+jSp?=
- =?us-ascii?Q?5h3D87jNAVqAwU7NCzIK+I0h1DqxOZAjS87akGhrkdPXPd3Clr0jJXJafi9W?=
- =?us-ascii?Q?ZKB4vFqv1wHLTTRNyzNAFnvSdcPtZZ5r4BhXscsjTYi4iXWVI+EdOUZXV6TQ?=
- =?us-ascii?Q?0QqJ6MaYcdBRJ+3WVxyRZySzqttWXNA3HIbabuSDSNGTXmhRcTfypqV37suW?=
- =?us-ascii?Q?GdGGx4eP0JL/FrN0deeg5oet8gJ6qXGutpz8GHcX7OtSRne5O8zfVVECQhtp?=
- =?us-ascii?Q?MutVQ0wD7m5IxXK3jSzDQYDwL1UhjApV1a/DXbLTqVFY6jdnHlCUN/3zkUgj?=
- =?us-ascii?Q?SipMvCvbOsGDbtXjuhgcZ04bbySyQ47uC9oJW6Hvh5+etdtzyNaC8znyzts6?=
- =?us-ascii?Q?wkcpJkkowGrEq6auMRX7+FS3kdvP8rYJWAfJ7wu62sy0Lw/6hLE0wK2jPi4U?=
- =?us-ascii?Q?BpPWPB9LH+I6qKOLLohgJjmqFmNpA7d2kPX8+TjYcU0/uzHPiDBZuuhqDsXF?=
- =?us-ascii?Q?nd49lvF4qCKpHYSusoM70q7PJrxwpeqhfup0RrVBPXLlFF55nhoejdaF5pNY?=
- =?us-ascii?Q?Kta0U3fgUkKkhopW+pWh0TPi39zFrS85RplHdxzcJ8eH/+bAzN5rd1Vd4jMg?=
- =?us-ascii?Q?5goi4ViJsJvI+H/HpJ5ehqp4GXe/Yay1oA0ufFawoGHtReKPytiHIh+o/wC8?=
- =?us-ascii?Q?DTmexaomUb6RP91RTrG1wvucAECp8269ujxFo8jwnmu73pdEbQB+kjKwAHdU?=
- =?us-ascii?Q?9bM1cWe63tKjBUk3tHyzcI1lZZPpi2Y+PbwW6IHnE8hUiB4X1VFJnNUgsaAz?=
- =?us-ascii?Q?5FMt3n5cym9z3zs9bfxI16b0bmWp/5gmV+VUqg+9TdJj6gKNm+3/kU1YMQmF?=
- =?us-ascii?Q?fUdsHnTR7B58xmqmRSWy20gZvJBKZ+tvBYKBdl1bzME+cXq8k0U1O99/stMa?=
- =?us-ascii?Q?T/WLaEMbVECARBISC5uRsYFwdJhUCSKlO9UcAjoHAVDvIPYaq1kMF9OrnMBE?=
- =?us-ascii?Q?ugZkaTUABgU1xyuYYjl+WbVTDBGTVpDgCjytggKLcF2cQ5pbpZU/egW4azIu?=
- =?us-ascii?Q?18x5hg2YkXeLauJ7t5+tnW6TVAZu/hcRWss0wuqp8eaZbMhJWT6YO8kcpEFY?=
- =?us-ascii?Q?wJM9JyRA8qrtLJf5pBWBpDla57g=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fecb51df-4bb2-48c8-d9a9-08da017d85d0
-X-MS-Exchange-CrossTenant-AuthSource: SA2PR10MB4763.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 03:33:05.5036
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G2dkU9YwwxxRM/Z+hkc7hk4lddMXtpzu73prLPGB1hwYXTXiZt+/F0Y0FVAbtU2+qoWL1l76SKEMDVWDEiUAmi6tEfoQzUOLweKytesCLnI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3259
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10280 signatures=690848
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=662 spamscore=0
- phishscore=0 bulkscore=0 adultscore=0 malwarescore=0 suspectscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203090018
-X-Proofpoint-ORIG-GUID: 06iQ0tM_Hq3D4muJvcZTBs0-wTQiQ7UE
-X-Proofpoint-GUID: 06iQ0tM_Hq3D4muJvcZTBs0-wTQiQ7UE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   92f90cc9fe0e7a984ea3d4bf3d120e30ba8a2118
+commit: a18b14d8886614b3c7d290c4cfc33389822b0535 riscv: Disable STACKPROTECTOR_PER_TASK if GCC_PLUGIN_RANDSTRUCT is enabled
+date:   7 months ago
+config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220309/202203091150.upB6zd1n-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a18b14d8886614b3c7d290c4cfc33389822b0535
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a18b14d8886614b3c7d290c4cfc33389822b0535
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/ drivers/video/fbdev/kyro/
 
-Jianglei,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> fc_exch_release(ep) will decrease the ep's reference count. When the
-> reference count reaches zero, it is freed. But ep is still used in the
-> following code, which will lead to a use after free.
 
-Applied to 5.18/scsi-staging, thanks!
+sparse warnings: (new ones prefixed by >>)
+>> drivers/video/fbdev/kyro/fbdev.c:725:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got char [noderef] __iomem *screen_base @@
+   drivers/video/fbdev/kyro/fbdev.c:725:9: sparse:     expected void *
+   drivers/video/fbdev/kyro/fbdev.c:725:9: sparse:     got char [noderef] __iomem *screen_base
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+vim +725 drivers/video/fbdev/kyro/fbdev.c
+
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  661  
+48c68c4f1b5424 drivers/video/kyro/fbdev.c       Greg Kroah-Hartman 2012-12-21  662  static int kyrofb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  663  {
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  664  	struct fb_info *info;
+a26968df0110bc drivers/video/kyro/fbdev.c       Antonino A. Daplas 2006-01-09  665  	struct kyrofb_info *currentpar;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  666  	unsigned long size;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  667  	int err;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  668  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  669  	if ((err = pci_enable_device(pdev))) {
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  670  		printk(KERN_WARNING "kyrofb: Can't enable pdev: %d\n", err);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  671  		return err;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  672  	}
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  673  
+a26968df0110bc drivers/video/kyro/fbdev.c       Antonino A. Daplas 2006-01-09  674  	info = framebuffer_alloc(sizeof(struct kyrofb_info), &pdev->dev);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  675  	if (!info)
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  676  		return -ENOMEM;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  677  
+a26968df0110bc drivers/video/kyro/fbdev.c       Antonino A. Daplas 2006-01-09  678  	currentpar = info->par;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  679  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  680  	kyro_fix.smem_start = pci_resource_start(pdev, 0);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  681  	kyro_fix.smem_len   = pci_resource_len(pdev, 0);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  682  	kyro_fix.mmio_start = pci_resource_start(pdev, 1);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  683  	kyro_fix.mmio_len   = pci_resource_len(pdev, 1);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  684  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  685  	currentpar->regbase = deviceInfo.pSTGReg =
+4bdc0d676a6431 drivers/video/fbdev/kyro/fbdev.c Christoph Hellwig  2020-01-06  686  		ioremap(kyro_fix.mmio_start, kyro_fix.mmio_len);
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  687  	if (!currentpar->regbase)
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  688  		goto out_free_fb;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  689  
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  690  	info->screen_base = pci_ioremap_wc_bar(pdev, 0);
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  691  	if (!info->screen_base)
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  692  		goto out_unmap_regs;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  693  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  694  	if (!nomtrr)
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  695  		currentpar->wc_cookie = arch_phys_wc_add(kyro_fix.smem_start,
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  696  							 kyro_fix.smem_len);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  697  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  698  	kyro_fix.ypanstep	= nopan ? 0 : 1;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  699  	kyro_fix.ywrapstep	= nowrap ? 0 : 1;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  700  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  701  	info->fbops		= &kyrofb_ops;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  702  	info->fix		= kyro_fix;
+a26968df0110bc drivers/video/kyro/fbdev.c       Antonino A. Daplas 2006-01-09  703  	info->pseudo_palette	= currentpar->palette;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  704  	info->flags		= FBINFO_DEFAULT;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  705  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  706  	SetCoreClockPLL(deviceInfo.pSTGReg, pdev);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  707  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  708  	deviceInfo.ulNextFreeVidMem = 0;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  709  	deviceInfo.ulOverlayOffset = 0;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  710  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  711  	/* This should give a reasonable default video mode */
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  712  	if (!fb_find_mode(&info->var, info, mode_option, kyro_modedb,
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  713  			  NUM_TOTAL_MODES, &kyro_modedb[VMODE_1024_768_75], 32))
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  714  		info->var = kyro_var;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  715  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  716  	fb_alloc_cmap(&info->cmap, 256, 0);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  717  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  718  	kyrofb_set_par(info);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  719  	kyrofb_check_var(&info->var, info);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  720  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  721  	size = get_line_length(info->var.xres_virtual,
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  722  			       info->var.bits_per_pixel);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  723  	size *= info->var.yres_virtual;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  724  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16 @725  	fb_memset(info->screen_base, 0, size);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  726  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  727  	if (register_framebuffer(info) < 0)
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  728  		goto out_unmap;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  729  
+31b6780c15a4e3 drivers/video/kyro/fbdev.c       Joe Perches        2013-09-19  730  	fb_info(info, "%s frame buffer device, at %dx%d@%d using %ldk/%ldk of VRAM\n",
+31b6780c15a4e3 drivers/video/kyro/fbdev.c       Joe Perches        2013-09-19  731  		info->fix.id,
+31b6780c15a4e3 drivers/video/kyro/fbdev.c       Joe Perches        2013-09-19  732  		info->var.xres, info->var.yres, info->var.bits_per_pixel,
+31b6780c15a4e3 drivers/video/kyro/fbdev.c       Joe Perches        2013-09-19  733  		size >> 10, (unsigned long)info->fix.smem_len >> 10);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  734  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  735  	pci_set_drvdata(pdev, info);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  736  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  737  	return 0;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  738  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  739  out_unmap:
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  740  	iounmap(info->screen_base);
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  741  out_unmap_regs:
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  742  	iounmap(currentpar->regbase);
+9e517ac88b2443 drivers/video/fbdev/kyro/fbdev.c Luis R. Rodriguez  2015-08-24  743  out_free_fb:
+a26968df0110bc drivers/video/kyro/fbdev.c       Antonino A. Daplas 2006-01-09  744  	framebuffer_release(info);
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  745  
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  746  	return -EINVAL;
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  747  }
+^1da177e4c3f41 drivers/video/kyro/fbdev.c       Linus Torvalds     2005-04-16  748  
+
+:::::: The code at line 725 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
