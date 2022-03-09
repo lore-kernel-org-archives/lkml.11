@@ -2,131 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E87D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB49C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 09:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231949AbiCIJSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 04:18:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        id S231953AbiCIJTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231797AbiCIJSm (ORCPT
+        with ESMTP id S231233AbiCIJTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 04:18:42 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E87E1DA48
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:17:42 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id y22so2013170eds.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:17:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hWpPImVtoUiNVUu2h4LS7JTyYOKWJY6gpNjKd62Yxkg=;
-        b=Hfa6lz7UYyCBsELtDHnUy0yBm1/cp3x13+fCjk7qbFsMzRq8d/UIjDLEU2CX5/xGhZ
-         I+VBZrNB/qdSGktqHGEJgNbno4ztVnrcKDcZp+4P/w2oW7mt6qAH4XBgYppKounGnAzF
-         SWuX/sEnx1XopufveGJpWuIUmhwyLbZ7Qxlm5oeIrDS6QBCRk0Wj7MaZfixEGziOZ/cA
-         W1y/xN/+mB5KE0/ixARAAz9L7y7dNY8HiYLhD8fOFuOIQOe8b5oSFtuYqd4BojisymsH
-         TSYMdKYLV3FROj3PXIoPeVyszL4zEa4QuKHyvzkfOdm2onc+Tb9g0vAwMdfe/T5rmkj5
-         Ukcw==
+        Wed, 9 Mar 2022 04:19:52 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91EAF2AC41
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 01:18:54 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 7075B3F79C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:18:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646817533;
+        bh=8BjTP/+1yUB9Aiej+vTJ+iAQ4nFO9laQpO6aipSI9Uo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=mmaQZV1R9nHyKXKVjvd7HBHUGO8/qsu3d7DgPEIHv5zxOnqHF7I5U9dKxZ8hsynV0
+         2cBInbF4L5CcxzO3Ad+hR9zPnggQ96qdND5Y/q8rVPduw26vXOG/Oy0ba7ioHN4bJy
+         nBp9shWy3rf68VtM71rFSsFr6HR7XBVH+vTfLIJ+Adzhs5PqolY/6yDCA5sFtwFcxb
+         mDLUwvQ8np7ylp+fbXNLd1TpypMpfV1nWNZn5KGzDRoM1C0fq1EXHg/f7q7e/YQnEP
+         hlFhpphKbpet88uGBLRyNyq6i8xh//LhVZqVXuVvjM0A18jzklwD9xPBtzq/fQkfVI
+         jtKz+cFWZAFdA==
+Received: by mail-ed1-f72.google.com with SMTP id l8-20020a056402028800b0041636072ef0so938001edv.13
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 01:18:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=hWpPImVtoUiNVUu2h4LS7JTyYOKWJY6gpNjKd62Yxkg=;
-        b=SkFL68h7RPmhUlZaXnMgoEfix5XytTd5Zb/sQ0rzIO1+xDbSuf7tYdgqe3hEOgNGg7
-         oVYfyutfnNKkDhHyn7jy1maAyBGLyiOOGqNXtXcrpnGxWXDDEx7VK6/Ir4COIqcAqBEm
-         XF6/54mTXATqqzeckXV3V2LHXsw4FlNOSmHKXtKczWB3RygWUTyWmhEBCOdSLRAi4LRT
-         e58C+M4m8uS/OzfIroxZ52gZY6AKFdKiUgzITF6WyGqa4MJPK6Yahbn/1FxYWDqtdBFV
-         LTLPDVXbfmwhMHaHCP5wQ5hQvVaR7yUzEIw2XU15Q7zbYcz7lZX9zGxpB/ghTmAWVkyx
-         vUXg==
-X-Gm-Message-State: AOAM5310DiiXqjQrp7g+w+vucIq7EwHowHyqCiArGbHLHApjUsro0wej
-        AZ4kyD5m/PN8Ys9gAJqQMQeV2lROSd1FaEh/
-X-Google-Smtp-Source: ABdhPJycfuDctbdlBEIiSy8A5vAWJsYhsu2Kcuuk3TjIadZkqsmcAEQXLZH1GAzCcdtI1IDWu/XDGA==
-X-Received: by 2002:a05:6402:2786:b0:416:6afe:2573 with SMTP id b6-20020a056402278600b004166afe2573mr7338062ede.54.1646817460386;
-        Wed, 09 Mar 2022 01:17:40 -0800 (PST)
-Received: from localhost.localdomain ([102.126.147.138])
-        by smtp.gmail.com with ESMTPSA id y19-20020a1709064b1300b006dabe44a6edsm482948eju.141.2022.03.09.01.17.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 01:17:40 -0800 (PST)
-From:   Hatim Muhammed <hatimmohammed369@gmail.com>
-X-Google-Original-From: Hatim Muhammed
-To:     linux-kernel@vger.kernel.org
-Cc:     greg@kroah.com, abbotti@mev.co.uk, hsweeten@visionengravers.com,
-        Hatim Muhammed <hatimmohammed369@gmail.com>
-Subject: [PATCH 9/9] Removing unnecessary #if's
-Date:   Wed,  9 Mar 2022 11:17:35 +0200
-Message-Id: <20220309091735.13652-1-hatimmohammed369@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        bh=8BjTP/+1yUB9Aiej+vTJ+iAQ4nFO9laQpO6aipSI9Uo=;
+        b=VPQx02mp/vC0GGnG1g63UTI0jYSp921EeE/Gwt4zDpcj9EhPoW6CXhbEYKYLc1+RTY
+         Mkkj7Scy+fDJP/j0xr4CtN0k8BRp9QSh5T0kHx6FPk4SPfgydqHTok3twMdLG06yWLlv
+         S4bJcYDERjyOYlO9cChML4QtLsK75zPKQJRxGyjwph3krADdeSHZZiMeeKfhFEzhXG7K
+         upV15VH6MK3zYmVbDvNC7zqZCdxq9ex6ahhQ+a5sPOou/2nDQcyGMo+0U1PvrZkhGwin
+         Ibj7csQUee+ET9pptzaMTAKOzQRjINV065Q7mA8OTEqshpWz/wCDt7pismIjmUKUnCLl
+         UlYA==
+X-Gm-Message-State: AOAM530L/JjTDJN2s2Up7GEye5E1Roqkqe9eVScfDH72AB3Z9GPSHOZG
+        WDxaWiM6Nzko3511wd3vVx0wFsdzBgFr5a1eTq7QiFjeI3RSEokBQ4sC4ouzg5RoYyN1DFkNY3I
+        Ll3oeq4918RborV00OkFFvHAeq1Sl2mGv/hn7TAQLYg==
+X-Received: by 2002:a05:6402:42c6:b0:415:fe7d:4963 with SMTP id i6-20020a05640242c600b00415fe7d4963mr20366880edc.317.1646817533109;
+        Wed, 09 Mar 2022 01:18:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwKBgYsIlQkmTPZZedYYFZfkqd0y8tOMc44J8WrRfvbA7BIK5mWKSKmpE5UARw9e0KjYHAZ0w==
+X-Received: by 2002:a05:6402:42c6:b0:415:fe7d:4963 with SMTP id i6-20020a05640242c600b00415fe7d4963mr20366870edc.317.1646817532959;
+        Wed, 09 Mar 2022 01:18:52 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id m1-20020a056402430100b004167e4606a8sm541596edc.74.2022.03.09.01.18.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 01:18:52 -0800 (PST)
+Message-ID: <a177b16a-c55e-8338-f34f-c7b9edcd94c0@canonical.com>
+Date:   Wed, 9 Mar 2022 10:18:51 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: linux-next: manual merge of the mfd tree with the arm-soc tree
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>, Olof Johansson <olof@lixom.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <20220309132952.525b3aa4@canb.auug.org.au>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220309132952.525b3aa4@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hatim Muhammed <hatimmohammed369@gmail.com>
 
-Removing two #if 0 and one #if 1
+On 09/03/2022 03:29, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the mfd tree got a conflict in:
+> 
+>   Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+> 
+> between commit:
+> 
+>   e465ea5cc05d ("dt-bindings: soc: samsung: usi: refer to dtschema for children")
+> 
+> from the arm-soc tree and commit:
+> 
+>   0ff4827ed66f ("spi: dt-bindings: samsung: Convert to dtschema")
+> 
+> from the mfd tree.
+> 
+> I fixed it up (I just used the former version) and can carry the fix as
+> necessary. 
 
-Signed-off-by: Hatim Muhammed <hatimmohammed369@gmail.com>
----
- drivers/comedi/drivers/dt2801.c | 29 -----------------------------
- 1 file changed, 29 deletions(-)
+Hi Arnd, Lee and Olof,
 
-diff --git a/drivers/comedi/drivers/dt2801.c b/drivers/comedi/drivers/dt2801.c
-index 230d25010f58..71193426d6e0 100644
---- a/drivers/comedi/drivers/dt2801.c
-+++ b/drivers/comedi/drivers/dt2801.c
-@@ -87,17 +87,6 @@
- #define DT2801_STATUS		1
- #define DT2801_CMD		1
+This conflict will pop-up when sending to Linus. I propose to resolve it
+slightly different - just remove the conflicting lines. After merge
+window I will properly reference the other schema inside properties (not
+description). This can look like:
+################
+--- a/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+
++++ b/Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml
+
+@@ -17,13 +17,6 @@ description: |
+
+   child nodes, each representing a serial sub-node device. The mode setting
+
+   selects which particular function will be used.
+
  
--#if 0
--/* ignore 'defined but not used' warning */
--static const struct comedi_lrange range_dt2801_ai_pgh_bipolar = {
--	4, {
--		BIP_RANGE(10),
--		BIP_RANGE(5),
--		BIP_RANGE(2.5),
--		BIP_RANGE(1.25)
--	}
--};
--#endif
- static const struct comedi_lrange range_dt2801_ai_pgl_bipolar = {
- 	4, {
- 		BIP_RANGE(10),
-@@ -107,17 +96,6 @@ static const struct comedi_lrange range_dt2801_ai_pgl_bipolar = {
- 	}
- };
- 
--#if 0
--/* ignore 'defined but not used' warning */
--static const struct comedi_lrange range_dt2801_ai_pgh_unipolar = {
--	4, {
--		UNI_RANGE(10),
--		UNI_RANGE(5),
--		UNI_RANGE(2.5),
--		UNI_RANGE(1.25)
--	}
--};
--#endif
- static const struct comedi_lrange range_dt2801_ai_pgl_unipolar = {
- 	4, {
- 		UNI_RANGE(10),
-@@ -580,14 +558,7 @@ static int dt2801_attach(struct comedi_device *dev, struct comedi_devconfig *it)
- 	/* ai subdevice */
- 	s->type = COMEDI_SUBD_AI;
- 	s->subdev_flags = SDF_READABLE | SDF_GROUND;
--#if 1
- 	s->n_chan = n_ai_chans;
--#else
--	if (it->options[2])
--		s->n_chan = board->ad_chan;
--	else
--		s->n_chan = board->ad_chan / 2;
--#endif
- 	s->maxdata = (1 << board->adbits) - 1;
- 	s->range_table = ai_range_lkup(board->adrangetype, it->options[3]);
- 	s->insn_read = dt2801_ai_insn_read;
--- 
-2.35.1
 
+-  Refer to next bindings documentation for information on protocol subnodes that
+
+-  can exist under USI node:
+
+-
+
+-  [1] Documentation/devicetree/bindings/serial/samsung_uart.yaml
+
+-  [2] Documentation/devicetree/bindings/i2c/i2c-exynos5.txt
+
+-  [3] Documentation/devicetree/bindings/spi/samsung,spi.yaml
+
+-
+
+ properties:
+
+   $nodename:
+
+     pattern: "^usi@[0-9a-f]+$"
+
+################
+
+Best regards,
+Krzysztof
