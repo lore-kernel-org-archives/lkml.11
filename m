@@ -2,211 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3414C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4849C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238190AbiCIU2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 15:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        id S236095AbiCIUiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 15:38:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238174AbiCIU2S (ORCPT
+        with ESMTP id S231630AbiCIUiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 15:28:18 -0500
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066554B855;
-        Wed,  9 Mar 2022 12:27:17 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:56056)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS2tw-009Dt1-10; Wed, 09 Mar 2022 13:27:16 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34650 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS2tu-0017uJ-LN; Wed, 09 Mar 2022 13:27:15 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Denys Vlasenko <vda.linux@googlemail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Liam R . Howlett" <liam.howlett@oracle.com>,
-        Jann Horn <jannh@google.com>, linux-mm@kvack.org
-References: <20220131153740.2396974-1-willy@infradead.org>
-        <871r0nriy4.fsf@email.froward.int.ebiederm.org>
-        <YfgKw5z2uswzMVRQ@casper.infradead.org>
-        <877dafq3bw.fsf@email.froward.int.ebiederm.org>
-        <YfgPwPvopO1aqcVC@casper.infradead.org>
-        <CAG48ez3MCs8d8hjBfRSQxwUTW3o64iaSwxF=UEVtk+SEme0chQ@mail.gmail.com>
-        <87bkzroica.fsf_-_@email.froward.int.ebiederm.org>
-        <87h788fdaw.fsf_-_@email.froward.int.ebiederm.org>
-        <202203081342.1924AD9@keescook>
-        <877d93dr8p.fsf@email.froward.int.ebiederm.org>
-        <202203090830.7E971BD6C@keescook>
-Date:   Wed, 09 Mar 2022 14:27:07 -0600
-In-Reply-To: <202203090830.7E971BD6C@keescook> (Kees Cook's message of "Wed, 9
-        Mar 2022 08:32:14 -0800")
-Message-ID: <8735jqdg84.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 9 Mar 2022 15:38:19 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB16EDF7F;
+        Wed,  9 Mar 2022 12:37:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23408CE1F20;
+        Wed,  9 Mar 2022 20:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4062AC340EC;
+        Wed,  9 Mar 2022 20:37:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646858237;
+        bh=6sKfHJveDwgdZ5BM+GvgsVg2EYZLfzyFaL4KGIQ2b1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PhZTGRr5PWwg5/93tz0nPyDv5AqmpXWrvwtTUzfcLd+yaUrFDkgaBKngcrCEIoW66
+         39nDbPPRgwNGPR2FdH8TQm2kGNNWdXp5F+XR0tvNkWaOr63DIBuxgOKytysRX83h7n
+         e6oPR8QrvNpFcLTtELEEZpq7zPVJ+GzvCnTVxhAo69TXly9BA0Lex2CTkmyGAhk9vU
+         S1x/xWyNSgo6ybxw/ra34yrkTx1ZGiF2VOvVbzu7Eu5U0AmE8JGQd8KhIJmsGSYDsT
+         TwNqxOFKluhi0ftvzJ/WCpG7lD4Ke2F/XVWXSfgZy70MEBZ0bllEJJg1sXX1yDgvBF
+         oZ3Xu4TNeW2wg==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nS33a-00DQq3-LT; Wed, 09 Mar 2022 20:37:14 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nS2tu-0017uJ-LN;;;mid=<8735jqdg84.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18ML1Zu0i2Zn9zxbmCt2bn3iMf4MsVJYIQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [GIT PULL] Fix fill_files_note
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Date:   Wed, 09 Mar 2022 20:37:14 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 0/7] irqchip/apple-aic: Add support for AICv2
+In-Reply-To: <YikOZNMmkkDGVhQc@sunset.rosenzweig.io>
+References: <20220309192123.152028-1-marcan@marcan.st>
+ <YikOZNMmkkDGVhQc@sunset.rosenzweig.io>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <995ddff0ab7b4dae93a1418eb9a0f4c1@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: alyssa@rosenzweig.io, marcan@marcan.st, tglx@linutronix.de, robh+dt@kernel.org, sven@svenpeter.dev, mark.kettenis@xs4all.nl, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+On 2022-03-09 20:30, Alyssa Rosenzweig wrote:
+>> This also adds support for multi-die AIC2 controllers. While no
+>> multi-die products exist yet, the AIC2 in t600x is built to support
+>> up to 2 dies, and it's pretty clear how it works, so let's implement
+>> it. If we're lucky, when multi-die products roll around, this will
+>> let us support them with only DT changes. In order to support the
+>> extra die dimension, this introduces a 4-argument IRQ phandle form
+>> (3-argument is always supported and just implies die 0).
+> 
+> Given you have a multidie device in the mail, it's probably best to
+> defer merging this series until the multidie code paths are confirmed
+> working there?
 
-> On Wed, Mar 09, 2022 at 10:29:10AM -0600, Eric W. Biederman wrote:
->> Kees Cook <keescook@chromium.org> writes:
->> 
->> > On Tue, Mar 08, 2022 at 01:35:03PM -0600, Eric W. Biederman wrote:
->> >> 
->> >> Kees,
->> >> 
->> >> Please pull the coredump-vma-snapshot-fix branch from the git tree:
->> >> 
->> >>   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix
->> >> 
->> >>   HEAD: 390031c942116d4733310f0684beb8db19885fe6 coredump: Use the vma snapshot in fill_files_note
->> >> 
->> >> Matthew Wilcox has reported that a missing mmap_lock in file_files_note,
->> >> which could cause trouble.
->> >> 
->> >> Refactor the code and clean it up so that the vma snapshot makes
->> >> it to fill_files_note, and then use the vma snapshot in fill_files_note.
->> >> 
->> >> Eric W. Biederman (5):
->> >>       coredump: Move definition of struct coredump_params into coredump.h
->> >>       coredump: Snapshot the vmas in do_coredump
->> >>       coredump: Remove the WARN_ON in dump_vma_snapshot
->> >>       coredump/elf: Pass coredump_params into fill_note_info
->> >>       coredump: Use the vma snapshot in fill_files_note
->> >> 
->> >>  fs/binfmt_elf.c          | 66 ++++++++++++++++++++++--------------------------
->> >>  fs/binfmt_elf_fdpic.c    | 18 +++++--------
->> >>  fs/binfmt_flat.c         |  1 +
->> >>  fs/coredump.c            | 59 ++++++++++++++++++++++++++++---------------
->> >>  include/linux/binfmts.h  | 13 +---------
->> >>  include/linux/coredump.h | 20 ++++++++++++---
->> >>  6 files changed, 93 insertions(+), 84 deletions(-)
->> >> 
->> >> ---
->> >> 
->> >> Kees I realized I needed to rebase this on Jann Horn's commit
->> >> 84158b7f6a06 ("coredump: Also dump first pages of non-executable ELF
->> >> libraries").  Unfortunately before I got that done I got distracted and
->> >> these changes have been sitting in limbo for most of the development
->> >> cycle.  Since you are running a tree that is including changes like this
->> >> including Jann's can you please pull these changes into your tree.
->> >
->> > Sure! Can you make a signed tag for this pull?
->> 
->> Not yet.
->> 
->> Hopefully I will get the time to set that up soon, but I am not at all
->> setup to do signed tags at this point.
->
-> Okay, cool. Since I'd already review these before, I've pulled and it
-> should be in -next now.
+This code is used on Pro and Max systems, so it has some value as is.
+Not to mention that it makes things slightly faster on the original M1
+too.
 
-
->
->> [...]
->> Thanks.  That looks like a good place to start.
->
-> I will try to clean up that work-flow and stuff it into my kernel-tools
-> repo.
-
-It turns out I missed a crazy corner case of binfmt_flat, when coredumps
-are disabled.  This fixes a compile error that was reported.
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git coredump-vma-snapshot-fix-for-v5.18
-   HEAD: f833116ad2c3eabf9c739946170e07825cca67ed coredump: Don't compile flat_core_dump when coredumps are disabled
-
-Can you include this as well.
-
-Thank you,
-Eric
-
-This is the entire patch.
-
-From: "Eric W. Biederman" <ebiederm@xmission.com>
-Date: Wed, 9 Mar 2022 10:37:07 -0600
-Subject: [PATCH] coredump: Don't compile flat_core_dump when coredumps are disabled
-
-Recently the kernel test robot reported:
-> In file included from include/linux/kernel.h:29,
->                     from fs/binfmt_flat.c:21:
->    fs/binfmt_flat.c: In function 'flat_core_dump':
-> >> fs/binfmt_flat.c:121:50: error: invalid use of undefined type 'struct coredump_params'
->      121 |                 current->comm, current->pid, cprm->siginfo->si_signo);
->          |                                                  ^~
->    include/linux/printk.h:418:33: note: in definition of macro 'printk_index_wrap'
->      418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
->          |                                 ^~~~~~~~~~~
->    include/linux/printk.h:499:9: note: in expansion of macro 'printk'
->      499 |         printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
->          |         ^~~~~~
->    fs/binfmt_flat.c:120:9: note: in expansion of macro 'pr_warn'
->      120 |         pr_warn("Process %s:%d received signr %d and should have core dumped\n",
->          |         ^~~~~~~
->    At top level:
->    fs/binfmt_flat.c:118:12: warning: 'flat_core_dump' defined but not used [-Wunused-function]
->      118 | static int flat_core_dump(struct coredump_params *cprm)
->          |            ^~~~~~~~~~~~~~
-
-The little dinky do nothing function flat_core_dump has always been
-compiled unconditionally.  With my change to move coredump_params into
-coredump.h coredump_params reasonably becomes unavailable when
-coredump support is not compiled in.  Fix this old issue by simply not
-compiling flat_core_dump when coredump support is not supported.
-
-Fixes: a99a3e2efaf1 ("coredump: Move definition of struct coredump_params into coredump.h")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- fs/binfmt_flat.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/fs/binfmt_flat.c b/fs/binfmt_flat.c
-index 208cdce16de1..626898150011 100644
---- a/fs/binfmt_flat.c
-+++ b/fs/binfmt_flat.c
-@@ -98,7 +98,9 @@ static int load_flat_shared_library(int id, struct lib_info *p);
- #endif
- 
- static int load_flat_binary(struct linux_binprm *);
-+#ifdef CONFIG_COREDUMP
- static int flat_core_dump(struct coredump_params *cprm);
-+#endif
- 
- static struct linux_binfmt flat_format = {
- 	.module		= THIS_MODULE,
-@@ -115,12 +117,14 @@ static struct linux_binfmt flat_format = {
-  * Currently only a stub-function.
-  */
- 
-+#ifdef CONFIG_COREDUMP
- static int flat_core_dump(struct coredump_params *cprm)
- {
- 	pr_warn("Process %s:%d received signr %d and should have core dumped\n",
- 		current->comm, current->pid, cprm->siginfo->si_signo);
- 	return 1;
- }
-+#endif
- 
- /****************************************************************************/
- /*
+         M.
 -- 
-2.29.2
-
-
+Jazz is not dead. It just smells funny...
