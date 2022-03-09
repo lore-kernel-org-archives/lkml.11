@@ -2,107 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134F8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F86C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 13:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233046AbiCINR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 08:17:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
+        id S232458AbiCINWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 08:22:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiCINRZ (ORCPT
+        with ESMTP id S229738AbiCINWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 08:17:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EE34172247
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 05:16:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646831785;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9L4wXSzrzpGMIVEQW9rtUhalBtem2aX0icrd1WDGeA0=;
-        b=TkP7KNWluANN8eo7El/ggpBqaotJA48FRSHZmko3g6GOdHCgSMV736ezgKTyOnocJ5UOCs
-        5JjCpqvfvPfx57wQ3zYo2w1hgYXNxKXbCKdNcIrsq397ppfHI3fH38/CQv/dQdnnIfx8Qz
-        fPdwgZjwK2+1j0o3/sOeA9SpUEx3tFw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-546-PjLKrLZ4N5G-NGiI0NRd0A-1; Wed, 09 Mar 2022 08:16:24 -0500
-X-MC-Unique: PjLKrLZ4N5G-NGiI0NRd0A-1
-Received: by mail-wm1-f72.google.com with SMTP id v125-20020a1cac83000000b0037e3d70e7e1so2586105wme.1
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 05:16:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9L4wXSzrzpGMIVEQW9rtUhalBtem2aX0icrd1WDGeA0=;
-        b=Y5cn+n2Ptbd82yxGKDRhAD66r1PrF2FOGY4/Glmv+ggC0le0IEN4SnkFOGvNLKFpRz
-         AQy5EG+ejGrWnjLWtVY4/m8Gu+lHeeTl/7kE7TAp9dfWaojbUrLkZ4nVfWkWdwTvN8Rc
-         fn1TVZMZTNXpy2eHRzEishaiLpQRroOX+CZ1oT52TmSEQbDIQzlPrBo0Fl+Rnm6bC5yE
-         jXDJ+m9ck/dZLd2V13YOiuSuzX+9DbOVKeB38VKx4ojDFHoGDP0CgEuDHXTh3fy+mO37
-         2sECyEPOl2FgKjI/7O2A0m5dHleSvjzalBNKVQQ9dYcmNPBZb2Ut3qf8jvkt1Fz1GmHF
-         g4CQ==
-X-Gm-Message-State: AOAM531Sh7SAGFffVjflFKx2HV2xeLj+pqRUK787fieetcmfddbGogVI
-        cmQnQXlKZ8syf/6om94EmHfpjoUYMeEcOxGKbQZstldpXuh/IC6WupEaoGTc5WGQZaCen38mwzi
-        t5D1QxcdSQvMJjSDa3qLAlyJy
-X-Received: by 2002:a1c:a4c6:0:b0:389:7269:5044 with SMTP id n189-20020a1ca4c6000000b0038972695044mr3162299wme.129.1646831782863;
-        Wed, 09 Mar 2022 05:16:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLVGtK4mTCwqDFDUxuBL3MHtSqW+jHIdMFxcBe9+YpVz8cxRLKpK8ygkT8GVaau+FzvEgBlw==
-X-Received: by 2002:a1c:a4c6:0:b0:389:7269:5044 with SMTP id n189-20020a1ca4c6000000b0038972695044mr3162281wme.129.1646831782620;
-        Wed, 09 Mar 2022 05:16:22 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id t184-20020a1c46c1000000b003814de297fcsm4964440wma.16.2022.03.09.05.16.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 05:16:19 -0800 (PST)
-Message-ID: <d9d8b17a-26a2-3c34-7308-539d5b08454f@redhat.com>
-Date:   Wed, 9 Mar 2022 14:16:17 +0100
+        Wed, 9 Mar 2022 08:22:52 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC273179250;
+        Wed,  9 Mar 2022 05:21:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646832112; x=1678368112;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tTDgNztZKtwKkjKcjqCPLfR/uvNtEaC1J22Ey8KVphM=;
+  b=TdQIckVhIfOVQBFKZUoP8+B2dyKJiYAi9DT0imznNlRRdyTtNuyPJ4RJ
+   tXs9B9lMzhzEM5OmYSEQstgkcCecp4z9T2ac4r4Ou+NuQ/iETlDa552TA
+   nt+/7cR1djtEM8hzOYQSiHvQEvlxx+TTqQtKYlwlCdjyl5BvYSX8Np8n5
+   qTxo0QtS9+QBRwTQCT6xJFpSIlCXs+HiWxVFxi0i2CwtcfT0yxUeLI405
+   YR1AD7rtHF45ddr9SclkwUEUrrWXG9a3GqECOUTNPqceXZ1t5C9dX6S4V
+   GT95I7b+uq2pl8s0BA0dWHK75dRedG4jx4e/HwmfaPwIZ2cGjOV+5rNck
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
+   d="scan'208";a="151404825"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 06:21:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 06:21:51 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Mar 2022 06:21:50 -0700
+Date:   Wed, 9 Mar 2022 14:24:43 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
+References: <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 RFC 07/10] drm/gem-fb-helper: Use actual bpp for size
- calculations
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1646683502.git.geert@linux-m68k.org>
- <842ab0a286ff743b625277e655d9bef505b630c1.1646683502.git.geert@linux-m68k.org>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <842ab0a286ff743b625277e655d9bef505b630c1.1646683502.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YifoltDp4/Fs+9op@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 21:52, Geert Uytterhoeven wrote:
-> The AFBC helpers derive the number of bits per pixel from the deprecated
-> drm_format_info.cpp[] field, which does not take into account block
-> sizes.
+The 03/09/2022 00:36, Andrew Lunn wrote:
 > 
-> Fix this by using the actual number of bits per pixel instead.
+> On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
+> > The 03/08/2022 19:10, Andrew Lunn wrote:
+> > >
+> > > > > So this is a function of the track length between the MAC and the PHY?
+> > > >
+> > > > Nope.
+> > > > This latency represents the time it takes for the frame to travel from RJ45
+> > > > module to the timestamping unit inside the PHY. To be more precisely,
+> > > > the timestamping unit will do the timestamp when it detects the end of
+> > > > the start of the frame. So it represents the time from when the frame
+> > > > reaches the RJ45 to when the end of start of the frame reaches the
+> > > > timestamping unit inside the PHY.
+> > >
+> > > I must be missing something here. How do you measure the latency
+> > > difference for a 1 meter cable vs a 100m cable?
+> >
+> > In the same way because the end result will be the same.
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
-> RFC, as this code path was untested.
->
+> The latency from the RJ45 to the PHY will be the same. But the latency
+> from the link peer PHY to the local PHY will be much more, 500ns. In
+> order for this RJ45 to PHY delay to be meaningful, don't you also need
+> to know the length of the cable? Is there a configuration knob
+> somewhere for the cable length?
+> 
+> I'm assuming the ptp protocol does not try to measure the cable delay,
+> since if it did, there would be no need to know the RJ45-PHY delay, it
+> would be part of that.
+> 
+> > > Isn't this error all just in the noise?
+> >
+> > I am not sure I follow this question.
+> 
+> At minimum, you expect to have a 1m cable. The RJ45-PHY track length
+> is maybe 2cm? So 2% of the overall length. So you are trying to
+> correct the error this 2% causes. If you have a 100m cable, 0.02% is
+> RJ45-PHY part that you are trying to correct the error on. These
+> numbers seem so small, it seems pointless. It only seems to make sense
+> if you know the length of the cable, and to an accuracy of a few cm.
 
-Looks good to me but haven't tested either.
+I am not trying to adjust for the length of the cable.
+If we have the following drawing:
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+ MAC                     PHY                    RJ45
+-----       --------------------------       --------
+|   |       |                        |       |       |
+|   |<----->|timestamp | FIFO | GPHY |<----->|       |<------> Peer
+|   |       |   unit                 |       |       |
+-----       --------------------------       --------
+                 ^                                   ^
+                 |            latency                |
+                 -------------------------------------
+
+I am trying to calculate this latency, which includes a 2cm of track +
+latency inside the PHY. As Richard mentioned also the PHY introduce some
+latency which can be microseconds.
+
+I understand if we consider that this latency should not be in the DT
+and be part of the driver because the latency over the 2cm or 1.5cm of track
+is almost nothing. But then what about the case when we want to add these
+latencies to a MAC? They will depend on the latency inside the PHY so
+those should come from DT.
+
+So it really doesn't matter to me if I use a 1m cable or 100m cable.
+What it matters is to see that mean path delay will be ~5ns for 1m cable
+and ~500ns for 100m cable. And if is not, then I need to update the
+register to calculate correctly the latency from RJ45 to timestamp unit
+in the PHY.
+
+> 
+
+>    Andrew
 
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+/Horatiu
