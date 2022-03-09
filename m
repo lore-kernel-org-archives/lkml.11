@@ -2,178 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD78C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbiCIBYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:24:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S230448AbiCIBYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbiCIBXq (ORCPT
+        with ESMTP id S231392AbiCIBXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:23:46 -0500
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660F76B0B1;
-        Tue,  8 Mar 2022 17:22:20 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:37556)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRjzj-001Qdt-51; Tue, 08 Mar 2022 17:15:59 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34144 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nRjzh-002fL8-Qm; Tue, 08 Mar 2022 17:15:58 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     <linux-arch@vger.kernel.org>
-Cc:     <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>, <linux-api@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Mon, 03 Jan 2022 15:30:02 -0600")
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
-        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Tue, 08 Mar 2022 18:15:51 -0600
-Message-ID: <87fsnsdlqg.fsf_-_@email.froward.int.ebiederm.org>
+        Tue, 8 Mar 2022 20:23:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E66FCEA35
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:20:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646788836; x=1678324836;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/eJ+XHd1Ms87SKIz1nVImLRpqYsl8GniCmZ7kQua8JA=;
+  b=PAU8CMeJzRwA+X9uvz/QlbRl3AOuBf+Td7m7G5xCc2rYWR+v4C+hCZfb
+   yUwCqjuAstjjH4UWEqMis5g0AJLM8n+EqY54+UJxJWkPMYif2k017KwGl
+   HiFfP41qEZS5hl18eDHIlwq2TSZE/+7CH56B6I4iSDXAkXO7+gKE7wCvl
+   V2kQ5l3kmZFqErwMnMJQVFRC60PAOoWUxeJbBoNScQ5Mp9eh20faqgcR4
+   paMt0DDR3lMZX4rejDHlS6dSIdqm/Gd6AWyN/xvRkSWPf9RNg3qLGV/3+
+   /rB8NOOmmI2ZTpfWV4UsnClRg4TsO3WcT42MCfFqBOcrSFOXr9QbVuwPt
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="253677026"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="253677026"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:11:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="495650716"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 08 Mar 2022 16:11:44 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRjvb-0002Ee-Mk; Wed, 09 Mar 2022 00:11:43 +0000
+Date:   Wed, 9 Mar 2022 08:11:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aditya Bavanari <abavanar@codeaurora.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
+        Will McVicker <willmcvicker@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.19-stable
+ 5226/9999] sound/soc/soc-core.c:761:27: warning: no previous prototype for
+ function 'soc_find_component_locked'
+Message-ID: <202203090820.wqQmG5sl-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nRjzh-002fL8-Qm;;;mid=<87fsnsdlqg.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18OQQ6XmC3RRMxFckLcbtxXLE62EYCdQMg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 00/13] Removing tracehook.h
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Aditya,
 
-While working on cleaning up do_exit I have been having to deal with the
-code in tracehook.h.  Unfortunately the code in tracehook.h does not
-make sense as organized.
+FYI, the error/warning still remains.
 
-This set of changes reorganizes things so that tracehook.h no longer
-exists, and so that it's current contents are organized in a fashion
-that is a little easier to understand.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-stable
+head:   3fba6c6e70994eff4dcc5be475c9d2bd3848b83d
+commit: 75fe91933be2dd4b884ca83bd72e1e0f0d05cfc6 [5226/9999] ANDROID: ASoC: core: add locked version of soc_find_component
+config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220309/202203090820.wqQmG5sl-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a2e9c68fcd4425fbce7380746e916966f00a39a0)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/75fe91933be2dd4b884ca83bd72e1e0f0d05cfc6
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-stable
+        git checkout 75fe91933be2dd4b884ca83bd72e1e0f0d05cfc6
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash sound/soc/
 
-The biggest change is that I lean into the fact that get_signal
-always calls task_work_run and removes the logic that tried to
-be smart and decouple task_work_run and get_signal as it has proven
-to not be effective.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This is a conservative change and I am not changing the how things
-like signal_pending operate (although it is probably justified).
+All warnings (new ones prefixed by >>):
 
-A new header resume_user_mode.h is added to hold resume_user_mode_work
-which was previously known as tracehook_notify_resume.
+>> sound/soc/soc-core.c:761:27: warning: no previous prototype for function 'soc_find_component_locked' [-Wmissing-prototypes]
+   struct snd_soc_component *soc_find_component_locked(
+                             ^
+   sound/soc/soc-core.c:761:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct snd_soc_component *soc_find_component_locked(
+   ^
+   static 
+   1 warning generated.
+   sound/soc/soc-core.c:2971: warning: Excess function parameter 'legacy_dai_naming' description in 'snd_soc_register_dais'
+   sound/soc/soc-core.c:3333: warning: Function parameter or member 'online' not described in 'snd_soc_card_change_online_state'
 
-Eric W. Biederman (13):
-      ptrace: Move ptrace_report_syscall into ptrace.h
-      ptrace/arm: Rename tracehook_report_syscall report_syscall
-      ptrace: Create ptrace_report_syscall_{entry,exit} in ptrace.h
-      ptrace: Remove arch_syscall_{enter,exit}_tracehook
-      ptrace: Remove tracehook_signal_handler
-      task_work: Remove unnecessary include from posix_timers.h
-      task_work: Introduce task_work_pending
-      task_work: Call tracehook_notify_signal from get_signal on all architectures
-      task_work: Decouple TIF_NOTIFY_SIGNAL and task_work
-      signal: Move set_notify_signal and clear_notify_signal into sched/signal.h
-      resume_user_mode: Remove #ifdef TIF_NOTIFY_RESUME in set_notify_resume
-      resume_user_mode: Move to resume_user_mode.h
-      tracehook: Remove tracehook.h
 
- MAINTAINERS                          |   1 -
- arch/Kconfig                         |   5 +-
- arch/alpha/kernel/ptrace.c           |   5 +-
- arch/alpha/kernel/signal.c           |   4 +-
- arch/arc/kernel/ptrace.c             |   5 +-
- arch/arc/kernel/signal.c             |   4 +-
- arch/arm/kernel/ptrace.c             |  12 +-
- arch/arm/kernel/signal.c             |   4 +-
- arch/arm64/kernel/ptrace.c           |  14 +--
- arch/arm64/kernel/signal.c           |   4 +-
- arch/csky/kernel/ptrace.c            |   5 +-
- arch/csky/kernel/signal.c            |   4 +-
- arch/h8300/kernel/ptrace.c           |   5 +-
- arch/h8300/kernel/signal.c           |   4 +-
- arch/hexagon/kernel/process.c        |   4 +-
- arch/hexagon/kernel/signal.c         |   1 -
- arch/hexagon/kernel/traps.c          |   6 +-
- arch/ia64/kernel/process.c           |   4 +-
- arch/ia64/kernel/ptrace.c            |   6 +-
- arch/ia64/kernel/signal.c            |   1 -
- arch/m68k/kernel/ptrace.c            |   6 +-
- arch/m68k/kernel/signal.c            |   4 +-
- arch/microblaze/kernel/ptrace.c      |   5 +-
- arch/microblaze/kernel/signal.c      |   4 +-
- arch/mips/kernel/ptrace.c            |   5 +-
- arch/mips/kernel/signal.c            |   4 +-
- arch/nds32/include/asm/syscall.h     |   2 +-
- arch/nds32/kernel/ptrace.c           |   5 +-
- arch/nds32/kernel/signal.c           |   4 +-
- arch/nios2/kernel/ptrace.c           |   5 +-
- arch/nios2/kernel/signal.c           |   4 +-
- arch/openrisc/kernel/ptrace.c        |   5 +-
- arch/openrisc/kernel/signal.c        |   4 +-
- arch/parisc/kernel/ptrace.c          |   7 +-
- arch/parisc/kernel/signal.c          |   4 +-
- arch/powerpc/kernel/ptrace/ptrace.c  |   8 +-
- arch/powerpc/kernel/signal.c         |   4 +-
- arch/riscv/kernel/ptrace.c           |   5 +-
- arch/riscv/kernel/signal.c           |   4 +-
- arch/s390/include/asm/entry-common.h |   1 -
- arch/s390/kernel/ptrace.c            |   1 -
- arch/s390/kernel/signal.c            |   5 +-
- arch/sh/kernel/ptrace_32.c           |   5 +-
- arch/sh/kernel/signal_32.c           |   4 +-
- arch/sparc/kernel/ptrace_32.c        |   5 +-
- arch/sparc/kernel/ptrace_64.c        |   5 +-
- arch/sparc/kernel/signal32.c         |   1 -
- arch/sparc/kernel/signal_32.c        |   4 +-
- arch/sparc/kernel/signal_64.c        |   4 +-
- arch/um/kernel/process.c             |   4 +-
- arch/um/kernel/ptrace.c              |   5 +-
- arch/x86/kernel/ptrace.c             |   1 -
- arch/x86/kernel/signal.c             |   5 +-
- arch/x86/mm/tlb.c                    |   1 +
- arch/xtensa/kernel/ptrace.c          |   5 +-
- arch/xtensa/kernel/signal.c          |   4 +-
- block/blk-cgroup.c                   |   2 +-
- fs/coredump.c                        |   1 -
- fs/exec.c                            |   1 -
- fs/io-wq.c                           |   6 +-
- fs/io_uring.c                        |  11 +-
- fs/proc/array.c                      |   1 -
- fs/proc/base.c                       |   1 -
- include/asm-generic/syscall.h        |   2 +-
- include/linux/entry-common.h         |  47 +-------
- include/linux/entry-kvm.h            |   2 +-
- include/linux/posix-timers.h         |   1 -
- include/linux/ptrace.h               |  78 ++++++++++++
- include/linux/resume_user_mode.h     |  64 ++++++++++
- include/linux/sched/signal.h         |  17 +++
- include/linux/task_work.h            |   5 +
- include/linux/tracehook.h            | 226 -----------------------------------
- include/uapi/linux/ptrace.h          |   2 +-
- kernel/entry/common.c                |  19 +--
- kernel/entry/kvm.c                   |   9 +-
- kernel/exit.c                        |   3 +-
- kernel/livepatch/transition.c        |   1 -
- kernel/seccomp.c                     |   1 -
- kernel/signal.c                      |  23 ++--
- kernel/task_work.c                   |   4 +-
- kernel/time/posix-cpu-timers.c       |   1 +
- mm/memcontrol.c                      |   2 +-
- security/apparmor/domain.c           |   1 -
- security/selinux/hooks.c             |   1 -
- 84 files changed, 317 insertions(+), 462 deletions(-)
+vim +/soc_find_component_locked +761 sound/soc/soc-core.c
 
-Eric
+   750	
+   751	/**
+   752	 * soc_find_component_locked: soc_find_component with client lock acquired
+   753	 *
+   754	 * @of_node: of_node of the component to query.
+   755	 * @name: name of the component to query.
+   756	 *
+   757	 * function to find out if a component is already registered with ASoC core.
+   758	 *
+   759	 * Returns component handle for success, else NULL error.
+   760	 */
+ > 761	struct snd_soc_component *soc_find_component_locked(
+   762		const struct device_node *of_node, const char *name)
+   763	{
+   764		struct snd_soc_component *component = NULL;
+   765	
+   766		mutex_lock(&client_mutex);
+   767		component = soc_find_component(of_node, name);
+   768		mutex_unlock(&client_mutex);
+   769		return component;
+   770	}
+   771	EXPORT_SYMBOL(soc_find_component_locked);
+   772	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
