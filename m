@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD96C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 167D7C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234962AbiCIQMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:12:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S235432AbiCIQN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:13:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235375AbiCIQIl (ORCPT
+        with ESMTP id S235549AbiCIQI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:08:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B46618E3FD;
-        Wed,  9 Mar 2022 08:05:47 -0800 (PST)
+        Wed, 9 Mar 2022 11:08:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3507918FAF6;
+        Wed,  9 Mar 2022 08:06:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5A95B82226;
-        Wed,  9 Mar 2022 16:05:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E25F4C340E8;
-        Wed,  9 Mar 2022 16:05:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBA1CB82221;
+        Wed,  9 Mar 2022 16:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 397D6C340E8;
+        Wed,  9 Mar 2022 16:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841945;
-        bh=wl6HBnhpwKS+JR4VuT7rhMipb3Fa6aCKKhyiO/sl5rg=;
+        s=korg; t=1646841967;
+        bh=RqzeAQhcKiZiQ5wOPHZeqLujTq7UN4gy/nboCZyWHbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f/4w2p4HIGXcrVJDFXYiS6fbW0AtuZrVANmApkvaPvPXe4SKP/F4wfeU02amLwHkx
-         7TizZkz6q924qxD3+UXZ4b9ab+cNMai3eCZnvB22PPo1OV43CwectWrhvhGmpWVC0l
-         Y25JqrukQr1INFuBEAcXqDQX9hLjEdBbkbUdZWkA=
+        b=jX+3YCGATebGvGIpIv5XGUgRJwrF9QzJMpoi9M2xCga5Va6Uvhi36MUnCXNlbErkB
+         qjnfaJf+xODaM614pqquLHVOCB8mzEdoV2AmkTR9bMDC96oYQChz7aIfx5kJMuIAOo
+         skv136Jnhz+q88h7+bu7CJWzTuY4Q+gJyyfxuqvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 30/43] arm64: entry: Move trampoline macros out of ifdefd section
-Date:   Wed,  9 Mar 2022 17:00:03 +0100
-Message-Id: <20220309155900.113009937@linuxfoundation.org>
+Subject: [PATCH 5.10 37/43] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Wed,  9 Mar 2022 17:00:10 +0100
+Message-Id: <20220309155900.313421352@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -52,50 +50,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
 
-The macros for building the kpti trampoline are all behind
-CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
-.entry.tramp.text section.
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
 
-Move the macros out so they can be used to generate other kinds of
-trampoline. Only the symbols need to be guarded by
-CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/arm64/include/asm/spectre.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -778,12 +778,6 @@ SYM_CODE_END(ret_to_user)
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -29,4 +29,6 @@ bool has_spectre_v4(const struct arm64_c
+ void spectre_v4_enable_mitigation(const struct arm64_cpu_capabilities *__unused);
+ void spectre_v4_enable_task_mitigation(struct task_struct *tsk);
  
- 	.popsection				// .entry.text
++enum mitigation_state arm64_get_spectre_bhb_state(void);
++
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -94,14 +94,39 @@ static bool spectre_v2_mitigations_off(v
+ 	return ret;
+ }
  
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--/*
-- * Exception vectors trampoline.
-- */
--	.pushsection ".entry.tramp.text", "ax"
--
- 	// Move from tramp_pg_dir to swapper_pg_dir
- 	.macro tramp_map_kernel, tmp
- 	mrs	\tmp, ttbr1_el1
-@@ -879,6 +873,11 @@ alternative_else_nop_endif
- 	.endr
- 	.endm
- 
-+#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
-+/*
-+ * Exception vectors trampoline.
-+ */
-+	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- SYM_CODE_START_NOALIGN(tramp_vectors)
- 	generate_tramp_vector
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
++
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
++
+ 	switch (spectre_v2_state) {
+ 	case SPECTRE_UNAFFECTED:
+-		return sprintf(buf, "Not affected\n");
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
++
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++		fallthrough;
+ 	case SPECTRE_MITIGATED:
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 	case SPECTRE_VULNERABLE:
+ 		fallthrough;
+ 	default:
+@@ -787,3 +812,10 @@ int arch_prctl_spec_ctrl_get(struct task
+ 		return -ENODEV;
+ 	}
+ }
++
++static enum mitigation_state spectre_bhb_state;
++
++enum mitigation_state arm64_get_spectre_bhb_state(void)
++{
++	return spectre_bhb_state;
++}
 
 
