@@ -2,368 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C99C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7664C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 11:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbiCILhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 06:37:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S232314AbiCILj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 06:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232324AbiCILhJ (ORCPT
+        with ESMTP id S230188AbiCILjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 06:37:09 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21C1156C48;
-        Wed,  9 Mar 2022 03:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646825770; x=1678361770;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yZfd0yrdxn/084b8ilGpKvAPRKSOPL9X9NLFEQ6Zec4=;
-  b=TqbndIKRQfXGqdZohH6BxI3WszQWEuIfPIFOkmkghYnaydDprrljKbus
-   ya8mTJtCIXSZT0ljxJf1shO33hAxgEacW8V+N0W7by3u02pXnX+Q7oEB0
-   0KuiIYH3L/sKlVEOsHxqaUJcJiKPUcnHNtgOxkIfKHfUEXL6HCWM1xXX1
-   OuYH6oxg3j2LwItjgTW5AfFyZArpasVGeDyw01JS/rrkLkrBeY6Per1hI
-   LhMXvEH20eLOuOd8+TUueBw16J/xeAFw1gX4hri/pN7ABV2+up22L0RBZ
-   DFolcJdEb/YpWHHKylTuQx4vRJ8O+F8xAmFX2RxXIOHXzGOfYXV3P5Tcx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318181507"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="318181507"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 03:36:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="688269779"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Mar 2022 03:36:06 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRubt-0003Ap-F2; Wed, 09 Mar 2022 11:36:05 +0000
-Date:   Wed, 9 Mar 2022 19:35:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jonathan Marek <jonathan@marek.ca>,
-        David Airlie <airlied@linux.ie>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Wang Qing <wangqing@vivo.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Sean Paul <sean@poorly.run>, Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH v1 06/10] drm/msm/a6xx: Propagate OOB set error
-Message-ID: <202203091923.2RD2Ech3-lkp@intel.com>
-References: <20220302225551.v1.6.I7f93862e5dfa6eb1cc3e6d3d4e5e83022a491a94@changeid>
+        Wed, 9 Mar 2022 06:39:23 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790411D0E5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 03:38:22 -0800 (PST)
+Date:   Wed, 09 Mar 2022 11:38:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646825900;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AcqsyaUAYvmbqtP7P9b+TRzWTjt75kKMkxbPSvHkyrM=;
+        b=YEdWK7as0XnlR2ZcQ6rfWVzv9VLYC5wMQ4Le6AwcmK4A0JsUGGCLGPpyxOas1bJu0fxSsU
+        PWa289UJ+fBzXg8RwJ6jbhFgjVNg1tPM8AidOFRUe1CZ6oH6dM0lC995ODfPLLAsa0+ZDw
+        QFO8SmyXu6iXe3R/8v/6CXtpo2gnQnq4WSsrbHX9A6kpnwojUNGFxtIjTFSpUIXrjbjWsM
+        dCMovbqhDe/30253ZMle96ycIqzEbg/leW9SaNNpr5LtrddRTGx2v3zCBmy+DcDLka9yUs
+        qYPemRqEU+O/Wm1D52eNwxuILCvxul1xs7LLX4fIE3LgnkiVXwEQ9aFya7GC1A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646825900;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AcqsyaUAYvmbqtP7P9b+TRzWTjt75kKMkxbPSvHkyrM=;
+        b=SOmTn9O9QZsmLyb4ByfOPu7O1DngeeO8s9gW66o3PrZZtElh6Zu8Z0GqpDL5JbR5QYbAET
+        DY6r1DOqSIR6LOAw==
+From:   "irqchip-bot for Qianggui Song" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/meson-gpio: Add support for meson s4 SoCs
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220225055207.1048-5-qianggui.song@amlogic.com>
+References: <20220225055207.1048-5-qianggui.song@amlogic.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302225551.v1.6.I7f93862e5dfa6eb1cc3e6d3d4e5e83022a491a94@changeid>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <164682589927.16921.10086882193156342940.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Akhil,
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Thank you for the patch! Perhaps something to improve:
+Commit-ID:     d6c47d21a0ef9a76c537f8c5258b49d61f2e160f
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/d6c47d21a0ef9a76c537f8c5258b49d61f2e160f
+Author:        Qianggui Song <qianggui.song@amlogic.com>
+AuthorDate:    Fri, 25 Feb 2022 13:52:06 +08:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Wed, 09 Mar 2022 11:19:56 
 
-[auto build test WARNING on drm/drm-next]
-[also build test WARNING on drm-intel/for-linux-next drm-tip/drm-tip drm-exynos/exynos-drm-next v5.17-rc7 next-20220308]
-[cannot apply to tegra-drm/drm/tegra/for-next airlied/drm-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+irqchip/meson-gpio: Add support for meson s4 SoCs
 
-url:    https://github.com/0day-ci/linux/commits/Akhil-P-Oommen/Support-for-GMU-coredump-and-some-related-improvements/20220303-013028
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: s390-randconfig-m031-20220307 (https://download.01.org/0day-ci/archive/20220309/202203091923.2RD2Ech3-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
+The meson s4 SoCs support 12 gpio irq lines compared with previous
+serial chips and have something different, details are as below.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+IRQ Number:
+- 80:68 13 pins on bank Z
+- 67:48 20 pins on bank X
+- 47:36 12 pins on bank H
+- 35:24 12 pins on bank D
+- 23:22 2  pins on bank E
+- 21:14 8  pins on bank C
+- 13:0  13 pins on bank B
 
-smatch warnings:
-drivers/gpu/drm/msm/adreno/a6xx_gpu.c:894 hw_init() warn: inconsistent indenting
-
-vim +894 drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-
-   874	
-   875	#define A6XX_INT_MASK (A6XX_RBBM_INT_0_MASK_CP_AHB_ERROR | \
-   876		  A6XX_RBBM_INT_0_MASK_RBBM_ATB_ASYNCFIFO_OVERFLOW | \
-   877		  A6XX_RBBM_INT_0_MASK_CP_HW_ERROR | \
-   878		  A6XX_RBBM_INT_0_MASK_CP_IB2 | \
-   879		  A6XX_RBBM_INT_0_MASK_CP_IB1 | \
-   880		  A6XX_RBBM_INT_0_MASK_CP_RB | \
-   881		  A6XX_RBBM_INT_0_MASK_CP_CACHE_FLUSH_TS | \
-   882		  A6XX_RBBM_INT_0_MASK_RBBM_ATB_BUS_OVERFLOW | \
-   883		  A6XX_RBBM_INT_0_MASK_RBBM_HANG_DETECT | \
-   884		  A6XX_RBBM_INT_0_MASK_UCHE_OOB_ACCESS | \
-   885		  A6XX_RBBM_INT_0_MASK_UCHE_TRAP_INTR)
-   886	
-   887	static int hw_init(struct msm_gpu *gpu)
-   888	{
-   889		struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-   890		struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-   891		int ret;
-   892	
-   893		/* Make sure the GMU keeps the GPU on while we set it up */
- > 894		 ret = a6xx_gmu_set_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
-   895	
-   896		gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_CNTL, 0);
-   897	
-   898		/*
-   899		 * Disable the trusted memory range - we don't actually supported secure
-   900		 * memory rendering at this point in time and we don't want to block off
-   901		 * part of the virtual memory space.
-   902		 */
-   903		gpu_write64(gpu, REG_A6XX_RBBM_SECVID_TSB_TRUSTED_BASE_LO,
-   904			REG_A6XX_RBBM_SECVID_TSB_TRUSTED_BASE_HI, 0x00000000);
-   905		gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_TRUSTED_SIZE, 0x00000000);
-   906	
-   907		/* Turn on 64 bit addressing for all blocks */
-   908		gpu_write(gpu, REG_A6XX_CP_ADDR_MODE_CNTL, 0x1);
-   909		gpu_write(gpu, REG_A6XX_VSC_ADDR_MODE_CNTL, 0x1);
-   910		gpu_write(gpu, REG_A6XX_GRAS_ADDR_MODE_CNTL, 0x1);
-   911		gpu_write(gpu, REG_A6XX_RB_ADDR_MODE_CNTL, 0x1);
-   912		gpu_write(gpu, REG_A6XX_PC_ADDR_MODE_CNTL, 0x1);
-   913		gpu_write(gpu, REG_A6XX_HLSQ_ADDR_MODE_CNTL, 0x1);
-   914		gpu_write(gpu, REG_A6XX_VFD_ADDR_MODE_CNTL, 0x1);
-   915		gpu_write(gpu, REG_A6XX_VPC_ADDR_MODE_CNTL, 0x1);
-   916		gpu_write(gpu, REG_A6XX_UCHE_ADDR_MODE_CNTL, 0x1);
-   917		gpu_write(gpu, REG_A6XX_SP_ADDR_MODE_CNTL, 0x1);
-   918		gpu_write(gpu, REG_A6XX_TPL1_ADDR_MODE_CNTL, 0x1);
-   919		gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_ADDR_MODE_CNTL, 0x1);
-   920	
-   921		/* enable hardware clockgating */
-   922		a6xx_set_hwcg(gpu, true);
-   923	
-   924		/* VBIF/GBIF start*/
-   925		if (adreno_is_a640_family(adreno_gpu) ||
-   926		    adreno_is_a650_family(adreno_gpu)) {
-   927			gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE0, 0x00071620);
-   928			gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE1, 0x00071620);
-   929			gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE2, 0x00071620);
-   930			gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
-   931			gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
-   932			gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x3);
-   933		} else {
-   934			gpu_write(gpu, REG_A6XX_RBBM_VBIF_CLIENT_QOS_CNTL, 0x3);
-   935		}
-   936	
-   937		if (adreno_is_a630(adreno_gpu))
-   938			gpu_write(gpu, REG_A6XX_VBIF_GATE_OFF_WRREQ_EN, 0x00000009);
-   939	
-   940		/* Make all blocks contribute to the GPU BUSY perf counter */
-   941		gpu_write(gpu, REG_A6XX_RBBM_PERFCTR_GPU_BUSY_MASKED, 0xffffffff);
-   942	
-   943		/* Disable L2 bypass in the UCHE */
-   944		gpu_write(gpu, REG_A6XX_UCHE_WRITE_RANGE_MAX_LO, 0xffffffc0);
-   945		gpu_write(gpu, REG_A6XX_UCHE_WRITE_RANGE_MAX_HI, 0x0001ffff);
-   946		gpu_write(gpu, REG_A6XX_UCHE_TRAP_BASE_LO, 0xfffff000);
-   947		gpu_write(gpu, REG_A6XX_UCHE_TRAP_BASE_HI, 0x0001ffff);
-   948		gpu_write(gpu, REG_A6XX_UCHE_WRITE_THRU_BASE_LO, 0xfffff000);
-   949		gpu_write(gpu, REG_A6XX_UCHE_WRITE_THRU_BASE_HI, 0x0001ffff);
-   950	
-   951		if (!adreno_is_a650_family(adreno_gpu)) {
-   952			/* Set the GMEM VA range [0x100000:0x100000 + gpu->gmem - 1] */
-   953			gpu_write64(gpu, REG_A6XX_UCHE_GMEM_RANGE_MIN_LO,
-   954				REG_A6XX_UCHE_GMEM_RANGE_MIN_HI, 0x00100000);
-   955	
-   956			gpu_write64(gpu, REG_A6XX_UCHE_GMEM_RANGE_MAX_LO,
-   957				REG_A6XX_UCHE_GMEM_RANGE_MAX_HI,
-   958				0x00100000 + adreno_gpu->gmem - 1);
-   959		}
-   960	
-   961		gpu_write(gpu, REG_A6XX_UCHE_FILTER_CNTL, 0x804);
-   962		gpu_write(gpu, REG_A6XX_UCHE_CACHE_WAYS, 0x4);
-   963	
-   964		if (adreno_is_a640_family(adreno_gpu) ||
-   965		    adreno_is_a650_family(adreno_gpu))
-   966			gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x02000140);
-   967		else
-   968			gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x010000c0);
-   969		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x8040362c);
-   970	
-   971		if (adreno_is_a660_family(adreno_gpu))
-   972			gpu_write(gpu, REG_A6XX_CP_LPAC_PROG_FIFO_SIZE, 0x00000020);
-   973	
-   974		/* Setting the mem pool size */
-   975		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 128);
-   976	
-   977		/* Setting the primFifo thresholds default values,
-   978		 * and vccCacheSkipDis=1 bit (0x200) for A640 and newer
-   979		*/
-   980		if (adreno_is_a650(adreno_gpu) || adreno_is_a660(adreno_gpu))
-   981			gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00300200);
-   982		else if (adreno_is_a640_family(adreno_gpu) || adreno_is_7c3(adreno_gpu))
-   983			gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00200200);
-   984		else if (adreno_is_a650(adreno_gpu) || adreno_is_a660(adreno_gpu))
-   985			gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00300200);
-   986		else
-   987			gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00180000);
-   988	
-   989		/* Set the AHB default slave response to "ERROR" */
-   990		gpu_write(gpu, REG_A6XX_CP_AHB_CNTL, 0x1);
-   991	
-   992		/* Turn on performance counters */
-   993		gpu_write(gpu, REG_A6XX_RBBM_PERFCTR_CNTL, 0x1);
-   994	
-   995		/* Select CP0 to always count cycles */
-   996		gpu_write(gpu, REG_A6XX_CP_PERFCTR_CP_SEL(0), PERF_CP_ALWAYS_COUNT);
-   997	
-   998		a6xx_set_ubwc_config(gpu);
-   999	
-  1000		/* Enable fault detection */
-  1001		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL,
-  1002			(1 << 30) | 0x1fffff);
-  1003	
-  1004		gpu_write(gpu, REG_A6XX_UCHE_CLIENT_PF, 1);
-  1005	
-  1006		/* Set weights for bicubic filtering */
-  1007		if (adreno_is_a650_family(adreno_gpu)) {
-  1008			gpu_write(gpu, REG_A6XX_TPL1_BICUBIC_WEIGHTS_TABLE_0, 0);
-  1009			gpu_write(gpu, REG_A6XX_TPL1_BICUBIC_WEIGHTS_TABLE_1,
-  1010				0x3fe05ff4);
-  1011			gpu_write(gpu, REG_A6XX_TPL1_BICUBIC_WEIGHTS_TABLE_2,
-  1012				0x3fa0ebee);
-  1013			gpu_write(gpu, REG_A6XX_TPL1_BICUBIC_WEIGHTS_TABLE_3,
-  1014				0x3f5193ed);
-  1015			gpu_write(gpu, REG_A6XX_TPL1_BICUBIC_WEIGHTS_TABLE_4,
-  1016				0x3f0243f0);
-  1017		}
-  1018	
-  1019		/* Protect registers from the CP */
-  1020		a6xx_set_cp_protect(gpu);
-  1021	
-  1022		if (adreno_is_a660_family(adreno_gpu)) {
-  1023			gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, 0x1);
-  1024			gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x0);
-  1025		}
-  1026	
-  1027		/* Set dualQ + disable afull for A660 GPU */
-  1028		if (adreno_is_a660(adreno_gpu))
-  1029			gpu_write(gpu, REG_A6XX_UCHE_CMDQ_CONFIG, 0x66906);
-  1030	
-  1031		/* Enable expanded apriv for targets that support it */
-  1032		if (gpu->hw_apriv) {
-  1033			gpu_write(gpu, REG_A6XX_CP_APRIV_CNTL,
-  1034				(1 << 6) | (1 << 5) | (1 << 3) | (1 << 2) | (1 << 1));
-  1035		}
-  1036	
-  1037		/* Enable interrupts */
-  1038		gpu_write(gpu, REG_A6XX_RBBM_INT_0_MASK, A6XX_INT_MASK);
-  1039	
-  1040		ret = adreno_hw_init(gpu);
-  1041		if (ret)
-  1042			goto out;
-  1043	
-  1044		ret = a6xx_ucode_init(gpu);
-  1045		if (ret)
-  1046			goto out;
-  1047	
-  1048		/* Set the ringbuffer address */
-  1049		gpu_write64(gpu, REG_A6XX_CP_RB_BASE, REG_A6XX_CP_RB_BASE_HI,
-  1050			gpu->rb[0]->iova);
-  1051	
-  1052		/* Targets that support extended APRIV can use the RPTR shadow from
-  1053		 * hardware but all the other ones need to disable the feature. Targets
-  1054		 * that support the WHERE_AM_I opcode can use that instead
-  1055		 */
-  1056		if (adreno_gpu->base.hw_apriv)
-  1057			gpu_write(gpu, REG_A6XX_CP_RB_CNTL, MSM_GPU_RB_CNTL_DEFAULT);
-  1058		else
-  1059			gpu_write(gpu, REG_A6XX_CP_RB_CNTL,
-  1060				MSM_GPU_RB_CNTL_DEFAULT | AXXX_CP_RB_CNTL_NO_UPDATE);
-  1061	
-  1062		/*
-  1063		 * Expanded APRIV and targets that support WHERE_AM_I both need a
-  1064		 * privileged buffer to store the RPTR shadow
-  1065		 */
-  1066	
-  1067		if (adreno_gpu->base.hw_apriv || a6xx_gpu->has_whereami) {
-  1068			if (!a6xx_gpu->shadow_bo) {
-  1069				a6xx_gpu->shadow = msm_gem_kernel_new(gpu->dev,
-  1070					sizeof(u32) * gpu->nr_rings,
-  1071					MSM_BO_WC | MSM_BO_MAP_PRIV,
-  1072					gpu->aspace, &a6xx_gpu->shadow_bo,
-  1073					&a6xx_gpu->shadow_iova);
-  1074	
-  1075				if (IS_ERR(a6xx_gpu->shadow))
-  1076					return PTR_ERR(a6xx_gpu->shadow);
-  1077	
-  1078				msm_gem_object_set_name(a6xx_gpu->shadow_bo, "shadow");
-  1079			}
-  1080	
-  1081			gpu_write64(gpu, REG_A6XX_CP_RB_RPTR_ADDR_LO,
-  1082				REG_A6XX_CP_RB_RPTR_ADDR_HI,
-  1083				shadowptr(a6xx_gpu, gpu->rb[0]));
-  1084		}
-  1085	
-  1086		/* Always come up on rb 0 */
-  1087		a6xx_gpu->cur_ring = gpu->rb[0];
-  1088	
-  1089		gpu->cur_ctx_seqno = 0;
-  1090	
-  1091		/* Enable the SQE_to start the CP engine */
-  1092		gpu_write(gpu, REG_A6XX_CP_SQE_CNTL, 1);
-  1093	
-  1094		ret = a6xx_cp_init(gpu);
-  1095		if (ret)
-  1096			goto out;
-  1097	
-  1098		/*
-  1099		 * Try to load a zap shader into the secure world. If successful
-  1100		 * we can use the CP to switch out of secure mode. If not then we
-  1101		 * have no resource but to try to switch ourselves out manually. If we
-  1102		 * guessed wrong then access to the RBBM_SECVID_TRUST_CNTL register will
-  1103		 * be blocked and a permissions violation will soon follow.
-  1104		 */
-  1105		ret = a6xx_zap_shader_init(gpu);
-  1106		if (!ret) {
-  1107			OUT_PKT7(gpu->rb[0], CP_SET_SECURE_MODE, 1);
-  1108			OUT_RING(gpu->rb[0], 0x00000000);
-  1109	
-  1110			a6xx_flush(gpu, gpu->rb[0]);
-  1111			if (!a6xx_idle(gpu, gpu->rb[0]))
-  1112				return -EINVAL;
-  1113		} else if (ret == -ENODEV) {
-  1114			/*
-  1115			 * This device does not use zap shader (but print a warning
-  1116			 * just in case someone got their dt wrong.. hopefully they
-  1117			 * have a debug UART to realize the error of their ways...
-  1118			 * if you mess this up you are about to crash horribly)
-  1119			 */
-  1120			dev_warn_once(gpu->dev->dev,
-  1121				"Zap shader not enabled - using SECVID_TRUST_CNTL instead\n");
-  1122			gpu_write(gpu, REG_A6XX_RBBM_SECVID_TRUST_CNTL, 0x0);
-  1123			ret = 0;
-  1124		} else {
-  1125			return ret;
-  1126		}
-  1127	
-  1128	out:
-  1129		/*
-  1130		 * Tell the GMU that we are done touching the GPU and it can start power
-  1131		 * management
-  1132		 */
-  1133		a6xx_gmu_clear_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
-  1134	
-  1135		if (a6xx_gpu->gmu.legacy) {
-  1136			/* Take the GMU out of its special boot mode */
-  1137			a6xx_gmu_clear_oob(&a6xx_gpu->gmu, GMU_OOB_BOOT_SLUMBER);
-  1138		}
-  1139	
-  1140		return ret;
-  1141	}
-  1142	
-
+Signed-off-by: Qianggui Song <qianggui.song@amlogic.com>
+[maz: fixed some W=1 build warnings]
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220225055207.1048-5-qianggui.song@amlogic.com
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/irqchip/irq-meson-gpio.c | 65 +++++++++++++++++++++++++++++++-
+ 1 file changed, 65 insertions(+)
+
+diff --git a/drivers/irqchip/irq-meson-gpio.c b/drivers/irqchip/irq-meson-gpio.c
+index 7b5863e..2aaa9aa 100644
+--- a/drivers/irqchip/irq-meson-gpio.c
++++ b/drivers/irqchip/irq-meson-gpio.c
+@@ -26,6 +26,8 @@
+ 
+ /* use for A1 like chips */
+ #define REG_PIN_A1_SEL	0x04
++/* Used for s4 chips */
++#define REG_EDGE_POL_S4	0x1c
+ 
+ /*
+  * Note: The S905X3 datasheet reports that BOTH_EDGE is controlled by
+@@ -53,6 +55,8 @@ static void meson_a1_gpio_irq_sel_pin(struct meson_gpio_irq_controller *ctl,
+ static void meson_a1_gpio_irq_init(struct meson_gpio_irq_controller *ctl);
+ static int meson8_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
+ 				    unsigned int type, u32 *channel_hwirq);
++static int meson_s4_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
++				      unsigned int type, u32 *channel_hwirq);
+ 
+ struct irq_ctl_ops {
+ 	void (*gpio_irq_sel_pin)(struct meson_gpio_irq_controller *ctl,
+@@ -101,6 +105,17 @@ struct meson_gpio_irq_params {
+ 	.pin_sel_mask = 0x7f,					\
+ 	.nr_channels = 8,					\
+ 
++#define INIT_MESON_S4_COMMON_DATA(irqs)				\
++	INIT_MESON_COMMON(irqs, meson_a1_gpio_irq_init,		\
++			  meson_a1_gpio_irq_sel_pin,		\
++			  meson_s4_gpio_irq_set_type)		\
++	.support_edge_both = true,				\
++	.edge_both_offset = 0,					\
++	.edge_single_offset = 12,				\
++	.pol_low_offset = 0,					\
++	.pin_sel_mask = 0xff,					\
++	.nr_channels = 12,					\
++
+ static const struct meson_gpio_irq_params meson8_params = {
+ 	INIT_MESON8_COMMON_DATA(134)
+ };
+@@ -131,6 +146,10 @@ static const struct meson_gpio_irq_params a1_params = {
+ 	INIT_MESON_A1_COMMON_DATA(62)
+ };
+ 
++static const struct meson_gpio_irq_params s4_params = {
++	INIT_MESON_S4_COMMON_DATA(82)
++};
++
+ static const struct of_device_id meson_irq_gpio_matches[] = {
+ 	{ .compatible = "amlogic,meson8-gpio-intc", .data = &meson8_params },
+ 	{ .compatible = "amlogic,meson8b-gpio-intc", .data = &meson8b_params },
+@@ -140,6 +159,7 @@ static const struct of_device_id meson_irq_gpio_matches[] = {
+ 	{ .compatible = "amlogic,meson-g12a-gpio-intc", .data = &axg_params },
+ 	{ .compatible = "amlogic,meson-sm1-gpio-intc", .data = &sm1_params },
+ 	{ .compatible = "amlogic,meson-a1-gpio-intc", .data = &a1_params },
++	{ .compatible = "amlogic,meson-s4-gpio-intc", .data = &s4_params },
+ 	{ }
+ };
+ 
+@@ -308,6 +328,51 @@ static int meson8_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
+ 	return 0;
+ }
+ 
++/*
++ * gpio irq relative registers for s4
++ * -PADCTRL_GPIO_IRQ_CTRL0
++ * bit[31]:    enable/disable all the irq lines
++ * bit[12-23]: single edge trigger
++ * bit[0-11]:  polarity trigger
++ *
++ * -PADCTRL_GPIO_IRQ_CTRL[X]
++ * bit[0-16]: 7 bits to choose gpio source for irq line 2*[X] - 2
++ * bit[16-22]:7 bits to choose gpio source for irq line 2*[X] - 1
++ * where X = 1-6
++ *
++ * -PADCTRL_GPIO_IRQ_CTRL[7]
++ * bit[0-11]: both edge trigger
++ */
++static int meson_s4_gpio_irq_set_type(struct meson_gpio_irq_controller *ctl,
++				      unsigned int type, u32 *channel_hwirq)
++{
++	u32 val = 0;
++	unsigned int idx;
++
++	idx = meson_gpio_irq_get_channel_idx(ctl, channel_hwirq);
++
++	type &= IRQ_TYPE_SENSE_MASK;
++
++	meson_gpio_irq_update_bits(ctl, REG_EDGE_POL_S4, BIT(idx), 0);
++
++	if (type == IRQ_TYPE_EDGE_BOTH) {
++		val |= BIT(ctl->params->edge_both_offset + idx);
++		meson_gpio_irq_update_bits(ctl, REG_EDGE_POL_S4,
++					   BIT(ctl->params->edge_both_offset + idx), val);
++		return 0;
++	}
++
++	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_EDGE_FALLING))
++		val |= BIT(ctl->params->pol_low_offset + idx);
++
++	if (type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING))
++		val |= BIT(ctl->params->edge_single_offset + idx);
++
++	meson_gpio_irq_update_bits(ctl, REG_EDGE_POL,
++				   BIT(idx) | BIT(12 + idx), val);
++	return 0;
++};
++
+ static unsigned int meson_gpio_irq_type_output(unsigned int type)
+ {
+ 	unsigned int sense = type & IRQ_TYPE_SENSE_MASK;
