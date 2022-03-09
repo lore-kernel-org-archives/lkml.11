@@ -2,92 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC281C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238060AbiCIWBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:01:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        id S238498AbiCIWDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232704AbiCIWBD (ORCPT
+        with ESMTP id S229946AbiCIWD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:01:03 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6A49900
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:00:04 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id h5so1787974plf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:00:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4ETWE4LlCM0BCZZSgmhGgtdOUBlAms7fQZsyUDLXvHw=;
-        b=ItpQucT3jB1AaUEy3NOv39/EpCagm6oO4riT7Po3DEIGUFTGvCzCYo8pGHM3ikAEgu
-         m7NefqG8qDXA3HbutQke5PGJ/OgPor3TZOqZ7muxG63Tlu3qqDFsfZ9/iE2AvC882OO9
-         fjyCDVWALz1NkQwC/kh/L35ORnpWN98bqEGZWadIg+Sw5AQgALvbKiQInyVxGOnp/BC5
-         7+QCQSF15ADOksPOqRHXVpk0ajewh6u+ll0iYFR3BjwHbMh4aprtON5PTMdK5fWLifpc
-         mw1iw3WP4gpqhQMces6fx9b4Y4cnDLRTKpToYZmj6Z31KplwWeJumgnCx3K48HRI+308
-         UJaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4ETWE4LlCM0BCZZSgmhGgtdOUBlAms7fQZsyUDLXvHw=;
-        b=YkRgAucRSu+kY/dn/yvyvVEiVg2Q5Vna0efxkFj0MFv0F3+0mpmywnPgkLgMNor2Ms
-         wctizhjEgojGIM2CD1PIX+5H0sqOoTFEgHUgqulhK2T1kS466uaWZRLGFFkCh2Bl0YMR
-         XO8biKvV6aZoHInBqCvFyWhgdEMHCEuuLopCQxE5ZRwO1a/6S0gnt9ukQlFQDy7QMnoc
-         JSdedq30jhRHcyCD2jhIEdBpxAajpfGUG+JtL5Lm5XQINuetyfJWDb+t8+Ks+sx/GBVT
-         2ciIEGvzbO8z81rxoc5FxVeLzECBK0WnQOxGj/37RKpp7SGTBCfzKUj+VcT87x0ICFfI
-         SxcQ==
-X-Gm-Message-State: AOAM531SZxqAgakVhE39Q3mvLQiAqEs6NlxbMyJI3lX0ocSS5sGFYNRn
-        Q23V0gUdHgYWXH+/w8OlyvIEjoZCUaVNlA==
-X-Google-Smtp-Source: ABdhPJywJEJ41wCLjoFmQzQwW0VYUCE3fUFoF+NvfDfXPKrDtxV7FY2K8jnLVeBYIdNEpB+Bnq2FEQ==
-X-Received: by 2002:a17:90b:1c86:b0:1bf:2a7e:5c75 with SMTP id oo6-20020a17090b1c8600b001bf2a7e5c75mr1657451pjb.145.1646863203865;
-        Wed, 09 Mar 2022 14:00:03 -0800 (PST)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:6f34:be93:349a:f478])
-        by smtp.gmail.com with ESMTPSA id y10-20020a63b50a000000b0038088a28ec0sm3317336pge.22.2022.03.09.14.00.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 14:00:03 -0800 (PST)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH] xtensa: add missing XCHAL_HAVE_WINDOWED check
-Date:   Wed,  9 Mar 2022 13:59:48 -0800
-Message-Id: <20220309215948.1250865-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 9 Mar 2022 17:03:29 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A649CB0;
+        Wed,  9 Mar 2022 14:02:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646863345; x=1678399345;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9+Y+W6kPpAhOBsTIr7uplKjRx92r1AT6ix+u1mTH2hM=;
+  b=BdN5dhV4N0WwLDIEZ6bsv/aETPS9ZYvuCrl4UV30Zh5eVtEH40T5OMfg
+   wpkIZyajzEf5frYesVogZMJ1vjSqzog6PcNXarvFLkkZnj4RBh5PwOCkj
+   gZiFKy3QZEL9UuX+AENUR76cU1YGhSee9moAkfv6rrbZzwJYuQC2N6UHK
+   RhO1uqG7KoGKHGLeZtD10e3Rw9HAyqsSFTIpKOwAncsO7wYCB7fvMz4iM
+   PrlShOw9vbIMRsfnWQlmLUqHqOwv58btvywROzn0lxGUg2YQ7fzDPkaRT
+   SAdchBLma3w4p4v3/JPE334GEJkE00CeMerkKpJpNJ0WiU6mZiJ76nryd
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,168,1643698800"; 
+   d="scan'208";a="155874789"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 15:02:24 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 9 Mar 2022 15:02:23 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 9 Mar 2022 15:02:22 -0700
+Date:   Wed, 9 Mar 2022 23:05:16 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
+Message-ID: <20220309220516.smxhbtikbvctlkeh@soft-dev3-1.localhost>
+References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
+ <YifMSUA/uZoPnpf1@lunn.ch>
+ <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
+ <YiinmN+VBWRxN5l4@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YiinmN+VBWRxN5l4@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing preprocessor conditions to secondary reset vector code.
+The 03/09/2022 14:11, Andrew Lunn wrote:
+> 
+> On Tue, Mar 08, 2022 at 11:30:00PM +0100, Horatiu Vultur wrote:
+> > The 03/08/2022 22:36, Andrew Lunn wrote:
+> > >
+> > > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
+> > > >  {
+> > > > -     u32 val;
+> > > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
+> > > > +     int ret = 0;
+> > > >
+> > > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
+> > > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
+> > > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
+> > > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
+> > > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
+> > > > +             if (time_after(jiffies, time)) {
+> > > > +                     ret = -ETIMEDOUT;
+> > > > +                     break;
+> > > > +             }
+> > >
+> > > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
+> > > explicitly supports that.
+> >
+> > I have tried but it didn't improve. It was the same as before.
+> 
+> The reason i recommend ipoll.h is that your implementation has the
+> usual bug, which iopoll does not have. Since you are using _atomic()
+> it is less of an issue, but it still exists.
+> 
+>      while (!(lan_rd(lan966x, QS_INJ_STATUS) &
+>               QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
+> 
+> Say you take an interrupt here
+> 
+>              if (time_after(jiffies, time)) {
+>                      ret = -ETIMEDOUT;
+>                      break;
+>              }
+> 
+> 
+> The interrupt takes a while, so that by the time you get to
+> time_after(), you have reached your timeout. So -ETIMEDOUT is
+> returned. But in fact, the hardware has done its thing, and if you
+> where to read the status the bit would be set, and you should actually
+> return O.K, not an error.
 
-Fixes: 09af39f649da ("xtensa: use register window specific opcodes only when present")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/kernel/mxhead.S | 2 ++
- 1 file changed, 2 insertions(+)
+That is a good catch and really nice explanation!
+Then if I add also the check at the end, then it should be also OK.
 
-diff --git a/arch/xtensa/kernel/mxhead.S b/arch/xtensa/kernel/mxhead.S
-index 9f3843742726..b702c0908b1f 100644
---- a/arch/xtensa/kernel/mxhead.S
-+++ b/arch/xtensa/kernel/mxhead.S
-@@ -37,11 +37,13 @@ _SetupOCD:
- 	 * xt-gdb to single step via DEBUG exceptions received directly
- 	 * by ocd.
- 	 */
-+#if XCHAL_HAVE_WINDOWED
- 	movi	a1, 1
- 	movi	a0, 0
- 	wsr	a1, windowstart
- 	wsr	a0, windowbase
- 	rsync
-+#endif
- 
- 	movi	a1, LOCKLEVEL
- 	wsr	a1, ps
+> 
+> iopoll does another check of the status before deciding to return
+> -ETIMEDOUT or O.K.
+> 
+> If you decide to simply check the status directly after the write, i
+> suggest you then use readx_poll_timeout_atomic() if you do need to
+> poll.
+> 
+>         Andrew
+
 -- 
-2.30.2
-
+/Horatiu
