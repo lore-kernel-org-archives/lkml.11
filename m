@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB22C35295
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6234C47080
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238046AbiCIQuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:50:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
+        id S237891AbiCIQuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239550AbiCIQcm (ORCPT
+        with ESMTP id S239510AbiCIQck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:32:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B7A1AAA4D;
-        Wed,  9 Mar 2022 08:28:06 -0800 (PST)
+        Wed, 9 Mar 2022 11:32:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D584474D;
+        Wed,  9 Mar 2022 08:27:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7988D61973;
-        Wed,  9 Mar 2022 16:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12537C340E8;
-        Wed,  9 Mar 2022 16:27:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37BABB81EE7;
+        Wed,  9 Mar 2022 16:26:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C81C340F6;
+        Wed,  9 Mar 2022 16:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843266;
-        bh=fEVgwXk1c1lGMS8hGbRJ0s5ynNwtkHpZ8UedaFiEplo=;
+        s=k20201202; t=1646843194;
+        bh=NH8oTPOZurRKmj4SPVwhpRhSF1kGMdS+csUxCzR+XWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYw0A9MRt6Chfg5hqO8CMiM+iVxhtSTUuNEJOOLan4+OqMSjjj6ougt50F2fd4+jh
-         wR7j28IPmHw9kuXOfeE+lCgDQbTmmk8R4W+S6/npncYEX0UbV2QKOz7/usN+Yd5vKf
-         3LTd15UDK0E1OCsYVBAGP+wMw9QqyRE8+SVbNKpFwAyEZITNwWBYY0lPiyHX/S8wUa
-         uUSsKm2ph+luxhg9RrFXARjgbPVey/CsrgGp3L4srMIrO4cbWJGC4vuK+vUibsZpC4
-         xbLOHy+m2XrTET6vw1CiIiemvAGFs/RALpGC4R0MgqTW1LbO60ozSA904wS3HM8Qbb
-         alwI2bISC5iRw==
+        b=AN51VlVq+uLVYZqCcwDvkUPC0sCkikeZiBEzTvcpJG5Hw6BeDSEkq6KjHf64/Jjvj
+         6sO4pkgiXeAP9u8sIbriHghgRflq6Iuq19zaOgAX08iX23hWnL/s86wOmjbBV5Xxup
+         GRwAFHgLLx6UeHFoTs6977eUCvtS4fgbiDFHkHhU2tiYXBhBKNcMuu48ZhCJRtu/Nw
+         GWFrBCUkWohoua5YstTYiX++CQlEymbAXwF2yPBn+dZEZZ0CqD04sQcycRxhdHKo+q
+         cZOMvjIh3D+xrrT9KLwFv2FF7HM0pG+ojn2/AWS2OWYiViXeMK+U8sNFR93kVCA118
+         QdVRYBDea76fw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, kuba@kernel.org, stefan.maetje@esd.eu,
-        mailhol.vincent@wanadoo.fr, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/11] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-Date:   Wed,  9 Mar 2022 11:27:10 -0500
-Message-Id: <20220309162716.137399-5-sashal@kernel.org>
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 03/12] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+Date:   Wed,  9 Mar 2022 11:26:08 -0500
+Message-Id: <20220309162618.137226-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309162716.137399-1-sashal@kernel.org>
-References: <20220309162716.137399-1-sashal@kernel.org>
+In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
+References: <20220309162618.137226-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,48 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
+[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
 
-Register the CAN device only when all the necessary initialization is
-completed. This patch makes sure all the data structures and locks are
-initialized before registering the CAN device.
+crypto-controller had a typo, fix it.
+In the same time, rename it to just crypto
 
-Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Pavel Machek <pavel@denx.de>
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_canfd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/rk3288.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 43cdd5544b0c..a127c853a4e9 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1601,15 +1601,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index 9adb58930c08..872e4e690beb 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -943,7 +943,7 @@ i2s: i2s@ff890000 {
+ 		status = "disabled";
+ 	};
  
- 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
- 		       RCANFD_NAPI_WEIGHT);
-+	spin_lock_init(&priv->tx_lock);
-+	devm_can_led_init(ndev);
-+	gpriv->ch[priv->channel] = priv;
- 	err = register_candev(ndev);
- 	if (err) {
- 		dev_err(&pdev->dev,
- 			"register_candev() failed, error %d\n", err);
- 		goto fail_candev;
- 	}
--	spin_lock_init(&priv->tx_lock);
--	devm_can_led_init(ndev);
--	gpriv->ch[priv->channel] = priv;
- 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
- 	return 0;
- 
+-	crypto: cypto-controller@ff8a0000 {
++	crypto: crypto@ff8a0000 {
+ 		compatible = "rockchip,rk3288-crypto";
+ 		reg = <0x0 0xff8a0000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.34.1
 
