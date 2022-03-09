@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6591C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85159C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbiCIH4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S230442AbiCIH4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:56:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiCIHzq (ORCPT
+        with ESMTP id S230037AbiCIHzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 02:55:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EC715F087;
-        Tue,  8 Mar 2022 23:54:48 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:54:45 -0000
+        Wed, 9 Mar 2022 02:55:44 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377F214F981;
+        Tue,  8 Mar 2022 23:54:46 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:54:43 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812486;
+        s=2020; t=1646812484;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=H0H+nWZrEoL9C0Jbz7R9b4TStI1vVa7COc7hRaM/CoA=;
-        b=YmNGKnPc8O8WbVht8ain1JQZtrf6yLilyWdbsvBgERYcHs1YhkHaX/bj74PpsgCDrWUpSy
-        O2A74jTU4kmV1zsmxb33Wph8vYVKqq4GjZsHiSo3yy+/l8JWhTQzloGIXKM+T+Z4EJnf+r
-        PZOqju7vdY3Kuxoob77SX1KX2YwArmqbIGkNiOf94il6SOQKqeInE9aRbh0ciXIkGTan1I
-        xLG2SfZtp//UoamfxxFdE2OFYottURqin1qsfCy7zkm4mhyDVx2/VU+b3SNGkZEYhBNRDO
-        V+foqqkblYfyrlIE9/sHiztLMvpl3q130/IOzP8shB4DGv1NF6sHuVWE4h1D/w==
+        bh=Uu+M6BK8PWYHQHPex1cf8gmayk/rKI5lQ8EctEC+wIs=;
+        b=ceb9AVGQAJhl1tnz/4ORI9kbMo5sbDXWphsriAyDVWVa+0tafcXIYfjaxg46gbE391Dw9o
+        ecEKJ2y+C4Uepnh1rsxkqBpDBKcs2gP5690Mgoygs9md5ChPv91ZXjaR14kLNe0uImn6ha
+        VvgvKaKC86jq/j05jtcYVnVfoO86ZDQb7+HHRKiYdnCUZ1t+/JYjhqIlKNvHjA1vgqjFx3
+        MF4mYxTpcSIfoJBIX/W++mp6tXeDy0b6dGHPNO/LNMlJgIyKR9okOKGfRQVMN/EYZkHBS2
+        JxfNCQ75+mVIJq2OVJ8/8C+jjLEx5EvVQgYLez2pM1uU5VVYRlV+xIpMaN8JGg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812486;
+        s=2020e; t=1646812484;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=H0H+nWZrEoL9C0Jbz7R9b4TStI1vVa7COc7hRaM/CoA=;
-        b=EpglWonjfPTsTh5flrB/PacpDyVSzuDSoTjki5Qg2pP7bFkiKXCDDrA7Vk5/49AaRqarlE
-        FLJ8Zbe2ltk6PCAg==
+        bh=Uu+M6BK8PWYHQHPex1cf8gmayk/rKI5lQ8EctEC+wIs=;
+        b=JKALMAU39VluTX+k7yfCQlSFFRwNT/FhBDfBkXjqO0akLgY/twFO3qiH9V8yqVpngQg5jC
+        R1jVzrqY9DsMz/CQ==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool: Rework ASM_REACHABLE
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+Subject: [tip: x86/core] Kbuild: Allow whole module objtool runs
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.410010807@infradead.org>
-References: <20220308154319.410010807@infradead.org>
+In-Reply-To: <20220308154319.528181453@infradead.org>
+References: <20220308154319.528181453@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164681248582.16921.6244900075385887859.tip-bot2@tip-bot2>
+Message-ID: <164681248379.16921.2753140038263453830.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,114 +62,160 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     0d5b64134b49881d62029a1a9923c604507e973b
-Gitweb:        https://git.kernel.org/tip/0d5b64134b49881d62029a1a9923c604507e973b
+Commit-ID:     8856dadf7ad3a0115b904d15532d2ed20c6985bb
+Gitweb:        https://git.kernel.org/tip/8856dadf7ad3a0115b904d15532d2ed20c6985bb
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:49 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:51 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:37 +01:00
+CommitterDate: Tue, 08 Mar 2022 23:53:38 +01:00
 
-objtool: Rework ASM_REACHABLE
+Kbuild: Allow whole module objtool runs
 
-Currently ASM_REACHABLE only works for UD2 instructions; reorder
-things to also allow over-riding dead_end_function().
+Just like we have vmlinux.o objtool runs, add the ability to do whole
+module objtool runs.
 
-To that end:
-
- - Mark INSN_BUG instructions in decode_instructions(), this saves
-   having to iterate all instructions yet again.
-
- - Have add_call_destinations() set insn->dead_end for
-   dead_end_function() calls.
-
- - Move add_dead_ends() *after* add_call_destinations() such that
-   ASM_REACHABLE can clear the ->dead_end mark.
-
- - have validate_branch() only check ->dead_end.
-
+Suggested-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.410010807@infradead.org
+Link: https://lore.kernel.org/r/20220308154319.528181453@infradead.org
 ---
- tools/objtool/check.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ scripts/Makefile.build    | 44 +------------------------------------
+ scripts/Makefile.lib      | 45 ++++++++++++++++++++++++++++++++++++++-
+ scripts/Makefile.modfinal |  1 +-
+ 3 files changed, 48 insertions(+), 42 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 9896562..aee6246 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -394,6 +394,14 @@ static int decode_instructions(struct objtool_file *file)
- 			if (ret)
- 				goto err;
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index a4b89b7..b10d7ec 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -223,41 +223,6 @@ cmd_record_mcount = $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),	
+ 	$(sub_cmd_record_mcount))
+ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
  
-+			/*
-+			 * By default, "ud2" is a dead end unless otherwise
-+			 * annotated, because GCC 7 inserts it for certain
-+			 * divide-by-zero cases.
-+			 */
-+			if (insn->type == INSN_BUG)
-+				insn->dead_end = true;
-+
- 			hash_add(file->insn_hash, &insn->hash, sec_offset_hash(sec, insn->offset));
- 			list_add_tail(&insn->list, &file->insn_list);
- 			nr_insns++;
-@@ -523,14 +531,6 @@ static int add_dead_ends(struct objtool_file *file)
- 	struct instruction *insn;
- 
- 	/*
--	 * By default, "ud2" is a dead end unless otherwise annotated, because
--	 * GCC 7 inserts it for certain divide-by-zero cases.
--	 */
--	for_each_insn(file, insn)
--		if (insn->type == INSN_BUG)
--			insn->dead_end = true;
+-ifdef CONFIG_STACK_VALIDATION
 -
--	/*
- 	 * Check for manually annotated dead ends.
- 	 */
- 	sec = find_section_by_name(file->elf, ".rela.discard.unreachable");
-@@ -1113,6 +1113,9 @@ static void annotate_call_site(struct objtool_file *file,
- 		list_add_tail(&insn->call_node, &file->mcount_loc_list);
- 		return;
- 	}
-+
-+	if (!sibling && dead_end_function(file, sym))
-+		insn->dead_end = true;
- }
- 
- static void add_call_dest(struct objtool_file *file, struct instruction *insn,
-@@ -2088,10 +2091,6 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
- 
--	ret = add_dead_ends(file);
--	if (ret)
--		return ret;
+-objtool := $(objtree)/tools/objtool/objtool
 -
- 	add_ignores(file);
- 	add_uaccess_safe(file);
+-objtool_args =								\
+-	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+-	$(if $(part-of-module), --module)				\
+-	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+-	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+-	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+-	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+-	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+-	$(if $(CONFIG_SLS), --sls)
+-
+-cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
+-cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+-
+-endif # CONFIG_STACK_VALIDATION
+-
+-ifdef CONFIG_LTO_CLANG
+-
+-# Skip objtool for LLVM bitcode
+-$(obj)/%.o: objtool-enabled :=
+-
+-else
+-
+-# 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
+-# 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
+-# 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
+-
+-$(obj)/%.o: objtool-enabled = $(if $(filter-out y%, \
+-	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
+-
+-endif
+-
+ ifdef CONFIG_TRIM_UNUSED_KSYMS
+ cmd_gen_ksymdeps = \
+ 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
+@@ -292,21 +257,16 @@ ifdef CONFIG_LTO_CLANG
+ # Module .o files may contain LLVM bitcode, compile them into native code
+ # before ELF processing
+ quiet_cmd_cc_lto_link_modules = LTO [M] $@
+-cmd_cc_lto_link_modules =						\
++      cmd_cc_lto_link_modules =						\
+ 	$(LD) $(ld_flags) -r -o $@					\
+ 		$(shell [ -s $(@:.lto.o=.o.symversions) ] &&		\
+ 			echo -T $(@:.lto.o=.o.symversions))		\
+ 		--whole-archive $(filter-out FORCE,$^)			\
+ 		$(cmd_objtool)
+-
+-# objtool was skipped for LLVM bitcode, run it now that we have compiled
+-# modules into native code
+-$(obj)/%.lto.o: objtool-enabled = y
+-$(obj)/%.lto.o: part-of-module := y
++endif
  
-@@ -2130,6 +2129,14 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
+ $(obj)/%.lto.o: $(obj)/%.o FORCE
+ 	$(call if_changed,cc_lto_link_modules)
+-endif
  
-+	/*
-+	 * Must be after add_call_destinations() such that it can override
-+	 * dead_end_function() marks.
-+	 */
-+	ret = add_dead_ends(file);
-+	if (ret)
-+		return ret;
+ cmd_mod = { \
+ 	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 79be57f..72638c2 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -533,3 +533,48 @@ define filechk_offsets
+ 	 echo ""; \
+ 	 echo "#endif"
+ endef
 +
- 	ret = add_jump_table_alts(file);
- 	if (ret)
- 		return ret;
-@@ -3137,7 +3144,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 				return 1;
- 			}
++# objtool
++# ---------------------------------------------------------------------------
++
++ifdef CONFIG_STACK_VALIDATION
++
++objtool := $(objtree)/tools/objtool/objtool
++
++objtool_args =								\
++	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
++	$(if $(part-of-module), --module)				\
++	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
++	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
++	$(if $(CONFIG_RETPOLINE), --retpoline)				\
++	$(if $(CONFIG_X86_SMAP), --uaccess)				\
++	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
++	$(if $(CONFIG_SLS), --sls)
++
++cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
++cmd_objtool_mod = $(if $(objtool-enabled), $(objtool) $(objtool_args) $(@:.ko=.o) ; )
++cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
++
++endif # CONFIG_STACK_VALIDATION
++
++ifdef CONFIG_LTO_CLANG
++
++# Skip objtool for LLVM bitcode
++$(obj)/%.o: objtool-enabled :=
++
++# objtool was skipped for LLVM bitcode, run it now that we have compiled
++# modules into native code
++$(obj)/%.lto.o: objtool-enabled = y
++$(obj)/%.lto.o: part-of-module := y
++
++else
++
++# 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
++# 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
++# 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
++
++$(obj)/%.o: objtool-enabled = $(if $(filter-out y%, \
++	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
++
++endif
++
+diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+index 7f39599..3a3c650 100644
+--- a/scripts/Makefile.modfinal
++++ b/scripts/Makefile.modfinal
+@@ -32,6 +32,7 @@ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
  
--			if (dead_end_function(file, insn->call_dest))
-+			if (insn->dead_end)
- 				return 0;
- 
- 			break;
+ quiet_cmd_ld_ko_o = LD [M]  $@
+       cmd_ld_ko_o +=							\
++	$(cmd_objtool_mod)						\
+ 	$(LD) -r $(KBUILD_LDFLAGS)					\
+ 		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)		\
+ 		-T scripts/module.lds -o $@ $(filter %.o, $^);		\
