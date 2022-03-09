@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 710F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC80C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232844AbiCIQ1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:27:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
+        id S233122AbiCIQ1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238120AbiCIQVT (ORCPT
+        with ESMTP id S238233AbiCIQVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:19 -0500
+        Wed, 9 Mar 2022 11:21:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64691520E1;
-        Wed,  9 Mar 2022 08:18:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA6D3A5;
+        Wed,  9 Mar 2022 08:20:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6377D615F1;
-        Wed,  9 Mar 2022 16:18:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D015C340E8;
-        Wed,  9 Mar 2022 16:18:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1EA3616F3;
+        Wed,  9 Mar 2022 16:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44325C340E8;
+        Wed,  9 Mar 2022 16:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842735;
-        bh=yv24BEIQB2Wa9G21wq5trSJnLc3FQVzB/HOeXIspnWk=;
+        s=k20201202; t=1646842841;
+        bh=zRZO4C73CEe0cGTlpqWmGRS66SbFnS+B8DijLjV/NHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l19KADzZvjJH/kZ4pJpMw0pHtWPr6vwS0mk+NN3BHpzZiufSxCruRKbHWLnuFAqYi
-         h22e4VVXv2gXjMALPHk2c6fZzB2NDJUys44OgUVHJIUs95HxQF66bhUjXiVt/8wqhB
-         zqBxu0k4XrkK6uA67lUtODJZsi0BKhe7wmqSkPFwBrxVcP/YjFzBtimuaFe6UJJGKl
-         QYqjAn8pzXiCxyPJl1apxPM2xRp1jjOxaBwST1utsTVQHZnnfYhb9j+aafDT+52PUw
-         s+4rXYji73igRwBrfaWnXfkvISIGa6bwR1KfgunxMPGbjEXBZ3L3BI0kxBlRmWp5Ei
-         BgVPktjXNI/9w==
+        b=RDlZcjRstpHZGCfX5fCswaVhkGrOjev85hohmeeNjY8+6O+0Pmg+NMYtLys349RxM
+         Jzq21p058lCrUtHOchoyJkb3qArpKiN2Mm3p3lusYenZlcLw9IgKrrwdiLyCob3LX0
+         ZltBYUnZhg7BdhcsQjtJoGozhGfd6ZUwKS0rrHgFYp90NHsZnNM4BXhhMbFM470pFA
+         CRoxzBki6myN/Q7Cnyij1yW+W8Y/ESRiT+Ybvi4U/G2NGjGTO/9OqknLpWxmc+H+56
+         xqc23j3+z00jbybAaTFDowMahu6v2wb4TrQcAp0AShs3b4y5KMar7z2HAf9TQw/zg4
+         WYvcgGQIWtkWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: [PATCH AUTOSEL 5.16 18/27] netfilter: egress: silence egress hook lockdep splats
-Date:   Wed,  9 Mar 2022 11:16:55 -0500
-Message-Id: <20220309161711.135679-18-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/24] mac80211: refuse aggregations sessions before authorized
+Date:   Wed,  9 Mar 2022 11:19:29 -0500
+Message-Id: <20220309161946.136122-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
-References: <20220309161711.135679-1-sashal@kernel.org>
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,43 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 17a8f31bba7bac8cce4bd12bab50697da96e7710 ]
+[ Upstream commit a6bce78262f5dd4b50510f0aa47f3995f7b185f3 ]
 
-Netfilter assumes its called with rcu_read_lock held, but in egress
-hook case it may be called with BH readlock.
+If an MFP station isn't authorized, the receiver will (or
+at least should) drop the action frame since it's a robust
+management frame, but if we're not authorized we haven't
+installed keys yet. Refuse attempts to start a session as
+they'd just time out.
 
-This triggers lockdep splat.
-
-In order to avoid to change all rcu_dereference() to
-rcu_dereference_check(..., rcu_read_lock_bh_held()), wrap nf_hook_slow
-with read lock/unlock pair.
-
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220203201528.ff4d5679dce9.I34bb1f2bc341e161af2d6faf74f91b332ba11285@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netfilter_netdev.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/mac80211/agg-tx.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
-index b4dd96e4dc8d..e6487a691136 100644
---- a/include/linux/netfilter_netdev.h
-+++ b/include/linux/netfilter_netdev.h
-@@ -101,7 +101,11 @@ static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
- 	nf_hook_state_init(&state, NF_NETDEV_EGRESS,
- 			   NFPROTO_NETDEV, dev, NULL, NULL,
- 			   dev_net(dev), NULL);
-+
-+	/* nf assumes rcu_read_lock, not just read_lock_bh */
-+	rcu_read_lock();
- 	ret = nf_hook_slow(skb, &state, e, 0);
-+	rcu_read_unlock();
+diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+index 74a878f213d3..1deb3d874a4b 100644
+--- a/net/mac80211/agg-tx.c
++++ b/net/mac80211/agg-tx.c
+@@ -9,7 +9,7 @@
+  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
+  * Copyright 2007-2010, Intel Corporation
+  * Copyright(c) 2015-2017 Intel Deutschland GmbH
+- * Copyright (C) 2018 - 2021 Intel Corporation
++ * Copyright (C) 2018 - 2022 Intel Corporation
+  */
  
- 	if (ret == 1) {
- 		return skb;
+ #include <linux/ieee80211.h>
+@@ -626,6 +626,14 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
+ 		return -EINVAL;
+ 	}
+ 
++	if (test_sta_flag(sta, WLAN_STA_MFP) &&
++	    !test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
++		ht_dbg(sdata,
++		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
++		       sta->sta.addr, tid);
++		return -EINVAL;
++	}
++
+ 	/*
+ 	 * 802.11n-2009 11.5.1.1: If the initiating STA is an HT STA, is a
+ 	 * member of an IBSS, and has no other existing Block Ack agreement
 -- 
 2.34.1
 
