@@ -2,127 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE92C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B57C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237600AbiCITUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:20:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
+        id S236609AbiCITVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:21:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237632AbiCITUT (ORCPT
+        with ESMTP id S235296AbiCITVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:20:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3D4114FC4;
-        Wed,  9 Mar 2022 11:19:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7700DB82396;
-        Wed,  9 Mar 2022 19:19:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97FE1C340E8;
-        Wed,  9 Mar 2022 19:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646853551;
-        bh=mZ0YOFOw30QUQWww8HEgcbPZ7ISUs/jOLiEzn+8383E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jYYWjfr7qHblMTfR0x3UegRLIdjcsCfTQN4OejzagH6Yfbo3B3Zo2vNiDSO7dCFbh
-         6eUgwXUcTXPWszRSF9FhQGqPRlOMms/v6yPVCxsOLOu5Mr4xYtNlnAXJC9TwfKjv8f
-         HzDDXmaqMTPCW321oAC2T6cYAVTWoNY7fzDzRZZzgmvLKl9of+ODytuREB9LrYYoYr
-         ADbd7m1FqnZKrRhoI3xudSm3bEkbpJRDQ2uJN9DjDgsrsMO46wxYdAl2Ye6xx+XWQY
-         az03UbI6T6si1J8pHOKey6tnwq8clOy/pJcSU9dEY+grd7ROciynKK9h6gPAIE4IOb
-         XIrTSJSKh9JRA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH] arm64: Do not include __READ_ONCE() block in assembly files
-Date:   Wed,  9 Mar 2022 12:16:34 -0700
-Message-Id: <20220309191633.2307110-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Mar 2022 14:21:43 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B19065D1F
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:20:43 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id b16so3959678ioz.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:20:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V3qUnbt1P5mTTafoLBkFNxFxh8sf9sREpXzWUvgskYo=;
+        b=o9NEYp98ynsmbGtnJMP9V92Qre4ZiQIkf6My+RPa/sf+MX+JoByPY4g1LMIFrXSK0o
+         B/3y5rbm4jpZfFpLkNdXGqrgNgPRz7WnRT+QHn3mhK1iGYsI1JJ+GW2sfCrtrJkrqFm1
+         bd1uIfn/Hy2oDYbwq1f9NzeoJU+8Xz8n0Ko0cBvfQXrZmfkHbhkzpQihNfi9vhNoahfI
+         YWRNFGImR5MMfXBl7XotbbtP5SxpSGuWmBnWRjQ//kl3iq2JG4+q1MwE1iWHGERdf0oB
+         qqlQ2AXLVn9wmJXtlQhAY5W9v+TYYHY7IoF3ZPfwAb4Zf+j1MOdKytFNWgGSfxcwKK+B
+         IwwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V3qUnbt1P5mTTafoLBkFNxFxh8sf9sREpXzWUvgskYo=;
+        b=0JtzJe1ZQgh3ffeZHi4IcEYsFBVM6hDsSF4HVFe8vUwK4Mxc3W9x0e8RZY5oGCbXOR
+         GwzUFqwfZIocy7toPlTYS02cRLqGiSwrgAF+5kmhgOXFrsl8h1HEegp6E20k6ev65ret
+         /lhn3R6wSn5ZZgHHce5dlPGTwShJTcPjjhREYhyO2zKGkR2aga5Btu3zyvvSa11R6xx4
+         VpytHUyWkY4s0IfbDdbIPO+msufGWseKHkFR2msRpN5mbtSIpPKimP5Lv61ZRlU4gKHD
+         eMjMdt4C5DnwGrV9H07byW5PP4KjzxWw/54Z40z0/01bIOavRAmx0VwsETZdKiiT/Qd2
+         AIAA==
+X-Gm-Message-State: AOAM5312cZlO/8AbwrZIZSpAJqeFymjS01n5k1HJD910qxpr+JTiSm9B
+        EMbV/G1p6Zp8r8rwvZxMxZpSFD0u2Nmt65Fb
+X-Google-Smtp-Source: ABdhPJwWisSsDtytKz9CbRJiULeLBJoTyeuepCwo8RuxHKA2+X3zReviscCzWN31tMjWxOLr87P2jA==
+X-Received: by 2002:a05:6638:2586:b0:319:ac56:5f2f with SMTP id s6-20020a056638258600b00319ac565f2fmr852653jat.146.1646853642298;
+        Wed, 09 Mar 2022 11:20:42 -0800 (PST)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id g8-20020a056602248800b006409fb2cbccsm1389182ioe.32.2022.03.09.11.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 11:20:41 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     djakov@kernel.org, bjorn.andersson@linaro.org, mka@chromium.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/7] net: ipa: use bulk interconnect interfaces
+Date:   Wed,  9 Mar 2022 13:20:30 -0600
+Message-Id: <20220309192037.667879-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building arm64 defconfig + CONFIG_LTO_CLANG_{FULL,THIN}=y after
-commit 558c303c9734 ("arm64: Mitigate spectre style branch history side
-channels"), the following error occurs:
+The IPA code currently enables and disables interconnects by setting
+the bandwidth of each to a non-zero value, or to zero.  The
+interconnect API now supports enable/disable functions, so we can
+use those instead.  In addition, the interconnect API provides bulk
+interfaces that allow all interconnects to be operated on at once.
 
-  <instantiation>:4:2: error: invalid fixup for movz/movk instruction
-   mov w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-   ^
+This series converts the IPA driver to use the bulk enable and
+disable interfaces.  In the process it uses some existing data
+structures rather than defining new ones.
 
-Marc figured out that moving "#include <linux/init.h>" in
-include/linux/arm-smccc.h into a !__ASSEMBLY__ block resolves it. The
-full include chain with CONFIG_LTO=y from include/linux/arm-smccc.h:
+Version 2 contains the same code as version 1; it's just rebased.
+Now that commit 1dba41c9d2e2d ("net: ipa: add an interconnect
+dependency") is in net-next/master the COMPILE_TEST build error
+reported for the original version should be gone.
+  https://lore.kernel.org/all/20220204202336.67c95e15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
 
-include/linux/init.h
-include/linux/compiler.h
-arch/arm64/include/asm/rwonce.h
-arch/arm64/include/asm/alternative-macros.h
-arch/arm64/include/asm/assembler.h
+					-Alex
 
-The asm/alternative-macros.h include in asm/rwonce.h only happens when
-CONFIG_LTO is set, which ultimately casues asm/assembler.h to be
-included before the definition of ARM_SMCCC_ARCH_WORKAROUND_3. As a
-result, the preprocessor does not expand ARM_SMCCC_ARCH_WORKAROUND_3 in
-__mitigate_spectre_bhb_fw, which results in the error above.
+Alex Elder (7):
+  net: ipa: kill struct ipa_interconnect
+  net: ipa: use icc_enable() and icc_disable()
+  net: ipa: use interconnect bulk enable/disable operations
+  net: ipa: use bulk operations to set up interconnects
+  net: ipa: use bulk interconnect initialization
+  net: ipa: embed interconnect array in the power structure
+  net: ipa: use IPA power device pointer
 
-Avoid this problem by just avoiding the CONFIG_LTO=y __READ_ONCE() block
-in asm/rwonce.h with assembly files, as nothing in that block is useful
-to assembly files, which allows ARM_SMCCC_ARCH_WORKAROUND_3 to be
-properly expanded with CONFIG_LTO=y builds.
+ drivers/net/ipa/ipa_power.c | 178 +++++++++---------------------------
+ 1 file changed, 42 insertions(+), 136 deletions(-)
 
-Cc: stable@vger.kernel.org
-Fixes: e35123d83ee3 ("arm64: lto: Strengthen READ_ONCE() to acquire when CONFIG_LTO=y")
-Link: https://lore.kernel.org/r/20220309155716.3988480-1-maz@kernel.org/
-Reported-by: Marc Zyngier <maz@kernel.org>
-Acked-by: James Morse <james.morse@arm.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
-
-This is based on current mainline; if it should be based on a specific
-arm64 branch, please let me know.
-
-As 558c303c9734 is going to stable, I marked this for stable as well to
-avoid breaking Android. I used e35123d83ee3 for the fixes tag to make it
-clear to the stable team this should only go where that commit is
-present. If a different fixes tag should be used, please feel free to
-substitute.
-
- arch/arm64/include/asm/rwonce.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/include/asm/rwonce.h b/arch/arm64/include/asm/rwonce.h
-index 1bce62fa908a..56f7b1d4d54b 100644
---- a/arch/arm64/include/asm/rwonce.h
-+++ b/arch/arm64/include/asm/rwonce.h
-@@ -5,7 +5,7 @@
- #ifndef __ASM_RWONCE_H
- #define __ASM_RWONCE_H
- 
--#ifdef CONFIG_LTO
-+#if defined(CONFIG_LTO) && !defined(__ASSEMBLY__)
- 
- #include <linux/compiler_types.h>
- #include <asm/alternative-macros.h>
-@@ -66,7 +66,7 @@
- })
- 
- #endif	/* !BUILD_VDSO */
--#endif	/* CONFIG_LTO */
-+#endif	/* CONFIG_LTO && !__ASSEMBLY__ */
- 
- #include <asm-generic/rwonce.h>
- 
-
-base-commit: 330f4c53d3c2d8b11d86ec03a964b86dc81452f5
 -- 
-2.35.1
+2.32.0
 
