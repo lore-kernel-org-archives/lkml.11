@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C68C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiCIRqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        id S233976AbiCIRql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233979AbiCIRqU (ORCPT
+        with ESMTP id S235480AbiCIRq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:46:20 -0500
+        Wed, 9 Mar 2022 12:46:28 -0500
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EAA9AE4F;
-        Wed,  9 Mar 2022 09:45:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485F11D7B5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 09:45:26 -0800 (PST)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KDKN33d8pz9sSl;
-        Wed,  9 Mar 2022 18:45:07 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4KDKN51Fnbz9sT6;
+        Wed,  9 Mar 2022 18:45:09 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id P4jMtb4PEz2B; Wed,  9 Mar 2022 18:45:07 +0100 (CET)
+        with ESMTP id FqyTL4a2528P; Wed,  9 Mar 2022 18:45:09 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN01T4Pz9sSp;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KDKN01n3Vz9sTL;
         Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1B0D58B788;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 24C278B798;
         Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id fzP3Shqaepem; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
+        with ESMTP id fod8ouXGOrUD; Wed,  9 Mar 2022 18:45:04 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.27])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id F15E18B78F;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id DA4C28B783;
         Wed,  9 Mar 2022 18:45:02 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229HiuY83619034
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 229Hj0AN3619068
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 9 Mar 2022 18:44:56 +0100
+        Wed, 9 Mar 2022 18:45:00 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229HiuNv3619033;
-        Wed, 9 Mar 2022 18:44:56 +0100
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 229Hj0MN3619067;
+        Wed, 9 Mar 2022 18:45:00 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -51,143 +51,203 @@ Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-mm@kvack.org, akpm@linux-foundation.org,
         catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Steve Capper <steve.capper@arm.com>,
-        Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org
-Subject: [PATCH v8 05/14] mm, hugetlbfs: Allow for "high" userspace addresses
-Date:   Wed,  9 Mar 2022 18:44:39 +0100
-Message-Id: <c234ceaf81ff37447fec5c9813d4ba5fc472a355.1646847562.git.christophe.leroy@csgroup.eu>
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v8 13/14] powerpc/mm: Convert to default topdown mmap layout
+Date:   Wed,  9 Mar 2022 18:44:47 +0100
+Message-Id: <d6d849621f821af253e777a24eda4c648814a76e.1646847562.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 References: <cover.1646847561.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847882; l=4559; s=20211009; h=from:subject:message-id; bh=Jj+K0Qwa2NeWktT0U34xo/gQowfdDEEU+akA04PFulc=; b=AU5aQ/0lMAvnlbg4RG4c+oki0uqQ1Lz+Vf0I3OHk8FAEJbpQoXnUd67msdOE6PCijSRQp6Q3YD/l QAbSV+o2DACnbA4xpavKVn9YdJQYj6sIZy9/TtTcOsq8pwTcLMWT
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1646847882; l=5708; s=20211009; h=from:subject:message-id; bh=Xcsn47c6Swyy/nruSEwkkuwmsSnuOz/uTzV1HZW9n6A=; b=3/3wocpl+in3o9GislQIDR2lMeAitrz3qZ2hi0j0PwA86msT7YMsPbtUAlA6fhLgM64xq5pxqAnl qV/V90njA2L3a1UyOIEwhk8T4pgCnwxAPwGPzhZVN0vnyfONzCgy
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a complement of f6795053dac8 ("mm: mmap: Allow for "high"
-userspace addresses") for hugetlb.
+Select CONFIG_ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT and
+remove arch/powerpc/mm/mmap.c
 
-This patch adds support for "high" userspace addresses that are
-optionally supported on the system and have to be requested via a hint
-mechanism ("high" addr parameter to mmap).
+This change reuses the generic framework added by
+commit 67f3977f805b ("arm64, mm: move generic mmap layout
+functions to mm") without any functional change.
 
-Architectures such as powerpc and x86 achieve this by making changes to
-their architectural versions of hugetlb_get_unmapped_area() function.
-However, arm64 uses the generic version of that function.
-
-So take into account arch_get_mmap_base() and arch_get_mmap_end() in
-hugetlb_get_unmapped_area(). To allow that, move those two macros
-out of mm/mmap.c into include/linux/sched/mm.h
-
-If these macros are not defined in architectural code then they default
-to (TASK_SIZE) and (base) so should not introduce any behavioural
-changes to architectures that do not define them.
-
-For the time being, only ARM64 is affected by this change.
+Comparison between powerpc implementation and the generic one:
+- mmap_is_legacy() is identical.
+- arch_mmap_rnd() does exactly the same allthough it's written
+slightly differently.
+- MIN_GAP and MAX_GAP are identical.
+- mmap_base() does the same but uses STACK_RND_MASK which provides
+the same values as stack_maxrandom_size().
+- arch_pick_mmap_layout() is identical.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Steve Capper <steve.capper@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
-Cc: <stable@vger.kernel.org> # 5.0.x
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 ---
- fs/hugetlbfs/inode.c     | 9 +++++----
- include/linux/sched/mm.h | 8 ++++++++
- mm/mmap.c                | 8 --------
- 3 files changed, 13 insertions(+), 12 deletions(-)
+ arch/powerpc/Kconfig                 |   2 +-
+ arch/powerpc/include/asm/processor.h |   2 -
+ arch/powerpc/mm/Makefile             |   2 +-
+ arch/powerpc/mm/mmap.c               | 105 ---------------------------
+ 4 files changed, 2 insertions(+), 109 deletions(-)
+ delete mode 100644 arch/powerpc/mm/mmap.c
 
-diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
-index ba15a85c7dfb..73f0a1f94d78 100644
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -205,7 +205,7 @@ hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
- 	info.flags = 0;
- 	info.length = len;
- 	info.low_limit = current->mm->mmap_base;
--	info.high_limit = TASK_SIZE;
-+	info.high_limit = arch_get_mmap_end(addr, len, flags);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	return vm_unmapped_area(&info);
-@@ -221,7 +221,7 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
- 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
- 	info.length = len;
- 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
--	info.high_limit = current->mm->mmap_base;
-+	info.high_limit = arch_get_mmap_base(addr, current->mm->mmap_base);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	addr = vm_unmapped_area(&info);
-@@ -236,7 +236,7 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
- 		VM_BUG_ON(addr != -ENOMEM);
- 		info.flags = 0;
- 		info.low_limit = current->mm->mmap_base;
--		info.high_limit = TASK_SIZE;
-+		info.high_limit = arch_get_mmap_end(addr, len, flags);
- 		addr = vm_unmapped_area(&info);
- 	}
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 23ce71367467..8a4f5951b993 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -117,7 +117,6 @@ config PPC
+ 	select ARCH_HAS_DEBUG_WX		if STRICT_KERNEL_RWX
+ 	select ARCH_HAS_DEVMEM_IS_ALLOWED
+ 	select ARCH_HAS_DMA_MAP_DIRECT 		if PPC_PSERIES
+-	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_FORTIFY_SOURCE
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_HUGEPD			if HUGETLB_PAGE
+@@ -153,6 +152,7 @@ config PPC
+ 	select ARCH_USE_MEMTEST
+ 	select ARCH_USE_QUEUED_RWLOCKS		if PPC_QUEUED_SPINLOCKS
+ 	select ARCH_USE_QUEUED_SPINLOCKS	if PPC_QUEUED_SPINLOCKS
++	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+ 	select ARCH_WANT_LD_ORPHAN_WARN
+diff --git a/arch/powerpc/include/asm/processor.h b/arch/powerpc/include/asm/processor.h
+index 39c25021030f..fdfaae194ddd 100644
+--- a/arch/powerpc/include/asm/processor.h
++++ b/arch/powerpc/include/asm/processor.h
+@@ -392,8 +392,6 @@ static inline void prefetchw(const void *x)
  
-@@ -251,6 +251,7 @@ generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma;
- 	struct hstate *h = hstate_file(file);
-+	const unsigned long mmap_end = arch_get_mmap_end(addr, len, flags);
+ #define spin_lock_prefetch(x)	prefetchw(x)
  
- 	if (len & ~huge_page_mask(h))
- 		return -EINVAL;
-@@ -266,7 +267,7 @@ generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	if (addr) {
- 		addr = ALIGN(addr, huge_page_size(h));
- 		vma = find_vma(mm, addr);
--		if (TASK_SIZE - len >= addr &&
-+		if (mmap_end - len >= addr &&
- 		    (!vma || addr + len <= vm_start_gap(vma)))
- 			return addr;
- 	}
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index 1dcf54360aea..319bbf90cc96 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -135,6 +135,14 @@ static inline void mm_update_next_owner(struct mm_struct *mm)
- #endif /* CONFIG_MEMCG */
- 
- #ifdef CONFIG_MMU
-+#ifndef arch_get_mmap_end
-+#define arch_get_mmap_end(addr, len, flags)	(TASK_SIZE)
-+#endif
-+
-+#ifndef arch_get_mmap_base
-+#define arch_get_mmap_base(addr, base) (base)
-+#endif
-+
- extern void arch_pick_mmap_layout(struct mm_struct *mm,
- 				  struct rlimit *rlim_stack);
- extern unsigned long
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 18cd52620719..b52e6df32ddf 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2119,14 +2119,6 @@ unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info)
- 	return addr;
- }
- 
--#ifndef arch_get_mmap_end
--#define arch_get_mmap_end(addr, len, flags)	(TASK_SIZE)
--#endif
+-#define HAVE_ARCH_PICK_MMAP_LAYOUT
 -
--#ifndef arch_get_mmap_base
--#define arch_get_mmap_base(addr, base) (base)
--#endif
+ /* asm stubs */
+ extern unsigned long isa300_idle_stop_noloss(unsigned long psscr_val);
+ extern unsigned long isa300_idle_stop_mayloss(unsigned long psscr_val);
+diff --git a/arch/powerpc/mm/Makefile b/arch/powerpc/mm/Makefile
+index d4c20484dad9..503a6e249940 100644
+--- a/arch/powerpc/mm/Makefile
++++ b/arch/powerpc/mm/Makefile
+@@ -5,7 +5,7 @@
+ 
+ ccflags-$(CONFIG_PPC64)	:= $(NO_MINIMAL_TOC)
+ 
+-obj-y				:= fault.o mem.o pgtable.o mmap.o maccess.o pageattr.o \
++obj-y				:= fault.o mem.o pgtable.o maccess.o pageattr.o \
+ 				   init_$(BITS).o pgtable_$(BITS).o \
+ 				   pgtable-frag.o ioremap.o ioremap_$(BITS).o \
+ 				   init-common.o mmu_context.o drmem.o \
+diff --git a/arch/powerpc/mm/mmap.c b/arch/powerpc/mm/mmap.c
+deleted file mode 100644
+index d9eae456558a..000000000000
+--- a/arch/powerpc/mm/mmap.c
++++ /dev/null
+@@ -1,105 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- *  flexible mmap layout support
+- *
+- * Copyright 2003-2004 Red Hat Inc., Durham, North Carolina.
+- * All Rights Reserved.
+- *
+- * Started by Ingo Molnar <mingo@elte.hu>
+- */
 -
- /* Get an address range which is currently unmapped.
-  * For shmat() with addr=0.
-  *
+-#include <linux/personality.h>
+-#include <linux/mm.h>
+-#include <linux/random.h>
+-#include <linux/sched/signal.h>
+-#include <linux/sched/mm.h>
+-#include <linux/elf-randomize.h>
+-#include <linux/security.h>
+-#include <linux/mman.h>
+-
+-/*
+- * Top of mmap area (just below the process stack).
+- *
+- * Leave at least a ~128 MB hole.
+- */
+-#define MIN_GAP (128*1024*1024)
+-#define MAX_GAP (TASK_SIZE/6*5)
+-
+-static inline int mmap_is_legacy(struct rlimit *rlim_stack)
+-{
+-	if (current->personality & ADDR_COMPAT_LAYOUT)
+-		return 1;
+-
+-	if (rlim_stack->rlim_cur == RLIM_INFINITY)
+-		return 1;
+-
+-	return sysctl_legacy_va_layout;
+-}
+-
+-unsigned long arch_mmap_rnd(void)
+-{
+-	unsigned long shift, rnd;
+-
+-	shift = mmap_rnd_bits;
+-#ifdef CONFIG_COMPAT
+-	if (is_32bit_task())
+-		shift = mmap_rnd_compat_bits;
+-#endif
+-	rnd = get_random_long() % (1ul << shift);
+-
+-	return rnd << PAGE_SHIFT;
+-}
+-
+-static inline unsigned long stack_maxrandom_size(void)
+-{
+-	if (!(current->flags & PF_RANDOMIZE))
+-		return 0;
+-
+-	/* 8MB for 32bit, 1GB for 64bit */
+-	if (is_32bit_task())
+-		return (1<<23);
+-	else
+-		return (1<<30);
+-}
+-
+-static inline unsigned long mmap_base(unsigned long rnd,
+-				      struct rlimit *rlim_stack)
+-{
+-	unsigned long gap = rlim_stack->rlim_cur;
+-	unsigned long pad = stack_maxrandom_size() + stack_guard_gap;
+-
+-	/* Values close to RLIM_INFINITY can overflow. */
+-	if (gap + pad > gap)
+-		gap += pad;
+-
+-	if (gap < MIN_GAP)
+-		gap = MIN_GAP;
+-	else if (gap > MAX_GAP)
+-		gap = MAX_GAP;
+-
+-	return PAGE_ALIGN(DEFAULT_MAP_WINDOW - gap - rnd);
+-}
+-
+-/*
+- * This function, called very early during the creation of a new
+- * process VM image, sets up which VM layout function to use:
+- */
+-void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+-{
+-	unsigned long random_factor = 0UL;
+-
+-	if (current->flags & PF_RANDOMIZE)
+-		random_factor = arch_mmap_rnd();
+-
+-	/*
+-	 * Fall back to the standard layout if the personality
+-	 * bit is set, or if the expected stack growth is unlimited:
+-	 */
+-	if (mmap_is_legacy(rlim_stack)) {
+-		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
+-		mm->get_unmapped_area = arch_get_unmapped_area;
+-	} else {
+-		mm->mmap_base = mmap_base(random_factor, rlim_stack);
+-		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+-	}
+-}
 -- 
 2.34.1
 
