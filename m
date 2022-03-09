@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BFCC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC35AC35274
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235634AbiCIQNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:13:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34902 "EHLO
+        id S235305AbiCIQNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:13:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235648AbiCIQJC (ORCPT
+        with ESMTP id S235478AbiCIQIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:09:02 -0500
+        Wed, 9 Mar 2022 11:08:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07068141445;
-        Wed,  9 Mar 2022 08:06:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4C318F233;
+        Wed,  9 Mar 2022 08:06:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E42FF61683;
-        Wed,  9 Mar 2022 16:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F070CC340E8;
-        Wed,  9 Mar 2022 16:06:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5EA16176B;
+        Wed,  9 Mar 2022 16:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB54FC340F3;
+        Wed,  9 Mar 2022 16:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646841981;
-        bh=KQ/z7MJIjzydCdxJw2qt2ZWgIt4pm1aDURrKJrC2ub0=;
+        s=korg; t=1646841959;
+        bh=Qz6t2IobnC8RCnxQbuaAbH5Pkqhth068M/VMGtTIl+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DDRoFK21774F4vslv22CTUFhuhdhpQs+yF4Q7mDDfZeN4KNmXpH2I5zU3NHcbEKg/
-         3K47jeOe5waE4Jiqp0jvLwuNKpceSERdCjSD185c4lySWWZuiq58cKF9KrzAB6WhZD
-         ZDHInEgBU7zPRE8s6X7qVuBWiQHV1EZN6Ms6E5Vo=
+        b=YrYEG2msCt7TfTTCxeTxRD6jdLKXX+dQmMl6VI3oDbozoLxBUr2wp6t8kpuhfBBAo
+         AwHsz2WVPhri7AFz6EhIC4/uS6MDKfjxFtumT7YQcGphILais8fvPnS3piJhm8V51S
+         q2xgABjPvg9lF+VHfKmNtVgEbPDWt7qZSAEEx2Fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 42/43] arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Wed,  9 Mar 2022 17:00:15 +0100
-Message-Id: <20220309155900.456787853@linuxfoundation.org>
+Subject: [PATCH 5.10 35/43] arm64: entry: Add macro for reading symbol addresses from the trampoline
+Date:   Wed,  9 Mar 2022 17:00:08 +0100
+Message-Id: <20220309155900.255720515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
 References: <20220309155859.239810747@linuxfoundation.org>
@@ -50,77 +50,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 58c9a5060cb7cd529d49c93954cdafe81c1d642a upstream.
+commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
 
-The mitigations for Spectre-BHB are only applied when an exception is
-taken from user-space. The mitigation status is reported via the spectre_v2
-sysfs vulnerabilities file.
+The trampoline code needs to use the address of symbols in the wider
+kernel, e.g. vectors. PC-relative addressing wouldn't work as the
+trampoline code doesn't run at the address the linker expected.
 
-When unprivileged eBPF is enabled the mitigation in the exception vectors
-can be avoided by an eBPF program.
+tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
+set, in which case it uses the data page as a literal pool because
+the data page can be unmapped when running in user-space, which is
+required for CPUs vulnerable to meltdown.
 
-When unprivileged eBPF is enabled, print a warning and report vulnerable
-via the sysfs vulnerabilities file.
+Pull this logic out as a macro, instead of adding a third copy
+of it.
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/proton-pack.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ arch/arm64/kernel/entry.S |   36 ++++++++++++++++--------------------
+ 1 file changed, 16 insertions(+), 20 deletions(-)
 
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -18,6 +18,7 @@
-  */
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -816,6 +816,15 @@ alternative_else_nop_endif
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
  
- #include <linux/arm-smccc.h>
-+#include <linux/bpf.h>
- #include <linux/cpu.h>
- #include <linux/device.h>
- #include <linux/nospec.h>
-@@ -110,6 +111,15 @@ static const char *get_bhb_affected_stri
- 	}
- }
- 
-+static bool _unprivileged_ebpf_enabled(void)
-+{
-+#ifdef CONFIG_BPF_SYSCALL
-+	return !sysctl_unprivileged_bpf_disabled;
++	.macro tramp_data_read_var	dst, var
++#ifdef CONFIG_RANDOMIZE_BASE
++	tramp_data_page		\dst
++	add	\dst, \dst, #:lo12:__entry_tramp_data_\var
++	ldr	\dst, [\dst]
 +#else
-+	return false;
++	ldr	\dst, =\var
 +#endif
-+}
-+
- ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -129,6 +139,9 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		v2_str = "CSV2";
- 		fallthrough;
- 	case SPECTRE_MITIGATED:
-+		if (bhb_state == SPECTRE_MITIGATED && _unprivileged_ebpf_enabled())
-+			return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
- 		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
- 	case SPECTRE_VULNERABLE:
- 		fallthrough;
-@@ -1108,3 +1121,16 @@ void noinstr spectre_bhb_patch_loop_iter
- 					 AARCH64_INSN_MOVEWIDE_ZERO);
- 	*updptr++ = cpu_to_le32(insn);
- }
-+
-+#ifdef CONFIG_BPF_SYSCALL
-+#define EBPF_WARN "Unprivileged eBPF is enabled, data leaks possible via Spectre v2 BHB attacks!\n"
-+void unpriv_ebpf_notify(int new_state)
-+{
-+	if (spectre_v2_state == SPECTRE_VULNERABLE ||
-+	    spectre_bhb_state != SPECTRE_MITIGATED)
-+		return;
-+
-+	if (!new_state)
-+		pr_err("WARNING: %s", EBPF_WARN);
-+}
-+#endif
++	.endm
+ 
+ #define BHB_MITIGATION_NONE	0
+ #define BHB_MITIGATION_LOOP	1
+@@ -846,13 +855,8 @@ alternative_else_nop_endif
+ 	b	.
+ 2:
+ 	tramp_map_kernel	x30
+-#ifdef CONFIG_RANDOMIZE_BASE
+-	tramp_data_page		x30
+ alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
+-	ldr	x30, [x30]
+-#else
+-	ldr	x30, =vectors
+-#endif
++	tramp_data_read_var	x30, vectors
+ alternative_if_not ARM64_WORKAROUND_CAVIUM_TX2_219_PRFM
+ 	prfm	plil1strm, [x30, #(1b - \vector_start)]
+ alternative_else_nop_endif
+@@ -935,7 +939,12 @@ SYM_CODE_END(tramp_exit_compat)
+ 	.pushsection ".rodata", "a"
+ 	.align PAGE_SHIFT
+ SYM_DATA_START(__entry_tramp_data_start)
++__entry_tramp_data_vectors:
+ 	.quad	vectors
++#ifdef CONFIG_ARM_SDE_INTERFACE
++__entry_tramp_data___sdei_asm_handler:
++	.quad	__sdei_asm_handler
++#endif /* CONFIG_ARM_SDE_INTERFACE */
+ SYM_DATA_END(__entry_tramp_data_start)
+ 	.popsection				// .rodata
+ #endif /* CONFIG_RANDOMIZE_BASE */
+@@ -1066,13 +1075,7 @@ SYM_CODE_START(__sdei_asm_entry_trampoli
+ 	 */
+ 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
+ 
+-#ifdef CONFIG_RANDOMIZE_BASE
+-	tramp_data_page		x4
+-	add	x4, x4, #:lo12:__sdei_asm_trampoline_next_handler
+-	ldr	x4, [x4]
+-#else
+-	ldr	x4, =__sdei_asm_handler
+-#endif
++	tramp_data_read_var     x4, __sdei_asm_handler
+ 	br	x4
+ SYM_CODE_END(__sdei_asm_entry_trampoline)
+ NOKPROBE(__sdei_asm_entry_trampoline)
+@@ -1095,13 +1098,6 @@ SYM_CODE_END(__sdei_asm_exit_trampoline)
+ NOKPROBE(__sdei_asm_exit_trampoline)
+ 	.ltorg
+ .popsection		// .entry.tramp.text
+-#ifdef CONFIG_RANDOMIZE_BASE
+-.pushsection ".rodata", "a"
+-SYM_DATA_START(__sdei_asm_trampoline_next_handler)
+-	.quad	__sdei_asm_handler
+-SYM_DATA_END(__sdei_asm_trampoline_next_handler)
+-.popsection		// .rodata
+-#endif /* CONFIG_RANDOMIZE_BASE */
+ #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+ 
+ /*
 
 
