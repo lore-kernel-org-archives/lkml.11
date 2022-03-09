@@ -2,195 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2218C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE0FCC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237357AbiCITPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 14:15:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        id S237361AbiCITQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 14:16:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236906AbiCITPp (ORCPT
+        with ESMTP id S237353AbiCITQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 14:15:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CC910E57C;
-        Wed,  9 Mar 2022 11:14:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CCACB8233F;
-        Wed,  9 Mar 2022 19:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0833BC340FD;
-        Wed,  9 Mar 2022 19:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646853283;
-        bh=j/hcgku6JfOzc1iuPid0B9kCNFOxQffEyi6/6phmZT8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MwnV1eUbIcO4xQRx3yBaCIemJJtnsTjo/iWv4gb8dc9BLUCT1mUR/uI4+NdsCEI4H
-         +LzO/h0Elb/eiWqzmjSko5i/vOZimnINRTx9ZkiFSav22zZJIdVkn8Yp+4b+rhnwQ9
-         D7KOzaH6UqAmf2StD8EUpYhgb61ZW5Ob7o+Lo9bdI2hDjXNF3TX5aC0kB4gIWCSBmJ
-         mVgWqPxoLKEhYLO4t95Ahwf0mlVjUSQS5BsY2kqtwiDpuXYei78wO0ZFDbeI4d9YFc
-         IB8kpDZcRygpdlUfSxlXD9WkglqDqR0EpsVe9g32pNzR5MRNyeud0x/uBKk2G3uLzl
-         KzLI6mj6rghlg==
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2db2add4516so34655697b3.1;
-        Wed, 09 Mar 2022 11:14:42 -0800 (PST)
-X-Gm-Message-State: AOAM530IgZbIHE1oh9HGeEVSPIXZOyNSmyW2uU4PFFOH/vO2BWSMeacl
-        XX392dxSve5oLZQXpesam+SHCp09NHcoHz+SkRI=
-X-Google-Smtp-Source: ABdhPJwcTK54agdAqu1Qr4kn6kbKVJv+q6g9IYS9RtT4xOMnxKqdrOdSw8L1OjQ2v89sS4L+OfAAvcjop4OBoqzc5/A=
-X-Received: by 2002:a81:5988:0:b0:2dc:5619:3692 with SMTP id
- n130-20020a815988000000b002dc56193692mr1131513ywb.465.1646853281901; Wed, 09
- Mar 2022 11:14:41 -0800 (PST)
+        Wed, 9 Mar 2022 14:16:16 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93F010EC77;
+        Wed,  9 Mar 2022 11:15:15 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id 7-20020a05600c228700b00385fd860f49so2112920wmf.0;
+        Wed, 09 Mar 2022 11:15:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+9maJ1V25mJdFx9ur9GjoHx/zoOZrNdScGBRyVYH6oI=;
+        b=a6I549TNzCCZZ6BzjvdBSuem6v0dkxjN0jV1r8qXeKoqN5yHrAbYTbL+g4ZleXy/NA
+         32aW0r27YbuX3DIS4IT+TBJS+TKilynvZitW5c9yLKs9Ie5qlNNU2ISzgAZ8988tytXB
+         hfL1JpBGc/xVc+fKtLqTwVl1ohM4q+EOhCW2uM8tCS7HqWlPfWGu+uy3u/B1M97l7JK1
+         8CNyXQu3eUOh/PDLDnHu/65/CbEgo/7osPCTGp0WnC4sokaiqMh2dKoGAXzViY2DXu8J
+         Ig0GT/VnAcnbVnKB6ZnPuwegLfo5iC2aCW3rtY69SLchj7HeCmsCCfrRgt59l+4bWdfa
+         oraw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+9maJ1V25mJdFx9ur9GjoHx/zoOZrNdScGBRyVYH6oI=;
+        b=IogfvLdBqiW+S8X0Mk3K3gUmhJDO9q5ePOz9iAEpnUQ0GhrfjaZ3BDVduQNjbq96ix
+         8ormWare5NiuQ8oEEc4jBONw5ZpcWiJLwOcdphgvgguxGOtlpXyICmiE5xOIEhX5Ju3b
+         aG9ENWNkyiyVwO5x60SQdOEFXbrP7SFci0axBvtfGWOQs0UA4gukH7gnLhc7qx7zBR1c
+         /Rinz3x0Bfq3ObrQSvCk4I18CL1ItTcvFHDglpcuXIPjLMLSwxn+A+s5LYIOHwDy9QuR
+         kmeCukS0HCuiBs71Gv2leDUm+0MlHmuWlzRxOjX5rvsPwn+yU5IbubidsuJ3tOfOkW2H
+         QGig==
+X-Gm-Message-State: AOAM530AwIMdPFMo7lavAxR4+d3nXFXC8WqvxXwKT1w9N4LCFBG2jlug
+        5NW62/tO3/e6NO4Uau3mzU4=
+X-Google-Smtp-Source: ABdhPJzBoVmlKArcBkUNkclq8mlbvc8PlvuUCAhujMehIveAomIBFKvYT60Bdz2eJptQU1hRx/CEwg==
+X-Received: by 2002:a1c:7212:0:b0:389:9f29:4e28 with SMTP id n18-20020a1c7212000000b003899f294e28mr8690638wmc.165.1646853314110;
+        Wed, 09 Mar 2022 11:15:14 -0800 (PST)
+Received: from Ansuel-xps.localdomain (host-79-47-249-147.retail.telecomitalia.it. [79.47.249.147])
+        by smtp.googlemail.com with ESMTPSA id w6-20020a5d6806000000b002036515dda7sm2396699wru.33.2022.03.09.11.15.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 11:15:12 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v3 00/18] Multiple addition to ipq8064 dtsi
+Date:   Wed,  9 Mar 2022 20:01:34 +0100
+Message-Id: <20220309190152.7998-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <CA+G9fYtpy8VgK+ag6OsA9TDrwi5YGU4hu7GM8xwpO7v6LrCD4Q@mail.gmail.com>
- <YiiDZ7jjG38gqP+Q@shell.armlinux.org.uk> <CAMj1kXHTdk1Abm7ShoZzrW6EpM9eyFMPSdaa58Ziie4ZMecCnQ@mail.gmail.com>
- <CA+G9fYvCvBBi+dZ+CnUy=ZK6GhCFhBw72_==Cav=Q8QP5T1r5w@mail.gmail.com>
- <CA+G9fYt73AYs=z-BeZh22RBp==sf73pKky6m4iPSH7a4FssK7w@mail.gmail.com>
- <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
- <YijCkHHhpleeADAO@shell.armlinux.org.uk> <CA+G9fYtjrAMg8TykZdRyZEfRthyqom_73x87F-60C_QFeEL8Bg@mail.gmail.com>
- <YijfzAhWAgfGGqCO@shell.armlinux.org.uk> <CAMj1kXFvjawvOzeTb2m1H=P-_aXgW-ozvaOK1FtjBv7G0sCDFA@mail.gmail.com>
- <Yij2cZVKwPexGsTf@shell.armlinux.org.uk>
-In-Reply-To: <Yij2cZVKwPexGsTf@shell.armlinux.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 9 Mar 2022 20:14:30 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
-Message-ID: <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
-Subject: Re: [next] arm: Internal error: Oops: 5 PC is at __read_once_word_nocheck
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022 at 19:48, Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Mar 09, 2022 at 06:43:42PM +0100, Ard Biesheuvel wrote:
-> > On Wed, 9 Mar 2022 at 18:11, Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Wed, Mar 09, 2022 at 10:08:25PM +0530, Naresh Kamboju wrote:
-> > > > Hi Russell,
-> > > >
-> > > > On Wed, 9 Mar 2022 at 20:37, Russell King (Oracle)
-> > > > <linux@armlinux.org.uk> wrote:
-> > > > >
-> > > > > On Wed, Mar 09, 2022 at 03:57:32PM +0100, Ard Biesheuvel wrote:
-> > > > > > On Wed, 9 Mar 2022 at 15:44, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> > > > > > >
-> > > > <trim>
-> > > > > Well, we unwound until:
-> > > > >
-> > > > >  __irq_svc from migrate_disable+0x0/0x70
-> > > > >
-> > > > > and then crashed - and the key thing there is that we're at the start
-> > > > > of migrate_disable() when we took an interrupt.
-> > > > >
-> > > > > For some reason, this triggers an access to address 0x10, which faults.
-> > > > > We then try unwinding again, and successfully unwind all the way back
-> > > > > to the same point (the line above) which then causes the unwinder to
-> > > > > again access address 0x10, and the cycle repeats with the stack
-> > > > > growing bigger and bigger.
-> > > > >
-> > > > > I'd suggest also testing without the revert but with my patch.
-> > > >
-> > > > I have tested your patch on top of linux next-20220309 and still see kernel
-> > > > crash as below [1]. build link [2].
-> > > >
-> > > > [   26.812060] 8<--- cut here ---
-> > > > [   26.813459] Unhandled fault: page domain fault (0x01b) at 0xb6a3ab70
-> > > > [   26.816139] [b6a3ab70] *pgd=fb28a835
-> > > > [   26.817770] Internal error: : 1b [#1] SMP ARM
-> > > > [   26.819636] Modules linked in:
-> > > > [   26.820956] CPU: 0 PID: 211 Comm: haveged Not tainted
-> > > > 5.17.0-rc7-next-20220309 #1
-> > > > [   26.824519] Hardware name: Generic DT based system
-> > > > [   26.827148] PC is at __read_once_word_nocheck+0x0/0x8
-> > > > [   26.829856] LR is at unwind_frame+0x7dc/0xab4
-> > > >
-> > > > - Naresh
-> > > >
-> > > > [1] https://lkft.validation.linaro.org/scheduler/job/4688599#L596
-> > > > [2] https://builds.tuxbuild.com/269gYLGuAdmltuLhIUDAjS2fg1Q/
-> > >
-> > > I think the problem has just moved:
-> > >
-> > > [   27.113085]  __irq_svc from __copy_to_user_std+0x24/0x378
-> > >
-> > > The code at the start of __copy_to_user_std is:
-> > >
-> > >    0:   e3a034bf        mov     r3, #-1090519040        ; 0xbf000000
-> > >    4:   e243c001        sub     ip, r3, #1
-> > >    8:   e05cc000        subs    ip, ip, r0
-> > >    c:   228cc001        addcs   ip, ip, #1
-> > >   10:   205cc002        subscs  ip, ip, r2
-> > >   14:   33a00000        movcc   r0, #0
-> > >   18:   e320f014        csdb
-> > >   1c:   e3a03000        mov     r3, #0
-> > >   20:   e92d481d        push    {r0, r2, r3, r4, fp, lr}
-> > >   24:   e1a0b00d        mov     fp, sp
-> > >
-> > > and the unwind information will be:
-> > >
-> > > 0xc056f14c <arm_copy_to_user+0x1c>: @0xc0b89b84
-> > >   Compact model index: 1
-> > >   0x9b      vsp = r11
-> > >   0xb1 0x0d pop {r0, r2, r3}
-> > >   0x84 0x81 pop {r4, r11, r14}
-> > >   0xb0      finish
-> > >
-> > > The problem is that the unwind information says "starting at offset
-> > > 0x1c, to unwind do the following operations". The first of which is
-> > > to move r11 (fp) to the stack pointer. However, r11 isn't setup
-> > > until function offset 0x24. You've hit that instruction, which hasn't
-> > > executed yet, but the stack has been modified by pushing r0, r2-r4,
-> > > fp and lr onto it.
-> > >
-> > > Given this, there is no way that the unwinder (as it currently stands)
-> > > can do its job properly between 0x1c and 0x24.
-> > >
-> > > I don't think this is specifically caused by Ard's patches, but by
-> > > the addition of KASAN, which has the effect of calling the unwinder
-> > > at random points in the kernel (when an interrupt happens) and it's
-> > > clear from the above that there are windows in the code where, if
-> > > we attempt to unwind using the unwind information, we faill fail
-> > > because the program state is not consistent with the unwind
-> > > information.
-> > >
-> > > Ard's patch that changes:
-> > >
-> > >         ctrl->vrs[reg] = READ_ONCE_NOCHECK(*(*vsp));
-> > >
-> > > to use get_kernel_nofault() should have the effect of protecting
-> > > against the oops, but the side effect is that it is fundamentally not
-> > > possible with the way these things are to unwind at these points -
-> > > which means its not possible to get a stacktrace there.
-> > >
-> > > So, I don't think this is a "new" problem, but a weakness of using
-> > > the unwinder to get a backtrace for KASAN.
-> > >
-> >
-> > It essentially means that we cannot unwind through asynchronous
-> > exceptions, and so we should probably make the svc_entry macro
-> > .nounwind, instead of pretending that we can reliably unwind through
-> > it.
->
-> Doesn't that impact the ability to debug the kernel over things like
-> oopses and the like?
->
+This try to complete the ipq8064 dtsi and introduce 2 new dtsi
+ipq8064-v2 and ipq8065. While some node are still missing (cpufreq node,
+l2 scale node, fab scale node) this would add most of the missing node
+to make ipq8064 actually usable.
 
-The backtrace dumped by __die() uses the pt_regs from the exception
-context as the starting point, so the exception entry code that deals
-with the condition that triggered the oops is omitted, and does not
-have to be unwound.
+Some of the changes are the fix for the pci IO that cause any secondary
+wifi card with ath10k to fail init.
+Adds regulators definition for RPM.
+Adds many missing gsbi nodes used by all the devices.
+Enable the usb phy by default as they are actually enabled internally by
+xlate only if the dwc3 driver is used.
+Add opp table and declare idle state for ipq8064.
+Fix some dtc warning.
 
-There may be other cases where less context is being provided with
-this change, but it is basically the conclusion drawn in this thread
-that the ARM EHABI unwinder cannot reliably do so anyway.
+This also add the ipq8064-v2.0 dtsi and the ipq8065 dtsi used by more
+recent devices based on this SoC.
+
+v3:
+- Fix error in rb3011 dts
+- Add tested-by tag on the entire series
+v2:
+- Added missing patch
+- Added additional gsbi6 spi
+- Added extra description for L2 cache opp
+- Fxied smb208 enabled by default that is problematic for rb3011 devices
+
+Ansuel Smith (18):
+  ARM: dts: qcom: add multiple missing pin definition for ipq8064
+  ARM: dts: qcom: add gsbi6 missing definition for ipq8064
+  ARM: dts: qcom: add missing rpm regulators and cells for ipq8064
+  ARM: dts: qcom: disable smb208 regulators for ipq8064-rb3011
+  ARM: dts: qcom: add missing snps,dwmac compatible for gmac ipq8064
+  ARM: dts: qcom: enable usb phy by default for ipq8064
+  ARM: dts: qcom: reduce pci IO size to 64K for ipq8064
+  ARM: dts: qcom: fix dtc warning for missing #address-cells for ipq8064
+  ARM: dts: qcom: add smem node for ipq8064
+  ARM: dts: qcom: add saw for l2 cache and kraitcc for ipq8064
+  ARM: dts: qcom: add sic non secure node for ipq8064
+  ARM: dts: qcom: fix and add some missing gsbi node for ipq8064
+  ARM: dts: qcom: add opp table for cpu and l2 for ipq8064
+  ARM: dts: qcom: add speedbin efuse nvmem binding
+  ARM: dts: qcom: add multiple missing binding for cpu and l2 for
+    ipq8064
+  ARM: dts: qcom: remove redundant binding from ipq8064 rb3011 dts
+  ARM: dts: qcom: add ipq8064-v2.0 dtsi
+  ARM: dts: qcom: add ipq8065 dtsi
+
+ arch/arm/boot/dts/qcom-ipq8064-rb3011.dts |  21 +-
+ arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi  |  70 ++++
+ arch/arm/boot/dts/qcom-ipq8064.dtsi       | 375 +++++++++++++++++++++-
+ arch/arm/boot/dts/qcom-ipq8065.dtsi       | 168 ++++++++++
+ 4 files changed, 603 insertions(+), 31 deletions(-)
+ create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+ create mode 100644 arch/arm/boot/dts/qcom-ipq8065.dtsi
+
+-- 
+2.34.1
+
