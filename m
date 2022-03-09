@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4124C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:36:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4894C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235407AbiCIQhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
+        id S234628AbiCIQhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:37:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236703AbiCIQaJ (ORCPT
+        with ESMTP id S236747AbiCIQaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:30:09 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AF8CEA16;
-        Wed,  9 Mar 2022 08:23:29 -0800 (PST)
+        Wed, 9 Mar 2022 11:30:11 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDC6B716D;
+        Wed,  9 Mar 2022 08:23:31 -0800 (PST)
 Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id AE231240005;
-        Wed,  9 Mar 2022 16:23:23 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id E0B98240009;
+        Wed,  9 Mar 2022 16:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646843003;
+        t=1646843007;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kAFhyrjp5VycTxXaHMiU9XiKXpAImKksYhJ4bWcA3hQ=;
-        b=FAN5Dt83CTz4LwVRzoe/n8NunPj20COLtI6tzXNAwmW0lkeh0karwt+wGPnMuAQDXXvFmw
-        oUnHellS+DpbzLcWuhbd7Nrr4fM4QgI9+LqL71/9FUSBBnXsNBSW83J+N/B95B23RTUO6l
-        iQ+lLE1pvHrVLo0Q03clULY4YRRTWPkMeU0vkj51IJBnVhg+EHQvdPnlMmympJopxbYqcZ
-        UdvKNguOKHrZzqV8J4+g7cfff8GsNeCYdvZqhJg2cS90shJfpMdxGpPokSFdExW2tJ22X+
-        HddrAqSgwpDF1/b9iXRGN44bKDgdDBpxGn3JllmxyFKJw8ve7PDykBihKqlZsw==
+        bh=coI9dHiEDla2UWdQmgJo3RqzSn/x2jsOBDPcmLF0OMA=;
+        b=lPfBLiFyojVXU6VpeZdM6VZbM+NGcwhS7FhZ3kcucl/s9JxBXpEXRi76iyRh9wz7HaeSxf
+        JkcIz5JNR/YMHJszjiWmKkn5fpP6iGyThNkYaoMspqk1hV3cW6OcnxGlu+3v3je6IEQFnL
+        QguVi3vPpdfmultBnEGMOmuQimg9fwZV/wFBkoam0wgzR9+pOkuY8LasXfqAvkOUxZ6qNp
+        9frx+ucWHVUHCTN2zYN+skYfXIQ9oXfBMHht6bFIhFqmQgkW8HbFuAbv1KV26jZZfykJPM
+        oWg9K+u2+mEDnzuKCTX0TY7A23P4MHoncsck2qUUsTLykfsUN6BOz+mo+YSXMg==
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Alessandro Zummo <a.zummo@towertech.it>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>
 Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 10/29] rtc: pcf2127: switch to RTC_FEATURE_UPDATE_INTERRUPT
-Date:   Wed,  9 Mar 2022 17:22:41 +0100
-Message-Id: <20220309162301.61679-10-alexandre.belloni@bootlin.com>
+Subject: [PATCH 14/29] rtc: pcf8523: switch to RTC_FEATURE_UPDATE_INTERRUPT
+Date:   Wed,  9 Mar 2022 17:22:45 +0100
+Message-Id: <20220309162301.61679-14-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
 References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
@@ -50,22 +50,22 @@ Stop using uie_unsupported and clear RTC_FEATURE_UPDATE_INTERRUPT instead.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/rtc/rtc-pcf2127.c | 2 +-
+ drivers/rtc/rtc-pcf8523.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-index eae9ecbc7fb5..f8469b134411 100644
---- a/drivers/rtc/rtc-pcf2127.c
-+++ b/drivers/rtc/rtc-pcf2127.c
-@@ -656,7 +656,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
- 	pcf2127->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
- 	pcf2127->rtc->range_max = RTC_TIMESTAMP_END_2099;
- 	pcf2127->rtc->set_start_time = true; /* Sets actual start to 1970 */
--	pcf2127->rtc->uie_unsupported = 1;
-+	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf2127->rtc->features);
- 	clear_bit(RTC_FEATURE_ALARM, pcf2127->rtc->features);
+diff --git a/drivers/rtc/rtc-pcf8523.c b/drivers/rtc/rtc-pcf8523.c
+index baa89f431ebd..cd55fdfe1d39 100644
+--- a/drivers/rtc/rtc-pcf8523.c
++++ b/drivers/rtc/rtc-pcf8523.c
+@@ -450,7 +450,7 @@ static int pcf8523_probe(struct i2c_client *client,
+ 	rtc->ops = &pcf8523_rtc_ops;
+ 	rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
+ 	rtc->range_max = RTC_TIMESTAMP_END_2099;
+-	rtc->uie_unsupported = 1;
++	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->features);
  
- 	if (alarm_irq > 0) {
+ 	if (client->irq > 0) {
+ 		err = regmap_write(pcf8523->regmap, PCF8523_TMR_CLKOUT_CTRL, 0x38);
 -- 
 2.35.1
 
