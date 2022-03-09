@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35160C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C915EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 07:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbiCIH5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 02:57:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
+        id S231226AbiCIH5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 02:57:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiCIH42 (ORCPT
+        with ESMTP id S230521AbiCIH42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Mar 2022 02:56:28 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4D5164D3B;
-        Tue,  8 Mar 2022 23:55:06 -0800 (PST)
-Date:   Wed, 09 Mar 2022 07:55:04 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264E7165C00;
+        Tue,  8 Mar 2022 23:55:07 -0800 (PST)
+Date:   Wed, 09 Mar 2022 07:55:05 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646812505;
+        s=2020; t=1646812506;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=J3jHw3JlK4DApFQG0xdprwUvN0McML7ZqT6xOtE2CuE=;
-        b=Zrcy7F2E8WYWXihqqh05iak2CEUT2FvDx2h+8psNwnOleb0qxh9tnvy4wTnZWInCWP6z2x
-        bz5GUa9Sj5z1LvbwbQf7Ykbjx9+O0pZazCdjhR5a///z8UE3OrGTy/Lq7tIICymkEtVmbq
-        i396ctl3RuX71CPFddSrydLG81wRCteKG/NDn1xZbDk187Jiu9HcaeqIMxgOxKsZdlcYyH
-        FT1SOlYJnryd3WXvRRSJEqfKh/rBMYg33Cjr9MlVmR1OT5wyuc1k4QBdUdR9jvF4NwlygB
-        kzX9OFec2GWHrJtmkvlZCMh5rFJDEXFa9sZk2lJdcSNROsxsdtyHtuHZTXJeFw==
+        bh=V6/XBJWkCoAtwdRRsS23R1mcqx7hkicGFYIhOjiwecU=;
+        b=wZ5dsRd1ITAldeTQwvX8ejnNe8Km1lWc7QdIDc5/3ZI22OXAm8Z61CGrftFxQSJ8sm8h2f
+        sjpE9k1gWuc5G5DyfT5d/fVEaGNOu9ndkNtb1r8T3bj9vbcMD4mjRQT8VyfS0rLp4BDnVx
+        fNRwZl4bLvd2UdF8fbelhpbAgMHu2KEMzchn05hEARRRj/7099xKRbGzIR7iy0C6kjUrVW
+        ujfkN0/66KMrAgz1ftwTqbZW8HAn4+hLRsik7Q9sKIkAKGJmh04+Viq6G12z8OUsg+6tQe
+        J9JCaxgdu0AMAOgAyxM7i9om3e3cXGk5fVlUoRaZ+8jUZ0qDh5AL8oi+bp7Q7w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646812505;
+        s=2020e; t=1646812506;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=J3jHw3JlK4DApFQG0xdprwUvN0McML7ZqT6xOtE2CuE=;
-        b=nwfsVA9W8yQcgYvRlP2dbX94yx/7yiVtaw+S8OeWECjr7kbHNWMPitHLD+mTzQ067VFUwe
-        rRvUnJ1Lij+135Aw==
+        bh=V6/XBJWkCoAtwdRRsS23R1mcqx7hkicGFYIhOjiwecU=;
+        b=yk1bLRkwGJ2z3gK+r7BbX0RCjrvQL78cHhr1WGQ4aeTEY72u6nBqKQQi2jCVo9r9qzKAY1
+        ipslwhwsbI5ZkjCg==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt,crypto: Add ENDBR for the jump-table entries
+Subject: [tip: x86/core] x86/ibt,paravirt: Sprinkle ENDBR
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154318.110500806@infradead.org>
-References: <20220308154318.110500806@infradead.org>
+In-Reply-To: <20220308154318.051635891@infradead.org>
+References: <20220308154318.051635891@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164681250431.16921.1083016919469715985.tip-bot2@tip-bot2>
+Message-ID: <164681250509.16921.1452423549062088116.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,55 +62,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     db76667e784428a927cc86b5a6d0cbade416c9e8
-Gitweb:        https://git.kernel.org/tip/db76667e784428a927cc86b5a6d0cbade416c9e8
+Commit-ID:     f0a38bd300b266aa78d8384995a1d81f6d7a95ff
+Gitweb:        https://git.kernel.org/tip/f0a38bd300b266aa78d8384995a1d81f6d7a95ff
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:27 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:26 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 08 Mar 2022 23:53:31 +01:00
+CommitterDate: Tue, 08 Mar 2022 23:53:30 +01:00
 
-x86/ibt,crypto: Add ENDBR for the jump-table entries
-
-The code does:
-
-	## branch into array
-	mov     jump_table(,%rax,8), %bufp
-	JMP_NOSPEC bufp
-
-resulting in needing to mark the jump-table entries with ENDBR.
+x86/ibt,paravirt: Sprinkle ENDBR
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154318.110500806@infradead.org
+Link: https://lore.kernel.org/r/20220308154318.051635891@infradead.org
 ---
- arch/x86/crypto/crc32c-pcl-intel-asm_64.S | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/include/asm/paravirt.h           | 1 +
+ arch/x86/include/asm/qspinlock_paravirt.h | 3 +++
+ arch/x86/kernel/kvm.c                     | 3 ++-
+ arch/x86/kernel/paravirt.c                | 2 ++
+ 4 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
-index 80c0d22..ec35915 100644
---- a/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
-+++ b/arch/x86/crypto/crc32c-pcl-intel-asm_64.S
-@@ -195,6 +195,7 @@ crc_array:
- .altmacro
- LABEL crc_ %i
- .noaltmacro
-+	ENDBR
- 	crc32q   -i*8(block_0), crc_init
- 	crc32q   -i*8(block_1), crc1
- 	crc32q   -i*8(block_2), crc2
-@@ -204,6 +205,7 @@ LABEL crc_ %i
- .altmacro
- LABEL crc_ %i
- .noaltmacro
-+	ENDBR
- 	crc32q   -i*8(block_0), crc_init
- 	crc32q   -i*8(block_1), crc1
- # SKIP  crc32  -i*8(block_2), crc2 ; Don't do this one yet
-@@ -237,6 +239,7 @@ LABEL crc_ %i
- 	################################################################
+diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
+index 0d76502..964442b 100644
+--- a/arch/x86/include/asm/paravirt.h
++++ b/arch/x86/include/asm/paravirt.h
+@@ -666,6 +666,7 @@ bool __raw_callee_save___native_vcpu_is_preempted(long cpu);
+ 	    ".globl " PV_THUNK_NAME(func) ";"				\
+ 	    ".type " PV_THUNK_NAME(func) ", @function;"			\
+ 	    PV_THUNK_NAME(func) ":"					\
++	    ASM_ENDBR							\
+ 	    FRAME_BEGIN							\
+ 	    PV_SAVE_ALL_CALLER_REGS					\
+ 	    "call " #func ";"						\
+diff --git a/arch/x86/include/asm/qspinlock_paravirt.h b/arch/x86/include/asm/qspinlock_paravirt.h
+index 1474cf9..892fd8c 100644
+--- a/arch/x86/include/asm/qspinlock_paravirt.h
++++ b/arch/x86/include/asm/qspinlock_paravirt.h
+@@ -2,6 +2,8 @@
+ #ifndef __ASM_QSPINLOCK_PARAVIRT_H
+ #define __ASM_QSPINLOCK_PARAVIRT_H
  
- LABEL crc_ 0
-+	ENDBR
- 	mov     tmp, len
- 	cmp     $128*24, tmp
- 	jae     full_block
++#include <asm/ibt.h>
++
+ /*
+  * For x86-64, PV_CALLEE_SAVE_REGS_THUNK() saves and restores 8 64-bit
+  * registers. For i386, however, only 1 32-bit register needs to be saved
+@@ -39,6 +41,7 @@ asm    (".pushsection .text;"
+ 	".type " PV_UNLOCK ", @function;"
+ 	".align 4,0x90;"
+ 	PV_UNLOCK ": "
++	ASM_ENDBR
+ 	FRAME_BEGIN
+ 	"push  %rdx;"
+ 	"mov   $0x1,%eax;"
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index d77481e..79e0b8d 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -1029,10 +1029,11 @@ asm(
+ ".global __raw_callee_save___kvm_vcpu_is_preempted;"
+ ".type __raw_callee_save___kvm_vcpu_is_preempted, @function;"
+ "__raw_callee_save___kvm_vcpu_is_preempted:"
++ASM_ENDBR
+ "movq	__per_cpu_offset(,%rdi,8), %rax;"
+ "cmpb	$0, " __stringify(KVM_STEAL_TIME_preempted) "+steal_time(%rax);"
+ "setne	%al;"
+-"ret;"
++ASM_RET
+ ".size __raw_callee_save___kvm_vcpu_is_preempted, .-__raw_callee_save___kvm_vcpu_is_preempted;"
+ ".popsection");
+ 
+diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
+index 6ecbbb0..7ca2d46 100644
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -41,6 +41,7 @@ extern void _paravirt_nop(void);
+ asm (".pushsection .entry.text, \"ax\"\n"
+      ".global _paravirt_nop\n"
+      "_paravirt_nop:\n\t"
++     ASM_ENDBR
+      ASM_RET
+      ".size _paravirt_nop, . - _paravirt_nop\n\t"
+      ".type _paravirt_nop, @function\n\t"
+@@ -50,6 +51,7 @@ asm (".pushsection .entry.text, \"ax\"\n"
+ asm (".pushsection .entry.text, \"ax\"\n"
+      ".global paravirt_ret0\n"
+      "paravirt_ret0:\n\t"
++     ASM_ENDBR
+      "xor %" _ASM_AX ", %" _ASM_AX ";\n\t"
+      ASM_RET
+      ".size paravirt_ret0, . - paravirt_ret0\n\t"
