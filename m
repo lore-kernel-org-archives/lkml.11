@@ -2,145 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A940C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C131C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 01:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230517AbiCIBqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Mar 2022 20:46:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
+        id S231134AbiCIBrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Mar 2022 20:47:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbiCIBqp (ORCPT
+        with ESMTP id S230473AbiCIBrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Mar 2022 20:46:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0BCDB1516
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:45:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646790346;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SoSjGNV88MG8vTOWxA+NDnTl5MshzRww6v3Ri4neFBo=;
-        b=Di/XAU/7UCbNx3IHpFCjVjoDoTmgv4dgHOUfxBXkuQjEwNKBd5NkYLGR4PrnhWop8XhDAI
-        /Z9PaRxAqQ0ebiqZxpNlPNUsocQpJSR37mDFt0shfWH1qrMZitfwRs5TRqT+b1dN3c8YhK
-        vkCVircHwImCb5g2Pm58fETWQTyihkw=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-346-YXsLv1IKP5iLMbm2LLZ_3A-1; Tue, 08 Mar 2022 20:45:45 -0500
-X-MC-Unique: YXsLv1IKP5iLMbm2LLZ_3A-1
-Received: by mail-il1-f200.google.com with SMTP id 3-20020a056e020ca300b002c2cf74037cso459781ilg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Mar 2022 17:45:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=SoSjGNV88MG8vTOWxA+NDnTl5MshzRww6v3Ri4neFBo=;
-        b=bo2cGSavHFcycwNw8ActfzdSCi3S4ZWd6anFF/v8gk+ML681LHCvvGAn3KjVQMJs9V
-         Qz2IdFEHVrNiQzPHq4Uis428WzhUKjdPZ537oejAnsdoQqZsGnDrGKFLN7sNLtIXuXFG
-         S/DPFRm404Ov6K+D3Y3cC+NQ4Iz/uun33/3uxJnsMOWQ1fCLiXotooRA1zNogrlOLEWj
-         aBH4XNs6LNZoknXKH7APwDa0bjnCJab1zrlimx9u5mTLFF+lecsitjWjnfJfWt8EPsQm
-         os2eImPwRMznPOB1YZ/FqKYpmgcijtR3BaP0iTXQ7Sz5YuKg1r6unSQeKT26ub0HS8Pz
-         gf5g==
-X-Gm-Message-State: AOAM533obnQm34RXMdhCQ0aVawdBxYOIXqwcEls77O6zI3MyIi/3Xup0
-        SvhKr4FWkFujHOWgDjk5+heIuiCQexqvNF+UqfVlsIaa1pfe7kHqqUuQqJudXbHr5GwDsGeZX/d
-        ik5n/Px9K2EjxcyMWHmJfvDDm
-X-Received: by 2002:a05:6638:408:b0:313:f2bd:2d2 with SMTP id q8-20020a056638040800b00313f2bd02d2mr18041834jap.110.1646790344952;
-        Tue, 08 Mar 2022 17:45:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzS8AzsMXjFYL+igfxZixZE0Qq62nR7+uTTQrLwMYMJvP3DkjKhEFaYhZPtj7W2LUu1X5ok/g==
-X-Received: by 2002:a05:6638:408:b0:313:f2bd:2d2 with SMTP id q8-20020a056638040800b00313f2bd02d2mr18041820jap.110.1646790344764;
-        Tue, 08 Mar 2022 17:45:44 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id p4-20020a92d284000000b002c64436fa71sm281578ilp.72.2022.03.08.17.45.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 17:45:44 -0800 (PST)
-Subject: Re: [PATCH] drm/bridge: anx7625: check the return on
- anx7625_aux_trans
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, nathan@kernel.org, xji@analogixsemi.com,
-        sam@ravnborg.org, tzungbi@google.com, pihsun@chromium.org,
-        maxime@cerno.tech, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        hsinyi@chromium.org
-References: <20220303201943.501746-1-trix@redhat.com>
- <CAKwvOdnoV_SsFuWWJd4nOOd1vGG6_-gg-KvdOg4_NHuRp7_WfA@mail.gmail.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <5b6a10bd-5650-2924-d1cc-e4664a0e7255@redhat.com>
-Date:   Tue, 8 Mar 2022 17:45:41 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Tue, 8 Mar 2022 20:47:06 -0500
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.149.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18DBEFF90
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 17:46:05 -0800 (PST)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 007897DFA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Mar 2022 18:54:38 -0600 (CST)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id Rka7nJUO7b6UBRka7nueMj; Tue, 08 Mar 2022 18:53:35 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=S82LfQ71+WjBONrEJUzmyZUddwy8tJcD58qdpxREMc0=; b=U5838IEnPnOKYA2dB093kbhq52
+        6Jwk9mLMlXcyLPo3TS2GspleF6Kd3fvzmE10ceett6rn5xoUDep5MG5ORQkchGbacZZMvQWVKCs1A
+        RVpWrdU5lB/tIdTsM2G1PkTFtw9Y7mv0TAXCky3CKfWFwKaUiGOYJRsmWtH7MshreeCAaPRasx6WU
+        glKl8vTy1wt4XGnE96sQxgKTIFcA1R/cq+GlO3M429NXAfqKsFzKmHvbmkYkHkSWLHeRy7tA/kOwP
+        OcjvBNc6y7Qr7V49Dw95cgZDb070bEJ+2NWEV8rASmeaDk5kEuG0AafB6PLd/MPxZSwjvX/PskA3H
+        uzWH0HHg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:38112)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nRka6-0015kr-PK; Wed, 09 Mar 2022 00:53:34 +0000
+Message-ID: <8f97b76e-fe64-ad9e-fa46-9874df61c35d@roeck-us.net>
+Date:   Tue, 8 Mar 2022 16:53:32 -0800
 MIME-Version: 1.0
-In-Reply-To: <CAKwvOdnoV_SsFuWWJd4nOOd1vGG6_-gg-KvdOg4_NHuRp7_WfA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/256] 5.15.27-rc2 review
 Content-Language: en-US
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Huang Pei <huangpei@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+References: <20220307162207.188028559@linuxfoundation.org>
+ <Yid4BNbLm3mStBi2@debian>
+ <CADVatmPdzXRU2aTeh-8dfZVmW6YPJwntSDCO8gcGDUJn-qzzAg@mail.gmail.com>
+ <CA+G9fYv74gGWQLkEZ4idGYri+F9BFV1+9=bz5L0+aophSzDdVA@mail.gmail.com>
+ <YifFMPFMp9gPnjPc@kroah.com>
+ <CADVatmMs_+YN3YAajL95fy98iEgoeb-7qXA_ZJ7K3QsdHGG=oA@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <CADVatmMs_+YN3YAajL95fy98iEgoeb-7qXA_ZJ7K3QsdHGG=oA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nRka6-0015kr-PK
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:38112
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 11
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 3/8/22 2:57 PM, Nick Desaulniers wrote:
-> On Thu, Mar 3, 2022 at 12:19 PM <trix@redhat.com> wrote:
->> From: Tom Rix <trix@redhat.com>
+On 3/8/22 14:27, Sudip Mukherjee wrote:
+> On Tue, Mar 8, 2022 at 9:05 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
 >>
->> Clang static analysis reports this issue
->> anx7625.c:876:13: warning: The left operand of '&' is
->>    a garbage value
->>    if (!(bcap & 0xOA01)) {
->>          ~~~~ ^
+>> On Tue, Mar 08, 2022 at 11:08:10PM +0530, Naresh Kamboju wrote:
+>>> Hi Greg,
+>>>
+>>> On Tue, 8 Mar 2022 at 21:40, Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
+>>>>
+>>>> On Tue, Mar 8, 2022 at 3:36 PM Sudip Mukherjee
+>>>> <sudipm.mukherjee@gmail.com> wrote:
+>>>>>
+>>>>> Hi Greg,
+>>>>>
+>>>>> On Mon, Mar 07, 2022 at 05:28:50PM +0100, Greg Kroah-Hartman wrote:
+>>>>>> This is the start of the stable review cycle for the 5.15.27 release.
+>>>>>> There are 256 patches in this series, all will be posted as a response
+>>>>>> to this one.  If anyone has any issues with these being applied, please
+>>>>>> let me know.
+>>>>>>
+>>>>
+>>>> <snip>
+>>>>
+>>>>>
+>>>>> Mips failures,
+>>>>>
+>>>>> allmodconfig, gpr_defconfig and mtx1_defconfig fails with:
+>>>
+> 
+> <snip>
+> 
 >>
->> bcap is only set by a successful call to
->> anx7625_aux_trans().  So check.
->>
->> Fixes: cd1637c7e480 ("drm/bridge: anx7625: add HDCP support")
-> Is this the correct Fixes tag?
-yes
-> I think it should be
->
-> Fixes: adca62ec370c ("drm/bridge: anx7625: Support reading edid
-> through aux channel")
+>> Ah, I'll queue up the revert for that in the morning, thanks for finding
+>> it.  Odd it doesn't trigger the same issue in 5.16.y.
+> 
+> ohh.. thats odd. I don't build v5.16.y, so never thought of it.
+> Just checked a little now, and I was expecting it to be fixed by:
+> e5b40668e930 ("slip: fix macro redefine warning")
+> but it still has the build error. I will check tomorrow morning what
+> is missing in v5.15.y
+> Please delay the revert till tomorrow afternoon.
+> 
 
-This one changes the name of the function
+In case you did not get my other e-mail: You also need commit
+b81e0c2372e ("block: drop unused includes in <linux/genhd.h>").
 
--       anx7625_aux_dpcd_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
-+       anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
-
-A return check from the earlier commit, when this block of code came 
-into existence, is when it was first needed.
-
-Tom
-
->
-> instead.
->
->> Signed-off-by: Tom Rix <trix@redhat.com>
->> ---
->>   drivers/gpu/drm/bridge/analogix/anx7625.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
->> index 633618bafd75d..f02ac079ed2ec 100644
->> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
->> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
->> @@ -872,7 +872,10 @@ static int anx7625_hdcp_enable(struct anx7625_data *ctx)
->>          }
->>
->>          /* Read downstream capability */
->> -       anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
->> +       ret = anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
->> +       if (ret < 0)
->> +               return ret;
->> +
->>          if (!(bcap & 0x01)) {
->>                  pr_warn("downstream not support HDCP 1.4, cap(%x).\n", bcap);
->>                  return 0;
->> --
->> 2.26.3
->>
->
-
+Guenter
