@@ -2,132 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA61EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF88C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238094AbiCIUFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 15:05:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39248 "EHLO
+        id S237605AbiCIUHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 15:07:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236983AbiCIUFb (ORCPT
+        with ESMTP id S229972AbiCIUHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 15:05:31 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB0D24BC3;
-        Wed,  9 Mar 2022 12:04:31 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:38326)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS2Xh-00CxEg-Pi; Wed, 09 Mar 2022 13:04:17 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34642 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nS2Xe-0012kW-1P; Wed, 09 Mar 2022 13:04:17 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Theodore Ts'o <tytso@mit.edu>, X86 ML <x86@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Matt Turner <mattst88@gmail.com>,
-        =?utf-8?Q?M=C3=A5ns_Rullg=C3=A5rd?= <mans@mansr.com>,
-        Michael Cree <mcree@orcon.net.nz>,
-        <linux-arch@vger.kernel.org>, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220113160115.5375-1-bp@alien8.de> <YeBzxuO0wLn/B2Ew@mit.edu>
-        <YeCuNapJLK4M5sat@zn.tnic>
-        <CAMuHMdUbTNNr16YY1TFe=-uRLjg6yGzgw_RqtAFpyhnOMM5Pvw@mail.gmail.com>
-        <YeHLIDsjGB944GSP@zn.tnic>
-        <CAMuHMdUBr+gpF6Z5nPadjHFYJwgGd+LGoNTV=Sxty+yaY5EWxg@mail.gmail.com>
-        <YeHQmbMYyy92AbBp@zn.tnic> <YeKyBP5rac8sVvWw@zn.tnic>
-        <b40d1377-51d5-4ba3-ab3f-b40626c229ad@physik.fu-berlin.de>
-Date:   Wed, 09 Mar 2022 14:03:42 -0600
-In-Reply-To: <b40d1377-51d5-4ba3-ab3f-b40626c229ad@physik.fu-berlin.de> (John
-        Paul Adrian Glaubitz's message of "Sat, 15 Jan 2022 20:42:59 +0100")
-Message-ID: <87ilsmdhb5.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 9 Mar 2022 15:07:37 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF9327CC5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 12:06:38 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 514EB1F41CDC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646856397;
+        bh=upzAnz+AemcOXDgluXZyqh6OsAIdv9e6PtW9m0nL/eY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gAc0WsraZucHzFdCM5DkNgzQK3fhxUgZGbi3q9C2S0WkfH62pOsS7vE5qTN6asQ8p
+         eFNBCuz7uqtDfjh0K79h7YNLUAY6T6Ga0700BpxFPZiMcFKxpGQOPZKOPl3xF9uy3h
+         MwoWvvnGfTUZg9E+wzjsDD3AOKgqjp20vd+OozepoSgbhSt3MgwBEscof+o+96DjTH
+         8dNA+xA9OK4KaeNqwvc5TQijt0/npkRPawqTws+CgwlsiffeFl7pBBV5HhoO6Dsflq
+         3e7HPo5NSfmqYFOu9ubN/OIdAwyka4neXLHb86PqF/xfcQdjLPqPXxM6eF0D0r5ftl
+         gnBZuijXaUiIQ==
+Message-ID: <05e1fe61-1c29-152f-414b-cd6a44525af0@collabora.com>
+Date:   Wed, 9 Mar 2022 23:06:33 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nS2Xe-0012kW-1P;;;mid=<87ilsmdhb5.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+e4yH+BUF7W62HMdvNWWMejYj/t+Qtgp8=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH] a.out: Stop building a.out/osf1 support on alpha and m68k
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 0/5] Add memory shrinker to VirtIO-GPU DRM driver
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Rob Clark <robdclark@chromium.org>
+References: <20220308131725.60607-1-dmitry.osipenko@collabora.com>
+ <CAF6AEGt=aVJ9nR+Wv+bJEFZrn-cNOSNXG1TaJr=Cx-FTgutwKA@mail.gmail.com>
+ <d2290971-ea22-8203-631e-b896c76a994b@collabora.com>
+ <CAF6AEGuR8B6z+z=VFQ6y01wbboYS_qpkghD1GYdLES_RZOW1wA@mail.gmail.com>
+ <42facae5-8f2c-9c1f-5144-4ebb99c798bd@collabora.com>
+ <CAF6AEGtebAbWhkvrxzi4UBLdv2LJPQVPBzH-sXcACs7cxznQ8A@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAF6AEGtebAbWhkvrxzi4UBLdv2LJPQVPBzH-sXcACs7cxznQ8A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/9/22 03:56, Rob Clark wrote:
+>> If we really can't track madvise state in the guest for dealing with
+>> host memory pressure, I think the better option is to introduce
+>> MADV:WILLNEED_REPLACE, ie. something to tell the host kernel that the
+>> buffer is needed but the previous contents are not (as long as the GPU
+>> VA remains the same).  With this the host could allocate new pages if
+>> needed, and the guest would not need to wait for a reply from host.
+> If variant with the memory ballooning will work, then it will be
+> possible to track the state within guest-only. Let's consider the
+> simplest variant for now.
+> 
+> I'll try to implement the balloon driver support in the v2 and will get
+> back to you.
+> 
 
-There has been repeated discussion on removing a.out support, the most
-recent was[1].  Having read through a bunch of the discussion it looks
-like no one has see any reason why we need to keep a.out support.
+I looked at the generic balloon driver and looks like this not what we
+want because:
 
-The m68k maintainer has even come out in favor of removing a.out
-support[2].
+1. Memory ballooning is primarily about handling memory overcommit
+situations. I.e. when there are multiple VMs consuming more memory than
+available in the system. Ballooning allows host to ask guest to give
+unused pages back to host and host could give pages to other VMs.
 
-At a practical level with only two rarely used architectures building
-a.out support, it gets increasingly hard to test and to care about.
-Which means the code will almost certainly bit-rot.
+2. Memory ballooning operates with guest memory pages only. I.e. each
+ballooned page is reported to/from host in a form of page's DMA address.
 
-Let's see if anyone cares about a.out support on the last two
-architectures that build it, by disabling the build of the support in
-Kconfig.  If anyone cares, this can be easily reverted, and we can then
-have a discussion about what it is going to take to support a.out
-binaries in the long term.
+3. There is no direct connection between host's OOM events and the
+balloon manager. I guess host could watch system's memory pressure and
+inflate VMs' balloons on low memory, releasing the guest's memory to the
+system, but apparently this use-case not supported by anyone today, at
+least I don't see Qemu supporting it.
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-m68k@lists.linux-m68k.org
-[1] https://lkml.kernel.org/r/20220113160115.5375-1-bp@alien8.de
-[2] https://lkml.kernel.org/r/CAMuHMdUbTNNr16YY1TFe=-uRLjg6yGzgw_RqtAFpyhnOMM5Pvw@mail.gmail.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
 
-Kees do you think you could add this to your execve branch?
+So the virtio-balloon driver isn't very useful for us as-is.
 
-I think this should be a complimentary patch to Borislav Petkov's patch
-at the top of this tread to remove a.out support on x86.
+One possible solution could be to create something like a new
+virtio-shrinker device or add shrinker functionality to the virtio-gpu
+device, allowing host to ask guests to drop shared caches. Host then
+should become a PSI handler. I think this should be doable in a case of
+crosvm. In a case of GNU world, it could take a lot of effort to get
+everything to upstreamable state, at first there is a need to
+demonstrate real problem being solved by this solution.
 
- arch/alpha/Kconfig | 1 -
- arch/m68k/Kconfig  | 1 -
- 2 files changed, 2 deletions(-)
+The other minor issue is that only integrated GPUs may use system's
+memory and even then they could use a dedicated memory carveout, i.e.
+releasing VRAM BOs may not help with host's OOM. In case of virgl
+context we have no clue about where buffers are physically located. On
+the other hand, in the worst case dropping host caches just won't help
+with OOM.
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 4e87783c90ad..14c97acea351 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -12,7 +12,6 @@ config ALPHA
- 	select FORCE_PCI if !ALPHA_JENSEN
- 	select PCI_DOMAINS if PCI
- 	select PCI_SYSCALL if PCI
--	select HAVE_AOUT
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_PCSPKR_PLATFORM
- 	select HAVE_PERF_EVENTS
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index 936e1803c7c7..268b3860d40d 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -17,7 +17,6 @@ config M68K
- 	select GENERIC_CPU_DEVICES
- 	select GENERIC_IOMAP
- 	select GENERIC_IRQ_SHOW
--	select HAVE_AOUT if MMU
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_DEBUG_BUGVERBOSE
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if !CPU_HAS_NO_UNALIGNED
--- 
-2.29.2
+It's now unclear how we should proceed with the host-side shrinker
+support. Thoughts?
 
+We may start easy and instead of thinking about host-side shrinker, we
+could make VirtIO-GPU driver to expire cached BOs after a certain
+timeout. Mesa already uses timeout-based BO caching, but it doesn't have
+an alarm timer and simply checks expiration when BO is allocated. Should
+be too much trouble to handle timers within Mesa since it's executed in
+application context, easier to do it in kernel, like VC4 driver does it
+for example. This is not good as a proper memory shrinker, but could be
+good enough in practice.
