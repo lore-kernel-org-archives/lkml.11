@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC114C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236159AbiCIQqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:46:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S236185AbiCIQq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiCIQcD (ORCPT
+        with ESMTP id S237965AbiCIQbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:32:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91531A7DB9;
-        Wed,  9 Mar 2022 08:26:58 -0800 (PST)
+        Wed, 9 Mar 2022 11:31:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8492C19140E;
+        Wed,  9 Mar 2022 08:25:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 471A5B82256;
-        Wed,  9 Mar 2022 16:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99638C340F8;
-        Wed,  9 Mar 2022 16:26:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35C50B821FD;
+        Wed,  9 Mar 2022 16:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96ECFC340FC;
+        Wed,  9 Mar 2022 16:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843166;
-        bh=xAX3loMR5mPRaq31kqGAqN9kE+3WU6JXu+F/CbN4ztE=;
+        s=k20201202; t=1646843119;
+        bh=hMg970VvUb5PCKUGsZQd1ROHCFa98Z3h1jv5K4b88c0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cHezaA7+FaZ9/9/JXE10AaJn5SGnujYa8r0TBiSTSMjpVLd6FgGqj+/+mTdoXKczg
-         5qxUi4Y/9WamrgAsIJCxwjn9MbCHjvButGknWXctWuNT3STd69kXjngl+pUnJ3pnMw
-         90nvJghycuNHngy0hcUb7gq33WTgL/oFErWwbM8RLaIeZgc4Q3HLtk51TX1Am1BMus
-         2uoAGVRtnPhQQQQnTqSAsqOEx8Nrcdl3J2yZc7zNQ4v/rPEfV18j0wT+Vgd25yB2pl
-         SALShdJLLG+BW3Izwk7A5dJ2+Xz0vNK0FoABhc4biUkWiNC60E3jU5VygwkoV/fsae
-         hojgA+83J9IIQ==
+        b=oXU/kfntwwevskn6uB8UrKRXu/qFGuIGnX9xFaUYz2uDiv2HvEXXVvmtinqfgfGJn
+         mHwBVmghALFaGDx7p4X2PKg6S5G247wMPuKSiwyR+XECuOHkQNwuBo+wX0Z6DrxJfJ
+         905hHdZSDo2LB4UdU88nhpzIv3WVwvVKcn5Ps9fCg/8YADiU93KJmYwVp4QtvymKst
+         bIdID2c4WtGy0oqDOjmPbEiknHZ8w9ueowj0RsXSxvcZci/qjxNctr1wByzKEIURbr
+         g8dAppzXkPst88FICprVIvi6E83+aYs6XgqZgIUHknPikNXs7TXUtsZdJpoCeTM+Lh
+         xYXQy/xI6Q9Ww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Yan Yan <evitayan@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/14] tcp: make tcp_read_sock() more robust
-Date:   Wed,  9 Mar 2022 11:25:04 -0500
-Message-Id: <20220309162508.137035-11-sashal@kernel.org>
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/14] xfrm: Fix xfrm migrate issues when address family changes
+Date:   Wed,  9 Mar 2022 11:24:55 -0500
+Message-Id: <20220309162508.137035-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162508.137035-1-sashal@kernel.org>
 References: <20220309162508.137035-1-sashal@kernel.org>
@@ -55,48 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Yan Yan <evitayan@google.com>
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
+[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
 
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
+xfrm_migrate cannot handle address family change of an xfrm_state.
+The symptons are the xfrm_state will be migrated to a wrong address,
+and sending as well as receiving packets wil be broken.
 
-Instead, issue a one time warning and make sure to make progress.
+This commit fixes it by breaking the original xfrm_state_clone
+method into two steps so as to update the props.family before
+running xfrm_init_state. As the result, xfrm_state's inner mode,
+outer mode, type and IP header length in xfrm_state_migrate can
+be updated with the new address family.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Tested with additions to Android's kernel unit test suite:
+https://android-review.googlesource.com/c/kernel/tests/+/1885354
+
+Signed-off-by: Yan Yan <evitayan@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_state.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 4dce1b418acc..f7795488b0ad 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1669,11 +1669,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 0fd67d1acbfb..cf147e1837a9 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -1442,9 +1442,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+ 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
+ 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
+ 
+-	if (xfrm_init_state(x) < 0)
+-		goto error;
+-
+ 	x->props.flags = orig->props.flags;
+ 	x->props.extra_flags = orig->props.extra_flags;
+ 
+@@ -1528,6 +1525,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
+ 	if (!xc)
+ 		return NULL;
+ 
++	xc->props.family = m->new_family;
 +
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
++	if (xfrm_init_state(xc) < 0)
++		goto error;
++
+ 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
+ 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
+ 
 -- 
 2.34.1
 
