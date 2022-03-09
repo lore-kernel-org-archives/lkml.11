@@ -2,104 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02808C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 19:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 20:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiCIUAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 15:00:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
+        id S238055AbiCIUCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 15:02:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237578AbiCIUAY (ORCPT
+        with ESMTP id S235423AbiCIUCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 15:00:24 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5A92E3
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 11:59:24 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id e3so3153527pjm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 11:59:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qY0faMoU6BxNREoouDEmmFkWjqNRWbbfGDDwPhgFlaA=;
-        b=ivyOe9HAmFp+PudsjkLZ5tKnlEZ4emhasp+yGMoOTg2U2ZJIqZkPIaXk1sql1I9WK/
-         nUQOffCU0ssrR/N1lWHZbUwROdhkUx1NUNSBwt2M8X/x7LR6luljUNwitO9CtXykihEV
-         7kMFECvdyoBIRJtwymkhM3klne+juuikdSIPpr4gNHAkjhB3bjU74tx0mu7aEZVFWwbD
-         84UlWp9k042Z8eHBdTXX0QlWCXBn+wKUPfpEmZeHi+kLP8NdiYFPshaM0E0/HqMx5RqT
-         ep+KpE+k3C30Da7hHMeIZR2O29RGOwYnk4gzbgAodkdGpUcAefZkLPIMO8V8FjE+ryc6
-         PukQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qY0faMoU6BxNREoouDEmmFkWjqNRWbbfGDDwPhgFlaA=;
-        b=HXIgVJclRE3K32Oi4vEUzoYWHQsw05VathYnYS0thkwaG4+eDJbOk//Ca3/904yGIp
-         9TS110KTPTNCwER9ff0XMHces9vJYOc/UURRdJSYWKa6Sy3TDnSaSoMlPRZ3UmgTa8bc
-         BWU4KrEgANrOdKIMUKLuSw9wRfghK6gedNm0R5tE0jlowuSxykZ0a4/ggG13fN70fi9C
-         9XOKqZ1R2n7kNj5UpzgZyfnHmP9yghPlJsMr9ZlieN+YKbsaVJtHrntj2dCBYW6Z01k+
-         MkOp3/r2WQofcvTAA9rXCREicCWaLhkYh+xOR+n+psO4uLx10P/2DLglrRLbJ8kmBEJG
-         rfQg==
-X-Gm-Message-State: AOAM530UO8n5TXYQG/YHOcrxYQ/1McxqkgHoYAGhCqlbIjT88ve+rVp2
-        xu8rp0SffsBPN+bLvIpnUE8hMVK8qWlxTH986AxnrA==
-X-Google-Smtp-Source: ABdhPJyybkU4/zl86lxMdAicFm/HAASMobJ7TCzsCf62cS4iwKaWjXHvqPPPTaNM0MIrxlS5E1MmhGpaOR/XFMKMpRw=
-X-Received: by 2002:a17:903:32d1:b0:151:da5c:60ae with SMTP id
- i17-20020a17090332d100b00151da5c60aemr1327115plr.34.1646855964287; Wed, 09
- Mar 2022 11:59:24 -0800 (PST)
+        Wed, 9 Mar 2022 15:02:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1814D2D8;
+        Wed,  9 Mar 2022 12:01:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A78AA61982;
+        Wed,  9 Mar 2022 19:50:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB0EC340F6;
+        Wed,  9 Mar 2022 19:49:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646855349;
+        bh=vLWP7Mz1loKXAb3DtQpG0OTSE1xeUnN23OMpCL3CeWA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KDQyLvFoiqpenp9TLxg7LLUJNyjnj7ylkJMcOzp6owy80ytt6FI07RIh5EW9UJFpE
+         EVa7KR0f17MBf4Qjb1ckQ1kkCvl/CYsRfdBzc2nsz63RxM2FA0ymXd9QTneB+GAhK/
+         DgzqOfcsLb22La8VJMRGG1wWWAC2yb/gOqdRnuGdNJ2ILYFSz8dkXzGeaXlIOUnh6O
+         fpHTqJeralBNOQaLkuXvqIB3//XGERraP26JGoYJYPnIDNFLcd9KvPvhrFohk5OwQX
+         m4h+woBg34bDT6DK8932+pOn7HsLwq9OPr7eHDnUOU1ZAit+dgWxASMpS3UjuQqbK/
+         e3il182jgGS9Q==
+Date:   Wed, 9 Mar 2022 19:49:07 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
+        martin.petersen@oracle.com,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCHv4 6/8] crypto: add rocksoft 64b crc guard tag framework
+Message-ID: <YikEs7RNgPXTQolv@gmail.com>
+References: <20220303201312.3255347-1-kbusch@kernel.org>
+ <20220303201312.3255347-7-kbusch@kernel.org>
+ <your-ad-here.call-01646770901-ext-3299@work.hours>
+ <20220308202747.GA3502158@dhcp-10-100-145-180.wdc.com>
+ <YigzoKRJ1EHFRZY9@sol.localdomain>
+ <20220309193126.GA3950874@dhcp-10-100-145-180.wdc.com>
 MIME-Version: 1.0
-References: <164610292916.2682974.12924748003366352335.stgit@dwillia2-desk3.amr.corp.intel.com>
- <164610295187.2682974.18123746840987009597.stgit@dwillia2-desk3.amr.corp.intel.com>
- <20220309182650.00006b28@Huawei.com>
-In-Reply-To: <20220309182650.00006b28@Huawei.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 9 Mar 2022 11:59:13 -0800
-Message-ID: <CAPcyv4iw+7WzAWykbsF+4pv9a8p0G8c6Bw5fk-JGfLZQX=susQ@mail.gmail.com>
-Subject: Re: [PATCH 04/11] cxl/core: Clamp max lock_class
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-cxl@vger.kernel.org, Linux NVDIMM <nvdimm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309193126.GA3950874@dhcp-10-100-145-180.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 10:27 AM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
->
-> On Mon, 28 Feb 2022 18:49:11 -0800
-> Dan Williams <dan.j.williams@intel.com> wrote:
->
-> > MAX_LOCKDEP_SUBCLASSES limits the depth of the CXL topology that can be
-> > validated by lockdep. Given that the cxl_test topology is already at
-> > this limit collapse some of the levels and clamp the max depth.
-> >
-> > Cc: Alison Schofield <alison.schofield@intel.com>
-> > Cc: Vishal Verma <vishal.l.verma@intel.com>
-> > Cc: Ira Weiny <ira.weiny@intel.com>
-> > Cc: Ben Widawsky <ben.widawsky@intel.com>
-> > Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-> > ---
-> >  drivers/cxl/cxl.h |   21 +++++++++++++++++----
-> >  1 file changed, 17 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-> > index 97e6ca7e4940..1357a245037d 100644
-> > --- a/drivers/cxl/cxl.h
-> > +++ b/drivers/cxl/cxl.h
-> > @@ -501,20 +501,33 @@ enum cxl_lock_class {
-> >       CXL_ANON_LOCK,
-> >       CXL_NVDIMM_LOCK,
-> >       CXL_NVDIMM_BRIDGE_LOCK,
->
-> I'd be tempted to give explicit value to the one above as well
-> so it's immediate clear there is deliberate duplication here.
+On Wed, Mar 09, 2022 at 11:31:26AM -0800, Keith Busch wrote:
+> On Tue, Mar 08, 2022 at 08:57:04PM -0800, Eric Biggers wrote:
+> > On Tue, Mar 08, 2022 at 12:27:47PM -0800, Keith Busch wrote:
+> > > On Tue, Mar 08, 2022 at 09:21:41PM +0100, Vasily Gorbik wrote:
+> > > > On Thu, Mar 03, 2022 at 12:13:10PM -0800, Keith Busch wrote:
+> > > > > Hardware specific features may be able to calculate a crc64, so provide
+> > > > > a framework for drivers to register their implementation. If nothing is
+> > > > > registered, fallback to the generic table lookup implementation. The
+> > > > > implementation is modeled after the crct10dif equivalent.
+> > > > 
+> > > > Hi Keith,
+> > > > 
+> > > > this is failing on big-endian systems. I get the following on s390:
+> > > 
+> > > Oh, I see the put_unaligned_le64() in chksum_final() was not the correct
+> > > action. I'll send an update, thank you for the report.
+> > 
+> > Or you could make the digests in your test vectors have have a consistent byte
+> > order, probably little endian.  That's how "shash" algorithms in the crypto API
+> > normally work, including crc32 and crc32c; they produce bytes as output.  I see
+> > that crct10dif violates that convention, and I assume you copied it from there.
+> > I'm not sure you should do that; crct10dif might be more of a one-off quirk.
+> 
+> Right, I started with the t10dif implementation. I changed it to the
+> unaligned accessor since you indicated the output buffer doesn't have an
+> alignment guarantee.
+> 
+> Perhaps I'm missing something, but it looks easier to just use the CPU
+> native endianess here. The only users for t10 and rocksoft transform to
+> big-endian for the wire protocol at the end, but there's no need to
+> maintain a specific byte order before setting the payload.
 
-Sounds good.
+The issue is that every other "shash" algorithm besides crct10dif, including
+crc32 and crc32c, follow the convention of treating the digest as bytes.  Doing
+otherwise is unusual for the crypto API.  So I have a slight preference for
+treating it as bytes.  Perhaps see what Herbert Xu (maintainer of the crypto
+API, Cc'ed) recommends?
 
-I also notice that clamp_lock_class() should return -1 when it wants
-to disable validation, not zero.
+- Eric
