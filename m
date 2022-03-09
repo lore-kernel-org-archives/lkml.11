@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D47AC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C420C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235975AbiCIQ2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 11:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
+        id S236124AbiCIQ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 11:28:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238200AbiCIQVg (ORCPT
+        with ESMTP id S238146AbiCIQV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 11:21:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45352F43;
-        Wed,  9 Mar 2022 08:20:38 -0800 (PST)
+        Wed, 9 Mar 2022 11:21:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A993115339B;
+        Wed,  9 Mar 2022 08:19:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D69E9616F3;
-        Wed,  9 Mar 2022 16:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19896C340E8;
-        Wed,  9 Mar 2022 16:20:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 502CBB82206;
+        Wed,  9 Mar 2022 16:19:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC727C340F3;
+        Wed,  9 Mar 2022 16:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842837;
-        bh=cOnmEJ3SL4r6/v5TFjAJCqaqodqDNHZuOq9BLJmSKYw=;
+        s=k20201202; t=1646842770;
+        bh=qz2/+MsYFE+k4rvs9wvf9F2qqKY54LYjp3wUAUnPR30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sVqErGRDb4PusR7Sg0nxtxq5gEX/eEp590HRRepQqTCIFLvpghM/lw7+hhDe1zjAH
-         iFDbL2lVpXI1vPYXkRRQFR3Oz9BMb/QaCfdUc5n+WmQIdyHb5nS/79p5ukoaTmh3Qe
-         1vXsWKZxubzrrFehUyOYyIAaxE+64ATojLvbewrY2M9YUcLRekurrjZXhBlK2wO5Pb
-         u8rEYSr6fsDJZmi32J0zuDhXmc6jL8RUZ4pUjNN0belRHVkpt57jpmaNYvjcJ9XcLm
-         6URUyMvqfum1+JkxC6czuuFVOZIeQ9sQHfITaEI8+iaEZY31BmsvGPFs2VyRnW/Noa
-         XNtk9STv1ZVwQ==
+        b=LaDaAh2rF7Wm/tsatS9H1qaRIwCgoTeNvq5hKkH7uJ8QV+hGGpr/opudxQBJLmjh/
+         6T9e+BuX90dRYrIcwEzFtqIe9+8qqGNw+9qCfs8XPTgjK3gd1/A+CJazktzG+ndpxQ
+         lNQC94xqWLs81GUJ+9+SqMFiIp5zc95ul+s8fMT/NPAj6q9T5563e0G0ILv+PMlpTH
+         zFVwjQPvCYXfyLLQmlj+wTfJLfeLaF+Uhit+QA8/svbAHuuZlJTxk1FA/ubGsQ7Fbb
+         Y/VdtBGX7+VUzseME/uquKyKOVi48ivCN9wNqFW9bmooy26Jn/nfenSOh3JNciYMVj
+         k5TQLZkrZVsvA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corentin Labbe <clabbe@baylibre.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/24] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-Date:   Wed,  9 Mar 2022 11:19:28 -0500
-Message-Id: <20220309161946.136122-9-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 24/27] tcp: make tcp_read_sock() more robust
+Date:   Wed,  9 Mar 2022 11:17:01 -0500
+Message-Id: <20220309161711.135679-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
+References: <20220309161711.135679-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,35 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
+[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
 
-crypto-controller had a typo, fix it.
-In the same time, rename it to just crypto
+If recv_actor() returns an incorrect value, tcp_read_sock()
+might loop forever.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Instead, issue a one time warning and make sure to make progress.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 4dcdcf17c977..66ff5db53c5a 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -971,7 +971,7 @@ i2s: i2s@ff890000 {
- 		status = "disabled";
- 	};
- 
--	crypto: cypto-controller@ff8a0000 {
-+	crypto: crypto@ff8a0000 {
- 		compatible = "rockchip,rk3288-crypto";
- 		reg = <0x0 0xff8a0000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 28abb0bb1c51..38f936785179 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1653,11 +1653,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 				if (!copied)
+ 					copied = used;
+ 				break;
+-			} else if (used <= len) {
+-				seq += used;
+-				copied += used;
+-				offset += used;
+ 			}
++			if (WARN_ON_ONCE(used > len))
++				used = len;
++			seq += used;
++			copied += used;
++			offset += used;
++
+ 			/* If recv_actor drops the lock (e.g. TCP splice
+ 			 * receive) the skb pointer might be invalid when
+ 			 * getting here: tcp_collapse might have deleted it
 -- 
 2.34.1
 
