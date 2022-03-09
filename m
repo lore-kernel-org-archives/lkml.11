@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 22:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238750AbiCIWgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 17:36:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        id S238753AbiCIWhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 17:37:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232562AbiCIWgb (ORCPT
+        with ESMTP id S229715AbiCIWhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 17:36:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CAF51216B1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:35:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646865330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7BCptgTn0msFj3Lu2nO08V4lR03WYPl53I+vGTYn7fk=;
-        b=fbYiabUp/uDUIUaecCQsduAEt0GMWW8Nhms468tDLVhY0Q2p540/ki9Plzi/9WO3Iadn/d
-        guLnaCfjL84lGTiIyOGdjYWZuSF7eglkDUHw4ow/9WiqIkLPOblYWV6oyzgM9RfgMotD+y
-        Mnm3hZR5DWk/ObMPHxV5vLVybN2fb8E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-578-P-IsmW0HMkWz7wctcP4Pcg-1; Wed, 09 Mar 2022 17:35:27 -0500
-X-MC-Unique: P-IsmW0HMkWz7wctcP4Pcg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE0D7835DE0;
-        Wed,  9 Mar 2022 22:35:23 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 954F945302;
-        Wed,  9 Mar 2022 22:35:02 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <92ebc9fbdda967c14274f2b246ef3f77a1f21224.camel@kernel.org>
-References: <92ebc9fbdda967c14274f2b246ef3f77a1f21224.camel@kernel.org> <164678185692.1200972.597611902374126174.stgit@warthog.procyon.org.uk> <164678220204.1200972.17408022517463940584.stgit@warthog.procyon.org.uk>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        linux-afs@lists.infradead.org,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        David Wysochanski <dwysocha@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-nfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        ceph-devel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 19/19] afs: Maintain netfs_i_context::remote_i_size
+        Wed, 9 Mar 2022 17:37:10 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FDB1216B9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 14:36:11 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id mr24-20020a17090b239800b001bf0a375440so6582678pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 14:36:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KaZ7UiCMXi8qMFjPqiV4xU9nDrqqMiEGUN4hXGJXHL0=;
+        b=f1Vc4QOkkBXv6009fjawNvWMX9OxrPebOlqoDZEQhDLnw1gEwD14g81AO62Vc7PZSM
+         0iUzd91hEUZhS3UI0SmnX5hGatAnQKj7z52vrmX9o+qdBDkPUNoKaAeC/GcOm6q8vJel
+         Y6wwFooGD3tTJpth4TUXsPLxLc5l2TEewJTu8J1oywVo4m7NRv+/ucWEgDn2C9iXl5vL
+         i6y5BReYAhUiEHPwojq307v1ALmQ+QoXaD1bJS2QpqJPJs7fbDzdjillX1xuPVOViKfI
+         sgCFjbKq19VXiVd3eTk8UiJqCaSkb9L/im9cUALFc1QHRFlr7I/yIoyoyLtq4A25KUTP
+         200Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KaZ7UiCMXi8qMFjPqiV4xU9nDrqqMiEGUN4hXGJXHL0=;
+        b=C9wiKp3BLOqzd6dQopw2C4fBjM1J0CJIWHcRYKAPEJGsvZCGvFRaF1qS/yrCzymXIn
+         RWUkX5ejZXNCiLSjCVkoJJ9duRDxMBwzWsUMK76zioQjq8ZOoXsGzwaHf7OsXE8bt1Ub
+         xmGhI7ZA45wRCwXAEDhBnD5ELVuQttlR+HVyU2ydHoVGahF7p+ssYuzY2ytLyMHp09uK
+         yz9o7HR578/zWeDxBWbhbg8GUZWcYZy9Tu+SReso+el6X1YFUzVduS2LKvOPzkrRsIk4
+         uIn1SJyFNA+aXt0Oi/CN+cTpeRe4LN4uxmVd5osYPGBIqpTLNYHpFqj3WZavdSFATp7N
+         lCHQ==
+X-Gm-Message-State: AOAM5326KBH3z7O+wWP/4VXXwDIgqTuOdMx2oEHrlLF8RAIiKdgTQyk5
+        IweoWIxgt1Pe4oshMLlaVPc=
+X-Google-Smtp-Source: ABdhPJweOMbhERmw1l+0POpTBXvnE5YjxPi6T3FchbPLhWMokyMkH/qrladgyIE5jlyra7QRpDmbpA==
+X-Received: by 2002:a17:90b:4d8a:b0:1be:f5f1:89d3 with SMTP id oj10-20020a17090b4d8a00b001bef5f189d3mr1794464pjb.79.1646865370688;
+        Wed, 09 Mar 2022 14:36:10 -0800 (PST)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:6f34:be93:349a:f478])
+        by smtp.gmail.com with ESMTPSA id z16-20020a056a00241000b004f3a647ae89sm4023446pfh.174.2022.03.09.14.36.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 14:36:09 -0800 (PST)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-xtensa@linux-xtensa.org
+Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH] xtensa: add kernel ABI selection to Kconfig
+Date:   Wed,  9 Mar 2022 14:35:57 -0800
+Message-Id: <20220309223557.1253417-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1842057.1646865301.1@warthog.procyon.org.uk>
-Date:   Wed, 09 Mar 2022 22:35:01 +0000
-Message-ID: <1842058.1646865301@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeff Layton <jlayton@kernel.org> wrote:
+Add choice to use default or call0 ABI for the kernel code. If call0 ABI
+is chosen add '-mabi=call0' to the flags. The toolchain support for this
+option is rather new so only enable it when the compiler supports it.
 
-> > -	op->store.i_size = max(pos + size, i_size);
-> > +	op->store.i_size = max(pos + size, ictx->remote_i_size);
-> 
-> Ahh ok, so if i_size is larger than is represented by this write, you'll
-> have a zeroed out region until writeback catches up. Makes sense.
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ arch/xtensa/Kconfig  | 35 +++++++++++++++++++++++++++++++++++
+ arch/xtensa/Makefile |  4 ++++
+ 2 files changed, 39 insertions(+)
 
-That's the way it was working.  With this change, we track the server's idea
-of the file size separately from our local inode->i_size (which is updated by
-the modifications into the pagecache) and only expand the server's setting to
-the end of the data we're storing, not to our local i_size.  I'm trying to
-avoid zeroed-out regions appearing in the file.
-
-Forcible expansion by truncate is a different matter.
-
-David
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index b324f6743073..cf03ed54c8f0 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -92,6 +92,9 @@ config CPU_BIG_ENDIAN
+ config CPU_LITTLE_ENDIAN
+ 	def_bool !CPU_BIG_ENDIAN
+ 
++config CC_HAVE_CALL0_ABI
++	def_bool $(success,test "$(shell,echo __XTENSA_CALL0_ABI__ | $(CC) -mabi=call0 -E -P - 2>/dev/null)" = 1)
++
+ menu "Processor type and features"
+ 
+ choice
+@@ -250,6 +253,38 @@ config FAST_SYSCALL_SPILL_REGISTERS
+ 
+ 	  If unsure, say N.
+ 
++choice
++	prompt "Kernel ABI"
++	default KERNEL_ABI_DEFAULT
++	help
++	  Select ABI for the kernel code. This ABI is independent of the
++	  supported userspace ABI and any combination of the
++	  kernel/userspace ABI is possible and should work.
++
++	  In case both kernel and userspace support only call0 ABI
++	  all register windows support code will be omitted from the
++	  build.
++
++	  If unsure, choose the default ABI.
++
++config KERNEL_ABI_DEFAULT
++	bool "Default ABI"
++	help
++	  Select this option to compile kernel code with the default ABI
++	  selected for the toolchain.
++	  Normally cores with windowed registers option use windowed ABI and
++	  cores without it use call0 ABI.
++
++config KERNEL_ABI_CALL0
++	bool "Call0 ABI" if CC_HAVE_CALL0_ABI
++	help
++	  Select this option to compile kernel code with call0 ABI even with
++	  toolchain that defaults to windowed ABI.
++	  When this option is not selected the default toolchain ABI will
++	  be used for the kernel code.
++
++endchoice
++
+ config USER_ABI_CALL0
+ 	bool
+ 
+diff --git a/arch/xtensa/Makefile b/arch/xtensa/Makefile
+index 725cd4cd8b30..5097caa7bf0c 100644
+--- a/arch/xtensa/Makefile
++++ b/arch/xtensa/Makefile
+@@ -35,6 +35,10 @@ KBUILD_CFLAGS += -ffreestanding -D__linux__
+ KBUILD_CFLAGS += -pipe -mlongcalls -mtext-section-literals
+ KBUILD_CFLAGS += $(call cc-option,-mforce-no-pic,)
+ KBUILD_CFLAGS += $(call cc-option,-mno-serialize-volatile,)
++ifneq ($(CONFIG_KERNEL_ABI_CALL0),)
++KBUILD_CFLAGS += -mabi=call0
++KBUILD_AFLAGS += -mabi=call0
++endif
+ 
+ KBUILD_AFLAGS += -mlongcalls -mtext-section-literals
+ 
+-- 
+2.30.2
 
