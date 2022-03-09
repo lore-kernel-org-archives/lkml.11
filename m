@@ -2,133 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0519C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF016C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 17:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236672AbiCIRBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 12:01:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S236706AbiCIRBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 12:01:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235892AbiCIRBC (ORCPT
+        with ESMTP id S235812AbiCIRBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 12:01:02 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F44E10612C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:48:02 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id kx6-20020a17090b228600b001bf859159bfso5831695pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:48:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SfXNkkolcMJPwDp63yf81XujFSDo95hIeJu326GhdWQ=;
-        b=RC0q0OcBEQu9ASG61IkTDmrNlwYTQDX300E7BWFYleWgmnmkyhz/MpJGbJULr1sh07
-         9Ha7BXxmneFsYSP/mR/gV+L9lXhtm9WOQ8XtVPRPS+epm3qPdqRu1qbKGILDHxpRoRva
-         crxiZpmDWDgq6+3UJvjFhWpK9OH7Ke4mGcFVxy0a579gwCrc7Ifd6GL/9vwBc6YruqVI
-         baQzqQvGyS+P7IMYrYdhP0owXMy++OQkmxh/ky24V6gXXG2rXEFjXfFI7QbZjevVxjDb
-         g+Qm0N1Mr4u43+neLiKGsu5OBbaUc7VlR02k86o6kDWu41wxAQq2T4O10m5O+JOkt31P
-         Aolw==
+        Wed, 9 Mar 2022 12:01:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC4FB1052AF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 08:47:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646844461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GtHZAmMaUYAx0LRBNry1Z8g5yS/lTA9TMVV6Zdqr9HI=;
+        b=BYfrRTalkZ7ByBaYceTjXgQMZ8rw5k4wRj7NlM4FQOrjeGqY9eTRUhlBjPvn+A89TpShO2
+        OtOC3QX8nXF6dzvFPF7aNxzGr3+fXj3/XSmFumX02tdMHzgJPQGe1EDmGuMDYOP6Nuc+zT
+        q97VgYpSiuPSEqYgdO5pz3pjA9Mfmi0=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-274--FDnHRUINxOZlu-W9BcJUQ-1; Wed, 09 Mar 2022 11:47:39 -0500
+X-MC-Unique: -FDnHRUINxOZlu-W9BcJUQ-1
+Received: by mail-ej1-f69.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so1594057ejw.9
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 08:47:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=SfXNkkolcMJPwDp63yf81XujFSDo95hIeJu326GhdWQ=;
-        b=2Ej021RsPpjFXTiC9SFWSN+QPnl2TEpOs/f4V6cNt5/etAk4LWpdKRdFp90uKMtsja
-         5ARvFqHuuW9yVp0PLmu/iztsx4s4UJ0ZKdU/9KJ6TwfDZZ67ffCDtI6GCVJP1TNIYzxq
-         olSgMpEFXYtwjSOHJ/5XnWHchDgmwFrLkT4e2Gci06xwPaDBf67GnooySkklYILH6z4I
-         CuliQgSR3sjD+sXZ731FKp5xHpMXp6IhJYUHcO/7KQ1YA2gzJ0W9yR/PuJ2dfn3pZ+W3
-         avMWPdH30M7AXR0Uk8dqmjBuYF5qJxH48No649p/ue9jJ7fKxi15jWbrV6Mu8DM5hm1J
-         M8vw==
-X-Gm-Message-State: AOAM533UoDIcZsNPURpXqn7bC90LIG57Gag+rjpdrIuCOnlvZ3K737sX
-        /DjtYHj5qKvqVLRyuTVw/gW14YpCyZY=
-X-Google-Smtp-Source: ABdhPJwrS2OvbPW4zE7Gt+E9g6pb4AjJcfenCjjwXCZjVXEQ/MT81h7EtQe22hOGM83go1+bt0AMbg==
-X-Received: by 2002:a17:902:7b8d:b0:14f:1aca:d95e with SMTP id w13-20020a1709027b8d00b0014f1acad95emr556596pll.122.1646844481703;
-        Wed, 09 Mar 2022 08:48:01 -0800 (PST)
-Received: from google.com ([2620:15c:211:201:aee3:831e:b1d0:905f])
-        by smtp.gmail.com with ESMTPSA id b10-20020a056a000cca00b004f6f6dd8287sm3807826pfv.18.2022.03.09.08.48.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 08:48:01 -0800 (PST)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 9 Mar 2022 08:47:59 -0800
-From:   Minchan Kim <minchan@kernel.org>
-To:     Charan Teja Kalla <quic_charante@quicinc.com>
-Cc:     akpm@linux-foundation.org, yuehaibing@huawei.com,
-        sfr@canb.auug.org.au, rientjes@google.com, edgararriaga@google.com,
-        mhocko@suse.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: madvise: return correct bytes advised with
- process_madvise
-Message-ID: <YijaP7cC6Sclxc29@google.com>
-References: <1646803679-11433-1-git-send-email-quic_charante@quicinc.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GtHZAmMaUYAx0LRBNry1Z8g5yS/lTA9TMVV6Zdqr9HI=;
+        b=SakN3tsyfF85tuaBhLLOFrn3E+bFbi8J1Yy6+wC5+K0eC5Q05cVRiVGAa0BoIJr7Zu
+         53M8SIeCbNhYhyiitDqPn54xJOJ7y1rG88CPRsl2rWQ1V91p42tjHY38Twq7p6akQUWW
+         88Ruzcmr3DFEH6xzRm4bZDygtxmuEAPLOlccZkcPETcST82VzYYp+Bji97ohDrxO0Vas
+         //6yPNdjSPT03BAesBG6hG6jkCni9iNPpzFNQMM25DPXdSMTTD9qCK/AHYxCYSTYQw96
+         o5EymtjYqEgzMC+ExAd/quqrgV/Ekb953q2F5P9RMcADfJ1mPxily4jXLxTJvmeZ1KI2
+         d26w==
+X-Gm-Message-State: AOAM533CAPcuFFgKMwSBV3iKwSGeWij9a6jk9jm/6UiLMv0kw5/jg3ut
+        oIbTCIxTVWrRhHwlFWc2h1RvgG6w992Ooi+H9GWvnK50Y+7NvAHc/C2xmk+3ZMG1a6HaErnqz75
+        y4ddoP0g3BxrjOaHIWSwyJgAT
+X-Received: by 2002:a17:907:60ca:b0:6da:8f25:7983 with SMTP id hv10-20020a17090760ca00b006da8f257983mr631820ejc.106.1646844457789;
+        Wed, 09 Mar 2022 08:47:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw7W66bmqFbu8gYAU5N0gz7/+fCQJtGeEoAcf1WlMCvUxsd/Rx1EWoj8m+ZeeL+r81lz05NDA==
+X-Received: by 2002:a17:907:60ca:b0:6da:8f25:7983 with SMTP id hv10-20020a17090760ca00b006da8f257983mr631795ejc.106.1646844457559;
+        Wed, 09 Mar 2022 08:47:37 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id t14-20020a170906608e00b006d1455acc62sm908648ejj.74.2022.03.09.08.47.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 08:47:36 -0800 (PST)
+Message-ID: <63493d06-0b6c-9993-2315-64033dd041d6@redhat.com>
+Date:   Wed, 9 Mar 2022 17:47:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646803679-11433-1-git-send-email-quic_charante@quicinc.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH MANUALSEL 5.15] KVM: x86: Yield to IPI target vCPU only if
+ it is busy
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Li RongQing <lirongqing@baidu.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+References: <20220309164632.137995-1-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220309164632.137995-1-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:57:59AM +0530, Charan Teja Kalla wrote:
-> The process_madvise() system call returns error even after processing
-> some VMA's passed in the 'struct iovec' vector list which leaves the
-> user confused to know where to restart the advise next. It is also
-> against this syscall man page[1] documentation where it mentions that
-> "return value may be less than the total number of requested bytes, if
-> an error occurred after some iovec elements were already processed.".
+On 3/9/22 17:46, Sasha Levin wrote:
+> From: Li RongQing <lirongqing@baidu.com>
 > 
-> Consider a user passed 10 VMA's in the 'struct iovec' vector list of
-> which 9 are processed but one. Then it just returns the error caused on
-> that failed VMA despite the first 9 VMA's processed, leaving the user
-> confused about on which VMA it is failed. Returning the number of bytes
-> processed here can help the user to know which VMA it is failed on and
-> thus can retry/skip the advise on that VMA.
+> [ Upstream commit 9ee83635d872812f3920209c606c6ea9e412ffcc ]
 > 
-> [1]https://man7.org/linux/man-pages/man2/process_madvise.2.html.
+> When sending a call-function IPI-many to vCPUs, yield to the
+> IPI target vCPU which is marked as preempted.
 > 
-> Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API"
-> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+> but when emulating HLT, an idling vCPU will be voluntarily
+> scheduled out and mark as preempted from the guest kernel
+> perspective. yielding to idle vCPU is pointless and increase
+> unnecessary vmexit, maybe miss the true preempted vCPU
+> 
+> so yield to IPI target vCPU only if vCPU is busy and preempted
+> 
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Message-Id: <1644380201-29423-1-git-send-email-lirongqing@baidu.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->  mm/madvise.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+>   arch/x86/kernel/kvm.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/mm/madvise.c b/mm/madvise.c
-> index 38d0f51..d3b49b3 100644
-> --- a/mm/madvise.c
-> +++ b/mm/madvise.c
-> @@ -1426,15 +1426,21 @@ SYSCALL_DEFINE5(process_madvise, int, pidfd, const struct iovec __user *, vec,
->  
->  	while (iov_iter_count(&iter)) {
->  		iovec = iov_iter_iovec(&iter);
-> +		/*
-> +		 * Even when [start, end) passed to do_madvise covers
-> +		 * some unmapped addresses, it continues processing with
-> +		 * returning ENOMEM at the end. Thus consider the range
-> +		 * as processed when do_madvise() returns ENOMEM.
-> +		 * This makes process_madvise() never returns ENOMEM.
-> +		 */
+> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+> index b656456c3a94..49f19e572a25 100644
+> --- a/arch/x86/kernel/kvm.c
+> +++ b/arch/x86/kernel/kvm.c
+> @@ -565,7 +565,7 @@ static void kvm_smp_send_call_func_ipi(const struct cpumask *mask)
+>   
+>   	/* Make sure other vCPUs get a chance to run if they need to. */
+>   	for_each_cpu(cpu, mask) {
+> -		if (vcpu_is_preempted(cpu)) {
+> +		if (!idle_cpu(cpu) && vcpu_is_preempted(cpu)) {
+>   			kvm_hypercall1(KVM_HC_SCHED_YIELD, per_cpu(x86_cpu_to_apicid, cpu));
+>   			break;
+>   		}
 
-Looks like that this patch has two things. first, returns processed
-bytes instead of error in case of error. Second, keep working on
-rest vmas on -ENOMEM due to unmapped hole.
+NACK
 
-First thing totally makes sense to me(that's exactly I wanted to
-do but somehow missed) so it should go stable tree. However,
-second stuff might be arguble so it would be great if you split
-the patch.
-
->  		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
->  					iovec.iov_len, behavior);
-> -		if (ret < 0)
-> +		if (ret < 0 && ret != -ENOMEM)
->  			break;
->  		iov_iter_advance(&iter, iovec.iov_len);
->  	}
->  
-> -	if (ret == 0)
-> -		ret = total_len - iov_iter_count(&iter);
-> +	ret = (total_len - iov_iter_count(&iter)) ? : ret;
->  
->  release_mm:
->  	mmput(mm);
-> -- 
-> 2.7.4
-> 
