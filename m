@@ -2,116 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E640FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB54C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245560AbiCJSqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:46:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
+        id S245570AbiCJSrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:47:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236161AbiCJSqK (ORCPT
+        with ESMTP id S245575AbiCJSrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:46:10 -0500
-X-Greylist: delayed 547 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 10:45:07 PST
-Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CF116E7D3;
-        Thu, 10 Mar 2022 10:45:07 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C9AFE3EB76;
-        Thu, 10 Mar 2022 19:35:50 +0100 (CET)
-From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Remi Pommarel <repk@triplefau.lt>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
-Subject: [PATCH net] mac80211: fix potential double free on mesh join
-Date:   Thu, 10 Mar 2022 19:35:13 +0100
-Message-Id: <20220310183513.28589-1-linus.luessing@c0d3.blue>
+        Thu, 10 Mar 2022 13:47:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8EA19D74B;
+        Thu, 10 Mar 2022 10:46:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B28C761E8F;
+        Thu, 10 Mar 2022 18:46:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEDD9C340EC;
+        Thu, 10 Mar 2022 18:46:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646938003;
+        bh=GKrZ2gUQwydnsjB5YvHl0U13LckJkTI0hMtoBFCtOm8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nnlP5vsLU77QzUy/SWAKZVugjxUvjQgorliXzc5uc5d2bJy6FjeXc/TZe0oP5ynq7
+         3AX4ThoBBtO17cviH5BEjosqf5md8Ef6BKH8Xe89B9miWBfMSARxkJWpgqxagxVG4D
+         hmey667/FsdOsgYQCh4IQhhvVb8zL5TkWn1j1JtZoC/Ahhn+o/ScOHK93pH2EqgbZU
+         igKSr5lzVxzybaiXcvETZOiobKF4MSthBT3XWgVS0tuHSI2RrcYYNxz28zfYVqTeba
+         T39Xwp9ssJrT7U5YTdPsYq+/885qspqgCRxnrTykgKdr8aN1eXOQ2UcUUa+ZYdseq6
+         CRN9hK3EQkegw==
+Date:   Thu, 10 Mar 2022 18:46:38 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, akumarma@xilinx.com,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH 2/2] spi: spi-cadence: Fix kernel-doc format for
+ resume/suspend
+Message-ID: <YipHjjg/sLRqQVX6@sirena.org.uk>
+References: <20220310164235.32230-1-amit.kumar-mahapatra@xilinx.com>
+ <20220310164235.32230-3-amit.kumar-mahapatra@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zGu91EIOk7veEsar"
+Content-Disposition: inline
+In-Reply-To: <20220310164235.32230-3-amit.kumar-mahapatra@xilinx.com>
+X-Cookie: Package sold by weight, not volume.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
 
-While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
-mesh") fixed a memory leak on mesh leave / teardown it introduced a
-potential memory corruption caused by a double free when rejoining the
-mesh:
+--zGu91EIOk7veEsar
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  ieee80211_leave_mesh()
-  -> kfree(sdata->u.mesh.ie);
-  ...
-  ieee80211_join_mesh()
-  -> copy_mesh_setup()
-     -> old_ie = ifmsh->ie;
-     -> kfree(old_ie);
+On Thu, Mar 10, 2022 at 10:12:35PM +0530, Amit Kumar Mahapatra wrote:
+> From: Michal Simek <michal.simek@xilinx.com>
+>=20
+> Kernel function name don't match with function name.
+>=20
+> Error log:
+> drivers/spi/spi-cadence.c:662: warning: expecting prototype for
+> cdns_spi_runtime_resume(). Prototype was for cnds_runtime_resume() instead
+> drivers/spi/spi-cadence.c:691: warning: expecting prototype for
+> cdns_spi_runtime_suspend(). Prototype was for cnds_runtime_suspend()
+> instead
 
-This double free / kernel panics can be reproduced by using wpa_supplicant
-with an encrypted mesh (if set up without encryption via "iw" then
-ifmsh->ie is always NULL, which avoids this issue). And then calling:
+These errors are introduced by the prior patch in the series, that patch
+should be fixed to just not introduce these errors in the first place.
 
-  $ iw dev mesh0 mesh leave
-  $ iw dev mesh0 mesh join my-mesh
+--zGu91EIOk7veEsar
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Note that typically these commands are not used / working when using
-wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
-through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
-where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
-default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
-the memory corruption, too.
+-----BEGIN PGP SIGNATURE-----
 
-The issue was first observed in an application which was not using
-wpa_supplicant but "Senf" instead, which implements its own calls to
-nl80211.
+iQEyBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIqR40ACgkQJNaLcl1U
+h9D6LAf4ySVpzHmfvga8kAdanxFVZF5MBBcNlY4bjjSUk9zGiv/LRXleptZCdQWc
+ykabXiwwg//Jx8+PJ1biJLWsvhRh21W/APFlFEhUpFcEYQPHruUOWa+4viNuCRnD
+UU+6X67mP3qQQ29HpqaE7fVc34hp69yk89Q6/yjhnAjN/jfl/rFIG2NmfSBEkz40
+P0uDuGlmfdggfSqZ263GBZNOJX5HPXtidna11JrWKquC489vwwodOk4paVUy0ib9
+8brfxlmUDlJXYia4HiAqWbvoJxQfwc5KbD215fIHdop2zd20Qb47hc2ipNGW0x5b
+dFQg3sx8DMfgLXeluzGru3Hoolzc
+=pg1e
+-----END PGP SIGNATURE-----
 
-Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
-join function and leaving it solely up to the mesh leave to free the
-mesh IE.
-
-Link: https://gitlab.fit.fraunhofer.de/wiback/senf
-Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
-Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
----
- net/mac80211/cfg.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 87a208089caf..58ff57dc669c 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -2148,14 +2148,12 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
- 		const struct mesh_setup *setup)
- {
- 	u8 *new_ie;
--	const u8 *old_ie;
- 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
- 					struct ieee80211_sub_if_data, u.mesh);
- 	int i;
- 
- 	/* allocate information elements */
- 	new_ie = NULL;
--	old_ie = ifmsh->ie;
- 
- 	if (setup->ie_len) {
- 		new_ie = kmemdup(setup->ie, setup->ie_len,
-@@ -2165,7 +2163,6 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
- 	}
- 	ifmsh->ie_len = setup->ie_len;
- 	ifmsh->ie = new_ie;
--	kfree(old_ie);
- 
- 	/* now copy the rest of the setup parameters */
- 	ifmsh->mesh_id_len = setup->mesh_id_len;
--- 
-2.34.1
-
+--zGu91EIOk7veEsar--
