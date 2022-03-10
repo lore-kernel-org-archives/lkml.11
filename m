@@ -2,195 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F64CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87CDC4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242810AbiCJOLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:11:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
+        id S242802AbiCJOLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:11:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242730AbiCJOLY (ORCPT
+        with ESMTP id S242754AbiCJOLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:11:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6D512F433;
-        Thu, 10 Mar 2022 06:10:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9716F61B5F;
-        Thu, 10 Mar 2022 14:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B2CC340E8;
-        Thu, 10 Mar 2022 14:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921418;
-        bh=euPopGTxH8jGEKDyqEBa7/HtOtJO/8PPWZPlndR+HAQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Sx4Bl5MBIGLt7bArWjWB84pHzV7pMLcij2sR/MHsxvI5n/kkL6kuR0McU6ZXnRF3
-         8XLGulNqd397TeKCGy8TL6xTKS62DS27rEKUbhgjP1BIbF3d+OOmj6k5pGomdRG9KO
-         VHRbrJEj6ntzorJon3H0IioFw0bbcXtWQw6dj6mI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.16 04/53] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Thu, 10 Mar 2022 15:09:09 +0100
-Message-Id: <20220310140811.963371885@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
-References: <20220310140811.832630727@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Thu, 10 Mar 2022 09:11:30 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E330E14F98A;
+        Thu, 10 Mar 2022 06:10:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646921429; x=1678457429;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=R9N/T0uA9Epd8O0DLQkw3YWNAAFsUHVjLA2F5YkEzAE=;
+  b=mxMgDjuFIY4HLmTks+qcX2ZI77cQWZO2uUIekh3dDwzO4YZ6q9Lmw5sv
+   Ip81L6ugwoNKMLW4HEEfrEfEXpHT5+s3OfyocpN0tL9K9GyMu3tkN3dWe
+   hpFK6PT9KHHH8hdZpzIxnqZpxIYuDlBagnzU5n4hm8Bv3W4yvIY8r3Idc
+   sJ6uaZO7FTac3980jCB6gFHmZhLIdttWlQdJJUFgNj5Kjp7Sx6ijVeW9A
+   T/bm1XDme6cZg3hjEZzyEuvkonbhOtLed34R2mMx8Xog05aSvoao1Dljg
+   Jrc6kcQ92buiYxJvhx7HrC8i/71WYHN+qjuNwFHJ89TUUudVB5y5uSG7k
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="235206016"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="235206016"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="554654963"
+Received: from chaop.bj.intel.com ([10.240.192.101])
+  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:10:08 -0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: [PATCH v5 05/13] KVM: Extend the memslot to support fd-based private memory
+Date:   Thu, 10 Mar 2022 22:09:03 +0800
+Message-Id: <20220310140911.50924-6-chao.p.peng@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+Extend the memslot definition to provide fd-based private memory support
+by adding two new fields (private_fd/private_offset). The memslot then
+can maintain memory for both shared pages and private pages in a single
+memslot. Shared pages are provided by existing userspace_addr(hva) field
+and private pages are provided through the new private_fd/private_offset
+fields.
 
-commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
+Since there is no 'hva' concept anymore for private memory so we cannot
+rely on get_user_pages() to get a pfn, instead we use the newly added
+memfile_notifier to complete the same job.
 
-With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
-to Spectre v2 BHB-based attacks.
+This new extension is indicated by a new flag KVM_MEM_PRIVATE.
 
-When both are enabled, print a warning message and report it in the
-'spectre_v2' sysfs vulnerabilities file.
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
- include/linux/bpf.h        |   12 ++++++++++++
- kernel/sysctl.c            |    7 +++++++
- 3 files changed, 48 insertions(+), 6 deletions(-)
+ Documentation/virt/kvm/api.rst | 37 +++++++++++++++++++++++++++-------
+ include/linux/kvm_host.h       |  7 +++++++
+ include/uapi/linux/kvm.h       |  8 ++++++++
+ 3 files changed, 45 insertions(+), 7 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -16,6 +16,7 @@
- #include <linux/prctl.h>
- #include <linux/sched/smt.h>
- #include <linux/pgtable.h>
-+#include <linux/bpf.h>
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 3acbf4d263a5..f76ac598606c 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -1307,7 +1307,7 @@ yet and must be cleared on entry.
+ :Capability: KVM_CAP_USER_MEMORY
+ :Architectures: all
+ :Type: vm ioctl
+-:Parameters: struct kvm_userspace_memory_region (in)
++:Parameters: struct kvm_userspace_memory_region(_ext) (in)
+ :Returns: 0 on success, -1 on error
  
- #include <asm/spec-ctrl.h>
- #include <asm/cmdline.h>
-@@ -650,6 +651,16 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
+ ::
+@@ -1320,9 +1320,17 @@ yet and must be cleared on entry.
+ 	__u64 userspace_addr; /* start of the userspace allocated memory */
+   };
  
-+#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
++  struct kvm_userspace_memory_region_ext {
++	struct kvm_userspace_memory_region region;
++	__u64 private_offset;
++	__u32 private_fd;
++	__u32 padding[5];
++};
 +
-+#ifdef CONFIG_BPF_SYSCALL
-+void unpriv_ebpf_notify(int new_state)
+   /* for kvm_memory_region::flags */
+   #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+   #define KVM_MEM_READONLY	(1UL << 1)
++  #define KVM_MEM_PRIVATE		(1UL << 2)
+ 
+ This ioctl allows the user to create, modify or delete a guest physical
+ memory slot.  Bits 0-15 of "slot" specify the slot id and this value
+@@ -1353,12 +1361,27 @@ It is recommended that the lower 21 bits of guest_phys_addr and userspace_addr
+ be identical.  This allows large pages in the guest to be backed by large
+ pages in the host.
+ 
+-The flags field supports two flags: KVM_MEM_LOG_DIRTY_PAGES and
+-KVM_MEM_READONLY.  The former can be set to instruct KVM to keep track of
+-writes to memory within the slot.  See KVM_GET_DIRTY_LOG ioctl to know how to
+-use it.  The latter can be set, if KVM_CAP_READONLY_MEM capability allows it,
+-to make a new slot read-only.  In this case, writes to this memory will be
+-posted to userspace as KVM_EXIT_MMIO exits.
++kvm_userspace_memory_region_ext includes all the kvm_userspace_memory_region
++fields. It also includes additional fields for some specific features. See
++below description of flags field for more information. It's recommended to use
++kvm_userspace_memory_region_ext in new userspace code.
++
++The flags field supports below flags:
++
++- KVM_MEM_LOG_DIRTY_PAGES can be set to instruct KVM to keep track of writes to
++  memory within the slot.  See KVM_GET_DIRTY_LOG ioctl to know how to use it.
++
++- KVM_MEM_READONLY can be set, if KVM_CAP_READONLY_MEM capability allows it, to
++  make a new slot read-only.  In this case, writes to this memory will be posted
++  to userspace as KVM_EXIT_MMIO exits.
++
++- KVM_MEM_PRIVATE can be set to indicate a new slot has private memory backed by
++  a file descirptor(fd) and the content of the private memory is invisible to
++  userspace. In this case, userspace should use private_fd/private_offset in
++  kvm_userspace_memory_region_ext to instruct KVM to provide private memory to
++  guest. Userspace should guarantee not to map the same pfn indicated by
++  private_fd/private_offset to different gfns with multiple memslots. Failed to
++  do this may result undefined behavior.
+ 
+ When the KVM_CAP_SYNC_MMU capability is available, changes in the backing of
+ the memory region are automatically reflected into the guest.  For example, an
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 9536ffa0473b..3be8116079d4 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -563,8 +563,15 @@ struct kvm_memory_slot {
+ 	u32 flags;
+ 	short id;
+ 	u16 as_id;
++	struct file *private_file;
++	loff_t private_offset;
+ };
+ 
++static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
 +{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+}
-+#endif
-+
- static inline bool match_option(const char *arg, int arglen, const char *opt)
- {
- 	int len = strlen(opt);
-@@ -994,6 +1005,9 @@ static void __init spectre_v2_select_mit
- 		break;
- 	}
- 
-+	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
-@@ -1780,6 +1794,20 @@ static char *ibpb_state(void)
- 	return "";
- }
- 
-+static ssize_t spectre_v2_show_state(char *buf)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
-+	return sprintf(buf, "%s%s%s%s%s%s\n",
-+		       spectre_v2_strings[spectre_v2_enabled],
-+		       ibpb_state(),
-+		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
-+		       stibp_state(),
-+		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
-+		       spectre_v2_module_string());
-+}
-+
- static ssize_t srbds_show_state(char *buf)
- {
- 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
-@@ -1805,12 +1833,7 @@ static ssize_t cpu_show_common(struct de
- 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
- 
- 	case X86_BUG_SPECTRE_V2:
--		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
--			       ibpb_state(),
--			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
--			       stibp_state(),
--			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
--			       spectre_v2_module_string());
-+		return spectre_v2_show_state(buf);
- 
- 	case X86_BUG_SPEC_STORE_BYPASS:
- 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1774,6 +1774,12 @@ bool bpf_prog_has_kfunc_call(const struc
- const struct btf_func_model *
- bpf_jit_find_kfunc_model(const struct bpf_prog *prog,
- 			 const struct bpf_insn *insn);
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return !sysctl_unprivileged_bpf_disabled;
++	return slot && (slot->flags & KVM_MEM_PRIVATE);
 +}
 +
- #else /* !CONFIG_BPF_SYSCALL */
- static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ static inline bool kvm_slot_dirty_track_enabled(const struct kvm_memory_slot *slot)
  {
-@@ -1993,6 +1999,12 @@ bpf_jit_find_kfunc_model(const struct bp
- {
- 	return NULL;
- }
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_BPF_SYSCALL */
+ 	return slot->flags & KVM_MEM_LOG_DIRTY_PAGES;
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 91a6fe4e02c0..a523d834efc8 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -103,6 +103,13 @@ struct kvm_userspace_memory_region {
+ 	__u64 userspace_addr; /* start of the userspace allocated memory */
+ };
  
- void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -228,6 +228,10 @@ static int bpf_stats_handler(struct ctl_
- 	return ret;
- }
++struct kvm_userspace_memory_region_ext {
++	struct kvm_userspace_memory_region region;
++	__u64 private_offset;
++	__u32 private_fd;
++	__u32 padding[5];
++};
++
+ /*
+  * The bit 0 ~ bit 15 of kvm_memory_region::flags are visible for userspace,
+  * other bits are reserved for kvm internal use which are defined in
+@@ -110,6 +117,7 @@ struct kvm_userspace_memory_region {
+  */
+ #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+ #define KVM_MEM_READONLY	(1UL << 1)
++#define KVM_MEM_PRIVATE		(1UL << 2)
  
-+void __weak unpriv_ebpf_notify(int new_state)
-+{
-+}
-+
- static int bpf_unpriv_handler(struct ctl_table *table, int write,
- 			      void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -245,6 +249,9 @@ static int bpf_unpriv_handler(struct ctl
- 			return -EPERM;
- 		*(int *)table->data = unpriv_enable;
- 	}
-+
-+	unpriv_ebpf_notify(unpriv_enable);
-+
- 	return ret;
- }
- #endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
-
+ /* for KVM_IRQ_LINE */
+ struct kvm_irq_level {
+-- 
+2.17.1
 
