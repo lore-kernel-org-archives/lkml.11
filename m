@@ -2,141 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ADDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243570AbiCJOYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        id S243608AbiCJOYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:24:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245059AbiCJOUW (ORCPT
+        with ESMTP id S245203AbiCJOUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:20:22 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A524B0C56
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id l12so7886342ljh.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
-        b=t7ALIPtw3FdXJEbivsDE3RXilGcI4LV6NZYNfsWaSRTH6omQWzDYIA0tmwsHGbNr67
-         egYoSkwO7q3t/m4u4zyTsFoeR+4oUxKD1s8HksaEci2TecLoN7NXYq6TtsnOG+DTMvpo
-         SIaK3KH3enNAKLMC9xa73KIHTlJwf57TUmKQlQ4GbDIVJK8Pr5NXSosQe83VUu4dtNE7
-         d3VZAKYTFYs9mrBebIuNxsc0ZQ4lLxALwlq39XFyL7Yle7Pnq0VhyjD3aFcATyqFdKvE
-         kx6MQ7Bv3ASpRIzZfoV9FBhel6UcyaZ6z1FEWcIFVNTc6Zo4Cn9xtaP9u/7A6VJAuVFe
-         xIug==
+        Thu, 10 Mar 2022 09:20:52 -0500
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9116A10D6;
+        Thu, 10 Mar 2022 06:19:51 -0800 (PST)
+Received: by mail-oo1-f54.google.com with SMTP id l24-20020a4a8558000000b00320d5a1f938so6859142ooh.8;
+        Thu, 10 Mar 2022 06:19:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
-        b=EXjKZNz3KRKrRtTJYyWRX7FAqEMhYvTM0HMjMkE/3RYk0RtEVVLvJBcH1FU4KROXgi
-         mTYn/wpPv6DsKpT41PhY2+84LO3hj44hhEa+ATcN1pTL4TqGg9WqlKd0Lye6VkORrt/A
-         1sYthfTfz5hesbO/5M5AbeiQbcut/a7xZayBO6hycGS/gjGG2/qMSFMvvj18f3l6wO/g
-         SPreoD2A2ygt91YNKzCMjE2xjnqK696vasrLSnJD/0N7xx1RLroPh9+UtyYWbbP9UzDq
-         l7vd7xlaaO9XMFmagoKHKd7XyqTYFYCbbT8ewyaoszM9G7MVfdykLe9rx6zxCpRG2YLw
-         uBRg==
-X-Gm-Message-State: AOAM533nzryfABm8EerkQqYiPpqPy5w/bVEvNmhcK7d69vSUm9Aw06CI
-        o5GeLQDncnjpF6rm230VVqEOjg==
-X-Google-Smtp-Source: ABdhPJxwinz6PetJ7dJRMmCVaeTN7Ts24q7yumXDa7xtozCjI+p6OkvWdIt8sgLgi3gI8hBYO12QAQ==
-X-Received: by 2002:a2e:2f0e:0:b0:246:1a59:8f04 with SMTP id v14-20020a2e2f0e000000b002461a598f04mr3253760ljv.409.1646921928481;
-        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
-Received: from [192.168.51.243] ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id bt23-20020a056512261700b00443e7fa1c26sm1000809lfb.261.2022.03.10.06.18.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
-Message-ID: <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
-Date:   Thu, 10 Mar 2022 16:18:45 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3W/Ki5qpGDEFWKMk7J7E8+Sx1qx4QiEdndntXWsLJJo=;
+        b=Ip0WAWLy+dn1sMctdsuJo5pDUkIl9qdZgYX38nAjIUWhur9Y1uGlNtmBSUlY9dbUGM
+         yb10n122GLmhFpCXq+hWNPe0TCtX8TNcmhkyD2F5lzBWTwtoaLWdSpH76nsnMY2paHvF
+         pHbPmpHhlT2QiqEbO4+eX2/5/N27A/hAZyj/C35dRxvxw2rP9Bq2PV3i3lP42WVN72uc
+         YJlYaBi3U8bgBvI0KeTNwh479d+bUOgz08EJarCfwLd3Wutn3L4hbVlFcTKQT0c9QQ74
+         rK7sREFgO8BeRrEzgt+hJ50VdX1VK7z/OpptoYBX9SI9bJ+9iooikTrb8hRMt+AS7w/h
+         TT9Q==
+X-Gm-Message-State: AOAM531xlm+JxmJc0dPjggMGm0X/hMYtlMzpEwF2qHfYn1kLj2P+rKRe
+        7nRkd/+11zJfOqp3QlEc5eIQngxFJg==
+X-Google-Smtp-Source: ABdhPJzLQb+1MVtYdE1o45AtniXUkVnyGAHMsHASWKW9w52BpjEdb/3jkpPrqvjFst6yafyQZQu4tw==
+X-Received: by 2002:a05:6870:796:b0:da:3d6a:101d with SMTP id en22-20020a056870079600b000da3d6a101dmr2781905oab.20.1646921990718;
+        Thu, 10 Mar 2022 06:19:50 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 68-20020a9d0a4a000000b005ad3287033csm2451415otg.44.2022.03.10.06.19.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:19:50 -0800 (PST)
+Received: (nullmailer pid 1611493 invoked by uid 1000);
+        Thu, 10 Mar 2022 14:19:49 -0000
+Date:   Thu, 10 Mar 2022 08:19:49 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Laszlo Ersek <lersek@redhat.com>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: arm: Convert QEMU fw-cfg to DT schema
+Message-ID: <YioJBWPxuE+T9g9g@robh.at.kernel.org>
+References: <20220310013552.549590-1-robh@kernel.org>
+ <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH iproute2-next 0/3] Extend locked port feature with FDB
- locked flag (MAC-Auth/MAB)
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/03/2022 15:36, Hans Schultz wrote:
-> This patch set extends the locked port feature for devices
-> that are behind a locked port, but do not have the ability to
-> authorize themselves as a supplicant using IEEE 802.1X.
-> Such devices can be printers, meters or anything related to
-> fixed installations. Instead of 802.1X authorization, devices
-> can get access based on their MAC addresses being whitelisted.
+On Thu, Mar 10, 2022 at 10:05:04AM +0100, Laszlo Ersek wrote:
+> On 03/10/22 02:35, Rob Herring wrote:
+> > Convert the QEMU fw-cfg binding to DT schema format. As this binding is
+> > also used on Risc-V now, drop any architecture references and move to a
+> > common location. The fw-cfg interface has also gained some DMA support
+> > which is coherent, so add the missing 'dma-coherent'.
+> > 
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  .../devicetree/bindings/arm/fw-cfg.txt        | 38 -------------
+> >  .../bindings/firmware/qemu,fw-cfg-mmio.yaml   | 54 +++++++++++++++++++
+> >  2 files changed, 54 insertions(+), 38 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/fw-cfg.txt
+> >  create mode 100644 Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/arm/fw-cfg.txt b/Documentation/devicetree/bindings/arm/fw-cfg.txt
+> > deleted file mode 100644
+> > index fd54e1db2156..000000000000
+> > --- a/Documentation/devicetree/bindings/arm/fw-cfg.txt
+> > +++ /dev/null
+> > @@ -1,38 +0,0 @@
+> > -* QEMU Firmware Configuration bindings for ARM
+> > -
+> > -QEMU's arm-softmmu and aarch64-softmmu emulation / virtualization targets
+> > -provide the following Firmware Configuration interface on the "virt" machine
+> > -type:
+> > -
+> > -- A write-only, 16-bit wide selector (or control) register,
+> > -- a read-write, 64-bit wide data register.
+> > -
+> > -QEMU exposes the control and data register to ARM guests as memory mapped
+> > -registers; their location is communicated to the guest's UEFI firmware in the
+> > -DTB that QEMU places at the bottom of the guest's DRAM.
+> > -
+> > -The authoritative guest-side hardware interface documentation to the fw_cfg
+> > -device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
+> > -
+> > -
+> > -Required properties:
+> > -
+> > -- compatible: "qemu,fw-cfg-mmio".
+> > -
+> > -- reg: the MMIO region used by the device.
+> > -  * Bytes 0x0 to 0x7 cover the data register.
+> > -  * Bytes 0x8 to 0x9 cover the selector register.
+> > -  * Further registers may be appended to the region in case of future interface
+> > -    revisions / feature bits.
+> > -
+> > -Example:
+> > -
+> > -/ {
+> > -	#size-cells = <0x2>;
+> > -	#address-cells = <0x2>;
+> > -
+> > -	fw-cfg@9020000 {
+> > -		compatible = "qemu,fw-cfg-mmio";
+> > -		reg = <0x0 0x9020000 0x0 0xa>;
+> > -	};
+> > -};
+> > diff --git a/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> > new file mode 100644
+> > index 000000000000..3aac9448e7f1
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> > @@ -0,0 +1,54 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/firmware/qemu,fw-cfg-mmio.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: QEMU Firmware Configuration bindings
+> > +
+> > +maintainers:
+> > +  - Laszlo Ersek <lersek@redhat.com>
 > 
-> For an authorization daemon to detect that a device is trying
-> to get access through a locked port, the bridge will add the
-> MAC address of the device to the FDB with a locked flag to it.
-> Thus the authorization daemon can catch the FDB add event and
-> check if the MAC address is in the whitelist and if so replace
-> the FDB entry without the locked flag enabled, and thus open
-> the port for the device.
+> Ugh :) I guess this is based on my authorship of historical commit
+> 53275a61bc7a ("devicetree: document ARM bindings for QEMU's Firmware
+> Config interface", 2015-01-13), and prehaps my R-b on commit
+> 92aed5d6ba90 ("devicetree: update documentation for fw_cfg ARM
+> bindings", 2016-02-09).
 > 
-> This feature is known as MAC-Auth or MAC Authentication Bypass
-> (MAB) in Cisco terminology, where the full MAB concept involves
-> additional Cisco infrastructure for authorization. There is no
-> real authentication process, as the MAC address of the device
-> is the only input the authorization daemon, in the general
-> case, has to base the decision if to unlock the port or not.
+> However -- I totally can't maintain this file. (I mean I've probably not
+> done anything related to it in the past seven years, so I guess it's
+> time to admit that fact!)
 > 
-> With this patch set, an implementation of the offloaded case is
-> supplied for the mv88e6xxx driver. When a packet ingresses on
-> a locked port, an ATU miss violation event will occur. When
-> handling such ATU miss violation interrupts, the MAC address of
-> the device is added to the FDB with a zero destination port
-> vector (DPV) and the MAC address is communicated through the
-> switchdev layer to the bridge, so that a FDB entry with the
-> locked flag enabled can be added.
-> 
-> Hans Schultz (3):
->    net: bridge: add fdb flag to extent locked port feature
->    net: switchdev: add support for offloading of fdb locked flag
->    net: dsa: mv88e6xxx: mac-auth/MAB implementation
-> 
->   drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
->   drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
->   drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
->   drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
->   drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
->   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
->   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
->   drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
->   drivers/net/dsa/mv88e6xxx/port.h              |  1 +
->   include/net/switchdev.h                       |  3 +-
->   include/uapi/linux/neighbour.h                |  1 +
->   net/bridge/br.c                               |  3 +-
->   net/bridge/br_fdb.c                           | 13 +++-
->   net/bridge/br_input.c                         | 11 ++-
->   net/bridge/br_private.h                       |  5 +-
->   15 files changed, 167 insertions(+), 14 deletions(-)
->   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
->   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
-> 
+> Rob, would you please consider taking it over?
 
-This doesn't look like an iproute2 patch-set. I think you've messed the target
-in the subject.
+Yeah, no problem.
 
+> With my name+email replaced with yours:
+> 
+> Acked-by: Laszlo Ersek <lersek@redhat.com>
+> 
+> Thank you!
+> Laszlo
