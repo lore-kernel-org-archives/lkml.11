@@ -2,103 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240654AbiCJJQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        id S240658AbiCJJSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:18:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbiCJJQu (ORCPT
+        with ESMTP id S231701AbiCJJSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:16:50 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8407A12E9F7;
-        Thu, 10 Mar 2022 01:15:48 -0800 (PST)
-X-UUID: 96bdbec796c24e49bc8fab5fcf09007a-20220310
-X-UUID: 96bdbec796c24e49bc8fab5fcf09007a-20220310
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 47384453; Thu, 10 Mar 2022 17:15:41 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 10 Mar 2022 17:15:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Mar 2022 17:15:40 +0800
-Message-ID: <0a05150360b7d5ec075396820ee7339c49fb5367.camel@mediatek.com>
-Subject: Re: [RESEND V2 0/3] Add watchdog support for MT8186 SoC
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>
-CC:     <runyang.chen@mediatek.com>, <linux-watchdog@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 10 Mar 2022 17:15:40 +0800
-In-Reply-To: <b2195d5a5d9e7c18eb5e2269a04cb9b8ce431d90.camel@mediatek.com>
-References: <20220301054405.25021-1-rex-bc.chen@mediatek.com>
-         <b2195d5a5d9e7c18eb5e2269a04cb9b8ce431d90.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 10 Mar 2022 04:18:12 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226291390F2;
+        Thu, 10 Mar 2022 01:17:12 -0800 (PST)
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KDk1t5xVwzfYkq;
+        Thu, 10 Mar 2022 17:15:46 +0800 (CST)
+Received: from localhost.localdomain (10.175.127.227) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Thu, 10 Mar 2022 17:17:09 +0800
+From:   Zhang Wensheng <zhangwensheng5@huawei.com>
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nbd@other.debian.org>, <yukuai3@huawei.com>,
+        <zhangwensheng5@huawei.com>
+Subject: [PATCH -next] nbd: fix possible overflow on 'first_minor' in nbd_dev_add()
+Date:   Thu, 10 Mar 2022 17:32:24 +0800
+Message-ID: <20220310093224.4002895-1-zhangwensheng5@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-10 at 16:34 +0800, Rex-BC Chen wrote:
-> On Tue, 2022-03-01 at 13:44 +0800, Rex-BC Chen wrote:
-> > resend v2:
-> > 1. Fix topic to V2.
-> > 
-> > v2:
-> > 1. Squash [1] into [2] in v1.
-> > 2. Add tags of acked-by and reviewed-by.
-> > 
-> > [1]: [3/4] dt-bindings: reset: mt8186: add DSI reset bit for MMSYS
-> > [2]: [2/4] dt-bindings: reset: mt8186: add toprgu reset-controller
-> > header file
-> > 
-> > v1:
-> > 1. Add mt8186-resets.h to define definition of reset bits.
-> > 2. Add wdt compatible for MT8186.
-> > 
-> > Rex-BC Chen (1):
-> >   dt-bindings: watchdog: Add compatible for MediaTek MT8186
-> > 
-> > Runyang Chen (2):
-> >   dt-bindings: reset: mt8186: add reset-controller header file
-> >   watchdog: mediatek: mt8186: add wdt support
-> > 
-> >  .../devicetree/bindings/watchdog/mtk-wdt.txt  |  1 +
-> >  drivers/watchdog/mtk_wdt.c                    |  6 ++++
-> >  include/dt-bindings/reset/mt8186-resets.h     | 36
-> > +++++++++++++++++++
-> >  3 files changed, 43 insertions(+)
-> >  create mode 100644 include/dt-bindings/reset/mt8186-resets.h
-> > 
-> 
-> Hello Guenter,
-> 
-> All patches are reviewed-by and acked-by.
-> Do you have any suggestion for this series?
-> 
-> Thanks!
-> 
-> BRs,
-> Rex
-> 
-Hello Guenter,
+When 'index' is a big numbers, it may become negative which forced
+to 'int'. then 'index << part_shift' might overflow to a positive
+value that is not greater than '0xfffff', then sysfs might complains
+about duplicate creation. Because of this, move the 'index' judgment
+to the front will fix it and be better.
 
-I am sorry that I did not notice this series is in watchdog-next.
-Thanks for accepting this series!
+Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
+Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+---
+ drivers/block/nbd.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-BRs,
-Rex
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 5a1f98494ddd..b3cdfc0ffb98 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1800,17 +1800,6 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
+ 	refcount_set(&nbd->refs, 0);
+ 	INIT_LIST_HEAD(&nbd->list);
+ 	disk->major = NBD_MAJOR;
+-
+-	/* Too big first_minor can cause duplicate creation of
+-	 * sysfs files/links, since index << part_shift might overflow, or
+-	 * MKDEV() expect that the max bits of first_minor is 20.
+-	 */
+-	disk->first_minor = index << part_shift;
+-	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
+-		err = -EINVAL;
+-		goto out_free_work;
+-	}
+-
+ 	disk->minors = 1 << part_shift;
+ 	disk->fops = &nbd_fops;
+ 	disk->private_data = nbd;
+@@ -1915,8 +1904,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+-	if (info->attrs[NBD_ATTR_INDEX])
++	if (info->attrs[NBD_ATTR_INDEX]) {
+ 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
++
++		/*
++		 * Too big first_minor can cause duplicate creation of
++		 * sysfs files/links, since index << part_shift might overflow, or
++		 * MKDEV() expect that the max bits of first_minor is 20.
++		 */
++		if (index < 0 || index > MINORMASK >> part_shift) {
++			printk(KERN_ERR "nbd: illegal input index %d\n", index);
++			return -EINVAL;
++		}
++	}
+ 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
+ 		printk(KERN_ERR "nbd: must specify at least one socket\n");
+ 		return -EINVAL;
+-- 
+2.31.1
 
