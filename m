@@ -2,147 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97048C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344355AbiCJWPK (ORCPT
+        id S1344330AbiCJWP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:15:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        Thu, 10 Mar 2022 17:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344329AbiCJWPF (ORCPT
+        with ESMTP id S240265AbiCJWP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:15:05 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43763197B43
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 14:14:03 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id q19so5866351pgm.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 14:14:03 -0800 (PST)
+        Thu, 10 Mar 2022 17:15:56 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E591F1965FB;
+        Thu, 10 Mar 2022 14:14:54 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id v4so6518604pjh.2;
+        Thu, 10 Mar 2022 14:14:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UzG3xwxvfaLfshaLysPhOgwGVwb5K3wxbNsB2PeYW8Y=;
-        b=xIIfbSPNUV8Ow0wLvcRQdP2Qe7loeLLVXmOTwxDaXkfmDW5jCezViM98w7q1uQr1I2
-         g2Io5NWjZjlegDBMXHuSk+kWVxbfISQOzk7UR0mcoCMj/FP9XMU5QzSH338gEXdaQMm3
-         FXAYA8/XXSntazYo0o5GiyvFgBJ5bUFtmxaHVcpBwZuxVnkcFSokFlDIb88U/Nadisgb
-         0oJnJDk7Jub0KO+awAzgiGlZfGkXRooPIu/ule2CbLNwTSSxC0BqhuV/puIYC3k0Vyfy
-         RyQvzHYY0FabRV9wwYNpG983O9ytwUKxe98ekoHczUocjnhzjEjkhPo1bf/CT3OgdcV4
-         gsVg==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XITCTKTL8wTpYtfXL8q5ribYE0GIZCZ8osIyt5sxi5Y=;
+        b=Wf39KxDBRAPvKdUnV3oTpsDm5l1oTrqTwjWBCaLsuQVp+cmCPTWAwOkI9WeCQl9tU6
+         l9XL3gJ3EYsF71msmPftotiPU73NUbVvktAlP5TsLdmZrbdo7EeXaoj0eEsq4AbWl428
+         AjehmrOqfBudS42mtlmmByoQBHMI0htiiBupmHlGF4aoB3pufLfmTgjP4E7ScOrvA9F5
+         wRqkjIlkrEmGPoX/WRsO0OzCwNOAZvf830LqKmOuQOxW3Hlljd7q/8LuvOSFI1N9B6YF
+         ukxn2bLa/E96iYp8IQp2MBs47Avs1GIXfpf09g1RQtafzoBHDzfNKnEXInDb43FQri1L
+         5mJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UzG3xwxvfaLfshaLysPhOgwGVwb5K3wxbNsB2PeYW8Y=;
-        b=x6k+NHZAysKhlI0a2VlZjW0NW8xclwpMVbGLMl52gYwa0KmGMmxwjp295MqpoqgbW3
-         eRMYjliLYNGHxkKb6b53lLxb/HoV0nDdntdcMFZq6BuXdNylrkk2a6eUM/uISePQt7fL
-         AodBnTc4t+CiKU+lZQvZ94oGik+Yz8BrG2CsNJcARLK5EJnb5b+EPvYLLJMZSmriuTFO
-         IqQI+DNhaMndtGr1ndmRZ4QaCLNaphJ+bRsTGCH8MhXele5DJ6y3rDGFECtUTZY6PhNC
-         N875Gof8IGM3ZJT+hnj6hP1/cXRYCla/57yYOoSfEcNuLVupDOHZLC+iyTL4BDmM/oIW
-         NTyw==
-X-Gm-Message-State: AOAM530Tf8AiMkDXRbnJLSJIW+n6C5vLtdPoRw1K4qSGnBZvIdZOtkQ9
-        i3lo2X0sPqzDzh57CMKEb99aSw==
-X-Google-Smtp-Source: ABdhPJyDPDNCNzaw9MyEiRkIMnm6aKQ+Xl8kK1W11zZDCZEXYzHIEfNaF1f5kgz+ExrcyR7MJSGhAQ==
-X-Received: by 2002:a05:6a00:843:b0:4f7:2830:6d81 with SMTP id q3-20020a056a00084300b004f728306d81mr6965380pfk.76.1646950442784;
-        Thu, 10 Mar 2022 14:14:02 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id nn15-20020a17090b38cf00b001bfceefd8cfsm3511915pjb.48.2022.03.10.14.14.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 14:14:02 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     davem@davemloft.net
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Subject: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Thu, 10 Mar 2022 14:13:28 -0800
-Message-Id: <20220310221328.877987-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
-References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XITCTKTL8wTpYtfXL8q5ribYE0GIZCZ8osIyt5sxi5Y=;
+        b=VBiSmWZKf7A3D00QgOvNdQd09lVa9kmRyrMxJSYGKv0Zm2Gqq7+ytvSvO6C0Bn87K+
+         VDmpXJX62B6IvNJUjYy9uPpcQlkVNEXa3gGmRH0Vtt4jF/DaDsA14+0b0zyREoBPyyJ5
+         aFEDyTORH9aMT82VRQPZaTNu7dGutt+TSkq0U43p36EjFCP7gBCaOIJwQb3ePJqr+VLh
+         33rzF5IfFbJOp1tHuxq6zDq9SQPhSzNkknW3HqK3wsybN1eK767Nh4MtdVpLK2/E9lOk
+         Ekguyb2KGnVWJ04wKsPGeRMUS+IJmg9FJJalagoxqgPrqggeX73kdlnK49NClTERC7Vl
+         cbBw==
+X-Gm-Message-State: AOAM5312T4W7G/2VJjvrzDdgNmClpnmYtJSGmeylPeUswtGU6623wnxj
+        atELaZWBmY/bOXq+c1SOcR0=
+X-Google-Smtp-Source: ABdhPJwLoUcx+V47MOmygwp79EL7GO8tDOu3EAg7WY+RIdu2wQvlAwtvWczrTnq3Qu3ICVgpBysQlA==
+X-Received: by 2002:a17:90b:3143:b0:1bf:8187:3689 with SMTP id ip3-20020a17090b314300b001bf81873689mr7390989pjb.184.1646950494461;
+        Thu, 10 Mar 2022 14:14:54 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d6-20020a056a00244600b004f701135460sm1998554pfj.146.2022.03.10.14.14.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 14:14:53 -0800 (PST)
+Subject: Re: [PATCH V2] tty: serial: bcm63xx: use more precise Kconfig symbol
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20220310221246.10009-1-zajec5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <68b8f56b-1d23-1065-50ef-80cfff6a7d73@gmail.com>
+Date:   Thu, 10 Mar 2022 14:14:50 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220310221246.10009-1-zajec5@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
+On 3/10/22 2:12 PM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+> documentation change regarding "depends" usage. Adjust Kconfig entry to
+> match current guidelines. Make this symbol available for relevant
+> architectures only.
+> 
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
-
-Add a check that prevents an invalid packet with MTU equall to the
-fregment header size to eat up all the space for payload.
-
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
-v2: Instead of updating the alloclen add a check that prevents
-    an invalid packet with MTU equall to the fregment header size
-    to eat up all the space for payload.
-    Fix suggested by Willem de Bruijn <willemdebruijn.kernel@gmail.com>
----
- net/ipv6/ip6_output.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4788f6b37053..6d45112322a0 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1649,6 +1649,16 @@ static int __ip6_append_data(struct sock *sk,
- 			skb->protocol = htons(ETH_P_IPV6);
- 			skb->ip_summed = csummode;
- 			skb->csum = 0;
-+
-+			/*
-+			 *	Check if there is still room for payload
-+			 */
-+			if (fragheaderlen >= mtu) {
-+				err = -EMSGSIZE;
-+				kfree_skb(skb);
-+				goto error;
-+			}
-+
- 			/* reserve for fragmentation and ipsec header */
- 			skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
- 				    dst_exthdrlen);
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.35.1
-
+Florian
