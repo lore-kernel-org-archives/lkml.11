@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3A5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A011C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243864AbiCJO14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
+        id S244164AbiCJO2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:28:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243591AbiCJOZN (ORCPT
+        with ESMTP id S243592AbiCJOZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:25:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2A51617F5;
-        Thu, 10 Mar 2022 06:21:49 -0800 (PST)
+        Thu, 10 Mar 2022 09:25:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3963B8B6D;
+        Thu, 10 Mar 2022 06:22:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 790F9B8254A;
-        Thu, 10 Mar 2022 14:21:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975C9C340F3;
-        Thu, 10 Mar 2022 14:21:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3171861B33;
+        Thu, 10 Mar 2022 14:22:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13915C340EB;
+        Thu, 10 Mar 2022 14:22:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922106;
-        bh=rkmLBM7nzDnRCXA27knWs8ea65zb6LJtanIaRfG92XE=;
+        s=korg; t=1646922125;
+        bh=YjuC0JE4Tu32QTqLjVs4svBdoOZj21c0fcUSIJ1dlVk=;
         h=From:To:Cc:Subject:Date:From;
-        b=OwPUeD9uvaEmJG7qUclXbFKwYbFDbxBZ+jnqg4UvhFefKH4quBXkh7p69DtyCSiEG
-         INoVVIb8m8FmDYcbLOFv3zXMYHeY/4ASnHC0TopZWzJFjli1o5UTv6YOBQ3HHbw5Dt
-         +bryLNaT1BEflxx+R6pxgnLY3C4aK1eBtDj4eX2E=
+        b=ytPEKts+Uo8gsqpUdvfsSb/Jf5UgynKGrrV3pE3oCBQB9T5xRUG2SeYZpSo5Va7On
+         y1GAJmez/oLaidSy058tUcEahCxhmkArIvNUR+adbewAhnwHhuKO7S3xmi/Bb12nUE
+         qFVnGW8XnHR+vCAGuuSrvvQFXnD+jHUYdLOrMukc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,27 +37,27 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
         jonathanh@nvidia.com, f.fainelli@gmail.com,
         sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/31] 4.14.271-rc2 review
-Date:   Thu, 10 Mar 2022 15:18:13 +0100
-Message-Id: <20220310140807.524313448@linuxfoundation.org>
+Subject: [PATCH 4.19 00/33] 4.19.234-rc2 review
+Date:   Thu, 10 Mar 2022 15:18:27 +0100
+Message-Id: <20220310140807.749164737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.271-rc2.gz
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.234-rc2.gz
 X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Branch: linux-4.19.y
 X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.271-rc2
+X-KernelTest-Version: 4.19.234-rc2
 X-KernelTest-Deadline: 2022-03-12T14:08+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.271 release.
-There are 31 patches in this series, all will be posted as a response
+This is the start of the stable review cycle for the 4.19.234 release.
+There are 33 patches in this series, all will be posted as a response
 to this one.  If anyone has any issues with these being applied, please
 let me know.
 
@@ -65,9 +65,9 @@ Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
 Anything received after that time might be too late.
 
 The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.271-rc2.gz
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.234-rc2.gz
 or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
 and the diffstat can be found below.
 
 thanks,
@@ -78,13 +78,16 @@ greg k-h
 Pseudo-Shortlog of commits:
 
 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.271-rc2
+    Linux 4.19.234-rc2
 
 Juergen Gross <jgross@suse.com>
     xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
 
 Juergen Gross <jgross@suse.com>
     xen/gnttab: fix gnttab_end_foreign_access() without page specified
+
+Juergen Gross <jgross@suse.com>
+    xen/pvcalls: use alloc/free_pages_exact()
 
 Juergen Gross <jgross@suse.com>
     xen/9p: use alloc/free_pages_exact()
@@ -118,6 +121,9 @@ Nathan Chancellor <nathan@kernel.org>
 
 Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
     ARM: fix co-processor register typo
+
+Sami Tolvanen <samitolvanen@google.com>
+    kbuild: add CONFIG_LD_IS_LLD
 
 Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
     ARM: fix build error when BPF_SYSCALL is disabled
@@ -188,26 +194,27 @@ Diffstat:
  arch/arm/kernel/entry-common.S                  |  24 +++
  arch/arm/kernel/spectre.c                       |  71 ++++++++
  arch/arm/kernel/traps.c                         |  65 ++++++-
- arch/arm/kernel/vmlinux-xip.lds.S               |  45 +++--
- arch/arm/kernel/vmlinux.lds.S                   |  45 +++--
+ arch/arm/kernel/vmlinux.lds.h                   |  43 ++++-
  arch/arm/mm/Kconfig                             |  11 ++
- arch/arm/mm/proc-v7-bugs.c                      | 199 +++++++++++++++++++---
+ arch/arm/mm/proc-v7-bugs.c                      | 201 +++++++++++++++++++---
  arch/x86/include/asm/cpufeatures.h              |   2 +-
  arch/x86/include/asm/nospec-branch.h            |  16 +-
  arch/x86/kernel/cpu/bugs.c                      | 214 +++++++++++++++++-------
- drivers/block/xen-blkfront.c                    |  67 ++++----
+ drivers/block/xen-blkfront.c                    |  63 ++++---
  drivers/firmware/psci.c                         |  15 ++
  drivers/net/xen-netfront.c                      |  54 +++---
  drivers/scsi/xen-scsifront.c                    |   3 +-
  drivers/xen/gntalloc.c                          |  25 +--
- drivers/xen/grant-table.c                       |  59 ++++---
+ drivers/xen/grant-table.c                       |  71 ++++----
+ drivers/xen/pvcalls-front.c                     |   8 +-
  drivers/xen/xenbus/xenbus_client.c              |  24 ++-
  include/linux/arm-smccc.h                       |  74 ++++++++
  include/linux/bpf.h                             |  11 ++
  include/xen/grant_table.h                       |  19 ++-
+ init/Kconfig                                    |   3 +
  kernel/sysctl.c                                 |   8 +
  net/9p/trans_xen.c                              |  14 +-
  tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
- 30 files changed, 986 insertions(+), 264 deletions(-)
+ 31 files changed, 963 insertions(+), 261 deletions(-)
 
 
