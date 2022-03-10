@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB900C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793ABC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343526AbiCJOw7 (ORCPT
+        id S1344525AbiCJOxa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        Thu, 10 Mar 2022 09:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344065AbiCJObk (ORCPT
+        with ESMTP id S237294AbiCJOfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:40 -0500
+        Thu, 10 Mar 2022 09:35:51 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77CD7CDC8;
-        Thu, 10 Mar 2022 06:30:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA0C1409D8;
+        Thu, 10 Mar 2022 06:31:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27228B81E9E;
-        Thu, 10 Mar 2022 14:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85278C340F3;
-        Thu, 10 Mar 2022 14:30:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEA9AB8267B;
+        Thu, 10 Mar 2022 14:31:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28F20C340F3;
+        Thu, 10 Mar 2022 14:31:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922613;
-        bh=ehyjI2ebByLI4IPd7HQT/CRQRY3GHe52d8FBm89hEgQ=;
+        s=korg; t=1646922704;
+        bh=3IHfz12xGSF/+hJenSrupdOYi3sChCsC8kMrYjgoioE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzmtFW588F+pKtpVdujP4bt9oQCqaYvCL9E9FIqDfhOB1TwviAb2c1xlI6DLmc8cz
-         J3463xszFwueOVak58immaIV3GIecx7yiP8CNnITcpK1ObiVqZjrSjo90/iaYow6KP
-         iR8ppPDqP/eRJ7WBZjYGanbClfpUxnbcPFzy6jU8=
+        b=AcdtFAMlnxuT+FgCIaRDn+WtdlOBqWBcputrek/hQEhaT25xx4tQ3cvumOmqdAm+D
+         NtQpXVDn13Lkl3XvVbFlM7ZFQ69Oih5robv+5EB16iZmzVAR4CCFt14Csf68hsaY6Y
+         jf9zb8e1Y5jNpv6tmSIIyD5YqA+BMXhr4fjZTox0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 34/58] arm64: entry: Add vectors that have the bhb mitigation sequences
-Date:   Thu, 10 Mar 2022 15:19:23 +0100
-Message-Id: <20220310140813.958838273@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Justin Forbes <jmforbes@linuxtx.org>,
+        Mark Pearson <markpearson@lenovo.com>
+Subject: [PATCH 5.15 58/58] Revert "ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE"
+Date:   Thu, 10 Mar 2022 15:19:47 +0100
+Message-Id: <20220310140814.628899103@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -49,264 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit ba2689234be92024e5635d30fe744f4853ad97db upstream.
+This reverts commit e799974e7cbb2e77ec12431512e155574c6ed333 which is
+commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc upstream.
 
-Some CPUs affected by Spectre-BHB need a sequence of branches, or a
-firmware call to be run before any indirect branch. This needs to go
-in the vectors. No CPU needs both.
+It's been reported to cause problems with a number of Fedora and Arch
+Linux users, so drop it for now until that is resolved.
 
-While this can be patched in, it would run on all CPUs as there is a
-single set of vectors. If only one part of a big/little combination is
-affected, the unaffected CPUs have to run the mitigation too.
-
-Create extra vectors that include the sequence. Subsequent patches will
-allow affected CPUs to select this set of vectors. Later patches will
-modify the loop count to match what the CPU requires.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Link: https://lore.kernel.org/r/CAJZ5v0gE52NT=4kN4MkhV3Gx=M5CeMGVHOF0jgTXDb5WwAMs_Q@mail.gmail.com
+Link: https://lore.kernel.org/r/31b9d1cd-6a67-218b-4ada-12f72e6f00dc@redhat.com
+Reported-by: Hans de Goede <hdegoede@redhat.com>
+Reported-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Justin Forbes <jmforbes@linuxtx.org>
+Cc: Mark Pearson <markpearson@lenovo.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/assembler.h |   24 ++++++++++++++++
- arch/arm64/include/asm/vectors.h   |   34 +++++++++++++++++++++++
- arch/arm64/kernel/entry.S          |   53 ++++++++++++++++++++++++++++++-------
- arch/arm64/kernel/proton-pack.c    |   16 +++++++++++
- include/linux/arm-smccc.h          |    5 +++
- 5 files changed, 123 insertions(+), 9 deletions(-)
- create mode 100644 arch/arm64/include/asm/vectors.h
+ drivers/acpi/ec.c    |   10 ----------
+ drivers/acpi/sleep.c |   14 ++++++++++----
+ 2 files changed, 10 insertions(+), 14 deletions(-)
 
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -830,4 +830,28 @@ alternative_endif
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2052,16 +2052,6 @@ bool acpi_ec_dispatch_gpe(void)
+ 		return true;
  
- #endif /* GNU_PROPERTY_AARCH64_FEATURE_1_DEFAULT */
- 
-+	.macro __mitigate_spectre_bhb_loop      tmp
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	mov	\tmp, #32
-+.Lspectre_bhb_loop\@:
-+	b	. + 4
-+	subs	\tmp, \tmp, #1
-+	b.ne	.Lspectre_bhb_loop\@
-+	sb
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
-+
-+	/* Save/restores x0-x3 to the stack */
-+	.macro __mitigate_spectre_bhb_fw
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	stp	x0, x1, [sp, #-16]!
-+	stp	x2, x3, [sp, #-16]!
-+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+alternative_cb	smccc_patch_fw_mitigation_conduit
-+	nop					// Patched to SMC/HVC #0
-+alternative_cb_end
-+	ldp	x2, x3, [sp], #16
-+	ldp	x0, x1, [sp], #16
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
- #endif	/* __ASM_ASSEMBLER_H */
---- /dev/null
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2022 ARM Ltd.
-+ */
-+#ifndef __ASM_VECTORS_H
-+#define __ASM_VECTORS_H
-+
-+/*
-+ * Note: the order of this enum corresponds to two arrays in entry.S:
-+ * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
-+ * 'full fat' vectors are used directly.
-+ */
-+enum arm64_bp_harden_el1_vectors {
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	/*
-+	 * Perform the BHB loop mitigation, before branching to the canonical
-+	 * vectors.
-+	 */
-+	EL1_VECTOR_BHB_LOOP,
-+
-+	/*
-+	 * Make the SMC call for firmware mitigation, before branching to the
-+	 * canonical vectors.
-+	 */
-+	EL1_VECTOR_BHB_FW,
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+
-+	/*
-+	 * Remap the kernel before branching to the canonical vectors.
-+	 */
-+	EL1_VECTOR_KPTI,
-++};
-+
-+#endif /* __ASM_VECTORS_H */
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -646,13 +646,26 @@ alternative_else_nop_endif
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
--	.macro tramp_ventry, vector_start, regsize, kpti
-+
-+#define BHB_MITIGATION_NONE	0
-+#define BHB_MITIGATION_LOOP	1
-+#define BHB_MITIGATION_FW	2
-+
-+	.macro tramp_ventry, vector_start, regsize, kpti, bhb
- 	.align	7
- 1:
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
- 
-+	.if	\bhb == BHB_MITIGATION_LOOP
-+	/*
-+	 * This sequence must appear before the first indirect branch. i.e. the
-+	 * ret out of tramp_ventry. It appears here because x30 is free.
-+	 */
-+	__mitigate_spectre_bhb_loop	x30
-+	.endif // \bhb == BHB_MITIGATION_LOOP
-+
- 	.if	\kpti == 1
  	/*
- 	 * Defend against branch aliasing attacks by pushing a dummy
-@@ -680,6 +693,15 @@ alternative_else_nop_endif
- 	ldr	x30, =vectors
- 	.endif // \kpti == 1
+-	 * Cancel the SCI wakeup and process all pending events in case there
+-	 * are any wakeup ones in there.
+-	 *
+-	 * Note that if any non-EC GPEs are active at this point, the SCI will
+-	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
+-	 * should be missed by canceling the wakeup here.
+-	 */
+-	pm_system_cancel_wakeup();
+-
+-	/*
+ 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
+ 	 * to allow the caller to process events properly after that.
+ 	 */
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -739,15 +739,21 @@ bool acpi_s2idle_wake(void)
+ 			return true;
+ 		}
  
-+	.if	\bhb == BHB_MITIGATION_FW
-+	/*
-+	 * The firmware sequence must appear before the first indirect branch.
-+	 * i.e. the ret out of tramp_ventry. But it also needs the stack to be
-+	 * mapped to save/restore the registers the SMC clobbers.
-+	 */
-+	__mitigate_spectre_bhb_fw
-+	.endif // \bhb == BHB_MITIGATION_FW
-+
- 	add	x30, x30, #(1b - \vector_start + 4)
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
-@@ -687,6 +709,9 @@ alternative_else_nop_endif
+-		/*
+-		 * Check non-EC GPE wakeups and if there are none, cancel the
+-		 * SCI-related wakeup and dispatch the EC GPE.
+-		 */
++		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
+ 		if (acpi_ec_dispatch_gpe()) {
+ 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
+ 			return true;
+ 		}
  
- 	.macro tramp_exit, regsize = 64
- 	adr	x30, tramp_vectors
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	add	x30, x30, SZ_4K
-+#endif
- 	msr	vbar_el1, x30
- 	ldr	lr, [sp, #S_LR]
- 	tramp_unmap_kernel	x29
-@@ -698,26 +723,32 @@ alternative_else_nop_endif
- 	sb
- 	.endm
++		/*
++		 * Cancel the SCI wakeup and process all pending events in case
++		 * there are any wakeup ones in there.
++		 *
++		 * Note that if any non-EC GPEs are active at this point, the
++		 * SCI will retrigger after the rearming below, so no events
++		 * should be missed by canceling the wakeup here.
++		 */
++		pm_system_cancel_wakeup();
+ 		acpi_os_wait_events_complete();
  
--	.macro	generate_tramp_vector,	kpti
-+	.macro	generate_tramp_vector,	kpti, bhb
- .Lvector_start\@:
- 	.space	0x400
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, \kpti
-+	tramp_ventry	.Lvector_start\@, 64, \kpti, \bhb
- 	.endr
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 32, \kpti
-+	tramp_ventry	.Lvector_start\@, 32, \kpti, \bhb
- 	.endr
- 	.endm
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- /*
-  * Exception vectors trampoline.
-+ * The order must match __bp_harden_el1_vectors and the
-+ * arm64_bp_harden_el1_vectors enum.
-  */
- 	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- SYM_CODE_START_NOALIGN(tramp_vectors)
--	generate_tramp_vector	kpti=1
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_LOOP
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_NONE
- SYM_CODE_END(tramp_vectors)
- 
- SYM_CODE_START(tramp_exit_native)
-@@ -744,7 +775,7 @@ SYM_DATA_END(__entry_tramp_data_start)
-  * Exception vectors for spectre mitigations on entry from EL1 when
-  * kpti is not in use.
-  */
--	.macro generate_el1_vector
-+	.macro generate_el1_vector, bhb
- .Lvector_start\@:
- 	kernel_ventry	1, t, 64, sync		// Synchronous EL1t
- 	kernel_ventry	1, t, 64, irq		// IRQ EL1t
-@@ -757,17 +788,21 @@ SYM_DATA_END(__entry_tramp_data_start)
- 	kernel_ventry	1, h, 64, error		// Error EL1h
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, kpti=0
-+	tramp_ventry	.Lvector_start\@, 64, 0, \bhb
- 	.endr
- 	.rept 4
--	tramp_ventry	.Lvector_start\@, 32, kpti=0
-+	tramp_ventry	.Lvector_start\@, 32, 0, \bhb
- 	.endr
- 	.endm
- 
-+/* The order must match tramp_vecs and the arm64_bp_harden_el1_vectors enum. */
- 	.pushsection ".entry.text", "ax"
- 	.align	11
- SYM_CODE_START(__bp_harden_el1_vectors)
--	generate_el1_vector
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_el1_vector	bhb=BHB_MITIGATION_LOOP
-+	generate_el1_vector	bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
- SYM_CODE_END(__bp_harden_el1_vectors)
- 	.popsection
- 
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -770,3 +770,19 @@ int arch_prctl_spec_ctrl_get(struct task
- 		return -ENODEV;
- 	}
- }
-+
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
-+						     __le32 *origptr,
-+						      __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
-+
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_fw_mitigation_enabled(struct alt_instr *alt,
-+						   __le32 *origptr,
-+						   __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -92,6 +92,11 @@
- 			   ARM_SMCCC_SMC_32,				\
- 			   0, 0x7fff)
- 
-+#define ARM_SMCCC_ARCH_WORKAROUND_3					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x3fff)
-+
- #define ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID				\
- 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
- 			   ARM_SMCCC_SMC_32,				\
+ 		/*
 
 
