@@ -2,216 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C45C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16981C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240581AbiCJQBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37466 "EHLO
+        id S238736AbiCJQBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:01:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239706AbiCJQAz (ORCPT
+        with ESMTP id S239872AbiCJQAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:00:55 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230091662F3;
-        Thu, 10 Mar 2022 07:59:53 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22AEaEXA022069;
-        Thu, 10 Mar 2022 15:59:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=0+rzNxS4DQSmqTOqZuotWTKYkyQQ0/mys+OgdhO986g=;
- b=bF09D7tQWpFas11ZSBM6QSZxylALAk3NMgvPQj7DQIiGWHzeDJD49rdODvHqdDNAMgxR
- sH3dfIRAcrJDTXgpyxgKpBpHGyvYie4A72EkL+Y1ZOgR75PkrxC1dCvXeOJTzHXlDOCi
- VtWKN1eSmVNiBu7bY+tsRePSWjfPSroqVE6CLa3PXshbmyc0O/BvomwbkIdGqlpt8cyO
- 0eOb1DDgSfEwcGyJkCsRanyo5yaTdbhMS+T1+MNpvlSRDDKwSnMlAARPF74gTYT0VLOA
- nx0vYe6UcNU75YeTSVElfCwWHZ/OE2M5AXd1qvjHhJ5s0QPaAJ1e71xir156DHH+OWmH dg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqcyyb3k6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:35 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22AFjiIl031612;
-        Thu, 10 Mar 2022 15:59:34 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqcyyb3jg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:34 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22AFv6EF028968;
-        Thu, 10 Mar 2022 15:59:32 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ekyg951d1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:32 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22AFxUbg14221706
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Mar 2022 15:59:30 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8CCDC11C052;
-        Thu, 10 Mar 2022 15:59:30 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 20EB311C04C;
-        Thu, 10 Mar 2022 15:59:30 +0000 (GMT)
-Received: from localhost (unknown [9.43.36.239])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 10 Mar 2022 15:59:29 +0000 (GMT)
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     linux-ext4@vger.kernel.org
-Cc:     Jan Kara <jack@suse.cz>, "Theodore Ts'o" <tytso@mit.edu>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ritesh Harjani <riteshh@linux.ibm.com>, stable@kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv2 02/10] ext4: Fix ext4_fc_stats trace point
-Date:   Thu, 10 Mar 2022 21:28:56 +0530
-Message-Id: <f165aa338a9d175844a19d7c582e7ecbd5cbc1a9.1646922487.git.riteshh@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1646922487.git.riteshh@linux.ibm.com>
-References: <cover.1646922487.git.riteshh@linux.ibm.com>
+        Thu, 10 Mar 2022 11:00:54 -0500
+X-Greylist: delayed 2526 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 07:59:52 PST
+Received: from iris.vrvis.at (iris.vrvis.at [92.60.8.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F6C1662FD
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:59:51 -0800 (PST)
+Received: from [10.43.0.34]
+        by iris.vrvis.at with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <valentin@vrvis.at>)
+        id 1nSKXp-0001fg-JI; Thu, 10 Mar 2022 16:17:38 +0100
+Message-ID: <07bafc71-a6d2-ad6d-4706-7c99047b3228@vrvis.at>
+Date:   Thu, 10 Mar 2022 16:17:37 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: XDBVF3UYp8kF75_UH50LtpaTIL0W6DNX
-X-Proofpoint-GUID: uzvIu7okU2WkzfK0rUdSeRLVBF9dZgz1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-10_06,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0 mlxlogscore=924
- clxscore=1011 adultscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203100084
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Justin Sanders <justin@coraid.com>,
+        Jens Axboe <axboe@kernel.dk>
+From:   Valentin Kleibel <valentin@vrvis.at>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [PATCH] block: aoe: handle device timeouts atomic-safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ftrace's __print_symbolic() requires that any enum values used in the
-symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
-so that the enum value can be decoded from the ftrace ring buffer by
-user space tooling.
+If an aoe device does not respond to any packet on the network layer 
+within aoe_deadsecs, the driver tries to mark the device as down, fail 
+all I/O and clean out the queue.
 
-This patch also fixes few other problems found in this trace point.
-e.g. dereferencing structures in TP_printk which should not be done
-at any cost.
+This currently produces a "BUG: scheduling while atomic" and never finishes.
+relevant dmesg output:
+[....]
+[  408.620155] blk_update_request: I/O error, dev etherd/e42.0, sector
+4096 op 0x0:(READ) flags 0x0 phys_seg 2 prio class 0
+[  408.620235] blk_update_request: I/O error, dev etherd/e42.0, sector 0
+op 0x0:(READ) flags 0x0 phys_seg 2 prio class 0
+[  408.620290] BUG: scheduling while atomic: swapper/16/0/0x00000100
+[  408.620325] Modules linked in: sctp bridge 8021q garp stp mrp llc
+psmouse dlm configfs aoe ipmi_ssif amd64_edac_mod edac_mce_amd
+amd_energy kvm_amd kvm irqbypass ghash_clmulni_intel aesni_intel libaes
+crypto_simd cryptd glue_helper rapl pcspkr ast drm_vram_helper
+drm_ttm_helper ttm drm_kms_helper cec drm evdev joydev ccp sg sp5100_tco
+rng_core watchdog k10temp acpi_ipmi ipmi_si ipmi_devintf ipmi_msghandler
+acpi_cpufreq button ext4 crc16 mbcache jbd2 dm_mod raid10 raid456
+async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq
+libcrc32c crc32c_generic raid0 multipath linear mlx4_ib ib_uverbs
+mlx4_en raid1 md_mod sd_mod t10_pi crc_t10dif crct10dif_generic ib_core
+hid_generic usbhid hid crct10dif_pclmul crct10dif_common crc32_pclmul
+crc32c_intel xhci_pci igb mpt3sas xhci_hcd ahci libahci i2c_algo_bit dca
+ptp libata pps_core raid_class usbcore scsi_transport_sas mlx4_core
+scsi_mod i2c_piix4 usb_common
+[  408.620422] CPU: 16 PID: 0 Comm: swapper/16 Not tainted
+5.10.0-5-amd64 #1 Debian 5.10.26-1
+[  408.620424] Hardware name: Supermicro AS -2013S-C0R/H11SSL-C, BIOS
+2.1 02/21/2020
+[  408.620425] Call Trace:
+[  408.620428]  <IRQ>
+[  408.620437]  dump_stack+0x6b/0x83
+[  408.620442]  __schedule_bug.cold+0x4c/0x58
+[  408.620446]  __schedule+0x719/0x870
+[  408.620449]  schedule+0x46/0xb0
+[  408.620453]  blk_mq_freeze_queue_wait+0x62/0x90
+[  408.620458]  ? add_wait_queue_exclusive+0x70/0x70
+[  408.620466]  aoedev_downdev+0x106/0x150 [aoe]
+[  408.620471]  rexmit_timer+0x4ea/0x500 [aoe]
+[  408.620476]  ? rexmit_deferred+0x380/0x380 [aoe]
+[  408.620480]  call_timer_fn+0x29/0xf0
+[  408.620483]  __run_timers.part.0+0x1d3/0x240
+[  408.620485]  ? ktime_get+0x38/0xa0
+[  408.620488]  ? lapic_next_event+0x1d/0x20
+[  408.620491]  ? clockevents_program_event+0x8d/0xf0
+[  408.620494]  run_timer_softirq+0x26/0x50
+[  408.620496]  __do_softirq+0xc5/0x275
+[  408.620499]  asm_call_irq_on_stack+0x12/0x20
+[  408.620501]  </IRQ>
+[  408.620505]  do_softirq_own_stack+0x37/0x40
+[  408.620509]  irq_exit_rcu+0x8e/0xc0
+[  408.620512]  sysvec_apic_timer_interrupt+0x36/0x80
+[  408.620515]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+[  408.620520] RIP: 0010:cpuidle_enter_state+0xc7/0x350
 
-Also to avoid checkpatch warnings, this patch removes those
-whitespaces/tab stops issues.
+The timeout is handled in rexmit_timer() [drivers/block/aoe/aoecmd.c 
+L727ff] which is registered as a timer callback function and never 
+explicitly called. For this reason rexmit_timer() is always called from 
+an interrupt context.
+When the timeout exceeds aoe_deadsecs aoedev_downdev() is called from 
+rexmit_timer() in L782.
+aoedev_downdev() then tries to clean out the queue 
+[drivers/block/aoe/aoedev.c L227ff] using blk_mq_freeze_queue() and 
+blk_mq_quiesce_queue(). These functions will sleep and, in the context 
+of an interrupt, trigger the "BUG: scheduling while atomic" message, 
+ultimately leading to hung tasks and an unusable system.
 
-Cc: stable@kernel.org
-Fixes: commit aa75f4d3daae ("ext4: main fast-commit commit path")
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Before the change to blk_mq (commit 3582dd291788) the queue was emptied 
+by iterating over all requests in the queue and failing them 1 by 1 
+while no new requests were accepted due to ~DEVFL_UP being set.
+To fail the queue in an atomic-safe way, this patch restores the 
+previous behavior and adapts it to blk_mq.
+Fetching requests from the queue is borrowed from nextbuf() 
+[drivers/block/aoe/aoecmd.c L850] and finally failing them is done with 
+aoe_end_request() [drivers/block/aoe/aoecmd.c L1030]. This is done while 
+the ~DEVFL_UP flag is set which prevents aoeblk_queue_rq() 
+[drivers/block/aoe/aoeblk.c L262] to enqueue new requests.
+
+Fixes: 3582dd291788 (aoe: convert aoeblk to blk-mq)
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=212665
+Signed-off-by: Valentin Kleibel <valentin@vrvis.at>
 ---
- include/trace/events/ext4.h | 77 +++++++++++++++++++++++--------------
- 1 file changed, 48 insertions(+), 29 deletions(-)
+  drivers/block/aoe/aoedev.c | 13 ++++++++-----
+  1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
-index 19e957b7f941..db404eb9b666 100644
---- a/include/trace/events/ext4.h
-+++ b/include/trace/events/ext4.h
-@@ -95,6 +95,16 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
- 	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
- 	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
- 
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
-+
- #define show_fc_reason(reason)						\
- 	__print_symbolic(reason,					\
- 		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
-@@ -2723,41 +2733,50 @@ TRACE_EVENT(ext4_fc_commit_stop,
- 
- #define FC_REASON_NAME_STAT(reason)					\
- 	show_fc_reason(reason),						\
--	__entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
-+	__entry->fc_ineligible_rc[reason]
- 
- TRACE_EVENT(ext4_fc_stats,
--	    TP_PROTO(struct super_block *sb),
--
--	    TP_ARGS(sb),
-+	TP_PROTO(struct super_block *sb),
- 
--	    TP_STRUCT__entry(
--		    __field(dev_t, dev)
--		    __field(struct ext4_sb_info *, sbi)
--		    __field(int, count)
--		    ),
-+	TP_ARGS(sb),
- 
--	    TP_fast_assign(
--		    __entry->dev = sb->s_dev;
--		    __entry->sbi = EXT4_SB(sb);
--		    ),
-+	TP_STRUCT__entry(
-+		__field(dev_t, dev)
-+		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
-+		__field(unsigned long, fc_commits)
-+		__field(unsigned long, fc_ineligible_commits)
-+		__field(unsigned long, fc_numblks)
-+	),
- 
--	    TP_printk("dev %d:%d fc ineligible reasons:\n"
--		      "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
--		      "num_commits:%ld, ineligible: %ld, numblks: %ld",
--		      MAJOR(__entry->dev), MINOR(__entry->dev),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
--		      __entry->sbi->s_fc_stats.fc_num_commits,
--		      __entry->sbi->s_fc_stats.fc_ineligible_commits,
--		      __entry->sbi->s_fc_stats.fc_numblks)
-+	TP_fast_assign(
-+		int i;
- 
-+		__entry->dev = sb->s_dev;
-+		for (i = 0; i < EXT4_FC_REASON_MAX; i++) {
-+			__entry->fc_ineligible_rc[i] =
-+				EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
-+		}
-+		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
-+		__entry->fc_ineligible_commits =
-+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
-+		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
-+	),
-+
-+	TP_printk("dev %d,%d fc ineligible reasons:\n"
-+		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
-+		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
-+		  MAJOR(__entry->dev), MINOR(__entry->dev),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
-+		  __entry->fc_commits, __entry->fc_ineligible_commits,
-+		  __entry->fc_numblks)
- );
- 
- #define DEFINE_TRACE_DENTRY_EVENT(__type)				\
--- 
-2.31.1
+diff --git a/drivers/block/aoe/aoedev.c b/drivers/block/aoe/aoedev.c
+index c5753c6bfe80..0740acefed4c 100644
+--- a/drivers/block/aoe/aoedev.c
++++ b/drivers/block/aoe/aoedev.c
+@@ -198,6 +198,7 @@ aoedev_downdev(struct aoedev *d)
+  {
+         struct aoetgt *t, **tt, **te;
+         struct list_head *head, *pos, *nx;
++       struct request *rq;
+         int i;
 
+         d->flags &= ~DEVFL_UP;
+@@ -225,11 +226,13 @@ aoedev_downdev(struct aoedev *d)
+
+         /* fast fail all pending I/O */
+         if (d->blkq) {
+-               /* UP is cleared, freeze+quiesce to insure all are 
+errored */
+-               blk_mq_freeze_queue(d->blkq);
+-               blk_mq_quiesce_queue(d->blkq);
+-               blk_mq_unquiesce_queue(d->blkq);
+-               blk_mq_unfreeze_queue(d->blkq);
++               /* UP is cleared, error all requests without sleeping */
++               while ((rq = list_first_entry_or_null(&d->rq_list, 
+struct request,
++                               queuelist))) {
++                       list_del_init(&rq->queuelist);
++                       blk_mq_start_request(rq);
++                       aoe_end_request(d, rq, 1);
++               }
+         }
+
+         if (d->gd)
