@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DF6C35274
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7A6C47080
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344990AbiCJOl1 (ORCPT
+        id S1345419AbiCJOlw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
+        Thu, 10 Mar 2022 09:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245041AbiCJO3u (ORCPT
+        with ESMTP id S245465AbiCJOac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:29:50 -0500
+        Thu, 10 Mar 2022 09:30:32 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886915C9F2;
-        Thu, 10 Mar 2022 06:25:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E83180218;
+        Thu, 10 Mar 2022 06:26:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43845B825A7;
-        Thu, 10 Mar 2022 14:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E60DC340E8;
-        Thu, 10 Mar 2022 14:25:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30BF1B82615;
+        Thu, 10 Mar 2022 14:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6DEC340E8;
+        Thu, 10 Mar 2022 14:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922320;
-        bh=CKv9siGuusoENM2DBRrXprlaYHpaPdR7ANqVe2dSUZk=;
+        s=korg; t=1646922374;
+        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Xi4CsSbief1BCa+XEBg2inAg3Z3XPrqKGCVFl9yVUj2DC2r+RKb17TzIlkK8IZ6x
-         FmwQ/MIxLlvoQItSxcg6gucBliIpL9qvOUlsTvOutNJ6WNEcJNLHE1emAguJn+Yeow
-         m7UrM9biVgU1R+gpAg6okRWLYLLBlzdS3QPwoFSo=
+        b=vLNi7cVzw8Yv8g+1ZqEdppnF6OdCJlf4H21GOaEBd3mkHnJfUDAHE/d6MPsUTmBUO
+         lXbyBZAWsmxY6IotBlYSSqaruwgb6hQnhzIyBEzLkNJs7tW0utAETRG/uYoPL1X4NS
+         O0ElGum20UYtEZmRgz5WuXhfv27PvJ92aohEdtBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 40/58] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
-Date:   Thu, 10 Mar 2022 15:19:00 +0100
-Message-Id: <20220310140814.012332345@linuxfoundation.org>
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.10 55/58] xen/pvcalls: use alloc/free_pages_exact()
+Date:   Thu, 10 Mar 2022 15:19:15 +0100
+Message-Id: <20220310140814.433062031@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -51,115 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
+Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
 
-KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
-implemented, and to preserve that state during migration through its
-firmware register interface.
+Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
+and free_pages_exact(). This is in preparation of a change of
+gnttab_end_foreign_access() which will prohibit use of high-order
+pages.
 
-Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
+This is part of CVE-2022-23041 / XSA-396.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/uapi/asm/kvm.h |    5 +++++
- arch/arm64/kvm/hypercalls.c       |   12 ++++++++++++
- arch/arm64/kvm/psci.c             |   18 +++++++++++++++++-
- 3 files changed, 34 insertions(+), 1 deletion(-)
+ drivers/xen/pvcalls-front.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/arm64/include/uapi/asm/kvm.h
-+++ b/arch/arm64/include/uapi/asm/kvm.h
-@@ -273,6 +273,11 @@ struct kvm_vcpu_events {
- #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
- #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED     	(1U << 4)
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
+ 	if (!map->active.ring)
+ 		return;
  
-+#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
-+#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
-+#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
-+#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
-+
- /* SVE registers */
- #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
- 
---- a/arch/arm64/kvm/hypercalls.c
-+++ b/arch/arm64/kvm/hypercalls.c
-@@ -58,6 +58,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu
- 				break;
- 			}
- 			break;
-+		case ARM_SMCCC_ARCH_WORKAROUND_3:
-+			switch (arm64_get_spectre_bhb_state()) {
-+			case SPECTRE_VULNERABLE:
-+				break;
-+			case SPECTRE_MITIGATED:
-+				val = SMCCC_RET_SUCCESS;
-+				break;
-+			case SPECTRE_UNAFFECTED:
-+				val = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
-+				break;
-+			}
-+			break;
- 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
- 			val = SMCCC_RET_SUCCESS;
- 			break;
---- a/arch/arm64/kvm/psci.c
-+++ b/arch/arm64/kvm/psci.c
-@@ -397,7 +397,7 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
- 
- int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
- {
--	return 3;		/* PSCI version and two workaround registers */
-+	return 4;		/* PSCI version and three workaround registers */
+-	free_pages((unsigned long)map->active.data.in,
+-			map->active.ring->ring_order);
++	free_pages_exact(map->active.data.in,
++			 PAGE_SIZE << map->active.ring->ring_order);
+ 	free_page((unsigned long)map->active.ring);
  }
  
- int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
-@@ -411,6 +411,9 @@ int kvm_arm_copy_fw_reg_indices(struct k
- 	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
- 		return -EFAULT;
+@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
+ 		goto out;
  
-+	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
-+		return -EFAULT;
-+
- 	return 0;
- }
- 
-@@ -450,6 +453,17 @@ static int get_kernel_wa_level(u64 regid
- 		case SPECTRE_VULNERABLE:
- 			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
- 		}
-+		break;
-+	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
-+		switch (arm64_get_spectre_bhb_state()) {
-+		case SPECTRE_VULNERABLE:
-+			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
-+		case SPECTRE_MITIGATED:
-+			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
-+		case SPECTRE_UNAFFECTED:
-+			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
-+		}
-+		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
- 	}
- 
- 	return -EINVAL;
-@@ -466,6 +480,7 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *
- 		break;
- 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
- 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
-+	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
- 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
- 		break;
- 	default:
-@@ -511,6 +526,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *
- 	}
- 
- 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
-+	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
- 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
- 			return -EINVAL;
+ 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
+-	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+-					PVCALLS_RING_ORDER);
++	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
++				  GFP_KERNEL | __GFP_ZERO);
+ 	if (!bytes)
+ 		goto out;
  
 
 
