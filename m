@@ -2,66 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E355DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344091AbiCJVvI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 16:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S245573AbiCJVvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 16:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344083AbiCJVvE (ORCPT
+        with ESMTP id S1344103AbiCJVvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 16:51:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A6AFABD6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:50:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BA5861A95
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A7AC340E8;
-        Thu, 10 Mar 2022 21:50:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646949001;
-        bh=CEC+fXpAIGgJovTgBZcpLqWqgTUrRG0j28afwA6P//Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GpF6e6hj/Xt2Tpgk7CR/sTdekzEY/GguaxXnfm+qWz4y//STFnNcYYk67rx+Pz2ks
-         Z29JGrBi8c9qEBcSdLxglJoQ5OEX6bTL5YwClEPgQsXpRCiRvDY7GEXmXa/ZQ2Q91c
-         aARX5jieY+GLv+WSK2mJqrXCx1d3KFkJcdpCgI7I=
-Date:   Thu, 10 Mar 2022 22:48:55 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] soundwire updates for v5.18-rc1
-Message-ID: <YipyR+xRLKabmpXa@kroah.com>
-References: <YiJJR1hYtlJfBCe4@matsya>
+        Thu, 10 Mar 2022 16:51:16 -0500
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F274919417D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:50:13 -0800 (PST)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2dbd97f9bfcso73849697b3.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RugAVh3UxY4wxouftMk7HSkCKZXxSMxitrpzMJUbDGw=;
+        b=yumWmESADJuFPPmH+EtMDxkbnBz3MrLfSXwMRNgdxayrVqgqXQjF+dFfpG09SB8AgZ
+         Vt2seFJlz7xwGqzYUlfnyY09fgqq2EqR4V0HqvkvxQKQT8tD4FWh+pBf3odrlgvCIwcY
+         dayBgw0BltAr1ix3kX0FiKz9v92+vM77KpWar3Jne6OJxNSR/2NvyPHjJ8VhbFXQYY8n
+         rkh9DcU+fIx9EiFqffBVlKtQMoXQc0CNPbH/qSzX+yl7S8TMaDSZw4+sp5tk1Xxxxr1z
+         2MRxRyl6Ib0CCQrWM46LdlUUrgLAF4JYHEuiIEAwbvwPx5Yu8SyUzTB7nFGeZnDciiIO
+         n3NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RugAVh3UxY4wxouftMk7HSkCKZXxSMxitrpzMJUbDGw=;
+        b=QYHIbxcN8PV44m7w7wnc85+nr4N0WFbZo0GAl45/EoUQMlE5zy/PvGLJtozyH+OTb6
+         xEEd90Skcnlgq3oUo8B7KnvjEWYZjCzhD2AlhfeNNnIj003+ybSDNYcCAk8BNKywlbf5
+         Ea1SkGk37uyTf0JGmAK9FsSvlBTuhhnvUve1MwzcY1ih0SAyZ2VPzWwAVAjvHOAdOGVU
+         wuiPMsDWV76Ll84xPPaH8Wbz2vjMMWQjjYT5nPJqJ1EnA3X7YOrGQMA0sTrJY04r0J4F
+         Rr2VwSXXT05q5aMc0urDGZ/JeZiPebHtZQ1Xx+1Uxo6yNRjVxpNryFOaSBpMqbNpncsF
+         c0eg==
+X-Gm-Message-State: AOAM533k8sLy4XTVYbMf008vhaWs07THVlvkq04woAvTOzLmPZ5/+kL8
+        0YxXR1WKcY8VR4PFEv+NfUddhyoiDnB8IHZS+zBo5le4C3E0Zfe3
+X-Google-Smtp-Source: ABdhPJy+ZRYKSMj0R6GUYoyQw0PK9dinkwFaI6DzHdB9OxXJb0bgmX5v2PdS8AZp7tYTIlZYBPGLeMwmY8a9EeZwX64=
+X-Received: by 2002:a81:2f12:0:b0:2d7:d366:164a with SMTP id
+ v18-20020a812f12000000b002d7d366164amr5982945ywv.265.1646949013038; Thu, 10
+ Mar 2022 13:50:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiJJR1hYtlJfBCe4@matsya>
+References: <CAMj1kXEFZVeWLaRQJmwO+Nn6uW4q6vXJOaNNTVKju1p2bMQksA@mail.gmail.com>
+ <YijCkHHhpleeADAO@shell.armlinux.org.uk> <CA+G9fYtjrAMg8TykZdRyZEfRthyqom_73x87F-60C_QFeEL8Bg@mail.gmail.com>
+ <YijfzAhWAgfGGqCO@shell.armlinux.org.uk> <CAMj1kXFvjawvOzeTb2m1H=P-_aXgW-ozvaOK1FtjBv7G0sCDFA@mail.gmail.com>
+ <Yij2cZVKwPexGsTf@shell.armlinux.org.uk> <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
+ <YikByJteDEtKi4Xv@shell.armlinux.org.uk> <CAMj1kXGnwbe=YYWaRxaXioEfTJOdXg9JYcNddO8iifpWLRZCWg@mail.gmail.com>
+ <Yinwq3Z9l0selLLS@shell.armlinux.org.uk> <Yin2jQqW+pUWJZ7E@shell.armlinux.org.uk>
+ <CAMj1kXGkUJ=-4oA4GvBZNK94A1MrZ7UwKDN_tJRgwq8KF06VmA@mail.gmail.com>
+ <CA+G9fYvEANOMekjvtu7agdVYQ_b8OMtxQdyAV2JT_vMdBU3VRA@mail.gmail.com> <CAMj1kXEVVZTKX_86bbTfLpFuDriV0-uwCMgSKDP+dzcD1L4XCw@mail.gmail.com>
+In-Reply-To: <CAMj1kXEVVZTKX_86bbTfLpFuDriV0-uwCMgSKDP+dzcD1L4XCw@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 11 Mar 2022 03:20:02 +0530
+Message-ID: <CA+G9fYuO-sy+sZnhSz=A7Xm0LdSp2AT+7jCKLB33tZzK4izj3g@mail.gmail.com>
+Subject: Re: [next] arm: Internal error: Oops: 5 PC is at __read_once_word_nocheck
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 10:45:51PM +0530, Vinod Koul wrote:
-> Hello Greg,
-> 
-> Please pull to receive updates for soundwire subsystem for v5.18.
-> 
-> Mostly bunch of core stream refactoring by Intel folks and qcom driver
-> updates.
-> 
-> The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-> 
->   Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/soundwire.git tags/soundwire-5.18-rc1
-> 
+On Fri, 11 Mar 2022 at 02:55, Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> On Thu, 10 Mar 2022 at 22:18, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> >
+> > Hi Ard and Russell,
+> >
+> > The boot test pass on linux next-20220310 tag with  KASAN=y on BeagleBoard x15
+> > device. but LTP cve tests reproduced the reported kernel crash  [1].
+> > From the available historical data I can confirm that this is an
+> > intermittent issue on
+> > BeagleBoard x15 devices.
+> >
+> > OTOH, the kernel crash is always reproducible on qemu-arm with KASAN=y
+> > while booting which has been known to fail for a long time.
+> >
+> > From the Ardb tree I have boot tested qemu-arm with KASAN=y the reported
+> > kernel crash is always reproducible.
+> >
+> > The build steps [3] and extra Kconfigs.
+> >
+> > - Naresh
+> > [1] https://lkft.validation.linaro.org/scheduler/job/4701310
+> > [2] https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/
+> > [3] https://builds.tuxbuild.com/2661dIAPUjE2DMJvye91He2gus0/tuxmake_reproducer.sh
+>
+> Thanks Naresh. I'm having trouble to make sense of this, though. The
+> linked output log appears to be from a build that lacks my 'ARM:
+> entry: fix unwinder problems caused by IRQ stacks' patch, as it
+> doesn't show any occurrences of call_with_stack() on any of the call
+> stacks.
+>
+> Do you have a link to the vmlinux and zImage files for this build?
 
-Pulled and pushed out, thanks.
+Yes.
 
-greg k-h
+vmlinux.xz:  https://builds.tuxbuild.com/26BmIasJnAyCii0SkgbKarkF369/vmlinux.xz
+zImage: https://builds.tuxbuild.com/26BmIasJnAyCii0SkgbKarkF369/zImage
+System.map: https://builds.tuxbuild.com/26BmIasJnAyCii0SkgbKarkF369/System.map
+Build log: https://builds.tuxbuild.com/26BmIasJnAyCii0SkgbKarkF369/
+
+- Naresh
