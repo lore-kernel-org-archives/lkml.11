@@ -2,246 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A84C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D13D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 00:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345120AbiCKAAt (ORCPT
+        id S1343796AbiCKABC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 19:00:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
+        Thu, 10 Mar 2022 19:01:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345086AbiCKAAm (ORCPT
+        with ESMTP id S1345131AbiCKAAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 19:00:42 -0500
-Received: from sonic308-16.consmr.mail.ne1.yahoo.com (sonic308-16.consmr.mail.ne1.yahoo.com [66.163.187.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8EDEA2A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:59:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956778; bh=CA7uJV6tefTVDxUjGl1tCyNZ2ZbFLUSTedcSfuXVSx4=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=ASaGEkofQQBycWVbjZoJgqOINbe8Ig7sGI6kouTP4nuO39u8A/VY+qXH3yN7n1bAw7h17m28HT4egKOKqx7x7i96Rva+DUkDJgDTyBdAo4BJVTtCvL5zytuwJV3WGr8n0Bsb62Q9I/2BWjmUr6/866Hjn+2lML0DQcBEz7jThcO/a1e/RAxRyZcGSFySyPx+Z1zQfg9SgXTWPB/n3zokIuMptUYtRMX5716YFj+1m3r/eYPz9lFVho+AXxyD3spEdSMXYYVga2KQfcBgrbO6GhuIgODyMgi6OzJGOih5CviSRykRGCSqPAz+VTv1tnkAyXm7crIk4XeUyVimdOOE3g==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956778; bh=tnxBETGvTNaLB3bucuBvOJK9fzvEYSrMZbOWVtxF7SU=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=HearUBV6FsKUqC/k/MtzEaOO+i/+H1Pt5P807YV7vWTl0BAmrnU1+dwUaDCLF4aqPvfYqayl8+uxJ+Z0SMv4tC1pu6v811qoaFFprRE/4AMdXG9cwvrbd1ffLpYyl0KVYx3SSb+0SGPGEym9CzwkMM6Q1eRkb6bjOcaxKammBhQw/2k2mGi1qAH6ohc9AONdK9rsH04KvkrNJwqo2e07rGT2OPEsDRRuDJCulq/c4y3Mu0RvULTHDoU5Lofw2JjKq79o7VHvJN+CcSdgzQQfFsljUz3XmaX1VQCwYe4LiEzCfqMdrvZONUkOuHAHEzxR4tfxpNTUIu0HsiQIhbD8nQ==
-X-YMail-OSG: ffRpECAVM1m_F4UQwx6YSD0fsLvJ1iEQB_97_4p1sRjaluUVwhAYVdbXgrPP5bT
- P2.9.L_NEi2yNwCQB.IK8vsL9hbofCyfBY1o1OleMtAxLIgJoOiT5l8EcGmkviMSmOmd4G.ubMII
- pBjqL.w4anrBvOGCo_2Mr9vuQArYOlS2OAoa8AQ6rAxSKCvY9QDevWkUtNEbMx1vRsZW6aCyveYQ
- qRw9IhJ6gMeCArJxMA2ic5iOy_owjmtonKdTJbop_vgp2ZwXGsGeOTHNM.U21iZnTsFMOrJuPszE
- v1l6St0eZ2W.vpJ2VyYbhzPeHMw4RG60C5e9u.79IgQsBBCH4m7_FYcf5pu4ghCzTZVA7M_p12aZ
- QQJf61qdzL7xBD4psGaj_bZgvMPFvlYTcVSSeUPW3pPkuBSe6oxJFltaVcs1KUjO3WCiGpw64OSy
- UNXHH.g84TKR8S1jJRNfZaFqOYXSwWMmTKiMsQCr1xZEo6aRtHbhQi3z9sEI9HiniB8CVr2sFstx
- PhnMiVRl4ECx.WcbvLXHzVmYu7V6CtAeJoku3FCV5H9Y74bzC.6NSYMM8XTjCpwZe_V2W5CQ8636
- HuDRuzGnkxv3d6786x9zlU3m65vQlrUP_xB6XRGejtTcRL1eWb77NDuQlyoDVmMiZB9vxV.nNHMR
- CnxCWEuAmF15rHlc1jaDgENtf4GgtyNJuvkFvJMrB9tDXNfU8Bem9tpDc8kRF2QdQw7s2bf60x9V
- lIkjlfSkJlsE1r.1aRr4D9sW82J1taZa36ldSbmnRMzU3ReU_Ykc9rwmzZpOG1mh5lKRbuBiPNWH
- pFPc.VL57VKjlYTnDA4mmRtrli9WojS_pMj9gyTC7zlrp_X3Udq__a.8ZitZOKt0o97oxqgpShKZ
- C4JrgfNLLOlAmpfDMemNzArdtV7FYKkPKNbDHlDKbYgyXBvdh8MiMQLCCj8fkOEIDAyDTdrwgb.K
- rNuRfIKVkoyHcCfEjAo6UcHghlBut9GO.kgZyw8bRC2O84TRxAr2raA.GSi.S5QvDlmNGhaerqRM
- p3TG6ZH7vuiNM7sLcVOQQutrO3dFlyaFEWCqvpGpLD11U_vR8V3CO3k2D27v_1RuZFjoi6Yrrp8v
- IesfTWk_A78k4i8N13_JY7EDrvvklMcidiAF.rbBAvNBPHHz94Z4cGv_QDcV485JgMCgil9RmU0E
- alQVRgms37unrmJWIOloLQiHdcOUYcLB0J88GzwIKHVwnaC_aFVY_WVJXzDwq0iEWoqxHsUI7Ohd
- w4o9.z.iTA6sVYhihb8srFLlIn2tDd2muEG33pDN2KLjvE2dzGipcsGlIKYs3nTpPr_UYCfG9dUc
- hjcppQifv3i32Xouu3OADeu_CePJfuIqDD3NAdlUFZ6kjCybPjGsnKIc0dUGDjZ6HiroKRO7pD4t
- gZ0EvAqf2Kj.ZIz.3vSNKyWiUoPOxVQ_mie00AChYHixcbibDk5upoThn7xnEgurqQcP2FcckFzP
- AKMNXOYEPhnjWKz1Gs8Jv_CLQ_bLtnNbrgaFFf.oNszxNvV1ICi0rmxgSJIL.fPd_ENMk14GHjG5
- 5sWwfz9uqMXfvqMJAOiXValH6NsGmLdBQMvyCgIRWcX1Z9C8SRIGRJGiULFtASgo6fQKkmVEeDhL
- uVM2ehkRc0eCGzSU8Hekgh923O.FSfPB6fexm0KQ04yKMvZavspTeTEI0ryHFnpkLJtfo1G502gX
- 2l3GCleT.HS3_.RVngjaR2sV7EPzhcDAHI2JDwgDiiVXGVEpr4SjfoEHO4EF.aM.v_GrJ5M2P5IO
- gVZMuw5DGMQj7MqbGmif4pran.2GrkB8N7afsDnTlDUGhbKHXwytr2tYVk_NmmrG22r4JrvnVXV5
- DA_bmyHmEh_okGPVQyKafZcBENn_QSpT0PF0hKYhj8Gez0_jNhb7Bozjj12Oty13Uqw8Av4B_fQ.
- btQGXLCGu.nSQ925c72q_5vIaTkTkjMAtxme3FBWs7G29aS_eJpjmvtjWzZk_fN4wqstcSE53_wl
- 7c_Xb5rySwUYd6RlQGi6ckBwL_J24WFUAXEsMozNNBSexDrlfsX7paADefuMRR06fwEWmUfFhpjS
- YYXqClyGqzjG2SPWgFTk7dNYafCbYzsdhq99d4XwS2aDYMfb7D75wHg2BILhgYl1RF0F7BWmzsM8
- 4CWbItd0UwRmLgnnK1nY.j1ka9ky_DPV8F73YFhra7OVdzVBMzGY6HsoECFXdJ4ymoH2WvjZaA7Z
- qE5e95SwLZ7Y7Qu7eoAU_TGqZhahBPBPZxEfw5xGo0.pJo_W0Pa8-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Thu, 10 Mar 2022 23:59:38 +0000
-Received: by kubenode510.mail-prod1.omega.ne1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 33032615d5bc216242260d2cf82dc739;
-          Thu, 10 Mar 2022 23:59:34 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v33 26/29] Audit: Add record for multiple task security contexts
-Date:   Thu, 10 Mar 2022 15:46:29 -0800
-Message-Id: <20220310234632.16194-27-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220310234632.16194-1-casey@schaufler-ca.com>
-References: <20220310234632.16194-1-casey@schaufler-ca.com>
+        Thu, 10 Mar 2022 19:00:54 -0500
+X-Greylist: delayed 339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 15:59:45 PST
+Received: from rere.qmqm.pl (rere.qmqm.pl [91.227.64.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2621EE02C9;
+        Thu, 10 Mar 2022 15:59:44 -0800 (PST)
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4KF5WG2Pswz9q;
+        Fri, 11 Mar 2022 00:54:01 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1646956443; bh=ZbM+uUpW63IdB++IxqwwUYhFJXACQMMNBE9FAmZwinc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kIyR5n+l/hAW3FQWdIPuou+eqg0mMW5LgNePzkqwxnwkrJSckG4TPJkGwK1xSrTjW
+         2d7SnTGSBkjBE5DCFm3+w5fAS33HffsMih9f+Lb6ETSfCSgi0Ri/lg/pbftAkVQwxB
+         WsQpEtxuqsoaD+7Doj4Cpa9GnOl51kFUF57MI6fKEcXcRZ8JOopXSoFMkuaBhHKVud
+         MUxq1sXw2E644SG6lRrCHSjzVYjr5bgwSklrSF4o1zY4BVEz6d1G0EJbMH3L9ZmFqh
+         6s8x/e6xDV79LFHZGarq9eGUTUQPv8u+1OTFAaZ7dtmOMXIvXmBUurzi/xoy2rtkFw
+         CnuvwD5HSkSYw==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.5 at mail
+Date:   Fri, 11 Mar 2022 00:54:00 +0100
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
+Message-ID: <YiqPmIdZ/RGiaOei@qmqm.qmqm.pl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a new audit record AUDIT_MAC_TASK_CONTEXTS.
-An example of the MAC_TASK_CONTEXTS (1420) record is:
+Hi Linus,
 
-    type=MAC_TASK_CONTEXTS[1420]
-    msg=audit(1600880931.832:113)
-    subj_apparmor=unconfined
-    subj_smack=_
+If the macro implementation doesn't have to be pretty, maybe it could go
+a step further and remember the list_head's offset? That would look
+something like following (expanding on your patch; not compile tested):
 
-When an audit event includes a AUDIT_MAC_TASK_CONTEXTS record
-the "subj=" field in other records in the event will be "subj=?".
-An AUDIT_MAC_TASK_CONTEXTS record is supplied when the system has
-multiple security modules that may make access decisions based
-on a subject security context.
+#define list_traversal_head(type,name,target_member) \
+	union { \
+		struct list_head name; \
+		type *name##_traversal_type; \
+		char (*name##_list_head_offset)[offsetof(type, target_member)];  \
+	}
 
-Functions are created to manage the skb list in the audit_buffer.
+#define list_traversal_entry(ptr, head) \
+	(typeof(*head##_traversal_type))((void *)ptr - sizeof(**head##_list_head_offset))
 
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
----
- include/uapi/linux/audit.h |   1 +
- kernel/audit.c             | 104 ++++++++++++++++++++++++++++++++-----
- 2 files changed, 93 insertions(+), 12 deletions(-)
+#define list_traversal_entry_head(ptr, head) \
+	(struct list_head *)((void *)ptr + sizeof(**head##_list_head_offset))
 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index 8eda133ca4c1..af0aaccfaf57 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -143,6 +143,7 @@
- #define AUDIT_MAC_UNLBL_STCDEL	1417	/* NetLabel: del a static label */
- #define AUDIT_MAC_CALIPSO_ADD	1418	/* NetLabel: add CALIPSO DOI entry */
- #define AUDIT_MAC_CALIPSO_DEL	1419	/* NetLabel: del CALIPSO DOI entry */
-+#define AUDIT_MAC_TASK_CONTEXTS	1420	/* Multiple LSM task contexts */
- 
- #define AUDIT_FIRST_KERN_ANOM_MSG   1700
- #define AUDIT_LAST_KERN_ANOM_MSG    1799
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 4713e66a12af..ad825af203cf 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -2147,8 +2147,65 @@ void audit_log_key(struct audit_buffer *ab, char *key)
- 		audit_log_format(ab, "(null)");
- }
- 
-+/*
-+ * A brief note on aux record management.
-+ *
-+ * Aux records are allocated and added to the skb list of
-+ * the "main" record. The ab->skb is reset to point to the
-+ * aux record on its creation. When the aux record in complete
-+ * ab->skb has to be reset to point to the "main" record.
-+ * This allows the audit_log_ functions to be ignorant of
-+ * which kind of record it is logging to. It also avoids adding
-+ * special data for aux records.
-+ */
-+
-+/**
-+ * audit_buffer_aux_new - Add an aux record buffer to the skb list
-+ * @ab: audit_buffer
-+ * @type: message type
-+ *
-+ * On success ab->skb will point to the new aux record.
-+ * Returns 0 on success, -ENOMEM should allocation fail.
-+ */
-+static int audit_buffer_aux_new(struct audit_buffer *ab, int type)
-+{
-+	WARN_ON(ab->skb != skb_peek(&ab->skb_list));
-+
-+	ab->skb = nlmsg_new(AUDIT_BUFSIZ, ab->gfp_mask);
-+	if (!ab->skb)
-+		goto err;
-+	if (!nlmsg_put(ab->skb, 0, 0, type, 0, 0))
-+		goto err;
-+	skb_queue_tail(&ab->skb_list, ab->skb);
-+
-+	audit_log_format(ab, "audit(%llu.%03lu:%u): ",
-+			 (unsigned long long)ab->stamp.ctime.tv_sec,
-+			 ab->stamp.ctime.tv_nsec/1000000,
-+			 ab->stamp.serial);
-+
-+	return 0;
-+
-+err:
-+	kfree_skb(ab->skb);
-+	ab->skb = skb_peek(&ab->skb_list);
-+	return -ENOMEM;
-+}
-+
-+/**
-+ * audit_buffer_aux_end - Switch back to the "main" record from an aux record
-+ * @ab: audit_buffer
-+ *
-+ * Restores the "main" audit record to ab->skb.
-+ */
-+static void audit_buffer_aux_end(struct audit_buffer *ab)
-+{
-+	ab->skb = skb_peek(&ab->skb_list);
-+}
-+
-+
- int audit_log_task_context(struct audit_buffer *ab)
- {
-+	int i;
- 	int error;
- 	struct lsmblob blob;
- 	struct lsmcontext context;
-@@ -2157,16 +2214,44 @@ int audit_log_task_context(struct audit_buffer *ab)
- 	if (!lsmblob_is_set(&blob))
- 		return 0;
- 
--	error = security_secid_to_secctx(&blob, &context, LSMBLOB_FIRST);
-+	if (!lsm_multiple_contexts()) {
-+		error = security_secid_to_secctx(&blob, &context,
-+						 LSMBLOB_FIRST);
-+		if (error) {
-+			if (error != -EINVAL)
-+				goto error_path;
-+			return 0;
-+		}
- 
--	if (error) {
--		if (error != -EINVAL)
-+		audit_log_format(ab, " subj=%s", context.context);
-+		security_release_secctx(&context);
-+	} else {
-+		/* Multiple LSMs provide contexts. Include an aux record. */
-+		audit_log_format(ab, " subj=?");
-+		error = audit_buffer_aux_new(ab, AUDIT_MAC_TASK_CONTEXTS);
-+		if (error)
- 			goto error_path;
--		return 0;
-+		for (i = 0; i < LSMBLOB_ENTRIES; i++) {
-+			if (blob.secid[i] == 0)
-+				continue;
-+			error = security_secid_to_secctx(&blob, &context, i);
-+			if (error) {
-+				if (error != -EINVAL)
-+					audit_panic("error in audit_log_task_context");
-+				audit_log_format(ab, "%ssubj_%s=?",
-+						 i ? " " : "",
-+						 lsm_slot_to_name(i));
-+			} else {
-+				audit_log_format(ab, "%ssubj_%s=%s",
-+						 i ? " " : "",
-+						 lsm_slot_to_name(i),
-+						 context.context);
-+				security_release_secctx(&context);
-+			}
-+		}
-+		audit_buffer_aux_end(ab);
- 	}
- 
--	audit_log_format(ab, " subj=%s", context.context);
--	security_release_secctx(&context);
- 	return 0;
- 
- error_path:
-@@ -2382,13 +2467,8 @@ int audit_signal_info(int sig, struct task_struct *t)
- }
- 
- /**
-- * __audit_log_end - end one audit record
-+ * __audit_log_end - send one audit record
-  * @skb: the buffer to send
-- *
-- * We can not do a netlink send inside an irq context because it blocks (last
-- * arg, flags, is not set to MSG_DONTWAIT), so the audit buffer is placed on a
-- * queue and a kthread is scheduled to remove them from the queue outside the
-- * irq context.  May be called in any context.
-  */
- static void __audit_log_end(struct sk_buff *skb)
- {
+#define list_traversal_entry_is_head(ptr, head) \
+	(list_traversal_entry_head(ptr, head) == (head))
+
+#define list_traversal_next_entry(ptr, head) \
+	list_traversal_entry(list_traversal_entry_head(ptr, head)->next)
+
+#define list_traverse(pos, head) \
+	for (typeof(*head##_traversal_type) pos = list_traversal_entry((head)->next); \
+		!list_traversal_entry_head(pos, head) == (head); \
+		pos = list_traversal_next_entry(pos, head))
+
+[Sorry for lack of citations - I found the thread via https://lwn.net/Articles/887097/]
+
 -- 
-2.31.1
-
+Micha³ Miros³aw
