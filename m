@@ -2,91 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB54C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95064C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245570AbiCJSrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:47:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
+        id S245579AbiCJStV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:49:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245575AbiCJSrp (ORCPT
+        with ESMTP id S236740AbiCJStS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:47:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8EA19D74B;
-        Thu, 10 Mar 2022 10:46:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B28C761E8F;
-        Thu, 10 Mar 2022 18:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEDD9C340EC;
-        Thu, 10 Mar 2022 18:46:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646938003;
-        bh=GKrZ2gUQwydnsjB5YvHl0U13LckJkTI0hMtoBFCtOm8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nnlP5vsLU77QzUy/SWAKZVugjxUvjQgorliXzc5uc5d2bJy6FjeXc/TZe0oP5ynq7
-         3AX4ThoBBtO17cviH5BEjosqf5md8Ef6BKH8Xe89B9miWBfMSARxkJWpgqxagxVG4D
-         hmey667/FsdOsgYQCh4IQhhvVb8zL5TkWn1j1JtZoC/Ahhn+o/ScOHK93pH2EqgbZU
-         igKSr5lzVxzybaiXcvETZOiobKF4MSthBT3XWgVS0tuHSI2RrcYYNxz28zfYVqTeba
-         T39Xwp9ssJrT7U5YTdPsYq+/885qspqgCRxnrTykgKdr8aN1eXOQ2UcUUa+ZYdseq6
-         CRN9hK3EQkegw==
-Date:   Thu, 10 Mar 2022 18:46:38 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, akumarma@xilinx.com,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 2/2] spi: spi-cadence: Fix kernel-doc format for
- resume/suspend
-Message-ID: <YipHjjg/sLRqQVX6@sirena.org.uk>
-References: <20220310164235.32230-1-amit.kumar-mahapatra@xilinx.com>
- <20220310164235.32230-3-amit.kumar-mahapatra@xilinx.com>
+        Thu, 10 Mar 2022 13:49:18 -0500
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2464D9C3;
+        Thu, 10 Mar 2022 10:48:16 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id x200so12688005ybe.6;
+        Thu, 10 Mar 2022 10:48:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3MTgeYPyfFm0jf3sbZyxxk/7jvLER9ox+8hl8j5mQNM=;
+        b=Cen+4mX+YEqYVpfprX6nDd3qita+XMchSL9agFF9BOLhkbkJTRIsS+yM4dvY4h0j2m
+         whyrtMBmE0aZIQyMIHHdCRm+cqgseD7lFVoybQk4pUcC5p9J0J1qgiiJb4dgz77fi2PO
+         C8xDnszTe5rQStpAbAwSCySdsJtTUPyxRo+p/uqfaDg7MFlJjme26QN5msi1Ob8E42bN
+         2O7H2eeg6GhN3NHPEii3Fg2D4RN98Cobsd2Um45RQYzN8bupW4OW7ARXwDCBYAkNyEMn
+         shvh3HQlWQAcf0hFxAIWXFKPOMq8bAT4Z0h9j3+ddoRK0S8VkjJd4/c6eVZX7LLoGFVy
+         N4Ig==
+X-Gm-Message-State: AOAM532nlRQmA+nFcZ0OkSg+5NHkk0OEDIr72xx0ACdNCdHZal03VMT4
+        spqXzbhSMLxFSwhW/xhwQF7YRB59v9Y6V01doHgira6a
+X-Google-Smtp-Source: ABdhPJxwIP3Vq2gEyZal0MKhjVzWbyOi4Y2iq3Nj79SDr0ARs88DeDenr5sct2NMMwOIjby8Wq6QUSKf+WLyxCh20bM=
+X-Received: by 2002:a25:24d7:0:b0:628:79dc:1250 with SMTP id
+ k206-20020a2524d7000000b0062879dc1250mr5093341ybk.153.1646938095508; Thu, 10
+ Mar 2022 10:48:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zGu91EIOk7veEsar"
-Content-Disposition: inline
-In-Reply-To: <20220310164235.32230-3-amit.kumar-mahapatra@xilinx.com>
-X-Cookie: Package sold by weight, not volume.
+References: <20220306055207.386821-1-dacohen@pm.me>
+In-Reply-To: <20220306055207.386821-1-dacohen@pm.me>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 10 Mar 2022 19:48:04 +0100
+Message-ID: <CAJZ5v0iRfK2vDFUeD1vXeRUr4ngG5-34pHpsmfiS2pFf3HWa-g@mail.gmail.com>
+Subject: Re: [PATCH] PM: fix dynamic debug within pm_pr_debug()
+To:     David Cohen <dacohen@pm.me>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, Mar 6, 2022 at 6:52 AM David Cohen <dacohen@pm.me> wrote:
 
---zGu91EIOk7veEsar
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The patch has been sent as an attachment, so I cannot comment it inline.
 
-On Thu, Mar 10, 2022 at 10:12:35PM +0530, Amit Kumar Mahapatra wrote:
-> From: Michal Simek <michal.simek@xilinx.com>
->=20
-> Kernel function name don't match with function name.
->=20
-> Error log:
-> drivers/spi/spi-cadence.c:662: warning: expecting prototype for
-> cdns_spi_runtime_resume(). Prototype was for cnds_runtime_resume() instead
-> drivers/spi/spi-cadence.c:691: warning: expecting prototype for
-> cdns_spi_runtime_suspend(). Prototype was for cnds_runtime_suspend()
-> instead
-
-These errors are introduced by the prior patch in the series, that patch
-should be fixed to just not introduce these errors in the first place.
-
---zGu91EIOk7veEsar
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIqR40ACgkQJNaLcl1U
-h9D6LAf4ySVpzHmfvga8kAdanxFVZF5MBBcNlY4bjjSUk9zGiv/LRXleptZCdQWc
-ykabXiwwg//Jx8+PJ1biJLWsvhRh21W/APFlFEhUpFcEYQPHruUOWa+4viNuCRnD
-UU+6X67mP3qQQ29HpqaE7fVc34hp69yk89Q6/yjhnAjN/jfl/rFIG2NmfSBEkz40
-P0uDuGlmfdggfSqZ263GBZNOJX5HPXtidna11JrWKquC489vwwodOk4paVUy0ib9
-8brfxlmUDlJXYia4HiAqWbvoJxQfwc5KbD215fIHdop2zd20Qb47hc2ipNGW0x5b
-dFQg3sx8DMfgLXeluzGru3Hoolzc
-=pg1e
------END PGP SIGNATURE-----
-
---zGu91EIOk7veEsar--
+However, printk(KERN_DEBIG, ...) is not the same as pr_debig() AFAICS.
