@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7CF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 03:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 452C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 03:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239166AbiCJDCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 22:02:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
+        id S239069AbiCJDCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 22:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237155AbiCJDBv (ORCPT
+        with ESMTP id S234539AbiCJDCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 22:01:51 -0500
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D78124C3B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:00:49 -0800 (PST)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D042F2C0676;
-        Thu, 10 Mar 2022 03:00:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1646881243;
-        bh=ssg+WNeSXSjip5E5FzNx/K8I5KRUwLfchkkahr8WXcs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JD6Pdck0+azTMqVM/ufEu0hk82MCZTtHpEo6FYlc17ctcHTEA6zw1UuuzyBwiazsk
-         302cjpuD1hFbJ/nwzLCdcR/qSruprhzcJQdiylHHoKoM1fPYoduvlR+RZORQAD3/kf
-         9hmDVytxncQ34s8KpGPTQ1LlBKxzEWtP/bAOB7Y8uLQ52AQn81HpffAPkdAHYWBwNQ
-         tKGJZLqGHs23HJaKui8iy4p7dSoDwQzWZqDGAQpr40u245cAynTbFnq8WbjsE4ws0q
-         AU3yUyOA/Dap6V4u589CBq9eBzfNv66CPtSkl0gXkal4y3gxR4Pje7nnTllQsEYYS1
-         OPT037Tp6aqCA==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B622969db0000>; Thu, 10 Mar 2022 16:00:43 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 92F2413EDD7;
-        Thu, 10 Mar 2022 16:00:43 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id A165A2A00D4; Thu, 10 Mar 2022 16:00:41 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     linus.walleij@linaro.org, robh+dt@kernel.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v1 0/4] arm64: mvebu: Support for Marvell 98DX2530 (and variants)
-Date:   Thu, 10 Mar 2022 16:00:35 +1300
-Message-Id: <20220310030039.2833808-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Mar 2022 22:02:20 -0500
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 470201255B9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:01:18 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAC3vdnaaSliK8S8Ag--.21223S2;
+        Thu, 10 Mar 2022 11:00:43 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     dan.carpenter@oracle.com, vkoul@kernel.org, lgirdwood@gmail.com,
+        broonie@kernel.org, perex@perex.cz, tiwai@suse.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] ASoC: soc-compress: Change the check for codec_dai
+Date:   Thu, 10 Mar 2022 11:00:41 +0800
+Message-Id: <20220310030041.1556323-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=jGREw9QuPlHGdXEqdN8A:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAC3vdnaaSliK8S8Ag--.21223S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr1rZr4UJFWkuw4xGw15Jwb_yoW8AFW7pr
+        4xurW2qFyrtFyIvw4rAw4S93WfGryxua1F9FnIv34xAr45XFs8Ww1Utw4vyFW8C3yDtr1D
+        Z39FyayfWFn8CFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvF14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8
+        ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AK
+        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvj
+        fUoOJ5UUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the Marvell 98DX2530 SoC which is the Contro=
-l and
-Management CPU integrated into the AlleyCat5/AlleyCat5X series of Marvell
-switches.
+It should be better to reverse the check on codec_dai
+and returned early in order to be easier to understand.
 
-The CPU core is an ARM Cortex-A55 with neon, simd and crypto extensions.
+Fixes: de2c6f98817f ("ASoC: soc-compress: prevent the potentially use of null pointer")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ sound/soc/soc-compress.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-This is fairly similar to the Armada-3700 SoC so most of the required
-peripherals are already supported. This series adds a devicetree and pinc=
-trl
-driver for the SoC and the RD-AC5X-32G16HVG6HLG reference board.
-
-Chris Packham (4):
-  dt-bindings: pinctrl: mvebu: Document bindings for AC5
-  pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
-  arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
-  arm64: marvell: enable the 98DX2530 pinctrl driver
-
- .../bindings/pinctrl/marvell,ac5-pinctrl.yaml |  73 +++
- arch/arm64/Kconfig.platforms                  |   2 +
- arch/arm64/boot/dts/marvell/Makefile          |   1 +
- .../boot/dts/marvell/armada-98dx2530.dtsi     | 459 ++++++++++++++++++
- arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  27 ++
- drivers/pinctrl/mvebu/Kconfig                 |   4 +
- drivers/pinctrl/mvebu/Makefile                |   1 +
- drivers/pinctrl/mvebu/pinctrl-ac5.c           | 226 +++++++++
- 8 files changed, 793 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5=
--pinctrl.yaml
- create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
- create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
- create mode 100644 drivers/pinctrl/mvebu/pinctrl-ac5.c
-
---=20
-2.35.1
+diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
+index f4b376a71be8..e9dd25894dc0 100644
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -567,16 +567,19 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* check client and interface hw capabilities */
+-	if (codec_dai) {
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-			playback = 1;
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-			capture = 1;
++	if (!codec_dai) {
++		dev_err(rtd->card->dev, "Missing codec\n");
++		return -EINVAL;
+ 	}
+ 
++	/* check client and interface hw capabilities */
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++		playback = 1;
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++		capture = 1;
++
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
+ 	 * should be set, check for that (xor)
+-- 
+2.25.1
 
