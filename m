@@ -2,522 +2,331 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B81C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245518AbiCJO5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:57:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        id S244613AbiCJPBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344107AbiCJOwn (ORCPT
+        with ESMTP id S1345658AbiCJPBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:52:43 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9A2158788
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:51:32 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id 25so8055545ljv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:51:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nX8DHqzGGIh8VXWXli7Q9VWCrZ0diUnq6RW+HJu2z+w=;
-        b=k8bpp3Qz6w1Ori2GaIS3vAJnymoKizHkjSM2pbKS5HLEWs61RqC8rcJaJz6q5CWxtC
-         GXG5sUn2Thmz5tBFiT3j2HthVKklGd2B/mlhN3G4qkWP4XLVSZftQiGImoG6pJWAa48l
-         nrknDuPIJ9/0vZvmbgfOCHA5P98NprkdmhnP2nGksyh84eA+kFxeu5ml9tQXFl5jFih3
-         pzjTTOj34nWAAyBl8nyb4DwSCSdVvCgNsvWR9hncOFUF0h6o3rcUchervhGG9m0yYbhs
-         t5nd2IWuuuyTEprSuF2ReL2VAm6m3335jTuiz5fs6QqaKjuS9bm87uNH3rQFq6/yLA9b
-         S9nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nX8DHqzGGIh8VXWXli7Q9VWCrZ0diUnq6RW+HJu2z+w=;
-        b=pmJGjdEU9pLeZo8eM+ZgB7H67jh+uDFvuhNfwXXKa2azIktBHG8Hd/LEBfsmTwmPUB
-         CdouSGHYkdtrG+kxoQaN8cemhBuiUEBdGTsnyIZjCjvvQw/DDlB14VDrONYLonzd/gMy
-         sQZCEyewQJHkp61bInqoQGjxYbdXmF+rbl9J2hcKtmUQV7Qy0UoP5dRlRmtoh0VGJEjx
-         3oslEIhdg6stlQ+1aGtwjr+DLM65KAf19Y874oL+I5+tJGGGIOz6htfGzSxxU8RmhIPk
-         kEepQ40v2i3ealvn/sDpntHRg6d7qwnzocK9Y+1/EfhHct3zAfTlyARP+/7PP83B92KY
-         NSAA==
-X-Gm-Message-State: AOAM531BSqLCzBn8A3ixfoqvSzqnaIn5B9DOvpmj3GKh9CSjizUdpe6b
-        +Y39HHBf7Dd0eDlRdZ2pC/PutDbL+lsdVvl6qpxCSQ==
-X-Google-Smtp-Source: ABdhPJzuHjyFVpmAlqMYopymRxphckm6YKWg8DSSI/RCaYrUp1EcYkyVPnDt0L4CVC1s5g5fjoqDBYSo7ut3HvLFmqM=
-X-Received: by 2002:a05:651c:b07:b0:247:e06d:8943 with SMTP id
- b7-20020a05651c0b0700b00247e06d8943mr3100152ljr.426.1646923890370; Thu, 10
- Mar 2022 06:51:30 -0800 (PST)
+        Thu, 10 Mar 2022 10:01:09 -0500
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925F6195300
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:54:29 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 822B2320152C;
+        Thu, 10 Mar 2022 09:54:26 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 10 Mar 2022 09:54:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=XU39pyNSH2eq0dpZIXSxiHRUSiX+T3Vk8Q3C8r
+        t+Bns=; b=CdIft1aMeCbNbv0TO9CvaUp7I/vx6dR/lleAnxB64oXWo9lTwWoDm6
+        9kITFan62pf5xs28GR3xKlM70GR1LzW7TZh54EtZGw2oWTJnpbBnG2fwtGGsGvA8
+        xJs4QEFUtr8uGIRWjhdkN2qHg5syw7WeOGvOjUGT+oF8TBvxY2d4vQNGl28R7mfb
+        Dj4v+m9dx0sYjPCHK3ATIouVWr3mDUYL4X8eLQDEJStXqfHOSTSsHp8Xa+77VyLc
+        VntM05EyJv9Swq95xCMsd76uwhGnyr2nKPE2x/HNhdEN2gntgqQlK5M0gi/XKEOp
+        QtNXkMAhCIFv24nkHE3ar00otwBJEtkg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=XU39pyNSH2eq0dpZI
+        XSxiHRUSiX+T3Vk8Q3C8rt+Bns=; b=Z3Uw/cWIDpaTLYnYF3mDsBTqDh9zytv6V
+        8TQVAtCYvRn9+HjBWI4hdeu64risYhJoPL2Pl9sQ1qRHl1erXO7YHbH/8rX8stl5
+        j618SgsPnkGslSchsAf5PESDsmFtSz79k2y1ktIjroVEaU9/g4awyKaQVzQRtg+I
+        7qk38DWtYw/soWgnWZJvYFxys96oel1gL7mGjl7hTEj0mZ5rLz46klHAGgDF5sEZ
+        hblc17lnZbTiZ/ffLLpe0sEwHBm9ST5s9mbmQkniZh/M4DcgAI9crz4t11G4jlXv
+        DBX4S3Da75b76tulpk+Ty0DFh8RpmM2i3QN8SPJXEDpvMJ5Gc9m3g==
+X-ME-Sender: <xms:IREqYlLII4_wXUYdQVRP-i6fHZ3O7FJV43mek-MS4KlgX-gHkvZ74Q>
+    <xme:IREqYhITxCfNZxRZ3vVao_3Tce5QF-9F3v6uxIZooBk-54ZYLN43eUD-XGPW3ecmM
+    ndPpCEYQ7g9VrtKKAg>
+X-ME-Received: <xmr:IREqYtuilj9KfTCQizpd4BjsMdVJsLO4QjRgk8A162uYN0gdTbBpZaP16WH1EzQXfDG-G7B3qk_32vdrKZc3KaqkxDCY_H04NngEwZI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvtddgieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucdnkfhovfculdeitddmnecujfgurhepfffhvffukf
+    hfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceo
+    mhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepleekgeehhf
+    dutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieehgedunecuvehluhhsthgv
+    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnh
+    hordhtvggthh
+X-ME-Proxy: <xmx:IREqYmaFO7qZzP3Pn4nnriSVUKEZ6b1cVrHusG10Wp2uGHpQG8aHPA>
+    <xmx:IREqYsY0fW-0oqfQ2w9NAwVG5FxXl7d_OlhlV6hHfQPhfRAqFnu3AQ>
+    <xmx:IREqYqD4J9E-rTiPC5PJ3sVgqD-VfM4014WEZN5WIbtSP36zLmEGKge9ng>
+    <xmx:IhEqYs6FgPet8aiL5pB1xWaWfJG2pv5uRZQ147eSex_wx73B39peYg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 10 Mar 2022 09:54:25 -0500 (EST)
+Date:   Thu, 10 Mar 2022 15:54:23 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jagan Teki <jagan@amarulasolutions.com>
+Subject: Re: [PATCH] drm: of: Properly try all possible cases for
+ bridge/panel detection
+Message-ID: <20220310145423.but7r7ul4j7h3wxw@houat>
+References: <20220309143200.111292-1-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-References: <20220307213356.2797205-1-brijesh.singh@amd.com> <20220307213356.2797205-33-brijesh.singh@amd.com>
-In-Reply-To: <20220307213356.2797205-33-brijesh.singh@amd.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Thu, 10 Mar 2022 07:51:17 -0700
-Message-ID: <CAMkAt6pO0xZb2pye-VEKdFQ_dYFgLA21fkYmnYPTWo8mzPrKDQ@mail.gmail.com>
-Subject: Re: [PATCH v12 32/46] x86/compressed/64: Add support for SEV-SNP
- CPUID table in #VC handlers
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-coco@lists.linux.dev,
-        linux-mm@kvack.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, Tony Luck <tony.luck@intel.com>,
-        Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lgbhzcypjjo7srta"
+Content-Disposition: inline
+In-Reply-To: <20220309143200.111292-1-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-()
 
-On Mon, Mar 7, 2022 at 2:35 PM Brijesh Singh <brijesh.singh@amd.com> wrote:
->
-> From: Michael Roth <michael.roth@amd.com>
->
-> CPUID instructions generate a #VC exception for SEV-ES/SEV-SNP guests,
-> for which early handlers are currently set up to handle. In the case
-> of SEV-SNP, guests can use a configurable location in guest memory
-> that has been pre-populated with a firmware-validated CPUID table to
-> look up the relevant CPUID values rather than requesting them from
-> hypervisor via a VMGEXIT. Add the various hooks in the #VC handlers to
-> allow CPUID instructions to be handled via the table. The code to
-> actually configure/enable the table will be added in a subsequent
-> commit.
->
-> Signed-off-by: Michael Roth <michael.roth@amd.com>
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+--lgbhzcypjjo7srta
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi Paul,
+
+On Wed, Mar 09, 2022 at 03:32:00PM +0100, Paul Kocialkowski wrote:
+> While bridge/panel detection was initially relying on the usual
+> port/ports-based of graph detection, it was recently changed to
+> perform the lookup on any child node that is not port/ports
+> instead when such a node is available, with no fallback on the
+> usual way.
+>=20
+> This results in breaking detection when a child node is present
+> but does not contain any panel or bridge node, even when the
+> usual port/ports-based of graph is there.
+>=20
+> In order to support both situations properly, this commit reworks
+> the logic to try both options and not just one of the two: it will
+> only return -EPROBE_DEFER when both have failed.
+>=20
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
+
+Thanks, it's in pretty good shape now, but I have a few bike sheds to paint=
+ :)
+
 > ---
->  arch/x86/include/asm/sev-common.h |   2 +
->  arch/x86/kernel/sev-shared.c      | 324 ++++++++++++++++++++++++++++++
->  2 files changed, 326 insertions(+)
->
-> diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
-> index e9b6815b3b3d..0759af9b1acf 100644
-> --- a/arch/x86/include/asm/sev-common.h
-> +++ b/arch/x86/include/asm/sev-common.h
-> @@ -152,6 +152,8 @@ struct snp_psc_desc {
->  #define GHCB_TERM_PSC                  1       /* Page State Change failure */
->  #define GHCB_TERM_PVALIDATE            2       /* Pvalidate failure */
->  #define GHCB_TERM_NOT_VMPL0            3       /* SNP guest is not running at VMPL-0 */
-> +#define GHCB_TERM_CPUID                        4       /* CPUID-validation failure */
-> +#define GHCB_TERM_CPUID_HV             5       /* CPUID failure during hypervisor fallback */
->
->  #define GHCB_RESP_CODE(v)              ((v) & GHCB_MSR_INFO_MASK)
->
-> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-> index b4d5558c9d0a..0f1375164ff0 100644
-> --- a/arch/x86/kernel/sev-shared.c
-> +++ b/arch/x86/kernel/sev-shared.c
-> @@ -24,6 +24,36 @@ struct cpuid_leaf {
->         u32 edx;
->  };
->
-> +/*
-> + * Individual entries of the SNP CPUID table, as defined by the SNP
-> + * Firmware ABI, Revision 0.9, Section 7.1, Table 14.
-> + */
-> +struct snp_cpuid_fn {
-> +       u32 eax_in;
-> +       u32 ecx_in;
-> +       u64 xcr0_in;
-> +       u64 xss_in;
-> +       u32 eax;
-> +       u32 ebx;
-> +       u32 ecx;
-> +       u32 edx;
-> +       u64 __reserved;
-> +} __packed;
-> +
-> +/*
-> + * SNP CPUID table, as defined by the SNP Firmware ABI, Revision 0.9,
-> + * Section 8.14.2.6. Also noted there is the SNP firmware-enforced limit
-> + * of 64 entries per CPUID table.
-> + */
-> +#define SNP_CPUID_COUNT_MAX 64
-> +
-> +struct snp_cpuid_table {
-> +       u32 count;
-> +       u32 __reserved1;
-> +       u64 __reserved2;
-> +       struct snp_cpuid_fn fn[SNP_CPUID_COUNT_MAX];
-> +} __packed;
-> +
->  /*
->   * Since feature negotiation related variables are set early in the boot
->   * process they must reside in the .data section so as not to be zeroed
-> @@ -33,6 +63,19 @@ struct cpuid_leaf {
->   */
->  static u16 ghcb_version __ro_after_init;
->
-> +/* Copy of the SNP firmware's CPUID page. */
-> +static struct snp_cpuid_table cpuid_table_copy __ro_after_init;
-> +
-> +/*
-> + * These will be initialized based on CPUID table so that non-present
-> + * all-zero leaves (for sparse tables) can be differentiated from
-> + * invalid/out-of-range leaves. This is needed since all-zero leaves
-> + * still need to be post-processed.
-> + */
-> +static u32 cpuid_std_range_max __ro_after_init;
-> +static u32 cpuid_hyp_range_max __ro_after_init;
-> +static u32 cpuid_ext_range_max __ro_after_init;
-> +
->  static bool __init sev_es_check_cpu_features(void)
->  {
->         if (!has_cpuflag(X86_FEATURE_RDRAND)) {
-> @@ -242,6 +285,252 @@ static int sev_cpuid_hv(struct cpuid_leaf *leaf)
->         return ret;
+>  drivers/gpu/drm/drm_of.c | 93 +++++++++++++++++++++-------------------
+>  1 file changed, 49 insertions(+), 44 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+> index 9d90cd75c457..67f1b7dfc892 100644
+> --- a/drivers/gpu/drm/drm_of.c
+> +++ b/drivers/gpu/drm/drm_of.c
+> @@ -219,6 +219,35 @@ int drm_of_encoder_active_endpoint(struct device_nod=
+e *node,
 >  }
->
-> +/*
-> + * This may be called early while still running on the initial identity
-> + * mapping. Use RIP-relative addressing to obtain the correct address
-> + * while running with the initial identity mapping as well as the
-> + * switch-over to kernel virtual addresses later.
-> + */
-> +static const struct snp_cpuid_table *snp_cpuid_get_table(void)
-> +{
-> +       void *ptr;
-> +
-> +       asm ("lea cpuid_table_copy(%%rip), %0"
-> +            : "=r" (ptr)
-> +            : "p" (&cpuid_table_copy));
-> +
-> +       return ptr;
-> +}
-> +
-> +/*
-> + * The SNP Firmware ABI, Revision 0.9, Section 7.1, details the use of
-> + * XCR0_IN and XSS_IN to encode multiple versions of 0xD subfunctions 0
-> + * and 1 based on the corresponding features enabled by a particular
-> + * combination of XCR0 and XSS registers so that a guest can look up the
-> + * version corresponding to the features currently enabled in its XCR0/XSS
-> + * registers. The only values that differ between these versions/table
-> + * entries is the enabled XSAVE area size advertised via EBX.
-> + *
-> + * While hypervisors may choose to make use of this support, it is more
-> + * robust/secure for a guest to simply find the entry corresponding to the
-> + * base/legacy XSAVE area size (XCR0=1 or XCR0=3), and then calculate the
-> + * XSAVE area size using subfunctions 2 through 64, as documented in APM
-> + * Volume 3, Rev 3.31, Appendix E.3.8, which is what is done here.
-> + *
-> + * Since base/legacy XSAVE area size is documented as 0x240, use that value
-> + * directly rather than relying on the base size in the CPUID table.
-> + *
-> + * Return: XSAVE area size on success, 0 otherwise.
-> + */
-> +static u32 snp_cpuid_calc_xsave_size(u64 xfeatures_en, bool compacted)
-> +{
-> +       const struct snp_cpuid_table *cpuid_table = snp_cpuid_get_table();
-> +       u64 xfeatures_found = 0;
-> +       u32 xsave_size = 0x240;
-> +       int i;
-> +
-> +       for (i = 0; i < cpuid_table->count; i++) {
-> +               const struct snp_cpuid_fn *e = &cpuid_table->fn[i];
-> +
-> +               if (!(e->eax_in == 0xD && e->ecx_in > 1 && e->ecx_in < 64))
-> +                       continue;
-> +               if (!(xfeatures_en & (BIT_ULL(e->ecx_in))))
-> +                       continue;
-> +               if (xfeatures_found & (BIT_ULL(e->ecx_in)))
-> +                       continue;
-> +
-> +               xfeatures_found |= (BIT_ULL(e->ecx_in));
-> +
-> +               if (compacted)
-> +                       xsave_size += e->eax;
-> +               else
-> +                       xsave_size = max(xsave_size, e->eax + e->ebx);
-> +       }
-> +
-> +       /*
-> +        * Either the guest set unsupported XCR0/XSS bits, or the corresponding
-> +        * entries in the CPUID table were not present. This is not a valid
-> +        * state to be in.
-> +        */
-> +       if (xfeatures_found != (xfeatures_en & GENMASK_ULL(63, 2)))
-> +               return 0;
-> +
-> +       return xsave_size;
-> +}
-> +
-> +static bool
-> +snp_cpuid_get_validated_func(struct cpuid_leaf *leaf)
-> +{
-> +       const struct snp_cpuid_table *cpuid_table = snp_cpuid_get_table();
-> +       int i;
-> +
-> +       for (i = 0; i < cpuid_table->count; i++) {
-> +               const struct snp_cpuid_fn *e = &cpuid_table->fn[i];
-> +
-> +               if (e->eax_in != leaf->fn)
-> +                       continue;
-> +
-> +               if (cpuid_function_is_indexed(leaf->fn) && e->ecx_in != leaf->subfn)
-> +                       continue;
-> +
-> +               /*
-> +                * For 0xD subfunctions 0 and 1, only use the entry corresponding
-> +                * to the base/legacy XSAVE area size (XCR0=1 or XCR0=3, XSS=0).
-> +                * See the comments above snp_cpuid_calc_xsave_size() for more
-> +                * details.
-> +                */
-> +               if (e->eax_in == 0xD && (e->ecx_in == 0 || e->ecx_in == 1))
-> +                       if (!(e->xcr0_in == 1 || e->xcr0_in == 3) || e->xss_in)
-> +                               continue;
-> +
-> +               leaf->eax = e->eax;
-> +               leaf->ebx = e->ebx;
-> +               leaf->ecx = e->ecx;
-> +               leaf->edx = e->edx;
-> +
-> +               return true;
-> +       }
-> +
-> +       return false;
-> +}
-> +
-> +static void snp_cpuid_hv(struct cpuid_leaf *leaf)
-> +{
-> +       if (sev_cpuid_hv(leaf))
-> +               sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_CPUID_HV);
-> +}
-> +
-> +static int snp_cpuid_postprocess(struct cpuid_leaf *leaf)
-> +{
-> +       struct cpuid_leaf leaf_hv = *leaf;
-> +
-> +       switch (leaf->fn) {
-> +       case 0x1:
-> +               snp_cpuid_hv(&leaf_hv);
-> +
-> +               /* initial APIC ID */
-> +               leaf->ebx = (leaf_hv.ebx & GENMASK(31, 24)) | (leaf->ebx & GENMASK(23, 0));
-> +               /* APIC enabled bit */
-> +               leaf->edx = (leaf_hv.edx & BIT(9)) | (leaf->edx & ~BIT(9));
-> +
-> +               /* OSXSAVE enabled bit */
-> +               if (native_read_cr4() & X86_CR4_OSXSAVE)
-> +                       leaf->ecx |= BIT(27);
-> +               break;
-> +       case 0x7:
-> +               /* OSPKE enabled bit */
-> +               leaf->ecx &= ~BIT(4);
-> +               if (native_read_cr4() & X86_CR4_PKE)
-> +                       leaf->ecx |= BIT(4);
-> +               break;
-> +       case 0xB:
-> +               leaf_hv.subfn = 0;
-> +               snp_cpuid_hv(&leaf_hv);
-> +
-> +               /* extended APIC ID */
-> +               leaf->edx = leaf_hv.edx;
-> +               break;
-> +       case 0xD: {
-> +               bool compacted = false;
-> +               u64 xcr0 = 1, xss = 0;
-> +               u32 xsave_size;
-> +
-> +               if (leaf->subfn != 0 && leaf->subfn != 1)
-> +                       return 0;
-> +
-> +               if (native_read_cr4() & X86_CR4_OSXSAVE)
-> +                       xcr0 = xgetbv(XCR_XFEATURE_ENABLED_MASK);
-> +               if (leaf->subfn == 1) {
-> +                       /* Get XSS value if XSAVES is enabled. */
-> +                       if (leaf->eax & BIT(3)) {
-> +                               unsigned long lo, hi;
-> +
-> +                               asm volatile("rdmsr" : "=a" (lo), "=d" (hi)
-> +                                                    : "c" (MSR_IA32_XSS));
-> +                               xss = (hi << 32) | lo;
-> +                       }
-> +
-> +                       /*
-> +                        * The PPR and APM aren't clear on what size should be
-> +                        * encoded in 0xD:0x1:EBX when compaction is not enabled
-> +                        * by either XSAVEC (feature bit 1) or XSAVES (feature
-> +                        * bit 3) since SNP-capable hardware has these feature
-> +                        * bits fixed as 1. KVM sets it to 0 in this case, but
-> +                        * to avoid this becoming an issue it's safer to simply
-> +                        * treat this as unsupported for SNP guests.
-> +                        */
-> +                       if (!(leaf->eax & (BIT(1) | BIT(3))))
-> +                               return -EINVAL;
+>  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
+> =20
+> +static int drm_of_find_remote_panel_or_bridge(struct device_node *remote,
+> +					      struct drm_panel **panel,
+> +					      struct drm_bridge **bridge)
 
-I couldn't get this patch set to boot and I found that I was setting
-these XSAVE cpuid bits wrong. This took me a while to debug because
-inside of handle_vc_boot_ghcb() this -EINVAL means we jump into the
-halt loop, in addition the early_printk()s inside of that function
-don't seem to  be working for me but should the halt in
-handle_vc_boot_ghcb() be replaced with an sev_es_terminate() or
-something?
+This function performs its look up directly on the struct device_node
+passed as argument, so I don't think the "remote" in the name is great.
+Since it's static, we can just call it find_panel_or_bridge, what do you
+think?
 
-I am still working on why the early_printk()s in that function are not
-working, it seems that they lead to a different halt. Have you tested
-any of those error paths manually? For example if you set your CPUID
-bits to explicitly fail here do you see the expected printks?
-
-> +
-> +                       compacted = true;
-> +               }
-> +
-> +               xsave_size = snp_cpuid_calc_xsave_size(xcr0 | xss, compacted);
-> +               if (!xsave_size)
-> +                       return -EINVAL;
-> +
-> +               leaf->ebx = xsave_size;
-> +               }
-> +               break;
-> +       case 0x8000001E:
-> +               snp_cpuid_hv(&leaf_hv);
-> +
-> +               /* extended APIC ID */
-> +               leaf->eax = leaf_hv.eax;
-> +               /* compute ID */
-> +               leaf->ebx = (leaf->ebx & GENMASK(31, 8)) | (leaf_hv.ebx & GENMASK(7, 0));
-> +               /* node ID */
-> +               leaf->ecx = (leaf->ecx & GENMASK(31, 8)) | (leaf_hv.ecx & GENMASK(7, 0));
-> +               break;
-> +       default:
-> +               /* No fix-ups needed, use values as-is. */
-> +               break;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +/*
-> + * Returns -EOPNOTSUPP if feature not enabled. Any other non-zero return value
-> + * should be treated as fatal by caller.
-> + */
-> +static int snp_cpuid(struct cpuid_leaf *leaf)
 > +{
-> +       const struct snp_cpuid_table *cpuid_table = snp_cpuid_get_table();
+> +	int ret =3D -EPROBE_DEFER;
 > +
-> +       if (!cpuid_table->count)
-> +               return -EOPNOTSUPP;
+> +	if (panel) {
+> +		*panel =3D of_drm_find_panel(remote);
+> +		if (!IS_ERR(*panel))
+> +			ret =3D 0;
+
+return 0?
+
+> +		else
+> +			*panel =3D NULL;
 > +
-> +       if (!snp_cpuid_get_validated_func(leaf)) {
-> +               /*
-> +                * Some hypervisors will avoid keeping track of CPUID entries
-> +                * where all values are zero, since they can be handled the
-> +                * same as out-of-range values (all-zero). This is useful here
-> +                * as well as it allows virtually all guest configurations to
-> +                * work using a single SNP CPUID table.
-> +                *
-> +                * To allow for this, there is a need to distinguish between
-> +                * out-of-range entries and in-range zero entries, since the
-> +                * CPUID table entries are only a template that may need to be
-> +                * augmented with additional values for things like
-> +                * CPU-specific information during post-processing. So if it's
-> +                * not in the table, set the values to zero. Then, if they are
-> +                * within a valid CPUID range, proceed with post-processing
-> +                * using zeros as the initial values. Otherwise, skip
-> +                * post-processing and just return zeros immediately.
-> +                */
-> +               leaf->eax = leaf->ebx = leaf->ecx = leaf->edx = 0;
+> +	}
 > +
-> +               /* Skip post-processing for out-of-range zero leafs. */
-> +               if (!(leaf->fn <= cpuid_std_range_max ||
-> +                     (leaf->fn >= 0x40000000 && leaf->fn <= cpuid_hyp_range_max) ||
-> +                     (leaf->fn >= 0x80000000 && leaf->fn <= cpuid_ext_range_max)))
-> +                       return 0;
-> +       }
+> +	/* No panel found yet, check for a bridge next. */
+> +	if (bridge) {
+> +		if (ret) {
+
+And the return above allows to remove that test
+
+> +			*bridge =3D of_drm_find_bridge(remote);
+> +			if (*bridge)
+> +				ret =3D 0;
+
+return 0?
+
+> +		} else {
+> +			*bridge =3D NULL;
+> +		}
 > +
-> +       return snp_cpuid_postprocess(leaf);
+> +	}
+> +
+> +	return ret;
+
+And here we can just return -EPROBE_DEFER
+
 > +}
 > +
->  /*
->   * Boot VC Handler - This is the first VC handler during boot, there is no GHCB
->   * page yet, so it only supports the MSR based communication with the
-> @@ -252,6 +541,7 @@ void __init do_vc_no_ghcb(struct pt_regs *regs, unsigned long exit_code)
->         unsigned int subfn = lower_bits(regs->cx, 32);
->         unsigned int fn = lower_bits(regs->ax, 32);
->         struct cpuid_leaf leaf;
-> +       int ret;
->
->         /* Only CPUID is supported via MSR protocol */
->         if (exit_code != SVM_EXIT_CPUID)
-> @@ -259,9 +549,18 @@ void __init do_vc_no_ghcb(struct pt_regs *regs, unsigned long exit_code)
->
->         leaf.fn = fn;
->         leaf.subfn = subfn;
-> +
-> +       ret = snp_cpuid(&leaf);
-> +       if (!ret)
-> +               goto cpuid_done;
-> +
-> +       if (ret != -EOPNOTSUPP)
-> +               goto fail;
-> +
->         if (sev_cpuid_hv(&leaf))
->                 goto fail;
->
-> +cpuid_done:
->         regs->ax = leaf.eax;
->         regs->bx = leaf.ebx;
->         regs->cx = leaf.ecx;
-> @@ -556,12 +855,37 @@ static enum es_result vc_handle_ioio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
->         return ret;
+
+>  /**
+>   * drm_of_find_panel_or_bridge - return connected panel or bridge device
+>   * @np: device tree node containing encoder output ports
+> @@ -249,57 +278,33 @@ int drm_of_find_panel_or_bridge(const struct device=
+_node *np,
+>  	if (panel)
+>  		*panel =3D NULL;
+> =20
+> -	/**
+> -	 * Devices can also be child nodes when we also control that device
+> -	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
+> -	 *
+> -	 * Lookup for a child node of the given parent that isn't either port
+> -	 * or ports.
+> -	 */
+> -	for_each_available_child_of_node(np, remote) {
+> -		if (of_node_name_eq(remote, "port") ||
+> -		    of_node_name_eq(remote, "ports"))
+> -			continue;
+> -
+> -		goto of_find_panel_or_bridge;
+> +	/* Check for a graph on the device node first. */
+> +	if (of_graph_is_present(np)) {
+> +		remote =3D of_graph_get_remote_node(np, port, endpoint);
+> +		if (remote) {
+> +			ret =3D drm_of_find_remote_panel_or_bridge(remote, panel,
+> +								 bridge);
+> +			of_node_put(remote);
+> +		}
+>  	}
+> =20
+> -	/*
+> -	 * of_graph_get_remote_node() produces a noisy error message if port
+> -	 * node isn't found and the absence of the port is a legit case here,
+> -	 * so at first we silently check whether graph presents in the
+> -	 * device-tree node.
+> -	 */
+> -	if (!of_graph_is_present(np))
+> -		return -ENODEV;
+> -
+> -	remote =3D of_graph_get_remote_node(np, port, endpoint);
+> -
+> -of_find_panel_or_bridge:
+> -	if (!remote)
+> -		return -ENODEV;
+> +	/* Otherwise check for any child node other than port/ports. */
+> +	if (ret) {
+> +		for_each_available_child_of_node(np, remote) {
+> +			if (of_node_name_eq(remote, "port") ||
+> +			    of_node_name_eq(remote, "ports"))
+> +				continue;
+> =20
+> -	if (panel) {
+> -		*panel =3D of_drm_find_panel(remote);
+> -		if (!IS_ERR(*panel))
+> -			ret =3D 0;
+> -		else
+> -			*panel =3D NULL;
+> -	}
+> +			ret =3D drm_of_find_remote_panel_or_bridge(remote, panel,
+> +								 bridge);
+> +			of_node_put(remote);
+> =20
+> -	/* No panel found yet, check for a bridge next. */
+> -	if (bridge) {
+> -		if (ret) {
+> -			*bridge =3D of_drm_find_bridge(remote);
+> -			if (*bridge)
+> -				ret =3D 0;
+> -		} else {
+> -			*bridge =3D NULL;
+> +			/* Stop at the first found occurrence. */
+> +			if (!ret)
+> +				break;
+>  		}
+> -
+>  	}
+> =20
+> -	of_node_put(remote);
+>  	return ret;
 >  }
+
+So the diff is fairly hard to read, but it ends up as:
+
+>        int ret =3D -EPROBE_DEFER;
+>        struct device_node *remote;
 >
-> +static int vc_handle_cpuid_snp(struct pt_regs *regs)
-> +{
-> +       struct cpuid_leaf leaf;
-> +       int ret;
-> +
-> +       leaf.fn = regs->ax;
-> +       leaf.subfn = regs->cx;
-> +       ret = snp_cpuid(&leaf);
-> +       if (!ret) {
-> +               regs->ax = leaf.eax;
-> +               regs->bx = leaf.ebx;
-> +               regs->cx = leaf.ecx;
-> +               regs->dx = leaf.edx;
-> +       }
-> +
-> +       return ret;
-> +}
-> +
->  static enum es_result vc_handle_cpuid(struct ghcb *ghcb,
->                                       struct es_em_ctxt *ctxt)
->  {
->         struct pt_regs *regs = ctxt->regs;
->         u32 cr4 = native_read_cr4();
->         enum es_result ret;
-> +       int snp_cpuid_ret;
-> +
-> +       snp_cpuid_ret = vc_handle_cpuid_snp(regs);
-> +       if (!snp_cpuid_ret)
-> +               return ES_OK;
-> +       if (snp_cpuid_ret != -EOPNOTSUPP)
-> +               return ES_VMM_ERROR;
+>        if (!panel && !bridge)
+>                return -EINVAL;
+>        if (panel)
+>                *panel =3D NULL;
 >
->         ghcb_set_rax(ghcb, regs->ax);
->         ghcb_set_rcx(ghcb, regs->cx);
-> --
-> 2.25.1
+>        /* Check for a graph on the device node first. */
+>       if (of_graph_is_present(np)) {
+>                remote =3D of_graph_get_remote_node(np, port, endpoint);
+>                if (remote) {
+>                        ret =3D drm_of_find_remote_panel_or_bridge(remote,=
+ panel,
+>                                                                 bridge);
+>                        of_node_put(remote);
+
+I think we can simplify this by doing
+
+                        if (!ret)
+			        return ret;
+
+>                }
+>        }
 >
+>        /* Otherwise check for any child node other than port/ports. */
+>        if (ret) {
+
+And thus we won't have to check for ret here
+
+>                for_each_available_child_of_node(np, remote) {
+
+I'm a bit reluctant with variables that we reuse from one loop to
+another, especially since it's a bit misleading here. What about using a
+(loop local) remote variable in the of_graph path, and a loop-local
+variable node or child here?
+
+>                        if (of_node_name_eq(remote, "port") ||
+>                            of_node_name_eq(remote, "ports"))
+>                                continue;
+>
+>                        ret =3D drm_of_find_remote_panel_or_bridge(remote,=
+ panel,
+>                                                                 bridge);
+>                        of_node_put(remote);
+>
+>                        /* Stop at the first found occurrence. */
+>                        if (!ret)
+>                                break;
+
+Ditto, let's just return here
+
+>                }
+>       }
+>
+>        return ret;
+
+And then we can just return EPROBE_DEFER here (and get rid of ret entirely)
+
+Maxime
+
+--lgbhzcypjjo7srta
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYioRHwAKCRDj7w1vZxhR
+xRlZAP98YkMuA9DQnqs5EI61id1YvE2ZQ+/gLGD36nrQVxFZwgD/aq9ge2+PLPGL
+TJgiShNyXnzB5UY6045THZf+j0+wqgE=
+=IMzz
+-----END PGP SIGNATURE-----
+
+--lgbhzcypjjo7srta--
