@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4AD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B210C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241436AbiCJKxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:53:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        id S241432AbiCJKxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:53:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241422AbiCJKxj (ORCPT
+        with ESMTP id S241433AbiCJKxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:53:39 -0500
+        Thu, 10 Mar 2022 05:53:43 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983245C677;
-        Thu, 10 Mar 2022 02:52:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE2369284;
+        Thu, 10 Mar 2022 02:52:42 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 548481F454C9
+        with ESMTPSA id 31F9C1F454C8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646909557;
-        bh=9aUbcW04U/4ptYzSIBnfoM+hXNE0ptVvNH6aQoyUu9Q=;
+        s=mail; t=1646909561;
+        bh=dwruVMKHe8Hzj+ZT1aHSQLRWF4u7URdyyePyiB1hmoY=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=igI/BZK/FA9bN67UwQfOCHAz40Bvc+sn142E6OatI1gORrtDMHcmx5GF3v8WZv91W
-         vPZERPUOJmWusSETIeJmIap+chaysvjB9mHy12BGGcAmNdiX04hWKNfZUYRJ8fkYF+
-         3wlQvzgxLYKDFOXLNUwTcP1HEpAoqGRxwZm8W+wRCz80KfFZhdZFuUMBgEZAk5lfIL
-         wBGH62C+lCVSyEpk/SjXWceXCuMjkv98X7YvpSQ5HpV+maoybrw/e9XDrbZhygD/Vn
-         ktDhfvRlenO3eZv2Hua4o/4TCCr5Q+tc7I5uaBVrV9moXNPkeG/3NoBx6BxrWKNV7k
-         rA2ucxVfYlTOA==
-Message-ID: <fba2646a-6eb6-eabe-538f-ed54bfd60c14@collabora.com>
-Date:   Thu, 10 Mar 2022 11:52:33 +0100
+        b=j1F3PRLNQcQHEhimDXLzLRdU3QZPcoDHEIJoD4/sNChZVlNtrCCWY/wxyDDgvu3eQ
+         uBIvRR0rBev+Jtv+Eb7Y+3hymYU+A9gnIp7lIkYnjrf8dHWrtOSfHwqs/gKtynbQTu
+         Rnt5OfPv+U5hOqdt5QWKflQSciv/oSNpxmtOATeTFXC7/YtB40ZojqoDimsAptZsiU
+         3Vt6eSmYBMotYjQPuRSNJqYoGLg0ThkzOM+qdvARgqdLE7yvejVp4ejoKfFZOK8IBS
+         8SCp7Z3Om5TFdBvnUw9hQYcsExVV4TkuWsTEBY96mLOtLxvbJkJUEk2yJHI/TJZMJy
+         ojQE0jCXKYGfg==
+Message-ID: <3fa9546b-2331-e25e-7768-4bb56753ee4d@collabora.com>
+Date:   Thu, 10 Mar 2022 11:52:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v14 10/22] drm/mediatek: add display MDP RDMA support for
- MT8195
+Subject: Re: [PATCH v14 11/22] drm/mediatek: add display merge advance config
+ API for MT8195
 Content-Language: en-US
 To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -54,10 +54,10 @@ Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         singo.chang@mediatek.com, srv_heupstream@mediatek.com,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220310035515.16881-1-nancy.lin@mediatek.com>
- <20220310035515.16881-11-nancy.lin@mediatek.com>
+ <20220310035515.16881-12-nancy.lin@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220310035515.16881-11-nancy.lin@mediatek.com>
+In-Reply-To: <20220310035515.16881-12-nancy.lin@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -65,8 +65,10 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 10/03/22 04:55, Nancy.Lin ha scritto:
-> Add MDP_RDMA driver for MT8195. MDP_RDMA is the DMA engine of
-> the ovl_adaptor component.
+> Add merge new advance config API. The original merge API is
+> mtk_ddp_comp_funcs function prototype. The API interface parameters
+> cannot be modified, so add a new config API for extension. This is
+> the preparation for ovl_adaptor merge control.
 > 
 > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
 > Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
@@ -74,14 +76,7 @@ Il 10/03/22 04:55, Nancy.Lin ha scritto:
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 > ---
->   drivers/gpu/drm/mediatek/Makefile       |   3 +-
->   drivers/gpu/drm/mediatek/mtk_disp_drv.h |   7 +
->   drivers/gpu/drm/mediatek/mtk_drm_drv.c  |   1 +
->   drivers/gpu/drm/mediatek/mtk_drm_drv.h  |   1 +
->   drivers/gpu/drm/mediatek/mtk_mdp_rdma.c | 315 ++++++++++++++++++++++++
->   drivers/gpu/drm/mediatek/mtk_mdp_rdma.h |  20 ++
->   6 files changed, 346 insertions(+), 1 deletion(-)
->   create mode 100644 drivers/gpu/drm/mediatek/mtk_mdp_rdma.c
->   create mode 100644 drivers/gpu/drm/mediatek/mtk_mdp_rdma.h
+>   drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  3 ++
+>   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 52 ++++++++++++++++++++---
+>   2 files changed, 48 insertions(+), 7 deletions(-)
 > 
-
