@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E82CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243762AbiCJOZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:25:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        id S243656AbiCJOZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244302AbiCJOTI (ORCPT
+        with ESMTP id S244439AbiCJOTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66337171EDA;
-        Thu, 10 Mar 2022 06:16:00 -0800 (PST)
+        Thu, 10 Mar 2022 09:19:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8574BF528;
+        Thu, 10 Mar 2022 06:16:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98A8EB81E9E;
-        Thu, 10 Mar 2022 14:15:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE2BEC340E8;
-        Thu, 10 Mar 2022 14:15:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3266461C7A;
+        Thu, 10 Mar 2022 14:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21DD8C340E8;
+        Thu, 10 Mar 2022 14:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921754;
-        bh=xj+QdKUrjDDFGwApWZ1l3iJAR6528yj7oSQnmuWft5c=;
+        s=korg; t=1646921742;
+        bh=lhCYm36lISKlmiaC/3uFiBZIuFSVw3qpMR4feD6Xf4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLGxLjopEFEkDWPek2ty4KR0yS41CUhigDAgmaJnFEAwlwArBcgkQUz9GX3LPq674
-         FKy/iXh96ekafe8L0xNnf8XUKZsHrKHsR3cELd4Jwt1U17eBcveIuX3hsl0iiATZDj
-         duKtTKgDhLds8doVD+rMJKT0vDg6wRFEK0CpFEHQ=
+        b=MmVb+wN6BI7RGxI3c5gUffkcNdgrGKZMpa2rTRwkFKIqpcH2DZbES7w1pxxDdJPRA
+         DkUkxF0C8n4+vtjseciPyPwsn4sjQIJjL/NLZe4O35QwTx1OkvxTnGZcUTnO/R8ms3
+         UsNsf7JnVDfmpb3ta5lEOUCirOjaKpGvZejEzz68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 29/38] ARM: fix build warning in proc-v7-bugs.c
-Date:   Thu, 10 Mar 2022 15:13:42 +0100
-Message-Id: <20220310140808.987050659@linuxfoundation.org>
+Subject: [PATCH 4.9 25/38] ARM: fix co-processor register typo
+Date:   Thu, 10 Mar 2022 15:13:38 +0100
+Message-Id: <20220310140808.872936077@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -51,34 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit b1a384d2cbccb1eb3f84765020d25e2c1929706e upstream.
+commit 33970b031dc4653cc9dc80f2886976706c4c8ef1 upstream.
 
-The kernel test robot discovered that building without
-HARDEN_BRANCH_PREDICTOR issues a warning due to a missing
-argument to pr_info().
-
-Add the missing argument.
+In the recent Spectre BHB patches, there was a typo that is only
+exposed in certain configurations: mcr p15,0,XX,c7,r5,4 should have
+been mcr p15,0,XX,c7,c5,4
 
 Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 9dd78194a372 ("ARM: report Spectre v2 status through sysfs")
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/proc-v7-bugs.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/include/asm/assembler.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -110,7 +110,8 @@ static unsigned int spectre_v2_install_w
- #else
- static unsigned int spectre_v2_install_workaround(unsigned int method)
- {
--	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
-+	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
-+		smp_processor_id());
+--- a/arch/arm/include/asm/assembler.h
++++ b/arch/arm/include/asm/assembler.h
+@@ -114,7 +114,7 @@
+ 	.endm
  
- 	return SPECTRE_VULNERABLE;
- }
+ 	.macro	isb, args
+-	mcr	p15, 0, r0, c7, r5, 4
++	mcr	p15, 0, r0, c7, c5, 4
+ 	.endm
+ #endif
+ 
 
 
