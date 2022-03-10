@@ -2,171 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E83C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242369AbiCJNXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
+        id S242382AbiCJNZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:25:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236943AbiCJNXs (ORCPT
+        with ESMTP id S236943AbiCJNZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:23:48 -0500
-Received: from m228-6.mailgun.net (m228-6.mailgun.net [159.135.228.6])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id A3032255B6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:22:46 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=michaelkloos.com; q=dns/txt;
- s=k1; t=1646918566; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: References: Cc: To: To: From: From: Subject: Subject:
- MIME-Version: Date: Message-ID: Sender: Sender;
- bh=vsCYinTDmsDFUE7f5prX02vMGrGhK6+P5tm1gFAQzgA=; b=A7lyiUOXYwZ8mHJUhX7L6GJkT95eRMEHYqYTf/wjdL3pbksRNMOeR3IJnXYTlViw8gnWUh/R
- Y9SS51RRPivriwiBY/PeJ/IeNHZamRf6ONCbcjwABY5aBibmvql0pBe/LH9P2/rZZWhIsSNc
- idLpsIcPqC3gcSy7HRFDPjqdzbw=
-X-Mailgun-Sending-Ip: 159.135.228.6
-X-Mailgun-Sid: WyI5NjYzNiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgIjQ4Y2MwIl0=
-Received: from drop1.michaelkloos.com (drop1.michaelkloos.com
- [67.205.190.89]) by smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6229fba5ea5f8dddb581e09c (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Thu, 10 Mar 2022 13:22:44 GMT
-Sender: Michael@michaelkloos.com
-Received: from [192.168.0.103] (cpe-173-88-115-50.columbus.res.rr.com [173.88.115.50])
-        by drop1.michaelkloos.com (Postfix) with ESMTPSA id 942D340176;
-        Thu, 10 Mar 2022 13:22:43 +0000 (UTC)
-Message-ID: <3db8c258-cc62-29d1-c64f-31f3c4e2aa07@MichaelKloos.com>
-Date:   Thu, 10 Mar 2022 08:22:42 -0500
+        Thu, 10 Mar 2022 08:25:13 -0500
+X-Greylist: delayed 652 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 05:24:10 PST
+Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB979A4DC;
+        Thu, 10 Mar 2022 05:24:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+        s=dhelectronicscom; t=1646917891;
+        bh=pmnm+l4Ris569uSGaDzzAWRmTE1k7P6kzMdlq+dUBJU=;
+        h=From:To:CC:Subject:Date:From;
+        b=IEYJKJPTVm6IOq4bFF/sqtLs/b1NqX7NZant+U2HkO2ybbBVF1ouTkmXAZxpFCNvO
+         uPKG7rkztrUh4a/4De4gSUHeQ3uOk+TM4pimYj6jH6EAnS7iTsKs+yyL4U3um/BRuA
+         kBccWgEp66MweKLrnhVCtjYzyFfm++5bI6XiEQqULuOkGQHXFQEUCxIN/8vXCBitcN
+         0bgcpa79nFuZi0nBvZQoEdqW2JOVGFZKzt0bEJul7KJoujxgs9nP/y5D59h0BngDAl
+         fQTcara+u9IHnCttbfu7VtyoAtDXIR8SQgQBNx6umXul3Q1FNIvVCRj/ezXKiLoKAL
+         nCKe7LW2I51NA==
+X-secureTransport-forwarded: yes
+From:   Dominik Kierner <dkierner@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To:     "javierm@redhat.com" <javierm@redhat.com>
+CC:     "airlied@linux.ie" <airlied@linux.ie>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "maxime@cerno.tech" <maxime@cerno.tech>,
+        "noralf@tronnes.org" <noralf@tronnes.org>,
+        "sam@ravnborg.org" <sam@ravnborg.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
+Thread-Topic: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED
+ displays
+Thread-Index: Adg0f9qHOCAIrgXYTGq8frgJBu/0lA==
+Date:   Thu, 10 Mar 2022 13:11:27 +0000
+Message-ID: <5d817ea54144414aa7865a72694b5811@dh-electronics.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] riscv: Work to remove kernel dependence on the
- M-extension
-Content-Language: en-US
-From:   "Michael T. Kloos" <Michael@MichaelKloos.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <mhng-08a28047-b563-41f4-b705-f27b88554f2c@palmer-mbp2014>
- <8f06a08e-c1b3-066f-bd9e-1f2d686492fa@MichaelKloos.com>
-In-Reply-To: <8f06a08e-c1b3-066f-bd9e-1f2d686492fa@MichaelKloos.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some other thoughts:
-It sounds like I am not the first person to want this feature and I
-probably won't be the last.  I created the change for my own reasons, the
-same as any other contributor.  I think we all know that I can not pull
-out some chart and say, "This many people want this and here is why."  I
-live in central Ohio and have been doing this as a hobby.  I don't even
-know anyone else who knows about systems and operating system development.
-If the justification that you are looking for is that I as some
-hypothetical developer at a major tech company is about to release a new
-RISC-V chip without M support but we want it to run Linux, I can not
-provide that answer.  It sounds a bit like some software or hardware,
-chicken or the egg anyway.  Trying to maintain my own fork if people
-start contributing patches with incompatible assembly scares me.
+Hello Javier,
 
-	Michael
+I was working on a SSD130x driver as well, although with a different
+(drm_panel) approach and hit a bit of a roadblock.
+Now that Your driver is quite a bit maturer than mine,
+I will happily provide You with the source of my draft,
+so that any useful bits can be incorporated in Your driver.
+I know that links are a bit frowned upon,
+but I'd rather avoid cluttering the thread with my draft code,
+which is unfinished and incompatible with the code in this thread.
 
-On 3/10/2022 4:31 AM, Michael T. Kloos wrote:
+https://github.com/dh-electronics/panel-solomon-ssd130x-draft
+https://github.com/dh-electronics/panel-solomon-ssd130x-draft/tree/drm-ssd1=
+30x/drivers/gpu/drm/panel
 
-> As far as I can tell, it's simply a compiler flag to enable or disable it.
-> The only complicating issue that I found was the BPF JIT.  That is a
-> special case amounting to a compiler within the kernel itself and can be
-> patched or set to depend on M.  There is still the BPF interpreter.  The
-> kernel doesn't depend on the C-extension.  I have grepped through the
-> source code where that symbol is referenced, the checking of instruction
-> alignment constraints, and various checks used to make that work are much
-> more extensive than I expected, yet that is supported.  To quote the
-> commentary from the beginning of chapter 2 (Base-I) of the RISC-V spec:
->> "RV32I was designed to be sufficient to form a compiler target and to
->> support modern operating system environments. The ISA was also designed
->> to reduce the hardware required in a minimal implementation. RV32I
->> contains 40 unique instructions, though a simple implementation might
->> cover the ECALL/EBREAK instructions with a single SYSTEM hardware
->> instruction that always traps and might be able to implement the FENCE
->> instruction as a NOP, reducing base instruction count to 38 total.
->> RV32I can emulate almost any other ISA extension (except the A extension,
->> which requires additional hardware support for atomicity).
->> In practice, a hardware implementation including the machine-mode
->> privileged architecture will also require the 6 CSR instructions.
->> Subsets of the base integer ISA might be useful for pedagogical purposes,
->> but the base has been defined such that there should be little incentive
->> to subset a real hardware implementation beyond omitting support for
->> misaligned memory accesses and treating all SYSTEM instructions
->> as a single trap."
-> This is all a noble goal of RISC-V, to create a minimal, yet robust ISA.
-> I'm not arguing to support no-A, as stated in the commentary, atomic can
-> not be emulated (I mean, maybe you could by taking over sscratch) and
-> the atomic properties of the CSR instructions.  But that does seem hacky.)
-> and everything else is handled in the Base-I (Not including Zicsr).  The
-> kernel supports rv(32/64)ima so to draw the line in the sand that
-> rv(32/64)ia is unacceptable seems silly.
-> One of my concerns here is that if support is not added, that people may
-> start writing assembly that uses M instructions and other non-portable
-> stuff.  This will make a future port more difficult.
-> I do not have real hardware like this but I do have an emulator that
-> implements rv32iasu.  Eventually I want to build a HART implementation
-> out of real hardware logic chips.  Adding M, adds hardware complexity and
-> I think that it is better to do in software for such a minimal case.
-> Sure it will be slower than having native hardware M support.  Firmware
-> emulation will be even slower than that.  I'd much rather have the option
-> in the kernel to switch this on or off.
-> I am not trying to argue that the kernel should bend over to support my
-> pet projects, but it seems quite strange and arbitrary to draw the line
-> here over such a beautifully modular and minimal ISA.
->> there's an infinite amount of
->> allowable RISC-V implementations, we'll all go crazy chasing them
->> around.
-> 2 points on that:
-> 1) Then it would seem logical to have the kernel target the most minimal
-> implementation to get the widest support.
-> 2) I actually don't think this is entirely true, or at least not in the
-> sense that it is relevant to the kernel.  Atomics are needed for a modern
-> system.  The kernel needs to know about the floating-point support because
-> it needs to handle the clean-up and context-switching of the additional
-> floating point registers.  The kernel needs to know about the C extension
-> because of the ramifications to alignment.  Everything else is just gravy.
-> If sometime in the future the L-extension or the B-extension are finished
-> and implemented in future hardware, unless they make some very strange
-> decisions, I don't see why a kernel built today couldn't run on that
-> hardware with userspace software taking advantage of those native features.
-> Sure, in that situation, the kernel binary wouldn't be taking advantage of
-> them.  But then wouldn't you want to add CONFIG_RISCV_ISA_L and
-> CONFIG_RISCV_ISA_B in said future kernel so that the compiler is passed an
-> -march value such that the kernel can take advantage of these new native
-> hardware features?
-> It seems to me that this is the grand vision in the modularity of both the
-> RISC-V ISA and the C programming language.  We aren't writing everything in
-> assembly for a reason.  I don't think it makes sense to stop one extension
-> away from what the RISC-V spec documents themselves state is the intended
-> minimal system capable of running a full modern operating system.  I think
-> it is an arbitrary limit to the portability of the kernel.
->      Michael
-> On 3/10/2022 2:34 AM, Palmer Dabbelt wrote:
->> On Wed, 09 Mar 2022 23:06:22 PST (-0800), Christoph Hellwig wrote:
->>> Why?
->> I have no idea, but this has come up a few times before.
->> IIRC the original port had a no-M flavor (don't remember if it even made
->> it to the original patch submission, but it was around for a bit).  We
->> decided to drop this under the theory that nobody would use it:
->> essentially, if you can afford the handful of MiB of memory required to
->> run Linux then you've probably got a multiplier.
->> If someone has hardware that lacks M and users care about running Linux
->> on that then I'm happy to support it.  I'll still point out the
->> silliness of that decision, but if it's too late to change things then
->> I'd rather support the hardware.  If it's one of these "fill out every
->> possible allowed ISA flavor, even if nobody has one that runs Linux"
->> then I don't see a reason to bother -- there's an infinite amount of
->> allowable RISC-V implementations, we'll all go crazy chasing them
->> around.
->> FWIW: to a first order, that applies to the no-A stuff as well (though
->> that got dropped because the Arm folks pointed out a way to support that
->> was way better than ours).
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+The code was designed as a rewrite from scratch, as I assumed that a new
+DRM driver that accommodates for I2C, 3- and 4-wire-SPI,
+will probably need a new DTS interface for differentiating the
+protocol-specific drivers, which would obviously break compatibility.
+
+I do have few suggestions though:
+
+# Atomic Configuration of Display Driving Regulator and the Charge Pump
+
+The regulator VBAT is the SSD1306-specific low-voltage (3.3 V to 5 V)
+regulator for the charge pump and takes the place of the voltage
+regulator VCC, that would otherwise supply the OLED driver block with
+7 V to 15 V.
+The charge pump is never enabled when a VCC with 7 V to 15 V is present.
+Configuring the charge pump based on the available regulators,
+would provide an atomic configuration for either low-voltage +
+charge pump or the regular voltage.
+
+This way, the device tree boolean for enabling the charge pump could be
+removed by probing for an optional VBAT first, which replaces VCC,
+and falling back to a mandatory VCC otherwise:
+
+```
+[...]
+struct ssd130x_panel {
+...
+	struct regulator *vdd;		/* Core logic supply */
+	union {
+		struct regulator *vcc;	/* Panel driving supply */
+		struct regulator *vbat;	/* Charge pump regulator supply */
+	};
+	struct backlight_device *backlight;
+		struct {
+		unsigned int com_scan_dir_inv : 1;
+		unsigned int com_seq_pin_cfg : 1;
+		unsigned int com_lr_remap : 1;
+		unsigned int seg_remap : 1;
+		unsigned int inverse_display : 1;
+		unsigned int use_charge_pump : 1;
+		uint8_t height;
+		uint8_t width;
+		uint8_t height_mm;
+		uint8_t width_mm;
+		uint8_t display_start_line;
+		uint8_t com_offset ;
+		uint8_t contrast;
+		uint8_t pre_charge_period_dclocks_phase1;
+		uint8_t pre_charge_period_dclocks_phase2;
+		uint8_t vcomh_deselect_level;
+		uint8_t clock_divide_ratio;
+		uint8_t oscillator_frequency;
+	} display_settings;
+	bool prepared;
+	bool enabled;
+
+[...]
+
+ssd130x->vbat =3D devm_regulator_get_optional(dev, "vbat");
+if (IS_ERR(ssd130x->vbat)) {
+	ret =3D PTR_ERR(ssd130x->vbat);
+
+	if (ret !=3D -ENODEV) {
+		if (ret !=3D -EPROBE_DEFER)
+			dev_err(dev,
+				"failed to request regulator: %d\n",
+				ret);
+		return ret;
+	}
+
+	ssd130x->vbat =3D NULL;
+}
+else {
+	ssd130x->display_settings.use_charge_pump =3D true;
+}
+
+/* Get panel driving supply */
+If (!ssd130x->vbat) {
+	ssd130x->vcc =3D devm_regulator_get(dev, "vcc");
+	if (IS_ERR(ssd130x->vcc)){
+		ret =3D PTR_ERR(ssd130x->vcc);
+		return ret;
+	}
+	else {
+		ssd130x->display_settings.use_charge_pump =3D false;
+	}
+}
+```
+
+Splitting in VCC/VBAT and VDD and enforcing their presence is
+of course compatibility breaking.
+
+https://github.com/dh-electronics/panel-solomon-ssd130x-draft/blob/drm-ssd1=
+30x/drivers/gpu/drm/panel/panel-solomon-ssd130x.h#L85
+https://github.com/dh-electronics/panel-solomon-ssd130x-draft/blob/drm-ssd1=
+30x/drivers/gpu/drm/panel/panel-solomon-ssd130x.c#L80
+
+
+# Static or Dynamic Configuration for SPI-Modes 3-Wire and 4-Wire
+
+For the SPI-protocol drivers I see two possible approaches:
+* Dynamic configuration by determining the presence/absence of the
+  D/C-GPIO and assigning the functions accordingly.
+  This way a single driver file for both SPI modes could be sufficient.
+* Static configuration by using the device-tree names
+  (ssd130x-spi-3wire/-4wire) to differentiate between the SPI protocol
+  drivers.
+  This would obviously necessitate two drivers files.
+
+Which one do you think would be the best approach for this?
+
+
+# DRM Mode Configuration via Device Tree
+
+In the old fbdev driver, the display modes are hard-coded, which means
+for every new display configuration, a new patch needs to be mainlined,
+which slows down official Kernel support and
+puts burden on the maintainers.
+Additionally, with the DRM-subsystem supporting height and length
+information, for scaling, this opens up a lot of new combinations.
+The SSD1306 for example, is available in multiple resolutions like
+128x64 and 96x16 and comes in different sizes per resolution as well.
+Just to name a few:
+* 128x64 0.96" (22x11mm)
+* 128x64 1.3" (30x15mm)
+* 96x16 0.69" (18x3mm)
+
+Instead of hard-coding, I would suggest something along the lines of
+of_get_drm_display_mode().
+The displays won't need to support multiple modes at the same time,
+let alone support for switching between them,
+so the one-time invocation of this expensive function might be worth it.=20
+maybe a new and simpler function that could be named:
+of_get_drm_display_mode_simple()
+
+Providing a mode could later prove useful for a conversion to
+drm_panel, if that is feasible.
+
+But for a function like this, I have to chicken out.
+
+
+# DRM Panel
+
+The reason why I decided for the drm_panel approach in my code,
+was power management and a clean handling of the software backlight
+dependency, which requires powered display regulators to be powered.
+
+Prepare/unprepare would power on/off the display logic regulator VDD.
+
+Enable/disable would power on/off VCC/VBAT, optionally turn on/off
+the charge pump and send the DISPLAY_ON/OFF commands.
+The SSD1305's PWM part would likely be placed in enable/disable as well.
+
+What is Your opinion on using drm_panel for Your driver?
+
+
+Mit freundlichen Gr=FC=DFen / Best regards
+
+Dominik Kierner
+Student Employee
+Research & Development
+DH electronics
+
