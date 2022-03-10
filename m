@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95771C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27494C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238351AbiCJOQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:16:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
+        id S242768AbiCJOQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243174AbiCJOQM (ORCPT
+        with ESMTP id S243189AbiCJOQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:16:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F04A9E17;
-        Thu, 10 Mar 2022 06:12:41 -0800 (PST)
+        Thu, 10 Mar 2022 09:16:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35908B2518;
+        Thu, 10 Mar 2022 06:12:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8BB861BA3;
-        Thu, 10 Mar 2022 14:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D95C340E8;
-        Thu, 10 Mar 2022 14:12:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1E0861B41;
+        Thu, 10 Mar 2022 14:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E76C340E8;
+        Thu, 10 Mar 2022 14:12:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921560;
-        bh=KoqgjawotcTUnzxOmTOceGJDLcd5aqX3AQO94bdCzbM=;
+        s=korg; t=1646921566;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K2UT2QnJwhmZr/5yERQwpMDx+cVrt1e57uHYT6n3kFP+r6hST7BBZsmODHs/NhP3X
-         tAioBRUH7AjtEQSgy0B6dcILA/ivsoLCFUNynVa6pojBSEPOKv5mE6lPGT68diFQwD
-         YLJ+zoc+RS/pUkFoW4EygeKHXZCEnsw/D9BYFMuY=
+        b=eOq88lZDvEc2eZAOT+Nz1Yyrh1aCF9jLkSjDidwv9hB/8/vsenTvCt5zXC6Etmjor
+         Dn1wDfGwK8Zb0NZFH7iZ7lCvgfMoezpAEn0Q8JYnyPJ5UGnPM0qKqDE3OKyuOEHIml
+         +45yJDhtSwfuyLm9PceQ87iRbi4lIViy56AKDBG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.16 49/53] xen/9p: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:09:54 +0100
-Message-Id: <20220310140813.243670002@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.16 13/53] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Thu, 10 Mar 2022 15:09:18 +0100
+Message-Id: <20220310140812.216049154@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
 References: <20220310140811.832630727@linuxfoundation.org>
@@ -50,70 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Commit 5cadd4bb1d7fc9ab201ac14620d1a478357e4ebd upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-By using the local variable "order" instead of ring->intf->ring_order
-in the error path of xen_9pfs_front_alloc_dataring() another bug is
-fixed, as the error path can be entered before ring->intf->ring_order
-is being set.
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
 
-By using alloc_pages_exact() the size in bytes is specified for the
-allocation, which fixes another bug for the case of
-order < (PAGE_SHIFT - XEN_PAGE_SHIFT).
-
-This is part of CVE-2022-23041 / XSA-396.
-
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/9p/trans_xen.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -281,9 +281,9 @@ static void xen_9pfs_front_free(struct x
- 				ref = priv->rings[i].intf->ref[j];
- 				gnttab_end_foreign_access(ref, 0, 0);
- 			}
--			free_pages((unsigned long)priv->rings[i].data.in,
--				   priv->rings[i].intf->ring_order -
--				   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+			free_pages_exact(priv->rings[i].data.in,
-+				   1UL << (priv->rings[i].intf->ring_order +
-+					   XEN_PAGE_SHIFT));
- 		}
- 		gnttab_end_foreign_access(priv->rings[i].ref, 0, 0);
- 		free_page((unsigned long)priv->rings[i].intf);
-@@ -322,8 +322,8 @@ static int xen_9pfs_front_alloc_dataring
- 	if (ret < 0)
- 		goto out;
- 	ring->ref = ret;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--			order - (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+	bytes = alloc_pages_exact(1UL << (order + XEN_PAGE_SHIFT),
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -354,9 +354,7 @@ out:
- 	if (bytes) {
- 		for (i--; i >= 0; i--)
- 			gnttab_end_foreign_access(ring->intf->ref[i], 0, 0);
--		free_pages((unsigned long)bytes,
--			   ring->intf->ring_order -
--			   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+		free_pages_exact(bytes, 1UL << (order + XEN_PAGE_SHIFT));
- 	}
- 	gnttab_end_foreign_access(ring->ref, 0, 0);
- 	free_page((unsigned long)ring->intf);
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
+ 
+ #include <asm/spectre.h>
+ 
++static bool _unprivileged_ebpf_enabled(void)
++{
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
++#else
++	return false
++#endif
++}
++
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
+ 
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
