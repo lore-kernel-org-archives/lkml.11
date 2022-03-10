@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8E6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E98D4C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242630AbiCJOpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:45:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
+        id S238098AbiCJOp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244547AbiCJOda (ORCPT
+        with ESMTP id S244655AbiCJOdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:33:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD3BEB159;
-        Thu, 10 Mar 2022 06:31:05 -0800 (PST)
+        Thu, 10 Mar 2022 09:33:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D87EEA65;
+        Thu, 10 Mar 2022 06:31:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A8F0B8266E;
-        Thu, 10 Mar 2022 14:25:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3112C340EB;
-        Thu, 10 Mar 2022 14:25:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70E1961C0A;
+        Thu, 10 Mar 2022 14:31:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79FAEC340E8;
+        Thu, 10 Mar 2022 14:31:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922355;
-        bh=CDNfl4IGoyFCsE3oBTqgf51g83179xk1H8jlgFCafWo=;
+        s=korg; t=1646922673;
+        bh=iG4dGyVQTtgev5VOsQ8d1I4SvBWcNj19Mn9JiAy+Rwo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WEH2owP8emqzU/Ir+0nxArXZhWHEGPxp5h4aG9IJZyt51nNPHUGXvwFCig2h4nyo0
-         537rM5qsw0r9ND7ZB8gb5cwx0fPI28kWkgQJuHuS6M0g28kr75vVtwD/Nhjlf3XzyP
-         RjKBvEWiFRA8nq/Ax7bEzTxzdF9bSn5GynhbZRG8=
+        b=mKeP0FQNY25uZ7fhwOUGc7bX92LyMZEUyvaAd4InOnR5DiMYtphbW0ohM/b094qdG
+         LPVbLkGnd1rJwIpES7cNvG533wQBebJn0SGcKTJLzjfAx4aYkSKi5lVEkIiIy0CY4y
+         5EYwGw1a/XCHfIX3n5saHaMEc8N3dWhygaByquLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.10 50/58] xen/netfront: dont use gnttab_query_foreign_access() for mapped status
-Date:   Thu, 10 Mar 2022 15:19:10 +0100
-Message-Id: <20220310140814.292401122@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.15 13/58] ARM: use LOADADDR() to get load address of sections
+Date:   Thu, 10 Mar 2022 15:19:02 +0100
+Message-Id: <20220310140813.364486542@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-References: <20220310140812.869208747@linuxfoundation.org>
+In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
+References: <20220310140812.983088611@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-Commit 31185df7e2b1d2fa1de4900247a12d7b9c7087eb upstream.
+commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
 
-It isn't enough to check whether a grant is still being in use by
-calling gnttab_query_foreign_access(), as a mapping could be realized
-by the other side just after having called that function.
+Use the linker's LOADADDR() macro to get the load address of the
+sections, and provide a macro to set the start and end symbols.
 
-In case the call was done in preparation of revoking a grant it is
-better to do so via gnttab_end_foreign_access_ref() and check the
-success of that operation instead.
-
-This is CVE-2022-23037 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/xen-netfront.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/arm/include/asm/vmlinux.lds.h |   19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -424,14 +424,12 @@ static bool xennet_tx_buf_gc(struct netf
- 			queue->tx_link[id] = TX_LINK_NONE;
- 			skb = queue->tx_skbs[id];
- 			queue->tx_skbs[id] = NULL;
--			if (unlikely(gnttab_query_foreign_access(
--				queue->grant_tx_ref[id]) != 0)) {
-+			if (unlikely(!gnttab_end_foreign_access_ref(
-+				queue->grant_tx_ref[id], GNTMAP_readonly))) {
- 				dev_alert(dev,
- 					  "Grant still in use by backend domain\n");
- 				goto err;
- 			}
--			gnttab_end_foreign_access_ref(
--				queue->grant_tx_ref[id], GNTMAP_readonly);
- 			gnttab_release_grant_reference(
- 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
- 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
+--- a/arch/arm/include/asm/vmlinux.lds.h
++++ b/arch/arm/include/asm/vmlinux.lds.h
+@@ -26,6 +26,11 @@
+ #define ARM_MMU_DISCARD(x)	x
+ #endif
+ 
++/* Set start/end symbol names to the LMA for the section */
++#define ARM_LMA(sym, section)						\
++	sym##_start = LOADADDR(section);				\
++	sym##_end = LOADADDR(section) + SIZEOF(section)
++
+ #define PROC_INFO							\
+ 		. = ALIGN(4);						\
+ 		__proc_info_begin = .;					\
+@@ -110,19 +115,19 @@
+  * only thing that matters is their relative offsets
+  */
+ #define ARM_VECTORS							\
+-	__vectors_start = .;						\
++	__vectors_lma = .;						\
+ 	.vectors 0xffff0000 : AT(__vectors_start) {			\
+ 		*(.vectors)						\
+ 	}								\
+-	. = __vectors_start + SIZEOF(.vectors);				\
+-	__vectors_end = .;						\
++	ARM_LMA(__vectors, .vectors);					\
++	. = __vectors_lma + SIZEOF(.vectors);				\
+ 									\
+-	__stubs_start = .;						\
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
++	__stubs_lma = .;						\
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
+ 		*(.stubs)						\
+ 	}								\
+-	. = __stubs_start + SIZEOF(.stubs);				\
+-	__stubs_end = .;						\
++	ARM_LMA(__stubs, .stubs);					\
++	. = __stubs_lma + SIZEOF(.stubs);				\
+ 									\
+ 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
+ 
 
 
