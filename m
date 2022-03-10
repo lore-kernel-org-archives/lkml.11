@@ -2,104 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1862DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:01:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C88CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241201AbiCJPB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S245415AbiCJPFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:05:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344255AbiCJO7v (ORCPT
+        with ESMTP id S1344491AbiCJPDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:59:51 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA0218A7A5;
-        Thu, 10 Mar 2022 06:52:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646923976; x=1678459976;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2obXWm16zHjxkmZ9vE0erL/w5gsiL/wNUz/RM0HIzeE=;
-  b=btRRfKTx629TvbXkbDiAAD/Umjl2Ia1oQ8FpVTG+dqnuHbB7Cj++k0IJ
-   wewQ+sGFqzozxxrMvkBRvdQsOySTrjWm/zJAyIZw4AfeKG+LusIa8UAWF
-   K4EyKcJSARg49mZ9Yv+8a1Lba4221i1DY5Ks2UoSvEHGsPdbo3GVESvRH
-   pAm/Dwu3smGmGM8sdkVwDE+w1buGVq28DGKhqSZWKKeG5QB3HyqqVjblF
-   QGUyWWuOx8GgQa0Pi4n5ZoRXVlCd/3+dO2LpVY6miQXX+UPB+Z7VnSrvU
-   Z6mZDs5HuTkEmaLU7KKFP9GT7EI6KVC/ge/1iwxWbJaEb0t8pjOmk8IX5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255002978"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="255002978"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:52:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="596683170"
-Received: from mylly.fi.intel.com (HELO [10.237.72.156]) ([10.237.72.156])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Mar 2022 06:52:10 -0800
-Message-ID: <5612fbbe-a42b-997e-2375-6d5f0c53bdea@linux.intel.com>
-Date:   Thu, 10 Mar 2022 16:52:09 +0200
+        Thu, 10 Mar 2022 10:03:51 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED77199E22;
+        Thu, 10 Mar 2022 06:55:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/58cWmygECTkPSPoDwqtqviybzKgiSNcNrLHiVOqlDE=; b=h7/+DopdaFXY6RnCGoW2MCpXek
+        qjKJbQBjWD3BTW7lvhC3/IM7+YQ0Ur/v7fTn0R3Vn7u1Mj6C3SL/3JtCokFcECooPEFCCJLW+1jqP
+        5EOLJB2P4lgIuPexvsE5raXxdasl+V1XPBy6P/+7lChYHfG1j1xhM21wZXl8I7mPu0cc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSKBv-00A9LI-05; Thu, 10 Mar 2022 15:54:59 +0100
+Date:   Thu, 10 Mar 2022 15:54:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <YioRQpUTJ7WmTLXQ@lunn.ch>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.6.1
-Subject: Re: [PATCH -next] i2c: designware: Add helper to remove redundancy
-Content-Language: en-US
-To:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, andriy.shevchenko@linux.intel.com
-Cc:     wsa@kernel.org, upstream@semihalf.com
-References: <20220310142236.192811-1-jsd@semihalf.com>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-In-Reply-To: <20220310142236.192811-1-jsd@semihalf.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/10/22 16:22, Jan Dabros wrote:
-> Simplify code by adding an extra static function for sending I2C
-> requests and verifying results.
-> 
-> Signed-off-by: Jan Dabros <jsd@semihalf.com>
-> ---
->   drivers/i2c/busses/i2c-designware-amdpsp.c | 44 ++++++++++++----------
->   1 file changed, 24 insertions(+), 20 deletions(-)
-> 
-Do I remember correctly was this suggested by Andy? I.e. to give kudos 
-to him if that was the case:
+> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+> +									    chip->ports[spid].port,
+> +									    &entry,
+> +									    fid);
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/busses/i2c-designware-amdpsp.c
-> index c64e459afb5c..cc758792f150 100644
-> --- a/drivers/i2c/busses/i2c-designware-amdpsp.c
-> +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
-> @@ -229,6 +229,26 @@ static int psp_send_i2c_req(enum psp_i2c_req_type i2c_req_type)
->   	return ret;
->   }
->   
-> +static int psp_send_i2c_req_check_err(enum psp_i2c_req_type request)
+> +static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
+> +					      const struct mv88e6xxx_vtu_entry *entry,
+> +					      void *priv)
 > +{
-> +	int status;
+> +	struct mv88e6xxx_fid_search_ctx *ctx = priv;
 > +
-> +	status = psp_send_i2c_req(request);
-> +	if (status) {
-> +		if (status == -ETIMEDOUT)
-> +			dev_err(psp_i2c_dev, "Timed out waiting for PSP to %s I2C bus\n",
-> +				(request == PSP_I2C_REQ_ACQUIRE) ?
-> +				"release" : "acquire");
-> +		else
-> +			dev_err(psp_i2c_dev, "PSP communication error\n");
-> +
-> +		dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive host usage\n");
-> +		psp_i2c_mbox_fail = true;
+> +	if (ctx->fid_search == entry->fid) {
+> +		ctx->vid_found = entry->vid;
+> +		return 1;
 > +	}
+> +	return 0;
+> +}
 > +
+> +int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
+> +						  int port,
+> +						  struct mv88e6xxx_atu_entry *entry,
+> +						  u16 fid)
+> +{
+> +	struct switchdev_notifier_fdb_info info = {
+> +		.addr = entry->mac,
+> +		.vid = 0,
+> +		.added_by_user = false,
+> +		.is_local = false,
+> +		.offloaded = true,
+> +		.locked = true,
+> +	};
+> +	struct mv88e6xxx_fid_search_ctx ctx;
+> +	struct netlink_ext_ack *extack;
+> +	struct net_device *brport;
+> +	struct dsa_port *dp;
+> +	int err;
+> +
+> +	ctx.fid_search = fid;
+> +	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
 
-Does it make sense to have these inside the psp_send_i2c_req() and get 
-rid of this new middle function? I mean psp_send_i2c_req() is called now 
-only from here so can it do these common error prints and set 
-"psp_i2c_mbox_fail = true"?
+I could be reading this code wrong, but it looks like you assume there
+is a single new entry in the ATU. But interrupts on these devices are
+slow. It would be easy for two or more devices to pop into existence
+at the same time. Don't you need to walk the whole ATU to find all the
+new entries? Have you tried this with a traffic generating populating
+the ATU with new entries at different rates, up to line rate? Do you
+get notifications for them all?
 
-Jarkko
+    Andrew
