@@ -2,331 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240597AbiCJJCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:02:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
+        id S240580AbiCJJGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:06:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240582AbiCJJCc (ORCPT
+        with ESMTP id S233760AbiCJJGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:02:32 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D87A13758E;
-        Thu, 10 Mar 2022 01:01:28 -0800 (PST)
-Received: from quad ([82.142.8.122]) by mrelayeu.kundenserver.de (mreue109
- [212.227.15.183]) with ESMTPSA (Nemesis) id 1MtfRp-1oI7nV3MdT-00v8gn; Thu, 10
- Mar 2022 10:00:55 +0100
-From:   Laurent Vivier <laurent@vivier.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>,
-        Laurent Vivier <laurent@vivier.eu>
-Subject: [PATCH v15 4/5] clocksource/drivers: Add a goldfish-timer clocksource
-Date:   Thu, 10 Mar 2022 10:00:47 +0100
-Message-Id: <20220310090048.1933020-5-laurent@vivier.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310090048.1933020-1-laurent@vivier.eu>
-References: <20220310090048.1933020-1-laurent@vivier.eu>
+        Thu, 10 Mar 2022 04:06:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A6111375BA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:05:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646903111;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sAYCq9czLIZzoXPdYqqCAowC2htPopAKPdrkAbY8Cbo=;
+        b=JwXMsmw+FLdmqNGqQ0Lh7EMQmBiHI9JmeojpSGdQ8EoJgZk17qz0YM+aEtnWhNGjQAfidq
+        NY0Z61oBGDVtkG0ff47pFNfgVdWbTV7SqCytgyvrJRCFkOG9NsNkNFrF7hQlb9JfoSVpzc
+        clgBhwpsXw01qMills+CIESXyGlW/5A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-462-_ju_elblO9-AfG_HY91MiA-1; Thu, 10 Mar 2022 04:05:08 -0500
+X-MC-Unique: _ju_elblO9-AfG_HY91MiA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F06D91006AA5;
+        Thu, 10 Mar 2022 09:05:06 +0000 (UTC)
+Received: from lacos-laptop-7.usersys.redhat.com (unknown [10.39.194.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B0C741059157;
+        Thu, 10 Mar 2022 09:05:05 +0000 (UTC)
+Subject: Re: [PATCH] dt-bindings: arm: Convert QEMU fw-cfg to DT schema
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220310013552.549590-1-robh@kernel.org>
+From:   Laszlo Ersek <lersek@redhat.com>
+Message-ID: <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
+Date:   Thu, 10 Mar 2022 10:05:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:tJydxKgy1kMsEs+bDA23vQSj11obVzoYyr4jxj6XXTc99C2pbhT
- PR8zZ8JhbaYeqDvapi5QXZsEy9MP/OjLY842oRsg0SuyMmH+ktUN8wtr5kFn2Voc2rWnmSf
- aiXsAnQdC/r240AZl0Mjs0FGxe78rtZPU/+ZCa49pZxSHXfmWPmqn86dS8lPIwl3Ndhbn/J
- Uql1fG9/wDpCtHb0xqQGg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sTIwBd0dNXk=:863uxZUKvnrvAVad0uz5se
- XISIWMqCCDO3IOutblzIXBIbWmSjKllOVZYSW4Q8MVjb9iemIu+XDae9PxIA89XJf+lvU+mAD
- EEZAv7fsVmCJi0OaLHYWKwgfNa3y5gBCPEKxoM1trFoGMNzHHwCQFaYaEoZ/0P2XmlQYQJpo6
- gUrXn/HxhnvCQ2KYip1tZf55fcEm3vHtN7sX8KOCXj2+nL7J/NJbkG91V8tXFtcItSO+6Uhbt
- saK6v0Ll65hnFqqtDRuY4ibqS6ze0SRdXcKlA+8HXhUJ59NCSNXO55a7PX9w3DusW3WOsGXmJ
- AFdWJioBDWoJwFEYgKElI+vzNxtkJFby/GKPaPd7V5LzIFVUl4dAUKbZpNaVZc7Hr8XNee/ih
- VsJ8kEYXjFpL8Z5Ykh6w9rVCYT0pS8HzZ08ag2GnDxKYzbd5PQZXMHvxZo8qdxh+UYUKx72JC
- pz+hKGs2vXp8j4j/UVgw5GIef7PpK6teoNXPMtGftwbqKVkm5M5ZWmclwmEOlDPbUw/sWo08R
- R76S6CgICjniyzR7O7L5lhi7e8xI+gnRP8ROrRSVvsQB3LNP//dTcTQdoeedIpHF+yEoLopEg
- FKBnZOqT/OntcDujcrgNLKFWSwmVR14pCp5R/CO4B18grbjYC7J80WgQ7M+BsfItPhE+A0GWT
- R8AZ5dpxVc07SHEHGT6Pvoua4Yb8CmCFpyzALYMMs/ITEobVylzgGNObufpXNv6RRde0=
+In-Reply-To: <20220310013552.549590-1-robh@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a clocksource based on the goldfish-rtc device.
+On 03/10/22 02:35, Rob Herring wrote:
+> Convert the QEMU fw-cfg binding to DT schema format. As this binding is
+> also used on Risc-V now, drop any architecture references and move to a
+> common location. The fw-cfg interface has also gained some DMA support
+> which is coherent, so add the missing 'dma-coherent'.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/arm/fw-cfg.txt        | 38 -------------
+>  .../bindings/firmware/qemu,fw-cfg-mmio.yaml   | 54 +++++++++++++++++++
+>  2 files changed, 54 insertions(+), 38 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/fw-cfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/fw-cfg.txt b/Documentation/devicetree/bindings/arm/fw-cfg.txt
+> deleted file mode 100644
+> index fd54e1db2156..000000000000
+> --- a/Documentation/devicetree/bindings/arm/fw-cfg.txt
+> +++ /dev/null
+> @@ -1,38 +0,0 @@
+> -* QEMU Firmware Configuration bindings for ARM
+> -
+> -QEMU's arm-softmmu and aarch64-softmmu emulation / virtualization targets
+> -provide the following Firmware Configuration interface on the "virt" machine
+> -type:
+> -
+> -- A write-only, 16-bit wide selector (or control) register,
+> -- a read-write, 64-bit wide data register.
+> -
+> -QEMU exposes the control and data register to ARM guests as memory mapped
+> -registers; their location is communicated to the guest's UEFI firmware in the
+> -DTB that QEMU places at the bottom of the guest's DRAM.
+> -
+> -The authoritative guest-side hardware interface documentation to the fw_cfg
+> -device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
+> -
+> -
+> -Required properties:
+> -
+> -- compatible: "qemu,fw-cfg-mmio".
+> -
+> -- reg: the MMIO region used by the device.
+> -  * Bytes 0x0 to 0x7 cover the data register.
+> -  * Bytes 0x8 to 0x9 cover the selector register.
+> -  * Further registers may be appended to the region in case of future interface
+> -    revisions / feature bits.
+> -
+> -Example:
+> -
+> -/ {
+> -	#size-cells = <0x2>;
+> -	#address-cells = <0x2>;
+> -
+> -	fw-cfg@9020000 {
+> -		compatible = "qemu,fw-cfg-mmio";
+> -		reg = <0x0 0x9020000 0x0 0xa>;
+> -	};
+> -};
+> diff --git a/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> new file mode 100644
+> index 000000000000..3aac9448e7f1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
+> @@ -0,0 +1,54 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/firmware/qemu,fw-cfg-mmio.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: QEMU Firmware Configuration bindings
+> +
+> +maintainers:
+> +  - Laszlo Ersek <lersek@redhat.com>
 
-Move the timer register definition to <clocksource/timer-goldfish.h>
+Ugh :) I guess this is based on my authorship of historical commit
+53275a61bc7a ("devicetree: document ARM bindings for QEMU's Firmware
+Config interface", 2015-01-13), and prehaps my R-b on commit
+92aed5d6ba90 ("devicetree: update documentation for fw_cfg ARM
+bindings", 2016-02-09).
 
-This kernel implementation is based on the QEMU upstream implementation:
+However -- I totally can't maintain this file. (I mean I've probably not
+done anything related to it in the past seven years, so I guess it's
+time to admit that fact!)
 
-   https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
+Rob, would you please consider taking it over?
 
-goldfish-timer is a high-precision signed 64-bit nanosecond timer.
-It is part of the 'goldfish' virtual hardware platform used to run
-some emulated Android systems under QEMU.
-This timer only supports oneshot event.
+With my name+email replaced with yours:
 
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
----
- drivers/clocksource/Kconfig          |   7 ++
- drivers/clocksource/Makefile         |   1 +
- drivers/clocksource/timer-goldfish.c | 153 +++++++++++++++++++++++++++
- drivers/rtc/rtc-goldfish.c           |  13 +--
- include/clocksource/timer-goldfish.h |  31 ++++++
- 5 files changed, 193 insertions(+), 12 deletions(-)
- create mode 100644 drivers/clocksource/timer-goldfish.c
- create mode 100644 include/clocksource/timer-goldfish.h
+Acked-by: Laszlo Ersek <lersek@redhat.com>
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index cfb8ea0df3b1..94f00374cebb 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -721,4 +721,11 @@ config MICROCHIP_PIT64B
- 	  modes and high resolution. It is used as a clocksource
- 	  and a clockevent.
- 
-+config GOLDFISH_TIMER
-+	bool "Clocksource using goldfish-rtc"
-+	depends on M68K || COMPILE_TEST
-+	depends on RTC_DRV_GOLDFISH
-+	help
-+	  Support for the timer/counter of goldfish-rtc
-+
- endmenu
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index fa5f624eadb6..12f5d7e8cc2d 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -89,3 +89,4 @@ obj-$(CONFIG_GX6605S_TIMER)		+= timer-gx6605s.o
- obj-$(CONFIG_HYPERV_TIMER)		+= hyperv_timer.o
- obj-$(CONFIG_MICROCHIP_PIT64B)		+= timer-microchip-pit64b.o
- obj-$(CONFIG_MSC313E_TIMER)		+= timer-msc313e.o
-+obj-$(CONFIG_GOLDFISH_TIMER)		+= timer-goldfish.o
-diff --git a/drivers/clocksource/timer-goldfish.c b/drivers/clocksource/timer-goldfish.c
-new file mode 100644
-index 000000000000..0512d5eabc82
---- /dev/null
-+++ b/drivers/clocksource/timer-goldfish.c
-@@ -0,0 +1,153 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/interrupt.h>
-+#include <linux/ioport.h>
-+#include <linux/clocksource.h>
-+#include <linux/clockchips.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/goldfish.h>
-+#include <clocksource/timer-goldfish.h>
-+
-+struct goldfish_timer {
-+	struct clocksource cs;
-+	struct clock_event_device ced;
-+	struct resource res;
-+	void __iomem *base;
-+};
-+
-+static struct goldfish_timer *ced_to_gf(struct clock_event_device *ced)
-+{
-+	return container_of(ced, struct goldfish_timer, ced);
-+}
-+
-+static struct goldfish_timer *cs_to_gf(struct clocksource *cs)
-+{
-+	return container_of(cs, struct goldfish_timer, cs);
-+}
-+
-+static u64 goldfish_timer_read(struct clocksource *cs)
-+{
-+	struct goldfish_timer *timerdrv = cs_to_gf(cs);
-+	void __iomem *base = timerdrv->base;
-+	u32 time_low, time_high;
-+	u64 ticks;
-+
-+	/*
-+	 * time_low: get low bits of current time and update time_high
-+	 * time_high: get high bits of time at last time_low read
-+	 */
-+	time_low = gf_ioread32(base + TIMER_TIME_LOW);
-+	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
-+
-+	ticks = ((u64)time_high << 32) | time_low;
-+
-+	return ticks;
-+}
-+
-+static int goldfish_timer_set_oneshot(struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+
-+	gf_iowrite32(0, base + TIMER_ALARM_HIGH);
-+	gf_iowrite32(0, base + TIMER_ALARM_LOW);
-+	gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
-+
-+	return 0;
-+}
-+
-+static int goldfish_timer_shutdown(struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+
-+	gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
-+
-+	return 0;
-+}
-+
-+static int goldfish_timer_next_event(unsigned long delta,
-+				     struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+	u64 now;
-+
-+	now = goldfish_timer_read(&timerdrv->cs);
-+
-+	now += delta;
-+
-+	gf_iowrite32(upper_32_bits(now), base + TIMER_ALARM_HIGH);
-+	gf_iowrite32(lower_32_bits(now), base + TIMER_ALARM_LOW);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t goldfish_timer_irq(int irq, void *dev_id)
-+{
-+	struct goldfish_timer *timerdrv = dev_id;
-+	struct clock_event_device *evt = &timerdrv->ced;
-+	void __iomem *base = timerdrv->base;
-+
-+	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
-+
-+	evt->event_handler(evt);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+int __init goldfish_timer_init(int irq, void __iomem *base)
-+{
-+	struct goldfish_timer *timerdrv;
-+	int ret;
-+
-+	timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-+	if (!timerdrv)
-+		return -ENOMEM;
-+
-+	timerdrv->base = base;
-+
-+	timerdrv->ced = (struct clock_event_device){
-+		.name			= "goldfish_timer",
-+		.features		= CLOCK_EVT_FEAT_ONESHOT,
-+		.set_state_shutdown	= goldfish_timer_shutdown,
-+		.set_state_oneshot      = goldfish_timer_set_oneshot,
-+		.set_next_event		= goldfish_timer_next_event,
-+	};
-+
-+	timerdrv->res = (struct resource){
-+		.name  = "goldfish_timer",
-+		.start = (unsigned long)base,
-+		.end   = (unsigned long)base + 0xfff,
-+	};
-+
-+	ret = request_resource(&iomem_resource, &timerdrv->res);
-+	if (ret) {
-+		pr_err("Cannot allocate '%s' resource\n", timerdrv->res.name);
-+		return ret;
-+	}
-+
-+	timerdrv->cs = (struct clocksource){
-+		.name		= "goldfish_timer",
-+		.rating		= 400,
-+		.read		= goldfish_timer_read,
-+		.mask		= CLOCKSOURCE_MASK(64),
-+		.flags		= 0,
-+		.max_idle_ns	= LONG_MAX,
-+	};
-+
-+	clocksource_register_hz(&timerdrv->cs, NSEC_PER_SEC);
-+
-+	ret = request_irq(irq, goldfish_timer_irq, IRQF_TIMER,
-+			  "goldfish_timer", timerdrv);
-+	if (ret) {
-+		pr_err("Couldn't register goldfish-timer interrupt\n");
-+		return ret;
-+	}
-+
-+	clockevents_config_and_register(&timerdrv->ced, NSEC_PER_SEC,
-+					1, 0xffffffff);
-+
-+	return 0;
-+}
-diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
-index eb1929b0cbb6..59c0f38cc08d 100644
---- a/drivers/rtc/rtc-goldfish.c
-+++ b/drivers/rtc/rtc-goldfish.c
-@@ -11,18 +11,7 @@
- #include <linux/platform_device.h>
- #include <linux/rtc.h>
- #include <linux/goldfish.h>
--
--#define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
--					/*   and update TIMER_TIME_HIGH  */
--#define TIMER_TIME_HIGH	0x04	/* get high bits of time at last */
--					/*   TIMER_TIME_LOW read         */
--#define TIMER_ALARM_LOW	0x08	/* set low bits of alarm and     */
--					/*   activate it                 */
--#define TIMER_ALARM_HIGH	0x0c	/* set high bits of next alarm   */
--#define TIMER_IRQ_ENABLED	0x10
--#define TIMER_CLEAR_ALARM	0x14
--#define TIMER_ALARM_STATUS	0x18
--#define TIMER_CLEAR_INTERRUPT	0x1c
-+#include <clocksource/timer-goldfish.h>
- 
- struct goldfish_rtc {
- 	void __iomem *base;
-diff --git a/include/clocksource/timer-goldfish.h b/include/clocksource/timer-goldfish.h
-new file mode 100644
-index 000000000000..d39097729b1d
---- /dev/null
-+++ b/include/clocksource/timer-goldfish.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * goldfish-timer clocksource
-+ * Registers definition for the goldfish-timer device
-+ */
-+
-+#ifndef _CLOCKSOURCE_TIMER_GOLDFISH_H
-+#define _CLOCKSOURCE_TIMER_GOLDFISH_H
-+
-+/*
-+ * TIMER_TIME_LOW	 get low bits of current time and update TIMER_TIME_HIGH
-+ * TIMER_TIME_HIGH	 get high bits of time at last TIMER_TIME_LOW read
-+ * TIMER_ALARM_LOW	 set low bits of alarm and activate it
-+ * TIMER_ALARM_HIGH	 set high bits of next alarm
-+ * TIMER_IRQ_ENABLED	 enable alarm interrupt
-+ * TIMER_CLEAR_ALARM	 disarm an existin alarm
-+ * TIMER_ALARM_STATUS	 alarm status (running or not)
-+ * TIMER_CLEAR_INTERRUPT clear interrupt
-+ */
-+#define TIMER_TIME_LOW		0x00
-+#define TIMER_TIME_HIGH		0x04
-+#define TIMER_ALARM_LOW		0x08
-+#define TIMER_ALARM_HIGH	0x0c
-+#define TIMER_IRQ_ENABLED	0x10
-+#define TIMER_CLEAR_ALARM	0x14
-+#define TIMER_ALARM_STATUS	0x18
-+#define TIMER_CLEAR_INTERRUPT	0x1c
-+
-+extern int goldfish_timer_init(int irq, void __iomem *base);
-+
-+#endif /* _CLOCKSOURCE_TIMER_GOLDFISH_H */
--- 
-2.35.1
+Thank you!
+Laszlo
+
+
+> +
+> +description: |
+> +  Various QEMU emulation / virtualization targets provide the following
+> +  Firmware Configuration interface on the "virt" machine type:
+> +
+> +  - A write-only, 16-bit wide selector (or control) register,
+> +  - a read-write, 64-bit wide data register.
+> +
+> +  QEMU exposes the control and data register to guests as memory mapped
+> +  registers; their location is communicated to the guest's UEFI firmware in the
+> +  DTB that QEMU places at the bottom of the guest's DRAM.
+> +
+> +  The authoritative guest-side hardware interface documentation to the fw_cfg
+> +  device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
+> +
+> +
+> +properties:
+> +  compatible:
+> +    const: qemu,fw-cfg-mmio
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description: |
+> +      * Bytes 0x0 to 0x7 cover the data register.
+> +      * Bytes 0x8 to 0x9 cover the selector register.
+> +      * Further registers may be appended to the region in case of future interface
+> +        revisions / feature bits.
+> +
+> +  dma-coherent: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +
+> +    fw-cfg@9020000 {
+> +        compatible = "qemu,fw-cfg-mmio";
+> +        reg = <0x9020000 0xa>;
+> +    };
+> +...
+> 
 
