@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA00C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FED4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244611AbiCJRWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        id S244545AbiCJRWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:22:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244545AbiCJRWA (ORCPT
+        with ESMTP id S238575AbiCJRWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:22:00 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3926190B4D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:59 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E3E198EEA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932859; x=1678468859;
+  t=1646932860; x=1678468860;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rq/FeN2nuKAZ1KCoQdgO+h7HjUaX0XwjPfHzXcRVt6g=;
-  b=eHi7yCOAkeC6Aqn9ddAlpF24sL4Ii3JLL8x5oTavk2PnpfvzC4d+fWhp
-   J5jChDMgHfJG2dtzMqgOGxoazZe4/IsZIR9TfDRPYzbYO8StWlCYHE9eX
-   InZMu8KpHHxdeDme+15wWjo2YoywSLFfkVusBFHJfJOC6eJh1oe9ikM6F
-   TMpo3xAohstN3j9NjIGsgutf1mc6VxpWZHm24m2oY0s+bX900HApohbHk
-   2YvzM7gITqU05zEdUsD5Izr5zABFIBM3k9JWZyQexJEGfrYb+871/hvMG
-   jNAYG0GwhT0wG892EltFXtWR0gy9Iuhv02+hjE/smL3zOBU+3NbXL1bB+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235261361"
+  bh=1tWPDyeaqpqP3+38dG/3atYvj81zVlkUqWonGq4wYBA=;
+  b=FGyoIk5OwXM9eGQU5z6jAuwyPIXlzpxfw1yD8G2NffDOATz9k4pvrwQE
+   AenOXvBoK9KskmwQYGYLUd/ZJ7RXaYKAddj7IXHp+yUI6wLnpri7YIvew
+   tuhPn3BW5+RKRs9e5z3RVXSwG322JV4d6p2aL31pr+l+l4IvLyDnoKNuo
+   KY1XkNHB1hu1dE7GdUlggOaTUiVtTW8HLaEdK1qVlqGOSz3lAlqEoltSr
+   dzST9U4apQ3N9ZXXFNfa9Tujtkle4Oe4qe5neCwq4GrMjQzbWKcUJFXFh
+   DX3UgjNhd2XlKbNr/4kfrLPUuODqOyurj93jCIlEoLSrX+KFFcefp0HyX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254141974"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="235261361"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:41 -0800
+   d="scan'208";a="254141974"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:59 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="642639204"
+   d="scan'208";a="611815982"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:41 -0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:59 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 07/45] x86/pkeys: Add PKS CPU feature bit
-Date:   Thu, 10 Mar 2022 09:19:41 -0800
-Message-Id: <20220310172019.850939-8-ira.weiny@intel.com>
+Subject: [PATCH V9 16/45] x86/pkeys: Preserve the PKS MSR on context switch
+Date:   Thu, 10 Mar 2022 09:19:50 -0800
+Message-Id: <20220310172019.850939-17-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,69 +59,155 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Memory Protection Keys (pkeys) provides a mechanism for enforcing
-page-based protections, but without requiring modification of the page
-tables when an application changes protection domains.
+The PKS MSR (PKRS) is a per-logical-processor register.  Unfortunately,
+the MSR is not managed by XSAVE.  Therefore, software must save/restore
+the MSR value on context switch.
 
-The supervisor support for memory protection keys is referred to as
-PKS (Protection Keys Supervisor).
+Allocate space in thread_struct to hold the saved MSR value.  Ensure all
+tasks, including the init_task are properly initialized.  Set the CPU
+PKRS value when a task is scheduled.
 
-Add the defines for the CPU support bit and the boilerplate disable
-infrastructure predicated on the new ARCH_ENABLE_SUPERVISOR_PKEYS
-Kconfig option.
-
+Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Dave Hansen
-		New commit message
+	From Dave Hansen
+		Clarify the commit message
+		s/pks_saved_pkrs/pkrs/
+		s/pks_write_current/x86_pkrs_load/
+		Change x86_pkrs_load to take the next thread instead of
+			'current'
 
 Changes for V8
-	Split this out into it's own patch
----
- arch/x86/include/asm/cpufeatures.h       | 1 +
- arch/x86/include/asm/disabled-features.h | 8 +++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+	From Thomas
+		Ensure pkrs_write_current() does not suffer the overhead
+		of preempt disable.
+		Fix setting of initial value
+		Remove flawed and broken create_initial_pkrs_value() in
+			favor of a much simpler and robust macro default
+		Update function names to be consistent.
 
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 65d147974f8d..cb529b824a96 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -370,6 +370,7 @@
- #define X86_FEATURE_MOVDIR64B		(16*32+28) /* MOVDIR64B instruction */
- #define X86_FEATURE_ENQCMD		(16*32+29) /* ENQCMD and ENQCMDS instructions */
- #define X86_FEATURE_SGX_LC		(16*32+30) /* Software Guard Extensions Launch Control */
-+#define X86_FEATURE_PKS			(16*32+31) /* Protection Keys for Supervisor pages */
+	s/pkrs_write_current/pks_write_current
+		This is a more consistent name
+	s/saved_pkrs/pks_saved_pkrs
+	s/pkrs_init_value/PKS_INIT_VALUE
+	Remove pks_init_task()
+		This function was added mainly to avoid the header file
+		issue.  Adding pks-keys.h solved that and saves the
+		complexity.
+
+Changes for V7
+	Move definitions from asm/processor.h to asm/pks.h
+	s/INIT_PKRS_VALUE/pkrs_init_value
+	Change pks_init_task()/pks_sched_in() to functions
+	s/pks_sched_in/pks_write_current to be used more generically
+	later in the series
+---
+ arch/x86/include/asm/pks.h       |  2 ++
+ arch/x86/include/asm/processor.h | 15 ++++++++++++++-
+ arch/x86/kernel/process_64.c     |  2 ++
+ arch/x86/mm/pkeys.c              |  9 +++++++++
+ 4 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
+index 8180fc59790b..a7bad7301783 100644
+--- a/arch/x86/include/asm/pks.h
++++ b/arch/x86/include/asm/pks.h
+@@ -5,10 +5,12 @@
+ #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
  
- /* AMD-defined CPU features, CPUID level 0x80000007 (EBX), word 17 */
- #define X86_FEATURE_OVERFLOW_RECOV	(17*32+ 0) /* MCA overflow recovery support */
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 8f28fafa98b3..66fdad8f3941 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -44,6 +44,12 @@
- # define DISABLE_OSPKE		(1<<(X86_FEATURE_OSPKE & 31))
- #endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
+ void pks_setup(void);
++void x86_pkrs_load(struct thread_struct *thread);
  
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+# define DISABLE_PKS		0
-+#else
-+# define DISABLE_PKS		(1<<(X86_FEATURE_PKS & 31))
-+#endif
+ #else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ 
+ static inline void pks_setup(void) { }
++static inline void x86_pkrs_load(struct thread_struct *thread) { }
+ 
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ 
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 2c5f12ae7d04..e3874c2d175e 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_X86_PROCESSOR_H
+ #define _ASM_X86_PROCESSOR_H
+ 
++#include <linux/pks-keys.h>
 +
- #ifdef CONFIG_X86_5LEVEL
- # define DISABLE_LA57	0
+ #include <asm/processor-flags.h>
+ 
+ /* Forward declaration, a strange C thing */
+@@ -527,6 +529,10 @@ struct thread_struct {
+ 	 * PKRU is the hardware itself.
+ 	 */
+ 	u32			pkru;
++#ifdef	CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++	/* Saved Protection key register for supervisor mappings */
++	u32			pkrs;
++#endif
+ 
+ 	/* Floating point and extended processor state */
+ 	struct fpu		fpu;
+@@ -769,7 +775,14 @@ static inline void spin_lock_prefetch(const void *x)
+ #define KSTK_ESP(task)		(task_pt_regs(task)->sp)
+ 
  #else
-@@ -85,7 +91,7 @@
- #define DISABLED_MASK14	0
- #define DISABLED_MASK15	0
- #define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
--			 DISABLE_ENQCMD)
-+			 DISABLE_ENQCMD|DISABLE_PKS)
- #define DISABLED_MASK17	0
- #define DISABLED_MASK18	0
- #define DISABLED_MASK19	0
+-#define INIT_THREAD { }
++
++#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++#define INIT_THREAD  {			\
++	.pkrs = PKS_INIT_VALUE,		\
++}
++#else
++#define INIT_THREAD  { }
++#endif
+ 
+ extern unsigned long KSTK_ESP(struct task_struct *task);
+ 
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 3402edec236c..e703cc451128 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -59,6 +59,7 @@
+ /* Not included via unistd.h */
+ #include <asm/unistd_32_ia32.h>
+ #endif
++#include <asm/pks.h>
+ 
+ #include "process.h"
+ 
+@@ -612,6 +613,7 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ 	x86_fsgsbase_load(prev, next);
+ 
+ 	x86_pkru_load(prev, next);
++	x86_pkrs_load(next);
+ 
+ 	/*
+ 	 * Switch the PDA and FPU contexts.
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index 10521f1a292e..39e4c2cbc279 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -246,6 +246,15 @@ static inline void pks_write_pkrs(u32 new_pkrs)
+ 	}
+ }
+ 
++/* x86_pkrs_load() - Update CPU with the incoming thread pkrs value */
++void x86_pkrs_load(struct thread_struct *thread)
++{
++	if (!cpu_feature_enabled(X86_FEATURE_PKS))
++		return;
++
++	pks_write_pkrs(thread->pkrs);
++}
++
+ /*
+  * PKS is independent of PKU and either or both may be supported on a CPU.
+  *
 -- 
 2.35.1
 
