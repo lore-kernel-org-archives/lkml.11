@@ -2,80 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD21C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344510AbiCJXBT (ORCPT
+        id S1344515AbiCJXFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 18:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
+        Thu, 10 Mar 2022 18:05:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343631AbiCJXBP (ORCPT
+        with ESMTP id S231866AbiCJXFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 18:01:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140AE6D91;
-        Thu, 10 Mar 2022 15:00:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43319B82923;
-        Thu, 10 Mar 2022 23:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EAF5BC340E9;
-        Thu, 10 Mar 2022 23:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646953211;
-        bh=YnU9wRAcgPPKa0uEALi1ZM17WwpEji+yiQPEESqcbrs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TSVNAqV3G6a18BwVmRPxQlEu81vG7hjstbDuuqAjisoA5O6gSqghugmRxEE3uCDIS
-         TqCwZF9P9J4svYvfZ7Z5zdbaLPtiz1xNwAuvpJ6bjmVDZNGDnyMCOBjPJJWvkwoDVB
-         phRraHuyV92yg/lhU1JZwbczrJHmzb1bXKun48RMQPqxMRuKV/OKcdfeljHhmWCvwl
-         Jx57JyijHMwdZuHe0r1esRsTRVoezAUXBy7fH4v5F+AN0FYf4E2S4N20hlao5S8pX9
-         LnhIuIvlfhb8Iyjee0B5DqTpaBubKKkjwh+++k6OsojTVTnmKFkNin1KlJRrvzv9jY
-         ZFc/gyH92KduA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB8ADF0383F;
-        Thu, 10 Mar 2022 23:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 10 Mar 2022 18:05:18 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB49CEA24
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:04:16 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id n15so6217883plh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1coxOHy+MiOVkaWgzSw++tkxGlirBpUlCMovtClURhw=;
+        b=CjWfotxA33yOsiAJ7O8Fm3Q6c+I6BF7K7x2OwbbcHiGwT0SPnVY4OXhan3k5QaGlbt
+         WU3LZJ+4LVyE4wxo5yZEYRRY6oVg/CwycFcrLAJA/7Sv9vc+4OPp3aEicV+dmxkIPNu7
+         B9mDme2VHkIEA86cgc3LRs1aJvhXqL+HivHuz8+8IKsulr7JWTB+EfFZ/70pTeYm0l5s
+         jbOQgfW0slhcjisOZ3zLqjDUjedFHxTul8fich1wTn1OV6bH8Bfv3gEdGQUbT/Jx7vRU
+         F+KzSYjRifjUoT98RTyxdS3W93t8RAjJ9ejZEz5cAaZ8uPIByzG/qpEFK88zunFNx8JJ
+         rnvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1coxOHy+MiOVkaWgzSw++tkxGlirBpUlCMovtClURhw=;
+        b=H1u4YGiB1wMjOozeHiuX3HvdHgCbEA43anymQtVHUpNuAf8rM3uboooCJYfcNWu8Ie
+         04NrnJFWxdZArm4LqH8ZNZXk0/9xbk2Wx0SpdTiNG1Cp2tocoksJa/Cs+RvsDwDbMy+r
+         POhgmHMUqJwx5K959QWeDa5zoBlWgUMijs4pJgQ3f8QKqlFke+KNpbmZHMXJNbMuh6fm
+         WRsYz+h7RgbqrMU7T43ZRbLBgb1ClUFyHKB4Tl0zryyyV+H5OJKbjiP9YZIctedE/mOj
+         VcC5bi/ptjK7D5LOtinx0XVFcb5tq4/GurrBDIA6toKrPSQkYODWe7JmdsZLshOwETXr
+         xnOA==
+X-Gm-Message-State: AOAM532NPhBZ0NvDa1hq+0SJxA/b/bmaULytlcsdpS8VZ9+8J5kyFUVZ
+        sU5TYHCUf+xW7KXlrka0FVgA8w==
+X-Google-Smtp-Source: ABdhPJw8HTIbG6Vtna5RHQ3w0pUmdSBxZ9o7VNzoRIFubitq+l+4KYvfWrG6iZrcHpsFwfLo5jj15A==
+X-Received: by 2002:a17:903:124a:b0:151:99fe:1a10 with SMTP id u10-20020a170903124a00b0015199fe1a10mr7338107plh.87.1646953455727;
+        Thu, 10 Mar 2022 15:04:15 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id rj14-20020a17090b3e8e00b001bf50a8b468sm11740225pjb.51.2022.03.10.15.04.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 15:04:15 -0800 (PST)
+Message-ID: <77a44185-c9cd-21f5-125f-b8eec7a66537@linaro.org>
+Date:   Thu, 10 Mar 2022 15:04:14 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: bcmgenet: Don't claim WOL when its not available
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164695321082.6170.1437245957185629804.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Mar 2022 23:00:10 +0000
-References: <20220310045535.224450-1-jeremy.linton@arm.com>
-In-Reply-To: <20220310045535.224450-1-jeremy.linton@arm.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, pbrobinson@gmail.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Content-Language: en-US
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Willem de Bruijn <willemb@google.com>
+References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
+ <20220310221328.877987-1-tadeusz.struk@linaro.org>
+ <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  9 Mar 2022 22:55:35 -0600 you wrote:
-> Some of the bcmgenet platforms don't correctly support WOL, yet
-> ethtool returns:
+On 3/10/22 14:43, Willem de Bruijn wrote:
+> On Thu, Mar 10, 2022 at 5:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Thu, 10 Mar 2022 14:13:28 -0800 Tadeusz Struk wrote:
+>>> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+>>> index 4788f6b37053..6d45112322a0 100644
+>>> --- a/net/ipv6/ip6_output.c
+>>> +++ b/net/ipv6/ip6_output.c
+>>> @@ -1649,6 +1649,16 @@ static int __ip6_append_data(struct sock *sk,
+>>>                        skb->protocol = htons(ETH_P_IPV6);
+>>>                        skb->ip_summed = csummode;
+>>>                        skb->csum = 0;
+>>> +
+>>> +                     /*
+>>> +                      *      Check if there is still room for payload
+>>> +                      */
+>>
+>> TBH I think the check is self-explanatory. Not worth a banner comment,
+>> for sure.
+>>
+>>> +                     if (fragheaderlen >= mtu) {
+>>> +                             err = -EMSGSIZE;
+>>> +                             kfree_skb(skb);
+>>> +                             goto error;
+>>> +                     }
+>>
+>> Not sure if Willem prefers this placement, but seems like we can lift
+>> this check out of the loop, as soon as fragheaderlen and mtu are known.
+>>
+>>>                        /* reserve for fragmentation and ipsec header */
+>>>                        skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
+>>>                                    dst_exthdrlen);
 > 
-> "Supports Wake-on: gsf"
+> Just updating this boundary check will do?
 > 
-> which is false.
-> 
-> [...]
+>          if (mtu < fragheaderlen ||
+>              ((mtu - fragheaderlen) & ~7) + fragheaderlen <
+> sizeof(struct frag_hdr))
+>                  goto emsgsize;
 
-Here is the summary with links:
-  - net: bcmgenet: Don't claim WOL when its not available
-    https://git.kernel.org/netdev/net/c/00b022f8f876
+Yes, it will. v3 on its way.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Tadeusz
