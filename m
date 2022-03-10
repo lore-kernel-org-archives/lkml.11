@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31597C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A460FC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344049AbiCJOqk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:46:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44510 "EHLO
+        id S245125AbiCJOqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:46:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245125AbiCJOeO (ORCPT
+        with ESMTP id S244804AbiCJOeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:34:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AA2ECB03;
-        Thu, 10 Mar 2022 06:31:42 -0800 (PST)
+        Thu, 10 Mar 2022 09:34:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF6310075C;
+        Thu, 10 Mar 2022 06:31:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AF7B61E2E;
-        Thu, 10 Mar 2022 14:31:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F598C340E8;
-        Thu, 10 Mar 2022 14:31:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7B3161CF0;
+        Thu, 10 Mar 2022 14:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFAFC340EB;
+        Thu, 10 Mar 2022 14:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922701;
-        bh=ihSrCrT2ljGKJuA4dYV5fuywYgWpjdEt4ZClp5t5oKY=;
+        s=korg; t=1646922679;
+        bh=8CsPEDtSRq+WyZJMx9PdQo5CL8eWcNCJjLJLpJcZxCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0I+cjAST48F0UEx29uwKBlQyaLoEoBCqF6f1XxfHgYTOYPpFcqD55huTH39lIfytE
-         Te6mHkL/VLqzfPN1SljtgXyd2RZ8grSso2cxELbjPBE3d2zNIfVcQ1BXij8rb2VHNk
-         0Xe9UBCBiy/DiR82MRyOCdNnD33+XP0/vW/5uPAc=
+        b=oV/af8os+8WhcJEC4WmIYab/nsW7S3GyNWIiyF9r/gzQizpZvAL6FCEdRzl3WYoXB
+         I7DVN+8cNOCHSLLmhEPpvPemyCDvsEmRStuJoAKGfNcpkiyLQuGj/I/UZLtXmG4sx9
+         sNUm+FYOi2Gh3DeoK6cWR/mfRC05wmsAYd4NwZAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.15 57/58] xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
-Date:   Thu, 10 Mar 2022 15:19:46 +0100
-Message-Id: <20220310140814.600852103@linuxfoundation.org>
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.15 05/58] Documentation/hw-vuln: Update spectre doc
+Date:   Thu, 10 Mar 2022 15:18:54 +0100
+Message-Id: <20220310140813.141110266@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -51,139 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-Commit 66e3531b33ee51dad17c463b4d9c9f52e341503d upstream.
+commit 5ad3eb1132453b9795ce5fd4572b1c18b292cca9 upstream.
 
-When calling gnttab_end_foreign_access_ref() the returned value must
-be tested and the reaction to that value should be appropriate.
+Update the doc with the new fun.
 
-In case of failure in xennet_get_responses() the reaction should not be
-to crash the system, but to disable the network device.
+  [ bp: Massage commit message. ]
 
-The calls in setup_netfront() can be replaced by calls of
-gnttab_end_foreign_access(). While at it avoid double free of ring
-pages and grant references via xennet_disconnect_backend() in this case.
-
-This is CVE-2022-23042 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 5.15]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/xen-netfront.c |   48 +++++++++++++++++++++++++++++----------------
- 1 file changed, 31 insertions(+), 17 deletions(-)
+ Documentation/admin-guide/hw-vuln/spectre.rst   |   42 ++++++++++++++++--------
+ Documentation/admin-guide/kernel-parameters.txt |    8 +++-
+ 2 files changed, 35 insertions(+), 15 deletions(-)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -988,7 +988,6 @@ static int xennet_get_responses(struct n
- 	struct device *dev = &queue->info->netdev->dev;
- 	struct bpf_prog *xdp_prog;
- 	struct xdp_buff xdp;
--	unsigned long ret;
- 	int slots = 1;
- 	int err = 0;
- 	u32 verdict;
-@@ -1030,8 +1029,13 @@ static int xennet_get_responses(struct n
- 			goto next;
- 		}
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -131,6 +131,19 @@ steer its indirect branch speculations t
+ speculative execution's side effects left in level 1 cache to infer the
+ victim's data.
  
--		ret = gnttab_end_foreign_access_ref(ref, 0);
--		BUG_ON(!ret);
-+		if (!gnttab_end_foreign_access_ref(ref, 0)) {
-+			dev_alert(dev,
-+				  "Grant still in use by backend domain\n");
-+			queue->info->broken = true;
-+			dev_alert(dev, "Disabled for further use\n");
-+			return -EINVAL;
-+		}
++Yet another variant 2 attack vector is for the attacker to poison the
++Branch History Buffer (BHB) to speculatively steer an indirect branch
++to a specific Branch Target Buffer (BTB) entry, even if the entry isn't
++associated with the source address of the indirect branch. Specifically,
++the BHB might be shared across privilege levels even in the presence of
++Enhanced IBRS.
++
++Currently the only known real-world BHB attack vector is via
++unprivileged eBPF. Therefore, it's highly recommended to not enable
++unprivileged eBPF, especially when eIBRS is used (without retpolines).
++For a full mitigation against BHB attacks, it's recommended to use
++retpolines (or eIBRS combined with retpolines).
++
+ Attack scenarios
+ ----------------
  
- 		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+@@ -364,13 +377,15 @@ The possible values in this file are:
  
-@@ -1252,6 +1256,10 @@ static int xennet_poll(struct napi_struc
- 					   &need_xdp_flush);
+   - Kernel status:
  
- 		if (unlikely(err)) {
-+			if (queue->info->broken) {
-+				spin_unlock(&queue->rx_lock);
-+				return 0;
-+			}
- err:
- 			while ((skb = __skb_dequeue(&tmpq)))
- 				__skb_queue_tail(&errq, skb);
-@@ -1916,7 +1924,7 @@ static int setup_netfront(struct xenbus_
- 			struct netfront_queue *queue, unsigned int feature_split_evtchn)
- {
- 	struct xen_netif_tx_sring *txs;
--	struct xen_netif_rx_sring *rxs;
-+	struct xen_netif_rx_sring *rxs = NULL;
- 	grant_ref_t gref;
- 	int err;
+-  ====================================  =================================
+-  'Not affected'                        The processor is not vulnerable
+-  'Vulnerable'                          Vulnerable, no mitigation
+-  'Mitigation: Full generic retpoline'  Software-focused mitigation
+-  'Mitigation: Full AMD retpoline'      AMD-specific software mitigation
+-  'Mitigation: Enhanced IBRS'           Hardware-focused mitigation
+-  ====================================  =================================
++  ========================================  =================================
++  'Not affected'                            The processor is not vulnerable
++  'Mitigation: None'                        Vulnerable, no mitigation
++  'Mitigation: Retpolines'                  Use Retpoline thunks
++  'Mitigation: LFENCE'                      Use LFENCE instructions
++  'Mitigation: Enhanced IBRS'               Hardware-focused mitigation
++  'Mitigation: Enhanced IBRS + Retpolines'  Hardware-focused + Retpolines
++  'Mitigation: Enhanced IBRS + LFENCE'      Hardware-focused + LFENCE
++  ========================================  =================================
  
-@@ -1936,21 +1944,21 @@ static int setup_netfront(struct xenbus_
+   - Firmware status: Show if Indirect Branch Restricted Speculation (IBRS) is
+     used to protect against Spectre variant 2 attacks when calling firmware (x86 only).
+@@ -584,12 +599,13 @@ kernel command line.
  
- 	err = xenbus_grant_ring(dev, txs, 1, &gref);
- 	if (err < 0)
--		goto grant_tx_ring_fail;
-+		goto fail;
- 	queue->tx_ring_ref = gref;
+ 		Specific mitigations can also be selected manually:
  
- 	rxs = (struct xen_netif_rx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
- 	if (!rxs) {
- 		err = -ENOMEM;
- 		xenbus_dev_fatal(dev, err, "allocating rx ring page");
--		goto alloc_rx_ring_fail;
-+		goto fail;
- 	}
- 	SHARED_RING_INIT(rxs);
- 	FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
+-		retpoline
+-					replace indirect branches
+-		retpoline,generic
+-					google's original retpoline
+-		retpoline,amd
+-					AMD-specific minimal thunk
++                retpoline               auto pick between generic,lfence
++                retpoline,generic       Retpolines
++                retpoline,lfence        LFENCE; indirect branch
++                retpoline,amd           alias for retpoline,lfence
++                eibrs                   enhanced IBRS
++                eibrs,retpoline         enhanced IBRS + Retpolines
++                eibrs,lfence            enhanced IBRS + LFENCE
  
- 	err = xenbus_grant_ring(dev, rxs, 1, &gref);
- 	if (err < 0)
--		goto grant_rx_ring_fail;
-+		goto fail;
- 	queue->rx_ring_ref = gref;
+ 		Not specifying this option is equivalent to
+ 		spectre_v2=auto.
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5267,8 +5267,12 @@
+ 			Specific mitigations can also be selected manually:
  
- 	if (feature_split_evtchn)
-@@ -1963,22 +1971,28 @@ static int setup_netfront(struct xenbus_
- 		err = setup_netfront_single(queue);
+ 			retpoline	  - replace indirect branches
+-			retpoline,generic - google's original retpoline
+-			retpoline,amd     - AMD-specific minimal thunk
++			retpoline,generic - Retpolines
++			retpoline,lfence  - LFENCE; indirect branch
++			retpoline,amd     - alias for retpoline,lfence
++			eibrs		  - enhanced IBRS
++			eibrs,retpoline   - enhanced IBRS + Retpolines
++			eibrs,lfence      - enhanced IBRS + LFENCE
  
- 	if (err)
--		goto alloc_evtchn_fail;
-+		goto fail;
- 
- 	return 0;
- 
- 	/* If we fail to setup netfront, it is safe to just revoke access to
- 	 * granted pages because backend is not accessing it at this point.
- 	 */
--alloc_evtchn_fail:
--	gnttab_end_foreign_access_ref(queue->rx_ring_ref, 0);
--grant_rx_ring_fail:
--	free_page((unsigned long)rxs);
--alloc_rx_ring_fail:
--	gnttab_end_foreign_access_ref(queue->tx_ring_ref, 0);
--grant_tx_ring_fail:
--	free_page((unsigned long)txs);
--fail:
-+ fail:
-+	if (queue->rx_ring_ref != GRANT_INVALID_REF) {
-+		gnttab_end_foreign_access(queue->rx_ring_ref, 0,
-+					  (unsigned long)rxs);
-+		queue->rx_ring_ref = GRANT_INVALID_REF;
-+	} else {
-+		free_page((unsigned long)rxs);
-+	}
-+	if (queue->tx_ring_ref != GRANT_INVALID_REF) {
-+		gnttab_end_foreign_access(queue->tx_ring_ref, 0,
-+					  (unsigned long)txs);
-+		queue->tx_ring_ref = GRANT_INVALID_REF;
-+	} else {
-+		free_page((unsigned long)txs);
-+	}
- 	return err;
- }
- 
+ 			Not specifying this option is equivalent to
+ 			spectre_v2=auto.
 
 
