@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C904AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244216AbiCJWT0 convert rfc822-to-8bit (ORCPT
+        id S1344367AbiCJWTn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:19:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        Thu, 10 Mar 2022 17:19:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236742AbiCJWTY (ORCPT
+        with ESMTP id S236742AbiCJWTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:19:24 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B488A4EF45
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 14:18:21 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-101-1qRMEwtpO-2LLQYOTwUG6Q-1; Thu, 10 Mar 2022 22:18:18 +0000
-X-MC-Unique: 1qRMEwtpO-2LLQYOTwUG6Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 10 Mar 2022 22:18:17 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 10 Mar 2022 22:18:16 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Tadeusz Struk' <tadeusz.struk@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-Subject: RE: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Thread-Topic: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Thread-Index: AQHYNMwtn/GFN1e7cUOoZGj2dooiCKy5LxsQ
-Date:   Thu, 10 Mar 2022 22:18:16 +0000
-Message-ID: <d83a4ea5fc794728bf5d2bf6f0d4fce9@AcuMS.aculab.com>
-References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
- <20220310221328.877987-1-tadeusz.struk@linaro.org>
-In-Reply-To: <20220310221328.877987-1-tadeusz.struk@linaro.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 10 Mar 2022 17:19:40 -0500
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8ED94F456;
+        Thu, 10 Mar 2022 14:18:38 -0800 (PST)
+Received: by mail-ot1-f46.google.com with SMTP id o106-20020a9d2273000000b005b21f46878cso5036537ota.3;
+        Thu, 10 Mar 2022 14:18:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uVBl4IjExhMMGQyqVZdtBYxJhbtlhf7V3EID45rNLsk=;
+        b=WIfaa4MTWFgPdWVPTIhscW20nxEv2YZRBZ6MKNUK6tA6jh7CuKuXJza6CnlyBR5zII
+         YH37ztxy/f5SihWbQpbvht0FiVj5DQco41fFOGD0bUC9CQ4CIp7J8cjjHO+FO7RvlgSo
+         Y30P8PLWwTLXveBxecjVxrn492bZhaj+a2B7ZHqwfk1IqqPMmHFioSGnGZNq+Vd+WXUK
+         6JxXYSH3IES2Hhy1Qx3RfUnWdsy8t7iEmWK/W0JSHqmeFOmgzEEqNa1XPOhRMPCFhHop
+         aFlU5bPBlR1zUCYhHwkuxufBGOqnpctoeNXMiyrJBK6GC3f3D8De0LWjk/KeR3kGVv3U
+         xdbQ==
+X-Gm-Message-State: AOAM533cVcQ4qmfod0yfrIYWqpiXMRoxHy9KqWpBpqeU8tBaG/3GOoPM
+        NhNOml8Dvh4HIi7xji62mg==
+X-Google-Smtp-Source: ABdhPJymVHkEV5XxQpBNmw5S/gpv0K8uSPo3RhUKisPITsq2PFiS19pD2qkEoukGiphCl2E24hUkYQ==
+X-Received: by 2002:a9d:77d7:0:b0:5b2:29b0:70cb with SMTP id w23-20020a9d77d7000000b005b229b070cbmr3556144otl.276.1646950718003;
+        Thu, 10 Mar 2022 14:18:38 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id i126-20020acab884000000b002d9f958bceesm2925916oif.41.2022.03.10.14.18.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 14:18:36 -0800 (PST)
+Received: (nullmailer pid 2185267 invoked by uid 1000);
+        Thu, 10 Mar 2022 22:18:35 -0000
+Date:   Thu, 10 Mar 2022 16:18:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Trevor Wu <trevor.wu@mediatek.com>
+Cc:     broonie@kernel.org, tiwai@suse.com, matthias.bgg@gmail.com,
+        alsa-devel@alsa-project.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, aaronyu@google.com,
+        yc.hung@mediatek.com
+Subject: Re: [PATCH 5/5] dt-bindings: mediatek: mt8195: add
+ mt8195-mt6359-max98390-rt5682 document
+Message-ID: <Yip5O3t0Ymyc2h+p@robh.at.kernel.org>
+References: <20220308072435.22460-1-trevor.wu@mediatek.com>
+ <20220308072435.22460-6-trevor.wu@mediatek.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308072435.22460-6-trevor.wu@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk
-> Sent: 10 March 2022 22:13
+On Tue, Mar 08, 2022 at 03:24:35PM +0800, Trevor Wu wrote:
+> This patch adds document for mt8195 board with mt6359, max98390 and
+> rt5682.
 > 
-> Syzbot found a kernel bug in the ipv6 stack:
-> LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-> The reproducer triggers it by sending a crafted message via sendmmsg()
-> call, which triggers skb_over_panic, and crashes the kernel:
+> Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
+> ---
+>  .../sound/mt8195-mt6359-max98390-rt5682.yaml  | 61 +++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/sound/mt8195-mt6359-max98390-rt5682.yaml
 > 
-> skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-> head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-> dev:<NULL>
-> 
-> Add a check that prevents an invalid packet with MTU equall to the
-> fregment header size to eat up all the space for payload.
+> diff --git a/Documentation/devicetree/bindings/sound/mt8195-mt6359-max98390-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8195-mt6359-max98390-rt5682.yaml
+> new file mode 100644
+> index 000000000000..7ec14d61b109
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/sound/mt8195-mt6359-max98390-rt5682.yaml
+> @@ -0,0 +1,61 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/sound/mt8195-mt6359-max98390-rt5682.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek MT8195 with MT6359, MAX98390 and RT5682 ASoC sound card driver
+> +
+> +maintainers:
+> +  - Trevor Wu <trevor.wu@mediatek.com>
+> +
+> +description:
+> +  This binding describes the MT8195 sound card.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt8195_mt6359_max98390_rt5682
 
-There probably ought to be a check much earlier that stops
-the option that makes the iphdr being to big being accepted
-in the first place.
+You have nodes for each of these components, why do we need new 
+compatible string for each combination. You can figure out the 
+combination by looking at each of those nodes.
 
-Much better to do the check in the option generation code.
+Second, why does each combination need a new schema doc?
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Rob
