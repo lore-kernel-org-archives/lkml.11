@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C89C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243730AbiCJO1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58452 "EHLO
+        id S243761AbiCJO1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243637AbiCJOXI (ORCPT
+        with ESMTP id S243726AbiCJOXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:23:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F91154735;
-        Thu, 10 Mar 2022 06:21:01 -0800 (PST)
+        Thu, 10 Mar 2022 09:23:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8FB15696D;
+        Thu, 10 Mar 2022 06:21:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6BB1B82678;
-        Thu, 10 Mar 2022 14:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C76C36AF7;
-        Thu, 10 Mar 2022 14:20:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D42F861CEE;
+        Thu, 10 Mar 2022 14:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2745C340E8;
+        Thu, 10 Mar 2022 14:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922058;
-        bh=4sRvDsU0YzxJTpWFP0plNUR7N8iCGw3geGeUgJ8shXI=;
+        s=korg; t=1646922064;
+        bh=mFLGwyxL60zb3gvRg16qJDVO+v5CSOIO6jNpfVxbb6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=boqfHfUIWlKEI+wj+pPx22k07efwQZQiwuCMyQFGjGCPrlJ5/IQVbqATuL5gU3XDG
-         A/EBJSANxkapwLdF42kRolDHggWQrnedKCXLHButKbN//ZfqJBUoyQ26U67+2veT22
-         99xtW8TQK4aNPzel6Dr1MlGbGGyDO4HREcKqWn4g=
+        b=PJAKjfVkjsZfZZiVuAOg3K3VrBA1x2fb3tN1yyeKlBuMI8sApwgYFyQbvDpVE33h1
+         CNf+iI/LnpD5AHQHwW3oYT1CFboOf3BpVZBmthFzv586zcb/mi7zdHEYzFDeYLa6c8
+         Op/9DolmISjWO0AckpvsytDb9PXN+Jg3Vb6cQYRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Demi Marie Obenour <demi@invisiblethingslab.com>,
         Juergen Gross <jgross@suse.com>,
         Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.14 23/31] xen/grant-table: add gnttab_try_end_foreign_access()
-Date:   Thu, 10 Mar 2022 15:18:36 +0100
-Message-Id: <20220310140808.215242873@linuxfoundation.org>
+Subject: [PATCH 4.14 25/31] xen/netfront: dont use gnttab_query_foreign_access() for mapped status
+Date:   Thu, 10 Mar 2022 15:18:38 +0100
+Message-Id: <20220310140808.274494842@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
 References: <20220310140807.524313448@linuxfoundation.org>
@@ -52,77 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Juergen Gross <jgross@suse.com>
 
-Commit 6b1775f26a2da2b05a6dc8ec2b5d14e9a4701a1a upstream.
+Commit 31185df7e2b1d2fa1de4900247a12d7b9c7087eb upstream.
 
-Add a new grant table function gnttab_try_end_foreign_access(), which
-will remove and free a grant if it is not in use.
+It isn't enough to check whether a grant is still being in use by
+calling gnttab_query_foreign_access(), as a mapping could be realized
+by the other side just after having called that function.
 
-Its main use case is to either free a grant if it is no longer in use,
-or to take some other action if it is still in use. This other action
-can be an error exit, or (e.g. in the case of blkfront persistent grant
-feature) some special handling.
+In case the call was done in preparation of revoking a grant it is
+better to do so via gnttab_end_foreign_access_ref() and check the
+success of that operation instead.
 
-This is CVE-2022-23036, CVE-2022-23038 / part of XSA-396.
+This is CVE-2022-23037 / part of XSA-396.
 
 Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/grant-table.c |   14 ++++++++++++--
- include/xen/grant_table.h |   12 ++++++++++++
- 2 files changed, 24 insertions(+), 2 deletions(-)
+ drivers/net/xen-netfront.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -378,11 +378,21 @@ static void gnttab_add_deferred(grant_re
- 	       what, ref, page ? page_to_pfn(page) : -1);
- }
- 
-+int gnttab_try_end_foreign_access(grant_ref_t ref)
-+{
-+	int ret = _gnttab_end_foreign_access_ref(ref, 0);
-+
-+	if (ret)
-+		put_free_entry(ref);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(gnttab_try_end_foreign_access);
-+
- void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
- 			       unsigned long page)
- {
--	if (gnttab_end_foreign_access_ref(ref, readonly)) {
--		put_free_entry(ref);
-+	if (gnttab_try_end_foreign_access(ref)) {
- 		if (page != 0)
- 			put_page(virt_to_page(page));
- 	} else
---- a/include/xen/grant_table.h
-+++ b/include/xen/grant_table.h
-@@ -97,10 +97,22 @@ int gnttab_end_foreign_access_ref(grant_
-  * access has been ended, free the given page too.  Access will be ended
-  * immediately iff the grant entry is not in use, otherwise it will happen
-  * some time later.  page may be 0, in which case no freeing will occur.
-+ * Note that the granted page might still be accessed (read or write) by the
-+ * other side after gnttab_end_foreign_access() returns, so even if page was
-+ * specified as 0 it is not allowed to just reuse the page for other
-+ * purposes immediately.
-  */
- void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
- 			       unsigned long page);
- 
-+/*
-+ * End access through the given grant reference, iff the grant entry is
-+ * no longer in use.  In case of success ending foreign access, the
-+ * grant reference is deallocated.
-+ * Return 1 if the grant entry was freed, 0 if it is still in use.
-+ */
-+int gnttab_try_end_foreign_access(grant_ref_t ref);
-+
- int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn);
- 
- unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -414,14 +414,12 @@ static bool xennet_tx_buf_gc(struct netf
+ 			queue->tx_link[id] = TX_LINK_NONE;
+ 			skb = queue->tx_skbs[id];
+ 			queue->tx_skbs[id] = NULL;
+-			if (unlikely(gnttab_query_foreign_access(
+-				queue->grant_tx_ref[id]) != 0)) {
++			if (unlikely(!gnttab_end_foreign_access_ref(
++				queue->grant_tx_ref[id], GNTMAP_readonly))) {
+ 				dev_alert(dev,
+ 					  "Grant still in use by backend domain\n");
+ 				goto err;
+ 			}
+-			gnttab_end_foreign_access_ref(
+-				queue->grant_tx_ref[id], GNTMAP_readonly);
+ 			gnttab_release_grant_reference(
+ 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
+ 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
 
 
