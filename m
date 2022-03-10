@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59445C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC28C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243950AbiCJOca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:32:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
+        id S237396AbiCJOcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243588AbiCJO0j (ORCPT
+        with ESMTP id S243742AbiCJO1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:26:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433D655BE6;
-        Thu, 10 Mar 2022 06:22:26 -0800 (PST)
+        Thu, 10 Mar 2022 09:27:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D038D6A9;
+        Thu, 10 Mar 2022 06:22:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E30261B33;
-        Thu, 10 Mar 2022 14:22:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1718DC340E8;
-        Thu, 10 Mar 2022 14:22:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7361AB8254A;
+        Thu, 10 Mar 2022 14:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA46FC340E8;
+        Thu, 10 Mar 2022 14:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922144;
-        bh=+KiLqnFc/JOlPhhx2sGptnR9bGJ54+ME3X2f13TPR5Y=;
+        s=korg; t=1646922153;
+        bh=vzSF9NLTj2CC/EtyDWRBsEmCrp/t8LoHmGjSgMq5smc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fFbZ41aEUWsMG1NG/up1OK/GTCkff0Q8H/OdKZPMwtw3C75xGVzw1qsu8sNAO0BAC
-         2WXOo8zPLm8Tfmh3iXEcDeX2/2a0JoKxh3PVbof4GmK0xytg03b2ItfmPpmaMdXoLA
-         GqTf2RYSzVPQcd8ko0FWAqBJjQmGIlLQOnhaj96E=
+        b=yYil//FhHNQgskWVGMnyLggedC0twC8n6HLEdQKLuwd5JNd7H66Vzr4NwgDzzylGC
+         sNT/iA7J1Y0nyAesDzbcuLnkBzsaoriSscdfcXCxWZLAKBvT7ZiU8YXG0i0KEexXc+
+         Ybya3Zatq2ojfrJjr6mhNYzqVkvi7FR3U/Sthznw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 20/33] ARM: fix co-processor register typo
-Date:   Thu, 10 Mar 2022 15:18:47 +0100
-Message-Id: <20220310140808.340304980@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.19 23/33] xen/xenbus: dont let xenbus_grant_ring() remove grants in error case
+Date:   Thu, 10 Mar 2022 15:18:50 +0100
+Message-Id: <20220310140808.426358398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -50,34 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Juergen Gross <jgross@suse.com>
 
-commit 33970b031dc4653cc9dc80f2886976706c4c8ef1 upstream.
+Commit 3777ea7bac3113005b7180e6b9dadf16d19a5827 upstream.
 
-In the recent Spectre BHB patches, there was a typo that is only
-exposed in certain configurations: mcr p15,0,XX,c7,r5,4 should have
-been mcr p15,0,XX,c7,c5,4
+Letting xenbus_grant_ring() tear down grants in the error case is
+problematic, as the other side could already have used these grants.
+Calling gnttab_end_foreign_access_ref() without checking success is
+resulting in an unclear situation for any caller of xenbus_grant_ring()
+as in the error case the memory pages of the ring page might be
+partially mapped. Freeing them would risk unwanted foreign access to
+them, while not freeing them would leak memory.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+In order to remove the need to undo any gnttab_grant_foreign_access()
+calls, use gnttab_alloc_grant_references() to make sure no further
+error can occur in the loop granting access to the ring pages.
+
+It should be noted that this way of handling removes leaking of
+grant entries in the error case, too.
+
+This is CVE-2022-23040 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/assembler.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/xen/xenbus/xenbus_client.c |   24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -116,7 +116,7 @@
- 	.endm
+--- a/drivers/xen/xenbus/xenbus_client.c
++++ b/drivers/xen/xenbus/xenbus_client.c
+@@ -368,7 +368,14 @@ int xenbus_grant_ring(struct xenbus_devi
+ 		      unsigned int nr_pages, grant_ref_t *grefs)
+ {
+ 	int err;
+-	int i, j;
++	unsigned int i;
++	grant_ref_t gref_head;
++
++	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
++	if (err) {
++		xenbus_dev_fatal(dev, err, "granting access to ring page");
++		return err;
++	}
  
- 	.macro	isb, args
--	mcr	p15, 0, r0, c7, r5, 4
-+	mcr	p15, 0, r0, c7, c5, 4
- 	.endm
- #endif
+ 	for (i = 0; i < nr_pages; i++) {
+ 		unsigned long gfn;
+@@ -378,23 +385,14 @@ int xenbus_grant_ring(struct xenbus_devi
+ 		else
+ 			gfn = virt_to_gfn(vaddr);
+ 
+-		err = gnttab_grant_foreign_access(dev->otherend_id, gfn, 0);
+-		if (err < 0) {
+-			xenbus_dev_fatal(dev, err,
+-					 "granting access to ring page");
+-			goto fail;
+-		}
+-		grefs[i] = err;
++		grefs[i] = gnttab_claim_grant_reference(&gref_head);
++		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
++						gfn, 0);
+ 
+ 		vaddr = vaddr + XEN_PAGE_SIZE;
+ 	}
+ 
+ 	return 0;
+-
+-fail:
+-	for (j = 0; j < i; j++)
+-		gnttab_end_foreign_access_ref(grefs[j], 0);
+-	return err;
+ }
+ EXPORT_SYMBOL_GPL(xenbus_grant_ring);
  
 
 
