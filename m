@@ -2,105 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9732AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A57FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344253AbiCJWKw (ORCPT
+        id S1344007AbiCJWLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:10:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        Thu, 10 Mar 2022 17:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344200AbiCJWKm (ORCPT
+        with ESMTP id S1344245AbiCJWKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:10:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E14DA873;
-        Thu, 10 Mar 2022 14:09:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B14761B43;
-        Thu, 10 Mar 2022 22:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40AAC340E9;
-        Thu, 10 Mar 2022 22:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646950180;
-        bh=nbZcLuFYhFoAwayMU7WIynO05puat2p3vzjHgrWypJo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gbqrCE4jXmfgTJyo13N2P9AnUUqV53HHGqmjPA3cx5b08Ri4OJUnE9Q4OqHY5PeD8
-         NWws8QrfwaOztwnMhv8QUcPEk4r8MFwrYU+tXWGVIp7xUU5BakKICBMFEMUWWz2icn
-         MxxqIfETRUt7eAqy1gZX8lCFFOKzS3cDcxLj+kvGAIDN1UqIDlrc1Eioe3lwiKn1Jz
-         YJoD8RoOPu6ARD/+Ia5KWGfC28xGXIQ5YwoS3aHCYMYRs6qV1pNoY4EQ83gH11zPsr
-         cWE7WkSAdJjEC1tKr3aabgbmJV0hDrG6cRh+bzzKDuO0zPgt+OnuwKBnG5UEwOz5sH
-         iTlGGjDBG+wfg==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 2/2] Documentation/sparse: Add hints about __CHECKER__
-Date:   Thu, 10 Mar 2022 16:09:27 -0600
-Message-Id: <20220310220927.245704-3-helgaas@kernel.org>
+        Thu, 10 Mar 2022 17:10:49 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C141148653;
+        Thu, 10 Mar 2022 14:09:46 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id z7so8187136iom.1;
+        Thu, 10 Mar 2022 14:09:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1v/g+XUsQiuGcvCnhpB+S1s02TLdasx4UAVfvGdDJK4=;
+        b=kIP/iT9my8xOYPBX0FN+vUWq07UAfSc/y8T0J8Vl++12og43rxuFfmCdCdoRX03SR0
+         +7Xa6+qUsTq6hyYFzpB6znt90NeXBbvowKl2/qAI7jkO+dDF8F2B9ZBX57ww9vHRqYao
+         rGZ6a+MmnTRdUAyFP/xpdKp0MQGwifAbf3D7/rJ5n6WmKTiYP03Y70DUUpuG/x84F8ib
+         Lh5G02rCs45U8UM5xzarAdmBx0ofS6SFK90g1tVYxasa0AmtCSwdqZG/s/Psg70+8RsY
+         OHVHfNZO1LZl9x14pn3sAvr+83BniW1WRIDfaboA4JMsrAyG8v/XQS9L+jpS5AfX9Zz+
+         lMsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1v/g+XUsQiuGcvCnhpB+S1s02TLdasx4UAVfvGdDJK4=;
+        b=mS/uUzEmNYknIjPpbN1tIG3GoRGS2CUEwfHp+ch4ua1xPSkQochhiZ9BMvIbsCFic4
+         SJSYb+YpR37M28cPG77mUNlHjUF8OCUvWfK0OMeYY3rYDvofgNWirhunqDboxQoDusy6
+         E2lVV9/5HDKvI/Wx2YPwgOw5D3eDQguOnewDI811jVIa304kiUMbEFO1VweLLSSVlNPO
+         qw+4NPX4x9Ab7ZIiy5diCGHzI5Rrvhd3/I1S0djADgprLG2R07O6d6UewRzupyurssyi
+         o4HKeVahFCKnoBWF8yV5JigyvWSv38M4yLuq4oKaGIYUXroIbuYTaVyfCQ7EjaPQqPJR
+         ozWw==
+X-Gm-Message-State: AOAM532pIkChwo+MYv3HQGWfEV+diTzcmNdcUi2x1X0h3+EqfImcIl3T
+        uQTumVzE7mIGlfrgkr2UCs3fQKTDOfs=
+X-Google-Smtp-Source: ABdhPJz4mn0TL2OHHFO11/EXnysHbSouq4ZhdIh0eLQKTis78PaM2zQFz0kkvqv4LZ85gFXLPPUK8A==
+X-Received: by 2002:a02:7013:0:b0:317:b68a:e4d2 with SMTP id f19-20020a027013000000b00317b68ae4d2mr5844220jac.8.1646950185817;
+        Thu, 10 Mar 2022 14:09:45 -0800 (PST)
+Received: from james-x399.localdomain (97-118-243-247.hlrn.qwest.net. [97.118.243.247])
+        by smtp.gmail.com with ESMTPSA id x15-20020a056e02194f00b002c609855ea5sm3575209ilu.34.2022.03.10.14.09.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 14:09:45 -0800 (PST)
+From:   James Hilliard <james.hilliard1@gmail.com>
+To:     linux-media@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Pawel Osciak <posciak@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Hilliard <james.hilliard1@gmail.com>
+Subject: [PATCH 1/1] uvcvideo: Add support for UVC1.5 P&C control.
+Date:   Thu, 10 Mar 2022 15:09:40 -0700
+Message-Id: <20220310220940.2994075-1-james.hilliard1@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220310220927.245704-1-helgaas@kernel.org>
-References: <20220310220927.245704-1-helgaas@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Pawel Osciak <posciak@chromium.org>
 
-Several attributes depend on __CHECKER__, but previously there was no clue
-in the tree about when __CHECKER__ might be defined.  Add hints at the most
-common places (__kernel, __user, __iomem, __bitwise) and in the sparse
-documentation.
+Add support for UVC 1.5 Probe & Commit control.
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Pawel Osciak <posciak@chromium.org>
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 ---
- Documentation/dev-tools/sparse.rst | 2 ++
- include/linux/compiler_types.h     | 1 +
- include/uapi/linux/types.h         | 1 +
- 3 files changed, 4 insertions(+)
+ drivers/media/usb/uvc/uvc_video.c | 34 +++++++++++++++++++++++++++++++
+ include/uapi/linux/usb/video.h    |  7 +++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/Documentation/dev-tools/sparse.rst b/Documentation/dev-tools/sparse.rst
-index 02102be7ff49..dc791c8d84d1 100644
---- a/Documentation/dev-tools/sparse.rst
-+++ b/Documentation/dev-tools/sparse.rst
-@@ -100,3 +100,5 @@ have already built it.
+diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+index 1b4cc934109e..46b8396e0d3b 100644
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -253,6 +253,7 @@ static int uvc_get_video_ctrl(struct uvc_streaming *stream,
+ 	u16 size = uvc_video_ctrl_size(stream);
+ 	u8 *data;
+ 	int ret;
++	unsigned int i;
  
- The optional make variable CF can be used to pass arguments to sparse.  The
- build system passes -Wbitwise to sparse automatically.
+ 	if ((stream->dev->quirks & UVC_QUIRK_PROBE_DEF) &&
+ 			query == UVC_GET_DEF)
+@@ -322,6 +323,26 @@ static int uvc_get_video_ctrl(struct uvc_streaming *stream,
+ 		ctrl->bMaxVersion = 0;
+ 	}
+ 
++	if (size >= 48) {
++		ctrl->bUsage = data[34];
++		ctrl->bBitDepthLuma = data[35];
++		ctrl->bmSetting = data[36];
++		ctrl->bMaxNumberOfRefFramesPlus1 = data[37];
++		ctrl->bmRateControlModes = get_unaligned_le16(&data[38]);
++		for (i = 0; i < ARRAY_SIZE(ctrl->bmLayoutPerStream); ++i) {
++			ctrl->bmLayoutPerStream[i] =
++				get_unaligned_le16(&data[40 + i * 2]);
++		}
++	} else {
++		ctrl->bUsage = 0;
++		ctrl->bBitDepthLuma = 0;
++		ctrl->bmSetting = 0;
++		ctrl->bMaxNumberOfRefFramesPlus1 = 0;
++		ctrl->bmRateControlModes = 0;
++		for (i = 0; i < ARRAY_SIZE(ctrl->bmLayoutPerStream); ++i)
++			ctrl->bmLayoutPerStream[i] = 0;
++	}
 +
-+Note that sparse defines the __CHECKER__ preprocessor symbol.
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 3c1795fdb568..4b3915ce38a4 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -4,6 +4,7 @@
+ 	/* Some broken devices return null or wrong dwMaxVideoFrameSize and
+ 	 * dwMaxPayloadTransferSize fields. Try to get the value from the
+ 	 * format and frame descriptors.
+@@ -340,6 +361,7 @@ static int uvc_set_video_ctrl(struct uvc_streaming *stream,
+ 	u16 size = uvc_video_ctrl_size(stream);
+ 	u8 *data;
+ 	int ret;
++	unsigned int i;
  
- #ifndef __ASSEMBLY__
+ 	data = kzalloc(size, GFP_KERNEL);
+ 	if (data == NULL)
+@@ -365,6 +387,18 @@ static int uvc_set_video_ctrl(struct uvc_streaming *stream,
+ 		data[33] = ctrl->bMaxVersion;
+ 	}
  
-+/* sparse defines __CHECKER__; see Documentation/dev-tools/sparse.rst */
- #ifdef __CHECKER__
- /* address spaces */
- # define __kernel	__attribute__((address_space(0)))
-diff --git a/include/uapi/linux/types.h b/include/uapi/linux/types.h
-index 71696f424ac8..c4dc597f3dcf 100644
---- a/include/uapi/linux/types.h
-+++ b/include/uapi/linux/types.h
-@@ -19,6 +19,7 @@
-  * any application/library that wants linux/types.h.
-  */
++	if (size >= 48) {
++		data[34] = ctrl->bUsage;
++		data[35] = ctrl->bBitDepthLuma;
++		data[36] = ctrl->bmSetting;
++		data[37] = ctrl->bMaxNumberOfRefFramesPlus1;
++		*(__le16 *)&data[38] = cpu_to_le16(ctrl->bmRateControlModes);
++		for (i = 0; i < ARRAY_SIZE(ctrl->bmLayoutPerStream); ++i) {
++			*(__le16 *)&data[40 + i * 2] =
++				cpu_to_le16(ctrl->bmLayoutPerStream[i]);
++		}
++	}
++
+ 	ret = __uvc_query_ctrl(stream->dev, UVC_SET_CUR, 0, stream->intfnum,
+ 		probe ? UVC_VS_PROBE_CONTROL : UVC_VS_COMMIT_CONTROL, data,
+ 		size, uvc_timeout_param);
+diff --git a/include/uapi/linux/usb/video.h b/include/uapi/linux/usb/video.h
+index bfdae12cdacf..a0de60efd73c 100644
+--- a/include/uapi/linux/usb/video.h
++++ b/include/uapi/linux/usb/video.h
+@@ -435,6 +435,7 @@ struct uvc_color_matching_descriptor {
+ #define UVC_DT_COLOR_MATCHING_SIZE			6
  
-+/* sparse defines __CHECKER__; see Documentation/dev-tools/sparse.rst */
- #ifdef __CHECKER__
- #define __bitwise	__attribute__((bitwise))
- #else
+ /* 4.3.1.1. Video Probe and Commit Controls */
++#define UVC_NUM_SIMULCAST_STREAMS			4
+ struct uvc_streaming_control {
+ 	__u16 bmHint;
+ 	__u8  bFormatIndex;
+@@ -452,6 +453,12 @@ struct uvc_streaming_control {
+ 	__u8  bPreferedVersion;
+ 	__u8  bMinVersion;
+ 	__u8  bMaxVersion;
++	__u8  bUsage;
++	__u8  bBitDepthLuma;
++	__u8  bmSetting;
++	__u8  bMaxNumberOfRefFramesPlus1;
++	__u16 bmRateControlModes;
++	__u16 bmLayoutPerStream[UVC_NUM_SIMULCAST_STREAMS];
+ } __attribute__((__packed__));
+ 
+ /* Uncompressed Payload - 3.1.1. Uncompressed Video Format Descriptor */
 -- 
 2.25.1
 
