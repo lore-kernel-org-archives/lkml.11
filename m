@@ -2,82 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD502C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240359AbiCJIcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
+        id S237247AbiCJIeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232250AbiCJIcp (ORCPT
+        with ESMTP id S240361AbiCJIeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:32:45 -0500
-Received: from smtp.tom.com (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2A52135701
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:31:44 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 3C61A4400DA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 16:31:43 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646901103; bh=tz98sccFxvbjWDJciH1zpeayD1ruRNaTozLwXtiPZlo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZDtPl7nlDBXpDKK7Tmv9S9bKH1hi6fJLWTYukCvzA+E9ohByiESJX3cA5wQ/aZ1WR
-         KMjrovnVmKbPjxqzTSNX4mgzQL9MTvWR25Pf5chYaQTj5WT75u89Z/Mh2IB9V5TrkZ
-         NUwJLqOVg7bze2NIZ6i6xUmvDKpqzQQBcyjorXzM=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID 1269508722
-          for <linux-kernel@vger.kernel.org>;
-          Thu, 10 Mar 2022 16:31:43 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646901103; bh=tz98sccFxvbjWDJciH1zpeayD1ruRNaTozLwXtiPZlo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZDtPl7nlDBXpDKK7Tmv9S9bKH1hi6fJLWTYukCvzA+E9ohByiESJX3cA5wQ/aZ1WR
-         KMjrovnVmKbPjxqzTSNX4mgzQL9MTvWR25Pf5chYaQTj5WT75u89Z/Mh2IB9V5TrkZ
-         NUwJLqOVg7bze2NIZ6i6xUmvDKpqzQQBcyjorXzM=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 3BC62154153A;
-        Thu, 10 Mar 2022 16:31:40 +0800 (CST)
-Date:   Thu, 10 Mar 2022 16:31:39 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/2] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220310163139.00003d87@tom.com>
-In-Reply-To: <20220310081908.GA26477@lst.de>
-References: <20220308151606.2563-1-sunmingbao@tom.com>
-        <20220309061442.GA31316@lst.de>
-        <20220309153136.000048e1@tom.com>
-        <20220309212852.00007828@tom.com>
-        <20220310081908.GA26477@lst.de>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        Thu, 10 Mar 2022 03:34:11 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DCC5C864;
+        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id s25so6675227lji.5;
+        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
+        b=UrjYq2/KyC3hvwORoAq2rAi9RMIsuR0umGHAz3DXdsGHU46VPLPpRZ7oxHgbMoZzfP
+         TpJPe7CbBMnfx/r97HrJIw8EChbICBje8UAdC9Xur7ScmBVscc+jU56Vbgzb0NFuyZ3L
+         Yr3DRddja/lhGnlemyu7O8ubgNs5p3fxjkfcF9hpjCvEkIDhWBW7Hb4SHkDbe9ZR3sKe
+         JSLTPqNPtGssgo/N6E/lV8jQE4RiK2pu5k5MCrEjkdKQGSt6kEugPFgkbIDoRlYVB0sl
+         u+5CMCvl2xxZtIiEx+I8NV02zzxhBW9yTYM3QTD8161ihrXzLxtgEfWnTWwBF8jH6EzQ
+         PARw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
+        b=5Sh4abJehEyo0VSM39lvJygbENY3Nnhzu7pS7NqESB+Y0beRufDihnkM32zLB8ja2g
+         73a4PDMGbWsa4yrnizk34viClI8fdhjSngsK8+7q5yQnD7yaG7oMw94Am/ElGOpnVTfM
+         KOvV3EbnzhPDVC+dgqlz+urpLNB1yQiQN59HVAdETBLTrRo0yM+6DKVFBb9gqRUEMtmv
+         9JwDrdExcwBZ+O2BcGBmf5YpZ9P3TrAtBGqttSFZ020V54crHQsexaBh6e+GBbvZlhpA
+         cUYKE0fdcppNja9lY8EXYdfCB1SAg6nafGTV0YveLIIiQpU8g8newNS9KTy8gT+v3AmY
+         2JMw==
+X-Gm-Message-State: AOAM531E6ZhOwLRiE3ZyxIAjUBDxoE/DKD+Ofncibdhm8nI69ypf5j2G
+        o09l+pEoLyp6K0TaaslMsqA=
+X-Google-Smtp-Source: ABdhPJxzhyaNeFJBtRmOqugCqJRepynC1ipQE7qbVJiJc/tZWrPO6G4gzHfE6PWCrhciUe6CBTBY2w==
+X-Received: by 2002:a2e:54b:0:b0:248:744:b859 with SMTP id 72-20020a2e054b000000b002480744b859mr2331586ljf.37.1646901187276;
+        Thu, 10 Mar 2022 00:33:07 -0800 (PST)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id j7-20020a2e3c07000000b00247fd2f7f46sm926039lja.47.2022.03.10.00.33.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 00:33:06 -0800 (PST)
+Message-ID: <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com>
+Date:   Thu, 10 Mar 2022 09:33:06 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20220310072239.4489-1-zajec5@gmail.com>
+ <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 09:19:08 +0100
-Christoph Hellwig <hch@lst.de> wrote:
+On 10.03.2022 09:19, Geert Uytterhoeven wrote:
+> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+>> documentation change regarding "depends" usage. Adjust Kconfig entry to
+>> match current guidelines. Make this symbol available for relevant
+>> architectures only.
+>>
+>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+>> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
+>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Thanks for your patch!
+> 
+>> --- a/drivers/tty/serial/Kconfig
+>> +++ b/drivers/tty/serial/Kconfig
+>> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
+>>   config SERIAL_BCM63XX
+>>          tristate "Broadcom BCM63xx/BCM33xx UART support"
+>>          select SERIAL_CORE
+>> -       depends on COMMON_CLK
+>> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
+>> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
+> 
+> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
+> cover MIPS.  Is there some symbol covering ARM so we can change the
+> depends to
+> 
+>      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
+> 
+> ?
 
-> On Wed, Mar 09, 2022 at 09:41:59PM +0800, Mingbao Sun wrote:
-> > So I tried with 'tcp_set_congestion_control'.
-> > But then I found this symbol is not exported yet.
-> > Then I applied =E2=80=98EXPORT_SYMBOL_GPL(tcp_set_congestion_control);=
-=E2=80=99
-> > in my local source, and it works well in the testing.
-> >=20
-> > Then what should I do with this? =20
->=20
-> Add the export in a separate, clearly documented, patch, and Cc the
-> netdev list and maintainers to get their opinion on all list.
+Florian, Kevin: do you know what other platforms need that driver?
 
-Got it.
-Will do that soon.
+Ref: c0ec3fd123e9 ("tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other platforms")
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0ec3fd123e9e64e095fb221ace841e00c04e40b
