@@ -2,170 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8343C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243492AbiCJOWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
+        id S243469AbiCJOWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:22:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244153AbiCJOS5 (ORCPT
+        with ESMTP id S244047AbiCJOSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:18:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3815EB18BF;
-        Thu, 10 Mar 2022 06:15:38 -0800 (PST)
+        Thu, 10 Mar 2022 09:18:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BC5A6468;
+        Thu, 10 Mar 2022 06:15:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A94D8B81E9E;
-        Thu, 10 Mar 2022 14:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A76C340E8;
-        Thu, 10 Mar 2022 14:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A4BD61C7A;
+        Thu, 10 Mar 2022 14:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E12CC340E8;
+        Thu, 10 Mar 2022 14:15:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921736;
-        bh=xhBRfrNy/7380JiHEmW+Fca0kX0t6YqpNMJ42Bk03qA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EoB4uIRU2ow9uMc87PDgQAyzyYwKkDdGa7M+k+7SYxYBTi5pqIgrO9llv9+Im5P2J
-         2N3SnRPBXf9wfOWYlv4hMJUAZofyhTjZXv0N6YEHKy/mxbEuFEdH5IHmiMUlUgOO+8
-         Gz+xEz2ojq9hZrvVcS+HlMBx6HBlciscxQQl0OUA=
+        s=korg; t=1646921718;
+        bh=kR2VHE2A1WiyMIApgLwMVYHS9zTJ+9waZH/a16M0Q2s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tkuJPFVnBQiCJmTgBiRO2oYFKLtSCprAN6z33S/X0AAYOKONTrxInrSeHqm+/edDf
+         CIpl1EGVOH4He8PosYrSc8tllbhI34HNcsod4HHg7kBXiaO6bppvI6ZjPR5Tx50+pm
+         Ls8SMZ/pjlDKM5zc3Dhdbn+QB9HZTHUIuzxPCDGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.9 37/38] xen/gnttab: fix gnttab_end_foreign_access() without page specified
-Date:   Thu, 10 Mar 2022 15:13:50 +0100
-Message-Id: <20220310140809.214707478@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/38] 4.9.306-rc2 review
+Date:   Thu, 10 Mar 2022 15:13:13 +0100
+Message-Id: <20220310140808.136149678@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
-References: <20220310140808.136149678@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.306-rc2.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.306-rc2
+X-KernelTest-Deadline: 2022-03-12T14:08+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+This is the start of the stable review cycle for the 4.9.306 release.
+There are 38 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-Commit 42baefac638f06314298087394b982ead9ec444b upstream.
+Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
+Anything received after that time might be too late.
 
-gnttab_end_foreign_access() is used to free a grant reference and
-optionally to free the associated page. In case the grant is still in
-use by the other side processing is being deferred. This leads to a
-problem in case no page to be freed is specified by the caller: the
-caller doesn't know that the page is still mapped by the other side
-and thus should not be used for other purposes.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.306-rc2.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
-The correct way to handle this situation is to take an additional
-reference to the granted page in case handling is being deferred and
-to drop that reference when the grant reference could be freed
-finally.
+thanks,
 
-This requires that there are no users of gnttab_end_foreign_access()
-left directly repurposing the granted page after the call, as this
-might result in clobbered data or information leaks via the not yet
-freed grant reference.
+greg k-h
 
-This is part of CVE-2022-23041 / XSA-396.
+-------------
+Pseudo-Shortlog of commits:
 
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/xen/grant-table.c |   30 +++++++++++++++++++++++-------
- include/xen/grant_table.h |    7 ++++++-
- 2 files changed, 29 insertions(+), 8 deletions(-)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.306-rc2
 
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -113,6 +113,10 @@ struct gnttab_ops {
- 	 * return the frame.
- 	 */
- 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
-+	/*
-+	 * Read the frame number related to a given grant reference.
-+	 */
-+	unsigned long (*read_frame)(grant_ref_t ref);
- };
- 
- struct unmap_refs_callback_data {
-@@ -277,6 +281,11 @@ int gnttab_end_foreign_access_ref(grant_
- }
- EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
- 
-+static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
-+{
-+	return gnttab_shared.v1[ref].frame;
-+}
-+
- struct deferred_entry {
- 	struct list_head list;
- 	grant_ref_t ref;
-@@ -306,12 +315,9 @@ static void gnttab_handle_deferred(unsig
- 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
- 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
- 			put_free_entry(entry->ref);
--			if (entry->page) {
--				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
--					 entry->ref, page_to_pfn(entry->page));
--				put_page(entry->page);
--			} else
--				pr_info("freeing g.e. %#x\n", entry->ref);
-+			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
-+				 entry->ref, page_to_pfn(entry->page));
-+			put_page(entry->page);
- 			kfree(entry);
- 			entry = NULL;
- 		} else {
-@@ -336,9 +342,18 @@ static void gnttab_handle_deferred(unsig
- static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
- 				struct page *page)
- {
--	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-+	struct deferred_entry *entry;
-+	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
- 	const char *what = KERN_WARNING "leaking";
- 
-+	entry = kmalloc(sizeof(*entry), gfp);
-+	if (!page) {
-+		unsigned long gfn = gnttab_interface->read_frame(ref);
-+
-+		page = pfn_to_page(gfn_to_pfn(gfn));
-+		get_page(page);
-+	}
-+
- 	if (entry) {
- 		unsigned long flags;
- 
-@@ -1010,6 +1025,7 @@ static const struct gnttab_ops gnttab_v1
- 	.update_entry			= gnttab_update_entry_v1,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
-+	.read_frame			= gnttab_read_frame_v1,
- };
- 
- static void gnttab_request_version(void)
---- a/include/xen/grant_table.h
-+++ b/include/xen/grant_table.h
-@@ -100,7 +100,12 @@ int gnttab_end_foreign_access_ref(grant_
-  * Note that the granted page might still be accessed (read or write) by the
-  * other side after gnttab_end_foreign_access() returns, so even if page was
-  * specified as 0 it is not allowed to just reuse the page for other
-- * purposes immediately.
-+ * purposes immediately. gnttab_end_foreign_access() will take an additional
-+ * reference to the granted page in this case, which is dropped only after
-+ * the grant is no longer in use.
-+ * This requires that multi page allocations for areas subject to
-+ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
-+ * via free_pages_exact()) in order to avoid high order pages.
-  */
- void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
- 			       unsigned long page);
+Juergen Gross <jgross@suse.com>
+    xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
+
+Juergen Gross <jgross@suse.com>
+    xen/gnttab: fix gnttab_end_foreign_access() without page specified
+
+Juergen Gross <jgross@suse.com>
+    xen: remove gnttab_query_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/gntalloc: don't use gnttab_query_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/scsifront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/netfront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/blkfront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/grant-table: add gnttab_try_end_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/xenbus: don't let xenbus_grant_ring() remove grants in error case
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: fix build warning in proc-v7-bugs.c
+
+WANG Chao <chao.wang@ucloud.cn>
+    x86, modpost: Replace last remnants of RETPOLINE with CONFIG_RETPOLINE
+
+Masahiro Yamada <yamada.masahiro@socionext.com>
+    x86/build: Fix compiler support check for CONFIG_RETPOLINE
+
+Nathan Chancellor <nathan@kernel.org>
+    ARM: Do not use NOCROSSREFS directive with ld.lld
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: fix co-processor register typo
+
+Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+    ARM: fix build error when BPF_SYSCALL is disabled
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: include unprivileged BPF status in Spectre V2 reporting
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Spectre-BHB workaround
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: use LOADADDR() to get load address of sections
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: early traps initialisation
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: report Spectre v2 status through sysfs
+
+Mark Rutland <mark.rutland@arm.com>
+    arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
+
+Steven Price <steven.price@arm.com>
+    arm/arm64: Provide a wrapper for SMCCC 1.1 calls
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about Spectre v2 LFENCE mitigation
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Update link to AMD speculation whitepaper
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Use generic retpoline by default on AMD
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Peter Zijlstra <peterz@infradead.org>
+    Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/speculation: Add eIBRS + Retpoline options
+
+Peter Zijlstra (Intel) <peterz@infradead.org>
+    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+Peter Zijlstra <peterz@infradead.org>
+    x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+
+Borislav Petkov <bp@suse.de>
+    x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
+
+Lukas Bulwahn <lukas.bulwahn@gmail.com>
+    Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    Documentation: Add swapgs description to the Spectre v1 documentation
+
+Tim Chen <tim.c.chen@linux.intel.com>
+    Documentation: Add section about CPU vulnerabilities for Spectre
+
+Zhenzhong Duan <zhenzhong.duan@oracle.com>
+    x86/retpoline: Remove minimal retpoline support
+
+Zhenzhong Duan <zhenzhong.duan@oracle.com>
+    x86/retpoline: Make CONFIG_RETPOLINE depend on compiler support
+
+Zhenzhong Duan <zhenzhong.duan@oracle.com>
+    x86/speculation: Add RETPOLINE_AMD support to the inline asm CALL_NOSPEC variant
+
+
+-------------
+
+Diffstat:
+
+ Documentation/hw-vuln/index.rst          |   1 +
+ Documentation/hw-vuln/spectre.rst        | 785 +++++++++++++++++++++++++++++++
+ Documentation/kernel-parameters.txt      |   8 +-
+ Makefile                                 |   4 +-
+ arch/arm/include/asm/assembler.h         |  10 +
+ arch/arm/include/asm/spectre.h           |  32 ++
+ arch/arm/kernel/Makefile                 |   2 +
+ arch/arm/kernel/entry-armv.S             |  79 +++-
+ arch/arm/kernel/entry-common.S           |  24 +
+ arch/arm/kernel/spectre.c                |  71 +++
+ arch/arm/kernel/traps.c                  |  65 ++-
+ arch/arm/kernel/vmlinux-xip.lds.S        |  45 +-
+ arch/arm/kernel/vmlinux.lds.S            |  45 +-
+ arch/arm/mm/Kconfig                      |  11 +
+ arch/arm/mm/proc-v7-bugs.c               | 199 ++++++--
+ arch/x86/Kconfig                         |   4 -
+ arch/x86/Makefile                        |  11 +-
+ arch/x86/include/asm/cpufeatures.h       |   2 +-
+ arch/x86/include/asm/nospec-branch.h     |  41 +-
+ arch/x86/kernel/cpu/bugs.c               | 225 ++++++---
+ drivers/block/xen-blkfront.c             |  67 +--
+ drivers/firmware/psci.c                  |  15 +
+ drivers/net/xen-netfront.c               |  54 ++-
+ drivers/scsi/xen-scsifront.c             |   3 +-
+ drivers/xen/gntalloc.c                   |  25 +-
+ drivers/xen/grant-table.c                |  59 ++-
+ drivers/xen/xenbus/xenbus_client.c       |  24 +-
+ include/linux/arm-smccc.h                |  74 +++
+ include/linux/bpf.h                      |  11 +
+ include/linux/compiler-gcc.h             |   2 +-
+ include/linux/module.h                   |   2 +-
+ include/xen/grant_table.h                |  19 +-
+ kernel/sysctl.c                          |   8 +
+ scripts/mod/modpost.c                    |   2 +-
+ tools/arch/x86/include/asm/cpufeatures.h |   2 +-
+ 35 files changed, 1763 insertions(+), 268 deletions(-)
 
 
