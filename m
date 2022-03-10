@@ -2,88 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78835C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 12:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F91C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 12:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242182AbiCJM4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 07:56:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
+        id S238385AbiCJM7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 07:59:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242165AbiCJM4G (ORCPT
+        with ESMTP id S231575AbiCJM7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 07:56:06 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F4314A058;
-        Thu, 10 Mar 2022 04:55:04 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id r12so4785110pla.1;
-        Thu, 10 Mar 2022 04:55:04 -0800 (PST)
+        Thu, 10 Mar 2022 07:59:02 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F07F45AFA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 04:58:01 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id n15so4809336plh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 04:58:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LqKvOOJIsEkJ2EYAXsGvj44/+JSM7E7TqxfIavhRMMk=;
-        b=IJoeHYMcb2qPcw4UZGlhhBR63cLCN0i3980ZRc0ENhA6FbnlNkiwbk1XXzoiEbgpAT
-         F3WInVz46eJE7IPPL6e/YAdavRBhsA0rOBT6yhJmZ4e+ZrS+VV+zBa+saY58ODM8+SES
-         c5Q4lP9pSGdsXyvQWBTuETNSNF748HTQDniKtQXhu2Mxq5cwJOB8bJr/pCl4QjHU7mDB
-         j0zcDyIajMbNhj6AVnYMdnWjUgPaH/Na4A3130hy8RTCcIrBcFEkLOEV08tZezfQqbkU
-         ti8R1EFNFTgM3k94lG9jhfCJrtPNJhDzXH0+o/Ksgl6684+OTvq6PuzE2RcJMDbIos+C
-         fcRQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ABjynNr7IG/7j/ecN/fk2K7CRcq07YcIgadt1mDYptM=;
+        b=a/KArTwnTnLXssaJb+Fr0NDiwFJ1KPxV0OfxyDEt7Xc6jhfmBs6aDXDs1PwRCvhrm7
+         cCXSPqYho5kVuwb8A4y5Z7hu3ywF11gOP53H54M89PHEMpc1an3v5rvoAK3iUXTVfnkd
+         v+yZT/3X14BvTK7t8QRw0BWrhsq1W4W8Dj+78hYvuACrq5+G2+MnbsDNXbcMEz58bQ1S
+         dhizSBCXTav20XHYPnRdnnPKqNzurywXEM2Tc141kXrWaon5Z2YCmWoW3eEKOYePL5DQ
+         j8fbTYQMrK8P15vGJWD7Q+5MzhewHUE2Tk+XT/dYdCQe0kqP9vITmU2Ha9lX/jLyRZE2
+         KmXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=LqKvOOJIsEkJ2EYAXsGvj44/+JSM7E7TqxfIavhRMMk=;
-        b=nE0wee2qnjADfEPbG8zQvOyj83zB9H7EK+FlaJqqEoxTSRnyeqGqrRdpEAczcEuFHE
-         9V8WnsFF3roP7+5uFP7Pd6Ty1N3f1kLDVTi0hh3/3x8Fqc0t557/rMh+IPpuoMPxwnU1
-         Q4niORJyVJyqnbhfsLU9BoXl6gXrPnVGNvJw70BUd0SB3go9wp1l/cHRz8dyAkPBjotB
-         8blvlH9oQ99F2vLMgC4CNV0w+H5xC+/MLYpdYV0umoUEPSmfZZXk1mGz3W/1QvZtDF7k
-         I8E6GXWsscm+G84vzeY6LJf3BAA+HQAt04N4QsQdne3Mr0HHdnZI5sIAlTohmSwQd0ZW
-         IkSA==
-X-Gm-Message-State: AOAM530jWfphAgE3Dk38TvUZaeDKk5hdBYlfjRnWnmx1r4eezhLEFGkr
-        U8rG2ydE+x2CXc0W4t+22kYeKVyc2R/O0Tq2dn0=
-X-Google-Smtp-Source: ABdhPJyZZCuUrQ4jvZncbPFQwRSOLywswNTEIfEXGZie0hGvBEhX7D+iEbgpPfWl9k5kD287FDNsPQ==
-X-Received: by 2002:a17:90a:7027:b0:1bf:6ae4:f19e with SMTP id f36-20020a17090a702700b001bf6ae4f19emr4861172pjk.39.1646916903575;
-        Thu, 10 Mar 2022 04:55:03 -0800 (PST)
-Received: from localhost.localdomain (hwsrv-462136.hostwindsdns.com. [2607:5501:3000:c81::2])
-        by smtp.gmail.com with ESMTPSA id c14-20020a056a00248e00b004f77e0fbfc0sm2203946pfv.185.2022.03.10.04.55.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 04:55:03 -0800 (PST)
-From:   Zizhuang Deng <sunsetdzz@gmail.com>
-To:     Jonathan.Cameron@huawei.com
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Zizhuang Deng <sunsetdzz@gmail.com>
-Subject: [PATCH] iio: dac: ad5592r: Fix the missing return value.
-Date:   Thu, 10 Mar 2022 20:54:50 +0800
-Message-Id: <20220310125450.4164164-1-sunsetdzz@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=ABjynNr7IG/7j/ecN/fk2K7CRcq07YcIgadt1mDYptM=;
+        b=V6fPzpx96DAD4wwZj5hv5esLMPHVBeeJChvPL983y8oJWbqkUZ+/FnK0DxlFzVNHPk
+         lxiWfuELH33bbRw5JUYt2T3uNeXiTcatYyx0t+3JV294kx2Evq3/kunGM7aSQsE1H/vg
+         0FimdU/1pLtTAPAnwd0/ue/x+T1ExMHcL/AQCWFjfNPk3LopZ+aLFt9/aIwxN6gWvLOV
+         ilOKBcVCsclD6I9bySCglgOO+GEcbLoAyFtjSKfaMR/n2lLiwvRGf2B2G84I5TcqrGQf
+         Wvn4v8OuzpqmveQH12TVLmmGfSMCqZAMvUujYHjdZLPZZQTcwDNyg6qxkEcAcDP2Bl8G
+         OINA==
+X-Gm-Message-State: AOAM5315cRa6rF9R9qb00vLJ3iyKX1u1wWee67RRK/OgCvQ3P3ukIEGp
+        g4QK2h7FKZ3OOFbBMqy5pXysig==
+X-Google-Smtp-Source: ABdhPJwWaI7OUB0xjsFNNyCmPiMUPkP0Z4Tg2y4MrQG2iaD6ziPzB0J+SkTkzZCndXW4irOZKsNGgA==
+X-Received: by 2002:a17:903:192:b0:151:8df9:6cdb with SMTP id z18-20020a170903019200b001518df96cdbmr5029952plg.20.1646917080490;
+        Thu, 10 Mar 2022 04:58:00 -0800 (PST)
+Received: from [10.4.175.235] ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm7701478pfl.135.2022.03.10.04.57.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 04:58:00 -0800 (PST)
+Message-ID: <849e57ee-d412-30bd-3cce-47ce3362409d@bytedance.com>
+Date:   Thu, 10 Mar 2022 20:57:54 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [External] Re: [PATCH v2] livepatch: Don't block removal of
+ patches that are safe to unload
+Content-Language: en-US
+To:     Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, joe.lawrence@redhat.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220303105446.7152-1-zhouchengming@bytedance.com>
+ <YicnIIatfgLc2NN2@alley> <alpine.LSU.2.21.2203081842120.9394@pobox.suse.cz>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <alpine.LSU.2.21.2203081842120.9394@pobox.suse.cz>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+Hi,
 
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
----
- drivers/iio/dac/ad5592r-base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2022/3/9 1:49 上午, Miroslav Benes wrote:
+> On Tue, 8 Mar 2022, Petr Mladek wrote:
+> 
+>> On Thu 2022-03-03 18:54:46, Chengming Zhou wrote:
+>>> module_put() is currently never called for a patch with forced flag, to block
+>>> the removal of that patch module that might still be in use after a forced
+>>> transition.
+>>>
+>>> But klp_force_transition() will set all patches on the list to be forced, since
+>>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+>>> has removed stack ordering of the livepatches, it will cause all other patches can't
+>>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+>>>
+>>> In fact, we don't need to set a patch to forced if it's a KLP_PATCHED forced
+>>> transition. It can still be unloaded safely as long as it has passed through
+>>> the consistency model in KLP_UNPATCHED transition.
+>>
+>> It really looks safe. klp_check_stack_func() makes sure that @new_func
+>> is not on the stack when klp_target_state == KLP_UNPATCHED. As a
+>> result, the system should not be using code from the livepatch module
+>> when KLP_UNPATCHED transition cleanly finished.
+>>
+>>
+>>> But the exception is when force transition of an atomic replace patch, we
+>>> have to set all previous patches to forced, or they will be removed at
+>>> the end of klp_try_complete_transition().
+>>>
+>>> This patch only set the klp_transition_patch to be forced in KLP_UNPATCHED
+>>> case, and keep the old behavior when in atomic replace case.
+>>>
+>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>>> ---
+>>> v2: interact nicely with the atomic replace feature noted by Miroslav.
+>>> ---
+>>>  kernel/livepatch/transition.c | 8 ++++++--
+>>>  1 file changed, 6 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+>>> index 5683ac0d2566..34ffb8c014ed 100644
+>>> --- a/kernel/livepatch/transition.c
+>>> +++ b/kernel/livepatch/transition.c
+>>> @@ -641,6 +641,10 @@ void klp_force_transition(void)
+>>>  	for_each_possible_cpu(cpu)
+>>>  		klp_update_patch_state(idle_task(cpu));
+>>>  
+>>> -	klp_for_each_patch(patch)
+>>> -		patch->forced = true;
+>>> +	if (klp_target_state == KLP_UNPATCHED)
+>>> +		klp_transition_patch->forced = true;
+>>> +	else if (klp_transition_patch->replace) {
+>>> +		klp_for_each_patch(patch)
+>>> +			patch->forced = true;
+>>
+>> This works only because there is should be only one patch when
+>> klp_target_state == KLP_UNPATCHED and
+>> klp_transition_patch->forced == true.
+> 
+> I probably misunderstand, but the above is not generally true, is it? I 
+> mean, if the transition patch is forced during its disablement, it does 
+> not say anything about the amount of enabled patches.
+> 
+>> But it is a bit tricky. I would do it the other way:
+>>
+>> 	if (klp_transition_patch->replace) {
+>> 		klp_for_each_patch(patch)
+>> 			patch->forced = true;
+>> 	} else if (klp_target_state == KLP_UNPATCHED) {
+>> 		klp_transition_patch->forced = true;
+>> 	}
+>>
+>> It looks more sane. And it makes it more clear
+>> that the special handling of KLP_UNPATCHED transition
+>> is done only when the atomic replace is not used.
+> 
+> But it is not the same. ->replace being true only comes into play when a 
+> patch is enabled. If it is disabled, then it behaves like any other patch.
+> 
+> So, if there is ->replace patch enabled (and it is the only patch present) 
+> and then more !->replace patches are loaded and then if ->replace patch is 
+> disabled and forced, your proposal would give a different result than what 
+> Chengming submitted, because in your case all the other patches will get 
+> ->forced set to true, while it is not the case in the original. It would 
+> be an unnecessary restriction if I am not missing something.
 
-diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-index a424b7220b61..4434c1b2a322 100644
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -522,7 +522,7 @@ static int ad5592r_alloc_channels(struct iio_dev *iio_dev)
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
- 
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
--- 
-2.25.1
+At first glance, I thought both way is right. But after looking at the case
+you mentioned above, they are not the same indeed. The original patch
+treat ->replace and not ->replace patches the same in KLP_UNPATCHED transition,
+and only set all patches to forced in the atomic replace transition.
 
+Thanks.
+
+> 
+> However, I may got lost somewhere along the way.
+> 
+> Regards
+> Miroslav
