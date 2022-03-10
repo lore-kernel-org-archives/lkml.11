@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A60BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344018AbiCJVke (ORCPT
+        id S1344076AbiCJVkn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 16:40:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        Thu, 10 Mar 2022 16:40:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344025AbiCJVka (ORCPT
+        with ESMTP id S1344017AbiCJVkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 16:40:30 -0500
+        Thu, 10 Mar 2022 16:40:32 -0500
 Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9CAC0856;
-        Thu, 10 Mar 2022 13:39:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF8CC084B;
+        Thu, 10 Mar 2022 13:39:30 -0800 (PST)
 Received: from MUA
         by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nSQUm-0006It-FR; Thu, 10 Mar 2022 22:38:52 +0100
+        id 1nSQV2-0006Ja-IC; Thu, 10 Mar 2022 22:39:08 +0100
 From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -35,9 +35,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
-Date:   Thu, 10 Mar 2022 22:38:37 +0100
-Message-Id: <19c757487eeeff5344ff3684fe9c090235b07d05.1646944472.git.maciej.szmigiero@oracle.com>
+Subject: [PATCH 4/5] KVM: nSVM: Restore next_rip when doing L1 -> L2 event re-injection
+Date:   Thu, 10 Mar 2022 22:38:40 +0100
+Message-Id: <a5380706e5a1679bf8e5967252335e1f2167065f.1646944472.git.maciej.szmigiero@oracle.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1646944472.git.maciej.szmigiero@oracle.com>
 References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
@@ -49,58 +49,84 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
 
-The next_rip field of a VMCB is *not* an output-only field for a VMRUN.
-This field value (instead of the saved guest RIP) in used by the CPU for
-the return address pushed on stack when injecting a software interrupt or
-INT3 or INTO exception.
+According to APM 15.7.1 "State Saved on Exit" the next_rip field can be
+zero after a VMEXIT in some cases.
+Yet, it is used by the CPU for the return address pushed on stack when
+injecting INT3 or INTO exception or a software interrupt.
 
-Make sure this field gets synced from vmcb12 to vmcb02 when entering L2 or
-loading a nested state.
+Restore this field to the L1-provided value if zeroed by the CPU when
+re-injecting a L1-provided event into L2.
 
 Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 ---
- arch/x86/kvm/svm/nested.c | 4 ++++
- arch/x86/kvm/svm/svm.h    | 1 +
- 2 files changed, 5 insertions(+)
+ arch/x86/kvm/svm/svm.c | 43 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index d736ec6514ca..9656f0d6815c 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -366,6 +366,7 @@ void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
- 	to->nested_ctl          = from->nested_ctl;
- 	to->event_inj           = from->event_inj;
- 	to->event_inj_err       = from->event_inj_err;
-+	to->next_rip            = from->next_rip;
- 	to->nested_cr3          = from->nested_cr3;
- 	to->virt_ext            = from->virt_ext;
- 	to->pause_filter_count  = from->pause_filter_count;
-@@ -638,6 +639,8 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	svm->vmcb->control.int_state           = svm->nested.ctl.int_state;
- 	svm->vmcb->control.event_inj           = svm->nested.ctl.event_inj;
- 	svm->vmcb->control.event_inj_err       = svm->nested.ctl.event_inj_err;
-+	/* The return address pushed on stack by the CPU for some injected events */
-+	svm->vmcb->control.next_rip            = svm->nested.ctl.next_rip;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 5b128baa5e57..760dd0e070ea 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -385,6 +385,44 @@ static int svm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
+ 	return 1;
+ }
  
- 	if (!nested_vmcb_needs_vls_intercept(svm))
- 		svm->vmcb->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
-@@ -1348,6 +1351,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
- 	dst->nested_ctl           = from->nested_ctl;
- 	dst->event_inj            = from->event_inj;
- 	dst->event_inj_err        = from->event_inj_err;
-+	dst->next_rip             = from->next_rip;
- 	dst->nested_cr3           = from->nested_cr3;
- 	dst->virt_ext              = from->virt_ext;
- 	dst->pause_filter_count   = from->pause_filter_count;
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 93502d2a52ce..f757400fc933 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -138,6 +138,7 @@ struct vmcb_ctrl_area_cached {
- 	u64 nested_ctl;
- 	u32 event_inj;
- 	u32 event_inj_err;
-+	u64 next_rip;
- 	u64 nested_cr3;
- 	u64 virt_ext;
- 	u32 clean;
++/*
++ * According to APM 15.7.1 "State Saved on Exit" the next_rip field can
++ * be zero after a VMEXIT in some cases.
++ * Yet, it is used by the CPU for the return address pushed on stack when
++ * injecting INT3 or INTO exception or a software interrupt.
++ *
++ * Restore this field to the L1-provided value if zeroed by the CPU when
++ * re-injecting a L1-provided event into L2.
++ */
++static void maybe_fixup_next_rip(struct kvm_vcpu *vcpu, bool uses_err)
++{
++	struct vcpu_svm *svm = to_svm(vcpu);
++	u32 err_vmcb = uses_err ? svm->vmcb->control.event_inj_err : 0;
++	u32 err_inject = uses_err ? svm->nested.ctl.event_inj_err : 0;
++
++	/* No nRIP Save feature? Then nothing to fix up. */
++	if (!nrips)
++		return;
++
++	/* The fix only applies to event injection into a L2. */
++	if (!is_guest_mode(vcpu))
++		return;
++
++	/*
++	 * If the current next_rip field is already non-zero assume the CPU had
++	 * returned the correct address during the last VMEXIT.
++	 */
++	if (svm->vmcb->control.next_rip)
++		return;
++
++	/* Is this a L1 -> L2 event re-injection? */
++	if (!event_inj_same(svm->vmcb->control.event_inj, err_vmcb,
++			    svm->nested.ctl.event_inj, err_inject))
++		return;
++
++	svm->vmcb->control.next_rip = svm->nested.ctl.next_rip;
++}
++
+ static void svm_queue_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+@@ -415,6 +453,9 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
+ 		| (has_error_code ? SVM_EVTINJ_VALID_ERR : 0)
+ 		| SVM_EVTINJ_TYPE_EXEPT;
+ 	svm->vmcb->control.event_inj_err = error_code;
++
++	if (kvm_exception_is_soft(nr))
++		maybe_fixup_next_rip(vcpu, true);
+ }
+ 
+ static void svm_init_erratum_383(void)
+@@ -3331,6 +3372,8 @@ static void svm_inject_irq(struct kvm_vcpu *vcpu)
+ 		SVM_EVTINJ_VALID;
+ 	if (vcpu->arch.interrupt.soft) {
+ 		svm->vmcb->control.event_inj |= SVM_EVTINJ_TYPE_SOFT;
++
++		maybe_fixup_next_rip(vcpu, false);
+ 	} else {
+ 		svm->vmcb->control.event_inj |= SVM_EVTINJ_TYPE_INTR;
+ 	}
