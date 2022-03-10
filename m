@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E568C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8216C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243256AbiCJORY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S243331AbiCJOR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240035AbiCJORM (ORCPT
+        with ESMTP id S243271AbiCJORN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:17:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832B1C24AC;
-        Thu, 10 Mar 2022 06:13:04 -0800 (PST)
+        Thu, 10 Mar 2022 09:17:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71326C487B;
+        Thu, 10 Mar 2022 06:13:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A32F9B81E9E;
-        Thu, 10 Mar 2022 14:13:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0EDAC340E8;
-        Thu, 10 Mar 2022 14:12:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1815F61B63;
+        Thu, 10 Mar 2022 14:13:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1601FC340E8;
+        Thu, 10 Mar 2022 14:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921580;
-        bh=2izHBbKePMU2Fb3LPgpGusKesTpyD1FWIKNwtBsOrao=;
+        s=korg; t=1646921583;
+        bh=FGraxefvvPnrocc02XB4M7eDiWsvLZHxdD9YVvxX22o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DKLabPk/FvS4kbH0YPVLZRZOtdp1WV62NqFFCDAHIXuGWtUcxxStqcrHh+LNf55wL
-         gdP5OR6QIcSjvxer1/na0Ixuvu/XHp/zCs3VkoVza32ed44RIuraZqyovcqrPW9Iwq
-         xJtyS14wOeD4GmhGp3+Ru4X4r6f+BLkrwPfdrhWU=
+        b=10iYpf8aGd1gifVoKRuoyjyOsVOXKcfZIjm76P9Ekt0bqpLAu/SMIBpzeA5qrMt3S
+         iHhE1Aklgdh7JvRDb/aRSLLAxMQ6qSfzqCYJLlY4uClDVJomwAE4I3de+fmjJwDd1J
+         akPHGAzx99FO3y8ixsPB5t5zeqgH89AP2esh5lQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.16 07/53] x86/speculation: Warn about Spectre v2 LFENCE mitigation
-Date:   Thu, 10 Mar 2022 15:09:12 +0100
-Message-Id: <20220310140812.046666764@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.16 51/53] xen/gnttab: fix gnttab_end_foreign_access() without page specified
+Date:   Thu, 10 Mar 2022 15:09:56 +0100
+Message-Id: <20220310140813.299486834@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
 References: <20220310140811.832630727@linuxfoundation.org>
@@ -48,62 +50,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
+Commit 42baefac638f06314298087394b982ead9ec444b upstream.
 
-With:
+gnttab_end_foreign_access() is used to free a grant reference and
+optionally to free the associated page. In case the grant is still in
+use by the other side processing is being deferred. This leads to a
+problem in case no page to be freed is specified by the caller: the
+caller doesn't know that the page is still mapped by the other side
+and thus should not be used for other purposes.
 
-  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
+The correct way to handle this situation is to take an additional
+reference to the granted page in case handling is being deferred and
+to drop that reference when the grant reference could be freed
+finally.
 
-it became possible to enable the LFENCE "retpoline" on Intel. However,
-Intel doesn't recommend it, as it has some weaknesses compared to
-retpoline.
+This requires that there are no users of gnttab_end_foreign_access()
+left directly repurposing the granted page after the call, as this
+might result in clobbered data or information leaks via the not yet
+freed grant reference.
 
-Now AMD doesn't recommend it either.
+This is part of CVE-2022-23041 / XSA-396.
 
-It can still be left available as a cmdline option. It's faster than
-retpoline but is weaker in certain scenarios -- particularly SMT, but
-even non-SMT may be vulnerable in some cases.
-
-So just unconditionally warn if the user requests it on the cmdline.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/xen/grant-table.c |   36 +++++++++++++++++++++++++++++-------
+ include/xen/grant_table.h |    7 ++++++-
+ 2 files changed, 35 insertions(+), 8 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -651,6 +651,7 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -133,6 +133,10 @@ struct gnttab_ops {
+ 	 * return the frame.
+ 	 */
+ 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
++	/*
++	 * Read the frame number related to a given grant reference.
++	 */
++	unsigned long (*read_frame)(grant_ref_t ref);
+ };
  
-+#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
+ struct unmap_refs_callback_data {
+@@ -330,6 +334,16 @@ int gnttab_end_foreign_access_ref(grant_
+ }
+ EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
  
- #ifdef CONFIG_BPF_SYSCALL
-@@ -972,6 +973,7 @@ static void __init spectre_v2_select_mit
- 		break;
- 
- 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
-+		pr_err(SPECTRE_V2_LFENCE_MSG);
- 		mode = SPECTRE_V2_LFENCE;
- 		break;
- 
-@@ -1787,6 +1789,9 @@ static char *ibpb_state(void)
- 
- static ssize_t spectre_v2_show_state(char *buf)
- {
-+	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-+		return sprintf(buf, "Vulnerable: LFENCE\n");
++static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
++{
++	return gnttab_shared.v1[ref].frame;
++}
 +
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++static unsigned long gnttab_read_frame_v2(grant_ref_t ref)
++{
++	return gnttab_shared.v2[ref].full_page.frame;
++}
++
+ struct deferred_entry {
+ 	struct list_head list;
+ 	grant_ref_t ref;
+@@ -359,12 +373,9 @@ static void gnttab_handle_deferred(struc
+ 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
+ 			put_free_entry(entry->ref);
+-			if (entry->page) {
+-				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
+-					 entry->ref, page_to_pfn(entry->page));
+-				put_page(entry->page);
+-			} else
+-				pr_info("freeing g.e. %#x\n", entry->ref);
++			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
++				 entry->ref, page_to_pfn(entry->page));
++			put_page(entry->page);
+ 			kfree(entry);
+ 			entry = NULL;
+ 		} else {
+@@ -389,9 +400,18 @@ static void gnttab_handle_deferred(struc
+ static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
+ 				struct page *page)
+ {
+-	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
++	struct deferred_entry *entry;
++	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
+ 	const char *what = KERN_WARNING "leaking";
  
++	entry = kmalloc(sizeof(*entry), gfp);
++	if (!page) {
++		unsigned long gfn = gnttab_interface->read_frame(ref);
++
++		page = pfn_to_page(gfn_to_pfn(gfn));
++		get_page(page);
++	}
++
+ 	if (entry) {
+ 		unsigned long flags;
+ 
+@@ -1404,6 +1424,7 @@ static const struct gnttab_ops gnttab_v1
+ 	.update_entry			= gnttab_update_entry_v1,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
++	.read_frame			= gnttab_read_frame_v1,
+ };
+ 
+ static const struct gnttab_ops gnttab_v2_ops = {
+@@ -1415,6 +1436,7 @@ static const struct gnttab_ops gnttab_v2
+ 	.update_entry			= gnttab_update_entry_v2,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v2,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v2,
++	.read_frame			= gnttab_read_frame_v2,
+ };
+ 
+ static bool gnttab_need_v2(void)
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -107,7 +107,12 @@ int gnttab_end_foreign_access_ref(grant_
+  * Note that the granted page might still be accessed (read or write) by the
+  * other side after gnttab_end_foreign_access() returns, so even if page was
+  * specified as 0 it is not allowed to just reuse the page for other
+- * purposes immediately.
++ * purposes immediately. gnttab_end_foreign_access() will take an additional
++ * reference to the granted page in this case, which is dropped only after
++ * the grant is no longer in use.
++ * This requires that multi page allocations for areas subject to
++ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
++ * via free_pages_exact()) in order to avoid high order pages.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
 
 
