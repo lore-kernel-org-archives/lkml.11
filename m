@@ -2,318 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93189C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244073AbiCJQsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:48:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
+        id S238274AbiCJQsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244006AbiCJQr0 (ORCPT
+        with ESMTP id S244757AbiCJQsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:47:26 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43609194156
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:46:06 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id i7-20020a170902cf0700b0015163eb319eso2960278plg.18
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:46:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=fbxWpZEa6eY/UYN831/It4hPjXSSXrSY82CYIn9xG4k=;
-        b=Va2QgQuftz6KeYn+NlohEVeWMRJNDL0ugIP1b+C9U3Y8BFpEEHWDfng5rES6HHZLOX
-         vMH7Egye4Q+YUkyTrSZWRSrW7mxmJrFdlVfyWeiUgDEa41fqBHapehDrsTlJCG5ODnai
-         EPQ04Bw60k1WvIyDg2ws80xj5/Ly0/4qnrFuXgx+Zre/9eqncifndEPIJj/8xKi0nBOg
-         E1dlQr+uuFm4cRzpo49sDK6OoP/1CVNlVSV0LEBMJkZQD9ZbVedzSAA/YHkBEYHC5FUA
-         JLAwbQsquD47DVpGdhkP34ch3hQ4bTVO3jkZyiNGoPrPgrsJpSH5joz2+mtrnOcmA1CO
-         beHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=fbxWpZEa6eY/UYN831/It4hPjXSSXrSY82CYIn9xG4k=;
-        b=TYFNQlFptjHL1CxAHOIhuSQgJfz8TED5emZTo9EVGn2Z3UbRBcaAN86OfvQ0Mkt4Wa
-         GCPr9Gj86ALRWxjl+0KRjOqX60dTLvWrebt3uhL4zBHd32vKbPRCuNf7wF5UZGe39QRs
-         qVs9MTECZYDdcs7zbwhkx9Pp9fShiPaZe9Gxbz9QyUEwmMt65uh+gWspIes9SScAY/8Q
-         Ov85vOjx+i5v2JJ6wFwi6x4ZqHONXUPxJVO3HJCuRZIXUrDsZ/Km7ZF7DnTcHG2DFFbC
-         g4ffzPklaDDoHFeHPbqbjDvlEPKo/nZrgNJrlSxwYrqVtPGExUw/4ZSx56NG21LelmjT
-         rovA==
-X-Gm-Message-State: AOAM531o95EJ3pSPO7WC5CgHFLhvkawIqKR8WpEl7EV2dxACI82+AR+c
-        RYN/fH4wu44YRLSopZY2sWco6OicHrSyats4er3sahy0YTfYaLBx6UD7WfOvY7JBzxHvFfM/Znq
-        kbjIHMUvcBIJbyiyPIeog4eWSWK++se0aQNKOfRo3lLmW0K/7bdvnhpxIEK0YUAXVcIdSgdc4
-X-Google-Smtp-Source: ABdhPJxNF8wOqc7sqaSmZcCBX9Tn2IXOfjzmrlDs/E6jF56PwaHYESssAe/kFm9XHLtJR98dk1VRmGRxquDe
-X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:2d58:733f:1853:8e86])
- (user=bgardon job=sendgmr) by 2002:a63:715:0:b0:380:cf1d:6765 with SMTP id
- 21-20020a630715000000b00380cf1d6765mr4732500pgh.577.1646930765503; Thu, 10
- Mar 2022 08:46:05 -0800 (PST)
-Date:   Thu, 10 Mar 2022 08:45:26 -0800
-In-Reply-To: <20220310164532.1821490-1-bgardon@google.com>
-Message-Id: <20220310164532.1821490-8-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220310164532.1821490-1-bgardon@google.com>
-X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
-Subject: [PATCH 07/13] selftests: KVM: Add NX huge pages test
-From:   Ben Gardon <bgardon@google.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 10 Mar 2022 11:48:20 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E11161104
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:47:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646930839; x=1678466839;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+lt5lFj32tlNLLvrEG/HXlx0i8mjc9DRePULl3+S6JQ=;
+  b=EsXCKGkIahVo8igPNFKvKQCl++kMDEPAHe5c0SNHRSxV21S2uffAyogt
+   h0UkVu9KgOk81vcvGO4jPfmB8Blps7120Y0Pj7dwUAIIHLFg4humq+GXO
+   f5IYJnLbgyKmwBaYjIr2Csxi+mXn526pN9Nti9Ua/aoRIs7FlnMBooSBg
+   QeoOJRUgpa4h6SqQFiGeB4RtYUrMAVsBkwO2l8bl7ZkmX2j/1aOmfnTlD
+   bImK0sJs+2UV9eJrWAXLsMlH9S4nPtotaCVPtULPHGGdoSt7KmLi4IzFZ
+   8pj1kMN2Ec/YkW+oWoIeZ9U965p6xgYXvvMbZLCZUGtgbVnjQ8gfMVS4+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254130894"
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="254130894"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 08:45:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="781516956"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Mar 2022 08:45:30 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSLus-0005AA-5k; Thu, 10 Mar 2022 16:45:30 +0000
+Date:   Fri, 11 Mar 2022 00:44:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org
+Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
+ expression
+Message-ID: <202203110052.4qnkNzyc-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's currently no test coverage of NX hugepages in KVM selftests, so
-add a basic test to ensure that the feature works as intended.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   1db333d9a51f3459fba1bcaa564d95befe79f0b3
+commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
+date:   7 months ago
+config: arc-randconfig-s032-20220310 (https://download.01.org/0day-ci/archive/20220311/202203110052.4qnkNzyc-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e188f3330a13df904d77003846eafd3edf99009d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/ fs/ kernel/ net/ipv4/
 
-Signed-off-by: Ben Gardon <bgardon@google.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
+   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
+   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
+   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
+   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
+   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
+   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
+   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
+   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
+   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
+>> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
+>> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
+--
+   fs/file.c:350:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file **old_fds @@     got struct file [noderef] __rcu **fd @@
+   fs/file.c:350:17: sparse:     expected struct file **old_fds
+   fs/file.c:350:17: sparse:     got struct file [noderef] __rcu **fd
+   fs/file.c:351:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file **new_fds @@     got struct file [noderef] __rcu **fd @@
+   fs/file.c:351:17: sparse:     expected struct file **new_fds
+   fs/file.c:351:17: sparse:     got struct file [noderef] __rcu **fd
+   fs/file.c:366:17: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   fs/file.c:366:17: sparse:    struct file [noderef] __rcu *
+   fs/file.c:366:17: sparse:    struct file *
+>> fs/file.c:401:54: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu *[assigned] _val_ @@
+   fs/file.c:441:28: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct fdtable [noderef] __rcu *fdt @@     got struct fdtable * @@
+   fs/file.c:608:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
+   fs/file.c:762:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
+   fs/file.c:813:30: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
+   fs/file.c:1038:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *tofree @@     got struct file [noderef] __rcu * @@
+--
+   net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct tcp_congestion_ops const [noderef] __rcu *_val_ @@     got struct tcp_congestion_ops *[assigned] ca @@
+   net/ipv4/tcp_cong.c:238:24: sparse:     expected struct tcp_congestion_ops const [noderef] __rcu *_val_
+   net/ipv4/tcp_cong.c:238:24: sparse:     got struct tcp_congestion_ops *[assigned] ca
+>> net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct tcp_congestion_ops const *prev @@     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_ @@
+   net/ipv4/tcp_cong.c:238:22: sparse:     expected struct tcp_congestion_ops const *prev
+   net/ipv4/tcp_cong.c:238:22: sparse:     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_
+
+vim +279 arch/arc/kernel/smp.c
+
+41195d236e8445 Vineet Gupta    2013-01-18  261  
+ddf84433f411b6 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
+41195d236e8445 Vineet Gupta    2013-01-18  263  {
+f2a4aa5646687f Vineet Gupta    2013-11-26  264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  265  	unsigned long old, new;
+41195d236e8445 Vineet Gupta    2013-01-18  266  	unsigned long flags;
+41195d236e8445 Vineet Gupta    2013-01-18  267  
+f2a4aa5646687f Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
+f2a4aa5646687f Vineet Gupta    2013-11-26  269  
+41195d236e8445 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
+41195d236e8445 Vineet Gupta    2013-01-18  271  
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  272  	/*
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  274  	 * and read back old value
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  275  	 */
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  276  	do {
+6aa7de059173a9 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
+d8e8c7dda11f5d Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
+41195d236e8445 Vineet Gupta    2013-01-18  280  
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  281  	/*
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
+82a423053eb3cf Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  288  	 */
+d8e8c7dda11f5d Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
+ddf84433f411b6 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
+41195d236e8445 Vineet Gupta    2013-01-18  291  
+41195d236e8445 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
+41195d236e8445 Vineet Gupta    2013-01-18  293  }
+41195d236e8445 Vineet Gupta    2013-01-18  294  
+
+:::::: The code at line 279 was first introduced by commit
+:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
+
+:::::: TO: Vineet Gupta <vgupta@synopsys.com>
+:::::: CC: Vineet Gupta <vgupta@synopsys.com>
+
 ---
- tools/testing/selftests/kvm/Makefile          |   3 +-
- .../kvm/lib/x86_64/nx_huge_pages_guest.S      |  45 +++++++
- .../selftests/kvm/x86_64/nx_huge_pages_test.c | 122 ++++++++++++++++++
- .../kvm/x86_64/nx_huge_pages_test.sh          |  25 ++++
- 4 files changed, 194 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/kvm/lib/x86_64/nx_huge_pages_guest.S
- create mode 100644 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
- create mode 100755 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 04099f453b59..6ee30c0df323 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -38,7 +38,7 @@ ifeq ($(ARCH),riscv)
- endif
- 
- LIBKVM = lib/assert.c lib/elf.c lib/io.c lib/kvm_util.c lib/rbtree.c lib/sparsebit.c lib/test_util.c lib/guest_modes.c lib/perf_test_util.c
--LIBKVM_x86_64 = lib/x86_64/apic.c lib/x86_64/processor.c lib/x86_64/vmx.c lib/x86_64/svm.c lib/x86_64/ucall.c lib/x86_64/handlers.S
-+LIBKVM_x86_64 = lib/x86_64/apic.c lib/x86_64/processor.c lib/x86_64/vmx.c lib/x86_64/svm.c lib/x86_64/ucall.c lib/x86_64/handlers.S lib/x86_64/nx_huge_pages_guest.S
- LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handlers.S lib/aarch64/spinlock.c lib/aarch64/gic.c lib/aarch64/gic_v3.c lib/aarch64/vgic.c
- LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
- LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
-@@ -56,6 +56,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
- TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
- TEST_GEN_PROGS_x86_64 += x86_64/mmu_role_test
-+TEST_GEN_PROGS_x86_64 += x86_64/nx_huge_pages_test
- TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
- TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
- TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/nx_huge_pages_guest.S b/tools/testing/selftests/kvm/lib/x86_64/nx_huge_pages_guest.S
-new file mode 100644
-index 000000000000..09c66b9562a3
---- /dev/null
-+++ b/tools/testing/selftests/kvm/lib/x86_64/nx_huge_pages_guest.S
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * tools/testing/selftests/kvm/nx_huge_page_guest.S
-+ *
-+ * Copyright (C) 2022, Google LLC.
-+ */
-+
-+.include "kvm_util.h"
-+
-+#define HPAGE_SIZE 	(2*1024*1024)
-+#define PORT_SUCCESS	0x70
-+
-+.global guest_code0
-+.global guest_code1
-+
-+.align HPAGE_SIZE
-+exit_vm:
-+	mov    $0x1,%edi
-+	mov    $0x2,%esi
-+	mov    a_string,%edx
-+	mov    $0x1,%ecx
-+	xor    %eax,%eax
-+	jmp    ucall
-+
-+
-+guest_code0:
-+	mov data1, %eax
-+	mov data2, %eax
-+	jmp exit_vm
-+
-+.align HPAGE_SIZE
-+guest_code1:
-+	mov data1, %eax
-+	mov data2, %eax
-+	jmp exit_vm
-+data1:
-+.quad	0
-+
-+.align HPAGE_SIZE
-+data2:
-+.quad	0
-+a_string:
-+.string "why does the ucall function take a string argument?"
-+
-+
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-new file mode 100644
-index 000000000000..5cbcc777d0ab
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-@@ -0,0 +1,122 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * tools/testing/selftests/kvm/nx_huge_page_test.c
-+ *
-+ * Usage: to be run via nx_huge_page_test.sh, which does the necessary
-+ * environment setup and teardown
-+ *
-+ * Copyright (C) 2022, Google LLC.
-+ */
-+
-+#define _GNU_SOURCE
-+
-+#include <stdint.h>
-+#include <fcntl.h>
-+
-+#include <test_util.h>
-+#include "kvm_util.h"
-+
-+#define HPAGE_SLOT		MEMSLOT(10)
-+#define HPAGE_PADDR_START       (10*1024*1024)
-+#define HPAGE_SLOT_NPAGES	(100*1024*1024/4096)
-+
-+/* Defined in nx_huge_page_guest.S */
-+void guest_code0(void);
-+void guest_code1(void);
-+
-+static void run_guest_code(struct kvm_vm *vm, void (*guest_code)(void))
-+{
-+	struct kvm_regs regs;
-+
-+	vcpu_regs_get(vm, 0, &regs);
-+	regs.rip = (uint64_t)guest_code;
-+	vcpu_regs_set(vm, 0, &regs);
-+	vcpu_run(vm, 0);
-+}
-+
-+static void check_2m_page_count(struct kvm_vm *vm, int expected_pages_2m)
-+{
-+	int actual_pages_2m;
-+
-+	actual_pages_2m = vm_get_single_stat(vm, "pages_2m");
-+
-+	TEST_ASSERT(actual_pages_2m == expected_pages_2m,
-+		    "Unexpected 2m page count. Expected %d, got %d",
-+		    expected_pages_2m, actual_pages_2m);
-+}
-+
-+static void check_split_count(struct kvm_vm *vm, int expected_splits)
-+{
-+	int actual_splits;
-+
-+	actual_splits = vm_get_single_stat(vm, "nx_lpage_splits");
-+
-+	TEST_ASSERT(actual_splits == expected_splits,
-+		    "Unexpected nx lpage split count. Expected %d, got %d",
-+		    expected_splits, actual_splits);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	struct kvm_vm *vm;
-+
-+	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
-+
-+	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
-+				    HPAGE_PADDR_START, HPAGE_SLOT,
-+				    HPAGE_SLOT_NPAGES, 0);
-+
-+	kvm_vm_elf_load(vm, program_invocation_name, HPAGE_SLOT);
-+
-+	vm_vcpu_add_default(vm, 0, guest_code0);
-+
-+	check_2m_page_count(vm, 0);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * Running guest_code0 will access data1 and data2.
-+	 * This should result in part of the huge page containing guest_code0,
-+	 * and part of the hugepage containing the ucall function being mapped
-+	 * at 4K. The huge pages containing data1 and data2 will be mapped
-+	 * at 2M.
-+	 */
-+	run_guest_code(vm, guest_code0);
-+	check_2m_page_count(vm, 2);
-+	check_split_count(vm, 2);
-+
-+	/*
-+	 * guest_code1 is in the same huge page as data1, so it will cause
-+	 * that huge page to be remapped at 4k.
-+	 */
-+	run_guest_code(vm, guest_code1);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 3);
-+
-+	/* Run guest_code0 again to check that is has no effect. */
-+	run_guest_code(vm, guest_code0);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 3);
-+
-+	/* Give recovery thread time to run */
-+	sleep(3);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 0);
-+
-+	/*
-+	 * The split 2M pages should have been reclaimed, so run guest_code0
-+	 * again to check that pages are mapped at 2M again.
-+	 */
-+	run_guest_code(vm, guest_code0);
-+	check_2m_page_count(vm, 2);
-+	check_split_count(vm, 2);
-+
-+	/* Pages are once again split from running guest_code1. */
-+	run_guest_code(vm, guest_code1);
-+	check_2m_page_count(vm, 1);
-+	check_split_count(vm, 3);
-+
-+	kvm_vm_free(vm);
-+
-+	return 0;
-+}
-+
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-new file mode 100755
-index 000000000000..a5f946fb0626
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-@@ -0,0 +1,25 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0-only */
-+
-+# tools/testing/selftests/kvm/nx_huge_page_test.sh
-+# Copyright (C) 2022, Google LLC.
-+
-+NX_HUGE_PAGES=$(cat /sys/module/kvm/parameters/nx_huge_pages)
-+NX_HUGE_PAGES_RECOVERY_RATIO=$(cat /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio)
-+NX_HUGE_PAGES_RECOVERY_PERIOD=$(cat /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms)
-+HUGE_PAGES=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
-+
-+echo 1 > /sys/module/kvm/parameters/nx_huge_pages
-+echo 1 > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-+echo 2 > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-+echo 200 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-+
-+./nx_huge_pages_test
-+RET=$?
-+
-+echo $NX_HUGE_PAGES > /sys/module/kvm/parameters/nx_huge_pages
-+echo $NX_HUGE_PAGES_RECOVERY_RATIO > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-+echo $NX_HUGE_PAGES_RECOVERY_PERIOD > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-+echo $HUGE_PAGES > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-+
-+exit $RET
--- 
-2.35.1.616.g0bdcbb4464-goog
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
