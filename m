@@ -2,120 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D01C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A57C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239053AbiCJAqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 19:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        id S239065AbiCJAsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 19:48:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbiCJAqa (ORCPT
+        with ESMTP id S239098AbiCJAsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 19:46:30 -0500
-X-Greylist: delayed 934 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 16:45:29 PST
-Received: from smtpq3.tb.ukmail.iss.as9143.net (smtpq3.tb.ukmail.iss.as9143.net [212.54.57.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3B565437
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:45:29 -0800 (PST)
-Received: from [212.54.57.96] (helo=smtpq1.tb.ukmail.iss.as9143.net)
-        by smtpq3.tb.ukmail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <zarniwhoop@ntlworld.com>)
-        id 1nS6gl-0007ZL-6Y
-        for linux-kernel@vger.kernel.org; Thu, 10 Mar 2022 01:29:55 +0100
-Received: from [212.54.57.106] (helo=csmtp2.tb.ukmail.iss.as9143.net)
-        by smtpq1.tb.ukmail.iss.as9143.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <zarniwhoop@ntlworld.com>)
-        id 1nS6gj-0002sG-8G
-        for linux-kernel@vger.kernel.org; Thu, 10 Mar 2022 01:29:53 +0100
-Received: from llamedos.mydomain ([81.97.236.130])
-        by cmsmtp with ESMTPA
-        id S6ginWO6qB5IlS6ginzfBV; Thu, 10 Mar 2022 01:29:53 +0100
-X-SourceIP: 81.97.236.130
-X-Authenticated-Sender: zarniwhoop@ntlworld.com
-X-Spam: 0
-X-Authority: v=2.4 cv=XIEj9CtE c=1 sm=1 tr=0 ts=62294681 cx=a_exe
- a=OGiDJHazYrvzwCbh7ZIPzQ==:117 a=OGiDJHazYrvzwCbh7ZIPzQ==:17
- a=IkcTkHD0fZMA:10 a=o8Y5sQTvuykA:10 a=pGLkceISAAAA:8 a=07d9gI8wAAAA:8
- a=VwQbUJbxAAAA:8 a=5gREawPU8w4pKPWqZwoA:9 a=QEXdDO2ut3YA:10
- a=e2CUPOnPG4QKp8I52DXD:22 a=AjGcO6oz07-iQ99wixmX:22
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ntlworld.com;
-        s=meg.feb2017; t=1646872193;
-        bh=itlXJNpz8fUGS/shN3O1AKR2ZZ8QkAg/FhMvnKn4DDc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=D+ZDBuBVvEaIi8YQ4xpbEYK4eYFqIUi42FxAXwVdx4XtOubizvEK8VvgtJC5VPe/W
-         aYRx73kkjrTpYAXF/xcbSLh/++gpCg6cmoOy1pAIdlaF8p2B+24QfVTW+9LHF5yeqs
-         ZnMY3zMkp/kr+8vvyx5HinJqF9wq/cQZ2AjQBsPgc1tAQWoLmM+mdikK+NZUbLg34s
-         qhRP8T1zhUyd+uH9cW68b4+NzErObc7acgJn0oFf4f6cmbOUCqQuWIdFr1VHAfOtzv
-         d+Zn51S9Qm2yFbKjW9D201slH+8ToJZa36SP1SPOfVwUgKOr8Wv5DdNIenYYRj7o4D
-         munX5+AksRNSA==
-Received: by llamedos.mydomain (Postfix, from userid 1000)
-        id D5CFE60C4F; Thu, 10 Mar 2022 00:29:52 +0000 (GMT)
-Date:   Thu, 10 Mar 2022 00:29:52 +0000
-From:   Ken Moffat <zarniwhoop@ntlworld.com>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org,
-        SeongJae Park <sjpark@amazon.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Documentation: describe how to apply incremental stable
- patches
-Message-ID: <YilGgO03v+CM0aDq@llamedos.localdomain>
-References: <20220307063340.256671-1-bagasdotme@gmail.com>
- <87mthy7lif.fsf@meer.lwn.net>
+        Wed, 9 Mar 2022 19:48:02 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C52E124C32
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:47:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646873222; x=1678409222;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=q27IIFrTX5Auup0eZVnfDyI9JkxZl5YZITGEcx2+eug=;
+  b=Z8+xFmF5i873EdHTFStf9Cc313nLq7ZnEObVzrbGsBfgkjQRGQMjXDy4
+   VAXQFOAnVrfjb4fS4bRE1B82J2+ufMxj4rV9gvQFJZH6LSk8vwbUAep7j
+   i2uSVRl4d4lt7spLC4+9EtOl6A3mwUV9FH1yA8c/fzicEHoa0Q+7Y0sDX
+   DU6F8iK2gku0t+lP2JFmL+KdOoqyoyncExtFtOuyi5boXNYqUpqaASym8
+   qBnsFjek9c6lEH8OoNowyaX839fIpU1SoStSeMj/P6y3WqtVpkN4DEDsX
+   cKJhTC/t08yhmXn2uPdVWUBO4CzXg1Z5gjDm1Crep89DiDPb1CGME3Sti
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255313062"
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="255313062"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 16:47:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="712159825"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2022 16:47:00 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nS6xH-00044i-RM; Thu, 10 Mar 2022 00:46:59 +0000
+Date:   Thu, 10 Mar 2022 08:46:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: [davidhildenbrand:cow_fixes_part_3 23/37] mm/gup.c:2555:17: error:
+ label 'pte_unmap' used but not defined
+Message-ID: <202203100823.mNsrrOHO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Clacks-Overhead: GNU Terry Pratchett
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87mthy7lif.fsf@meer.lwn.net>
-User-Agent: Mutt/2.2.1 (2022-02-19)
-X-CMAE-Envelope: MS4xfHUqsACAFenD9OguapbTyegxxLYTnV8mJh64zwNVt3Tgg+VfIvzTPQMLGrrPy5Dtpj3sfc9VQTp8vEqAvF5E5ivkgvOhV3KN4qswmB5Ct9z5E90WdV8+
- meUWmYW7YmLfv9KuI17sJMcuS0me33iPkEaaFG0ZELukS7I/ObusBphPu+5p+1b5HdrombyZk3QUwlAnF/O4irBv1+CPfnAlKeX6nB55CTPTddH5BTWHs3+j
- 8L3r21RV6puQ+pAogSm5tnY8D60/iRcpUXb/MGKBHWb3mdWyaQaqQWjiot5+ds61wpsm+an4mh4b5vwOpJTqGtrjONrzWX8uXDnhsn4KoHs=
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 04:29:28PM -0700, Jonathan Corbet wrote:
-> Bagas Sanjaya <bagasdotme@gmail.com> writes:
-> 
-> > The applying patches document
-> > (Documentation/process/applying-patches.rst) mentions incremental stable
-> > patches, but there is no example of how to apply them. Describe the
-> > process.
-> >
-> > While at it, remove note about incremental patches and move the external
-> > link of 5.x.y incremental patches to "Where can I download patches?"
-> > section.
-> >
-> > Cc: Jonathan Corbet <corbet@lwn.net>
-> > Cc: SeongJae Park <sjpark@amazon.de>
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> > ---
-> >  Documentation/process/applying-patches.rst | 28 ++++++++++++++++++----
-> >  1 file changed, 23 insertions(+), 5 deletions(-)
-> 
-> I've applied this, thanks.  I do have to wonder, though, how useful this
-> information is anymore.  Does anybody actually apply kernel-patch files
-> this far into the Git era?
-> 
-> Thanks,
-> 
-> jon
+tree:   git://github.com/davidhildenbrand/linux cow_fixes_part_3
+head:   d49a3c40226a6bb397e7c532c81eb7d91026acaf
+commit: f88e4c489908eb7ca8f63ea3dae1b09febcff282 [23/37] mm/gup: trigger FAULT_FLAG_UNSHARE when R/O-pinning a possibly shared anonymous page
+config: powerpc64-buildonly-randconfig-r004-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100823.mNsrrOHO-lkp@intel.com/config)
+compiler: powerpc64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/davidhildenbrand/linux/commit/f88e4c489908eb7ca8f63ea3dae1b09febcff282
+        git remote add davidhildenbrand git://github.com/davidhildenbrand/linux
+        git fetch --no-tags davidhildenbrand cow_fixes_part_3
+        git checkout f88e4c489908eb7ca8f63ea3dae1b09febcff282
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-I do.  I have several machines with multiple systems (current, old,
-older, experimental) and mostly I build current kernels in the
-current system, and older LTS in the old systems.  Ideally I will
-find time to test an rc, but I only use git for kernels when I need
-to bisect.  I find it much easier to keep the initial relase tarball
-and chosen point patches on my local nfs.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-My interests are userspace, and some of my machines are
-comparatively slow to compile kernels.
+All errors (new ones prefixed by >>):
 
-ĸen 
+   mm/gup.c: In function 'gup_hugepte':
+>> mm/gup.c:2555:17: error: label 'pte_unmap' used but not defined
+    2555 |                 goto pte_unmap;
+         |                 ^~~~
 
--- 
-The beauty of reading a page of de Selby is that it leads one
-inescapably to the conclusion that one is not, of all nincompoops,
-the greatest.            -- du Garbandier
+
+vim +/pte_unmap +2555 mm/gup.c
+
+  2518	
+  2519	static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
+  2520			       unsigned long end, unsigned int flags,
+  2521			       struct page **pages, int *nr)
+  2522	{
+  2523		unsigned long pte_end;
+  2524		struct page *head, *page;
+  2525		pte_t pte;
+  2526		int refs;
+  2527	
+  2528		pte_end = (addr + sz) & ~(sz-1);
+  2529		if (pte_end < end)
+  2530			end = pte_end;
+  2531	
+  2532		pte = huge_ptep_get(ptep);
+  2533	
+  2534		if (!pte_access_permitted(pte, flags & FOLL_WRITE))
+  2535			return 0;
+  2536	
+  2537		/* hugepages are never "special" */
+  2538		VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
+  2539	
+  2540		head = pte_page(pte);
+  2541		page = head + ((addr & (sz-1)) >> PAGE_SHIFT);
+  2542		refs = record_subpages(page, addr, end, pages + *nr);
+  2543	
+  2544		head = try_grab_compound_head(head, refs, flags);
+  2545		if (!head)
+  2546			return 0;
+  2547	
+  2548		if (unlikely(pte_val(pte) != pte_val(*ptep))) {
+  2549			put_compound_head(head, refs, flags);
+  2550			return 0;
+  2551		}
+  2552	
+  2553		if (!pte_write(pte) && gup_must_unshare(flags, head)) {
+  2554			put_compound_head(head, refs, flags);
+> 2555			goto pte_unmap;
+  2556		}
+  2557	
+  2558		*nr += refs;
+  2559		SetPageReferenced(head);
+  2560		return 1;
+  2561	}
+  2562	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
