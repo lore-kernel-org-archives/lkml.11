@@ -2,143 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 642A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344662AbiCJX1B (ORCPT
+        id S1344693AbiCJX1L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 18:27:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
+        Thu, 10 Mar 2022 18:27:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344086AbiCJX05 (ORCPT
+        with ESMTP id S239313AbiCJX1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 18:26:57 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FEE19ABD5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:25:55 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id bc27so5990595pgb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:25:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ejJjmdbNGVk0Ojn9gs31SAw6IuTYvfqq7ug7NCCkkt4=;
-        b=onIx2e9X0TzzdYS9bDwjnzCQL6eZTBbf+XJonIjFE7H559YPkcY+EhmcsSUTYccP7P
-         SJhQkA9/eitkZ6RjDtU8Casbh0s5w49mbQFTWLMchOLcU7UVtTkD54CeHJL02skXriet
-         PElVeFd230TUHFlwda1A5LSJhaSTD+Bxgbibu/IKEXmZ3J+nggAKvfIS3QhoOtknOwKs
-         QKEIoTVTIi/ZmcjBt6AMvlUYOomvLKkOEmN2AJpl/yhf31HAVBpWthxNzm7juMSUt8dw
-         DXE48U7DiDyM87kNgix+yq6u8HeLPvQ6BLJxv/YvFub9TgJMoM1intVwQvSH9rQM+b2Q
-         9MVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ejJjmdbNGVk0Ojn9gs31SAw6IuTYvfqq7ug7NCCkkt4=;
-        b=JeUlvMZnVAPVvsCbjF7XaTuB/Lyu78HeG+uWOlvZbPtX58sO5bT4E7uWXs+L5j7JSQ
-         5vLOzmTBCt2ylNtxcJ/HnUIt0h6oGTOvSlYoYgYVxOxZYQq3sx39g0vlwrrzB0t+UbyB
-         vjJijodMAWOx8TAzAv0NJDXJsrZGB1enTEh6cmI7mRcZhS2H6Xj72MGziwsZ7yrO/Wnc
-         L7i+Mm+1MaWXh7HnmcU3t13Ygf/qGHNUOrswiCShNAffikwXBp5SC5Z5q9B4iNjVJ9EJ
-         MFeJ5UV7cFu1UpLShvurbiLrdN466/WIwnezkYYthxFdEWMHjl5+Ajy6rNJzEcYnXFfq
-         ZDow==
-X-Gm-Message-State: AOAM531aS3iwMbgHC9qbN+8w65RC/0epoA+UmCGGWF0cnm4E/SNND/rH
-        vQUlHKA8kosdaPolPOiEkyMhmw==
-X-Google-Smtp-Source: ABdhPJzv6gLDrKCUJmstikLr5c12MnrtNWMmsWP1SNNEHRV+MGXn9BOQlivb1Lqc4nAFEDZ9B4Opyg==
-X-Received: by 2002:a05:6a02:10a:b0:37f:f691:b094 with SMTP id bg10-20020a056a02010a00b0037ff691b094mr5995278pgb.184.1646954755255;
-        Thu, 10 Mar 2022 15:25:55 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id k62-20020a17090a4cc400b001bf0d92e1c7sm6995703pjh.41.2022.03.10.15.25.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 15:25:54 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     kuba@kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Subject: [PATCH v3] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Thu, 10 Mar 2022 15:25:38 -0800
-Message-Id: <20220310232538.1044947-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
-References: <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
+        Thu, 10 Mar 2022 18:27:09 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434B519ABD5;
+        Thu, 10 Mar 2022 15:26:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=rvvIpi7k3bDAjHNxFs9qtFYxGVX6i80TlE7ph4fJVv4=; b=k3yo2LKfmw5mbr+a8qBF2YD9aS
+        UhS7OBBQ/wYCqavl/5XgGdyHCempe0UvcFDZtzwAtObmjcI2kXs1AQBQtSkUBgRuaCV3FVjv8LbhQ
+        2u3sngzQmidqiNlt4WHV9HJsWE3GvsL9S1fJAHQZ9zNKVQtL4mlB0zTsQmwbZN0ohWxU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSSAB-00ACP9-WC; Fri, 11 Mar 2022 00:25:44 +0100
+Date:   Fri, 11 Mar 2022 00:25:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Cc:     "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v1 3/4] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Message-ID: <YiqI9/Or4SL6NthP@lunn.ch>
+References: <20220310030039.2833808-1-chris.packham@alliedtelesis.co.nz>
+ <20220310030039.2833808-4-chris.packham@alliedtelesis.co.nz>
+ <YioKgjhEnqylB24M@lunn.ch>
+ <b6128e83-3f97-e728-66f2-25507d0f7abe@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6128e83-3f97-e728-66f2-25507d0f7abe@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
+> >> +	mvDma {
+> >> +		compatible = "marvell,mv_dma";
+> >> +		memory-region = <&prestera_rsvd>;
+> >> +		status = "okay";
+> >> +	};
+> > Is this different to the existing Marvell XOR engine?
+> 
+> Yes it has something to do with the DMA memory for the integrated L3 
+> switch. Because that driver doesn't exist I'll probably remove this node 
+> (and the other prestera node below) in v2.
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
+The compatible itself is not so great, since it made me think of the
+DMA engine in the SoC. So maybe when the driver is added, it could be
+something like prestera_dma?
 
-Update the check that prevents an invalid packet with MTU equall to the
-fregment header size to eat up all the space for payload.
+> >> +				sdhci0: sdhci@805c0000 {
+> >> +					compatible = "marvell,ac5-sdhci", "marvell,armada-ap806-sdhci";
+> > This additional compatible should be added to the existing binding
+> > document.
+> I'll see what differences there are with the ap806-sdhci. I might be 
+> able to remove it.
 
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+It is actually good to have the additional compatible. You might not
+spot a difference now, but sometime in the future you do find a
+difference which you need to work around in the driver. Having the
+compatible in place means you can just change the driver and existing
+DT blobs, burnt into flash etc, don't need to change.
 
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
+> >
+> >> +			eth0: ethernet@20000 {
+> >> +				compatible = "marvell,armada-ac5-neta";
+> > So it is not compatible with plain nata?
+> 
+> There is some odd muxing setup where the serdes are either SGMII or PCIe 
+> or can even be connected to the internal switch. Whether the Ethernet 
+> driver needs to care about it I'm not sure.
 
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
-v2: Instead of updating the alloclen add a check that prevents
-    an invalid packet with MTU equall to the fregment header size
-    to eat up all the space for payload.
-    Fix suggested by Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Russell King probably knows more about this, but it sounds more like a
+comphy issues, not neta. The comphy connects the MAC to a SERDES, and
+that SERDES can be SGMII, PCIe or USB.
 
-v3: Update existing check outside of the while loop.
----
- net/ipv6/ip6_output.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> >> +		nand: nand@805b0000 {
+> >> +			compatible = "marvell,ac5-nand-controller";
+> > The current NAND driver does not work?
+> 
+> This is one of the things I can't test on the board I have (uses eMMC 
+> instead of NAND). Should I put "marvell,armada-8k-nand-controller" in as 
+> a placeholder or leave the node out entirely?
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4788f6b37053..194832663d85 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
- 
--	if (mtu < fragheaderlen ||
--	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+	if (mtu <= fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
- 		goto emsgsize;
- 
- 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
--- 
-2.35.1
+I would leave it out if you cannot test it.
 
+  Andrew
