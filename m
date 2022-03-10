@@ -2,163 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EAE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241087AbiCJKin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
+        id S241201AbiCJKki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:40:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbiCJKik (ORCPT
+        with ESMTP id S230310AbiCJKkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:38:40 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE52FD3D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:37:38 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8CF111F441;
-        Thu, 10 Mar 2022 10:37:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646908657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P113h4crLXMl5tXV6V95ni0R4d/EjRojkyoRVUPcGwM=;
-        b=m/Xn0fGKRlUXmyJ8GWh3DhNeIbKxtp8JxgRvV2aqY8oObrIIinZiza1upbjwLDIx6QqRgQ
-        S6bVYc0BelHCqGIkWnuZlTbfjfyuNdFcOKnYEBG+C8rkEjzAVvYzYfG4UyrzYGZwH44JP1
-        REWKoLKWA9jpDTpcc4S/mvtOSNz/VIU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646908657;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P113h4crLXMl5tXV6V95ni0R4d/EjRojkyoRVUPcGwM=;
-        b=/smlhImydRWpe5xsDfrS1beZ/1aietQl26wM9s+cUwPgmh3Szl93H5W4w00E1rbfp7T2Ff
-        nfaAwgKEszyZ+SBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 22CFA13A3D;
-        Thu, 10 Mar 2022 10:37:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 2afjB/HUKWK6dAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 10 Mar 2022 10:37:37 +0000
-Message-ID: <e7b3070b-e1d8-618f-93ad-eb9d8b148513@suse.cz>
-Date:   Thu, 10 Mar 2022 11:37:36 +0100
+        Thu, 10 Mar 2022 05:40:36 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7574FC64
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:39:35 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nSGCi-0005Cd-2t; Thu, 10 Mar 2022 11:39:32 +0100
+Message-ID: <831731e2-6769-3d36-0cdf-721437452fcc@leemhuis.info>
+Date:   Thu, 10 Mar 2022 11:39:30 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 6/9] mm/khugepaged: remove reuse_swap_page() usage
+ Thunderbird/91.5.0
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org
-References: <20220131162940.210846-1-david@redhat.com>
- <20220131162940.210846-7-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220131162940.210846-7-david@redhat.com>
+To:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Bug 215658 - arch/powerpc/mm/mmu_context.o Assembler messages: Error:
+ unrecognized opcode: `dssall' (PowerMac G4)
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1646908775;1ae64f2d;
+X-HE-SMSGID: 1nSGCi-0005Cd-2t
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 17:29, David Hildenbrand wrote:
-> reuse_swap_page() currently indicates if we can write to an anon page
-> without COW. A COW is required if the page is shared by multiple
-> processes (either already mapped or via swap entries) or if there is
-> concurrent writeback that cannot tolerate concurrent page modifications.
-> 
-> However, in the context of khugepaged we're not actually going to write
-> to a read-only mapped page, we'll copy the page content to our newly
-> allocated THP and map that THP writable. All we have to make sure
-> is that the read-only mapped page we're about to copy won't get reused
-> by another process sharing the page, otherwise, page content would
-> get modified. But that is already guaranteed via multiple mechanisms
-> (e.g., holding a reference, holding the page lock, removing the rmap after
->  copying the page).
-> 
-> The swapcache handling was introduced in commit 10359213d05a ("mm:
-> incorporate read-only pages into transparent huge pages") and it sounds
-> like it merely wanted to mimic what do_swap_page() would do when trying
-> to map a page obtained via the swapcache writable.
-> 
-> As that logic is unnecessary, let's just remove it, removing the last
-> user of reuse_swap_page().
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+Hi, this is your Linux kernel regression tracker.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+I noticed a regression report in bugzilla.kernel.org that afaics nobody
+acted upon since it was reported about a week ago, that's why I decided
+to forward it to the lists and a few relevant people to the CC. To quote
+from the ticket:
 
-> ---
->  include/trace/events/huge_memory.h |  1 -
->  mm/khugepaged.c                    | 11 -----------
->  2 files changed, 12 deletions(-)
+> 5.16.12 kernel build for my G4 DP on my Talos II fails with:
 > 
-> diff --git a/include/trace/events/huge_memory.h b/include/trace/events/huge_memory.h
-> index 4fdb14a81108..d651f3437367 100644
-> --- a/include/trace/events/huge_memory.h
-> +++ b/include/trace/events/huge_memory.h
-> @@ -29,7 +29,6 @@
->  	EM( SCAN_VMA_NULL,		"vma_null")			\
->  	EM( SCAN_VMA_CHECK,		"vma_check_failed")		\
->  	EM( SCAN_ADDRESS_RANGE,		"not_suitable_address_range")	\
-> -	EM( SCAN_SWAP_CACHE_PAGE,	"page_swap_cache")		\
->  	EM( SCAN_DEL_PAGE_LRU,		"could_not_delete_page_from_lru")\
->  	EM( SCAN_ALLOC_HUGE_PAGE_FAIL,	"alloc_huge_page_failed")	\
->  	EM( SCAN_CGROUP_CHARGE_FAIL,	"ccgroup_charge_failed")	\
-> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> index 35f14d0a00a6..9da9325ab4d4 100644
-> --- a/mm/khugepaged.c
-> +++ b/mm/khugepaged.c
-> @@ -45,7 +45,6 @@ enum scan_result {
->  	SCAN_VMA_NULL,
->  	SCAN_VMA_CHECK,
->  	SCAN_ADDRESS_RANGE,
-> -	SCAN_SWAP_CACHE_PAGE,
->  	SCAN_DEL_PAGE_LRU,
->  	SCAN_ALLOC_HUGE_PAGE_FAIL,
->  	SCAN_CGROUP_CHARGE_FAIL,
-> @@ -682,16 +681,6 @@ static int __collapse_huge_page_isolate(struct vm_area_struct *vma,
->  			result = SCAN_PAGE_COUNT;
->  			goto out;
->  		}
-> -		if (!pte_write(pteval) && PageSwapCache(page) &&
-> -				!reuse_swap_page(page)) {
-> -			/*
-> -			 * Page is in the swap cache and cannot be re-used.
-> -			 * It cannot be collapsed into a THP.
-> -			 */
-> -			unlock_page(page);
-> -			result = SCAN_SWAP_CACHE_PAGE;
-> -			goto out;
-> -		}
->  
->  		/*
->  		 * Isolate the page to avoid collapsing an hugepage
+> [...]
+>   CC      arch/powerpc/mm/init_32.o
+>   CC      arch/powerpc/mm/pgtable_32.o
+>   CC      arch/powerpc/mm/pgtable-frag.o
+>   CC      arch/powerpc/mm/ioremap.o
+>   CC      arch/powerpc/mm/ioremap_32.o
+>   CC      arch/powerpc/mm/init-common.o
+>   CC      arch/powerpc/mm/mmu_context.o
+> {standard input}: Assembler messages:
+> {standard input}:30: Error: unrecognized opcode: `dssall'
+> make[2]: *** [scripts/Makefile.build:287: arch/powerpc/mm/mmu_context.o] Fehler 1
+> make[1]: *** [scripts/Makefile.build:549: arch/powerpc/mm] Fehler 2
+> make: *** [Makefile:1846: arch/powerpc] Error 2
+> 
+> This seems to have been introduced by commit d51f86cfd8e378d4907958db77da3074f6dce3ba "powerpc/mm: Switch obsolete dssall to .long"
+> 
+> Reverting this commit fixes the build for my G4.
 
+Could somebody take a look into this? Or was this discussed somewhere
+else already? Or even fixed?
+
+Anyway, to get this tracked:
+
+#regzbot introduced: d51f86cfd8e378d4907958db77da3074f6dce3ba
+#regzbot from: Erhard F <erhard_f@mailbox.org>
+#regzbot title:  arch/powerpc/mm/mmu_context.o Assembler messages:
+Error: unrecognized opcode: `dssall' (PowerMac G4)
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215658
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
