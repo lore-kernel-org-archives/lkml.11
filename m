@@ -2,480 +2,396 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ECC5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CE0C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343934AbiCJOkW (ORCPT
+        id S1344006AbiCJOkY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
+        Thu, 10 Mar 2022 09:40:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343931AbiCJOb3 (ORCPT
+        with ESMTP id S1343932AbiCJOb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:31:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E7BE7F43;
-        Thu, 10 Mar 2022 06:28:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D47361D23;
-        Thu, 10 Mar 2022 14:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D392C340E8;
-        Thu, 10 Mar 2022 14:28:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922523;
-        bh=dpnoPptyZYbohuqzKQSI2MGPQ+orAJqLGP1nHGxVwhg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RxZuwAPh9cW7+0PVx6vwYFlaCUEKFxAQ1DZxjnm2Ll8lWuwLrrGrIh1BJLIeqcMMG
-         qxEMx+V1TpqI2sEUT1Pv8TVc7zdN8F9iLcJezI0U2u9dV+bNNT3FPXLZ8t0rKmt49F
-         pJbr30WBTAv8rPdKJZqyhBru03h0szqggrvslwog=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 16/33] ARM: Spectre-BHB workaround
-Date:   Thu, 10 Mar 2022 15:19:17 +0100
-Message-Id: <20220310140809.220998772@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
-References: <20220310140808.741682643@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E46DD96E;
+        Thu, 10 Mar 2022 06:28:42 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id hw13so11981169ejc.9;
+        Thu, 10 Mar 2022 06:28:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=igqxKMbYEhW7vx1kkHjWCH0qO2MptjIF1MiqioZxqm0=;
+        b=dLihUw/uxcglEmZs9nknjcmc/570D86JE26ac/N8NHaBvsQkcM+0LW+qIT010WNc4e
+         lXhUnA2/+M0hNXZMtuVurXQra+i5r/oNd7HLByruxMullNderTv6n2InGGRF4Y8mKNVi
+         Da3vxVx+KdJIBX9eCoJx6NcPiv7NdFayNpaWYoR0eZr8ZViEjIDB6OYQUae6bzu5FgW/
+         49W4JrKx/M6AHew8M6W3w3jCM5ZrV/PPzIrkmf7BmUGwK7Ga+rJD/VhbF1+yZozxOu9u
+         Gwy62PP5pKg50tkLXUBrbmLy5w2jeQrR4kkJREM2DVvWLzy+a+zaBug68z7pQqko69Jd
+         rTEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=igqxKMbYEhW7vx1kkHjWCH0qO2MptjIF1MiqioZxqm0=;
+        b=y6/K1OrtMrhhAtRIAFDrF0k+xoPArUk9OkKBoq6YzNgkdidxfquB2CIcPIfoKPPcdT
+         D5yI2/mFbAIliQUalnYtv9I4SG15to/NFZWsipeBZ04MCEfARjOhSnHGvPs9O7PQktu5
+         zU12IfAibbGQlW79uvfw+2ZDmw3blzigbcfTmaSiDh8paZgEsSpsEaBcLTnP03H8Aqtv
+         spcfB6bWaX0U5Hibk93qHp9s+dmlbnvbiJXR0qtnH6OuzYWZx2XWI8v+0H5xKqOm0SaP
+         FnsjAEwxzPgwVkG52ClCrLQn92ohsi6SlMGaqmkZASqotyj1Hgv9R3x1K9DLpN7qbgTo
+         R8sg==
+X-Gm-Message-State: AOAM533gEwN5oZx1iIOacAKT2SckVRBkozyf4GU7shczkKiX/PjuBjG+
+        3u/y0Eqpx/u/4TuNQ8ahr7I=
+X-Google-Smtp-Source: ABdhPJxTwaVu3sMHqIVYeIKVSXsTy5vi+94HHHVvS4LkXemB2L1VeGr/LdRvc4WgC7Otb79KPpS8Kg==
+X-Received: by 2002:a17:907:9956:b0:6cf:cd25:c5a7 with SMTP id kl22-20020a170907995600b006cfcd25c5a7mr4420302ejc.635.1646922518750;
+        Thu, 10 Mar 2022 06:28:38 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id t19-20020a1709060c5300b006d582121f99sm1845220ejf.36.2022.03.10.06.28.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:28:38 -0800 (PST)
+Date:   Thu, 10 Mar 2022 16:28:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20220310142836.m5onuelv4jej5gvs@skbuf>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+On Thu, Mar 10, 2022 at 03:23:20PM +0100, Hans Schultz wrote:
+> This implementation for the Marvell mv88e6xxx chip series, is
+> based on handling ATU miss violations occurring when packets
+> ingress on a port that is locked. The mac address triggering
+> the ATU miss violation is communicated through switchdev to
+> the bridge module, which adds a fdb entry with the fdb locked
+> flag set.
+> Note: The locked port must have learning enabled for the ATU
+> miss violation to occur.
+> 
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
+>  drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+>  drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+>  drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+>  drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+>  drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+>  .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+>  .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+>  drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+>  drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+>  9 files changed, 138 insertions(+), 7 deletions(-)
+>  create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+>  create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
+> index c8eca2b6f959..3ca57709730d 100644
+> --- a/drivers/net/dsa/mv88e6xxx/Makefile
+> +++ b/drivers/net/dsa/mv88e6xxx/Makefile
+> @@ -15,3 +15,4 @@ mv88e6xxx-objs += port_hidden.o
+>  mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
+>  mv88e6xxx-objs += serdes.o
+>  mv88e6xxx-objs += smi.o
+> +mv88e6xxx-objs += mv88e6xxx_switchdev.o
+> \ No newline at end of file
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 84b90fc36c58..e1b6bd738085 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -1714,11 +1714,11 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
+>  	return err;
+>  }
+>  
+> -static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+> -			      int (*cb)(struct mv88e6xxx_chip *chip,
+> -					const struct mv88e6xxx_vtu_entry *entry,
+> -					void *priv),
+> -			      void *priv)
+> +int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+> +		       int (*cb)(struct mv88e6xxx_chip *chip,
+> +				 const struct mv88e6xxx_vtu_entry *entry,
+> +				 void *priv),
+> +		       void *priv)
+>  {
+>  	struct mv88e6xxx_vtu_entry entry = {
+>  		.vid = mv88e6xxx_max_vid(chip),
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+> index 30b92a265613..64e8fc470fdf 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.h
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
+> @@ -763,6 +763,11 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
+>  	mutex_unlock(&chip->reg_lock);
+>  }
+>  
+> +int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+> +		       int (*cb)(struct mv88e6xxx_chip *chip,
+> +				 const struct mv88e6xxx_vtu_entry *entry,
+> +				 void *priv),
+> +		       void *priv);
+>  int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
+>  
+>  #endif /* _MV88E6XXX_CHIP_H */
+> diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+> index 2c1607c858a1..729cc0610d9a 100644
+> --- a/drivers/net/dsa/mv88e6xxx/global1.h
+> +++ b/drivers/net/dsa/mv88e6xxx/global1.h
+> @@ -136,6 +136,7 @@
+>  #define MV88E6XXX_G1_ATU_DATA_TRUNK				0x8000
+>  #define MV88E6XXX_G1_ATU_DATA_TRUNK_ID_MASK			0x00f0
+>  #define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_MASK			0x3ff0
+> +#define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS		0x0000
+>  #define MV88E6XXX_G1_ATU_DATA_STATE_MASK			0x000f
+>  #define MV88E6XXX_G1_ATU_DATA_STATE_UC_UNUSED			0x0000
+>  #define MV88E6XXX_G1_ATU_DATA_STATE_UC_AGE_1_OLDEST		0x0001
+> diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+> index 40bd67a5c8e9..afa54fe8667e 100644
+> --- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
+> +++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+> @@ -12,6 +12,8 @@
+>  
+>  #include "chip.h"
+>  #include "global1.h"
+> +#include "port.h"
+> +#include "mv88e6xxx_switchdev.h"
+>  
+>  /* Offset 0x01: ATU FID Register */
+>  
+> @@ -114,6 +116,18 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
+>  	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
+>  }
+>  
+> +static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
+> +{
+> +	int err;
+> +
+> +	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
+> +				 MV88E6XXX_G1_ATU_OP_BUSY | MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
+> +	if (err)
+> +		return err;
+> +
+> +	return mv88e6xxx_g1_atu_op_wait(chip);
+> +}
+> +
+>  static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
+>  {
+>  	u16 val;
+> @@ -356,11 +370,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+>  	int spid;
+>  	int err;
+>  	u16 val;
+> +	u16 fid;
+>  
+>  	mv88e6xxx_reg_lock(chip);
+>  
+> -	err = mv88e6xxx_g1_atu_op(chip, 0,
+> -				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
+> +	err = mv88e6xxx_g1_read_atu_violation(chip);
+>  	if (err)
+>  		goto out;
+>  
+> @@ -368,6 +382,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+>  	if (err)
+>  		goto out;
+>  
+> +	err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &fid);
+> +	if (err)
+> +		goto out;
+> +
+>  	err = mv88e6xxx_g1_atu_data_read(chip, &entry);
+>  	if (err)
+>  		goto out;
+> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+>  				    "ATU miss violation for %pM portvec %x spid %d\n",
+>  				    entry.mac, entry.portvec, spid);
+>  		chip->ports[spid].atu_miss_violation++;
+> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+> +									    chip->ports[spid].port,
+> +									    &entry,
+> +									    fid);
 
-commit b9baf5c8c5c356757f4f9d8180b5e9d234065bc3 upstream.
+Do we want to suppress the ATU miss violation warnings if we're going to
+notify the bridge, or is it better to keep them for some reason?
+My logic is that they're part of normal operation, so suppressing makes
+sense.
 
-Workaround the Spectre BHB issues for Cortex-A15, Cortex-A57,
-Cortex-A72, Cortex-A73 and Cortex-A75. We also include Brahma B15 as
-well to be safe, which is affected by Spectre V2 in the same ways as
-Cortex-A15.
+> +		if (err)
+> +			goto out;
+>  	}
+>  
+>  	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
+> diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+> new file mode 100644
+> index 000000000000..e0ca452b6f86
+> --- /dev/null
+> +++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+> @@ -0,0 +1,67 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * mv88e6xxx_switchdev.c
+> + *
+> + *	Authors:
+> + *	Hans J. Schultz		<hans.schultz@westermo.com>
+> + *
+> + */
+> +
+> +#include <net/switchdev.h>
+> +#include "chip.h"
+> +#include "global1.h"
+> +
+> +struct mv88e6xxx_fid_search_ctx {
+> +	u16 fid_search;
+> +	u16 vid_found;
+> +};
+> +
+> +static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
+> +					      const struct mv88e6xxx_vtu_entry *entry,
+> +					      void *priv)
+> +{
+> +	struct mv88e6xxx_fid_search_ctx *ctx = priv;
+> +
+> +	if (ctx->fid_search == entry->fid) {
+> +		ctx->vid_found = entry->vid;
+> +		return 1;
+> +	}
+> +	return 0;
+> +}
+> +
+> +int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
+> +						  int port,
+> +						  struct mv88e6xxx_atu_entry *entry,
+> +						  u16 fid)
+> +{
+> +	struct switchdev_notifier_fdb_info info = {
+> +		.addr = entry->mac,
+> +		.vid = 0,
+> +		.added_by_user = false,
+> +		.is_local = false,
+> +		.offloaded = true,
+> +		.locked = true,
+> +	};
+> +	struct mv88e6xxx_fid_search_ctx ctx;
+> +	struct netlink_ext_ack *extack;
+> +	struct net_device *brport;
+> +	struct dsa_port *dp;
+> +	int err;
+> +
+> +	ctx.fid_search = fid;
+> +	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
+> +	if (err < 0)
+> +		return err;
+> +	if (err == 1)
+> +		info.vid = ctx.vid_found;
+> +	else
+> +		return -ENODATA;
+> +
+> +	dp = dsa_to_port(chip->ds, port);
+> +	brport = dsa_port_to_bridge_port(dp);
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-[changes due to lack of SYSTEM_FREEING_INITMEM - gregkh]
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/include/asm/assembler.h |   10 ++++
- arch/arm/include/asm/spectre.h   |    4 +
- arch/arm/kernel/entry-armv.S     |   79 ++++++++++++++++++++++++++++++++++++---
- arch/arm/kernel/entry-common.S   |   24 +++++++++++
- arch/arm/kernel/spectre.c        |    4 +
- arch/arm/kernel/traps.c          |   38 ++++++++++++++++++
- arch/arm/kernel/vmlinux.lds.h    |   18 +++++++-
- arch/arm/mm/Kconfig              |   10 ++++
- arch/arm/mm/proc-v7-bugs.c       |   76 +++++++++++++++++++++++++++++++++++++
- 9 files changed, 254 insertions(+), 9 deletions(-)
+Since this is threaded interrupt context, I suppose it could race with
+dsa_port_bridge_leave(). So it is best to check whether "brport" is NULL
+or not.
 
---- a/arch/arm/include/asm/assembler.h
-+++ b/arch/arm/include/asm/assembler.h
-@@ -107,6 +107,16 @@
- 	.endm
- #endif
- 
-+#if __LINUX_ARM_ARCH__ < 7
-+	.macro	dsb, args
-+	mcr	p15, 0, r0, c7, c10, 4
-+	.endm
-+
-+	.macro	isb, args
-+	mcr	p15, 0, r0, c7, r5, 4
-+	.endm
-+#endif
-+
- 	.macro asm_trace_hardirqs_off, save=1
- #if defined(CONFIG_TRACE_IRQFLAGS)
- 	.if \save
---- a/arch/arm/include/asm/spectre.h
-+++ b/arch/arm/include/asm/spectre.h
-@@ -14,6 +14,7 @@ enum {
- 	__SPECTRE_V2_METHOD_ICIALLU,
- 	__SPECTRE_V2_METHOD_SMC,
- 	__SPECTRE_V2_METHOD_HVC,
-+	__SPECTRE_V2_METHOD_LOOP8,
- };
- 
- enum {
-@@ -21,8 +22,11 @@ enum {
- 	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
- 	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
- 	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
-+	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
- };
- 
- void spectre_v2_update_state(unsigned int state, unsigned int methods);
- 
-+int spectre_bhb_update_vectors(unsigned int method);
-+
- #endif
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1005,12 +1005,11 @@ vector_\name:
- 	sub	lr, lr, #\correction
- 	.endif
- 
--	@
--	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
--	@ (parent CPSR)
--	@
-+	@ Save r0, lr_<exception> (parent PC)
- 	stmia	sp, {r0, lr}		@ save r0, lr
--	mrs	lr, spsr
-+
-+	@ Save spsr_<exception> (parent CPSR)
-+2:	mrs	lr, spsr
- 	str	lr, [sp, #8]		@ save spsr
- 
- 	@
-@@ -1031,6 +1030,44 @@ vector_\name:
- 	movs	pc, lr			@ branch to handler in SVC mode
- ENDPROC(vector_\name)
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.subsection 1
-+	.align 5
-+vector_bhb_loop8_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mov	r0, #8
-+1:	b	. + 4
-+	subs	r0, r0, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	2b
-+ENDPROC(vector_bhb_loop8_\name)
-+
-+vector_bhb_bpiall_\name:
-+	.if \correction
-+	sub	lr, lr, #\correction
-+	.endif
-+
-+	@ Save r0, lr_<exception> (parent PC)
-+	stmia	sp, {r0, lr}
-+
-+	@ bhb workaround
-+	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
-+	@ isb not needed due to "movs pc, lr" in the vector stub
-+	@ which gives a "context synchronisation".
-+	b	2b
-+ENDPROC(vector_bhb_bpiall_\name)
-+	.previous
-+#endif
-+
- 	.align	2
- 	@ handler addresses follow this label
- 1:
-@@ -1039,6 +1076,10 @@ ENDPROC(vector_\name)
- 	.section .stubs, "ax", %progbits
- 	@ This must be the first word
- 	.word	vector_swi
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.word	vector_bhb_loop8_swi
-+	.word	vector_bhb_bpiall_swi
-+#endif
- 
- vector_rst:
-  ARM(	swi	SYS_ERROR0	)
-@@ -1153,8 +1194,10 @@ vector_addrexcptn:
-  * FIQ "NMI" handler
-  *-----------------------------------------------------------------------------
-  * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
-- * systems.
-+ * systems. This must be the last vector stub, so lets place it in its own
-+ * subsection.
-  */
-+	.subsection 2
- 	vector_stub	fiq, FIQ_MODE, 4
- 
- 	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-@@ -1187,6 +1230,30 @@ vector_addrexcptn:
- 	W(b)	vector_irq
- 	W(b)	vector_fiq
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+	.section .vectors.bhb.loop8, "ax", %progbits
-+.L__vectors_bhb_loop8_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_loop8_und
-+	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+	W(b)	vector_bhb_loop8_pabt
-+	W(b)	vector_bhb_loop8_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_loop8_irq
-+	W(b)	vector_bhb_loop8_fiq
-+
-+	.section .vectors.bhb.bpiall, "ax", %progbits
-+.L__vectors_bhb_bpiall_start:
-+	W(b)	vector_rst
-+	W(b)	vector_bhb_bpiall_und
-+	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+	W(b)	vector_bhb_bpiall_pabt
-+	W(b)	vector_bhb_bpiall_dabt
-+	W(b)	vector_addrexcptn
-+	W(b)	vector_bhb_bpiall_irq
-+	W(b)	vector_bhb_bpiall_fiq
-+#endif
-+
- 	.data
- 	.align	2
- 
---- a/arch/arm/kernel/entry-common.S
-+++ b/arch/arm/kernel/entry-common.S
-@@ -163,12 +163,36 @@ ENDPROC(ret_from_fork)
-  */
- 
- 	.align	5
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+ENTRY(vector_bhb_loop8_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mov	r8, #8
-+1:	b	2f
-+2:	subs	r8, r8, #1
-+	bne	1b
-+	dsb
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_loop8_swi)
-+
-+	.align	5
-+ENTRY(vector_bhb_bpiall_swi)
-+	sub	sp, sp, #PT_REGS_SIZE
-+	stmia	sp, {r0 - r12}
-+	mcr	p15, 0, r8, c7, c5, 6	@ BPIALL
-+	isb
-+	b	3f
-+ENDPROC(vector_bhb_bpiall_swi)
-+#endif
-+	.align	5
- ENTRY(vector_swi)
- #ifdef CONFIG_CPU_V7M
- 	v7m_exception_entry
- #else
- 	sub	sp, sp, #PT_REGS_SIZE
- 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
-+3:
-  ARM(	add	r8, sp, #S_PC		)
-  ARM(	stmdb	r8, {sp, lr}^		)	@ Calling sp, lr
-  THUMB(	mov	r8, sp			)
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -45,6 +45,10 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		method = "Firmware call";
- 		break;
- 
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		method = "History overwrite";
-+		break;
-+
- 	default:
- 		method = "Multiple mitigations";
- 		break;
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -30,6 +30,7 @@
- #include <linux/atomic.h>
- #include <asm/cacheflush.h>
- #include <asm/exception.h>
-+#include <asm/spectre.h>
- #include <asm/unistd.h>
- #include <asm/traps.h>
- #include <asm/ptrace.h>
-@@ -813,6 +814,43 @@ static void flush_vectors(void *vma, siz
- 	flush_icache_range(start, end);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+int spectre_bhb_update_vectors(unsigned int method)
-+{
-+	extern char __vectors_bhb_bpiall_start[], __vectors_bhb_bpiall_end[];
-+	extern char __vectors_bhb_loop8_start[], __vectors_bhb_loop8_end[];
-+	void *vec_start, *vec_end;
-+
-+	if (system_state > SYSTEM_SCHEDULING) {
-+		pr_err("CPU%u: Spectre BHB workaround too late - system vulnerable\n",
-+		       smp_processor_id());
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		vec_start = __vectors_bhb_loop8_start;
-+		vec_end = __vectors_bhb_loop8_end;
-+		break;
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		vec_start = __vectors_bhb_bpiall_start;
-+		vec_end = __vectors_bhb_bpiall_end;
-+		break;
-+
-+	default:
-+		pr_err("CPU%u: unknown Spectre BHB state %d\n",
-+		       smp_processor_id(), method);
-+		return SPECTRE_VULNERABLE;
-+	}
-+
-+	copy_from_lma(vectors_page, vec_start, vec_end);
-+	flush_vectors(vectors_page, 0, vec_end - vec_start);
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#endif
-+
- void __init early_trap_init(void *vectors_base)
- {
- 	extern char __stubs_start[], __stubs_end[];
---- a/arch/arm/kernel/vmlinux.lds.h
-+++ b/arch/arm/kernel/vmlinux.lds.h
-@@ -106,11 +106,23 @@
-  */
- #define ARM_VECTORS							\
- 	__vectors_lma = .;						\
--	.vectors 0xffff0000 : AT(__vectors_start) {			\
--		*(.vectors)						\
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
-+		.vectors {						\
-+			*(.vectors)					\
-+		}							\
-+		.vectors.bhb.loop8 {					\
-+			*(.vectors.bhb.loop8)				\
-+		}							\
-+		.vectors.bhb.bpiall {					\
-+			*(.vectors.bhb.bpiall)				\
-+		}							\
- 	}								\
- 	ARM_LMA(__vectors, .vectors);					\
--	. = __vectors_lma + SIZEOF(.vectors);				\
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);		\
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);		\
-+	. = __vectors_lma + SIZEOF(.vectors) +				\
-+		SIZEOF(.vectors.bhb.loop8) +				\
-+		SIZEOF(.vectors.bhb.bpiall);				\
- 									\
- 	__stubs_lma = .;						\
- 	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -854,6 +854,16 @@ config HARDEN_BRANCH_PREDICTOR
- 
- 	   If unsure, say Y.
- 
-+config HARDEN_BRANCH_HISTORY
-+	bool "Harden Spectre style attacks against branch history" if EXPERT
-+	depends on CPU_SPECTRE
-+	default y
-+	help
-+	  Speculation attacks against some high-performance processors can
-+	  make use of branch history to influence future speculation. When
-+	  taking an exception, a sequence of branches overwrites the branch
-+	  history, or branch history is invalidated.
-+
- config TLS_REG_EMUL
- 	bool
- 	select NEED_KUSER_HELPERS
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -190,6 +190,81 @@ static void cpu_v7_spectre_v2_init(void)
- 	spectre_v2_update_state(state, method);
- }
- 
-+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+static int spectre_bhb_method;
-+
-+static const char *spectre_bhb_method_name(int method)
-+{
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_LOOP8:
-+		return "loop";
-+
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		return "BPIALL";
-+
-+	default:
-+		return "unknown";
-+	}
-+}
-+
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	if (spectre_bhb_method != method) {
-+		if (spectre_bhb_method) {
-+			pr_err("CPU%u: Spectre BHB: method disagreement, system vulnerable\n",
-+			       smp_processor_id());
-+
-+			return SPECTRE_VULNERABLE;
-+		}
-+
-+		if (spectre_bhb_update_vectors(method) == SPECTRE_VULNERABLE)
-+			return SPECTRE_VULNERABLE;
-+
-+		spectre_bhb_method = method;
-+	}
-+
-+	pr_info("CPU%u: Spectre BHB: using %s workaround\n",
-+		smp_processor_id(), spectre_bhb_method_name(method));
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#else
-+static int spectre_bhb_install_workaround(int method)
-+{
-+	return SPECTRE_VULNERABLE;
-+}
-+#endif
-+
-+static void cpu_v7_spectre_bhb_init(void)
-+{
-+	unsigned int state, method = 0;
-+
-+	switch (read_cpuid_part()) {
-+	case ARM_CPU_PART_CORTEX_A15:
-+	case ARM_CPU_PART_BRAHMA_B15:
-+	case ARM_CPU_PART_CORTEX_A57:
-+	case ARM_CPU_PART_CORTEX_A72:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_LOOP8;
-+		break;
-+
-+	case ARM_CPU_PART_CORTEX_A73:
-+	case ARM_CPU_PART_CORTEX_A75:
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_BPIALL;
-+		break;
-+
-+	default:
-+		state = SPECTRE_UNAFFECTED;
-+		break;
-+	}
-+
-+	if (state == SPECTRE_MITIGATED)
-+		state = spectre_bhb_install_workaround(method);
-+
-+	spectre_v2_update_state(state, method);
-+}
-+
- static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
- 						  u32 mask, const char *msg)
- {
-@@ -230,4 +305,5 @@ void cpu_v7_ca15_ibe(void)
- void cpu_v7_bugs_init(void)
- {
- 	cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
- }
+Speaking of races with dsa_port_bridge_leave().. does SWITCHDEV_FDB_ADD_TO_BRIDGE
+not require rtnl_lock?
 
+> +	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE, brport, &info.info, extack);
 
+It is buggy to pass an uninitialized on-stack extack, just pass NULL if
+there's no one to consume it.
+
+Alternatively, if the bridge produces a valid extack message for errors
+in this case (I haven't checked), it may be more useful to manually
+print the extack._msg to the kernel log - see dsa_switch_sync_vlan_filtering()
+for an example.
+
+I am a bit uncomfortable having every driver implement this ad-hoc and
+potentially have a gazillion subtle bugs like these, could we have a
+common function exported by DSA that deals with SWITCHDEV_FDB_ADD_TO_BRIDGE?
+
+> +	if (err)
+> +		return err;
+> +	entry->portvec = MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS;
+> +	return mv88e6xxx_g1_atu_loadpurge(chip, fid, entry);
+> +}
+> diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+> new file mode 100644
+> index 000000000000..127f3098f745
+> --- /dev/null
+> +++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+> @@ -0,0 +1,20 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later
+> + *
+> + * mv88e6xxx_switchdev.h
+> + *
+> + *	Authors:
+> + *	Hans J. Schultz		<hans.schultz@westermo.com>
+> + *
+> + */
+> +
+> +#ifndef DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
+> +#define DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
+> +
+> +#include <net/switchdev.h>
+> +
+> +int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
+> +						  int port,
+> +						  struct mv88e6xxx_atu_entry *entry,
+> +						  u16 fid);
+> +
+> +#endif /* DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_ */
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+> index 795b3128768f..6b375b0caa2c 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.c
+> +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> @@ -1239,6 +1239,17 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
+>  	return err;
+>  }
+>  
+> +bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port)
+> +{
+> +	u16 reg;
+> +
+> +	if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
+> +		return false;
+> +	if (!(reg & MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK))
+> +		return false;
+> +	return true;
+> +}
+> +
+>  int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
+>  			    bool locked)
+>  {
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+> index e0a705d82019..09ea8f1615bb 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.h
+> +++ b/drivers/net/dsa/mv88e6xxx/port.h
+> @@ -374,6 +374,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
+>  int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
+>  int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
+>  
+> +bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port);
+>  int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
+>  			    bool locked);
+>  
+> -- 
+> 2.30.2
+> 
