@@ -2,373 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D6FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242547AbiCJQVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
+        id S242215AbiCJQV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241402AbiCJQUl (ORCPT
+        with ESMTP id S241984AbiCJQUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 11:20:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5B58192CB3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:19:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646929128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UV+Xt03K95r9yXtehuKM0Hf1AJlIHc0XyIgFU5k/aLA=;
-        b=eiM5hFX1wC7ixka7WHMVQycvPEbTYcoALFkpIyQUkYWd3F8bbvXW/P1lIWMYgVBUV7ouIv
-        CRKSdpFFje1GlgInEoyVtfEXqFKGY0Gg9qBfniFPEiIclhcGsvKUbvwistBzfWLUfXzGnX
-        VCEMb04RSCsgIC04dz+xbUGWrbtMl/w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-348-m5pJVoO-NlafZCFGbNUn9Q-1; Thu, 10 Mar 2022 11:18:43 -0500
-X-MC-Unique: m5pJVoO-NlafZCFGbNUn9Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D45EA824FA8;
-        Thu, 10 Mar 2022 16:18:41 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0545A2619D;
-        Thu, 10 Mar 2022 16:18:31 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH v3 14/20] netfs: Add a function to consolidate beginning a
- read
-From:   David Howells <dhowells@redhat.com>
-To:     linux-cachefs@redhat.com
-Cc:     dhowells@redhat.com, Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Jeff Layton <jlayton@redhat.com>,
-        David Wysochanski <dwysocha@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 10 Mar 2022 16:18:31 +0000
-Message-ID: <164692911113.2099075.1060868473229451371.stgit@warthog.procyon.org.uk>
-In-Reply-To: <164692883658.2099075.5745824552116419504.stgit@warthog.procyon.org.uk>
-References: <164692883658.2099075.5745824552116419504.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C853192E19;
+        Thu, 10 Mar 2022 08:19:04 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id r13so13240251ejd.5;
+        Thu, 10 Mar 2022 08:19:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZnfzIl/XKnXSQq2KD9VQO6H3UQ7J9fUV7zmQlLiotKs=;
+        b=aTALYhu38lknVv7BfYemP6WiHW/GFkCSGNdbnorghVU13Psbuj2T7cfar5d9OyBVST
+         PY59zXV+CAGveUnRCnTqNt6Z3KTaH1ToDHxtzFZhPSrlZKSLXMjCyadeQIMNWkOaP/d9
+         nSXAeaOm3w1iseNHF6cyT6+D6j0XjbtbpfGwIoXKYzvS2skP40grTKbowPAKuZBIT8TU
+         CMiwOwYYEMOnHV7Un7g7eN8IOCt1pgM1GbnoQ6ekqy5H+4ie4mhPMWzlHXxawqfgnCEN
+         4L/nbeMHZUV7uYGP5qfUULJfA0fiHSI/fNhEnRqWK2cYau5O5qUQVvDD2eyHUhcpgCCx
+         bBXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZnfzIl/XKnXSQq2KD9VQO6H3UQ7J9fUV7zmQlLiotKs=;
+        b=LDOHWjCFVwV9+jQV8UbjD4sLJJZznl3yxxGW21bbVJrfLplIdt2o95g4UiW5aZBsPG
+         GauABlDx7EIU/XW14Tp2zaRHhfKcJqgj6VEom2jfb8xRbdWlxCRz7J/3NkP/93eV4H7j
+         Ni4wr5mnbtImmfkL46txLLA7HOiW9PWeWMMn1JrPXkgf8+of+T6cVOLVfwpVYCxIZ3dU
+         9VF+qv6FKM5yLNbpbBXBcEZgVbwlPcaF9krofnGdAOb4SxLQpoO+rkYCYymGbqW5+Wo6
+         41THPCvcA7QC32N1QNl1Qtm2wJU1NUnc32GBhOS/NF6EBs8CJdBuXvz6yYinEfRcZ/JM
+         ezmg==
+X-Gm-Message-State: AOAM533k53poIZYh+2R1T55/3QoGCj542oJGbtumqJ5ALc2zKWdSwEgv
+        bZt6DII0NFWjcxwJ2aJdy+E=
+X-Google-Smtp-Source: ABdhPJzVD+zvPbiraqopDuXXStXu/l+JGmVkl9+j84TaeHBWiBByJf46bIvVitxsyzVaH1Tj5j7XJg==
+X-Received: by 2002:a17:906:c0c9:b0:6db:207:c41f with SMTP id bn9-20020a170906c0c900b006db0207c41fmr5175917ejb.292.1646929139399;
+        Thu, 10 Mar 2022 08:18:59 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id l24-20020a170906231800b006d69a771a34sm1935088eja.93.2022.03.10.08.18.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 08:18:58 -0800 (PST)
+Date:   Thu, 10 Mar 2022 18:18:57 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 07/10] net: dsa: Pass MST state changes to
+ driver
+Message-ID: <20220310161857.33owtynhm3pdyxiy@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-8-tobias@waldekranz.com>
+ <20220303222055.7a5pr4la3wmuuekc@skbuf>
+ <87mthymblh.fsf@waldekranz.com>
+ <20220310103509.g35syl776kyh5j2n@skbuf>
+ <87h785n67k.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h785n67k.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a function to do the steps needed to begin a read request, allowing
-this code to be removed from several other functions and consolidated.
+On Thu, Mar 10, 2022 at 05:05:35PM +0100, Tobias Waldekranz wrote:
+> On Thu, Mar 10, 2022 at 12:35, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > On Thu, Mar 10, 2022 at 09:54:34AM +0100, Tobias Waldekranz wrote:
+> >> >> +	if (!dsa_port_can_configure_learning(dp) || dp->learning) {
+> >> >> +		switch (state->state) {
+> >> >> +		case BR_STATE_DISABLED:
+> >> >> +		case BR_STATE_BLOCKING:
+> >> >> +		case BR_STATE_LISTENING:
+> >> >> +			/* Ideally we would only fast age entries
+> >> >> +			 * belonging to VLANs controlled by this
+> >> >> +			 * MST.
+> >> >> +			 */
+> >> >> +			dsa_port_fast_age(dp);
+> >> >
+> >> > Does mv88e6xxx support this? If it does, you might just as well
+> >> > introduce another variant of ds->ops->port_fast_age() for an msti.
+> >> 
+> >> You can limit ATU operations to a particular FID. So the way I see it we
+> >> could either have:
+> >> 
+> >> int (*port_vlan_fast_age)(struct dsa_switch *ds, int port, u16 vid)
+> >> 
+> >> + Maybe more generic. You could imagine there being a way to trigger
+> >>   this operation from userspace for example.
+> >> - We would have to keep the VLAN<->MSTI mapping in the DSA layer in
+> >>   order to be able to do the fan-out in dsa_port_set_mst_state.
+> >> 
+> >> or:
+> >> 
+> >> int (*port_msti_fast_age)(struct dsa_switch *ds, int port, u16 msti)
+> >> 
+> >> + Let's the mapping be an internal affair in the driver.
+> >> - Perhaps, less generically useful.
+> >> 
+> >> Which one do you prefer? Or is there a hidden third option? :)
+> >
+> > Yes, I was thinking of "port_msti_fast_age". I don't see a cheap way of
+> > keeping VLAN to MSTI associations in the DSA layer. Only if we could
+> > retrieve this mapping from the bridge layer - maybe with something
+> > analogous to br_vlan_get_info(), but br_mst_get_info(), and this gets
+> > passed a VLAN_N_VID sized bitmap, which the bridge populates with ones
+> > and zeroes.
+> 
+> That can easily be done. Given that, should we go for port_vlan_fast_age
+> instead? port_msti_fast_age feels like an awkward interface, since I
+> don't think there is any hardware out there that can actually perform
+> that operation without internally fanning it out over all affected VIDs
+> (or FIDs in the case of mv88e6xxx).
 
-Changes
-=======
-ver #2)
- - Move before the unstaticking patch so that some functions can be left
-   static.
- - Set uninitialised return code in netfs_begin_read()[1][2].
- - Fixed a refleak caused by non-removal of a get from netfs_write_begin()
-   when the request submission code got moved to netfs_begin_read().
- - Use INIT_WORK() to (re-)init the request work_struct[3].
+Yup, yup. My previous email was all over the place with regard to the
+available options, because I wrote it in multiple phases so it wasn't
+chronologically ordered top-to-bottom. But port_vlan_fast_age() makes
+the most sense if you can implement br_mst_get_info(). Same goes for
+dsa_port_notify_bridge_fdb_flush().
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-cachefs@redhat.com
-Link: https://lore.kernel.org/r/20220303163826.1120936-1-nathan@kernel.org/ [1]
-Link: https://lore.kernel.org/r/20220303235647.1297171-1-colin.i.king@gmail.com/ [2]
-Link: https://lore.kernel.org/r/9d69be49081bccff44260e4c6e0049c63d6d04a1.camel@redhat.com/ [3]
-Link: https://lore.kernel.org/r/164623004355.3564931.7275693529042495641.stgit@warthog.procyon.org.uk/ # v1
-Link: https://lore.kernel.org/r/164678214287.1200972.16734134007649832160.stgit@warthog.procyon.org.uk/ # v2
----
+> > The reason why I asked for this is because I'm not sure of the
+> > implications of flushing the entire FDB of the port for a single MSTP
+> > state change. It would trigger temporary useless flooding in other MSTIs
+> > at the very least. There isn't any backwards compatibility concern to
+> > speak of, so we can at least try from the beginning to limit the
+> > flushing to the required VLANs.
+> 
+> Aside from the performance implications of flows being temporarily
+> flooded I don't think there are any.
+> 
+> I suppose if you've disabled flooding of unknown unicast on that port,
+> you would loose the flow until you see some return traffic (or when one
+> side gives up and ARPs). While somewhat esoteric, it would be nice to
+> handle this case if the hardware supports it.
 
- fs/netfs/internal.h          |    2 -
- fs/netfs/objects.c           |    1 
- fs/netfs/read_helper.c       |  144 +++++++++++++++++++++---------------------
- include/trace/events/netfs.h |    5 +
- 4 files changed, 76 insertions(+), 76 deletions(-)
+If by "handle this case" you mean "flush only the affected VLANs", then
+yes, I fully agree.
 
-diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
-index 5f9719409f21..937c2465943f 100644
---- a/fs/netfs/internal.h
-+++ b/fs/netfs/internal.h
-@@ -39,7 +39,7 @@ static inline void netfs_see_request(struct netfs_io_request *rreq,
-  */
- extern unsigned int netfs_debug;
- 
--void netfs_rreq_work(struct work_struct *work);
-+int netfs_begin_read(struct netfs_io_request *rreq, bool sync);
- 
- /*
-  * stats.c
-diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
-index 657b19e60118..e86107b30ba4 100644
---- a/fs/netfs/objects.c
-+++ b/fs/netfs/objects.c
-@@ -35,7 +35,6 @@ struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
- 	rreq->i_size	= i_size_read(inode);
- 	rreq->debug_id	= atomic_inc_return(&debug_ids);
- 	INIT_LIST_HEAD(&rreq->subrequests);
--	INIT_WORK(&rreq->work, netfs_rreq_work);
- 	refcount_set(&rreq->ref, 1);
- 	__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
- 	if (rreq->netfs_ops->init_request) {
-diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
-index 73be06c409bb..6864716cfcac 100644
---- a/fs/netfs/read_helper.c
-+++ b/fs/netfs/read_helper.c
-@@ -443,7 +443,7 @@ static void netfs_rreq_assess(struct netfs_io_request *rreq, bool was_async)
- 	netfs_rreq_completed(rreq, was_async);
- }
- 
--void netfs_rreq_work(struct work_struct *work)
-+static void netfs_rreq_work(struct work_struct *work)
- {
- 	struct netfs_io_request *rreq =
- 		container_of(work, struct netfs_io_request, work);
-@@ -688,6 +688,69 @@ static bool netfs_rreq_submit_slice(struct netfs_io_request *rreq,
- 	return false;
- }
- 
-+/*
-+ * Begin the process of reading in a chunk of data, where that data may be
-+ * stitched together from multiple sources, including multiple servers and the
-+ * local cache.
-+ */
-+int netfs_begin_read(struct netfs_io_request *rreq, bool sync)
-+{
-+	unsigned int debug_index = 0;
-+	int ret;
-+
-+	_enter("R=%x %llx-%llx",
-+	       rreq->debug_id, rreq->start, rreq->start + rreq->len - 1);
-+
-+	if (rreq->len == 0) {
-+		pr_err("Zero-sized read [R=%x]\n", rreq->debug_id);
-+		netfs_put_request(rreq, false, netfs_rreq_trace_put_zero_len);
-+		return -EIO;
-+	}
-+
-+	INIT_WORK(&rreq->work, netfs_rreq_work);
-+
-+	if (sync)
-+		netfs_get_request(rreq, netfs_rreq_trace_get_hold);
-+
-+	/* Chop the read into slices according to what the cache and the netfs
-+	 * want and submit each one.
-+	 */
-+	atomic_set(&rreq->nr_outstanding, 1);
-+	do {
-+		if (!netfs_rreq_submit_slice(rreq, &debug_index))
-+			break;
-+
-+	} while (rreq->submitted < rreq->len);
-+
-+	if (sync) {
-+		/* Keep nr_outstanding incremented so that the ref always belongs to
-+		 * us, and the service code isn't punted off to a random thread pool to
-+		 * process.
-+		 */
-+		for (;;) {
-+			wait_var_event(&rreq->nr_outstanding,
-+				       atomic_read(&rreq->nr_outstanding) == 1);
-+			netfs_rreq_assess(rreq, false);
-+			if (!test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags))
-+				break;
-+			cond_resched();
-+		}
-+
-+		ret = rreq->error;
-+		if (ret == 0 && rreq->submitted < rreq->len) {
-+			trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_read);
-+			ret = -EIO;
-+		}
-+		netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
-+	} else {
-+		/* If we decrement nr_outstanding to 0, the ref belongs to us. */
-+		if (atomic_dec_and_test(&rreq->nr_outstanding))
-+			netfs_rreq_assess(rreq, false);
-+		ret = 0;
-+	}
-+	return ret;
-+}
-+
- static void netfs_cache_expand_readahead(struct netfs_io_request *rreq,
- 					 loff_t *_start, size_t *_len, loff_t i_size)
- {
-@@ -750,7 +813,6 @@ void netfs_readahead(struct readahead_control *ractl)
- {
- 	struct netfs_io_request *rreq;
- 	struct netfs_i_context *ctx = netfs_i_context(ractl->mapping->host);
--	unsigned int debug_index = 0;
- 	int ret;
- 
- 	_enter("%lx,%x", readahead_index(ractl), readahead_count(ractl));
-@@ -777,22 +839,13 @@ void netfs_readahead(struct readahead_control *ractl)
- 
- 	netfs_rreq_expand(rreq, ractl);
- 
--	atomic_set(&rreq->nr_outstanding, 1);
--	do {
--		if (!netfs_rreq_submit_slice(rreq, &debug_index))
--			break;
--
--	} while (rreq->submitted < rreq->len);
--
- 	/* Drop the refs on the folios here rather than in the cache or
- 	 * filesystem.  The locks will be dropped in netfs_rreq_unlock().
- 	 */
- 	while (readahead_folio(ractl))
- 		;
- 
--	/* If we decrement nr_outstanding to 0, the ref belongs to us. */
--	if (atomic_dec_and_test(&rreq->nr_outstanding))
--		netfs_rreq_assess(rreq, false);
-+	netfs_begin_read(rreq, false);
- 	return;
- 
- cleanup_free:
-@@ -821,7 +874,6 @@ int netfs_readpage(struct file *file, struct page *subpage)
- 	struct address_space *mapping = folio->mapping;
- 	struct netfs_io_request *rreq;
- 	struct netfs_i_context *ctx = netfs_i_context(mapping->host);
--	unsigned int debug_index = 0;
- 	int ret;
- 
- 	_enter("%lx", folio_index(folio));
-@@ -836,42 +888,16 @@ int netfs_readpage(struct file *file, struct page *subpage)
- 
- 	if (ctx->ops->begin_cache_operation) {
- 		ret = ctx->ops->begin_cache_operation(rreq);
--		if (ret == -ENOMEM || ret == -EINTR || ret == -ERESTARTSYS) {
--			folio_unlock(folio);
--			goto out;
--		}
-+		if (ret == -ENOMEM || ret == -EINTR || ret == -ERESTARTSYS)
-+			goto discard;
- 	}
- 
- 	netfs_stat(&netfs_n_rh_readpage);
- 	trace_netfs_read(rreq, rreq->start, rreq->len, netfs_read_trace_readpage);
-+	return netfs_begin_read(rreq, true);
- 
--	netfs_get_request(rreq, netfs_rreq_trace_get_hold);
--
--	atomic_set(&rreq->nr_outstanding, 1);
--	do {
--		if (!netfs_rreq_submit_slice(rreq, &debug_index))
--			break;
--
--	} while (rreq->submitted < rreq->len);
--
--	/* Keep nr_outstanding incremented so that the ref always belongs to us, and
--	 * the service code isn't punted off to a random thread pool to
--	 * process.
--	 */
--	do {
--		wait_var_event(&rreq->nr_outstanding,
--			       atomic_read(&rreq->nr_outstanding) == 1);
--		netfs_rreq_assess(rreq, false);
--	} while (test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags));
--
--	ret = rreq->error;
--	if (ret == 0 && rreq->submitted < rreq->len) {
--		trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_readpage);
--		ret = -EIO;
--	}
--out:
--	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
--	return ret;
-+discard:
-+	netfs_put_request(rreq, false, netfs_rreq_trace_put_discard);
- alloc_error:
- 	folio_unlock(folio);
- 	return ret;
-@@ -966,7 +992,7 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
- 	struct netfs_io_request *rreq;
- 	struct netfs_i_context *ctx = netfs_i_context(file_inode(file ));
- 	struct folio *folio;
--	unsigned int debug_index = 0, fgp_flags;
-+	unsigned int fgp_flags;
- 	pgoff_t index = pos >> PAGE_SHIFT;
- 	int ret;
- 
-@@ -1029,39 +1055,13 @@ int netfs_write_begin(struct file *file, struct address_space *mapping,
- 	 */
- 	ractl._nr_pages = folio_nr_pages(folio);
- 	netfs_rreq_expand(rreq, &ractl);
--	netfs_get_request(rreq, netfs_rreq_trace_get_hold);
- 
- 	/* We hold the folio locks, so we can drop the references */
- 	folio_get(folio);
- 	while (readahead_folio(&ractl))
- 		;
- 
--	atomic_set(&rreq->nr_outstanding, 1);
--	do {
--		if (!netfs_rreq_submit_slice(rreq, &debug_index))
--			break;
--
--	} while (rreq->submitted < rreq->len);
--
--	/* Keep nr_outstanding incremented so that the ref always belongs to
--	 * us, and the service code isn't punted off to a random thread pool to
--	 * process.
--	 */
--	for (;;) {
--		wait_var_event(&rreq->nr_outstanding,
--			       atomic_read(&rreq->nr_outstanding) == 1);
--		netfs_rreq_assess(rreq, false);
--		if (!test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags))
--			break;
--		cond_resched();
--	}
--
--	ret = rreq->error;
--	if (ret == 0 && rreq->submitted < rreq->len) {
--		trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_write_begin);
--		ret = -EIO;
--	}
--	netfs_put_request(rreq, false, netfs_rreq_trace_put_hold);
-+	ret = netfs_begin_read(rreq, true);
- 	if (ret < 0)
- 		goto error;
- 
-diff --git a/include/trace/events/netfs.h b/include/trace/events/netfs.h
-index f00e3e1821c8..beec534cbaab 100644
---- a/include/trace/events/netfs.h
-+++ b/include/trace/events/netfs.h
-@@ -56,17 +56,18 @@
- 	EM(netfs_fail_check_write_begin,	"check-write-begin")	\
- 	EM(netfs_fail_copy_to_cache,		"copy-to-cache")	\
- 	EM(netfs_fail_read,			"read")			\
--	EM(netfs_fail_short_readpage,		"short-readpage")	\
--	EM(netfs_fail_short_write_begin,	"short-write-begin")	\
-+	EM(netfs_fail_short_read,		"short-read")		\
- 	E_(netfs_fail_prepare_write,		"prep-write")
- 
- #define netfs_rreq_ref_traces					\
- 	EM(netfs_rreq_trace_get_hold,		"GET HOLD   ")	\
- 	EM(netfs_rreq_trace_get_subreq,		"GET SUBREQ ")	\
- 	EM(netfs_rreq_trace_put_complete,	"PUT COMPLT ")	\
-+	EM(netfs_rreq_trace_put_discard,	"PUT DISCARD")	\
- 	EM(netfs_rreq_trace_put_failed,		"PUT FAILED ")	\
- 	EM(netfs_rreq_trace_put_hold,		"PUT HOLD   ")	\
- 	EM(netfs_rreq_trace_put_subreq,		"PUT SUBREQ ")	\
-+	EM(netfs_rreq_trace_put_zero_len,	"PUT ZEROLEN")	\
- 	E_(netfs_rreq_trace_new,		"NEW        ")
- 
- #define netfs_sreq_ref_traces					\
+> > What I didn't think about, and will be a problem, is
+> > dsa_port_notify_bridge_fdb_flush() - we don't know the vid to flush.
+> > The easy way out here would be to export dsa_port_notify_bridge_fdb_flush(),
+> > add a "vid" argument to it, and let drivers call it. Thoughts?
+> 
+> To me, this seems to be another argument in favor of
+> port_vlan_fast_age. That way you would know the VIDs being flushed at
+> the DSA layer, and driver writers needn't concern themselves with having
+> to remember to generate the proper notifications back to the bridge.
 
+See above.
 
+> > Alternatively, if you think that cross-flushing FDBs of multiple MSTIs
+> > isn't a real problem, I suppose we could keep the "port_fast_age" method.
+> 
+> What about falling back to it if the driver doesn't support per-VLAN
+> flushing? Flushing all entries will work in most cases, at the cost of
+> some temporary flooding. Seems more useful than refusing the offload
+> completely.
+
+So here's what I don't understand. Do you expect a driver other than
+mv88e6xxx to do something remotely reasonable under a bridge with MSTP
+enabled? The idea being to handle gracefully the case where a port is
+BLOCKING in an MSTI but FORWARDING in another. Because if not, let's
+just outright not offload that kind of bridge, and only concern
+ourselves with what MST-capable drivers can do.
+I'm shadowing you with a prototype (and untested so far) MSTP
+implementation for the ocelot/felix drivers, and those switches can
+flush the MAC table per VLAN too. So I don't see an immediate need to
+have a fallback implementation if you'll also provide it for mv88e6xxx.
+Let's treat that only if the need arises.
+
+> >> > And since it is new code, you could require that drivers _do_ support
+> >> > configuring learning before they could support MSTP. After all, we don't
+> >> > want to keep legacy mechanisms in place forever.
+> >> 
+> >> By "configuring learning", do you mean this new fast-age-per-vid/msti,
+> >> or being able to enable/disable learning per port? If it's the latter,
+> >> I'm not sure I understand how those two are related.
+> >
+> > The code from dsa_port_set_state() which you've copied:
+> >
+> > 	if (!dsa_port_can_configure_learning(dp) ||
+> > 	    (do_fast_age && dp->learning)) {
+> >
+> > has this explanation:
+> >
+> > 1. DSA keeps standalone ports in the FORWARDING state.
+> > 2. DSA also disables address learning on standalone ports, where this is
+> >    possible (dsa_port_can_configure_learning(dp) == true).
+> > 3. When a port joins a bridge, it leaves its FORWARDING state from
+> >    standalone mode and inherits the bridge port's BLOCKING state
+> > 4. dsa_port_set_state() treats a port transition from FORWARDING to
+> >    BLOCKING as a transition requiring an FDB flush
+> > 5. due to (2), the FDB flush at stage (4) is in fact not needed, because
+> >    the FDB of that port should already be empty. Flushing the FDB may be
+> >    a costly operation for some drivers, so it is avoided if possible.
+> >
+> > So this is why the "dsa_port_can_configure_learning()" check is there -
+> > for compatibility with drivers that can't configure learning => they
+> > keep learning enabled also in standalone mode => they need an FDB flush
+> > when a standalone port joins a bridge.
+> >
+> > What I'm saying is: for drivers that offload MSTP, let's force them to
+> > get the basics right first (have configurable learning), rather than go
+> > forward forever with a backwards compatibility mode.
+> 
+> Makes sense, I'll just move it up to the initial capability check.
