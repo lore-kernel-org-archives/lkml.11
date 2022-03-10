@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 764CDC4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344462AbiCJOsL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        id S241736AbiCJOwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:52:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243929AbiCJOc3 (ORCPT
+        with ESMTP id S243592AbiCJObw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:32:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EE4B0D03;
-        Thu, 10 Mar 2022 06:30:52 -0800 (PST)
+        Thu, 10 Mar 2022 09:31:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFA99F3B5;
+        Thu, 10 Mar 2022 06:30:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D088A61D23;
-        Thu, 10 Mar 2022 14:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D898FC340EB;
-        Thu, 10 Mar 2022 14:30:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D03761DF8;
+        Thu, 10 Mar 2022 14:30:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A954C36AE2;
+        Thu, 10 Mar 2022 14:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922651;
-        bh=2izHBbKePMU2Fb3LPgpGusKesTpyD1FWIKNwtBsOrao=;
+        s=korg; t=1646922648;
+        bh=ZwwrUYRY5dio8pDaWYDTlGOjhbR2smNpyr8q2xrywcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=goI8TcgMwM/4guN81o8IAiy+J936n/RiW5cA56XYFdZ1ZS4GzHiylsf+j4ZvnQ8fh
-         0YMKjN9/Yu6wWXGSyx0lHgVCeqd6m9OwH87Gn90zHAFa6eG8AhQSwZa2WQZHCY9isQ
-         RgsGOx5sSr4fSDC1zPHxjKJ3jJHGsIL3yxogobJw=
+        b=vIKUG3VxLoN8QTNxGWX/ufF9dyEwrmZ0oRUxGhgtT7oOUxFdYTw6iDlR0GoBpa7BS
+         YX3Saj5lHKWjuFXt76TclOjzP+cw/2doB6ALWtE88ne3vn3mP9pwcf+GlEe5MBAGcU
+         H+H1Ni3wPZ01BVIE7lw+ruCDPIt0z/Iwu6qFMU/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 09/58] x86/speculation: Warn about Spectre v2 LFENCE mitigation
-Date:   Thu, 10 Mar 2022 15:18:58 +0100
-Message-Id: <20220310140813.253102183@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 44/58] ARM: Do not use NOCROSSREFS directive with ld.lld
+Date:   Thu, 10 Mar 2022 15:19:33 +0100
+Message-Id: <20220310140814.238366909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -49,62 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
+commit 36168e387fa7d0f1fe0cd5cf76c8cea7aee714fa upstream.
 
-With:
+ld.lld does not support the NOCROSSREFS directive at the moment, which
+breaks the build after commit b9baf5c8c5c3 ("ARM: Spectre-BHB
+workaround"):
 
-  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
+  ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got NOCROSSREFS
 
-it became possible to enable the LFENCE "retpoline" on Intel. However,
-Intel doesn't recommend it, as it has some weaknesses compared to
-retpoline.
+Support for this directive will eventually be implemented, at which
+point a version check can be added. To avoid breaking the build in the
+meantime, just define NOCROSSREFS to nothing when using ld.lld, with a
+link to the issue for tracking.
 
-Now AMD doesn't recommend it either.
-
-It can still be left available as a cmdline option. It's faster than
-retpoline but is weaker in certain scenarios -- particularly SMT, but
-even non-SMT may be vulnerable in some cases.
-
-So just unconditionally warn if the user requests it on the cmdline.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1609
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/include/asm/vmlinux.lds.h |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -651,6 +651,7 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
+--- a/arch/arm/include/asm/vmlinux.lds.h
++++ b/arch/arm/include/asm/vmlinux.lds.h
+@@ -26,6 +26,14 @@
+ #define ARM_MMU_DISCARD(x)	x
  #endif
  
-+#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
- 
- #ifdef CONFIG_BPF_SYSCALL
-@@ -972,6 +973,7 @@ static void __init spectre_v2_select_mit
- 		break;
- 
- 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
-+		pr_err(SPECTRE_V2_LFENCE_MSG);
- 		mode = SPECTRE_V2_LFENCE;
- 		break;
- 
-@@ -1787,6 +1789,9 @@ static char *ibpb_state(void)
- 
- static ssize_t spectre_v2_show_state(char *buf)
- {
-+	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-+		return sprintf(buf, "Vulnerable: LFENCE\n");
++/*
++ * ld.lld does not support NOCROSSREFS:
++ * https://github.com/ClangBuiltLinux/linux/issues/1609
++ */
++#ifdef CONFIG_LD_IS_LLD
++#define NOCROSSREFS
++#endif
 +
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
- 
+ /* Set start/end symbol names to the LMA for the section */
+ #define ARM_LMA(sym, section)						\
+ 	sym##_start = LOADADDR(section);				\
 
 
