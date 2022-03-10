@@ -2,190 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4433C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64022C38162
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345466AbiCJOly (ORCPT
+        id S1344800AbiCJOlM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
+        Thu, 10 Mar 2022 09:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245565AbiCJOaj (ORCPT
+        with ESMTP id S244817AbiCJO3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE4E182BE7;
-        Thu, 10 Mar 2022 06:26:27 -0800 (PST)
+        Thu, 10 Mar 2022 09:29:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414D913FAF8;
+        Thu, 10 Mar 2022 06:24:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BE4FB825A7;
-        Thu, 10 Mar 2022 14:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56EEC340F3;
-        Thu, 10 Mar 2022 14:26:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7917B82676;
+        Thu, 10 Mar 2022 14:24:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BA6C340E8;
+        Thu, 10 Mar 2022 14:24:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922386;
-        bh=l8kb+JyFkCFG12lhe+TB8NG8sV6PXySdPd9O6zdBpGk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWRUs7ELghAbsWeoFRR+sROWTW8IQAB5nRt4QD1is6bBNTbyU6GlIzdxj9CCDZLPm
-         Ts5S+zuU9kAJRjp9yEkqg5DCFg+48FBdb+XgLx9jfoSagnyLQxKIcD4hpX6oqI9DKE
-         EB5E5eNSnmexYD1W/ycsdPyjOr9mGD8x3V2cnahg=
+        s=korg; t=1646922258;
+        bh=IGMsbAtKCivwIrG+92+GkcrGbLGm7lLEddCjNgl6LsE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aIOzmT0ZLolIkpmzRz3kmDFJtErUiVN56v6oreVeORqJt8j149IzxDBxEna/nbCVk
+         P2IlDk648V8MKD3mJ29+O6PpAreae8zttssADggCTlcYCalSJ/p/7bYV9RxrUDJCYP
+         sDLNlWZ6hekNOmnoPiSvi4JEWZrIUsNuSx0IXPjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.10 20/58] arm64: add ID_AA64ISAR2_EL1 sys register
-Date:   Thu, 10 Mar 2022 15:18:40 +0100
-Message-Id: <20220310140813.450792361@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.10 00/58] 5.10.105-rc2 review
+Date:   Thu, 10 Mar 2022 15:18:20 +0100
+Message-Id: <20220310140812.869208747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-References: <20220310140812.869208747@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.105-rc2.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.10.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.10.105-rc2
+X-KernelTest-Deadline: 2022-03-12T14:08+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+This is the start of the stable review cycle for the 5.10.105 release.
+There are 58 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
+Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
+Anything received after that time might be too late.
 
-This is a new ID register, introduced in 8.7.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.105-rc2.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+and the diffstat can be found below.
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Cc: Alexandru Elisei <alexandru.elisei@arm.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Reiji Watanabe <reijiw@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cpu.h    |    1 +
- arch/arm64/include/asm/sysreg.h |   15 +++++++++++++++
- arch/arm64/kernel/cpufeature.c  |    9 +++++++++
- arch/arm64/kernel/cpuinfo.c     |    1 +
- arch/arm64/kvm/sys_regs.c       |    2 +-
- 5 files changed, 27 insertions(+), 1 deletion(-)
+thanks,
 
---- a/arch/arm64/include/asm/cpu.h
-+++ b/arch/arm64/include/asm/cpu.h
-@@ -25,6 +25,7 @@ struct cpuinfo_arm64 {
- 	u64		reg_id_aa64dfr1;
- 	u64		reg_id_aa64isar0;
- 	u64		reg_id_aa64isar1;
-+	u64		reg_id_aa64isar2;
- 	u64		reg_id_aa64mmfr0;
- 	u64		reg_id_aa64mmfr1;
- 	u64		reg_id_aa64mmfr2;
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -175,6 +175,7 @@
- 
- #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
- #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
-+#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
- 
- #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
- #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
-@@ -687,6 +688,20 @@
- #define ID_AA64ISAR1_GPI_NI			0x0
- #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
- 
-+/* id_aa64isar2 */
-+#define ID_AA64ISAR2_RPRES_SHIFT	4
-+#define ID_AA64ISAR2_WFXT_SHIFT		0
-+
-+#define ID_AA64ISAR2_RPRES_8BIT		0x0
-+#define ID_AA64ISAR2_RPRES_12BIT	0x1
-+/*
-+ * Value 0x1 has been removed from the architecture, and is
-+ * reserved, but has not yet been removed from the ARM ARM
-+ * as of ARM DDI 0487G.b.
-+ */
-+#define ID_AA64ISAR2_WFXT_NI		0x0
-+#define ID_AA64ISAR2_WFXT_SUPPORTED	0x2
-+
- /* id_aa64pfr0 */
- #define ID_AA64PFR0_CSV3_SHIFT		60
- #define ID_AA64PFR0_CSV2_SHIFT		56
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -205,6 +205,10 @@ static const struct arm64_ftr_bits ftr_i
- 	ARM64_FTR_END,
- };
- 
-+static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
-+	ARM64_FTR_END,
-+};
-+
- static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
-@@ -596,6 +600,7 @@ static const struct __ftr_reg_entry {
- 	/* Op1 = 0, CRn = 0, CRm = 6 */
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
- 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
-+	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
- 
- 	/* Op1 = 0, CRn = 0, CRm = 7 */
- 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
-@@ -830,6 +835,7 @@ void __init init_cpu_features(struct cpu
- 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
- 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
-+	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
- 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
-@@ -1058,6 +1064,8 @@ void update_cpu_features(int cpu,
- 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
- 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
- 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
-+	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
-+				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
- 
- 	/*
- 	 * Differing PARange support is fine as long as all peripherals and
-@@ -1157,6 +1165,7 @@ static u64 __read_sysreg_by_encoding(u32
- 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
- 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
-+	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
- 
- 	read_sysreg_case(SYS_CNTFRQ_EL0);
- 	read_sysreg_case(SYS_CTR_EL0);
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -365,6 +365,7 @@ static void __cpuinfo_store_cpu(struct c
- 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
- 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
- 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
-+	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
- 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
- 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
- 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
---- a/arch/arm64/kvm/sys_regs.c
-+++ b/arch/arm64/kvm/sys_regs.c
-@@ -1517,7 +1517,7 @@ static const struct sys_reg_desc sys_reg
- 	/* CRm=6 */
- 	ID_SANITISED(ID_AA64ISAR0_EL1),
- 	ID_SANITISED(ID_AA64ISAR1_EL1),
--	ID_UNALLOCATED(6,2),
-+	ID_SANITISED(ID_AA64ISAR2_EL1),
- 	ID_UNALLOCATED(6,3),
- 	ID_UNALLOCATED(6,4),
- 	ID_UNALLOCATED(6,5),
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.10.105-rc2
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Revert "ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE"
+
+Juergen Gross <jgross@suse.com>
+    xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
+
+Juergen Gross <jgross@suse.com>
+    xen/gnttab: fix gnttab_end_foreign_access() without page specified
+
+Juergen Gross <jgross@suse.com>
+    xen/pvcalls: use alloc/free_pages_exact()
+
+Juergen Gross <jgross@suse.com>
+    xen/9p: use alloc/free_pages_exact()
+
+Juergen Gross <jgross@suse.com>
+    xen: remove gnttab_query_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/gntalloc: don't use gnttab_query_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/scsifront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/netfront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/blkfront: don't use gnttab_query_foreign_access() for mapped status
+
+Juergen Gross <jgross@suse.com>
+    xen/grant-table: add gnttab_try_end_foreign_access()
+
+Juergen Gross <jgross@suse.com>
+    xen/xenbus: don't let xenbus_grant_ring() remove grants in error case
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: fix build warning in proc-v7-bugs.c
+
+Nathan Chancellor <nathan@kernel.org>
+    ARM: Do not use NOCROSSREFS directive with ld.lld
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: fix co-processor register typo
+
+Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+    ARM: fix build error when BPF_SYSCALL is disabled
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+James Morse <james.morse@arm.com>
+    arm64: Use the clearbhb instruction in mitigations
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+
+James Morse <james.morse@arm.com>
+    arm64: Mitigate spectre style branch history side channels
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+
+James Morse <james.morse@arm.com>
+    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+
+James Morse <james.morse@arm.com>
+    arm64: Add percpu vectors for EL1
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add macro for reading symbol addresses from the trampoline
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add vectors that have the bhb mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow the trampoline text to occupy multiple pages
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the kpti trampoline's kpti sequence optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move trampoline macros out of ifdef'd section
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Don't assume tramp_vectors is the start of the vectors
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move the trampoline data page before the text page
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Free up another register on kpti's tramp_exit path
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the trampoline cleanup optional
+
+James Morse <james.morse@arm.com>
+    arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+
+James Morse <james.morse@arm.com>
+    arm64: entry.S: Add ventry overflow sanity checks
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_RPRES
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: cpufeature: add HWCAP for FEAT_AFP
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: add ID_AA64ISAR2_EL1 sys register
+
+Marc Zyngier <maz@kernel.org>
+    arm64: Add HWCAP for self-synchronising virtual counter
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-A510 CPU part definition
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-X2 CPU part definition
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+
+Hector Martin <marcan@marcan.st>
+    arm64: cputype: Add CPU implementor & types for the Apple M1 cores
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: include unprivileged BPF status in Spectre V2 reporting
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: Spectre-BHB workaround
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: use LOADADDR() to get load address of sections
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: early traps initialisation
+
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: report Spectre v2 status through sysfs
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Warn about Spectre v2 LFENCE mitigation
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Update link to AMD speculation whitepaper
+
+Kim Phillips <kim.phillips@amd.com>
+    x86/speculation: Use generic retpoline by default on AMD
+
+Josh Poimboeuf <jpoimboe@redhat.com>
+    x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Peter Zijlstra <peterz@infradead.org>
+    Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/speculation: Add eIBRS + Retpoline options
+
+Peter Zijlstra (Intel) <peterz@infradead.org>
+    x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+Peter Zijlstra <peterz@infradead.org>
+    x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+
+
+-------------
+
+Diffstat:
+
+ Documentation/admin-guide/hw-vuln/spectre.rst   |  48 ++--
+ Documentation/admin-guide/kernel-parameters.txt |   8 +-
+ Documentation/arm64/cpu-feature-registers.rst   |  29 +-
+ Documentation/arm64/elf_hwcaps.rst              |  12 +
+ Makefile                                        |   4 +-
+ arch/arm/include/asm/assembler.h                |  10 +
+ arch/arm/include/asm/spectre.h                  |  32 +++
+ arch/arm/include/asm/vmlinux.lds.h              |  43 ++-
+ arch/arm/kernel/Makefile                        |   2 +
+ arch/arm/kernel/entry-armv.S                    |  79 +++++-
+ arch/arm/kernel/entry-common.S                  |  24 ++
+ arch/arm/kernel/spectre.c                       |  71 +++++
+ arch/arm/kernel/traps.c                         |  65 ++++-
+ arch/arm/mm/Kconfig                             |  11 +
+ arch/arm/mm/proc-v7-bugs.c                      | 208 +++++++++++---
+ arch/arm64/Kconfig                              |   9 +
+ arch/arm64/include/asm/assembler.h              |  33 +++
+ arch/arm64/include/asm/cpu.h                    |   1 +
+ arch/arm64/include/asm/cpucaps.h                |   3 +-
+ arch/arm64/include/asm/cpufeature.h             |  28 ++
+ arch/arm64/include/asm/cputype.h                |  22 ++
+ arch/arm64/include/asm/fixmap.h                 |   6 +-
+ arch/arm64/include/asm/hwcap.h                  |   3 +
+ arch/arm64/include/asm/insn.h                   |   1 +
+ arch/arm64/include/asm/kvm_asm.h                |   8 +
+ arch/arm64/include/asm/kvm_mmu.h                |   3 +-
+ arch/arm64/include/asm/mmu.h                    |   6 +
+ arch/arm64/include/asm/sections.h               |   5 +
+ arch/arm64/include/asm/spectre.h                |   4 +
+ arch/arm64/include/asm/sysreg.h                 |  18 ++
+ arch/arm64/include/asm/vectors.h                |  73 +++++
+ arch/arm64/include/uapi/asm/hwcap.h             |   3 +
+ arch/arm64/include/uapi/asm/kvm.h               |   5 +
+ arch/arm64/kernel/cpu_errata.c                  |   7 +
+ arch/arm64/kernel/cpufeature.c                  |  28 +-
+ arch/arm64/kernel/cpuinfo.c                     |   4 +
+ arch/arm64/kernel/entry.S                       | 213 ++++++++++----
+ arch/arm64/kernel/proton-pack.c                 | 359 +++++++++++++++++++++++-
+ arch/arm64/kernel/vmlinux.lds.S                 |   2 +-
+ arch/arm64/kvm/arm.c                            |   3 +-
+ arch/arm64/kvm/hyp/hyp-entry.S                  |   4 +
+ arch/arm64/kvm/hyp/smccc_wa.S                   |  75 +++++
+ arch/arm64/kvm/hyp/vhe/switch.c                 |   9 +-
+ arch/arm64/kvm/hypercalls.c                     |  12 +
+ arch/arm64/kvm/psci.c                           |  18 +-
+ arch/arm64/kvm/sys_regs.c                       |   2 +-
+ arch/arm64/mm/mmu.c                             |  12 +-
+ arch/x86/include/asm/cpufeatures.h              |   2 +-
+ arch/x86/include/asm/nospec-branch.h            |  16 +-
+ arch/x86/kernel/cpu/bugs.c                      | 205 ++++++++++----
+ drivers/acpi/ec.c                               |  10 -
+ drivers/acpi/sleep.c                            |  14 +-
+ drivers/block/xen-blkfront.c                    |  63 +++--
+ drivers/net/xen-netfront.c                      |  54 ++--
+ drivers/scsi/xen-scsifront.c                    |   3 +-
+ drivers/xen/gntalloc.c                          |  25 +-
+ drivers/xen/grant-table.c                       |  71 ++---
+ drivers/xen/pvcalls-front.c                     |   8 +-
+ drivers/xen/xenbus/xenbus_client.c              |  24 +-
+ include/linux/arm-smccc.h                       |   5 +
+ include/linux/bpf.h                             |  12 +
+ include/xen/grant_table.h                       |  19 +-
+ kernel/sysctl.c                                 |   7 +
+ net/9p/trans_xen.c                              |  14 +-
+ tools/arch/x86/include/asm/cpufeatures.h        |   2 +-
+ 65 files changed, 1825 insertions(+), 354 deletions(-)
 
 
