@@ -2,256 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245653AbiCJUuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 15:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
+        id S245626AbiCJUuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 15:50:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236624AbiCJUuG (ORCPT
+        with ESMTP id S236624AbiCJUup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 15:50:06 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29AA18646F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:49:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646945344; x=1678481344;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CrFDnEHjWGlNjQ0AvbIlRUCriIxyzYtQjLpxtio4/14=;
-  b=J1yZ7uGj6cxDzpCJNw63Nk2Ln9mO/kRTNdK5+MfDUDihHXbj+6t6s5RI
-   VmiFTFmqqi+vplNLq7+rHd4lHAp39AUIYVwGZF+aEXNrjrP2xAU1fZfEa
-   8I8emyYZ7L3FVRrRMFexHmsGVETQrZC6WLlue+Z7+XCBoLat4v5xoj9ZU
-   dyb7CNVu83UCYNarx3MhuSlO2pN401aJ2JQa5WBpuNP0c7fszdFZP3FE1
-   TYLNbCWQo61kEymt3LFIkkPVChkCJeiOmVHjLoTFlmmFITHMOElUT46mC
-   ANB8nTmNTCRW7SicpZicFWtv2OlRTEyObwFn1QwouYt9gMvangKPXZV4j
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254205624"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="254205624"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 12:49:03 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="554843294"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 12:49:03 -0800
-From:   Tony Luck <tony.luck@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Fenghua Yu <fenghua.yu@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 1/2] x86/split_lock: Make life miserable for split lockers
-Date:   Thu, 10 Mar 2022 12:48:53 -0800
-Message-Id: <20220310204854.31752-2-tony.luck@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310204854.31752-1-tony.luck@intel.com>
-References: <20220217012721.9694-1-tony.luck@intel.com>
- <20220310204854.31752-1-tony.luck@intel.com>
+        Thu, 10 Mar 2022 15:50:45 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347DF187E1A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:49:43 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id 3so11574178lfr.7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:49:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LoJnjb1eTkY6RbpEBPOSq+mDiZAbj8l9xQTfBcxy8oU=;
+        b=Y7FvDAJsL40Mo2PA9+bZiLPYtKMnLPXzXJ5HLFicNxmCzZdjJYLjv5yqpsyhCi7vOr
+         CD+QPTbXobrKHAuNAA7EVyR6s5AJ2oTb3lHlMncdUyYPQ4ai6e5Om/5yCjw+F2P89/hF
+         lzvVtisopmYw9PsQWFgxf4X1aLVZkcgRXPVxUBeu2A8j9m7lL4/+HuQTMMTU8yAuUPIr
+         /9UskIi+Izx38o1RWUn/mGiOU115InWglwpA0y6MGBMTHlx/0TvsozCBTKVyaBjguFqC
+         U25qw5VYUkLud9lfcYzlxnt+DNX0zT/h2pGf4bXY+rXL37GWa3nX4nAjILfxiBwfELTC
+         y3yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LoJnjb1eTkY6RbpEBPOSq+mDiZAbj8l9xQTfBcxy8oU=;
+        b=HPOZUAFjeo93Ij+4bA4poGIj1edbsBShVlKHZ82yB2O6Yu1VIwuWso+AUvU8B9Az9+
+         zG0V3l7xU1sh2p7b/imeA2VMEG5aGIaa7AftEhaU0Ls5qw42pXxZonOrjfKelqLCIFV5
+         RRl3ovcnLmn8obTXCXiW9LCaqNxG2CCsPn84NGWk2p3FWa1yBFitfeIPNHqWZnUpdBMa
+         Myb7eQ73XeJpm7BTag6bgwmxMymtikOiGyjsiRcaERclezEOdk3CZBQyi9ACGFvniaJ3
+         nxj39tGK6n24gOUyl4PFiVnN4zdBC7Mvs4jkuV7nPWdjEhH5x4EQ+ZwOSPa6MbB9qSdK
+         GzxA==
+X-Gm-Message-State: AOAM533lMLot7qwK9whe4DjWIYyg7Grvu1XCAWSyhZWl3HZSrpT5UOoL
+        A+DKlGcIxeAiBkjFUsLlk/PavBXqP6A9IpWiZEUHMg==
+X-Google-Smtp-Source: ABdhPJy8imNzaXNZDqs43TGptWccGDGO5gCC4bQU1a3VTUFE15BERAeVO8Mg8dbe5wwLt+vA1yx3Tir6Y+d/zYS/XIE=
+X-Received: by 2002:a05:6512:31d4:b0:445:e4ef:c0f8 with SMTP id
+ j20-20020a05651231d400b00445e4efc0f8mr4046529lfe.626.1646945381031; Thu, 10
+ Mar 2022 12:49:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220308153011.021123062@infradead.org> <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
+ <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net> <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
+ <CAKwvOdk0ROSOSDKHcyH0kP+5MFH5QnasD6kbAu8gG8CCXO7OmQ@mail.gmail.com>
+ <Yim/QJhNBCDfuxsc@hirez.programming.kicks-ass.net> <184d593713ca4e289ddbd7590819eddc@AcuMS.aculab.com>
+ <YinP49gEl2zUVekz@hirez.programming.kicks-ass.net>
+In-Reply-To: <YinP49gEl2zUVekz@hirez.programming.kicks-ass.net>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 10 Mar 2022 12:49:29 -0800
+Message-ID: <CAKwvOdkyi1c9TvP_Bzn3+71kKsJzAbQZmgDzfDM8c7sce-V0Dw@mail.gmail.com>
+Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "andrew.cooper3@citrix.com" <andrew.cooper3@citrix.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In https://lore.kernel.org/all/87y22uujkm.ffs@tglx/ Thomas
-said:
+On Thu, Mar 10, 2022 at 2:16 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Thu, Mar 10, 2022 at 09:22:59AM +0000, David Laight wrote:
+> > From: Peter Zijlstra
+> > > Sent: 10 March 2022 09:05
+> > >
+> > > On Wed, Mar 09, 2022 at 04:30:28PM -0800, Nick Desaulniers wrote:
+> > >
+> > > > I observed the following error when building with
+> > > > CONFIG_LTO_CLANG_FULL=y enabled:
+> > > >
+> > > > ld.lld: error: ld-temp.o <inline asm>:7:2: symbol 'ibt_selftest_ip' is
+> > > > already defined
+> > > >         ibt_selftest_ip:
+> > > >         ^
+> > > >
+> > > > Seems to come from
+> > > > commit a802350ba65a ("x86/ibt: Add IBT feature, MSR and #CP handling")
+> > > >
+> > > > Commenting out the label in the inline asm, I then observed:
+> > > > vmlinux.o: warning: objtool: identify_cpu()+0x6d0: sibling call from
+> > > > callable instruction with modified stack frame
+> > > > vmlinux.o: warning: objtool: identify_cpu()+0x6e0: stack state
+> > > > mismatch: cfa1=4+64 cfa2=4+8
+> > > > These seemed to disappear when I kept CONFIG_LTO_CLANG_FULL=y but then
+> > > > disabled CONFIG_X86_KERNEL_IBT. (perhaps due to the way I hacked out
+> > > > the ibt_selftest_ip label).
+> > >
+> > LTO has probably inlined it twice.
+>
+> Indeed, adding noinline to ibt_selftest() makes it work.
 
-  Its's simply wishful thinking that stuff gets fixed because of a
-  WARN_ONCE(). This has never worked. The only thing which works is to
-  make stuff fail hard or slow it down in a way which makes it annoying
-  enough to users to complain.
+Yep, that LGTM. If you end up sticking that as a patch on top:
 
-He was talking about WBINVD. But it made me think about how we
-use the split lock detection feature in Linux.
+Reported-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Existing code has three options for applications:
-1) Don't enable split lock detection (allow arbitrary split locks)
-2) Warn once when a process uses split lock, but let the process
-   keep running with split lock detection disabled
-3) Kill process that use split locks
+For the kernel IBT series @ v4 plus this diff:
 
-Option 2 falls into the "wishful thinking" territory that Thomas
-warns does nothing. But option 3 might not be viable in a situation
-with legacy applications that need to run.
+Tested-by: Nick Desaulniers <ndesaulniers@google.com> # llvm build, non-IBT boot
 
-Hence make option 2 much stricter to "slow it down in a way which makes
-it annoying".
+>
+>
+> ---
+> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+> index d8bbc705efe5..0c737cc31ee5 100644
+> --- a/arch/x86/kernel/alternative.c
+> +++ b/arch/x86/kernel/alternative.c
+> @@ -781,7 +781,8 @@ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data
+>         return NOTIFY_STOP;
+>  }
+>
+> -static void __init int3_selftest(void)
+> +/* Must be noinline to ensure uniqueness of int3_selftest_ip. */
+> +static noinline void __init int3_selftest(void)
+>  {
+>         static __initdata struct notifier_block int3_exception_nb = {
+>                 .notifier_call  = int3_exception_notify,
+> @@ -794,9 +795,8 @@ static void __init int3_selftest(void)
+>         /*
+>          * Basically: int3_magic(&val); but really complicated :-)
+>          *
+> -        * Stick the address of the INT3 instruction into int3_selftest_ip,
+> -        * then trigger the INT3, padded with NOPs to match a CALL instruction
+> -        * length.
+> +        * INT3 padded with NOP to CALL_INSN_SIZE. The int3_exception_nb
+> +        * notifier above will emulate CALL for us.
+>          */
+>         asm volatile ("int3_selftest_ip:\n\t"
+>                       ANNOTATE_NOENDBR
+> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+> index 837cc3c7d4f4..fb89a2f1011f 100644
+> --- a/arch/x86/kernel/traps.c
+> +++ b/arch/x86/kernel/traps.c
+> @@ -214,7 +214,7 @@ DEFINE_IDTENTRY(exc_overflow)
+>
+>  static __ro_after_init bool ibt_fatal = true;
+>
+> -void ibt_selftest_ip(void); /* code label defined in asm below */
+> +extern void ibt_selftest_ip(void); /* code label defined in asm below */
+>
+>  enum cp_error_code {
+>         CP_EC        = (1 << 15) - 1,
+> @@ -238,7 +238,7 @@ DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
+>         if (WARN_ON_ONCE(user_mode(regs) || (error_code & CP_EC) != CP_ENDBR))
+>                 return;
+>
+> -       if (unlikely(regs->ip == (unsigned long)ibt_selftest_ip)) {
+> +       if (unlikely(regs->ip == (unsigned long)&ibt_selftest_ip)) {
 
-Primary reason for this change is to provide better quality of service
-to the rest of the applications running on the system. Internal
-testing shows that even with many processes splitting locks, performance
-for the rest of the system is much more responsive.
+(Though adding the address of operator & to the function name in the
+comparisons isn't strictly necessary; functions used in expressions
+"decay" into function pointers; I guess the standard calls these
+"function designators." I see that's been added to be consistent
+between the two...See 6.3.2.1.4 of
+http://open-std.org/jtc1/sc22/wg14/www/docs/n2731.pdf pdf page
+62/printed page 46.)
 
-The new "warn" mode operates like this.  When an application tries to
-execute a bus lock the #AC handler.
+>                 regs->ax = 0;
+>                 return;
+>         }
+> @@ -252,7 +252,8 @@ DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
+>         BUG();
+>  }
+>
+> -bool ibt_selftest(void)
+> +/* Must be noinline to ensure uniqueness of ibt_selftest_ip. */
+> +noinline bool ibt_selftest(void)
+>  {
+>         unsigned long ret;
+>
 
-1) Delays (interruptibly) 10 ms before moving to next step.
-2) Blocks (interruptibly) until it can get the semaphore
-	If interrupted, just return. Assume the signal will either
-	kill the task, or direct execution away from the instruction
-	that is trying to get the bus lock.
-3) Disables split lock detection for the current core
-4) Schedules a work queue to re-enable split lock detect in 2 jiffies
-5) Returns
 
-The work queue that re-enables split lock detection also releases the
-semaphore.
-
-There is a corner case where a CPU may be taken offline while
-split lock detection is disabled. A CPU hotplug handler handles
-this case.
-
-Old behaviour was to only print the split lock warning on
-the first occurrence of a split lock from a task. Preserve
-that by adding a flag to the task structure that suppresses
-subsequent split lock messages from that task.
-
-Signed-off-by: Tony Luck <tony.luck@intel.com>
----
- arch/x86/kernel/cpu/intel.c | 65 +++++++++++++++++++++++++++++++------
- include/linux/sched.h       |  3 ++
- kernel/fork.c               |  5 +++
- 3 files changed, 63 insertions(+), 10 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index 8321c43554a1..2536784511e3 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -7,10 +7,13 @@
- #include <linux/smp.h>
- #include <linux/sched.h>
- #include <linux/sched/clock.h>
-+#include <linux/semaphore.h>
- #include <linux/thread_info.h>
- #include <linux/init.h>
- #include <linux/uaccess.h>
-+#include <linux/workqueue.h>
- #include <linux/delay.h>
-+#include <linux/cpuhotplug.h>
- 
- #include <asm/cpufeature.h>
- #include <asm/msr.h>
-@@ -1006,6 +1009,8 @@ static const struct {
- 
- static struct ratelimit_state bld_ratelimit;
- 
-+static DEFINE_SEMAPHORE(buslock_sem);
-+
- static inline bool match_option(const char *arg, int arglen, const char *opt)
- {
- 	int len = strlen(opt), ratelimit;
-@@ -1116,18 +1121,54 @@ static void split_lock_init(void)
- 		split_lock_verify_msr(sld_state != sld_off);
- }
- 
-+static void __split_lock_reenable(struct work_struct *work)
-+{
-+	sld_update_msr(true);
-+	up(&buslock_sem);
-+}
-+
-+/*
-+ * If a CPU goes offline with pending delayed work to
-+ * re-enable split lock detection then the delayed work
-+ * will be executed on some other CPU. That handles releasing
-+ * the buslock_sem, but because it executes on a different
-+ * CPU probably won't re-enable split lock detection. This
-+ * is a problem on HT systems since the sibling CPU on the
-+ * same core may then be left running with split lock
-+ * detection disabled.
-+ *
-+ * Unconditionally re-enable detection here.
-+ */
-+static int splitlock_cpu_offline(unsigned int cpu)
-+{
-+	sld_update_msr(true);
-+
-+	return 0;
-+}
-+
-+static DECLARE_DELAYED_WORK(split_lock_reenable, __split_lock_reenable);
-+
- static void split_lock_warn(unsigned long ip)
- {
--	pr_warn_ratelimited("#AC: %s/%d took a split_lock trap at address: 0x%lx\n",
--			    current->comm, current->pid, ip);
-+	int cpu;
- 
--	/*
--	 * Disable the split lock detection for this task so it can make
--	 * progress and set TIF_SLD so the detection is re-enabled via
--	 * switch_to_sld() when the task is scheduled out.
--	 */
-+	if (!current->reported_split_lock)
-+		pr_warn_ratelimited("#AC: %s/%d took a split_lock trap at address: 0x%lx\n",
-+				    current->comm, current->pid, ip);
-+	current->reported_split_lock = 1;
-+
-+	/* misery factor #1, sleep 10ms before trying to execute split lock */
-+	if (msleep_interruptible(10) > 0)
-+		return;
-+	/* Misery factor #2, only allow one buslocked disabled core at a time */
-+	if (down_interruptible(&buslock_sem) == -EINTR)
-+		return;
-+	cpu = get_cpu();
-+	schedule_delayed_work_on(cpu, &split_lock_reenable, 2);
-+
-+	/* Disable split lock detection on this CPU to make progress */
- 	sld_update_msr(false);
--	set_tsk_thread_flag(current, TIF_SLD);
-+	put_cpu();
- }
- 
- bool handle_guest_split_lock(unsigned long ip)
-@@ -1281,10 +1322,14 @@ static void sld_state_show(void)
- 		pr_info("disabled\n");
- 		break;
- 	case sld_warn:
--		if (boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT))
-+		if (boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT)) {
- 			pr_info("#AC: crashing the kernel on kernel split_locks and warning on user-space split_locks\n");
--		else if (boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT))
-+			if (cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
-+					      "x86/splitlock", NULL, splitlock_cpu_offline) < 0)
-+				pr_warn("No splitlock CPU offline handler\n");
-+		} else if (boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT)) {
- 			pr_info("#DB: warning on user-space bus_locks\n");
-+		}
- 		break;
- 	case sld_fatal:
- 		if (boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT)) {
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 75ba8aa60248..ffa7166e23d6 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -938,6 +938,9 @@ struct task_struct {
- 	/* Recursion prevention for eventfd_signal() */
- 	unsigned			in_eventfd_signal:1;
- #endif
-+#ifdef	CONFIG_CPU_SUP_INTEL
-+	unsigned			reported_split_lock:1;
-+#endif
- 
- 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
- 
-diff --git a/kernel/fork.c b/kernel/fork.c
-index f1e89007f228..085d68d143b2 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -970,6 +970,11 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
- #ifdef CONFIG_MEMCG
- 	tsk->active_memcg = NULL;
- #endif
-+
-+#ifdef CONFIG_CPU_SUP_INTEL
-+	tsk->reported_split_lock = 0;
-+#endif
-+
- 	return tsk;
- 
- free_stack:
 -- 
-2.35.1
-
+Thanks,
+~Nick Desaulniers
