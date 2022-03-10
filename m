@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D25C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343960AbiCJVkP (ORCPT
+        id S1343996AbiCJVkW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 16:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        Thu, 10 Mar 2022 16:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237075AbiCJVkL (ORCPT
+        with ESMTP id S245656AbiCJVkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 16:40:11 -0500
+        Thu, 10 Mar 2022 16:40:12 -0500
 Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FFABECC3;
-        Thu, 10 Mar 2022 13:39:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2305BC0840;
+        Thu, 10 Mar 2022 13:39:09 -0800 (PST)
 Received: from MUA
         by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nSQUh-0006Ir-2l; Thu, 10 Mar 2022 22:38:47 +0100
+        id 1nSQUr-0006Iv-S5; Thu, 10 Mar 2022 22:38:57 +0100
 From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -35,10 +35,12 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Liam Merwick <liam.merwick@oracle.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/5] nSVM: L1 -> L2 event injection fixes and a self-test
-Date:   Thu, 10 Mar 2022 22:38:36 +0100
-Message-Id: <cover.1646944472.git.maciej.szmigiero@oracle.com>
+Subject: [PATCH 2/5] KVM: SVM: Downgrade BUG_ON() to WARN_ON() in svm_inject_irq()
+Date:   Thu, 10 Mar 2022 22:38:38 +0100
+Message-Id: <3f8422d9185477148e53440a4c6d66acbf387f65.1646944472.git.maciej.szmigiero@oracle.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1646944472.git.maciej.szmigiero@oracle.com>
+References: <cover.1646944472.git.maciej.szmigiero@oracle.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,53 +49,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
 
-There are some issues with respect to nSVM L1 -> L2 event injection.
+There is no need to bring down the whole host just because there might be
+some issue with respect to guest GIF handling in KVM.
 
-First, the next_rip field of a VMCB is *not* an output-only field for a VMRUN.
-This field value (instead of the saved guest RIP) in used by the CPU for
-the return address pushed on stack when injecting a software interrupt or
-INT3 or INTO exception (this was confirmed by AMD).
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+---
+ arch/x86/kvm/svm/svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On a VMRUN that does event injection it has similar function as VMX's
-VM_ENTRY_INSTRUCTION_LEN field, although, in contrast to VMX, it holds an
-absolute RIP value, not a relative increment.
-
-However, KVM seems to treat this field as a unidirectional hint from the CPU
-to the hypervisor - there seems to be no specific effort to maintain this
-field consistency for such VMRUN.
-
-This is mostly visible with running a nested guest, with L1 trying to inject
-an event into its L2.
-In this case, we need to make sure the next_rip field gets synced from
-vmcb12 to vmcb02.
-
-Another issue is that pending L1 -> L2 events are forgotten if there is an
-intervening L0 VMEXIT during their delivery.
-We need to make sure they are remembered (including their desired next_rip
-field value) until they are either re-injected into L2 successfully or
-returned back to L1 in the EXITINTINFO field upon a nested VMEXIT.
-
-A new KVM self-test that checks for the nSVM issues described above is
-included in this patch series.
-
-These issues are SVM-specific - all the use cases described above already
-work correctly with VMX.
-
-This patch set was tested with both Linux and Windows nested guests.
-
-  KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
-  KVM: SVM: Downgrade BUG_ON() to WARN_ON() in svm_inject_irq()
-  KVM: nSVM: Don't forget about L1-injected events
-  KVM: nSVM: Restore next_rip when doing L1 -> L2 event re-injection
-  KVM: selftests: nSVM: Add svm_nested_soft_inject_test
-
- arch/x86/kvm/svm/nested.c                     |  69 +++++++-
- arch/x86/kvm/svm/svm.c                        |  60 ++++++-
- arch/x86/kvm/svm/svm.h                        |  48 ++++++
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/include/x86_64/svm_util.h   |   2 +
- .../kvm/x86_64/svm_nested_soft_inject_test.c  | 147 ++++++++++++++++++
- 7 files changed, 324 insertions(+), 4 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index b069493ad5c7..1e5d904aeec3 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3322,7 +3322,7 @@ static void svm_inject_irq(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 
+-	BUG_ON(!(gif_set(svm)));
++	WARN_ON(!gif_set(svm));
+ 
+ 	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+ 	++vcpu->stat.irq_injections;
