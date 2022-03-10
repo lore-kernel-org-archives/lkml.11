@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA39C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbiCJOfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:35:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
+        id S244315AbiCJOfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:35:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244755AbiCJO32 (ORCPT
+        with ESMTP id S244746AbiCJO31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:29:28 -0500
+        Thu, 10 Mar 2022 09:29:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E25DE2E6;
-        Thu, 10 Mar 2022 06:24:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBB0D64E2;
+        Thu, 10 Mar 2022 06:24:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2912F61D78;
-        Thu, 10 Mar 2022 14:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B150C36AE5;
-        Thu, 10 Mar 2022 14:24:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FFFD61CF0;
+        Thu, 10 Mar 2022 14:24:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F730C340E8;
+        Thu, 10 Mar 2022 14:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922252;
-        bh=jr+6+1MnJQNcfljlgg0AAAnKF+/2D+Wgaosbrook0EU=;
+        s=korg; t=1646922273;
+        bh=A6oXWWdywzHZKFb4f9k7sQK6E39VRSRYq5LVYyv73hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VUQ4UbV+o+YSisb1l5MBI8zvA5mONzOJgitXbIYLdMytTnA8PSLPAgTb6CAAjO2uh
-         nLJ2yaM+gXK96yEs/ZHD1t+aiv5UeB6F0Z+O615+qzA88Pru/Vyd61H9RnSGneXAI0
-         QErfzsjfVSUEjBvd2KsrH+Rqa0i984Pe+7Hbc03k=
+        b=yf0DiOWE32F6xRI62c/kBy0sho02GL+VjYWvF8Fy3wKgXymHrLvNRl5+uO9tETjqV
+         f+JouvKR3v1Uc1L+s9qpTCCQGQAX4sKwQNLwJWisKfr4yeuTBnnTP0D9PsDoJDecOs
+         rQq6fgAsL8HpdCfOmAHvl/UqDJGPPLl71jofcRmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 08/58] x86/speculation: Warn about Spectre v2 LFENCE mitigation
-Date:   Thu, 10 Mar 2022 15:18:28 +0100
-Message-Id: <20220310140813.112529706@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 26/58] arm64: entry: Free up another register on kptis tramp_exit path
+Date:   Thu, 10 Mar 2022 15:18:46 +0100
+Message-Id: <20220310140813.622219780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -48,62 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: James Morse <james.morse@arm.com>
 
-commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
+commit 03aff3a77a58b5b52a77e00537a42090ad57b80b upstream.
 
-With:
+Kpti stashes x30 in far_el1 while it uses x30 for all its work.
 
-  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
+Making the vectors a per-cpu data structure will require a second
+register.
 
-it became possible to enable the LFENCE "retpoline" on Intel. However,
-Intel doesn't recommend it, as it has some weaknesses compared to
-retpoline.
+Allow tramp_exit two registers before it unmaps the kernel, by
+leaving x30 on the stack, and stashing x29 in far_el1.
 
-Now AMD doesn't recommend it either.
-
-It can still be left available as a cmdline option. It's faster than
-retpoline but is weaker in certain scenarios -- particularly SMT, but
-even non-SMT may be vulnerable in some cases.
-
-So just unconditionally warn if the user requests it on the cmdline.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm64/kernel/entry.S |   19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -614,6 +614,7 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -357,14 +357,16 @@ alternative_else_nop_endif
+ 	ldp	x24, x25, [sp, #16 * 12]
+ 	ldp	x26, x27, [sp, #16 * 13]
+ 	ldp	x28, x29, [sp, #16 * 14]
+-	ldr	lr, [sp, #S_LR]
+-	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 
+ 	.if	\el == 0
+-alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
++alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
++	eret
++alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+-	msr	far_el1, x30
++	msr	far_el1, x29
+ 	tramp_alias	x30, tramp_exit_native
+ 	br	x30
+ 4:
+@@ -372,6 +374,9 @@ alternative_insn eret, nop, ARM64_UNMAP_
+ 	br	x30
  #endif
- 
-+#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
- 
- #ifdef CONFIG_BPF_SYSCALL
-@@ -935,6 +936,7 @@ static void __init spectre_v2_select_mit
- 		break;
- 
- 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
-+		pr_err(SPECTRE_V2_LFENCE_MSG);
- 		mode = SPECTRE_V2_LFENCE;
- 		break;
- 
-@@ -1717,6 +1719,9 @@ static char *ibpb_state(void)
- 
- static ssize_t spectre_v2_show_state(char *buf)
- {
-+	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-+		return sprintf(buf, "Vulnerable: LFENCE\n");
+ 	.else
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
 +
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
+ 	/* Ensure any device/NC reads complete */
+ 	alternative_insn nop, "dmb sy", ARM64_WORKAROUND_1508412
  
+@@ -844,10 +849,12 @@ alternative_else_nop_endif
+ 	.macro tramp_exit, regsize = 64
+ 	adr	x30, tramp_vectors
+ 	msr	vbar_el1, x30
+-	tramp_unmap_kernel	x30
++	ldr	lr, [sp, #S_LR]
++	tramp_unmap_kernel	x29
+ 	.if	\regsize == 64
+-	mrs	x30, far_el1
++	mrs	x29, far_el1
+ 	.endif
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 	eret
+ 	sb
+ 	.endm
 
 
