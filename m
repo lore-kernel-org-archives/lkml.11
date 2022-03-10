@@ -2,115 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D94C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344469AbiCJWpM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:45:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        id S244508AbiCJWqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 17:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344413AbiCJWpE (ORCPT
+        with ESMTP id S232617AbiCJWqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:45:04 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811B3190C36;
-        Thu, 10 Mar 2022 14:43:57 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id v14so1626947qta.2;
-        Thu, 10 Mar 2022 14:43:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hSx2wMxzDpIQ8A7Q2B9OaU0Z9cc1aqyiEXduTYNSa9A=;
-        b=mMNZoPpq0bPT6Von03F6SslaHTpwZWcgHrxmkDY+/m4jvhgKAhE1es/HV+Yu5MfkkC
-         YW4DsQssw6228gSHtWZCazVGB2jMxTtDY+LaG4BQQZsXUwiO2ywPUIwujg31zw4u2bGU
-         KTuvJ7w6jKu2Z3Z3TRf2z5hPP/XEiVBe8+uTz9SCnI7wDTs6jrGP4EzipjkChrI9U5EG
-         S/cqg2Y22zwSt4wmurn45B0euPuwNUPq42XvtQ+G2A/6w4o/5v6HcNRj1ebBjcB/Uu43
-         coeMKf57QzCKDnJMTRsbJRlsIfvh6IaDUVfsoxPPGToEiimTSJCudOKcudEZ0t2FM9wk
-         Vh3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hSx2wMxzDpIQ8A7Q2B9OaU0Z9cc1aqyiEXduTYNSa9A=;
-        b=c94oC8kMzcoO9VOsgQuABSzJA+/u/RTa9rzQI7lkHua+pQlXYym63pzrfkKoYQJtw7
-         cdy/qVJczN5sv4ouCZMa42UlnbLl9vyA4HUrnGY+GcPBu4BvKtVHCddxjXL9DNhj2fsS
-         +3wgWzJvRPJYeJavxbMBdSn8aWoeUCtAzbK2Z6XJnlXvA+zcEppHx6xq7weDjhrCmbx/
-         OlfTpAFVfSEhKXvMDJxSe06DA9fFfyXT9iA7wAjYRYKclkiVn1df+e6PmzF5zGNibw3C
-         EBPjMt496Hbk3nt4bndUdmybQQofYsZ3P7oPTb2JVQzTRJ8vAytoQPeCqAOURpfWvjCV
-         2jOw==
-X-Gm-Message-State: AOAM532Im3Bdyd0UeExz4Iq0qTcRKlo6o48lWQkqvXB/6SNX0kvFbYza
-        Mft9l/MuIYJhL7TGxk9QFX/wpFwcvNsJat0vxgk=
-X-Google-Smtp-Source: ABdhPJw7XtrEc3Yf9PdiTO5/XVKITkunzcVoFz+FobsR5iuPM5qor3Td5XAZhOh7my7EgM5mxc7SmWE02XkMPsaOo+U=
-X-Received: by 2002:a05:622a:1802:b0:2e1:abdb:e522 with SMTP id
- t2-20020a05622a180200b002e1abdbe522mr4120736qtc.144.1646952236625; Thu, 10
- Mar 2022 14:43:56 -0800 (PST)
+        Thu, 10 Mar 2022 17:46:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F5E96834
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 14:45:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B81861BC2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8CBC340E8;
+        Thu, 10 Mar 2022 22:45:46 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 17:45:45 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Subject: [GIT PULL] tracing: minor fixes
+Message-ID: <20220310174545.68e872fc@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
- <20220310221328.877987-1-tadeusz.struk@linaro.org> <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 10 Mar 2022 17:43:20 -0500
-Message-ID: <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 5:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 10 Mar 2022 14:13:28 -0800 Tadeusz Struk wrote:
-> > diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> > index 4788f6b37053..6d45112322a0 100644
-> > --- a/net/ipv6/ip6_output.c
-> > +++ b/net/ipv6/ip6_output.c
-> > @@ -1649,6 +1649,16 @@ static int __ip6_append_data(struct sock *sk,
-> >                       skb->protocol = htons(ETH_P_IPV6);
-> >                       skb->ip_summed = csummode;
-> >                       skb->csum = 0;
-> > +
-> > +                     /*
-> > +                      *      Check if there is still room for payload
-> > +                      */
->
-> TBH I think the check is self-explanatory. Not worth a banner comment,
-> for sure.
->
-> > +                     if (fragheaderlen >= mtu) {
-> > +                             err = -EMSGSIZE;
-> > +                             kfree_skb(skb);
-> > +                             goto error;
-> > +                     }
->
-> Not sure if Willem prefers this placement, but seems like we can lift
-> this check out of the loop, as soon as fragheaderlen and mtu are known.
->
-> >                       /* reserve for fragmentation and ipsec header */
-> >                       skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
-> >                                   dst_exthdrlen);
 
-Just updating this boundary check will do?
+Linus,
 
-        if (mtu < fragheaderlen ||
-            ((mtu - fragheaderlen) & ~7) + fragheaderlen <
-sizeof(struct frag_hdr))
-                goto emsgsize;
+Minor tracing fixes:
+
+ - Fix unregistering the same event twice a the user could disable
+   the event osnoise will disable on unregistering.
+
+ - Inform RCU of a quiescent state in the osnoise testing thread.
+
+ - Fix some kerneldoc comments.
+
+
+Please pull the latest trace-v5.17-rc6 tree, which can be found at:
+
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+trace-v5.17-rc6
+
+Tag SHA1: c61cf6d2e56a0cd22a9d95f2006e91e895b512a2
+Head SHA1: 78cbc6513217b00be6a9904415ef7ff3619eb035
+
+
+Daniel Bristot de Oliveira (1):
+      tracing/osnoise: Do not unregister events twice
+
+Jiapeng Chong (1):
+      ftrace: Fix some W=1 warnings in kernel doc comments
+
+Nicolas Saenz Julienne (1):
+      tracing/osnoise: Force quiescent states while tracing
+
+----
+ kernel/trace/ftrace.c        |  4 ++--
+ kernel/trace/trace_osnoise.c | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+), 2 deletions(-)
+---------------------------
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index a4b462b6f944..6105b7036482 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7790,7 +7790,7 @@ int ftrace_is_dead(void)
+ 
+ /**
+  * register_ftrace_function - register a function for profiling
+- * @ops - ops structure that holds the function for profiling.
++ * @ops:	ops structure that holds the function for profiling.
+  *
+  * Register a function to be called by all functions in the
+  * kernel.
+@@ -7817,7 +7817,7 @@ EXPORT_SYMBOL_GPL(register_ftrace_function);
+ 
+ /**
+  * unregister_ftrace_function - unregister a function for profiling.
+- * @ops - ops structure that holds the function to unregister
++ * @ops:	ops structure that holds the function to unregister
+  *
+  * Unregister a function that was added to be called by ftrace profiling.
+  */
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index cfddb30e65ab..5e3c62a08fc0 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1386,6 +1386,26 @@ static int run_osnoise(void)
+ 					osnoise_stop_tracing();
+ 		}
+ 
++		/*
++		 * In some cases, notably when running on a nohz_full CPU with
++		 * a stopped tick PREEMPT_RCU has no way to account for QSs.
++		 * This will eventually cause unwarranted noise as PREEMPT_RCU
++		 * will force preemption as the means of ending the current
++		 * grace period. We avoid this problem by calling
++		 * rcu_momentary_dyntick_idle(), which performs a zero duration
++		 * EQS allowing PREEMPT_RCU to end the current grace period.
++		 * This call shouldn't be wrapped inside an RCU critical
++		 * section.
++		 *
++		 * Note that in non PREEMPT_RCU kernels QSs are handled through
++		 * cond_resched()
++		 */
++		if (IS_ENABLED(CONFIG_PREEMPT_RCU)) {
++			local_irq_disable();
++			rcu_momentary_dyntick_idle();
++			local_irq_enable();
++		}
++
+ 		/*
+ 		 * For the non-preemptive kernel config: let threads runs, if
+ 		 * they so wish.
+@@ -2200,6 +2220,17 @@ static void osnoise_workload_stop(void)
+ 	if (osnoise_has_registered_instances())
+ 		return;
+ 
++	/*
++	 * If callbacks were already disabled in a previous stop
++	 * call, there is no need to disable then again.
++	 *
++	 * For instance, this happens when tracing is stopped via:
++	 * echo 0 > tracing_on
++	 * echo nop > current_tracer.
++	 */
++	if (!trace_osnoise_callback_enabled)
++		return;
++
+ 	trace_osnoise_callback_enabled = false;
+ 	/*
+ 	 * Make sure that ftrace_nmi_enter/exit() see
