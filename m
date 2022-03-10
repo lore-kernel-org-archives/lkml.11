@@ -2,92 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06599C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D81C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245717AbiCJTGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:06:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
+        id S245730AbiCJTGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 14:06:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239330AbiCJTGB (ORCPT
+        with ESMTP id S239330AbiCJTGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:06:01 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7278141E3E;
-        Thu, 10 Mar 2022 11:05:00 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id k25so7549725iok.8;
-        Thu, 10 Mar 2022 11:05:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=OKFP8TqzjD87nVnA5QCfg2pISdNFfHhzbTP/7HGxIhA=;
-        b=ANDDgCAiRgwX5/BicfRIRlq1ry9MZ/5pAG3MF9mbAjKeMSPcOPWeYGRSFQ1V3IpEN7
-         rphSEN+eLQbzNrZCae8zaz/Z1SEJBAC3LpfWkmlNICmsftdOvape8SvUqhhIWM7ykXti
-         JPzaOIpsJvtAbVnm6K5SlkprSLw9uiNYWwp2PIDnVMmhJO5Q7uD7ww08dxkHCNagVXia
-         G8eJHqmmA9J3/mYnYI02JLBK/aPn3+AVzCcN49mIbuObm7xl9Fb+Ve2Mo1YQI4oWqS1M
-         zRGm9sr3VAa76oYzUVD8xBvdvxwehgdozkQvlc6ddqkBlRf3o5iDKhb9dEmq/BTapUh0
-         SIsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=OKFP8TqzjD87nVnA5QCfg2pISdNFfHhzbTP/7HGxIhA=;
-        b=2Ixy3GwUnsF2DbcqV4S12iGTee8JgcbNdWcUc6lBVRpsuhP0ckZDBiKkYAO4ADCwz/
-         TgsGwdjIx15N1z+z2ZBl7EvePKhOh/n5nYtFiQIINBnL6BcEm3XRgH870I6n/YFcESzH
-         PJmNVSSlpzxdd1bWSr6Gc2rdqnEWS6QUq7rxH63BSYAEUEKis7yqrjvjy+XtIdmP2qba
-         InHHDTrzZfYZlHoCsFoK8BSXfoPP+enJvdj9Vwt1PK0bwCTUNfP03/OMFDt8jefsticb
-         IjlltwNIyYGHe0F+OxX4QHT6pZvf9glSnAz6qi9uvm+n1NAA46CpgJx1XgwJrghKqHRF
-         NDdw==
-X-Gm-Message-State: AOAM530xQmkNaOz0LxzXo8ceXddVoKkcNub/47nIPOL2NTxbXvXNwdqR
-        9YBu9GNwF/zNJX+/1uwV7Mi849bDCop5Z0f8jkz1Ug==
-X-Google-Smtp-Source: ABdhPJyZwwfpJg61uLGZ3a3+jR2rZ+jGBrNph/zEz+UzcqwWWS2mSomRDgTHrNaiFsDkpmcIkk5fZQ==
-X-Received: by 2002:a5d:9d91:0:b0:645:bc14:47bd with SMTP id ay17-20020a5d9d91000000b00645bc1447bdmr4807359iob.133.1646939099548;
-        Thu, 10 Mar 2022 11:04:59 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id y6-20020a056e02178600b002c613ccce6csm3422334ilu.48.2022.03.10.11.04.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 11:04:59 -0800 (PST)
-Message-ID: <622a4bdb.1c69fb81.27616.e9c3@mx.google.com>
-Date:   Thu, 10 Mar 2022 11:04:59 -0800 (PST)
-X-Google-Original-Date: Thu, 10 Mar 2022 19:04:57 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 00/58] 5.15.28-rc2 review
-To:     linux-kernel@vger.kernel.org
+        Thu, 10 Mar 2022 14:06:04 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C915E141E3E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:05:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646939102; x=1678475102;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WnFGNKbJzycKyV82fMk3LWMbBnyeS+s9105OQY/fMpc=;
+  b=jOQkeXeihZRAUZnmZfqgK1V1WJurN4yFWBixmEuw0+rTbe1LMZlp0ET1
+   P5qJNNihAAoDh5joEuiyi3Ks/Hagd/Zwtdp/rq+3En/Cv6vv2X3xSTqcH
+   ptrr73D5X/OiPeD+qtj2HDCGjkcO8+LyFLC/cjMdJilAWAtLApeYlL7Ce
+   Op2nPBAO80VezYpeBAk3hBXV2EYMUdldaFXMDzgfJ5iaG+eHh5IxQYfjK
+   fmWcvAnFRBXVTdsXXZ85lpKXPRdezRM8FR5+FY/cBCiuXDbmiNqQ3e/ur
+   rpa6eDobrcDHtDX0O8dysgH8wRusmB+sreBeSBEfuyo2opxM9UFM9Opy2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255081932"
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="255081932"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 11:03:49 -0800
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="554794723"
+Received: from jdubrow-mobl.amr.corp.intel.com (HELO intel.com) ([10.255.39.9])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 11:03:46 -0800
+Date:   Thu, 10 Mar 2022 14:03:45 -0500
+From:   Rodrigo Vivi <rodrigo.vivi@intel.com>
+To:     Alexander Usyskin <alexander.usyskin@intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        linux-kernel@vger.kernel.org,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org
+Subject: Re: [Intel-gfx] [PATCH v10 4/5] mei: gsc: add runtime pm handlers
+Message-ID: <YipLkXkoZFFNuK3p@intel.com>
+References: <20220308163654.942820-1-alexander.usyskin@intel.com>
+ <20220308163654.942820-5-alexander.usyskin@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308163654.942820-5-alexander.usyskin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 15:18:49 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.28 release.
-> There are 58 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, Mar 08, 2022 at 06:36:53PM +0200, Alexander Usyskin wrote:
+> From: Tomas Winkler <tomas.winkler@intel.com>
 > 
-> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
-> Anything received after that time might be too late.
+> Implement runtime handlers for mei-gsc, to track
+> idle state of the device properly.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.28-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> CC: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+> Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+> ---
+>  drivers/misc/mei/gsc-me.c | 67 ++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 66 insertions(+), 1 deletion(-)
 > 
-> thanks,
-> 
-> greg k-h
-> 
+> diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
+> index cf427f6fdec9..dac482ddab51 100644
+> --- a/drivers/misc/mei/gsc-me.c
+> +++ b/drivers/misc/mei/gsc-me.c
+> @@ -152,7 +152,72 @@ static int __maybe_unused mei_gsc_pm_resume(struct device *device)
+>  	return 0;
+>  }
+>  
+> -static SIMPLE_DEV_PM_OPS(mei_gsc_pm_ops, mei_gsc_pm_suspend, mei_gsc_pm_resume);
+> +static int __maybe_unused mei_gsc_pm_runtime_idle(struct device *device)
+> +{
+> +	struct mei_device *dev = dev_get_drvdata(device);
+> +
+> +	if (!dev)
+> +		return -ENODEV;
+> +	if (mei_write_is_idle(dev))
+> +		pm_runtime_autosuspend(device);
 
-5.15.28-rc2 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+This is not needed. The _idle() callback is called right before the autosuspend.
+so you just need to return -EBUSY if not idle.
 
+But also I'm missing the call to enable the autosuspend and set the delay.
+
+Is this flow really working and you are getting device suspended when not in use?
+(Maybe it is just my ignorance on other flow types here)
+
+> +
+> +	return -EBUSY;
+> +}
+> +
+> +static int  __maybe_unused mei_gsc_pm_runtime_suspend(struct device *device)
+> +{
+> +	struct mei_device *dev = dev_get_drvdata(device);
+> +	struct mei_me_hw *hw;
+> +	int ret;
+> +
+> +	if (!dev)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&dev->device_lock);
+> +
+> +	if (mei_write_is_idle(dev)) {
+> +		hw = to_me_hw(dev);
+> +		hw->pg_state = MEI_PG_ON;
+> +		ret = 0;
+> +	} else {
+> +		ret = -EAGAIN;
+> +	}
+
+probably not needed this here... but it would be good if you use
+the runtime_pm{get,put} to protect your write operations as well...
+
+> +
+> +	mutex_unlock(&dev->device_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __maybe_unused mei_gsc_pm_runtime_resume(struct device *device)
+> +{
+> +	struct mei_device *dev = dev_get_drvdata(device);
+> +	struct mei_me_hw *hw;
+> +	irqreturn_t irq_ret;
+> +
+> +	if (!dev)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&dev->device_lock);
+> +
+> +	hw = to_me_hw(dev);
+> +	hw->pg_state = MEI_PG_OFF;
+> +
+> +	mutex_unlock(&dev->device_lock);
+> +
+> +	irq_ret = mei_me_irq_thread_handler(1, dev);
+> +	if (irq_ret != IRQ_HANDLED)
+> +		dev_err(dev->dev, "thread handler fail %d\n", irq_ret);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct dev_pm_ops mei_gsc_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(mei_gsc_pm_suspend,
+> +				mei_gsc_pm_resume)
+> +	SET_RUNTIME_PM_OPS(mei_gsc_pm_runtime_suspend,
+> +			   mei_gsc_pm_runtime_resume,
+> +			   mei_gsc_pm_runtime_idle)
+> +};
+>  
+>  static const struct auxiliary_device_id mei_gsc_id_table[] = {
+>  	{
+> -- 
+> 2.32.0
+> 
