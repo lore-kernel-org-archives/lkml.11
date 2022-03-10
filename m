@@ -2,310 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E2EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241683AbiCJOOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:14:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50876 "EHLO
+        id S242905AbiCJOOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:14:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242987AbiCJONK (ORCPT
+        with ESMTP id S243043AbiCJONj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:13:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B25156978;
-        Thu, 10 Mar 2022 06:11:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0A70B82678;
-        Thu, 10 Mar 2022 14:11:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B03C340E8;
-        Thu, 10 Mar 2022 14:11:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921483;
-        bh=oAy40g1GwMXudB1PoTaSbgS8tYsxXpG0PSmshLCBrns=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6hcYbTZ+XgHPTzb0VrDyL3OuFxHad9E1yYMGIQmdDiX8zyZoop7HPVke7WW42PXA
-         pOmRejJIFka9WHChaTA5BoD1VQTmmCNYwe/+nL8e2mQIdC9Fsl6IXL4Fviw3YWcbH0
-         AaTNtDAgBtw2De3l35JKbv1EwfzedudtXaYo+0Vc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.16 29/53] arm64: entry: Add vectors that have the bhb mitigation sequences
-Date:   Thu, 10 Mar 2022 15:09:34 +0100
-Message-Id: <20220310140812.674013221@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
-References: <20220310140811.832630727@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Thu, 10 Mar 2022 09:13:39 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB9158781;
+        Thu, 10 Mar 2022 06:11:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646921494; x=1678457494;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=/0lWU+5EyoSjlOB1k9o55wX3sxsJiR5VJJRuHs8r7qY=;
+  b=kiYvPnW9Gj7SQrP24WbI06ECFPfV2PqyoFFes50+7S86EZlVoYo7g0Jx
+   jYL0+D2UIylthTW7Aw3zTuAs5o660VG2VDDGcDryyAfhXmhIgvJdPAl8A
+   aJojElt2ht3053BNck435zMaBVB5t/QxOWfBb0sZdduj+iEuH0TMcdlRo
+   dVbqlVuSo/9IqGNcc3okXn3h5UMvLItMzfvWTn2Scq/5Nr52PKDo1uC9W
+   P6etffT2Y22yZqN30E3aWg1ihKLdCQ/qKLfi8FDaxZ1vWTc164ge7T8NK
+   qcBa8KAk/DXSfNwUsgYLGdAYpV2XN25Ht9BQivzLaDSplSTk2a1R8hdO+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242702683"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="242702683"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="554655084"
+Received: from chaop.bj.intel.com ([10.240.192.101])
+  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:10:32 -0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: [PATCH v5 08/13] KVM: Use memfile_pfn_ops to obtain pfn for private pages
+Date:   Thu, 10 Mar 2022 22:09:06 +0800
+Message-Id: <20220310140911.50924-9-chao.p.peng@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+Private pages are not mmap-ed into userspace so can not reply on
+get_user_pages() to obtain the pfn. Instead we add a memfile_pfn_ops
+pointer pfn_ops in each private memslot and use it to obtain the pfn
+for a gfn. To do that, KVM should convert the gfn to the offset into
+the fd and then call get_lock_pfn callback. Once KVM completes its job
+it should call put_unlock_pfn to unlock the pfn. Note the pfn(page) is
+locked between get_lock_pfn/put_unlock_pfn to ensure pfn is valid when
+KVM uses it to establish the mapping in the secondary MMU page table.
 
-commit ba2689234be92024e5635d30fe744f4853ad97db upstream.
+The pfn_ops is initialized via memfile_register_notifier from the memory
+backing store that provided the private_fd.
 
-Some CPUs affected by Spectre-BHB need a sequence of branches, or a
-firmware call to be run before any indirect branch. This needs to go
-in the vectors. No CPU needs both.
-
-While this can be patched in, it would run on all CPUs as there is a
-single set of vectors. If only one part of a big/little combination is
-affected, the unaffected CPUs have to run the mitigation too.
-
-Create extra vectors that include the sequence. Subsequent patches will
-allow affected CPUs to select this set of vectors. Later patches will
-modify the loop count to match what the CPU requires.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- arch/arm64/include/asm/assembler.h |   24 ++++++++++++++++
- arch/arm64/include/asm/vectors.h   |   34 +++++++++++++++++++++++
- arch/arm64/kernel/entry.S          |   53 ++++++++++++++++++++++++++++++-------
- arch/arm64/kernel/proton-pack.c    |   16 +++++++++++
- include/linux/arm-smccc.h          |    5 +++
- 5 files changed, 123 insertions(+), 9 deletions(-)
- create mode 100644 arch/arm64/include/asm/vectors.h
+ arch/x86/kvm/Kconfig     |  1 +
+ include/linux/kvm_host.h | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
 
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -840,4 +840,28 @@ alternative_endif
+diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
+index e3cbd7706136..ca7b2a6a452a 100644
+--- a/arch/x86/kvm/Kconfig
++++ b/arch/x86/kvm/Kconfig
+@@ -48,6 +48,7 @@ config KVM
+ 	select SRCU
+ 	select INTERVAL_TREE
+ 	select HAVE_KVM_PM_NOTIFIER if PM
++	select MEMFILE_NOTIFIER
+ 	help
+ 	  Support hosting fully virtualized guest machines using hardware
+ 	  virtualization extensions.  You will need a fairly recent
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index c92c70174248..6e1d770d6bf8 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -44,6 +44,7 @@
  
- #endif /* GNU_PROPERTY_AARCH64_FEATURE_1_DEFAULT */
+ #include <asm/kvm_host.h>
+ #include <linux/kvm_dirty_ring.h>
++#include <linux/memfile_notifier.h>
  
-+	.macro __mitigate_spectre_bhb_loop      tmp
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	mov	\tmp, #32
-+.Lspectre_bhb_loop\@:
-+	b	. + 4
-+	subs	\tmp, \tmp, #1
-+	b.ne	.Lspectre_bhb_loop\@
-+	sb
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
-+
-+	/* Save/restores x0-x3 to the stack */
-+	.macro __mitigate_spectre_bhb_fw
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	stp	x0, x1, [sp, #-16]!
-+	stp	x2, x3, [sp, #-16]!
-+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+alternative_cb	smccc_patch_fw_mitigation_conduit
-+	nop					// Patched to SMC/HVC #0
-+alternative_cb_end
-+	ldp	x2, x3, [sp], #16
-+	ldp	x0, x1, [sp], #16
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	.endm
- #endif	/* __ASM_ASSEMBLER_H */
---- /dev/null
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2022 ARM Ltd.
-+ */
-+#ifndef __ASM_VECTORS_H
-+#define __ASM_VECTORS_H
-+
-+/*
-+ * Note: the order of this enum corresponds to two arrays in entry.S:
-+ * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
-+ * 'full fat' vectors are used directly.
-+ */
-+enum arm64_bp_harden_el1_vectors {
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	/*
-+	 * Perform the BHB loop mitigation, before branching to the canonical
-+	 * vectors.
-+	 */
-+	EL1_VECTOR_BHB_LOOP,
-+
-+	/*
-+	 * Make the SMC call for firmware mitigation, before branching to the
-+	 * canonical vectors.
-+	 */
-+	EL1_VECTOR_BHB_FW,
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+
-+	/*
-+	 * Remap the kernel before branching to the canonical vectors.
-+	 */
-+	EL1_VECTOR_KPTI,
-++};
-+
-+#endif /* __ASM_VECTORS_H */
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -646,13 +646,26 @@ alternative_else_nop_endif
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
+ #ifndef KVM_MAX_VCPU_IDS
+ #define KVM_MAX_VCPU_IDS KVM_MAX_VCPUS
+@@ -565,6 +566,7 @@ struct kvm_memory_slot {
+ 	u16 as_id;
+ 	struct file *private_file;
+ 	loff_t private_offset;
++	struct memfile_pfn_ops *pfn_ops;
+ };
  
--	.macro tramp_ventry, vector_start, regsize, kpti
-+
-+#define BHB_MITIGATION_NONE	0
-+#define BHB_MITIGATION_LOOP	1
-+#define BHB_MITIGATION_FW	2
-+
-+	.macro tramp_ventry, vector_start, regsize, kpti, bhb
- 	.align	7
- 1:
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
- 
-+	.if	\bhb == BHB_MITIGATION_LOOP
-+	/*
-+	 * This sequence must appear before the first indirect branch. i.e. the
-+	 * ret out of tramp_ventry. It appears here because x30 is free.
-+	 */
-+	__mitigate_spectre_bhb_loop	x30
-+	.endif // \bhb == BHB_MITIGATION_LOOP
-+
- 	.if	\kpti == 1
- 	/*
- 	 * Defend against branch aliasing attacks by pushing a dummy
-@@ -680,6 +693,15 @@ alternative_else_nop_endif
- 	ldr	x30, =vectors
- 	.endif // \kpti == 1
- 
-+	.if	\bhb == BHB_MITIGATION_FW
-+	/*
-+	 * The firmware sequence must appear before the first indirect branch.
-+	 * i.e. the ret out of tramp_ventry. But it also needs the stack to be
-+	 * mapped to save/restore the registers the SMC clobbers.
-+	 */
-+	__mitigate_spectre_bhb_fw
-+	.endif // \bhb == BHB_MITIGATION_FW
-+
- 	add	x30, x30, #(1b - \vector_start + 4)
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
-@@ -687,6 +709,9 @@ alternative_else_nop_endif
- 
- 	.macro tramp_exit, regsize = 64
- 	adr	x30, tramp_vectors
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	add	x30, x30, SZ_4K
-+#endif
- 	msr	vbar_el1, x30
- 	ldr	lr, [sp, #S_LR]
- 	tramp_unmap_kernel	x29
-@@ -698,26 +723,32 @@ alternative_else_nop_endif
- 	sb
- 	.endm
- 
--	.macro	generate_tramp_vector,	kpti
-+	.macro	generate_tramp_vector,	kpti, bhb
- .Lvector_start\@:
- 	.space	0x400
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, \kpti
-+	tramp_ventry	.Lvector_start\@, 64, \kpti, \bhb
- 	.endr
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 32, \kpti
-+	tramp_ventry	.Lvector_start\@, 32, \kpti, \bhb
- 	.endr
- 	.endm
- 
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- /*
-  * Exception vectors trampoline.
-+ * The order must match __bp_harden_el1_vectors and the
-+ * arm64_bp_harden_el1_vectors enum.
-  */
- 	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- SYM_CODE_START_NOALIGN(tramp_vectors)
--	generate_tramp_vector	kpti=1
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_LOOP
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
-+	generate_tramp_vector	kpti=1, bhb=BHB_MITIGATION_NONE
- SYM_CODE_END(tramp_vectors)
- 
- SYM_CODE_START(tramp_exit_native)
-@@ -744,7 +775,7 @@ SYM_DATA_END(__entry_tramp_data_start)
-  * Exception vectors for spectre mitigations on entry from EL1 when
-  * kpti is not in use.
-  */
--	.macro generate_el1_vector
-+	.macro generate_el1_vector, bhb
- .Lvector_start\@:
- 	kernel_ventry	1, t, 64, sync		// Synchronous EL1t
- 	kernel_ventry	1, t, 64, irq		// IRQ EL1t
-@@ -757,17 +788,21 @@ SYM_DATA_END(__entry_tramp_data_start)
- 	kernel_ventry	1, h, 64, error		// Error EL1h
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64, kpti=0
-+	tramp_ventry	.Lvector_start\@, 64, 0, \bhb
- 	.endr
- 	.rept 4
--	tramp_ventry	.Lvector_start\@, 32, kpti=0
-+	tramp_ventry	.Lvector_start\@, 32, 0, \bhb
- 	.endr
- 	.endm
- 
-+/* The order must match tramp_vecs and the arm64_bp_harden_el1_vectors enum. */
- 	.pushsection ".entry.text", "ax"
- 	.align	11
- SYM_CODE_START(__bp_harden_el1_vectors)
--	generate_el1_vector
-+#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
-+	generate_el1_vector	bhb=BHB_MITIGATION_LOOP
-+	generate_el1_vector	bhb=BHB_MITIGATION_FW
-+#endif /* CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY */
- SYM_CODE_END(__bp_harden_el1_vectors)
- 	.popsection
- 
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -770,3 +770,19 @@ int arch_prctl_spec_ctrl_get(struct task
- 		return -ENODEV;
- 	}
+ static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
+@@ -915,6 +917,7 @@ static inline void kvm_irqfd_exit(void)
+ {
  }
+ #endif
 +
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
-+						     __le32 *origptr,
-+						      __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
-+
-+/* Patched to NOP when enabled */
-+void noinstr spectre_bhb_patch_fw_mitigation_enabled(struct alt_instr *alt,
-+						   __le32 *origptr,
-+						   __le32 *updptr, int nr_inst)
-+{
-+	BUG_ON(nr_inst != 1);
-+}
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -92,6 +92,11 @@
- 			   ARM_SMCCC_SMC_32,				\
- 			   0, 0x7fff)
+ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 		  struct module *module);
+ void kvm_exit(void);
+@@ -2217,4 +2220,34 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
+ /* Max number of entries allowed for each kvm dirty ring */
+ #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
  
-+#define ARM_SMCCC_ARCH_WORKAROUND_3					\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   0, 0x3fff)
++#ifdef CONFIG_MEMFILE_NOTIFIER
++static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
++				       int *order)
++{
++	pgoff_t index = gfn - slot->base_gfn +
++			(slot->private_offset >> PAGE_SHIFT);
 +
- #define ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID				\
- 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
- 			   ARM_SMCCC_SMC_32,				\
-
++	return slot->pfn_ops->get_lock_pfn(file_inode(slot->private_file),
++					   index, order);
++}
++
++static inline void kvm_memfile_put_pfn(struct kvm_memory_slot *slot,
++				       kvm_pfn_t pfn)
++{
++	slot->pfn_ops->put_unlock_pfn(pfn);
++}
++
++#else
++static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
++				       int *order)
++{
++	return -1;
++}
++
++static inline void kvm_memfile_put_pfn(struct kvm_memory_slot *slot,
++				       kvm_pfn_t pfn)
++{
++}
++#endif /* CONFIG_MEMFILE_NOTIFIER */
++
+ #endif
+-- 
+2.17.1
 
