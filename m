@@ -2,61 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B94C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5877C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243553AbiCJOXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:23:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        id S232596AbiCJOXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:23:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244256AbiCJOTE (ORCPT
+        with ESMTP id S244350AbiCJOTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:04 -0500
+        Thu, 10 Mar 2022 09:19:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC1A1704D0;
-        Thu, 10 Mar 2022 06:15:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B220B8B52;
+        Thu, 10 Mar 2022 06:16:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 024F261C67;
-        Thu, 10 Mar 2022 14:15:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD90BC36AF5;
-        Thu, 10 Mar 2022 14:15:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 486C261B63;
+        Thu, 10 Mar 2022 14:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5707AC340E8;
+        Thu, 10 Mar 2022 14:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921751;
-        bh=TulCEYJwDG+ZNjCzCFBRTe+9gAE+iWf3pD+bnXcqBTc=;
+        s=korg; t=1646921765;
+        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hwTMYIL2V+H90wccEOYxrBMcRZnGxlIHaFzL0vKJ7FzQqic4IW2ROFFIC0UCtZVRN
-         jJe+qvSAFDNSMgj2c3dqIGEMVz6KCjjllM15RKatXC0KjmWwj2sCT+tR88VJDqlXhG
-         +/rgiKT5JTBZvS8TCHYvsAI/YhgAzWALxwG8n+hI=
+        b=wTnznO68SjKNfoXctdLF0OdNFUJ41sRjENk7V4uKvgAtOwC3tjX39vnk+7Hm21OpE
+         SLDYTWZjcmHvnxFjS+uXcnFnvlu+pp/IDmE7HKaxPzq22bfXZXgFqTo8ZIpYtxy9qS
+         2wGv2wa/xu6U5kbIbUvnIiVLLQKoMDd/zLNIlckM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, WANG Chao <chao.wang@ucloud.cn>,
-        Borislav Petkov <bp@suse.de>,
-        Zhenzhong Duan <zhenzhong.duan@oracle.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jessica Yu <jeyu@kernel.org>, Jiri Kosina <jkosina@suse.cz>,
-        Kees Cook <keescook@chromium.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linux-kbuild@vger.kernel.org, srinivas.eeda@oracle.com,
-        x86-ml <x86@kernel.org>, Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 28/38] x86, modpost: Replace last remnants of RETPOLINE with CONFIG_RETPOLINE
-Date:   Thu, 10 Mar 2022 15:13:41 +0100
-Message-Id: <20220310140808.958165558@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.9 23/38] ARM: include unprivileged BPF status in Spectre V2 reporting
+Date:   Thu, 10 Mar 2022 15:13:36 +0100
+Message-Id: <20220310140808.814428235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -68,100 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: WANG Chao <chao.wang@ucloud.cn>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit e4f358916d528d479c3c12bd2fd03f2d5a576380 upstream.
+commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
 
-Commit
+The mitigations for Spectre-BHB are only applied when an exception
+is taken, but when unprivileged BPF is enabled, userspace can
+load BPF programs that can be used to exploit the problem.
 
-  4cd24de3a098 ("x86/retpoline: Make CONFIG_RETPOLINE depend on compiler support")
+When unprivileged BPF is enabled, report the vulnerable status via
+the spectre_v2 sysfs file.
 
-replaced the RETPOLINE define with CONFIG_RETPOLINE checks. Remove the
-remaining pieces.
-
- [ bp: Massage commit message. ]
-
-Fixes: 4cd24de3a098 ("x86/retpoline: Make CONFIG_RETPOLINE depend on compiler support")
-Signed-off-by: WANG Chao <chao.wang@ucloud.cn>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Zhenzhong Duan <zhenzhong.duan@oracle.com>
-Reviewed-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Woodhouse <dwmw@amazon.co.uk>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jessica Yu <jeyu@kernel.org>
-Cc: Jiri Kosina <jkosina@suse.cz>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc: Michal Marek <michal.lkml@markovi.net>
-Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Tim Chen <tim.c.chen@linux.intel.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linux-kbuild@vger.kernel.org
-Cc: srinivas.eeda@oracle.com
-Cc: stable <stable@vger.kernel.org>
-Cc: x86-ml <x86@kernel.org>
-Link: https://lkml.kernel.org/r/20181210163725.95977-1-chao.wang@ucloud.cn
-[bwh: Backported to 4.9: adjust context]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c   |    2 +-
- include/linux/compiler-gcc.h |    2 +-
- include/linux/module.h       |    2 +-
- scripts/mod/modpost.c        |    2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/kernel/spectre.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -586,7 +586,7 @@ static enum spectre_v2_user_mitigation s
- static enum spectre_v2_user_mitigation spectre_v2_user_ibpb __ro_after_init =
- 	SPECTRE_V2_USER_NONE;
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -1,9 +1,19 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <linux/bpf.h>
+ #include <linux/cpu.h>
+ #include <linux/device.h>
  
--#ifdef RETPOLINE
-+#ifdef CONFIG_RETPOLINE
- static bool spectre_v2_bad_module;
+ #include <asm/spectre.h>
  
- bool retpoline_module_ok(bool has_retpoline)
---- a/include/linux/compiler-gcc.h
-+++ b/include/linux/compiler-gcc.h
-@@ -107,7 +107,7 @@
- #define __weak		__attribute__((weak))
- #define __alias(symbol)	__attribute__((alias(#symbol)))
- 
--#ifdef RETPOLINE
-+#ifdef CONFIG_RETPOLINE
- #define __noretpoline __attribute__((indirect_branch("keep")))
- #endif
- 
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -791,7 +791,7 @@ static inline void module_bug_finalize(c
- static inline void module_bug_cleanup(struct module *mod) {}
- #endif	/* CONFIG_GENERIC_BUG */
- 
--#ifdef RETPOLINE
-+#ifdef CONFIG_RETPOLINE
- extern bool retpoline_module_ok(bool has_retpoline);
- #else
- static inline bool retpoline_module_ok(bool has_retpoline)
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -2147,7 +2147,7 @@ static void add_intree_flag(struct buffe
- /* Cannot check for assembler */
- static void add_retpoline(struct buffer *b)
++static bool _unprivileged_ebpf_enabled(void)
++{
++#ifdef CONFIG_BPF_SYSCALL
++	return !sysctl_unprivileged_bpf_disabled;
++#else
++	return false
++#endif
++}
++
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
  {
--	buf_printf(b, "\n#ifdef RETPOLINE\n");
-+	buf_printf(b, "\n#ifdef CONFIG_RETPOLINE\n");
- 	buf_printf(b, "MODULE_INFO(retpoline, \"Y\");\n");
- 	buf_printf(b, "#endif\n");
- }
+@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
+ 	if (spectre_v2_state != SPECTRE_MITIGATED)
+ 		return sprintf(buf, "%s\n", "Vulnerable");
+ 
++	if (_unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
+ 	switch (spectre_v2_methods) {
+ 	case SPECTRE_V2_METHOD_BPIALL:
+ 		method = "Branch predictor hardening";
 
 
