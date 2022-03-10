@@ -2,84 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 02:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAF0C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 03:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236660AbiCJC6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 21:58:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
+        id S238502AbiCJDBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 22:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiCJC6H (ORCPT
+        with ESMTP id S229795AbiCJDBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 21:58:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D10122F4F;
-        Wed,  9 Mar 2022 18:57:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FDA4610AB;
-        Thu, 10 Mar 2022 02:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10D6C340E8;
-        Thu, 10 Mar 2022 02:57:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646881025;
-        bh=TMsrqTzqCQLOUMzh7FRwm1+/uKdoKl9Y7nT2OfN8/OU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DJ4RP46yTKivVt/Kt+U3SyVfoLj3KMMvpA/Pk4VFoyPN8xBRwcjzVxeJRSkm2HZEB
-         PUQoQCYg5gpwsHV9obERrf+A0Me5Km7Ck6oY6rCMPY61Zj0EeCjc0MERYzVrRjbYCN
-         5HfHi2MCi2fC8oce8bLS1/g6iED04qCEGRMiL7P0By4DBKRcRO5HvxGxc1bucL4jMU
-         sIIbeg9gzbYagWfPZQQyIHEXXqmNgvxUzOT/EmOmq0IQMWNB4HPZ3dU34IFGwe9Gqf
-         gBOK8r5qjZBsA9C/VDXhtzHWcZFeTXVGRipc+7XuHUnBO2wXnov+q+T+2deDP6UUmr
-         /UXzhlp++wMLQ==
-Message-ID: <0f97539a-439f-d584-9ba3-f4bd5a302bc0@kernel.org>
-Date:   Wed, 9 Mar 2022 19:57:03 -0700
+        Wed, 9 Mar 2022 22:01:48 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A27B124C3B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:00:46 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 376552C0C61;
+        Thu, 10 Mar 2022 03:00:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1646881244;
+        bh=bhyF/NCDXANrCw6v9FLOgZoyTG+XDLRL020LrUJIdEo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nqdCnlxNG74lIoOiQsoGhAnF2YXVFhcPabOttpOFU0cyA2I7uzLfmIwLPoU+J8iWk
+         nFAbVhw6wfr954swdBfDqCF7pym3uWlS9Q9Lw5g2jkqF0lzmqzx4yh1V6iQ9lz1O6A
+         3UUvy8ifLBcB4a7qEFjI8Skq165QGVtsSl3zVsgVGenVSKpytQNkjnibhqJNxBQqoI
+         YnmhIe+jjhiCmJHvbh1Oev2h7A5MyjOD4jy1wfKm8JGyYPLHNv1lKN3ilzn1VZceOJ
+         u4opikFZBYhXtmHDEUu3700binh2Qk8iDexMJmVvxtuUmbnAjiib6vI8Ql9NJk9e/y
+         +ZrmAjjFepSqg==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B622969db0004>; Thu, 10 Mar 2022 16:00:43 +1300
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 9C82913EE9C;
+        Thu, 10 Mar 2022 16:00:43 +1300 (NZDT)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id ACBCF2A00D4; Thu, 10 Mar 2022 16:00:41 +1300 (NZDT)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     linus.walleij@linaro.org, robh+dt@kernel.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, robert.marko@sartura.hr
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v1 4/4] arm64: marvell: enable the 98DX2530 pinctrl driver
+Date:   Thu, 10 Mar 2022 16:00:39 +1300
+Message-Id: <20220310030039.2833808-5-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310030039.2833808-1-chris.packham@alliedtelesis.co.nz>
+References: <20220310030039.2833808-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: IPv4 saddr do not match with selected output device in double
- default gateways scene
-Content-Language: en-US
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, ja@ssi.bg
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=XQcNo-tEeLJW46c85tUA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/7/22 11:41 PM, Ziyang Xuan (William) wrote:
-> Create VLAN devices and add default gateways with following commands:
-> 
-> # ip link add link eth2 dev eth2.71 type vlan id 71
-> # ip link add link eth2 dev eth2.72 type vlan id 72
-> # ip addr add 192.168.71.41/24 dev eth2.71
-> # ip addr add 192.168.72.41/24 dev eth2.72
-> # ip link set eth2.71 up
-> # ip link set eth2.72 up
-> # route add -net default gw 192.168.71.1 dev eth2.71
-> # route add -net default gw 192.168.72.1 dev eth2.72
-> 
+This commit makes sure the drivers for the 98DX2530 pin controller is
+enabled.
 
-...
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+---
+ arch/arm64/Kconfig.platforms | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> We can find that IPv4 saddr "192.168.72.41" do not match with selected VLAN device "eth2.71".
-> 
-> I tracked the related processes, and found that user space program uses connect() firstly, then sends UDP packet.
-> 
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 21697449d762..6bbb56901794 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -183,11 +183,13 @@ config ARCH_MVEBU
+ 	select PINCTRL_ARMADA_37XX
+ 	select PINCTRL_ARMADA_AP806
+ 	select PINCTRL_ARMADA_CP110
++	select PINCTRL_AC5
+ 	help
+ 	  This enables support for Marvell EBU familly, including:
+ 	   - Armada 3700 SoC Family
+ 	   - Armada 7K SoC Family
+ 	   - Armada 8K SoC Family
++	   - 98DX2530 SoC Family
+=20
+ config ARCH_MXC
+ 	bool "ARMv8 based NXP i.MX SoC family"
+--=20
+2.35.1
 
-...
-
-> Deep tracking, it because fa->fa_default has changed in fib_select_default() after first __ip_route_output_key() process,
-> and a new fib_nh is selected in fib_select_default() within the second __ip_route_output_key() process but not update flowi4.
-> So the phenomenon described at the beginning happens.
-> 
-> Does it a kernel bug or a user problem? If it is a kernel bug, is there any good solution?
-
-That is a known problem with multipath routes.
