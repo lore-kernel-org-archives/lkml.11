@@ -2,120 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2179FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98797C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243439AbiCJOXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:23:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        id S233038AbiCJOX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:23:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244472AbiCJOTY (ORCPT
+        with ESMTP id S244517AbiCJOTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BB1C1CBF;
-        Thu, 10 Mar 2022 06:16:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDB5CB82676;
-        Thu, 10 Mar 2022 14:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C607FC340EB;
-        Thu, 10 Mar 2022 14:15:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921748;
-        bh=DvEI6aRgVGSp13qeZIvZaOfCgzZ25LrHDBt0QKYNd0k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTU4MddBPFYOTzKHtSSh7tvmjaa95J9H0E1cYUvTussJZkGPp49zF++eGM4io5ySK
-         C/5vNe3K0tUvY8NfK2+RO+oYBaUQ+DkOwRaN98YlEcwpkJlD7T9JHysMZGFeBreDRS
-         S70RR7Ml1B3rIRxpfxEM86xOsHVf/RwCPmFlWTUQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meelis Roos <mroos@linux.ee>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Zhenzhong Duan <zhenzhong.duan@oracle.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 27/38] x86/build: Fix compiler support check for CONFIG_RETPOLINE
-Date:   Thu, 10 Mar 2022 15:13:40 +0100
-Message-Id: <20220310140808.928982540@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
-References: <20220310140808.136149678@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:19:37 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB5EC559B;
+        Thu, 10 Mar 2022 06:16:26 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id o22so4648505qta.8;
+        Thu, 10 Mar 2022 06:16:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2L8OR5koUh2CDVJY7FcCTDkGe8HG516p7zFzZPDOUYA=;
+        b=NnkiLgsEZB4dZyt1H8ltHuaieq6L4WSw2AG364q8ofxQwnVhizrC3MKo+CTq4HeWqI
+         PPXTdUf7CrJBMWocGLjt5un9QvOPxFqYsFYY3QZvMiVizagUCufylO97Diz1mQqnt1t3
+         UINlKk30iYZrlU2kDThBq4FbK+Eb2wQj2DITIdW/5k9i8i/ODbzsAcjvYynPbZt+W8aD
+         H/sG4JBdYeYQX4YXAJUsP8UujuxmYHhYFLCY6R1lpZdB4lhc0ezu2bxoTYDCLX6BDRUm
+         go5/DhjyXe5gYUyB+faVrBVqPu6JFfGJt2v42p3/4VHjXcNvR+85IRGNVEQONve4zlzC
+         t+vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2L8OR5koUh2CDVJY7FcCTDkGe8HG516p7zFzZPDOUYA=;
+        b=zYmJsX1G/dWzUn2EB7damWRj/08Bp4pYXYyMXhQniZV+60DJoKkRurFrFYqJJgvaD9
+         7+cQBgJqV9y1QWqzkiCWr+9Q2jmT7bhctj4arZhBcFDaIlFQ8/zA0fot6fw9zpWllG48
+         4xGOc6adZpxM9T1cUBEqwP1Us4rCjIiFrDPiDmiQaNKYJtWfJZzpD33Jji/q5jxyA6C/
+         4V5hmturRU7l+Fy3K13PwAy/tHTazRtixOJsgJ5qsWImCN+x7+dWE42xa2fIkFvP7mcT
+         YYacm8/0kRaOswjlNJZ4uT4AjLyjizZwzVkD6PEm78w9YSTkz49ny5TTWz/RPhZq3xNR
+         w6KA==
+X-Gm-Message-State: AOAM5310nahwiWsp+8NQhSSwFE9Bqv5J7g4LYT5TMbPk9ihmprLgfPTu
+        tb0z9kpsWA14mzts0XdQQdsLZLrKlR/gCtP0agI=
+X-Google-Smtp-Source: ABdhPJy0vcFKq3czcAkuCKChovxMM8akI73joMv8l5k6Zzq/zj/9f/Pyn2v7HMfvT8wBCVN4ICZVgzd3wKyaV7cJyn8=
+X-Received: by 2002:ac8:7f51:0:b0:2dd:dbca:1f40 with SMTP id
+ g17-20020ac87f51000000b002dddbca1f40mr3924359qtk.463.1646921784722; Thu, 10
+ Mar 2022 06:16:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220310140542.7483-1-arinc.unal@arinc9.com>
+In-Reply-To: <20220310140542.7483-1-arinc.unal@arinc9.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Thu, 10 Mar 2022 15:16:13 +0100
+Message-ID: <CAMhs-H_+UXiYQdpE_WKAgEw0=1s5DA0ftQwD1w+W2vORQxFdKQ@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: pinctrl: rt2880: add missing pin groups and functions
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, erkin.bozoglu@xeront.com,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
+On Thu, Mar 10, 2022 at 3:06 PM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc=
+9.com> wrote:
+>
+> Add the missing pin groups:
+> jtag, wdt
+>
+> Add the missing functions:
+> i2s, jtag, pcie refclk, pcie rst, pcm, spdif2, spdif3, wdt refclk, wdt rs=
+t
+>
+> Sort pin groups and functions in alphabetical order. Fix a typo.
+>
+> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> ---
+> I didn't know the order to put the missing groups and functions so I sort=
+ed
+> them in alphabetical order, let me know if it's not ok.
+>
+> Ar=C4=B1n=C3=A7
+>
+> ---
+>  .../bindings/pinctrl/ralink,rt2880-pinmux.yaml        | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
 
-commit 25896d073d8a0403b07e6dec56f58e6c33678207 upstream.
+Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
 
-It is troublesome to add a diagnostic like this to the Makefile
-parse stage because the top-level Makefile could be parsed with
-a stale include/config/auto.conf.
-
-Once you are hit by the error about non-retpoline compiler, the
-compilation still breaks even after disabling CONFIG_RETPOLINE.
-
-The easiest fix is to move this check to the "archprepare" like
-this commit did:
-
-  829fe4aa9ac1 ("x86: Allow generating user-space headers without a compiler")
-
-Reported-by: Meelis Roos <mroos@linux.ee>
-Tested-by: Meelis Roos <mroos@linux.ee>
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-Acked-by: Zhenzhong Duan <zhenzhong.duan@oracle.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Zhenzhong Duan <zhenzhong.duan@oracle.com>
-Fixes: 4cd24de3a098 ("x86/retpoline: Make CONFIG_RETPOLINE depend on compiler support")
-Link: http://lkml.kernel.org/r/1543991239-18476-1-git-send-email-yamada.masahiro@socionext.com
-Link: https://lkml.org/lkml/2018/12/4/206
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-[bwh: Backported to 4.9: adjust context]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/Makefile |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -221,9 +221,6 @@ ifdef CONFIG_RETPOLINE
-     RETPOLINE_CFLAGS_CLANG := -mretpoline-external-thunk
- 
-     RETPOLINE_CFLAGS += $(call cc-option,$(RETPOLINE_CFLAGS_GCC),$(call cc-option,$(RETPOLINE_CFLAGS_CLANG)))
--    ifeq ($(RETPOLINE_CFLAGS),)
--      $(error You are building kernel with non-retpoline compiler, please update your compiler.)
--    endif
-     KBUILD_CFLAGS += $(RETPOLINE_CFLAGS)
- endif
- 
-@@ -240,6 +237,13 @@ archprepare:
- ifeq ($(CONFIG_KEXEC_FILE),y)
- 	$(Q)$(MAKE) $(build)=arch/x86/purgatory arch/x86/purgatory/kexec-purgatory.c
- endif
-+ifdef CONFIG_RETPOLINE
-+ifeq ($(RETPOLINE_CFLAGS),)
-+	@echo "You are building kernel with non-retpoline compiler." >&2
-+	@echo "Please update your compiler." >&2
-+	@false
-+endif
-+endif
- 
- ###
- # Kernel objects
-
-
+Thanks,
+     Sergio Paracuellos
