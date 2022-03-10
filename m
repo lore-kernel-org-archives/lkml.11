@@ -2,179 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B48C47081
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE868C3527E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245134AbiCJOeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:34:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
+        id S245174AbiCJOeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:34:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244391AbiCJO2x (ORCPT
+        with ESMTP id S244412AbiCJO2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:53 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296FDCD314;
-        Thu, 10 Mar 2022 06:23:53 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id 17so5826399lji.1;
-        Thu, 10 Mar 2022 06:23:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=da086JP55rsZQrttnyPrbRnmSrzYkA4tf6FDeCXSGn8=;
-        b=Z+e/z3T6tUfk0NmKVo9IgGfkkQIJNRFPGXu0FwCgDeGEQdiRVmwo1YlmzAs9EcKpKK
-         mwzIyqPAJ/dhq9T1RooeYxJ2bgH12WcOwGWhb/yqwRTRN2ow5MAIgke1G8KciqjbyP3+
-         en3jlZTxKH3jD1DjO/4KweqtdXmJLuXZOd+qiNaX+MeBldeRNffR9n7B2i3m0WHhqtrc
-         8QQ98NQbaQRS+W1LU7UUeUo8lTnU4kTEn0QK2vFVGePkXUcIzpne/9F8Xws4YhaGjqq2
-         tJ1FK/LCVfR10eZrYIhlTVh8pKHOc/ooJxiCBxH2Vhxqr0XowN3+K0ndPtyfxahH0LQZ
-         t9kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=da086JP55rsZQrttnyPrbRnmSrzYkA4tf6FDeCXSGn8=;
-        b=uwv4iicb48BIBkJwukH3xKeQ0dzKasPF5KNsXcyOdO7dfVqPnGQiMGjpGr1KKNmJbN
-         3wkJvXvDR9YyJPPR8/tYRfBkcdmT5Gje+PvF729RRmyxNJ+ajfGDKa7g1gWtayGcypQc
-         faR6NvPexBrS7+3kLp8usIt0qpx8C+d7K0DS5dhJf4CC6QhTIne0Xw/xou9Tsqd/aPNB
-         loQTh4rF4FU44733NoOjmZzrqw+4VzYmxX1zdIF1cio0gMJgxt6ROnl4j2ye+QTZ1OMX
-         bYo32gA4DTNiibSISSIjx7iD4KBb9r5L6k+gkA9hRYlw6tChw6yruRjWPMhRCp7lPCAW
-         uMeg==
-X-Gm-Message-State: AOAM532/qn7pfXLlyzh+j5W6BePqAMPP1J7/2RoZpe6hgzY8FXiU50SX
-        cZslK3w18xLeDLFfEEv2Rmk=
-X-Google-Smtp-Source: ABdhPJydcEuj+KQu43Z12hPJB7OUldKO5vUPTvL0Um7ak/OLihpqkhUy+9vw1rwez9WWNvOuxAk+Ow==
-X-Received: by 2002:a2e:9cd:0:b0:244:d41d:69ef with SMTP id 196-20020a2e09cd000000b00244d41d69efmr3040304ljj.386.1646922224990;
-        Thu, 10 Mar 2022 06:23:44 -0800 (PST)
-Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id 10-20020a2e080a000000b00247f82bbc6fsm1088932lji.54.2022.03.10.06.23.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:23:44 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked port feature
-Date:   Thu, 10 Mar 2022 15:23:18 +0100
-Message-Id: <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+        Thu, 10 Mar 2022 09:28:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFE3D10A5;
+        Thu, 10 Mar 2022 06:23:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DF55B82672;
+        Thu, 10 Mar 2022 14:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B29DCC340E8;
+        Thu, 10 Mar 2022 14:23:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922230;
+        bh=iG4dGyVQTtgev5VOsQ8d1I4SvBWcNj19Mn9JiAy+Rwo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EACZd+laC1OYAHRa7MnhKtmtwsF/b1jPGjhKfyB1J3XDHpBwEXjFIPWz2SfDLgN3K
+         b0asMn5jWG9libXqx0H6er3eJ1WePPDA7gc0T2eLrm5Oa81PkOd9vS+sHJXYWWGHsd
+         L2OGUsvY+p7DgMBuy0O++kKj20eCBqTqy/UEYa0I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.10 12/58] ARM: use LOADADDR() to get load address of sections
+Date:   Thu, 10 Mar 2022 15:18:32 +0100
+Message-Id: <20220310140813.225153043@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
+References: <20220310140812.869208747@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an intermediate state for clients behind a locked port to allow for
-possible opening of the port for said clients. This feature corresponds
-to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
-latter defined by Cisco.
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
+
+Use the linker's LOADADDR() macro to get the load address of the
+sections, and provide a macro to set the start and end symbols.
+
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/neighbour.h |  1 +
- net/bridge/br_fdb.c            |  6 ++++++
- net/bridge/br_input.c          | 11 ++++++++++-
- net/bridge/br_private.h        |  3 ++-
- 4 files changed, 19 insertions(+), 2 deletions(-)
+ arch/arm/include/asm/vmlinux.lds.h |   19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-index db05fb55055e..83115a592d58 100644
---- a/include/uapi/linux/neighbour.h
-+++ b/include/uapi/linux/neighbour.h
-@@ -208,6 +208,7 @@ enum {
- 	NFEA_UNSPEC,
- 	NFEA_ACTIVITY_NOTIFY,
- 	NFEA_DONT_REFRESH,
-+	NFEA_LOCKED,
- 	__NFEA_MAX
- };
- #define NFEA_MAX (__NFEA_MAX - 1)
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 6ccda68bd473..396dcf3084cf 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
- 	struct nda_cacheinfo ci;
- 	struct nlmsghdr *nlh;
- 	struct ndmsg *ndm;
-+	u8 ext_flags = 0;
+--- a/arch/arm/include/asm/vmlinux.lds.h
++++ b/arch/arm/include/asm/vmlinux.lds.h
+@@ -26,6 +26,11 @@
+ #define ARM_MMU_DISCARD(x)	x
+ #endif
  
- 	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
- 	if (nlh == NULL)
-@@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
- 		ndm->ndm_flags |= NTF_EXT_LEARNED;
- 	if (test_bit(BR_FDB_STICKY, &fdb->flags))
- 		ndm->ndm_flags |= NTF_STICKY;
-+	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
-+		ext_flags |= 1 << NFEA_LOCKED;
- 
- 	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
- 		goto nla_put_failure;
- 	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
- 		goto nla_put_failure;
-+	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
-+		goto nla_put_failure;
++/* Set start/end symbol names to the LMA for the section */
++#define ARM_LMA(sym, section)						\
++	sym##_start = LOADADDR(section);				\
++	sym##_end = LOADADDR(section) + SIZEOF(section)
 +
- 	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
- 	ci.ndm_confirmed = 0;
- 	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index e0c13fcc50ed..897908484b18 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 	struct net_bridge_mcast *brmctx;
- 	struct net_bridge_vlan *vlan;
- 	struct net_bridge *br;
-+	unsigned long flags = 0;
- 	u16 vid = 0;
- 	u8 state;
+ #define PROC_INFO							\
+ 		. = ALIGN(4);						\
+ 		__proc_info_begin = .;					\
+@@ -110,19 +115,19 @@
+  * only thing that matters is their relative offsets
+  */
+ #define ARM_VECTORS							\
+-	__vectors_start = .;						\
++	__vectors_lma = .;						\
+ 	.vectors 0xffff0000 : AT(__vectors_start) {			\
+ 		*(.vectors)						\
+ 	}								\
+-	. = __vectors_start + SIZEOF(.vectors);				\
+-	__vectors_end = .;						\
++	ARM_LMA(__vectors, .vectors);					\
++	. = __vectors_lma + SIZEOF(.vectors);				\
+ 									\
+-	__stubs_start = .;						\
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
++	__stubs_lma = .;						\
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
+ 		*(.stubs)						\
+ 	}								\
+-	. = __stubs_start + SIZEOF(.stubs);				\
+-	__stubs_end = .;						\
++	ARM_LMA(__stubs, .stubs);					\
++	. = __stubs_lma + SIZEOF(.stubs);				\
+ 									\
+ 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
  
-@@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
- 
- 		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
--		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-+		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
-+			if (!fdb_src) {
-+				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
-+				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
-+			}
- 			goto drop;
-+		} else {
-+			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
-+				goto drop;
-+		}
- 	}
- 
- 	nbp_switchdev_frame_mark(p, skb);
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 48bc61ebc211..f5a0b68c4857 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -248,7 +248,8 @@ enum {
- 	BR_FDB_ADDED_BY_EXT_LEARN,
- 	BR_FDB_OFFLOADED,
- 	BR_FDB_NOTIFY,
--	BR_FDB_NOTIFY_INACTIVE
-+	BR_FDB_NOTIFY_INACTIVE,
-+	BR_FDB_ENTRY_LOCKED,
- };
- 
- struct net_bridge_fdb_key {
--- 
-2.30.2
+
 
