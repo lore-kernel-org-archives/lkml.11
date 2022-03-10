@@ -2,70 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00969C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0619C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344306AbiCJWNl (ORCPT
+        id S1344325AbiCJWOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:13:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        Thu, 10 Mar 2022 17:14:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343995AbiCJWNi (ORCPT
+        with ESMTP id S244576AbiCJWOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:13:38 -0500
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5962DFB;
-        Thu, 10 Mar 2022 14:12:33 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id o83so2441oif.0;
-        Thu, 10 Mar 2022 14:12:33 -0800 (PST)
+        Thu, 10 Mar 2022 17:14:02 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0506D10BB;
+        Thu, 10 Mar 2022 14:13:01 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id v4so6514704pjh.2;
+        Thu, 10 Mar 2022 14:13:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OEbSQ04nyfNRXvDeQMNqKDmEQERB66Kn5CxU4dhzX5o=;
+        b=M5vpwh2HbSfMc9Coy8Z4zHTJ5PszU64EO1EOUobZsMFdWPcr8T+rgjGhVcG32OZaOw
+         HFmwwIy4/FxtKj6FefdPft7esEMC2GlW60sXH0u0miHbYzqALoerKtoP0EDq22Y7VMcd
+         c0xPta1RwbPVe9yyjdR9RnJ+I8lnmbIcCKAqX0Ugol53kYlIhF1nPgVa/am0G7mrdQSP
+         4a7Zo0sMrCNA/KElb1DorGWRtyLcbPZLrCod1pksSlzdJXg5Ou45GC9Zd7umNyp1NPKm
+         XO0ouufT9EU6xIrNWm1QLE7cpyyN/WoZGHx35qPlPrGOtU7WhwEPWX435R/Tvkv8G7Wb
+         G+mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=omjoz0M9biHPr5EKrbgbc5QfautyWsC0HyZJaIjRDEg=;
-        b=X7GYqySPrMybM2edaDOQg6w5BlZ4iKFQyUoYrAIU7nNp3ipMAYq/4b6Ot1e6yuwZtd
-         VtAxqOyUY0Wm4aAD/KXfcCDpovUcnuHT7trlywzq3VgJqJAfGn9RhwQJPxg4GAh74Yby
-         NvRxRqvoQ9e0F1zy8p2najFsNLLlrHvALF1OQbPAHyjOXW8jkWlEwq3LjtaOlu9lnk5Z
-         0a6ptiOz5wifrk3+btkK6aHYIjJUwTMdBoP3rFS7IvDN546n5TYOJaZ8OaIlHfnB1l+Z
-         FUngKREGoBFnZWZ1bJKj9t9FRgDAklU/1bnfAaxHTrNuhUS3J00Hx9uE9BSTj50HsY7I
-         StVQ==
-X-Gm-Message-State: AOAM533KrarHS3fgEtxRslyDTPHwXJgbzQEbVe/hVb2xrnj07P8D/uFD
-        gcuPUMJ8//kh+xE0uBLcIw==
-X-Google-Smtp-Source: ABdhPJxHna6A8giuUalT7X77knNuIyLF0eFu5RYM8FUTp80V2T9F0GnnEXgbqAyoeBJg75biyF6+tw==
-X-Received: by 2002:a05:6808:1528:b0:2da:7f1d:f847 with SMTP id u40-20020a056808152800b002da7f1df847mr1796358oiw.85.1646950353167;
-        Thu, 10 Mar 2022 14:12:33 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c14-20020a056870b28e00b000d7d5962242sm2821551oao.35.2022.03.10.14.12.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 14:12:32 -0800 (PST)
-Received: (nullmailer pid 2175473 invoked by uid 1000);
-        Thu, 10 Mar 2022 22:12:31 -0000
-Date:   Thu, 10 Mar 2022 16:12:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Trevor Wu <trevor.wu@mediatek.com>
-Cc:     broonie@kernel.org, tiwai@suse.com, matthias.bgg@gmail.com,
-        alsa-devel@alsa-project.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, aaronyu@google.com,
-        yc.hung@mediatek.com
-Subject: Re: [PATCH 2/5] dt-bindings: mediatek: mt8195: add reset property
-Message-ID: <Yip3z3XoarN8TeMn@robh.at.kernel.org>
-References: <20220308072435.22460-1-trevor.wu@mediatek.com>
- <20220308072435.22460-3-trevor.wu@mediatek.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OEbSQ04nyfNRXvDeQMNqKDmEQERB66Kn5CxU4dhzX5o=;
+        b=lSPN9zy/BG+q1frLXuSFngFsz8s890FjZe6+L7yHWRzOwOIuZbNeM91MBtQKI+2LfL
+         TRGJkUx8esQifyBChzJDWFsOrmjsj+yRSqWJ9Mo8sHnAd6VTs78FxMbEgscuy+bjZ5iI
+         oOXGHqtOM1lhZkQLT2a6i21faznzkBTqpcuGqmRP/TCmDWb59wR1ri8KOCylCuSNz0li
+         nXvXX7isykjoSwwWitPRGZvCOVpiEBEwc1WiTz6RyVsZzpecgjLJFrv98x7u+ZQUUzTa
+         QVg4pkmYPx50zyu/MU95PZKnNyf6DxCaQeFFXPhXosM34r5JSsG7yJBxbR/1QZqe5sBR
+         5yMA==
+X-Gm-Message-State: AOAM532Wegm+mneTy+jE+irPFZKM0dGnTCAjkocVAuzWOjVJRC3wUQ3A
+        kr0IwC9CAHXIRGymT3xFVk4=
+X-Google-Smtp-Source: ABdhPJzigQ1KKLniJLT7PnvfAcdr+8HGXe1QJU9BUH50mnKGpKOCbYDWxe4rfVzcUute6ptxqEQJpw==
+X-Received: by 2002:a17:90b:4ac1:b0:1bf:6d51:1ad9 with SMTP id mh1-20020a17090b4ac100b001bf6d511ad9mr18247300pjb.199.1646950380379;
+        Thu, 10 Mar 2022 14:13:00 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id cv15-20020a17090afd0f00b001bedcbca1a9sm10950308pjb.57.2022.03.10.14.12.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 14:12:59 -0800 (PST)
+Subject: Re: [PATCH 5.15 00/58] 5.15.28-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220310140812.983088611@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9d7f894c-ddc6-3da1-97b2-f228993126a6@gmail.com>
+Date:   Thu, 10 Mar 2022 14:12:53 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308072435.22460-3-trevor.wu@mediatek.com>
+In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 03:24:32PM +0800, Trevor Wu wrote:
-> Add required properties "resets" and "reset_names", which are used to
-> specify audiosys hw reset for mt8195 afe driver.
+On 3/10/22 6:18 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.28 release.
+> There are 58 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.28-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-The subject needs to be more specific and indicate this applies to ASoC 
-and mt8195-afe-pcm. Try to write subjects that could only ever appear 
-once as you can never make the same change twice.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Rob
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
