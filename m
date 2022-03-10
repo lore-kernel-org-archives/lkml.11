@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244493AbiCJRVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:21:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
+        id S244503AbiCJRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:21:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbiCJRVg (ORCPT
+        with ESMTP id S244487AbiCJRVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:21:36 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00221965E9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:34 -0800 (PST)
+        Thu, 10 Mar 2022 12:21:39 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBE41986E6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932834; x=1678468834;
+  t=1646932838; x=1678468838;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7iJMoT3l/imb1JMUcZ/zix886+gdS+rNaiSrvLlCA98=;
-  b=YeEuhcid6c3Yks97dJoabTmDZp1KoWRkt99hha7EMQ+zYWltutRT46uX
-   zCbsgH5UwuJbu4nifbIUnE+bX5dCnXxa+9Fs91eHy4kaCjUryokHX+3xm
-   XkMqrcTDZFu06LJgxLDD9Z3/5pqvd5OkTRrx7jFba/3PU1qwZq+YxkFJO
-   Xry92rMsFpBX2o2VU/KWJZHgKATCW29R5NkObnr+E5wHpsNLZVStjDYtv
-   CmFQbRPIxF+tEoto4UE2jBiICQPNUlWXpPKqD//bwMHFPj0HZhsSJF1le
-   Mcv9HYmTg+SP6USgESXRhA4T9byIksIWd3IiiD34nRvm6icTHtpGp8xi7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="341741130"
+  bh=93jFsX4NWL0obNPFh5T/xV2MAM630r0feBd5fmn2ZFc=;
+  b=XUQl6A3r4OUljL0x5FGnppaLm3T2Yg0ShfIZJag1LVCZ6X9N0Ko3NZY6
+   6hE2Z/nvyy28SXz4/0+PX0sAqG2bda0mhDTG35G82GEsoKtqrs+UMTiqj
+   TkCWwSJmtLySXMQOuUkl+lINr9Ry1yGWosquUVCIl4WHdlppLGwc9Ifvf
+   8z81jUvO/uCkT9p/45UW0d0su1T+Pp+qVVTSS512Y4RDwkHo1dJQF9ZX8
+   s60OAPp25UYyRFCxx7wBCuEgQBySB41jz7j74gzI0SM8dQwhs8nSyztzX
+   fttn0Z8xCP9ZhERDW4eMvqetXfPC52JtDtoAg1uwWKVb6Onp+7QkT8/CU
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="280050663"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="341741130"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:34 -0800
+   d="scan'208";a="280050663"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:37 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="510983766"
+   d="scan'208";a="611815891"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:33 -0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:37 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 03/45] x86/pkeys: Clarify PKRU_AD_KEY macro
-Date:   Thu, 10 Mar 2022 09:19:37 -0800
-Message-Id: <20220310172019.850939-4-ira.weiny@intel.com>
+Subject: [PATCH V9 05/45] x86/fpu: Refactor arch_set_user_pkey_access()
+Date:   Thu, 10 Mar 2022 09:19:39 -0800
+Message-Id: <20220310172019.850939-6-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,62 +59,108 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-When changing the PKRU_AD_KEY macro to be used for PKS the name came
-into question.[1]
+Both PKU and PKS update their register values in the same way.  They can
+therefore share the update code.
 
-The intent of PKRU_AD_KEY is to set an initial value for the PKRU
-register but that is just a mask value.
+Define a helper, pkey_update_pkval(), which will be used to support both
+Protection Key User (PKU) and the new Protection Key for Supervisor
+(PKS) in subsequent patches.
 
-Clarify this by changing the name to PKRU_AD_MASK().
+pkey_update_pkval() contributed by Thomas
 
-NOTE the checkpatch errors are ignored for the init_pkru_value to align
-the values in the code.
-
-[1] https://lore.kernel.org/lkml/eff862e2-bfaa-9e12-42b5-a12467d72a22@intel.com/
-
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+Co-developed-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-Changes for V9
-	New Patch
+Update for V8:
+	From Rick Edgecombe
+		Change pkey type to u8
+	Replace the code Peter provided in update_pkey_reg() for
+	Thomas' pkey_update_pkval()
+		-- https://lore.kernel.org/lkml/20200717085442.GX10769@hirez.programming.kicks-ass.net/
 ---
- arch/x86/mm/pkeys.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/pkeys.h |  2 ++
+ arch/x86/kernel/fpu/xstate.c | 22 ++++------------------
+ arch/x86/mm/pkeys.c          | 16 ++++++++++++++++
+ 3 files changed, 22 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index e44e938885b7..7418c367e328 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -110,7 +110,7 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
- 	return vma_pkey(vma);
+diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
+index 1d5f14aff5f6..26616cbe19e2 100644
+--- a/arch/x86/include/asm/pkeys.h
++++ b/arch/x86/include/asm/pkeys.h
+@@ -131,4 +131,6 @@ static inline int vma_pkey(struct vm_area_struct *vma)
+ 	return (vma->vm_flags & vma_pkey_mask) >> VM_PKEY_SHIFT;
  }
  
--#define PKRU_AD_KEY(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
-+#define PKRU_AD_MASK(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
++u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits);
++
+ #endif /*_ASM_X86_PKEYS_H */
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index d090867c9de3..c8a8dadd9f87 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -1071,8 +1071,7 @@ void *get_xsave_addr(struct xregs_state *xsave, int xfeature_nr)
+ int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+ 			      unsigned long init_val)
+ {
+-	u32 old_pkru, new_pkru_bits = 0;
+-	int pkey_shift;
++	u32 pkru;
  
- /*
-  * Make the default PKRU value (at execve() time) as restrictive
-@@ -118,11 +118,14 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
-  * in the process's lifetime will not accidentally get access
-  * to data which is pkey-protected later on.
-  */
--u32 init_pkru_value = PKRU_AD_KEY( 1) | PKRU_AD_KEY( 2) | PKRU_AD_KEY( 3) |
--		      PKRU_AD_KEY( 4) | PKRU_AD_KEY( 5) | PKRU_AD_KEY( 6) |
--		      PKRU_AD_KEY( 7) | PKRU_AD_KEY( 8) | PKRU_AD_KEY( 9) |
--		      PKRU_AD_KEY(10) | PKRU_AD_KEY(11) | PKRU_AD_KEY(12) |
--		      PKRU_AD_KEY(13) | PKRU_AD_KEY(14) | PKRU_AD_KEY(15);
-+u32 init_pkru_value = PKRU_AD_MASK( 1) | PKRU_AD_MASK( 2) |
-+		      PKRU_AD_MASK( 3) | PKRU_AD_MASK( 4) |
-+		      PKRU_AD_MASK( 5) | PKRU_AD_MASK( 6) |
-+		      PKRU_AD_MASK( 7) | PKRU_AD_MASK( 8) |
-+		      PKRU_AD_MASK( 9) | PKRU_AD_MASK(10) |
-+		      PKRU_AD_MASK(11) | PKRU_AD_MASK(12) |
-+		      PKRU_AD_MASK(13) | PKRU_AD_MASK(14) |
-+		      PKRU_AD_MASK(15);
+ 	/*
+ 	 * This check implies XSAVE support.  OSPKE only gets
+@@ -1089,22 +1088,9 @@ int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
+ 	if (WARN_ON_ONCE(pkey >= arch_max_pkey()))
+ 		return -EINVAL;
  
- static ssize_t init_pkru_read_file(struct file *file, char __user *user_buf,
- 			     size_t count, loff_t *ppos)
+-	/* Set the bits needed in PKRU:  */
+-	if (init_val & PKEY_DISABLE_ACCESS)
+-		new_pkru_bits |= PKR_AD_BIT;
+-	if (init_val & PKEY_DISABLE_WRITE)
+-		new_pkru_bits |= PKR_WD_BIT;
+-
+-	/* Shift the bits in to the correct place in PKRU for pkey: */
+-	pkey_shift = pkey * PKR_BITS_PER_PKEY;
+-	new_pkru_bits <<= pkey_shift;
+-
+-	/* Get old PKRU and mask off any old bits in place: */
+-	old_pkru = read_pkru();
+-	old_pkru &= ~((PKR_AD_BIT|PKR_WD_BIT) << pkey_shift);
+-
+-	/* Write old part along with new part: */
+-	write_pkru(old_pkru | new_pkru_bits);
++	pkru = read_pkru();
++	pkru = pkey_update_pkval(pkru, pkey, init_val);
++	write_pkru(pkru);
+ 
+ 	return 0;
+ }
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index e1527b4619e1..7c90b2188c5f 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -193,3 +193,19 @@ static __init int setup_init_pkru(char *opt)
+ 	return 1;
+ }
+ __setup("init_pkru=", setup_init_pkru);
++
++/*
++ * Kernel users use the same flags as user space:
++ *     PKEY_DISABLE_ACCESS
++ *     PKEY_DISABLE_WRITE
++ */
++u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
++{
++	int shift = pkey * PKR_BITS_PER_PKEY;
++
++	if (WARN_ON_ONCE(accessbits & ~PKEY_ACCESS_MASK))
++		accessbits &= PKEY_ACCESS_MASK;
++
++	pkval &= ~(PKEY_ACCESS_MASK << shift);
++	return pkval | accessbits << shift;
++}
 -- 
 2.35.1
 
