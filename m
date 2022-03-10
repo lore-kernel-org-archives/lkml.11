@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 080EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243703AbiCJOY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S243404AbiCJOZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:25:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244250AbiCJOTE (ORCPT
+        with ESMTP id S244322AbiCJOTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D701704C0;
-        Thu, 10 Mar 2022 06:15:51 -0800 (PST)
+        Thu, 10 Mar 2022 09:19:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0C6172888;
+        Thu, 10 Mar 2022 06:16:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE99BB8267B;
-        Thu, 10 Mar 2022 14:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18E7FC340E8;
-        Thu, 10 Mar 2022 14:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0C5661C39;
+        Thu, 10 Mar 2022 14:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7CCC340E8;
+        Thu, 10 Mar 2022 14:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921745;
-        bh=DzqVsiVDsID/SYy4BDD6YW+JEMYUAwX1RdJngJSgkrg=;
+        s=korg; t=1646921760;
+        bh=tIRJjRTSlbPh8kjeK5uRXo4H5ulTD8w7NIMSEQd1/4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vw8EAkukNP7W1k477R9qRdwOJtICzzwIgaEXbP1rTpw4aHeN+6EvrL7HQkwNSW/KF
-         6JdCW+KRUyL2+WlmD792o19i/2q30pTqMboOo0AWWP0R1X7cx79rmxCaSZ+anvQ595
-         QccIM6sI+b9tNiywf4v+skSZ9KeUwcg4HUgpIPX4=
+        b=rM5eZslWnLbHGCR2nRmXY1rxKTdTenjL2H6uZ5aG3tsSwJFX1e9vsbfIYWp11wosN
+         85y7VtgOz2/sDkNTkjxTBOVlx6qjiDVy/e8fMMaT8XO7H3yt95kBw7LHw+W/s0QB4Y
+         kOlJsyKVv7vmwuzQeo11RkbheZXopsV9xq4rsQDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 26/38] ARM: Do not use NOCROSSREFS directive with ld.lld
-Date:   Thu, 10 Mar 2022 15:13:39 +0100
-Message-Id: <20220310140808.900651068@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.9 31/38] xen/grant-table: add gnttab_try_end_foreign_access()
+Date:   Thu, 10 Mar 2022 15:13:44 +0100
+Message-Id: <20220310140809.044695427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -48,65 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Juergen Gross <jgross@suse.com>
 
-commit 36168e387fa7d0f1fe0cd5cf76c8cea7aee714fa upstream.
+Commit 6b1775f26a2da2b05a6dc8ec2b5d14e9a4701a1a upstream.
 
-ld.lld does not support the NOCROSSREFS directive at the moment, which
-breaks the build after commit b9baf5c8c5c3 ("ARM: Spectre-BHB
-workaround"):
+Add a new grant table function gnttab_try_end_foreign_access(), which
+will remove and free a grant if it is not in use.
 
-  ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got NOCROSSREFS
+Its main use case is to either free a grant if it is no longer in use,
+or to take some other action if it is still in use. This other action
+can be an error exit, or (e.g. in the case of blkfront persistent grant
+feature) some special handling.
 
-Support for this directive will eventually be implemented, at which
-point a version check can be added. To avoid breaking the build in the
-meantime, just define NOCROSSREFS to nothing when using ld.lld, with a
-link to the issue for tracking.
+This is CVE-2022-23036, CVE-2022-23038 / part of XSA-396.
 
-Cc: stable@vger.kernel.org
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1609
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/vmlinux-xip.lds.S |    8 ++++++++
- arch/arm/kernel/vmlinux.lds.S     |    8 ++++++++
- 2 files changed, 16 insertions(+)
+ drivers/xen/grant-table.c |   14 ++++++++++++--
+ include/xen/grant_table.h |   12 ++++++++++++
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
---- a/arch/arm/kernel/vmlinux-xip.lds.S
-+++ b/arch/arm/kernel/vmlinux-xip.lds.S
-@@ -12,6 +12,14 @@
- #include <asm/memory.h>
- #include <asm/page.h>
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -377,11 +377,21 @@ static void gnttab_add_deferred(grant_re
+ 	       what, ref, page ? page_to_pfn(page) : -1);
+ }
+ 
++int gnttab_try_end_foreign_access(grant_ref_t ref)
++{
++	int ret = _gnttab_end_foreign_access_ref(ref, 0);
++
++	if (ret)
++		put_free_entry(ref);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gnttab_try_end_foreign_access);
++
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page)
+ {
+-	if (gnttab_end_foreign_access_ref(ref, readonly)) {
+-		put_free_entry(ref);
++	if (gnttab_try_end_foreign_access(ref)) {
+ 		if (page != 0)
+ 			put_page(virt_to_page(page));
+ 	} else
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -97,10 +97,22 @@ int gnttab_end_foreign_access_ref(grant_
+  * access has been ended, free the given page too.  Access will be ended
+  * immediately iff the grant entry is not in use, otherwise it will happen
+  * some time later.  page may be 0, in which case no freeing will occur.
++ * Note that the granted page might still be accessed (read or write) by the
++ * other side after gnttab_end_foreign_access() returns, so even if page was
++ * specified as 0 it is not allowed to just reuse the page for other
++ * purposes immediately.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
  
 +/*
-+ * ld.lld does not support NOCROSSREFS:
-+ * https://github.com/ClangBuiltLinux/linux/issues/1609
++ * End access through the given grant reference, iff the grant entry is
++ * no longer in use.  In case of success ending foreign access, the
++ * grant reference is deallocated.
++ * Return 1 if the grant entry was freed, 0 if it is still in use.
 + */
-+#ifdef CONFIG_LD_IS_LLD
-+#define NOCROSSREFS
-+#endif
++int gnttab_try_end_foreign_access(grant_ref_t ref);
 +
- /* Set start/end symbol names to the LMA for the section */
- #define ARM_LMA(sym, section)						\
- 	sym##_start = LOADADDR(section);				\
---- a/arch/arm/kernel/vmlinux.lds.S
-+++ b/arch/arm/kernel/vmlinux.lds.S
-@@ -14,6 +14,14 @@
- #include <asm/page.h>
- #include <asm/pgtable.h>
+ int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn);
  
-+/*
-+ * ld.lld does not support NOCROSSREFS:
-+ * https://github.com/ClangBuiltLinux/linux/issues/1609
-+ */
-+#ifdef CONFIG_LD_IS_LLD
-+#define NOCROSSREFS
-+#endif
-+
- /* Set start/end symbol names to the LMA for the section */
- #define ARM_LMA(sym, section)						\
- 	sym##_start = LOADADDR(section);				\
+ unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
 
 
