@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24636C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98200C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244683AbiCJRZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:25:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
+        id S244821AbiCJRZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244924AbiCJRW6 (ORCPT
+        with ESMTP id S245135AbiCJRXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:22:58 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A5919CCCD
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:42 -0800 (PST)
+        Thu, 10 Mar 2022 12:23:11 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C584B198D07
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:22:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932902; x=1678468902;
+  t=1646932923; x=1678468923;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tTk+9fg3xxqlLphYlniN0akUys2MoAwrAiQS3zSHa5s=;
-  b=cnGrwBY1AAh37DILFmya9+CgvTsnU3Y70mRRnMkUzbzX/2JEmijfyC4p
-   eozW2yy3ziM/iZS9yECzwlbLsjmaOrfwFgA7e1muvdHd974E/VuKnvqWD
-   lE8E/v4LU3/tyMMT253kwkyR8HU1UrUzkzq50ZDch3bBTxZEXeHEKFnMw
-   2nrfRtNVrFwUor14ZeJM8EbIaSaZURi64n1HuVr3YaDdOiRlpJQRXmD/p
-   c9fVp+BaAaQ4fPA114Qf9pDtapbg6bCVfiRV4rfo4xXIoXXOuOc1+4CYF
-   TOwcNd2zTCrX5j0LwwZUl/0YDFkdUBZTHOBscR3ZBUhKZauFghQmGQfVB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="237484393"
+  bh=i6pPXC0JSSSMuLc8Wn5aZ29lRSQ2lCEZPmuGWTz0kMM=;
+  b=l5J6JC7/oIbdMXY0HinjoJsV8GWAGsMKsufeyMHMzR4YZ1PZSY66Mlpq
+   DJvEG9YSTHGwetdPwFhc5sn1wwE8y0+XAu6l9M8uKHW39pacn56A9HSfH
+   BM1ByDghpBnmoVfqzAU9X0IA7A5LaYKj8IhdlEAAJmaOcTIKfHSLiPMCg
+   bUXlZ4893eiJaJ3nXZDN1gIVXLUpON6amTzxWdR94ww43bhhZ3dOd0aVL
+   hMJBXG+iTXmIs9VazkR07uycVWk/rO7ACVXTlpAVERyVVKcY+lF2fIWYS
+   6rygLsxOwNkuuhzVztneqBbZLbNF6+Mxbu8MefyJ9CuFJn2g0qnUhIxT/
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316033214"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="237484393"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:41 -0800
+   d="scan'208";a="316033214"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:22:03 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="510984375"
+   d="scan'208";a="688732698"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:41 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:22:02 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 34/45] memremap_pages: Add Kconfig for DEVMAP_ACCESS_PROTECTION
-Date:   Thu, 10 Mar 2022 09:20:08 -0800
-Message-Id: <20220310172019.850939-35-ira.weiny@intel.com>
+Subject: [PATCH V9 44/45] nvdimm/pmem: Enable stray access protection
+Date:   Thu, 10 Mar 2022 09:20:18 -0800
+Message-Id: <20220310172019.850939-45-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -61,69 +61,123 @@ From: Ira Weiny <ira.weiny@intel.com>
 
 The persistent memory (PMEM) driver uses the memremap_pages facility to
 provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
-capacity may be orders of magnitude higher capacity than System RAM it
+capacity maybe orders of magnitude higher capacity than System RAM it
 presents a large vulnerability surface to stray writes.  Unlike stray
 writes to System RAM, which may result in a crash or other undesirable
 behavior, stray writes to PMEM additionally are more likely to result in
 permanent data loss. Reboot is not a remediation for PMEM corruption
 like it is for System RAM.
 
-Given that PMEM access from the kernel is limited to a constrained set
-of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
-page), it is amenable to supervisor pkey protection.
+Now that all valid kernel access' to PMEM have been annotated with
+{__}pgmap_set_{readwrite,noaccess}() PGMAP_PROTECTION is safe to enable
+in the pmem layer.
 
-Add a Kconfig option to configure additional devmap protections using
-PKS.
+Set PGMAP_PROTECTION if pgmap protections are available and set the
+pgmap property of the dax device for it's use.
 
-Only PMEM which is advertised to the memory subsystem needs this
-protection.  Therefore, the feature depends on NVDIMM_PFN.
+Internally, the pmem driver uses a cached virtual address,
+pmem->virt_addr (pmem_addr).  Call __pgmap_set_{readwrite,noaccess}()
+directly when PGMAP_PROTECTION is active on those mappings.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Change this to enable arch pks consumer for mutual exclusion
-		with testing all pkeys
-	From Dan Williams
-		Default to no
-		Clean up commit message
+	Remove the dax operations and pass the pgmap to the dax_device
+		for its use.
+	s/pgmap_mk_*/pgmap_set_*/
+	s/pmem_mk_*/pmem_set_*/
 
 Changes for V8
-	Split this out from
-		[PATCH V7 13/18] memremap_pages: Add access protection via supervisor Protection Keys (PKS)
+	Rebase to 5.17-rc1
+	Remove global param
+	Add internal structure which uses the pmem device and pgmap
+		device directly in the *_mk_*() calls.
+	Add pmem dax ops callbacks
+	Use pgmap_protection_available()
+	s/PGMAP_PKEY_PROTECT/PGMAP_PROTECTION
 ---
- mm/Kconfig | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/nvdimm/pmem.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 850372b6aaec..ba8a557dcf81 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -776,6 +776,24 @@ config ZONE_DEVICE
+diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+index 58d95242a836..2c7b18da7974 100644
+--- a/drivers/nvdimm/pmem.c
++++ b/drivers/nvdimm/pmem.c
+@@ -138,6 +138,18 @@ static blk_status_t read_pmem(struct page *page, unsigned int off,
+ 	return BLK_STS_OK;
+ }
  
- 	  If FS_DAX is enabled, then say Y.
++static void pmem_set_readwrite(struct pmem_device *pmem)
++{
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		__pgmap_set_readwrite(&pmem->pgmap);
++}
++
++static void pmem_set_noaccess(struct pmem_device *pmem)
++{
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		__pgmap_set_noaccess(&pmem->pgmap);
++}
++
+ static blk_status_t pmem_do_read(struct pmem_device *pmem,
+ 			struct page *page, unsigned int page_off,
+ 			sector_t sector, unsigned int len)
+@@ -149,7 +161,11 @@ static blk_status_t pmem_do_read(struct pmem_device *pmem,
+ 	if (unlikely(is_bad_pmem(&pmem->bb, sector, len)))
+ 		return BLK_STS_IOERR;
  
-+config DEVMAP_ACCESS_PROTECTION
-+	bool "Access protection for memremap_pages()"
-+	depends on NVDIMM_PFN
-+	depends on ARCH_HAS_SUPERVISOR_PKEYS
-+	select ARCH_ENABLE_PKS_CONSUMER
-+	default n
++	/* Enable direct use of pmem->virt_addr */
++	pmem_set_readwrite(pmem);
+ 	rc = read_pmem(page, page_off, pmem_addr, len);
++	pmem_set_noaccess(pmem);
 +
-+	help
-+	  Enable extra protections on device memory.  This protects against
-+	  unintended access to devices such as a stray writes.  This feature is
-+	  particularly useful to protect against corruption of persistent
-+	  memory.
+ 	flush_dcache_page(page);
+ 	return rc;
+ }
+@@ -181,11 +197,15 @@ static blk_status_t pmem_do_write(struct pmem_device *pmem,
+ 	 * after clear poison.
+ 	 */
+ 	flush_dcache_page(page);
 +
-+	  This depends on architecture support of supervisor PKeys and has no
-+	  overhead if the architecture does not support them.
-+
-+	  If you have persistent memory say 'Y'.
-+
- config DEV_PAGEMAP_OPS
- 	bool
++	/* Enable direct use of pmem->virt_addr */
++	pmem_set_readwrite(pmem);
+ 	write_pmem(pmem_addr, page, page_off, len);
+ 	if (unlikely(bad_pmem)) {
+ 		rc = pmem_clear_poison(pmem, pmem_off, len);
+ 		write_pmem(pmem_addr, page, page_off, len);
+ 	}
++	pmem_set_noaccess(pmem);
  
+ 	return rc;
+ }
+@@ -427,6 +447,8 @@ static int pmem_attach_disk(struct device *dev,
+ 	pmem->pfn_flags = PFN_DEV;
+ 	if (is_nd_pfn(dev)) {
+ 		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
++		if (pgmap_protection_available())
++			pmem->pgmap.flags |= PGMAP_PROTECTION;
+ 		addr = devm_memremap_pages(dev, &pmem->pgmap);
+ 		pfn_sb = nd_pfn->pfn_sb;
+ 		pmem->data_offset = le64_to_cpu(pfn_sb->dataoff);
+@@ -440,6 +462,8 @@ static int pmem_attach_disk(struct device *dev,
+ 		pmem->pgmap.range.end = res->end;
+ 		pmem->pgmap.nr_range = 1;
+ 		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
++		if (pgmap_protection_available())
++			pmem->pgmap.flags |= PGMAP_PROTECTION;
+ 		addr = devm_memremap_pages(dev, &pmem->pgmap);
+ 		pmem->pfn_flags |= PFN_MAP;
+ 		bb_range = pmem->pgmap.range;
+@@ -481,6 +505,8 @@ static int pmem_attach_disk(struct device *dev,
+ 	}
+ 	set_dax_nocache(dax_dev);
+ 	set_dax_nomc(dax_dev);
++	if (pmem->pgmap.flags & PGMAP_PROTECTION)
++		set_dax_pgmap(dax_dev, &pmem->pgmap);
+ 	if (is_nvdimm_sync(nd_region))
+ 		set_dax_synchronous(dax_dev);
+ 	rc = dax_add_host(dax_dev, disk);
 -- 
 2.35.1
 
