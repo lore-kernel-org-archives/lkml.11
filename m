@@ -2,124 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3140C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241733AbiCJLgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        id S241714AbiCJLgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbiCJLgf (ORCPT
+        with ESMTP id S241659AbiCJLgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:36:35 -0500
-Received: from smtp.tom.com (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4E69144F5E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:35:33 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 7198C440128
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:35:32 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646912132; bh=9NFV5tI+G3N523bN1IXvF7Uy8KRnhGygKs9kPGcs2QI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2Z4FS8uDWQ647GF1UqnkOOOwanPfnHb9XKAH7XYxnGyvLjMgO4BQ/YPL7i4FxnbL0
-         cC3f23M/Jxv7wmrLkIGPDd/52eHa2Koo+iCxECla8jFxHl4OhPosRLej5aa4/rcmup
-         0xH+WIa8WPB4cYuf0EfmpddKRJI0FEAuh6nxjgVY=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID -1914667527
-          for <linux-kernel@vger.kernel.org>;
-          Thu, 10 Mar 2022 19:35:32 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646912132; bh=9NFV5tI+G3N523bN1IXvF7Uy8KRnhGygKs9kPGcs2QI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2Z4FS8uDWQ647GF1UqnkOOOwanPfnHb9XKAH7XYxnGyvLjMgO4BQ/YPL7i4FxnbL0
-         cC3f23M/Jxv7wmrLkIGPDd/52eHa2Koo+iCxECla8jFxHl4OhPosRLej5aa4/rcmup
-         0xH+WIa8WPB4cYuf0EfmpddKRJI0FEAuh6nxjgVY=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 7E0FF154153A;
-        Thu, 10 Mar 2022 19:35:26 +0800 (CST)
-Date:   Thu, 10 Mar 2022 19:35:25 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 1/2] nvmet-tcp: support specifying the
- congestion-control
-Message-ID: <20220310193525.0000407d@tom.com>
-In-Reply-To: <20220310190636.00001695@tom.com>
-References: <20220309053711.2561-1-sunmingbao@tom.com>
-        <20220309061541.GB31316@lst.de>
-        <20220309175203.00006ee2@tom.com>
-        <20220310083811.GA26953@lst.de>
-        <20220310190636.00001695@tom.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        Thu, 10 Mar 2022 06:36:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD12414235E;
+        Thu, 10 Mar 2022 03:35:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A3EA6165C;
+        Thu, 10 Mar 2022 11:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A8EBC340E8;
+        Thu, 10 Mar 2022 11:35:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646912134;
+        bh=pkk4N3eCD0H/JMi6+p8qQuPegRrrIJ1gxJThJ3WAz7Y=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Nck9PWgTGt9VgQJiLBMk/E9xtUhXAQU0MI8dImqhzOCPyKGigBYqMgLnvL3Qqoj3f
+         Zh2ncEh/f9gWX8HLYrHcb5Dt32AkmiAFkSLWI0zwFa13eUCL3HCZfAs1vMjbQfYIcC
+         E3BfMl5PXHuUUss6ee45f2i++98qX8ALuV03hrnY0KVUyLkq2XnYtaBDKHPCSA4hQp
+         LCdsCAnIXDTzmRGL7irJZGlBm8b54o96FZE2XiwYtrNk1KLgMcTpp44fY9ISh0PQoZ
+         g0k4cQJhwEIkiNmzNTOhYpMh2C472s7kHFmOr1NB6GY1adZxUmPvNlXUCCieHf1OKu
+         o2jHOZ2LuHHvA==
+From:   Mark Brown <broonie@kernel.org>
+To:     robh+dt@kernel.org, cy_huang <u0084500@gmail.com>
+Cc:     cy_huang@richtek.com, linux-kernel@vger.kernel.org,
+        lgirdwood@gmail.com, krzysztof.kozlowski@canonical.com,
+        devicetree@vger.kernel.org
+In-Reply-To: <1646812903-32496-1-git-send-email-u0084500@gmail.com>
+References: <1646812903-32496-1-git-send-email-u0084500@gmail.com>
+Subject: Re: [PATCH v2 0/2] Add Richtek RT5190A PMIC support
+Message-Id: <164691213322.14059.3681107079269316589.b4-ty@kernel.org>
+Date:   Thu, 10 Mar 2022 11:35:33 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 19:06:36 +0800
-Mingbao Sun <sunmingbao@tom.com> wrote:
+On Wed, 9 Mar 2022 16:01:41 +0800, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> This patch series add Richtek RT5190A PMIC support.
+> 
+> v2:
+> 1. use standard bindings regulator-min/max-microvolt to replace
+>    fixed-microvolt property
+> 2. change dt-bindings sample node name from rt5190a@64 to pmic@64.
+> 3. add dt-binding header to defin e the opmode mapping number.
+> 4. refine 'richtek,mute-enable' description in dt-binding.
+> 4. due to fixed-microvolt property removal, use of_regulator_match to get
+>    the regulator init data.
+> 5. fix checkpatch warning and error.
+> 
+> [...]
 
-> On Thu, 10 Mar 2022 09:38:11 +0100
-> Christoph Hellwig <hch@lst.de> wrote:
->=20
-> > On Wed, Mar 09, 2022 at 05:52:03PM +0800, Mingbao Sun wrote:
-> > > On Wed, 9 Mar 2022 07:15:41 +0100
-> > > Christoph Hellwig <hch@lst.de> wrote:
-> > >  =20
-> > > > On Wed, Mar 09, 2022 at 01:37:11PM +0800, Mingbao Sun wrote: =20
-> > > > > +		if (port->nport->tcp_congestion) {
-> > > > > +			icsk_new =3D inet_csk(newsock->sk);
-> > > > > +			if (icsk_new->icsk_ca_ops !=3D icsk->icsk_ca_ops) {
-> > > > > +				pr_warn("congestion abnormal: expected %s, actual %s.\n",
-> > > > > +					icsk->icsk_ca_ops->name,
-> > > > > +					icsk_new->icsk_ca_ops->name);
-> > > > > +			}
-> > > > > +		}   =20
-> > > >=20
-> > > > What is the point of having this code? =20
-> > >=20
-> > > Well, this could happen in certain circumstances.
-> > > Take the result from my test as an example:
-> > >=20
-> > >     - The congestion of the listening socket of the target was set to
-> > >       =E2=80=98dctcp=E2=80=99.
-> > >=20
-> > >     - But the congestion of the socket of the host side was set to
-> > >       =E2=80=98cubic=E2=80=99.
-> > >=20
-> > >     - Then the congestion of the socket of the new connection at the
-> > >       target side would automatically be altered to =E2=80=98dctcp-re=
-no=E2=80=99.
-> > >=20
-> > > In case tcp_congestion was explicitly set for the target, it can be
-> > > supposed that the user attaches great importance to performance.
-> > > So we=E2=80=99d better make the users aware that the system is not wo=
-rking
-> > > in the way they expect.  =20
-> >=20
-> > A warning message really seems very severe for a condition like this.
-> > Maybe the better interface is a way to figure out which congestion
-> > control algorithm is in use by reading a sysfs file.
->=20
-> Well, a target could have a great number of TCP sockets.
->=20
-> I feel it=E2=80=99s not proper to create a sysfs entry for each socket.
-> And for those sockets that do not have the exception of
-> congestion-control, it=E2=80=99s merely a waste of resources.
->=20
-> Also, since these sockets generate and die dynamically, the info
-> exported via fs may even do not have the opportunity to be seen by
-> the user.
->=20
-> Anyway, if you insist that the checking and warning here is not proper,
-> I can remove it.=20
+Applied to
 
-How about replacing pr_warn with pr_warn_once?
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+
+Thanks!
+
+[1/2] dt-bindings: regulator: Add bindings for Richtek RT5190A PMIC
+      commit: b77e70f6b8f2cc62fba847f3008a430a09ef275d
+[2/2] regulator: rt5190a: Add support for Richtek RT5190A PMIC
+      commit: 760423dfad53877b468490758fe7ea968ded9402
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
