@@ -2,115 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CFFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 340BEC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243523AbiCJOXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:23:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
+        id S243492AbiCJOWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:22:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiCJOTD (ORCPT
+        with ESMTP id S244153AbiCJOS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CE816EAA5;
-        Thu, 10 Mar 2022 06:15:48 -0800 (PST)
+        Thu, 10 Mar 2022 09:18:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3815EB18BF;
+        Thu, 10 Mar 2022 06:15:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D52D961C99;
-        Thu, 10 Mar 2022 14:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E1CC340E8;
-        Thu, 10 Mar 2022 14:15:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646921702;
-        bh=yo5cNZOSv/J/WvklnDG16ry9Bw3elHchQ9q/vBCqvbQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=maGHS2m9LDj84cxFFYKfEByaP+07rvv+owPqT7QN/rWpqfNcEJIgelSZsi89z4YEO
-         eQ1qFs24G5TKKZ37vfsaWUuoahmWC2QwUDpYhUJOWTcA5ftlnYtglXuIm3C+NzvXVX
-         gBXYfhzm3t7ZnwmCGQflz+r+w3644ExZdU582Wf+q3jK8KdwigqrOzzNj+ZaARW29C
-         7hn4UDgR975l1tpTzDFBwdz4PbSL/O4tpE2aHK4RWiwc0aMs1RoAbAgXX3XjuS86s3
-         HePHW4K+4ISCDz6AYjeZei8oxFadEePkK2O4JH54dDvQ9xfKcmwPJoy+iQaWP2GBHv
-         67tYi9URG2iMw==
-Received: by mail-ed1-f51.google.com with SMTP id w4so7136387edc.7;
-        Thu, 10 Mar 2022 06:15:02 -0800 (PST)
-X-Gm-Message-State: AOAM533sFQ6Hbbpfbrv8YOLkfiPhbxZKL1SafpwCxR7e05ac5nwXrzTk
-        mQQIcSGNUYNUX0PJA3TAFi6msy0GoFfApICOQg==
-X-Google-Smtp-Source: ABdhPJxTKjB6jCuITpAJueLD1jR/nypmp0A/gmHHrMEnwEcpJdUe3bQ2Gx3VCz4Rpb6k9VX70aM1nvGlH0UAjjLTElI=
-X-Received: by 2002:a05:6402:5256:b0:416:97d1:a6a2 with SMTP id
- t22-20020a056402525600b0041697d1a6a2mr4571157edd.280.1646921700547; Thu, 10
- Mar 2022 06:15:00 -0800 (PST)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A94D8B81E9E;
+        Thu, 10 Mar 2022 14:15:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A76C340E8;
+        Thu, 10 Mar 2022 14:15:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921736;
+        bh=xhBRfrNy/7380JiHEmW+Fca0kX0t6YqpNMJ42Bk03qA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EoB4uIRU2ow9uMc87PDgQAyzyYwKkDdGa7M+k+7SYxYBTi5pqIgrO9llv9+Im5P2J
+         2N3SnRPBXf9wfOWYlv4hMJUAZofyhTjZXv0N6YEHKy/mxbEuFEdH5IHmiMUlUgOO+8
+         Gz+xEz2ojq9hZrvVcS+HlMBx6HBlciscxQQl0OUA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.9 37/38] xen/gnttab: fix gnttab_end_foreign_access() without page specified
+Date:   Thu, 10 Mar 2022 15:13:50 +0100
+Message-Id: <20220310140809.214707478@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
+References: <20220310140808.136149678@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20211224161334.31123-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211224161334.31123-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <c5ea7235-8642-6a89-f4ce-bd0861b6e4aa@linaro.org> <CA+V-a8tkhERx+8zDae5aWkNQ9Oxd1AamRL=i4TDC2X8RGgAo0w@mail.gmail.com>
- <5e13c1ba-0bf5-e360-c350-e7a1a1402350@linaro.org>
-In-Reply-To: <5e13c1ba-0bf5-e360-c350-e7a1a1402350@linaro.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 10 Mar 2022 08:14:48 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+CWKvkHMNhAa3o_rSLy_+AoHi6wkB3MRM8O3jJ5sG_Wg@mail.gmail.com>
-Message-ID: <CAL_Jsq+CWKvkHMNhAa3o_rSLy_+AoHi6wkB3MRM8O3jJ5sG_Wg@mail.gmail.com>
-Subject: Re: [PATCH] slimbus: qcom-ngd-ctrl: Use platform_get_irq() to get the interrupt
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        alsa-devel <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 4:42 AM Srinivas Kandagatla
-<srinivas.kandagatla@linaro.org> wrote:
->
->
->
-> On 10/03/2022 10:23, Lad, Prabhakar wrote:
-> > On Thu, Mar 10, 2022 at 10:16 AM Srinivas Kandagatla
-> > <srinivas.kandagatla@linaro.org> wrote:
-> >>
-> >>
-> >>
-> >> On 24/12/2021 16:13, Lad Prabhakar wrote:
-> >>> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-> >>> allocation of IRQ resources in DT core code, this causes an issue
-> >>
-> >> Are you saying that we should not be using platform_get_resource(pdev,
-> >> IORESOURCE_IRQ, ...) on drivers that support DT?
+From: Juergen Gross <jgross@suse.com>
 
-We should be using platform_get_irq(). (period, on all platform drivers)
+Commit 42baefac638f06314298087394b982ead9ec444b upstream.
 
-> >>> when using hierarchical interrupt domains using "interrupts" property
-> >>> in the node as this bypasses the hierarchical setup and messes up the
-> >>> irq chaining.
-> >>
-> >> Should this not be fixed in the DT core itself?
-> >>
-> > Yes the plan is to fix in the DT core itself (refer [0]).
-> >
-> > [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-> >
-> >>>
-> >>> In preparation for removal of static setup of IRQ resource from DT core
-> >>> code use platform_get_irq().
-> >>
-> >> I would prefer this patch to be part of the series that removes IRQ
-> >> resource handling from DT core.
-> >>
-> > Since there are too many users (which are in different subsystems)
-> > getting this all in single series would be a pain. As a result it is
-> > split up into individual subsystems.
-> Am happy for this to be included in that series,
-> TBH, this patch make more sense along with that series than by itself.
+gnttab_end_foreign_access() is used to free a grant reference and
+optionally to free the associated page. In case the grant is still in
+use by the other side processing is being deferred. This leads to a
+problem in case no page to be freed is specified by the caller: the
+caller doesn't know that the page is still mapped by the other side
+and thus should not be used for other purposes.
 
-No it doesn't. This is no different than converting to devm_* variants
-or other cleanups to match current preferred styles.
+The correct way to handle this situation is to take an additional
+reference to the granted page in case handling is being deferred and
+to drop that reference when the grant reference could be freed
+finally.
 
-Treewide cross subsystem clean-ups are a huge pain to merge. Why would
-you ask for that when it is clearly not necessary?
+This requires that there are no users of gnttab_end_foreign_access()
+left directly repurposing the granted page after the call, as this
+might result in clobbered data or information leaks via the not yet
+freed grant reference.
 
-Rob
+This is part of CVE-2022-23041 / XSA-396.
+
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/grant-table.c |   30 +++++++++++++++++++++++-------
+ include/xen/grant_table.h |    7 ++++++-
+ 2 files changed, 29 insertions(+), 8 deletions(-)
+
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -113,6 +113,10 @@ struct gnttab_ops {
+ 	 * return the frame.
+ 	 */
+ 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
++	/*
++	 * Read the frame number related to a given grant reference.
++	 */
++	unsigned long (*read_frame)(grant_ref_t ref);
+ };
+ 
+ struct unmap_refs_callback_data {
+@@ -277,6 +281,11 @@ int gnttab_end_foreign_access_ref(grant_
+ }
+ EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
+ 
++static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
++{
++	return gnttab_shared.v1[ref].frame;
++}
++
+ struct deferred_entry {
+ 	struct list_head list;
+ 	grant_ref_t ref;
+@@ -306,12 +315,9 @@ static void gnttab_handle_deferred(unsig
+ 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
+ 			put_free_entry(entry->ref);
+-			if (entry->page) {
+-				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
+-					 entry->ref, page_to_pfn(entry->page));
+-				put_page(entry->page);
+-			} else
+-				pr_info("freeing g.e. %#x\n", entry->ref);
++			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
++				 entry->ref, page_to_pfn(entry->page));
++			put_page(entry->page);
+ 			kfree(entry);
+ 			entry = NULL;
+ 		} else {
+@@ -336,9 +342,18 @@ static void gnttab_handle_deferred(unsig
+ static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
+ 				struct page *page)
+ {
+-	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
++	struct deferred_entry *entry;
++	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
+ 	const char *what = KERN_WARNING "leaking";
+ 
++	entry = kmalloc(sizeof(*entry), gfp);
++	if (!page) {
++		unsigned long gfn = gnttab_interface->read_frame(ref);
++
++		page = pfn_to_page(gfn_to_pfn(gfn));
++		get_page(page);
++	}
++
+ 	if (entry) {
+ 		unsigned long flags;
+ 
+@@ -1010,6 +1025,7 @@ static const struct gnttab_ops gnttab_v1
+ 	.update_entry			= gnttab_update_entry_v1,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
++	.read_frame			= gnttab_read_frame_v1,
+ };
+ 
+ static void gnttab_request_version(void)
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -100,7 +100,12 @@ int gnttab_end_foreign_access_ref(grant_
+  * Note that the granted page might still be accessed (read or write) by the
+  * other side after gnttab_end_foreign_access() returns, so even if page was
+  * specified as 0 it is not allowed to just reuse the page for other
+- * purposes immediately.
++ * purposes immediately. gnttab_end_foreign_access() will take an additional
++ * reference to the granted page in this case, which is dropped only after
++ * the grant is no longer in use.
++ * This requires that multi page allocations for areas subject to
++ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
++ * via free_pages_exact()) in order to avoid high order pages.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
+
+
