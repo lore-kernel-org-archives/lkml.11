@@ -2,71 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiCJQU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:20:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
+        id S241942AbiCJQUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242274AbiCJQUP (ORCPT
+        with ESMTP id S242333AbiCJQUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 11:20:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D983265B;
-        Thu, 10 Mar 2022 08:18:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8563461B6B;
-        Thu, 10 Mar 2022 16:18:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4A64C340E8;
-        Thu, 10 Mar 2022 16:18:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646929092;
-        bh=RL6LWXRaaVwckNt7HfefIcDqliQpIbRJZYvaKxx3k+w=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=igtxKHRC+lYvIQv2mKpJ29IQ8z849L4f7oaALvJSIfI0Vo79K8sJiMFKVg3l4n+LT
-         Lg7kwiqCGpNxlnoOkLiDtWl7pItY4mIwTPsoGBrAAeOAHOrtIdAENDQfrwhlCMCI1j
-         3IgXM9AId4n3F+zo8+0dlUHbNKnTrQA5xZaWVBGi6AtIAl/xknQ+Xl6HB2NlvP0l/O
-         bqEpoiOVb8ptq4eRlyfMObNL43eKwE0AG3AKGHZ845hPxI0pUGwzMJRJ1o4tpmpxNx
-         /P4s17QgUcDYs6oxYP3jBR+ObB81HFvm5P9HI29z31rP9+L5R8E3cH4ESvV4UCS1xN
-         xVMkvAhJOPQNg==
-Content-Type: text/plain; charset="utf-8"
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E170190B7A;
+        Thu, 10 Mar 2022 08:18:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=rK+8Sm7AEx/XwTnwqxVVc4RKTofQynom/qH1kIz4tgY=; b=1b+5SWyzHKApOh+3r4QwSJJRXa
+        70eP1vH0och8Pdpa//QhAien+9xt0eXqcYpQPhPjg+Dw2HDge6qZdXgSbLcqpxPLc1qrvrmK/xEi/
+        n8PLDjixXbaBl2K/R2MGhA0VhHKd/+2MAgSTEZEYzbC5d8X8VymZs0CyHIFhHi8vNEm1ssBs0klqs
+        B2++zM8SlJI7uxuwn56kFOkzaybYWB9MnSZ4WPMk5lm+SP2fZTIpwRwwRCbSG3xJUhZmGS7UvLIqy
+        3B2kAqb447wJ8sbmz1z2vl40AYlRvFpeFDVLBRN8j4fp+xSI8hEmuE5EtetjdqopsredUXcChCR5s
+        qMD213+g==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSLUl-00DU5D-5r; Thu, 10 Mar 2022 16:18:31 +0000
+Date:   Thu, 10 Mar 2022 08:18:31 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Christoph Hellwig <hch@infradead.org>, cgel.zte@gmail.com,
+        axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] block/psi: remove PSI annotations from submit_bio
+Message-ID: <Yiok1xi0Hqmh1fbi@infradead.org>
+References: <20220309094323.2082884-1-yang.yang29@zte.com.cn>
+ <Yij9eygSYy5MSIA0@cmpxchg.org>
+ <Yime3HdbEqFgRVtO@infradead.org>
+ <YiokaQLWeulWpiCx@cmpxchg.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] bcma: gpio: remove redundant re-assignment of chip->owner
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220303085841.1124766-1-colin.i.king@gmail.com>
-References: <20220303085841.1124766-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        linux-wireless@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164692908978.6056.13110647210803354793.kvalo@kernel.org>
-Date:   Thu, 10 Mar 2022 16:18:11 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiokaQLWeulWpiCx@cmpxchg.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Colin Ian King <colin.i.king@gmail.com> wrote:
-
-> There are two identical assignments of chip->owner to the same value,
-> the second assignment is redundant and can be removed.
+On Thu, Mar 10, 2022 at 11:16:41AM -0500, Johannes Weiner wrote:
+> The first version did that, but it was sprawling and not well-received:
 > 
-> Cleans up cppcheck warning:
-> drivers/bcma/driver_gpio.c:184:15: style: Variable 'chip->owner' is
-> reassigned a value before the old one has been used. [redundantAssignment]
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> https://lkml.org/lkml/2019/7/22/1261
 
-Patch applied to wireless-next.git, thanks.
-
-857f837d856a bcma: gpio: remove redundant re-assignment of chip->owner
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220303085841.1124766-1-colin.i.king@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Well, Dave's comments are spot on.  Except that we replaced it with
+something even more horrible and not something sensible as he suggested.
