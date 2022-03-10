@@ -2,132 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A17C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243542AbiCJOYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S243570AbiCJOYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245076AbiCJOUa (ORCPT
+        with ESMTP id S245059AbiCJOUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:20:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AAE5FBC;
-        Thu, 10 Mar 2022 06:19:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D26BB825A7;
-        Thu, 10 Mar 2022 14:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C07FC340E8;
-        Thu, 10 Mar 2022 14:19:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646921966;
-        bh=x54tX+WKuRg2TSvnQQqf6l2VpZTFE8lhw3ZR3z0WJ2M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ee3TXcpv5ErDmwlnyjdM1OmjTD/eCcgnpinuVmL9ClQr82doa/r8DwtMUJCa1gfWj
-         Z4/XbUDbDP5d1cWN1Ob80gAddAJ5nMfThGnYURtL/Sf/vBghV6pPWs8a3R6G2xhTeR
-         ejpwpghmYBoSH/IDq2nozt090C/xo6q2Yj6OYhy50IPzGLhK8mkz8KMy3v+N1TqeEs
-         KqhEePEvOu/nqlJSDjImSIPYRHar3NQuJmf4N+W7HmtXPHdZI/kUWvsPFm9VppEjKs
-         deSh+comtVv0aITzT3cMEZBNkqr2T6BRRwi7r16aoSxGXO9Fo0vVXAA6L4CLXL6JP2
-         qHjcu8wAH8i7w==
-Message-ID: <e442e6b1-2612-d8fb-793a-5e6f11851f21@kernel.org>
-Date:   Thu, 10 Mar 2022 08:19:24 -0600
+        Thu, 10 Mar 2022 09:20:22 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A524B0C56
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id l12so7886342ljh.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
+        b=t7ALIPtw3FdXJEbivsDE3RXilGcI4LV6NZYNfsWaSRTH6omQWzDYIA0tmwsHGbNr67
+         egYoSkwO7q3t/m4u4zyTsFoeR+4oUxKD1s8HksaEci2TecLoN7NXYq6TtsnOG+DTMvpo
+         SIaK3KH3enNAKLMC9xa73KIHTlJwf57TUmKQlQ4GbDIVJK8Pr5NXSosQe83VUu4dtNE7
+         d3VZAKYTFYs9mrBebIuNxsc0ZQ4lLxALwlq39XFyL7Yle7Pnq0VhyjD3aFcATyqFdKvE
+         kx6MQ7Bv3ASpRIzZfoV9FBhel6UcyaZ6z1FEWcIFVNTc6Zo4Cn9xtaP9u/7A6VJAuVFe
+         xIug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
+        b=EXjKZNz3KRKrRtTJYyWRX7FAqEMhYvTM0HMjMkE/3RYk0RtEVVLvJBcH1FU4KROXgi
+         mTYn/wpPv6DsKpT41PhY2+84LO3hj44hhEa+ATcN1pTL4TqGg9WqlKd0Lye6VkORrt/A
+         1sYthfTfz5hesbO/5M5AbeiQbcut/a7xZayBO6hycGS/gjGG2/qMSFMvvj18f3l6wO/g
+         SPreoD2A2ygt91YNKzCMjE2xjnqK696vasrLSnJD/0N7xx1RLroPh9+UtyYWbbP9UzDq
+         l7vd7xlaaO9XMFmagoKHKd7XyqTYFYCbbT8ewyaoszM9G7MVfdykLe9rx6zxCpRG2YLw
+         uBRg==
+X-Gm-Message-State: AOAM533nzryfABm8EerkQqYiPpqPy5w/bVEvNmhcK7d69vSUm9Aw06CI
+        o5GeLQDncnjpF6rm230VVqEOjg==
+X-Google-Smtp-Source: ABdhPJxwinz6PetJ7dJRMmCVaeTN7Ts24q7yumXDa7xtozCjI+p6OkvWdIt8sgLgi3gI8hBYO12QAQ==
+X-Received: by 2002:a2e:2f0e:0:b0:246:1a59:8f04 with SMTP id v14-20020a2e2f0e000000b002461a598f04mr3253760ljv.409.1646921928481;
+        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
+Received: from [192.168.51.243] ([78.128.78.220])
+        by smtp.gmail.com with ESMTPSA id bt23-20020a056512261700b00443e7fa1c26sm1000809lfb.261.2022.03.10.06.18.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
+Message-ID: <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
+Date:   Thu, 10 Mar 2022 16:18:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] EDAC: altera: Add SDRAM ECC check for U-Boot
+Subject: Re: [PATCH iproute2-next 0/3] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
 Content-Language: en-US
-To:     niravkumar.l.rabara@intel.com, bp@alien8.de, mchehab@kernel.org,
-        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
-        linux-edac@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
-From:   Dinh Nguyen <dinguyen@kernel.org>
-In-Reply-To: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 10/03/2022 15:36, Hans Schultz wrote:
+> This patch set extends the locked port feature for devices
+> that are behind a locked port, but do not have the ability to
+> authorize themselves as a supplicant using IEEE 802.1X.
+> Such devices can be printers, meters or anything related to
+> fixed installations. Instead of 802.1X authorization, devices
+> can get access based on their MAC addresses being whitelisted.
+> 
+> For an authorization daemon to detect that a device is trying
+> to get access through a locked port, the bridge will add the
+> MAC address of the device to the FDB with a locked flag to it.
+> Thus the authorization daemon can catch the FDB add event and
+> check if the MAC address is in the whitelist and if so replace
+> the FDB entry without the locked flag enabled, and thus open
+> the port for the device.
+> 
+> This feature is known as MAC-Auth or MAC Authentication Bypass
+> (MAB) in Cisco terminology, where the full MAB concept involves
+> additional Cisco infrastructure for authorization. There is no
+> real authentication process, as the MAC address of the device
+> is the only input the authorization daemon, in the general
+> case, has to base the decision if to unlock the port or not.
+> 
+> With this patch set, an implementation of the offloaded case is
+> supplied for the mv88e6xxx driver. When a packet ingresses on
+> a locked port, an ATU miss violation event will occur. When
+> handling such ATU miss violation interrupts, the MAC address of
+> the device is added to the FDB with a zero destination port
+> vector (DPV) and the MAC address is communicated through the
+> switchdev layer to the bridge, so that a FDB entry with the
+> locked flag enabled can be added.
+> 
+> Hans Schultz (3):
+>    net: bridge: add fdb flag to extent locked port feature
+>    net: switchdev: add support for offloading of fdb locked flag
+>    net: dsa: mv88e6xxx: mac-auth/MAB implementation
+> 
+>   drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+>   drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+>   drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+>   drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+>   drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+>   drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+>   drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+>   include/net/switchdev.h                       |  3 +-
+>   include/uapi/linux/neighbour.h                |  1 +
+>   net/bridge/br.c                               |  3 +-
+>   net/bridge/br_fdb.c                           | 13 +++-
+>   net/bridge/br_input.c                         | 11 ++-
+>   net/bridge/br_private.h                       |  5 +-
+>   15 files changed, 167 insertions(+), 14 deletions(-)
+>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+> 
 
+This doesn't look like an iproute2 patch-set. I think you've messed the target
+in the subject.
 
-On 3/4/22 19:41, niravkumar.l.rabara@intel.com wrote:
-> From: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
-> 
-> A bug in legacy U-Boot causes a crash during SDRAM boot if ECC
-> is not enabled in the bitstream but enabled in the Linux config.
-> 
-> Memory mapped read of the ECC Enabled bit was only enabled
-> if U-Boot determined ECC was enabled in the bitstream.
-> 
-> The Linux driver checks the ECC enable bit using a memory map
-> read. In the ECC disabled bitstream case, U-Boot didn't
-> enable ECC register memory map reads and since they are not
-> allowed this results in a crash.
-> 
-> This patch always reads the ECC Enable register through a
-> SMC call which is always allowed and it works with legacy
-> and current U-Boot.
-> 
-> Signed-off-by: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
-> ---
->   drivers/edac/altera_edac.c | 40 +++++++++++++++++++++++++++++++++++++-
->   1 file changed, 39 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
-> index 5dd29789f97d..e7e8e624a436 100644
-> --- a/drivers/edac/altera_edac.c
-> +++ b/drivers/edac/altera_edac.c
-> @@ -1083,8 +1083,46 @@ static int __init __maybe_unused altr_init_a10_ecc_device_type(char *compat)
->   
->   #ifdef CONFIG_EDAC_ALTERA_SDRAM
->   
-> +/*
-> + * A legacy U-Boot bug only enabled memory mapped access to the ECC Enable
-> + * register if ECC is enabled. Linux checks the ECC Enable register to
-> + * determine ECC status.
-> + * Use an SMC call (which always works) to determine ECC enablement.
-> + */
-> +static int altr_s10_sdram_check_ecc_deps(struct altr_edac_device_dev *device)
-> +{
-> +	const struct edac_device_prv_data *prv = device->data;
-> +	unsigned long sdram_ecc_addr;
-> +	struct arm_smccc_res result;
-> +	struct device_node *np;
-> +	phys_addr_t sdram_addr;
-> +	u32 read_reg;
-> +	int ret;
-> +
-> +	np = of_find_compatible_node(NULL, NULL, "altr,sdr-ctl");
-> +	if (!np)
-> +		goto sdram_err;
-> +
-> +	sdram_addr = of_translate_address(np, of_get_address(np, 0,
-> +							     NULL, NULL));
-> +	of_node_put(np);
-> +	sdram_ecc_addr = (unsigned long)sdram_addr + prv->ecc_en_ofst;
-> +	arm_smccc_smc(INTEL_SIP_SMC_REG_READ, sdram_ecc_addr,
-> +		      0, 0, 0, 0, 0, 0, &result);
-> +	read_reg = (unsigned int)result.a1;
-> +	ret = (int)result.a0;
-> +	if (!ret && (read_reg & prv->ecc_enable_mask))
-> +		return 0;
-> +
-> +sdram_err:
-> +	edac_printk(KERN_ERR, EDAC_DEVICE,
-> +		    "%s: No ECC present or ECC disabled.\n",
-> +		    device->edac_dev_name);
-> +	return -ENODEV;
-> +}
-> +
->   static const struct edac_device_prv_data s10_sdramecc_data = {
-> -	.setup = altr_check_ecc_deps,
-> +	.setup = altr_s10_sdram_check_ecc_deps,
->   	.ce_clear_mask = ALTR_S10_ECC_SERRPENA,
->   	.ue_clear_mask = ALTR_S10_ECC_DERRPENA,
->   	.ecc_enable_mask = ALTR_S10_ECC_EN,
-
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
