@@ -2,284 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D593C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620C7C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344805AbiCJOxx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:53:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
+        id S242768AbiCJOyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344255AbiCJOkg (ORCPT
+        with ESMTP id S1346147AbiCJOmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:40:36 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0668180211
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:34:37 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A38B321A41;
-        Thu, 10 Mar 2022 14:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646922868; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9RouxQD9+gCSJlO6hdmA/8bp89OhhegxAXxjgYOLaZE=;
-        b=n2K4oY3y+KFwk9XZgNQhaAZwkt1LV/+z0gdG17f6RDQOuZtqGBi+yvVCgAy2Bbq1G8oBw+
-        9a3iGLRZ0ZuPCE4rcGhiee1N55Ul7DHy0q6mrQuQ2LdeYDso5FLPw3XMwJP9VADzrNAqs1
-        gdbers2jjnWZRwP7JIMdZfkNNejQHiU=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 857FAA3BAC;
-        Thu, 10 Mar 2022 14:34:28 +0000 (UTC)
-Date:   Thu, 10 Mar 2022 15:34:25 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
- proper kthread support
-Message-ID: <YioMcSe0P0Z7ksiW@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-12-john.ogness@linutronix.de>
- <YhYKP/UuSKENGwfj@alley>
- <87tuc7xma0.fsf@jogness.linutronix.de>
+        Thu, 10 Mar 2022 09:42:38 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3512110EC71;
+        Thu, 10 Mar 2022 06:40:42 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 42B881F4592C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646923240;
+        bh=twmvPMBXpCtjQaOxFlhSQ0t2WCEZ9mk4gP1Gmfjc8cY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bu6K6V2iDa++LupO2x7yaRGExEZNhxm11yrUSf02TZ9Kxyrz7sb9akpciPqa7AZ1H
+         /lGsHPgeVloLRWcIFAb3182BKNwYEyU5OktHpyzzRENe8KOYfeY+0eljBkpJui6AAU
+         Z535DZMSTrDqmXmw6DoVWIxVeZFvkXtJyfRbazGi5XS7KHwGzOFlwDHRzZt9i43rAZ
+         KEWauRFPe8gk8QJRmjPCAX5xO+/rvRSjZkCVNuinwhy4Egew/utvEcPNJy9uuhfRLa
+         HTp9gAPz2rhoqAhCnKwpX0wDXclIsmca4LRGlheB1nVPfbPB9R4UieXX2Y/9opXp3h
+         MlLZxpKubHQFg==
+Message-ID: <4974d21c-953c-30c1-8dbf-5826dbb20d8e@collabora.com>
+Date:   Thu, 10 Mar 2022 15:40:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tuc7xma0.fsf@jogness.linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] remoteproc: mediatek: fix side effect of mt8195 sram
+ power on
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220309114713.8156-1-tinghan.shen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220309114713.8156-1-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-03-09 15:02:07, John Ogness wrote:
-> On 2022-02-23, Petr Mladek <pmladek@suse.com> wrote:
-> >> +/*
-> >> + * A variant of console_trylock() that allows specifying if the context may
-> >> + * sleep. If yes, a trylock on @console_sem is attempted and if successful,
-> >> + * the threaded printers are paused. This is important to ensure that
-> >> + * sleepable contexts do not become involved in console_lock handovers and
-> >> + * will call cond_resched() during the printing loop.
-> >> + */
-> >> +static int console_trylock_sched(bool may_schedule)
-> >> +{
-> >> +	if (!may_schedule)
-> >> +		return console_trylock();
-> >> +
-> >> +	might_sleep();
-> >> +
-> >> +	if (down_trylock_console_sem())
-> >> +		return 0;
-> >> +	if (console_suspended) {
-> >> +		up_console_sem();
-> >> +		return 0;
-> >> +	}
-> >> +	pause_all_consoles();
-> >
-> > This is weird. Any trylock function should be fast and non-blocking.
-> > But pause_all_consoles() uses mutex_lock().
-> >
-> > My expectation would be that console_trylock_sched() behaves
-> > excatly the same as console_trylock() except that it will
-> > set console_may_schedule by the given parameter.
-> >
-> > I would do it the other way. Rename console_trylock() and
-> > implement:
-> >
-> > int console_trylock(void)
-> > {
-> > 	return console_trylock_sched(false);
-> > }
-> >
-> > LATER: I got it. It is used by console_trylock_sched() called
-> >        in console_unlock() when "do_cond_resched == true". In this
-> >        case, the trylock might wait for the mutexes. It will prevent
-> >        transfering console_lock from schedulable to atomic context
-> >        by the check in console_emit_next_record().
+Il 09/03/22 12:47, Tinghan Shen ha scritto:
+> The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
 > 
-> Yes!
+> L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
 > 
-> >        Hmm, I would still prefer to keep console_trylock_sched()
-> >        behavior sane: non-blocking in all situations. It means
-> >        that we actually do not need it and console_trylock()
-> >        is enough.
-> >
-> >        It will allow to steal console_lock() from schedulable
-> >        context. But it is not a regression. And it is only
-> >        a corner case when console_unlock() re-takes the semaphore
-> >        after releasing it.
+> L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
+> These bits have to be powered on to allow EMI access for SCP.
 > 
-> A console waiter must not wait on a schedulable context. The console
-> waiter is burning the CPU waiting for a transfer. If the console owner
-> gets scheduled away while still holding the console lock, that is bad.
-
-There must be a confusion. Of course, preemption must be disabled
-when the current console_lock() owner allows to take over the lock.
-It is currently achieved by disabling interrupts:
-
-	printk_safe_enter_irqsave(flags);
-	console_lock_spinning_enable();
-
-	call_console_driver(con, write_text, len, dropped_text);
-
-	*handover = console_lock_spinning_disable_and_check();
-	printk_safe_exit_irqrestore(flags);
-
-
-I wanted to say that it is safe even when the preemption is otherwise
-enabled around this code.
-
-Also I wanted to say that it is not ideal when the current owner
-is called with preemption enabled and the new owner will continue
-handling consoles with preemption disabled. But the original code
-worked this way.
-
-It would be nice to avoid moving the lock from a preemptive context
-to non-preemptive one. But I would prefer to do it separately
-because the proposed console_trylock_sched() is really controversial.
-IMHO, it is not worth delaying this patchset because of this.
-
-
-> >        We could do the same optimization in console_unlock() by
-> >        calling console_emit_next_record() with NULL handover pointer
-> >        when do_cond_resched == true. But we should do it
-> >        as a separate patch later.
+> Bits[7:4] also affect audio DSP because audio DSP and SCP are
+> placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
+> blocked too.
 > 
-> It is not an optimization, it is needed. Passing a NULL handover pointer
-> when do_cond_resched == true would handle it correctly, but this feels
-> like a workaround to me.
->
-> The reason for adding console_trylock_sched() is because a context that
-> previously acquired the console lock via console_lock() wants to try to
-> reacquire it. If it reacquires the console lock using the kthread
-> mutexes, the locking scenario returns to the same as it was
-> before... all kthreads are blocked via their mutex.
+> L1TCM_SRAM_PDN bits[31:8] are not used.
 > 
-> You are suggesting that a console_lock() context later tries to
-> reacquire the console lock, but using the console_trylock() method
-> (atomic counter) and keeping console_may_schedule=1.
+> This fix removes modification of bits[7:4] when power on/off mt8195 SCP
+> L1TCM. It's because the modification introduces a short period of time
+> blocking audio DSP to access EMI. This was not a problem until we have
+> to load both SCP module and audio DSP module. audio DSP needs to access
+> EMI because it has source/data on DRAM. Audio DSP will have unexpected
+> behavior when it accesses EMI and the SCP driver blocks the EMI path at
+> the same time.
 > 
-> IMHO, _this_ is a weird variant that requires passing in a NULL handover
-> pointer as a workaround. It introduces a third locking scenario where a
-> schedulable context is using functions created for atomic use.
->
-> Also, as I mentioned in the percpu thread [0], I think we need to avoid
-> console_trylock() usage in schedulable contexts. Functions need to be
-> aware in what contexts they are running and call the appropriate
-> functions for it.
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>   drivers/remoteproc/mtk_common.h |  4 +++
+>   drivers/remoteproc/mtk_scp.c    | 57 +++++++++++++++++++++++++++++----
+>   2 files changed, 55 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
+> index 5ff3867c72f3..27e7172c926d 100644
+> --- a/drivers/remoteproc/mtk_common.h
+> +++ b/drivers/remoteproc/mtk_common.h
+> @@ -51,6 +51,10 @@
+>   #define MT8192_CORE0_WDT_IRQ		0x10030
+>   #define MT8192_CORE0_WDT_CFG		0x10034
+>   
+> +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		0xF0
 
-Let's put the NULL parameter aside. It is an implementation detail.
-It can be handled by another parameter or so.
+This is GENMASK(7, 4)..
 
-IMHO, the main disagreement is:
+> +#define MT8195_L1TCM_SRAM_PDN_RESERVED_BITS \
+> +	MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS
+> +
 
-   + I do not like the proposed console_trylock_sched() API because
-     it uses mutex_lock().
+Why are you defining the same thing twice?
+Please drop this.
 
-     From my POV, it can obviously cause deadlock. It is something
-     that nobody would expect from any *_trylock() API. IMHO,
-     it is a ticking bomb.
+>   #define SCP_FW_VER_LEN			32
+>   #define SCP_SHARE_BUFFER_SIZE		288
+>   
+> diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
+> index dcddb33e9997..4d75af856fd1 100644
+> --- a/drivers/remoteproc/mtk_scp.c
+> +++ b/drivers/remoteproc/mtk_scp.c
+> @@ -365,22 +365,32 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
+>   	return 0;
+>   }
+>   
+> -static void mt8192_power_on_sram(void __iomem *addr)
+> +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
+>   {
+>   	int i;
+>   
+>   	for (i = 31; i >= 0; i--)
+> -		writel(GENMASK(i, 0), addr);
+> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
+>   	writel(0, addr);
+>   }
+>   
+> -static void mt8192_power_off_sram(void __iomem *addr)
+> +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
+>   {
+>   	int i;
+>   
+>   	writel(0, addr);
+>   	for (i = 0; i < 32; i++)
+> -		writel(GENMASK(i, 0), addr);
+> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
+> +}
+> +
+> +static void mt8192_power_on_sram(void __iomem *addr)
+> +{
+> +	scp_sram_power_on(addr, 0);
+> +}
+> +
+> +static void mt8192_power_off_sram(void __iomem *addr)
+> +{
+> +	scp_sram_power_off(addr, 0);
+>   }
+>   
+>   static int mt8192_scp_before_load(struct mtk_scp *scp)
+> @@ -403,6 +413,27 @@ static int mt8192_scp_before_load(struct mtk_scp *scp)
+>   	return 0;
+>   }
+>   
+> +static int mt8195_scp_before_load(struct mtk_scp *scp)
+> +{
+> +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
+> +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
+> +
+> +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
+> +
+> +	/* enable SRAM clock */
+> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_0);
 
+At this point, you can simply use scp_sram_power_{on, off} instead of defining
+a new function for just one call... I get that your intent here is to enhance
+human readability, but I don't think that this is really happening with that and,
+if it is, it's just about a little ignorable difference.
 
-   + You do not like that console_lock()/console_unlock() might
-     re-take the lock using another approach (atomic counter
-     vs. con->flags.
+Please use scp_sram_power_on() and scp_sram_power_off() directly.
 
-     From your POV, using non-blocking console_trylock() in
-     console_unlock() would be 3rd locking scheme. Also you say that
-     that the caller should know the context and use the appropriate
-     function.
+	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
+	... etc :)
 
+> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_1);
+> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_2);
+> +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
+> +			  MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
+> +	mt8192_power_on_sram(scp->reg_base + MT8192_CPU0_SRAM_PD);
+> +
+> +	/* enable MPU for all memory regions */
+> +	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
+> +
+> +	return 0;
+> +}
+> +
 
-Let me try to persuade you ;-)
+Please remember to add me to the Cc's for the next version, so that I will be
+able to timely give you my R-b tag for this one.
 
-1. Regarding the 3rd locking scheme:
-
-   It is exactly the opposite from my POV. console_trylock_sched()
-   looks like a 3rd locking variant to me. We would have blocking
-   console_lock(), non-blocking console_trylock(), and semi-blocking
-   console_trylock_sched().
-
-   And it is even worse. console_trylock_sched() behaves differently
-   according to the parameter. It makes is even more hard to
-   understand the behavior.
-
-
-2. Regarding using appropriate function:
-
-   Let's see how it looks in the code:
-
-       printk()
-           preempt_disable()
-
-           console_trylock()
-           console_unlock()
-               // printing
-               up_console_sem()
-               retry = console_trylock_sched();
-
-   It feels like using sleeping lock in a non-preemptive context.
-   OK, we could make it more obvious:
-
-   console_unlock()
-   {
-	  [...]
-	  if (may_schedule)
-	      retry = console_trylock_sched();
-	  else
-	      retry = console_trylock();
-   }
-
-   But it is yet another complexity in console_unlock().
-   Is it really necessary?
-
-
-3. Implementation detail:
-
-  From my POV, the way how console_lock()/console_trylock() takes
-  the lock is an implementation detail.
-
-  console_lock() uses con->flags because it can and actually must
-  wait/sleep. console_trylock() uses the atomic counter because
-  it must not block.
-
-  We hide this implementation detail in __console_unlock(). It
-  releases the lock the same way as it was taken.
-
-
-4. may_schedule vs. handover
-
-  The information whether console_unlock() may schedule is stored in
-  @console_may_schedule variable. console_lock() allows scheduling
-  and console_trylock() disables scheduling.
-
-  console_emit_next_record() allows handover according to
-  the atomic counter. It is set by the way how console_lock
-  was taken. console_lock() disables handover. console_trylock()
-  enables handover.
-
-  Now, console_trylock_sched() is needed to re-take the lock
-  the same way as it was taken originally. Otherwise,
-  the atomic counter will be used even when scheduling was enabled.
-  As a result, console_emit_next_record() would work differently.
-
-  By other word, console_trylock_sched() is used to encode
-  @console_may_schedule into @console_lock_count.
-
-  It looks like a hack similar to passing NULL *handover. But from my POV,
-  it is much worse. The price is console_trylock_sched() API with
-  very strange behavior. It is super tricky. It took me hours to
-  understand the motivation and behavior.
-
-  From, my POV, the most clear solution is to pass "may_schedule"
-  parameter to console_emit_next_record().
+Regards,
+Angelo
 
 
-Does it make sense, please?
-Do I miss anything, please?
-
-Best Regards,
-Petr
