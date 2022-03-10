@@ -2,97 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B28C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 809FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237778AbiCJGeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 01:34:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
+        id S239823AbiCJGhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 01:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiCJGej (ORCPT
+        with ESMTP id S238025AbiCJGhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 01:34:39 -0500
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1CD638199
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:33:38 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowAAHDtq5myligd_CAg--.6137S2;
-        Thu, 10 Mar 2022 14:33:31 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     hminas@synopsys.com, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] usb: dwc2: Add missing check for dwc2_vbus_supply_init
-Date:   Thu, 10 Mar 2022 14:33:28 +0800
-Message-Id: <20220310063328.1581166-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Mar 2022 01:37:14 -0500
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE10212E765
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:36:04 -0800 (PST)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26038:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Thu, 10 Mar 2022 14:29:00 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     robh+dt@kernel.org
+Cc:     krzk@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        tglx@linutronix.de, maz@kernel.org, p.zabel@pengutronix.de,
+        linux@armlinux.org.uk, broonie@kernel.org, arnd@arndb.de,
+        stefan.wahren@i2se.com, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, Qin Jian <qinjian@cqplus1.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v10 03/10] dt-bindings: reset: Add bindings for SP7021 reset driver
+Date:   Thu, 10 Mar 2022 14:28:42 +0800
+Message-Id: <d3606d8ecd9492469ee2ea53cdff7f559794acad.1646892810.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1646892810.git.qinjian@cqplus1.com>
+References: <cover.1646892810.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAAHDtq5myligd_CAg--.6137S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr45ArWrXry3Zr17tr15CFg_yoW8XF47p3
-        43WF1UAF1Utwsagwn0yasrX3W5GwsrJ34UGry7Gwn7Zw1F9395KF1rGFyFkFZ8XrWUJ3W3
-        AF4Iyw4rAF15G37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyC14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUywZ7UUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the dwc2_vbus_supply_init(),
-it should be better to handle the return value and check
-it.
+Add documentation to describe Sunplus SP7021 reset driver bindings.
 
-Fixes: cd7cd0e6cedf ("usb: dwc2: fix unbalanced use of external vbus-supply")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- drivers/usb/dwc2/hcd.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ .../bindings/reset/sunplus,reset.yaml         | 38 ++++++++
+ MAINTAINERS                                   |  2 +
+ include/dt-bindings/reset/sp-sp7021.h         | 97 +++++++++++++++++++
+ 3 files changed, 137 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ create mode 100644 include/dt-bindings/reset/sp-sp7021.h
 
-diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index f63a27d11fac..c8786d223dcd 100644
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -3672,7 +3672,7 @@ static int dwc2_hcd_hub_control(struct dwc2_hsotg *hsotg, u16 typereq,
- 			hprt0 |= HPRT0_PWR;
- 			dwc2_writel(hsotg, hprt0, HPRT0);
- 			if (!pwr)
--				dwc2_vbus_supply_init(hsotg);
-+				retval = dwc2_vbus_supply_init(hsotg);
- 			break;
+diff --git a/Documentation/devicetree/bindings/reset/sunplus,reset.yaml b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+new file mode 100644
+index 000000000..c083c821f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/reset/sunplus,reset.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Sunplus SoC Reset Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-reset
++
++  "#reset-cells":
++    const: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - "#reset-cells"
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    rstc: reset@9c000054 {
++      compatible = "sunplus,sp7021-reset";
++      #reset-cells = <1>;
++      reg = <0x9c000054 0x28>;
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6a5422f10..652f42cab 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2661,6 +2661,8 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	include/dt-bindings/reset/sp-sp7021.h
  
- 		case USB_PORT_FEAT_RESET:
-@@ -3722,7 +3722,7 @@ static int dwc2_hcd_hub_control(struct dwc2_hsotg *hsotg, u16 typereq,
- 					"In host mode, hprt0=%08x\n", hprt0);
- 				dwc2_writel(hsotg, hprt0, HPRT0);
- 				if (!pwr)
--					dwc2_vbus_supply_init(hsotg);
-+					retval = dwc2_vbus_supply_init(hsotg);
- 			}
- 
- 			/* Clear reset bit in 10ms (FS/LS) or 50ms (HS) */
-@@ -4523,7 +4523,9 @@ static int _dwc2_hcd_resume(struct usb_hcd *hcd)
- 
- 	/* Enable external vbus supply after resuming the port. */
- 	spin_unlock_irqrestore(&hsotg->lock, flags);
--	dwc2_vbus_supply_init(hsotg);
-+	ret = dwc2_vbus_supply_init(hsotg);
-+	if (ret)
-+		return ret;
- 
- 	/* Wait for controller to correctly update D+/D- level */
- 	usleep_range(3000, 5000);
+ ARM/Synaptics SoC support
+ M:	Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+diff --git a/include/dt-bindings/reset/sp-sp7021.h b/include/dt-bindings/reset/sp-sp7021.h
+new file mode 100644
+index 000000000..fd2a50327
+--- /dev/null
++++ b/include/dt-bindings/reset/sp-sp7021.h
+@@ -0,0 +1,97 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#ifndef _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++
++/* mo_reset0 ~ mo_reset9 */
++#define RST_SYSTEM		0x00
++#define RST_RTC			0x02
++#define RST_IOCTL		0x03
++#define RST_IOP			0x04
++#define RST_OTPRX		0x05
++#define RST_NOC			0x06
++#define RST_BR			0x07
++#define RST_RBUS_L00	        0x08
++#define RST_SPIFL		0x09
++#define RST_SDCTRL0		0x0a
++#define RST_PERI0		0x0b
++#define RST_A926		0x0d
++#define RST_UMCTL2		0x0e
++#define RST_PERI1		0x0f
++
++#define RST_DDR_PHY0	        0x10
++#define RST_ACHIP		0x12
++#define RST_STC0		0x14
++#define RST_STC_AV0		0x15
++#define RST_STC_AV1		0x16
++#define RST_STC_AV2		0x17
++#define RST_UA0			0x18
++#define RST_UA1			0x19
++#define RST_UA2			0x1a
++#define RST_UA3			0x1b
++#define RST_UA4			0x1c
++#define RST_HWUA		0x1d
++#define RST_DDC0		0x1e
++#define RST_UADMA		0x1f
++
++#define RST_CBDMA0		0x20
++#define RST_CBDMA1		0x21
++#define RST_SPI_COMBO_0	        0x22
++#define RST_SPI_COMBO_1	        0x23
++#define RST_SPI_COMBO_2	        0x24
++#define RST_SPI_COMBO_3	        0x25
++#define RST_AUD			0x26
++#define RST_USBC0		0x2a
++#define RST_USBC1		0x2b
++#define RST_UPHY0		0x2d
++#define RST_UPHY1		0x2e
++
++#define RST_I2CM0		0x30
++#define RST_I2CM1		0x31
++#define RST_I2CM2		0x32
++#define RST_I2CM3		0x33
++#define RST_PMC			0x3d
++#define RST_CARD_CTL0	        0x3e
++#define RST_CARD_CTL1	        0x3f
++
++#define RST_CARD_CTL4	        0x42
++#define RST_BCH			0x44
++#define RST_DDFCH		0x4b
++#define RST_CSIIW0		0x4c
++#define RST_CSIIW1		0x4d
++#define RST_MIPICSI0	        0x4e
++#define RST_MIPICSI1	        0x4f
++
++#define RST_HDMI_TX		0x50
++#define RST_VPOST		0x55
++
++#define RST_TGEN		0x60
++#define RST_DMIX		0x61
++#define RST_TCON		0x6a
++#define RST_INTERRUPT	        0x6f
++
++#define RST_RGST		0x70
++#define RST_GPIO		0x73
++#define RST_RBUS_TOP	        0x74
++
++#define RST_MAILBOX		0x86
++#define RST_SPIND		0x8a
++#define RST_I2C2CBUS	        0x8b
++#define RST_SEC			0x8d
++#define RST_DVE			0x8e
++#define RST_GPOST0		0x8f
++
++#define RST_OSD0		0x90
++#define RST_DISP_PWM	        0x92
++#define RST_UADBG		0x93
++#define RST_DUMMY_MASTER	0x94
++#define RST_FIO_CTL		0x95
++#define RST_FPGA		0x96
++#define RST_L2SW		0x97
++#define RST_ICM			0x98
++#define RST_AXI_GLOBAL	        0x99
++
++#endif
 -- 
-2.25.1
+2.33.1
 
