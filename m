@@ -2,71 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2106FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F113C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240711AbiCJJWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
+        id S240750AbiCJJXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231629AbiCJJWm (ORCPT
+        with ESMTP id S240726AbiCJJXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:22:42 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C43139814
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:21:42 -0800 (PST)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KDk7461J1zfYpp;
-        Thu, 10 Mar 2022 17:20:16 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Mar
- 2022 17:21:39 +0800
-From:   Wang Wensheng <wangwensheng4@huawei.com>
-To:     <nicoleotsuka@gmail.com>, <Xiubo.Lee@gmail.com>,
-        <festevam@gmail.com>, <shengjiu.wang@gmail.com>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
-        <kernel@pengutronix.de>, <linux-imx@nxp.com>, <xobs@kosagi.com>,
-        <alsa-devel@alsa-project.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <xuqiang36@huawei.com>
-Subject: [PATCH -next] ASoC: imx-es8328: Fix error return code in imx_es8328_probe()
-Date:   Thu, 10 Mar 2022 09:19:02 +0000
-Message-ID: <20220310091902.129299-1-wangwensheng4@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 10 Mar 2022 04:23:35 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10AD1AF23
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:22:30 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BF62E3F336
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:22:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646904149;
+        bh=urZkMj1CVFHDmDBVJ94HruqSmh7h0kdRAgFJ0/wcFrI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=eC0pWIRIZ3ZKVY0UP6TqSKe5v0RkHI4hjZmxHw7J7rBYxa8hATx9s0qA5E4TmDOqy
+         IQ7XMp5CtkIzqXpYMMWT920y4UkPSVtcjbp1xS/XoBhwwe0lX+TnmOdMpO6E8R91jH
+         BS+F1xmAt3PLs/VtKp6pFk/7tHugbcA3aQDAYQFW0pVq6ozBbRJO2920VyYPxglCal
+         0VJkeJCzl5+CLy2Wf9LQ2WRtdQSdNgDIa2z20v9mkzxaaCS3pL/IL8YHukbRPYRfnC
+         ai9jl43Pl2JJzKyW12oLofuwhhkJ+3XE70C+0PkBGHlliuC+R71nUBhkc3St38SzQR
+         Y+4CeAykp/ZDw==
+Received: by mail-ej1-f71.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so2764297ejw.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:22:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=urZkMj1CVFHDmDBVJ94HruqSmh7h0kdRAgFJ0/wcFrI=;
+        b=P/YzO+Q29Dz8q4Vf8BVkxS8Jt2WydTJgSEGIRCy3wXM5t9yUg2Tr7jYdwDwM7ww0kB
+         tJnWIdEJuGfQjFFOkmQTx3n0rBTxknl4CBZywCShrpa5uenSqtGbbkoJteCxbRVtXjXm
+         R7gvEptREP14ZVpbfCs464uZXu1xbQNCyLP3T8G1+g+3rCcFsobkelQs7Tf9AKpH8A11
+         71SA1FugQpipN8iDCSfdrbrG+EfOyl7i4Q0f3gShhS2Sc7NegJOI6zW4hjHTEu32oY+G
+         f4GcRsJTy/iTBdFoRS2WnIkI7RlyIkDO3bJla4k0IjeWAyZguNgxXXT62wKjXXndQeDO
+         8sKA==
+X-Gm-Message-State: AOAM5323ewl7Z1l781sIFdVbZsm7UGSN60l531SjGDgXw+PFps8rshYk
+        T/EfnC2i+1xiFF1YgqGiEfjLlW/5jkdZ6/cqRV84gED44VxCa095CnOeEf2x5Ip2jP/XDWyGnRg
+        NLdmWav5yzmGCMPrHhB14QzdREPq0hK3L6mQAwvzNqQ==
+X-Received: by 2002:a05:6402:5255:b0:416:6089:b23f with SMTP id t21-20020a056402525500b004166089b23fmr3275295edd.87.1646904148954;
+        Thu, 10 Mar 2022 01:22:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx8GzTU6l3uc5oXfjJxqxMo0SlXcIWmtaWXAFmIM5inJcUnvOtC5zOyN2yO3KsVjUmD5zVvMA==
+X-Received: by 2002:a05:6402:5255:b0:416:6089:b23f with SMTP id t21-20020a056402525500b004166089b23fmr3275277edd.87.1646904148803;
+        Thu, 10 Mar 2022 01:22:28 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056402354600b004167d09f418sm1744200edd.55.2022.03.10.01.22.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 01:22:28 -0800 (PST)
+Message-ID: <cb6f313d-7e02-2341-c1b2-f4dba8ad981d@canonical.com>
+Date:   Thu, 10 Mar 2022 10:22:27 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 02/10] dt-bindings: arm: sunplus: Add bindings for
+ Sunplus SP7021 SoC boards
+Content-Language: en-US
+To:     Qin Jian <qinjian@cqplus1.com>, robh+dt@kernel.org
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, tglx@linutronix.de,
+        maz@kernel.org, p.zabel@pengutronix.de, linux@armlinux.org.uk,
+        broonie@kernel.org, arnd@arndb.de, stefan.wahren@i2se.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org
+References: <cover.1646892810.git.qinjian@cqplus1.com>
+ <7b9357809c002f6dd76c6fdd738a4ea8af62cb26.1646892810.git.qinjian@cqplus1.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <7b9357809c002f6dd76c6fdd738a4ea8af62cb26.1646892810.git.qinjian@cqplus1.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix to return a negative error code from the error handling case instead
-of 0, as done elsewhere in this function.
+On 10/03/2022 07:28, Qin Jian wrote:
+> This introduces bindings for boards based Sunplus SP7021 SoC.
+> 
+> Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+> ---
+> Add SoC compatible: "sunplus,sp7021"
+> ---
+>  .../bindings/arm/sunplus,sp7021.yaml          | 28 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 +++++
+>  2 files changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+> 
 
-Fixes: 7e7292dba215 ("ASoC: fsl: add imx-es8328 machine driver")
-Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
----
- sound/soc/fsl/imx-es8328.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/fsl/imx-es8328.c b/sound/soc/fsl/imx-es8328.c
-index 09c674ee79f1..168973035e35 100644
---- a/sound/soc/fsl/imx-es8328.c
-+++ b/sound/soc/fsl/imx-es8328.c
-@@ -87,6 +87,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
- 	if (int_port > MUX_PORT_MAX || int_port == 0) {
- 		dev_err(dev, "mux-int-port: hardware only has %d mux ports\n",
- 			MUX_PORT_MAX);
-+		ret = -EINVAL;
- 		goto fail;
- 	}
- 
--- 
-2.17.1
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
+
+Best regards,
+Krzysztof
