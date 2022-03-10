@@ -2,128 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E66CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F97C47085
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346166AbiCJOmj (ORCPT
+        id S1346217AbiCJOmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:42:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50104 "EHLO
+        Thu, 10 Mar 2022 09:42:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343923AbiCJOb3 (ORCPT
+        with ESMTP id S1343922AbiCJOb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:31:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474DAD95EF;
-        Thu, 10 Mar 2022 06:28:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D686661C0A;
-        Thu, 10 Mar 2022 14:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91F6C340E8;
-        Thu, 10 Mar 2022 14:28:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922508;
-        bh=5IG58LdHT4xAvpo1TWps4IujYggSLXE7CJz3LAeiwxk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a2Hx9S+1ftr7A4s6TptcEyLMAxpf5Yh0UmBqGSjCT8oyi78yLqAk6OIKosv+UviYy
-         CSKI3/0e5CnTcJYyIk8ifIg5bnQYQUHkNcE1GNuHuVw+wdDKbpWEhhmd5Wg0Vy6Z0H
-         6lewHzM3Y1FA0EbhgJFzQKe1FedbqSKxnBwB6zTI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.4 22/33] xen/xenbus: dont let xenbus_grant_ring() remove grants in error case
-Date:   Thu, 10 Mar 2022 15:19:23 +0100
-Message-Id: <20220310140809.393007441@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
-References: <20220310140808.741682643@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0744AD5DCC
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:28:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=UoLoMSr1L4PiQxwJzNXgnjqeiV5XbOR73wyZICR4kL0=; b=Lr6akouqn7YW5NjwJwQCt55gBL
+        N+eHZT6DyUTmjU4aB51d1uEGSHkNUg9PzFLOI4KCujoYfFQzLMvBz8sQPSosVZ8VhYRB2/D2uT6iy
+        Fuht3Bb+ZAfmzGY9OYhTKoPRPn36QAmgwW+AF7vW7sQ5lSaW2aGbKxkOXBrnR7YWcFJvejamAMKcX
+        0jlcPDsDI1T0yUkEtzsdJtdHckBXXD/2MgWIEiTxI0fJEDIADbqMhMRMSGhO4Q/LzBqN3lgBFClWK
+        Pf0YVSTcexMJGfP/U5CQ7isfsCM/e9VRnTbpn5dDj1ftuxvOLgxjo27gQebFtmM4ve1QJ7lcR9ZuG
+        NiAhAIMA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSJlo-000biS-0H; Thu, 10 Mar 2022 14:28:00 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 089FC3000E6;
+        Thu, 10 Mar 2022 15:27:58 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D03752B52E237; Thu, 10 Mar 2022 15:27:58 +0100 (CET)
+Date:   Thu, 10 Mar 2022 15:27:58 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Josh Poimboeuf' <jpoimboe@redhat.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "andrew.cooper3@citrix.com" <andrew.cooper3@citrix.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
+Message-ID: <YioK7llYzEUrAw/r@hirez.programming.kicks-ass.net>
+References: <20220308153011.021123062@infradead.org>
+ <20220308200614.gyhp657bdq3rxapl@treble>
+ <20220309065718.e4k2el2mlqn23yh2@treble>
+ <bdb04de758ea4f89a8731ee6b98794fa@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bdb04de758ea4f89a8731ee6b98794fa@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+On Wed, Mar 09, 2022 at 01:37:50PM +0000, David Laight wrote:
+> I'm wondering what actually happens to loadable modules?
 
-Commit 3777ea7bac3113005b7180e6b9dadf16d19a5827 upstream.
+They work just fine..
 
-Letting xenbus_grant_ring() tear down grants in the error case is
-problematic, as the other side could already have used these grants.
-Calling gnttab_end_foreign_access_ref() without checking success is
-resulting in an unclear situation for any caller of xenbus_grant_ring()
-as in the error case the memory pages of the ring page might be
-partially mapped. Freeing them would risk unwanted foreign access to
-them, while not freeing them would leak memory.
+> Especially those built 'out of tree',
+> potentially with a different compiler,
+> and maybe containing binary 'blobs'.
 
-In order to remove the need to undo any gnttab_grant_foreign_access()
-calls, use gnttab_alloc_grant_references() to make sure no further
-error can occur in the loop granting access to the ring pages.
+-EDONTCARE, you're on your own and get to keep whatever pieces.
+In fact, the more pieces I can get you, the better I feel about it.
 
-It should be noted that this way of handling removes leaking of
-grant entries in the error case, too.
+> The requirement to run programs on old distributions means
+> that things get compiled with quite old versions of gcc.
+> For instance RHEL7 is gcc 4.8.5.
 
-This is CVE-2022-23040 / part of XSA-396.
+Min GCC is 5.1. If you want Kernel IBT you get to use GCC-9 (or 8 with
+backports) but I'd recommend using GCC-10 or later since before that the
+IBT code-gen is pretty stupid.
 
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/xen/xenbus/xenbus_client.c |   24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
-
---- a/drivers/xen/xenbus/xenbus_client.c
-+++ b/drivers/xen/xenbus/xenbus_client.c
-@@ -366,7 +366,14 @@ int xenbus_grant_ring(struct xenbus_devi
- 		      unsigned int nr_pages, grant_ref_t *grefs)
- {
- 	int err;
--	int i, j;
-+	unsigned int i;
-+	grant_ref_t gref_head;
-+
-+	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
-+	if (err) {
-+		xenbus_dev_fatal(dev, err, "granting access to ring page");
-+		return err;
-+	}
- 
- 	for (i = 0; i < nr_pages; i++) {
- 		unsigned long gfn;
-@@ -376,23 +383,14 @@ int xenbus_grant_ring(struct xenbus_devi
- 		else
- 			gfn = virt_to_gfn(vaddr);
- 
--		err = gnttab_grant_foreign_access(dev->otherend_id, gfn, 0);
--		if (err < 0) {
--			xenbus_dev_fatal(dev, err,
--					 "granting access to ring page");
--			goto fail;
--		}
--		grefs[i] = err;
-+		grefs[i] = gnttab_claim_grant_reference(&gref_head);
-+		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
-+						gfn, 0);
- 
- 		vaddr = vaddr + XEN_PAGE_SIZE;
- 	}
- 
- 	return 0;
--
--fail:
--	for (j = 0; j < i; j++)
--		gnttab_end_foreign_access_ref(grefs[j], 0);
--	return err;
- }
- EXPORT_SYMBOL_GPL(xenbus_grant_ring);
- 
-
-
+If you build modules using another compiler than the main kernel, you
+again get to keep the pieces.
