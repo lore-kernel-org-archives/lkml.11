@@ -2,175 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38318C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 597B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241356AbiCJKnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:43:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
+        id S241372AbiCJKoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:44:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235213AbiCJKnc (ORCPT
+        with ESMTP id S241381AbiCJKn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:43:32 -0500
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDE59E54C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:42:31 -0800 (PST)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2d07ae0b1c0so53137457b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:42:31 -0800 (PST)
+        Thu, 10 Mar 2022 05:43:56 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EAFA8EDB
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:42:45 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id u1so7229131wrg.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:42:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PjvVFIKZnpSRC+f09phnGX4Uu5Wyj+AZlMtNPwY4epI=;
-        b=N2WsR4ppwa1hiSYpMnQi16CZJFt0xsiOm/GSJGOrjM/kDllAE5FbmrSUzSAPq3085X
-         H4N9BU3YlYt74jkDWlHY/hTW7RQKmYd7QyZViNS7vwVuOuys/XZu773r8mFJDW3Fjg1P
-         wYXZ1h0iQdak6Lzr/jOpJe1sUd6ncN2JSrZEFKYj8i7jaR+3DFKlmLtIiDQgb5Ci5CjT
-         mfddlFomZJOiROWg89ER9sEVMOQLBkuFYlV/1+fpKRwLlzxea9LVM5DialZcX2FS72zk
-         E9oZTmf1+JwYLRUbi4RYOuJBspe1qh66RVqCOERCQwpt0dPWO3sgRYq6fNzAB4Kx39rn
-         L1GA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QVMbWuHkkDuZtNM8luekJjrN/fjg/FyiWebrna5roZw=;
+        b=tIzoauSJ+w5agVaEFio3bpeTlHSNKY7X4l83Kr8LtMdX7pcS3I+jVWWKNLFprL+e3p
+         yMRJADedzZG7//YHPb+2zWxhWZ+UaEz7ubkaPixFQZhL4RXi6Oq+9/bQGTSEMWDeKaPq
+         sXaYEm3chI4nvNcNVIEOYeOIIMhumUmkyyCX/h4YUmCiQvpecMQTmILjGYlPj8DmVcn4
+         XoeSe0geQ5i32wtQn+Ywn4REMUWuwyqFp6XuK/Bn0bkzuZUQlenWReKxabxrAKIRMzS1
+         If+tpvYP0RWQVIbRllPeA+KJ8iVWm/KuKZ3IPewdqJxOmzLG0eK+HO+Bndo5SAjFLSJ6
+         wWNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PjvVFIKZnpSRC+f09phnGX4Uu5Wyj+AZlMtNPwY4epI=;
-        b=ZfslJ/Zt+CyC33GVj81OELYtM3qc0UQjujkkYhC9M5T3uGR2a/PNF0Zu8vPMU3LcXG
-         3nm4NL4igg1yi6lkDYdPvZfi9wCMQJKnGUTHN5ep87r6fs3T2v2/h7Rp9+4Fk+e+1Aub
-         BtSeMdcgaFyz2vYESgWZwQic2QPU5YShqMKKlCFTmfbev9Z2oxDfzphwe8/3l6Tuig/x
-         61Z9Ujt+VBtwJ8kAgWg1PuKQI1cL/A3tYrTSlf4uDZtfNarcPuqyVXlwYyQH+b28zcKC
-         iM+VLXWxxRZTJdWhh5NrDmjOfuXdhrNfH7NIhVruqt3otjOmjdUFOpjXy1Ms41Yjtm91
-         cACQ==
-X-Gm-Message-State: AOAM531/9q3/VNRlkDQpcIes0JO9AdljPrh8NPFq8foQDICUELVJGquE
-        74sFUQGDPH06cgR3ea2suT6CwDq1edY/gGntnEAAtw==
-X-Google-Smtp-Source: ABdhPJxsqY3tbTUqohNm2XSgz8up04CIOjs4jevepGkNfFHKU6IKs0Os1NqJ9ZAfQ69oRydLyjunFjUm0eFl3YDC5Dk=
-X-Received: by 2002:a81:e85:0:b0:2dc:50d1:145 with SMTP id 127-20020a810e85000000b002dc50d10145mr3361489ywo.314.1646908950510;
- Thu, 10 Mar 2022 02:42:30 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QVMbWuHkkDuZtNM8luekJjrN/fjg/FyiWebrna5roZw=;
+        b=3AlhUB8xE9se/OzvJU9Al/Tsdzy7YPYchREuUZgdSDHYFr4wsBccCo1i/CgGvZMm4I
+         vYRyq0kzLi/kEUX3OWMMqp5wTzJiUXaA7VoJzXts/iMmSAqEjfchlln0DY5dAPunQH1K
+         Wfa4sWZZHCSx/FmFYpA67YwvE7xVSI6VYpLGrVwKtG1ta3/rMbe7jD8A/ntoKsalOoC/
+         YWehV+S6yCs359OKmeivUC9ZTJky5N7Kp/VI21XND/f65tZR2b+BVHrcLCSGgSeBIizD
+         2PhBHzp4prxlQgNQzjtexZplbebsCtZvm8MLcKOx687vDQ2HIXa1L4bcTQ8h4VDU0z/r
+         CClA==
+X-Gm-Message-State: AOAM532bj90TDAd2Izxr08g6In5IWHoW7l4jwhmtPDW7GadmM+FNtXTe
+        YzXAgOTBmpVQhjlYL0tEU3Kaj1ceuQ75jg==
+X-Google-Smtp-Source: ABdhPJyY6drV+z0QAzNTPASiA7ycLBG5wzjkdEV9U3cnvDm+EIQxess0YzG0KPe/LtY8rbMKgGefdQ==
+X-Received: by 2002:adf:fa41:0:b0:1f0:2118:4832 with SMTP id y1-20020adffa41000000b001f021184832mr3016372wrr.571.1646908963682;
+        Thu, 10 Mar 2022 02:42:43 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id g2-20020a5d46c2000000b001f079ba0158sm3751927wrs.60.2022.03.10.02.42.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 02:42:43 -0800 (PST)
+Message-ID: <5e13c1ba-0bf5-e360-c350-e7a1a1402350@linaro.org>
+Date:   Thu, 10 Mar 2022 10:42:42 +0000
 MIME-Version: 1.0
-References: <20220310081854.2487280-1-jiyong@google.com> <20220310085931.cpgc2cv4yg7sd4vu@sgarzare-redhat>
-In-Reply-To: <20220310085931.cpgc2cv4yg7sd4vu@sgarzare-redhat>
-From:   Jiyong Park <jiyong@google.com>
-Date:   Thu, 10 Mar 2022 19:41:54 +0900
-Message-ID: <CALeUXe6heGD9J+5fkLs9TJ7Mn0UT=BSdGNK_wZ4gkor_Ax_SqA@mail.gmail.com>
-Subject: Re: [PATCH] vhost/vsock: reset only the h2g connections upon release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, adelva@google.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] slimbus: qcom-ngd-ctrl: Use platform_get_irq() to get the
+ interrupt
+Content-Language: en-US
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org,
+        alsa-devel <alsa-devel@alsa-project.org>
+References: <20211224161334.31123-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211224161334.31123-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <c5ea7235-8642-6a89-f4ce-bd0861b6e4aa@linaro.org>
+ <CA+V-a8tkhERx+8zDae5aWkNQ9Oxd1AamRL=i4TDC2X8RGgAo0w@mail.gmail.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <CA+V-a8tkhERx+8zDae5aWkNQ9Oxd1AamRL=i4TDC2X8RGgAo0w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stefano,
 
-On Thu, Mar 10, 2022 at 5:59 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> Hi Jiyong,
->
-> On Thu, Mar 10, 2022 at 05:18:54PM +0900, Jiyong Park wrote:
-> >Filtering non-h2g connections out when determining orphaned connections.
-> >Otherwise, in a nested VM configuration, destroying the nested VM (which
-> >often involves the closing of /dev/vhost-vsock if there was h2g
-> >connections to the nested VM) kills not only the h2g connections, but
-> >also all existing g2h connections to the (outmost) host which are
-> >totally unrelated.
-> >
-> >Tested: Executed the following steps on Cuttlefish (Android running on a
-> >VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
-> >connection inside the VM, (2) open and then close /dev/vhost-vsock by
-> >`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
-> >session is not reset.
-> >
-> >[1] https://android.googlesource.com/device/google/cuttlefish/
-> >
-> >Signed-off-by: Jiyong Park <jiyong@google.com>
-> >---
-> > drivers/vhost/vsock.c | 4 ++++
-> > 1 file changed, 4 insertions(+)
-> >
-> >diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> >index 37f0b4274113..2f6d5d66f5ed 100644
-> >--- a/drivers/vhost/vsock.c
-> >+++ b/drivers/vhost/vsock.c
-> >@@ -722,6 +722,10 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
-> >        * executing.
-> >        */
-> >
-> >+      /* Only the h2g connections are reset */
-> >+      if (vsk->transport != &vhost_transport.transport)
-> >+              return;
-> >+
-> >       /* If the peer is still valid, no need to reset connection */
-> >       if (vhost_vsock_get(vsk->remote_addr.svm_cid))
-> >               return;
-> >--
-> >2.35.1.723.g4982287a31-goog
-> >
->
-> Thanks for your patch!
->
-> Yes, I see the problem and I think I introduced it with the
-> multi-transports support (ooops).
->
-> So we should add this fixes tag:
->
-> Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
->
->
-> IIUC the problem is for all transports that should only cycle on their
-> own sockets. Indeed I think there is the same problem if the g2h driver
-> will be unloaded (or a reset event is received after a VM migration), it
-> will close all sockets of the nested h2g.
->
-> So I suggest a more generic solution, modifying
-> vsock_for_each_connected_socket() like this (not tested):
->
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index 38baeb189d4e..f04abf662ec6 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
->   }
->   EXPORT_SYMBOL_GPL(vsock_remove_sock);
->
-> -void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-> +void vsock_for_each_connected_socket(struct vsock_transport *transport,
-> +                                    void (*fn)(struct sock *sk))
->   {
->          int i;
->
-> @@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
->          for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
->                  struct vsock_sock *vsk;
->                  list_for_each_entry(vsk, &vsock_connected_table[i],
-> -                                   connected_table)
-> +                                   connected_table) {
-> +                       if (vsk->transport != transport)
-> +                               continue;
-> +
->                          fn(sk_vsock(vsk));
-> +               }
->          }
->
->
-> And all transports that call it.
->
-> Thanks,
-> Stefano
->
 
-Thanks for the suggestion, which looks much better. It actually worked well.
+On 10/03/2022 10:23, Lad, Prabhakar wrote:
+> On Thu, Mar 10, 2022 at 10:16 AM Srinivas Kandagatla
+> <srinivas.kandagatla@linaro.org> wrote:
+>>
+>>
+>>
+>> On 24/12/2021 16:13, Lad Prabhakar wrote:
+>>> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+>>> allocation of IRQ resources in DT core code, this causes an issue
+>>
+>> Are you saying that we should not be using platform_get_resource(pdev,
+>> IORESOURCE_IRQ, ...) on drivers that support DT?
+>>
+>>> when using hierarchical interrupt domains using "interrupts" property
+>>> in the node as this bypasses the hierarchical setup and messes up the
+>>> irq chaining.
+>>
+>> Should this not be fixed in the DT core itself?
+>>
+> Yes the plan is to fix in the DT core itself (refer [0]).
+> 
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> 
+>>>
+>>> In preparation for removal of static setup of IRQ resource from DT core
+>>> code use platform_get_irq().
+>>
+>> I would prefer this patch to be part of the series that removes IRQ
+>> resource handling from DT core.
+>>
+> Since there are too many users (which are in different subsystems)
+> getting this all in single series would be a pain. As a result it is
+> split up into individual subsystems.
+Am happy for this to be included in that series,
+TBH, this patch make more sense along with that series than by itself.
 
-By the way, the suggested change will alter the kernel-module interface (KMI),
-which will make it difficult to land the change on older releases where we'd
-like to keep the KMI stable [1]. Would it be OK if we let the supplied function
-(fn) be responsible for checking the transport? I think that there, in
-the future,
-might be a case where one needs to cycle over all sockets for inspection or so.
-I admit that this would be prone to error, though.
+This would also give better insight of what exactly is changing in 
+platform_get_resource() w.r.t handling IRQ resources.
 
-Please let me know what you think. I don't have a strong preference. I will
-submit a revision as you want.
 
-[1] https://source.android.com/devices/architecture/kernel/generic-kernel-image#kmi-stability
+--srini
+
+> 
+> Cheers,
+> Prabhakar
+> 
+>>
+>> --srini
+>>
+>>>
+>>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>>> ---
+>>> Hi,
+>>>
+>>> Dropping usage of platform_get_resource() was agreed based on
+>>> the discussion [0].
+>>>
+>>> [0] https://patchwork.kernel.org/project/linux-renesas-soc/
+>>> patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+>>>
+>>> Cheers,
+>>> Prabhakar
+>>> ---
+>>>    drivers/slimbus/qcom-ngd-ctrl.c | 10 ++++------
+>>>    1 file changed, 4 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
+>>> index 7040293c2ee8..0f29a08b4c09 100644
+>>> --- a/drivers/slimbus/qcom-ngd-ctrl.c
+>>> +++ b/drivers/slimbus/qcom-ngd-ctrl.c
+>>> @@ -1526,13 +1526,11 @@ static int qcom_slim_ngd_ctrl_probe(struct platform_device *pdev)
+>>>        if (IS_ERR(ctrl->base))
+>>>                return PTR_ERR(ctrl->base);
+>>>
+>>> -     res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+>>> -     if (!res) {
+>>> -             dev_err(&pdev->dev, "no slimbus IRQ resource\n");
+>>> -             return -ENODEV;
+>>> -     }
+>>> +     ret = platform_get_irq(pdev, 0);
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>>
+>>> -     ret = devm_request_irq(dev, res->start, qcom_slim_ngd_interrupt,
+>>> +     ret = devm_request_irq(dev, ret, qcom_slim_ngd_interrupt,
+>>>                               IRQF_TRIGGER_HIGH, "slim-ngd", ctrl);
+>>>        if (ret) {
+>>>                dev_err(&pdev->dev, "request IRQ failed\n");
