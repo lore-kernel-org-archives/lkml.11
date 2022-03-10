@@ -2,81 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3745DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F379C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243497AbiCJPYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:24:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S231332AbiCJPZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:25:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244062AbiCJPXg (ORCPT
+        with ESMTP id S232317AbiCJPZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:23:36 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12B365DC;
-        Thu, 10 Mar 2022 07:22:33 -0800 (PST)
-Received: from Monstersaurus.ksquared.org.uk.beta.tailscale.net (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 7E0AA491;
-        Thu, 10 Mar 2022 16:22:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646925751;
-        bh=f1cZwxY3Sz3yLsut2yWbhLFFNJnpn/cbPONcZc3vM9M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MAz8Uo8ZMfT8UYYCHhyBAylyu4XYtKLCwPeeJzgEli2Nrvg8f0N/4msdI8EVmE0ne
-         ogL9DanCVjuvWuUD0Agtolgb3TwMWPFNoU4bg6ie3kCGxb2IAHULCtXSJ/b+gB4dRY
-         QRX2aBgfcopymVWqhvLtI8b3B+CdkZ4l7xG1HKDg=
-From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-To:     dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Douglas Anderson <dianders@chromium.org>,
+        Thu, 10 Mar 2022 10:25:07 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6BA15722D;
+        Thu, 10 Mar 2022 07:24:03 -0800 (PST)
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nSKdt-000DUs-L2; Thu, 10 Mar 2022 16:23:53 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nSKdt-0007vB-6m; Thu, 10 Mar 2022 16:23:53 +0100
+Subject: Re: [PATCH] bpf: test_run: use kvfree() for memory allocated with
+ kvmalloc()
+To:     Yihao Han <hanyihao@vivo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Subject: [PATCH v3 0/3] drm/bridge: ti-sn65dsi86: Support non-eDP DisplayPort connectors
-Date:   Thu, 10 Mar 2022 15:22:24 +0000
-Message-Id: <20220310152227.2122960-1-kieran.bingham+renesas@ideasonboard.com>
-X-Mailer: git-send-email 2.32.0
+Cc:     kernel@vivo.com, toke@redhat.com
+References: <20220310092828.13405-1-hanyihao@vivo.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b611d5d6-fb8c-0c9d-ca12-7131765001ca@iogearbox.net>
+Date:   Thu, 10 Mar 2022 16:23:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220310092828.13405-1-hanyihao@vivo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26477/Thu Mar 10 10:34:39 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement support for non eDP connectors on the TI-SN65DSI86 bridge, and
-provide IRQ based hotplug detect to identify when the connector is
-present.
+[ You have plenty of folks in Cc, just not Toke given b530e9e1063e, so added him. ;) ]
 
-no-hpd is extended to be the default behaviour for non DisplayPort
-connectors.
+On 3/10/22 10:28 AM, Yihao Han wrote:
+> It is allocated with kvmalloc(), the corresponding release function
+> should not be kfree(), use vfree() instead.
 
-This series is based upon Sam Ravnborgs and Rob Clarks series [0] to
-support DRM_BRIDGE_STATE_OPS and NO_CONNECTOR support on the SN65DSI86,
-however some extra modifications have been made on the top of Sam's
-series to fix compile breakage and the NO_CONNECTOR support.
+nit: s/vfree/kvfree/
 
-A full branch with these changes is available at [1]
+> Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
 
-[0] https://lore.kernel.org/all/20220206154405.1243333-1-sam@ravnborg.org/
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/kbingham/rcar.git
-    branch: kbingham/drm-misc/next/sn65dsi86/hpd
+Fixed up typo and added Fixes tag before pushing, thanks!
 
-Kieran Bingham (1):
-  drm/bridge: ti-sn65dsi86: Support hotplug detection
-
-Laurent Pinchart (2):
-  drm/bridge: ti-sn65dsi86: Support DisplayPort (non-eDP) mode
-  drm/bridge: ti-sn65dsi86: Implement bridge connector operations
-
- drivers/gpu/drm/bridge/ti-sn65dsi86.c | 180 +++++++++++++++++++++++---
- 1 file changed, 165 insertions(+), 15 deletions(-)
-
--- 
-2.32.0
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> ---
+>   net/bpf/test_run.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index 25169908be4a..b7e1e5f61c50 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -196,9 +196,9 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
+>   err_mmodel:
+>   	page_pool_destroy(pp);
+>   err_pp:
+> -	kfree(xdp->skbs);
+> +	kvfree(xdp->skbs);
+>   err_skbs:
+> -	kfree(xdp->frames);
+> +	kvfree(xdp->frames);
+>   	return err;
+>   }
+>   
+> 
 
