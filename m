@@ -2,112 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01993C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8714EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244009AbiCJTOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
+        id S1343491AbiCJTRW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 14:17:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237088AbiCJTOg (ORCPT
+        with ESMTP id S239336AbiCJTRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:14:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A332C14FFF0;
-        Thu, 10 Mar 2022 11:13:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A604B8279C;
-        Thu, 10 Mar 2022 19:13:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAB2C340F5;
-        Thu, 10 Mar 2022 19:13:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646939612;
-        bh=MFqvsPhJ5FQFN9ZJ8GxngZigWjLHIqTL7/ZSq+djCtY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QE+FlqFj2DYnzMMFwVfj3vAw6KWI1HM2OxSGexXLiAmnLSSEumiNtLCf4h+1Ad614
-         98I8Cvv4D6VJkkfB1Dym2hn/e1JbR4lelLfzqlQMRdrn0kO2HPdUbj8W6W123F1/nL
-         sIYCZuH0OPRbE56YoOkrj9TsmMpvUepi3Bk9uYYi2h7y2xeT1C3L0+kywPJWYYHAAL
-         2SrZk6ylTk8iemDXLZhnVFAWR/TYuqjLrWFWzTszrzkjjTdL/uUVLp4Lyk6v5WFfDL
-         rkUEoPiOl46GdwirsruolkbT/JRXfUaS6hxO1fCc5CqnhGgdk427GchL/6a3vsm0PU
-         vvnX0RUL/Khqg==
-Received: by mail-ej1-f48.google.com with SMTP id kt27so14390112ejb.0;
-        Thu, 10 Mar 2022 11:13:31 -0800 (PST)
-X-Gm-Message-State: AOAM532Uu0kwIOH5Rgp0TJie6DxZuc6n8IlN0QqxYfFes0ZmWHC8cr4q
-        tpO6MEVEpELzYx4jvagonY+0Cm6YZtb9E5UYog==
-X-Google-Smtp-Source: ABdhPJw/7Hn8wBEKMu7V2R+odPO0hI5sV48PqGvd1xtKQ39XTlRkabyhzSktXJv26NsRfyOT74sdCDYTis/v/9pA1e4=
-X-Received: by 2002:a17:907:298f:b0:6da:b3da:19e with SMTP id
- eu15-20020a170907298f00b006dab3da019emr5542466ejc.423.1646939610179; Thu, 10
- Mar 2022 11:13:30 -0800 (PST)
+        Thu, 10 Mar 2022 14:17:20 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6477B159EAB
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:16:19 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id r7so11186062lfc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:16:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=go92KYaN5aNvN8bXbqqxD++j8ixdpZLOPabJY6m9jQw=;
+        b=LMIIbB0h1/4pQ0VdwUiOVE5d8NYb+t5fKYOcBza0G4sUYUWMDPGXo6a0id4sFW37kU
+         6PZ2zExV/hzV0YuLWmcwShIUaxVm9631BL2nPdiIHiZGdGkS915lgqkRKgnNzjIJRABq
+         3p1plaVXJ4Xyv6Y/3l4odxQrdGFhBBcovjO2Ov1AovSwcNpnnk5EtWg/AIWe9NqtZRNm
+         SpWjOXK61WvLZdF+uhKHXmIVdc8jO6xY5SN7yP/WdujHoRlSZ6/zXbrAz+y7O+Dbtm3g
+         Ozlpm0qv5imV2YW5vd/0MDNm7DFvkJDqOehkFMPsktIyHGsWxGU0R9DWREfGW0uwXnRG
+         lFrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=go92KYaN5aNvN8bXbqqxD++j8ixdpZLOPabJY6m9jQw=;
+        b=Ad5eEVnuZ4JsP6GYWmb/wt9/Gi6lM7k06uAZioteQbFwKztP0UYZ8ri+m95okoJSgQ
+         MSO56QYjNnL9n+7OauVu3xOjVlgf2h2870lBzRJw+gNegAMOl/hh/s3jEmZD6Cx+iQ+b
+         9cxDN1+DKStkhZ3Nlhl8FOOUZT9HjHa3QGJ2j+55dayWELNV80ewgBOR58zNwmFZi5bf
+         LibObheGHEWVQ92ZW0j0v7mX9wdlP0uwbOWoyLJgJRg0+8+wnoqZN4a6mXu4p9hYK1fe
+         HlgPr/03xeWC9NpupuNI0CBlAHPqqworNu5hbxYJz1hjoSHYBq9Xceeg5jurue4CisSy
+         4sww==
+X-Gm-Message-State: AOAM5326IR1XyjhY7chcaKSBF9gnM63CRNfqeHmrv82u+qMP1zkcML6T
+        7iPOmSZdmVIz26L0LzPciwxtAYijcykBSyOw3xj8zA==
+X-Google-Smtp-Source: ABdhPJzEWqQmXRfdkmydm0aeWMsZ+uV0rW00eQolc1dHSilGfFUrRNnedV8T2t9cApwOAE7/envXItTTv3uQAduPaEY=
+X-Received: by 2002:a05:6512:31d4:b0:445:e4ef:c0f8 with SMTP id
+ j20-20020a05651231d400b00445e4efc0f8mr3847544lfe.626.1646939777382; Thu, 10
+ Mar 2022 11:16:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20220309120025.6721-1-bharat.kumar.gogada@xilinx.com> <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
-In-Reply-To: <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 10 Mar 2022 13:13:18 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL3CSERnTihfc_CKB96bbdN2xxkb78H383pMfC_bGg+Xw@mail.gmail.com>
-Message-ID: <CAL_JsqL3CSERnTihfc_CKB96bbdN2xxkb78H383pMfC_bGg+Xw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root Port
-To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc:     PCI <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michals@xilinx.com>
+References: <20220305125605.149913-1-masahiroy@kernel.org>
+In-Reply-To: <20220305125605.149913-1-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 10 Mar 2022 11:16:05 -0800
+Message-ID: <CAKwvOdkYs8wkFOGpPc6SKY8CSFHdT8t_AJdFTkSCr+43dm20Mg@mail.gmail.com>
+Subject: Re: [PATCH v2] kbuild: add --target to correctly cross-compile UAPI
+ headers with Clang
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Fangrui Song <maskray@google.com>,
+        "Dmitry V. Levin" <ldv@altlinux.org>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?Q?Matthias_M=C3=A4nnich?= <maennich@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 6:00 AM Bharat Kumar Gogada
-<bharat.kumar.gogada@xilinx.com> wrote:
+On Sat, Mar 5, 2022 at 4:56 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> Xilinx Versal Premium series has CPM5 block which supports Root Port
-> functioning at Gen5 speed.
+> When you compile-test UAPI headers (CONFIG_UAPI_HEADER_TEST=y) with
+> Clang, they are currently compiled for the host target (likely x86_64)
+> regardless of the given ARCH=.
 >
-> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
+> In fact, some exported headers include libc headers. For example,
+> include/uapi/linux/agpgart.h includes <stdlib.h> after being exported.
+> The header search paths should match to the target we are compiling
+> them for.
+
+Isn't that a bug in that header though? Why does it inconsistently use
+size_t vs. __kernel_size_t. Shouldn't it be consistently using
+__kernel_size_t? (Seeing TRUE/FALSE defined in such a low level header
+is also *yikes*.) Are there platforms where sizeof(size_t) !=
+sizeof(__kernel_size_t)?
+
+Usually to bootstrap a toolchain you need to start with kernel headers
+to bootstrap the libc.  It seems like some kind of circular dependency
+to me if kernel headers are dependent on libc headers. Hence my
+previous comment about -ffreestanding.
+
 >
-> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> Pick up the --target triple from KBUILD_CFLAGS in the same ways as
+> commit 7f58b487e9ff ("kbuild: make Clang build userprogs for target
+> architecture").
+
+Oh boy thanks for finding+fixing this! I still suspect we shouldn't
+need a cross-libc for UAPI header testing, and that the kernel headers
+simply need to be cleaned up. But regardless of that it doesn't make
+sense to use the wrong target when checking headers generated for the
+target. Thanks for the patch (and sorry I've been falling behind on
+code review lately).
+
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
->  .../bindings/pci/xilinx-versal-cpm.yaml       | 47 ++++++++++++++++---
->  1 file changed, 40 insertions(+), 7 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> index 32f4641085bc..97c7229d7f91 100644
-> --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> @@ -14,17 +14,21 @@ allOf:
+> Changes in v2:
+>   - Reword the commit description to mention agpgart.h instead of
+>     asound.h because the latter is in the no-header-test list.
 >
->  properties:
->    compatible:
-> -    const: xlnx,versal-cpm-host-1.00
-> +    contains:
+>  usr/include/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/usr/include/Makefile b/usr/include/Makefile
+> index ac206fb27c65..4215801e1110 100644
+> --- a/usr/include/Makefile
+> +++ b/usr/include/Makefile
+> @@ -10,7 +10,7 @@ UAPI_CFLAGS := -std=c90 -Wall -Werror=implicit-function-declaration
+>
+>  # In theory, we do not care -m32 or -m64 for header compile tests.
+>  # It is here just because CONFIG_CC_CAN_LINK is tested with -m32 or -m64.
+> -UAPI_CFLAGS += $(filter -m32 -m64, $(KBUILD_CFLAGS))
+> +UAPI_CFLAGS += $(filter -m32 -m64 --target=%, $(KBUILD_CFLAGS))
+>
+>  # USERCFLAGS might contain sysroot location for CC.
+>  UAPI_CFLAGS += $(USERCFLAGS)
+> --
+> 2.32.0
+>
 
-Nope. That means 'compatible = "foo", "xlnx,versal-cpm-host-1.00",
-"bar";' would be valid.
 
-> +      enum:
-> +        - xlnx,versal-cpm-host-1.00
-> +        - xlnx,versal-cpm5-host-1.00
-
-Where does 1.00 come from? My guess is you or whoever did the original
-binding just made it up. Version numbers are only used when they
-correspond to something documented for the h/w. In the case of Xilinx,
-that should be soft IP (which I assume has versioned releases) and
-nothing else. If 'versal' is not specific enough to identify a
-specific SoC, then add to it.
-
-
->    reg:
-> -    items:
-> -      - description: Configuration space region and bridge registers.
-> -      - description: CPM system level control and status registers.
-> +    description: |
-> +      Should contain cpm_slcr, cfg registers location and length.
-> +      For xlnx,versal-cpm5-host-1.00, it should also contain cpm_csr.
-
-Not an improvement in defining what each entry is.
-
-> +    minItems: 2
-> +    maxItems: 3
+-- 
+Thanks,
+~Nick Desaulniers
