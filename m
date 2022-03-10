@@ -2,391 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 157F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242851AbiCJONo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:13:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
+        id S237969AbiCJONu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242907AbiCJOM5 (ORCPT
+        with ESMTP id S243020AbiCJONC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:12:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7D21567BA;
-        Thu, 10 Mar 2022 06:11:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF48D61B6B;
-        Thu, 10 Mar 2022 14:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E30C340E8;
-        Thu, 10 Mar 2022 14:11:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921471;
-        bh=KxvxXb3+O5AfhepAo9Ks7yUlX1lr2/vjaR83ObB37c4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpmfVNEm1skrCZ0G9QsJxlLng3BEn6Xdk8owwB+KMvACdxOg3AQzv9q9KC8VcMhHb
-         K+5eMcryahybW0AKYj+9W1abmMNbboFC5DtVEZLUGPPAMm0TD6OhPsdQu+g5O28gH7
-         Wj8wco0Ajzjd56jrrXiZrvxpPyv/PdCpZYGsooKk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.16 09/53] ARM: report Spectre v2 status through sysfs
-Date:   Thu, 10 Mar 2022 15:09:14 +0100
-Message-Id: <20220310140812.103024506@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
-References: <20220310140811.832630727@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Thu, 10 Mar 2022 09:13:02 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3AF015694C;
+        Thu, 10 Mar 2022 06:11:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646921480; x=1678457480;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=dJciXpEHLFj6Z+EAfDFvGxoZXvWRu/tGM+jdlgCTKlE=;
+  b=Js2cUaBkpKSpZ2f+bQu0e7Lq8W9rIAI3MQoOOEaEh5WQaOMkMXTMoKdJ
+   HRkqWCOWgyt7zDICbp3zC2lArsOpGhv75JsDbR80rFTaY9Pa057PQjVob
+   vYy0CtKv5iJmts/UIK96OKSkEqEqPObvvJ1Xkt6t6ezjnNhxTHCPJA0qC
+   U09Wngd7+C5MTe+bdJwCOngIf77CQrNBRsPUnGgsk8LXtpSmV9PJesf8i
+   q51wtmEurz3TifUvoG6dO8/xTLoj8tlPLF9NqV0BwoyhMjDYJAOXe4vny
+   loSSqhC8NDLAr4t85Ap37dilJ7AfKfu8yQHH4qkChqpFMJCNWQLjomSTc
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="252823625"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="252823625"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="554655136"
+Received: from chaop.bj.intel.com ([10.240.192.101])
+  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:10:49 -0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: [PATCH v5 10/13] KVM: Register private memslot to memory backing store
+Date:   Thu, 10 Mar 2022 22:09:08 +0800
+Message-Id: <20220310140911.50924-11-chao.p.peng@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Add 'notifier' to memslot to make it a memfile_notifier node and then
+register it to memory backing store via memfile_register_notifier() when
+memslot gets created. When memslot is deleted, do the reverse with
+memfile_unregister_notifier(). Note each KVM memslot can be registered
+to different memory backing stores (or the same backing store but at
+different offset) independently.
 
-commit 9dd78194a3722fa6712192cdd4f7032d45112a9a upstream.
-
-As per other architectures, add support for reporting the Spectre
-vulnerability status via sysfs CPU.
-
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- arch/arm/include/asm/spectre.h |   28 ++++++++
- arch/arm/kernel/Makefile       |    2 
- arch/arm/kernel/spectre.c      |   54 +++++++++++++++
- arch/arm/mm/Kconfig            |    1 
- arch/arm/mm/proc-v7-bugs.c     |  141 +++++++++++++++++++++++++++++------------
- 5 files changed, 187 insertions(+), 39 deletions(-)
- create mode 100644 arch/arm/include/asm/spectre.h
- create mode 100644 arch/arm/kernel/spectre.c
+ include/linux/kvm_host.h |  1 +
+ virt/kvm/kvm_main.c      | 75 ++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 70 insertions(+), 6 deletions(-)
 
---- /dev/null
-+++ b/arch/arm/include/asm/spectre.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+#ifndef __ASM_SPECTRE_H
-+#define __ASM_SPECTRE_H
-+
-+enum {
-+	SPECTRE_UNAFFECTED,
-+	SPECTRE_MITIGATED,
-+	SPECTRE_VULNERABLE,
-+};
-+
-+enum {
-+	__SPECTRE_V2_METHOD_BPIALL,
-+	__SPECTRE_V2_METHOD_ICIALLU,
-+	__SPECTRE_V2_METHOD_SMC,
-+	__SPECTRE_V2_METHOD_HVC,
-+};
-+
-+enum {
-+	SPECTRE_V2_METHOD_BPIALL = BIT(__SPECTRE_V2_METHOD_BPIALL),
-+	SPECTRE_V2_METHOD_ICIALLU = BIT(__SPECTRE_V2_METHOD_ICIALLU),
-+	SPECTRE_V2_METHOD_SMC = BIT(__SPECTRE_V2_METHOD_SMC),
-+	SPECTRE_V2_METHOD_HVC = BIT(__SPECTRE_V2_METHOD_HVC),
-+};
-+
-+void spectre_v2_update_state(unsigned int state, unsigned int methods);
-+
-+#endif
---- a/arch/arm/kernel/Makefile
-+++ b/arch/arm/kernel/Makefile
-@@ -106,4 +106,6 @@ endif
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 6e1d770d6bf8..9b175aeca63f 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -567,6 +567,7 @@ struct kvm_memory_slot {
+ 	struct file *private_file;
+ 	loff_t private_offset;
+ 	struct memfile_pfn_ops *pfn_ops;
++	struct memfile_notifier notifier;
+ };
  
- obj-$(CONFIG_HAVE_ARM_SMCCC)	+= smccc-call.o
+ static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index d11a2628b548..67349421eae3 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -840,6 +840,37 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
  
-+obj-$(CONFIG_GENERIC_CPU_VULNERABILITIES) += spectre.o
-+
- extra-y := $(head-y) vmlinux.lds
---- /dev/null
-+++ b/arch/arm/kernel/spectre.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/cpu.h>
-+#include <linux/device.h>
-+
-+#include <asm/spectre.h>
-+
-+ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
+ #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+ 
++#ifdef CONFIG_MEMFILE_NOTIFIER
++static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
 +{
-+	return sprintf(buf, "Mitigation: __user pointer sanitization\n");
++	return memfile_register_notifier(file_inode(slot->private_file),
++					 &slot->notifier,
++					 &slot->pfn_ops);
 +}
 +
-+static unsigned int spectre_v2_state;
-+static unsigned int spectre_v2_methods;
-+
-+void spectre_v2_update_state(unsigned int state, unsigned int method)
++static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
 +{
-+	if (state > spectre_v2_state)
-+		spectre_v2_state = state;
-+	spectre_v2_methods |= method;
-+}
-+
-+ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
-+{
-+	const char *method;
-+
-+	if (spectre_v2_state == SPECTRE_UNAFFECTED)
-+		return sprintf(buf, "%s\n", "Not affected");
-+
-+	if (spectre_v2_state != SPECTRE_MITIGATED)
-+		return sprintf(buf, "%s\n", "Vulnerable");
-+
-+	switch (spectre_v2_methods) {
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		method = "Branch predictor hardening";
-+		break;
-+
-+	case SPECTRE_V2_METHOD_ICIALLU:
-+		method = "I-cache invalidation";
-+		break;
-+
-+	case SPECTRE_V2_METHOD_SMC:
-+	case SPECTRE_V2_METHOD_HVC:
-+		method = "Firmware call";
-+		break;
-+
-+	default:
-+		method = "Multiple mitigations";
-+		break;
-+	}
-+
-+	return sprintf(buf, "Mitigation: %s\n", method);
-+}
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -830,6 +830,7 @@ config CPU_BPREDICT_DISABLE
- 
- config CPU_SPECTRE
- 	bool
-+	select GENERIC_CPU_VULNERABILITIES
- 
- config HARDEN_BRANCH_PREDICTOR
- 	bool "Harden the branch predictor against aliasing attacks" if EXPERT
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -6,8 +6,35 @@
- #include <asm/cp15.h>
- #include <asm/cputype.h>
- #include <asm/proc-fns.h>
-+#include <asm/spectre.h>
- #include <asm/system_misc.h>
- 
-+#ifdef CONFIG_ARM_PSCI
-+static int __maybe_unused spectre_v2_get_cpu_fw_mitigation_state(void)
-+{
-+	struct arm_smccc_res res;
-+
-+	arm_smccc_1_1_invoke(ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
-+			     ARM_SMCCC_ARCH_WORKAROUND_1, &res);
-+
-+	switch ((int)res.a0) {
-+	case SMCCC_RET_SUCCESS:
-+		return SPECTRE_MITIGATED;
-+
-+	case SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED:
-+		return SPECTRE_UNAFFECTED;
-+
-+	default:
-+		return SPECTRE_VULNERABLE;
++	if (slot->private_file) {
++		memfile_unregister_notifier(file_inode(slot->private_file),
++					    &slot->notifier);
++		fput(slot->private_file);
++		slot->private_file = NULL;
 +	}
 +}
-+#else
-+static int __maybe_unused spectre_v2_get_cpu_fw_mitigation_state(void)
-+{
-+	return SPECTRE_VULNERABLE;
-+}
-+#endif
 +
- #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
- DEFINE_PER_CPU(harden_branch_predictor_fn_t, harden_branch_predictor_fn);
- 
-@@ -36,13 +63,60 @@ static void __maybe_unused call_hvc_arch
- 	arm_smccc_1_1_hvc(ARM_SMCCC_ARCH_WORKAROUND_1, NULL);
- }
- 
--static void cpu_v7_spectre_init(void)
-+static unsigned int spectre_v2_install_workaround(unsigned int method)
++#else /* !CONFIG_MEMFILE_NOTIFIER */
++
++static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
++{
++}
++
++#endif /* CONFIG_MEMFILE_NOTIFIER */
++
+ #ifdef CONFIG_HAVE_KVM_PM_NOTIFIER
+ static int kvm_pm_notifier_call(struct notifier_block *bl,
+ 				unsigned long state,
+@@ -884,6 +915,9 @@ static void kvm_destroy_dirty_bitmap(struct kvm_memory_slot *memslot)
+ /* This does not remove the slot from struct kvm_memslots data structures */
+ static void kvm_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
  {
- 	const char *spectre_v2_method = NULL;
- 	int cpu = smp_processor_id();
++	if (slot->flags & KVM_MEM_PRIVATE)
++		kvm_memfile_unregister(slot);
++
+ 	kvm_destroy_dirty_bitmap(slot);
  
- 	if (per_cpu(harden_branch_predictor_fn, cpu))
--		return;
-+		return SPECTRE_MITIGATED;
-+
-+	switch (method) {
-+	case SPECTRE_V2_METHOD_BPIALL:
-+		per_cpu(harden_branch_predictor_fn, cpu) =
-+			harden_branch_predictor_bpiall;
-+		spectre_v2_method = "BPIALL";
-+		break;
-+
-+	case SPECTRE_V2_METHOD_ICIALLU:
-+		per_cpu(harden_branch_predictor_fn, cpu) =
-+			harden_branch_predictor_iciallu;
-+		spectre_v2_method = "ICIALLU";
-+		break;
-+
-+	case SPECTRE_V2_METHOD_HVC:
-+		per_cpu(harden_branch_predictor_fn, cpu) =
-+			call_hvc_arch_workaround_1;
-+		cpu_do_switch_mm = cpu_v7_hvc_switch_mm;
-+		spectre_v2_method = "hypervisor";
-+		break;
-+
-+	case SPECTRE_V2_METHOD_SMC:
-+		per_cpu(harden_branch_predictor_fn, cpu) =
-+			call_smc_arch_workaround_1;
-+		cpu_do_switch_mm = cpu_v7_smc_switch_mm;
-+		spectre_v2_method = "firmware";
-+		break;
-+	}
-+
-+	if (spectre_v2_method)
-+		pr_info("CPU%u: Spectre v2: using %s workaround\n",
-+			smp_processor_id(), spectre_v2_method);
-+
-+	return SPECTRE_MITIGATED;
-+}
-+#else
-+static unsigned int spectre_v2_install_workaround(unsigned int method)
-+{
-+	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
-+
-+	return SPECTRE_VULNERABLE;
-+}
-+#endif
-+
-+static void cpu_v7_spectre_v2_init(void)
-+{
-+	unsigned int state, method = 0;
- 
- 	switch (read_cpuid_part()) {
- 	case ARM_CPU_PART_CORTEX_A8:
-@@ -51,68 +125,57 @@ static void cpu_v7_spectre_init(void)
- 	case ARM_CPU_PART_CORTEX_A17:
- 	case ARM_CPU_PART_CORTEX_A73:
- 	case ARM_CPU_PART_CORTEX_A75:
--		per_cpu(harden_branch_predictor_fn, cpu) =
--			harden_branch_predictor_bpiall;
--		spectre_v2_method = "BPIALL";
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_BPIALL;
- 		break;
- 
- 	case ARM_CPU_PART_CORTEX_A15:
- 	case ARM_CPU_PART_BRAHMA_B15:
--		per_cpu(harden_branch_predictor_fn, cpu) =
--			harden_branch_predictor_iciallu;
--		spectre_v2_method = "ICIALLU";
-+		state = SPECTRE_MITIGATED;
-+		method = SPECTRE_V2_METHOD_ICIALLU;
- 		break;
- 
--#ifdef CONFIG_ARM_PSCI
- 	case ARM_CPU_PART_BRAHMA_B53:
- 		/* Requires no workaround */
-+		state = SPECTRE_UNAFFECTED;
- 		break;
-+
- 	default:
- 		/* Other ARM CPUs require no workaround */
--		if (read_cpuid_implementor() == ARM_CPU_IMP_ARM)
-+		if (read_cpuid_implementor() == ARM_CPU_IMP_ARM) {
-+			state = SPECTRE_UNAFFECTED;
- 			break;
-+		}
-+
- 		fallthrough;
--		/* Cortex A57/A72 require firmware workaround */
--	case ARM_CPU_PART_CORTEX_A57:
--	case ARM_CPU_PART_CORTEX_A72: {
--		struct arm_smccc_res res;
- 
--		arm_smccc_1_1_invoke(ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
--				     ARM_SMCCC_ARCH_WORKAROUND_1, &res);
--		if ((int)res.a0 != 0)
--			return;
-+	/* Cortex A57/A72 require firmware workaround */
-+	case ARM_CPU_PART_CORTEX_A57:
-+	case ARM_CPU_PART_CORTEX_A72:
-+		state = spectre_v2_get_cpu_fw_mitigation_state();
-+		if (state != SPECTRE_MITIGATED)
-+			break;
- 
- 		switch (arm_smccc_1_1_get_conduit()) {
- 		case SMCCC_CONDUIT_HVC:
--			per_cpu(harden_branch_predictor_fn, cpu) =
--				call_hvc_arch_workaround_1;
--			cpu_do_switch_mm = cpu_v7_hvc_switch_mm;
--			spectre_v2_method = "hypervisor";
-+			method = SPECTRE_V2_METHOD_HVC;
- 			break;
- 
- 		case SMCCC_CONDUIT_SMC:
--			per_cpu(harden_branch_predictor_fn, cpu) =
--				call_smc_arch_workaround_1;
--			cpu_do_switch_mm = cpu_v7_smc_switch_mm;
--			spectre_v2_method = "firmware";
-+			method = SPECTRE_V2_METHOD_SMC;
- 			break;
- 
- 		default:
-+			state = SPECTRE_VULNERABLE;
- 			break;
- 		}
+ 	kvm_arch_free_memslot(kvm, slot);
+@@ -1738,6 +1772,12 @@ static int kvm_set_memslot(struct kvm *kvm,
+ 		kvm_invalidate_memslot(kvm, old, invalid_slot);
  	}
--#endif
--	}
  
--	if (spectre_v2_method)
--		pr_info("CPU%u: Spectre v2: using %s workaround\n",
--			smp_processor_id(), spectre_v2_method);
--}
--#else
--static void cpu_v7_spectre_init(void)
--{
-+	if (state == SPECTRE_MITIGATED)
-+		state = spectre_v2_install_workaround(method);
++	if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE) {
++		r = kvm_memfile_register(new);
++		if (r)
++			return r;
++	}
 +
-+	spectre_v2_update_state(state, method);
- }
--#endif
+ 	r = kvm_prepare_memory_region(kvm, old, new, change);
+ 	if (r) {
+ 		/*
+@@ -1752,6 +1792,10 @@ static int kvm_set_memslot(struct kvm *kvm,
+ 		} else {
+ 			mutex_unlock(&kvm->slots_arch_lock);
+ 		}
++
++		if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE)
++			kvm_memfile_unregister(new);
++
+ 		return r;
+ 	}
  
- static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
- 						  u32 mask, const char *msg)
-@@ -142,16 +205,16 @@ static bool check_spectre_auxcr(bool *wa
- void cpu_v7_ca8_ibe(void)
- {
- 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(6)))
--		cpu_v7_spectre_init();
-+		cpu_v7_spectre_v2_init();
- }
+@@ -1817,6 +1861,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+ 	enum kvm_mr_change change;
+ 	unsigned long npages;
+ 	gfn_t base_gfn;
++	struct file *file = NULL;
+ 	int as_id, id;
+ 	int r;
  
- void cpu_v7_ca15_ibe(void)
- {
- 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
--		cpu_v7_spectre_init();
-+		cpu_v7_spectre_v2_init();
- }
+@@ -1890,14 +1935,24 @@ int __kvm_set_memory_region(struct kvm *kvm,
+ 			return 0;
+ 	}
  
- void cpu_v7_bugs_init(void)
- {
--	cpu_v7_spectre_init();
-+	cpu_v7_spectre_v2_init();
++	if (mem->flags & KVM_MEM_PRIVATE) {
++		file = fdget(region_ext->private_fd).file;
++		if (!file)
++			return -EINVAL;
++	}
++
+ 	if ((change == KVM_MR_CREATE || change == KVM_MR_MOVE) &&
+-	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages))
+-		return -EEXIST;
++	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages)) {
++		r = -EEXIST;
++		goto out;
++	}
+ 
+ 	/* Allocate a slot that will persist in the memslot. */
+ 	new = kzalloc(sizeof(*new), GFP_KERNEL_ACCOUNT);
+-	if (!new)
+-		return -ENOMEM;
++	if (!new) {
++		r = -ENOMEM;
++		goto out;
++	}
+ 
+ 	new->as_id = as_id;
+ 	new->id = id;
+@@ -1905,10 +1960,18 @@ int __kvm_set_memory_region(struct kvm *kvm,
+ 	new->npages = npages;
+ 	new->flags = mem->flags;
+ 	new->userspace_addr = mem->userspace_addr;
++	new->private_file = file;
++	new->private_offset = mem->flags & KVM_MEM_PRIVATE ?
++			      region_ext->private_offset : 0;
+ 
+ 	r = kvm_set_memslot(kvm, old, new, change);
+-	if (r)
+-		kfree(new);
++	if (!r)
++		return r;
++
++	kfree(new);
++out:
++	if (file)
++		fput(file);
+ 	return r;
  }
-
+ EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
+-- 
+2.17.1
 
