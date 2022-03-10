@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1AAC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240804AbiCJOpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:45:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        id S235028AbiCJOqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:46:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243014AbiCJObn (ORCPT
+        with ESMTP id S244921AbiCJOeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFFF4C418;
-        Thu, 10 Mar 2022 06:30:40 -0800 (PST)
+        Thu, 10 Mar 2022 09:34:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562B511EF0E;
+        Thu, 10 Mar 2022 06:31:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82901B825A7;
-        Thu, 10 Mar 2022 14:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB77C340E8;
-        Thu, 10 Mar 2022 14:30:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD0A61C0A;
+        Thu, 10 Mar 2022 14:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD32C340F3;
+        Thu, 10 Mar 2022 14:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922639;
-        bh=l37UARKIQ5Jo8vDSJTC9HNb2cDupJ6KmhPyrEn/bpO4=;
+        s=korg; t=1646922685;
+        bh=a//jtcByFiHXOCJ+/M4jiKQWdvoAGv/83F2/7HhgSnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHK+156FAP130K4mIf8QZEcgb893X357q2q2jkFheqP7N9gIxaAkc5wrOMOTDXWyW
-         Ux2EIYOvjivk5XQCxpkA+R+vxCpjNZOmz/Hur8gpXDmE01vMFRNoOoSFAwGevPLhqp
-         ob+ko2yLOXPOnQe7pWO5AiKoIyANwwf7dxSxArBQ=
+        b=rf7y0MSXcr1TEoaZeCm9B5UvtbUtgyW4G4YbqWf5Mp5qYn6b1yGCz83eXEaXuBs+b
+         Jr4KWp5bF3UjUXqY3dc2n7v5VNpY5z0qNTmW1CF1blC+TOstyiJxiuew2UPQyHQgFN
+         mf52DaJocyzPqWK/w2srGaAWxHG1Ar5azYLy+hG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 41/58] arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Thu, 10 Mar 2022 15:19:30 +0100
-Message-Id: <20220310140814.152279375@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.15 51/58] xen/scsifront: dont use gnttab_query_foreign_access() for mapped status
+Date:   Thu, 10 Mar 2022 15:19:40 +0100
+Message-Id: <20220310140814.432646258@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -48,79 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit 58c9a5060cb7cd529d49c93954cdafe81c1d642a upstream.
+Commit 33172ab50a53578a95691310f49567c9266968b0 upstream.
 
-The mitigations for Spectre-BHB are only applied when an exception is
-taken from user-space. The mitigation status is reported via the spectre_v2
-sysfs vulnerabilities file.
+It isn't enough to check whether a grant is still being in use by
+calling gnttab_query_foreign_access(), as a mapping could be realized
+by the other side just after having called that function.
 
-When unprivileged eBPF is enabled the mitigation in the exception vectors
-can be avoided by an eBPF program.
+In case the call was done in preparation of revoking a grant it is
+better to do so via gnttab_try_end_foreign_access() and check the
+success of that operation instead.
 
-When unprivileged eBPF is enabled, print a warning and report vulnerable
-via the sysfs vulnerabilities file.
+This is CVE-2022-23038 / part of XSA-396.
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/proton-pack.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/scsi/xen-scsifront.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -18,6 +18,7 @@
-  */
+--- a/drivers/scsi/xen-scsifront.c
++++ b/drivers/scsi/xen-scsifront.c
+@@ -233,12 +233,11 @@ static void scsifront_gnttab_done(struct
+ 		return;
  
- #include <linux/arm-smccc.h>
-+#include <linux/bpf.h>
- #include <linux/cpu.h>
- #include <linux/device.h>
- #include <linux/nospec.h>
-@@ -111,6 +112,15 @@ static const char *get_bhb_affected_stri
+ 	for (i = 0; i < shadow->nr_grants; i++) {
+-		if (unlikely(gnttab_query_foreign_access(shadow->gref[i]))) {
++		if (unlikely(!gnttab_try_end_foreign_access(shadow->gref[i]))) {
+ 			shost_printk(KERN_ALERT, info->host, KBUILD_MODNAME
+ 				     "grant still in use by backend\n");
+ 			BUG();
+ 		}
+-		gnttab_end_foreign_access(shadow->gref[i], 0, 0UL);
  	}
- }
  
-+static bool _unprivileged_ebpf_enabled(void)
-+{
-+#ifdef CONFIG_BPF_SYSCALL
-+	return !sysctl_unprivileged_bpf_disabled;
-+#else
-+	return false;
-+#endif
-+}
-+
- ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -130,6 +140,9 @@ ssize_t cpu_show_spectre_v2(struct devic
- 		v2_str = "CSV2";
- 		fallthrough;
- 	case SPECTRE_MITIGATED:
-+		if (bhb_state == SPECTRE_MITIGATED && _unprivileged_ebpf_enabled())
-+			return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
- 		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
- 	case SPECTRE_VULNERABLE:
- 		fallthrough;
-@@ -1125,3 +1138,16 @@ void __init spectre_bhb_patch_clearbhb(s
- 	*updptr++ = cpu_to_le32(aarch64_insn_gen_nop());
- 	*updptr++ = cpu_to_le32(aarch64_insn_gen_nop());
- }
-+
-+#ifdef CONFIG_BPF_SYSCALL
-+#define EBPF_WARN "Unprivileged eBPF is enabled, data leaks possible via Spectre v2 BHB attacks!\n"
-+void unpriv_ebpf_notify(int new_state)
-+{
-+	if (spectre_v2_state == SPECTRE_VULNERABLE ||
-+	    spectre_bhb_state != SPECTRE_MITIGATED)
-+		return;
-+
-+	if (!new_state)
-+		pr_err("WARNING: %s", EBPF_WARN);
-+}
-+#endif
+ 	kfree(shadow->sg);
 
 
