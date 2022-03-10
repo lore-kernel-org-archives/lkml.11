@@ -2,335 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241586AbiCJLSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:18:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
+        id S240170AbiCJLTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241593AbiCJLRy (ORCPT
+        with ESMTP id S232959AbiCJLTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:17:54 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2058.outbound.protection.outlook.com [40.107.244.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D70141E1E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:16:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AdS0rd7JEURGAQWdz8jzvqalPkzITeIhmceeHkuyyEn1zAj6MzFaVWZrqOAqXDi5+M6PdvROzhXMeWwoE12TrDtr5Q541uCg0acY2pDiwg6XTxEF5OrttMeZ+D1n/n3CqkZyh5Ga/orb/DDPFlqB9mz/0YAXNcNHQnEfrTQvkK/lZfZFkVUyhIqE2ZTUOfLJ5KBtEqX55ehyelTyvm7S+CTqA+7XdDe/L+yJNOHc8Cin05+HMtlaW1U5eDtl2Psq85wd0cNWcLCLyhyGmK1RdTtjrTkZ6cQldFfnIYwco+PvS4CNtuGPtL3HSxByPNXk/vgzOmYAe84vEGmjftpcNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4rfYUlsXYPJNu5slNzpLm+592cDa0WcESV4Wg5wtHZk=;
- b=MYKORmd6FmRA2MejJGvfKhKPGrS3/ev3s3axqWclFO4N2Sazz8HCmmwSBS2XNLe9DG/uKJMkIB2EcxXjY0ck/DxkL6hlruGDCkQljHcn33jlySPIm+zS1Q4w+YRO5mY1UGosxlQaeWYZIWxrmz8TiqYHlhbIy1LjulhSRlxwTu4syU2ukpnz+it7/hUo2j3LZTDU/x2lJPcdl2SoNJh73e9wlYc+ZFlnFyGcQPrZbEaE5nXv5OFTHbAYhV3TtBABszS0LMjoGrBvBppGIlWfTvb8UtbJ9WwG5SK996U1qNvEKdmSyoS95CpOeeUBMUbtaboUlMQNUBqRBM2gkKZc+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4rfYUlsXYPJNu5slNzpLm+592cDa0WcESV4Wg5wtHZk=;
- b=qtKqSnBDTLa22tagngmj0PRNplB/2FPofd0RTA2GLuKVcP7vdi7zBCpMTLEHEBNx48sq+sctOgoMvQUiFTL9mngQowIsz/z/ydSRK9LMQyvcX66CD1d6o+IDRHXIjcfhDpNGUMRSDeUcaIicVum4f6Zue2+CTY5VzZxwu90xnxM=
-Received: from MW4PR03CA0114.namprd03.prod.outlook.com (2603:10b6:303:b7::29)
- by DM6PR12MB3643.namprd12.prod.outlook.com (2603:10b6:5:3d::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Thu, 10 Mar
- 2022 11:16:45 +0000
-Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b7:cafe::bc) by MW4PR03CA0114.outlook.office365.com
- (2603:10b6:303:b7::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Thu, 10 Mar 2022 11:16:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5061.22 via Frontend Transport; Thu, 10 Mar 2022 11:16:44 +0000
-Received: from BLR-5CG1133937.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 10 Mar
- 2022 05:16:38 -0600
-From:   Bharata B Rao <bharata@amd.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <linux-mm@kvack.org>, <x86@kernel.org>,
-        <kirill.shutemov@linux.intel.com>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-        <catalin.marinas@arm.com>, <will@kernel.org>, <shuah@kernel.org>,
-        <oleg@redhat.com>, <ananth.narayan@amd.com>,
-        "Bharata B Rao" <bharata@amd.com>
-Subject: [RFC PATCH v0 6/6] x86: Add prctl() options to control tagged user addresses ABI
-Date:   Thu, 10 Mar 2022 16:45:45 +0530
-Message-ID: <20220310111545.10852-7-bharata@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220310111545.10852-1-bharata@amd.com>
-References: <20220310111545.10852-1-bharata@amd.com>
+        Thu, 10 Mar 2022 06:19:38 -0500
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5569D8AE57;
+        Thu, 10 Mar 2022 03:18:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1646911118; x=1678447118;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WjIPQTq4qE0v+4bb5i6Io9GYAjwBg05I+PKmJLYgqMs=;
+  b=mDCSv2edFddvXmqQxdY6kkDGAqxYkV8/0gXxdoD2Hyo7w+cBqbYe/Bd7
+   qgbIC644CoxISUUcuqPZGRljxQwsbbQhHOlaGBxOjxXBjgNDFdgQWBSi7
+   is36xzGOItPKOiUcRvhuGn5vApDeYomqBWsdJNspP3W/Dku5lICGv7JBw
+   E=;
+X-IronPort-AV: E=Sophos;i="5.90,170,1643673600"; 
+   d="scan'208";a="181017142"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 10 Mar 2022 11:18:20 +0000
+Received: from EX13MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com (Postfix) with ESMTPS id 9871F814CA;
+        Thu, 10 Mar 2022 11:18:15 +0000 (UTC)
+Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
+ EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Thu, 10 Mar 2022 11:18:10 +0000
+Received: from [0.0.0.0] (10.43.162.111) by EX13D20UWC001.ant.amazon.com
+ (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.28; Thu, 10 Mar
+ 2022 11:18:06 +0000
+Message-ID: <47137806-9162-0f60-e830-1a3731595c8c@amazon.com>
+Date:   Thu, 10 Mar 2022 12:18:04 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54ad381d-831f-48d6-562f-08da028775d8
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3643:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3643A400128C39341FEC1B75B00B9@DM6PR12MB3643.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kbcvRvV/lmgpXlu27R1XgpN84sc7HI3qrJYbNg30Ht35PJ8A7rf7i+OnKrVtoMxtV13gqtLpxeJGqrbzWg+ApeD+RwVKeplD4ypIFvVCa6Np1WRcgwUjbG0gLrWIGrADxq7KfSkKC60DLTlRVBqV1tujOjunRUlmc8ofbSRHAXzyU6TBUJYsfppexRwvQFgHztz6o7fjLLzmvZ0ixnaezRbY9yv8IMLdLKxUnvww7oZZioRerF80kuVV1xppLpCwDznAklKdA848s3MMBGt3XfAa0fz3UQgM7xF2uXofMEI4b/6mfbzoT2QpHb6g4F9Sn9HnrD/7sw0c1gkVuxK+2QZ+JXabYjQZjTxWnCBMzkbPb2scfG+2YFg/PrJotyjFNrHh75uXUWgkvnNP1fsp6JNKWuIP4yW9j5iqoVwg9YFErf0RAtcGfoicBSOfVW9gTDw/M8zi/D6OpmTKN3piWzgoTxhQda5gqYF1b0cOzcWJmpOWP2KbGUXwsM/DvFL0kZeDWp4U6YcU5KHNdKhvgWSgcsKCDXRdu28GA/huuURULJwNhDyhYASPqhQ4+tonoTnpIt4n83bar+XvCNR8uguDVpLae1BR1lxcv8nG198imbURcCSbD0BjC7ToZnrqHx8GH4+zpQX/WF3VuljEZzCJXD8J/V8Rvszv0jy3iRkb0kTHiljSsNBhNOIcjmIrfy7ZB/wOCpYMmIstDk3Cdg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(6916009)(81166007)(426003)(54906003)(1076003)(70206006)(8676002)(5660300002)(70586007)(356005)(2906002)(40460700003)(83380400001)(316002)(47076005)(36756003)(2616005)(336012)(7416002)(86362001)(16526019)(26005)(82310400004)(8936002)(186003)(4326008)(7696005)(6666004)(508600001)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:16:44.5424
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54ad381d-831f-48d6-562f-08da028775d8
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3643
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: propagating vmgenid outward and upward
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+CC:     LKML <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        "QEMU Developers" <qemu-devel@nongnu.org>,
+        <linux-hyperv@vger.kernel.org>,
+        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <adrian@parity.io>, Laszlo Ersek <lersek@redhat.com>,
+        =?UTF-8?Q?Daniel_P=2e_Berrang=c3=a9?= <berrange@redhat.com>,
+        "Dominik Brodowski" <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
+ <c5181fb5-38fb-f261-9de5-24655be1c749@amazon.com>
+ <CAHmME9rTMDkE7UA3_wg87mrDVYps+YaHw+dZwF0EbM0zC4pQQw@mail.gmail.com>
+From:   Alexander Graf <graf@amazon.com>
+In-Reply-To: <CAHmME9rTMDkE7UA3_wg87mrDVYps+YaHw+dZwF0EbM0zC4pQQw@mail.gmail.com>
+X-Originating-IP: [10.43.162.111]
+X-ClientProxiedBy: EX13D17UWB002.ant.amazon.com (10.43.161.141) To
+ EX13D20UWC001.ant.amazon.com (10.43.162.244)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide an option for applications to opt-in for a relaxed
-tagged ABI via prtcl(). This allows them to pass tagged addresses
-to syscalls as pointer arguments.
-
-The implementation is kept separate for AMD UAI as the equivalent
-implementation for Intel LAM is likely to be different.
-
-Signed-off-by: Bharata B Rao <bharata@amd.com>
----
- arch/x86/Kconfig                 |   9 +++
- arch/x86/include/asm/processor.h |  12 +++
- arch/x86/include/asm/uaccess.h   |   3 +-
- arch/x86/kernel/process.c        | 134 +++++++++++++++++++++++++++++++
- 4 files changed, 157 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..b73414eb1c01 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2436,6 +2436,15 @@ config STRICT_SIGALTSTACK_SIZE
- 
- source "kernel/livepatch/Kconfig"
- 
-+config X86_TAGGED_ADDR_ABI
-+	bool "Enable the tagged user addresses syscall ABI"
-+	depends on X86_64 && CPU_SUP_AMD
-+	default y
-+	help
-+	  When this option is enabled, user applications can opt-in to a
-+	  relaxed ABI via prctl() allowing tagged addresses to be passed
-+	  to system calls as pointer arguments.
-+
- endmenu
- 
- config ARCH_HAS_ADD_PAGES
-diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index 2c5f12ae7d04..414e2c039c34 100644
---- a/arch/x86/include/asm/processor.h
-+++ b/arch/x86/include/asm/processor.h
-@@ -863,4 +863,16 @@ bool arch_is_platform_page(u64 paddr);
- #define arch_is_platform_page arch_is_platform_page
- #endif
- 
-+#ifdef CONFIG_X86_TAGGED_ADDR_ABI
-+/* PR_{SET,GET}_TAGGED_ADDR_CTRL prctl */
-+long set_tagged_addr_ctrl(struct task_struct *task, unsigned long flags,
-+			  int __user *nr_bits, int __user *offset);
-+long get_tagged_addr_ctrl(struct task_struct *task,
-+			  int __user *nr_bits, int __user *offset);
-+#define SET_TAGGED_ADDR_CTRL(flags, nr_bits, offset)	\
-+	set_tagged_addr_ctrl(current, flags, nr_bits, offset)
-+#define GET_TAGGED_ADDR_CTRL(nr_bits, offset)		\
-+	get_tagged_addr_ctrl(current, nr_bits, offset)
-+#endif
-+
- #endif /* _ASM_X86_PROCESSOR_H */
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index feb2e21c7e09..e415523dc425 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -38,7 +38,8 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
- static inline bool __range_not_ok(const void __user *addr, unsigned long size,
- 				  unsigned long limit)
- {
--	if (test_thread_flag(TIF_TAGGED_ADDR))
-+	if (IS_ENABLED(CONFIG_X86_TAGGED_ADDR_ABI) &&
-+	    (current->flags & PF_KTHREAD || test_thread_flag(TIF_TAGGED_ADDR)))
- 		addr = untagged_addr(addr);
- 
- 	__chk_user_ptr(addr);
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 81d8ef036637..2bc44efdd994 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -26,6 +26,7 @@
- #include <linux/elf-randomize.h>
- #include <trace/events/power.h>
- #include <linux/hw_breakpoint.h>
-+#include <linux/sysctl.h>
- #include <asm/cpu.h>
- #include <asm/apic.h>
- #include <linux/uaccess.h>
-@@ -231,6 +232,12 @@ static void pkru_flush_thread(void)
- 	pkru_write_default();
- }
- 
-+static void flush_tagged_addr_state(void)
-+{
-+	if (IS_ENABLED(CONFIG_X86_TAGGED_ADDR_ABI))
-+		clear_thread_flag(TIF_TAGGED_ADDR);
-+}
-+
- void flush_thread(void)
- {
- 	struct task_struct *tsk = current;
-@@ -240,6 +247,7 @@ void flush_thread(void)
- 
- 	fpu_flush_thread();
- 	pkru_flush_thread();
-+	flush_tagged_addr_state();
- }
- 
- void disable_TSC(void)
-@@ -1000,3 +1008,129 @@ long do_arch_prctl_common(struct task_struct *task, int option,
- 
- 	return -EINVAL;
- }
-+
-+#ifdef CONFIG_X86_TAGGED_ADDR_ABI
-+/*
-+ * Control the relaxed ABI allowing tagged user addresses into the kernel.
-+ */
-+static unsigned int tagged_addr_disabled;
-+
-+#ifdef CONFIG_CPU_SUP_AMD
-+#define UAI_TAG_BITS	7
-+
-+static long amd_set_tagged_addr_ctrl(unsigned long flags, int __user *nr_bits,
-+				     int __user *offset)
-+{
-+	int val;
-+
-+	if (!boot_cpu_has(X86_FEATURE_UAI))
-+		return -EINVAL;
-+
-+	/* Disable tagging */
-+	if (!(flags & PR_TAGGED_ADDR_ENABLE)) {
-+		clear_thread_flag(TIF_TAGGED_ADDR);
-+		return 0;
-+	}
-+
-+	if (!nr_bits || !offset)
-+		return -EINVAL;
-+
-+	/*
-+	 * Do not allow the enabling of the tagged address ABI if globally
-+	 * disabled via sysctl abi.tagged_addr_disabled.
-+	 */
-+	if (tagged_addr_disabled)
-+		return -EINVAL;
-+
-+	if (get_user(val, nr_bits))
-+		return -EFAULT;
-+
-+	if (val != UAI_TAG_BITS)
-+		return -EINVAL;
-+
-+	if (put_user(val, nr_bits) || put_user(64 - val, offset))
-+		return -EFAULT;
-+
-+	set_thread_flag(TIF_TAGGED_ADDR);
-+	return 0;
-+}
-+
-+static long amd_get_tagged_addr_ctrl(int __user *nr_bits, int __user *offset)
-+{
-+	long ret = 0;
-+
-+	if (!boot_cpu_has(X86_FEATURE_UAI))
-+		return -EINVAL;
-+
-+	if (test_thread_flag(TIF_TAGGED_ADDR)) {
-+		if (nr_bits && put_user(UAI_TAG_BITS, nr_bits))
-+			return -EFAULT;
-+		if (offset && put_user(64 - UAI_TAG_BITS, offset))
-+			return -EFAULT;
-+		ret = PR_TAGGED_ADDR_ENABLE;
-+	} else {
-+		/* Report max tag size */
-+		if (nr_bits && put_user(UAI_TAG_BITS, nr_bits))
-+			return -EFAULT;
-+	}
-+	return ret;
-+}
-+#endif
-+
-+long set_tagged_addr_ctrl(struct task_struct *task, unsigned long flags,
-+			  int __user *nr_bits, int __user *offset)
-+{
-+	unsigned long valid_mask = PR_TAGGED_ADDR_ENABLE;
-+
-+	if (in_32bit_syscall())
-+		return -EINVAL;
-+
-+	if (flags & ~valid_mask)
-+		return -EINVAL;
-+
-+	if (IS_ENABLED(CONFIG_CPU_SUP_AMD))
-+		return amd_set_tagged_addr_ctrl(flags, nr_bits, offset);
-+	else
-+		return -EINVAL;
-+}
-+
-+long get_tagged_addr_ctrl(struct task_struct *task,
-+			  int __user *nr_bits, int __user *offset)
-+{
-+
-+	if (in_32bit_syscall())
-+		return -EINVAL;
-+
-+	if (IS_ENABLED(CONFIG_CPU_SUP_AMD))
-+		return amd_get_tagged_addr_ctrl(nr_bits, offset);
-+	else
-+		return -EINVAL;
-+}
-+
-+/*
-+ * Global sysctl to disable the tagged user addresses support. This control
-+ * only prevents the tagged address ABI enabling via prctl() and does not
-+ * disable it for tasks that already opted in to the relaxed ABI.
-+ */
-+static struct ctl_table tagged_addr_sysctl_table[] = {
-+	{
-+		.procname	= "tagged_addr_disabled",
-+		.mode		= 0644,
-+		.data		= &tagged_addr_disabled,
-+		.maxlen		= sizeof(int),
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
-+	{ }
-+};
-+
-+static int __init tagged_addr_init(void)
-+{
-+	if (!register_sysctl("abi", tagged_addr_sysctl_table))
-+		return -EINVAL;
-+	return 0;
-+}
-+
-+core_initcall(tagged_addr_init);
-+#endif	/* CONFIG_X86_TAGGED_ADDR_ABI */
--- 
-2.25.1
+Ck9uIDA5LjAzLjIyIDIzOjAyLCBKYXNvbiBBLiBEb25lbmZlbGQgd3JvdGU6Cj4gSGkgQWxleCwK
+Pgo+IE9uIFdlZCwgTWFyIDksIDIwMjIgYXQgMzoxMCBBTSBBbGV4YW5kZXIgR3JhZiA8Z3JhZkBh
+bWF6b24uY29tPiB3cm90ZToKPj4+IFRoZSB2bWdlbmlkIGRyaXZlciBiYXNpY2FsbHkgd29ya3Ms
+IHRob3VnaCBpdCBpcyByYWN5LCBiZWNhdXNlIHRoYXQgQUNQSQo+Pj4gbm90aWZpY2F0aW9uIGNh
+biBhcnJpdmUgYWZ0ZXIgdGhlIHN5c3RlbSBpcyBhbHJlYWR5IHJ1bm5pbmcgYWdhaW4uIFRoaXMK
+Pj4KPj4gSSBiZWxpZXZlIGVub3VnaCBwZW9wbGUgYWxyZWFkeSBwb2ludGVkIG91dCB0aGF0IHRo
+aXMgYXNzdW1wdGlvbiBpcwo+PiBpbmNvcnJlY3QuIFRoZSB0aGluZyB0aGF0IGlzIHJhY3kgYWJv
+dXQgVk1HZW5JRCBpcyB0aGUgaW50ZXJydXB0IGJhc2VkCj4+IG5vdGlmaWNhdGlvbi4KPiBJJ20g
+aGF2aW5nIGEgaGFyZCB0aW1lIGZpZ3VyaW5nIG91dCB3aGF0J3MgZGlmZmVyZW50IGJldHdlZW4g
+eW91cgo+IHN0YXRlbWVudCBhbmQgbWluZS4gSSBzYWlkIHRoYXQgdGhlIHJhY2UgaXMgZHVlIHRv
+IHRoZSBub3RpZmljYXRpb24uCj4gWW91IHNhaWQgdGhhdCB0aGUgcmFjZSBpcyBkdWUgdG8gdGhl
+IG5vdGlmaWNhdGlvbi4gV2hhdCBzdWJ0bGUgdGhpbmcKPiBhbSBJIG1pc3NpbmcgaGVyZSB0aGF0
+IHdvdWxkIGxlYWQgeW91IHRvIHNheSB0aGF0IG15IGFzc3VtcHRpb24gaXMKPiBpbmNvcnJlY3Q/
+IE9yIGRpZCB5b3UganVzdCBtaXNyZWFkPwoKClRoZSBzdWJ0bGUgZGlmZmVyZW5jZSBpcyB0aGF0
+IHlvdSBkb24ndCBuZWVkIHRvIHJlbHkgb24gdGhlIG5vdGlmaWNhdGlvbiAKdG8gbGVhcm4gYWJv
+dXQgdGhlIHdvcmxkIHN3aXRjaC4gSWYgeW91IGluc3RlYWQgcmVhZCBWTUdlbklEIGV4cGxpY2l0
+bHkgCndpdGhvdXQgd2FpdGluZyBmb3IgdGhlIG5vdGlmaWNhdGlvbiwgeW91J3JlIGd1YXJhbnRl
+ZWQgdG8gYWx3YXlzIGtub3cgCndoZXRoZXIgeW91IHdlcmUgY2xvbmVkLiBUaGF0IG1lYW5zIHRo
+ZSBhY3R1YWwgVk1HZW5JRCBpbnRlcmZhY2UgaXMgbm90IAphbHdheXMgcmFjeS4gSnVzdCB0aGUg
+bm90aWZpY2F0aW9uIHBhcnQgaXMuCgpTbyB5b3UgKmNhbiogYnVpbGQgYSByYWNlLWZyZWUgVk1H
+ZW5JRCBtZWNoYW5pc20uIFlvdSBqdXN0IGNhbid0IGJ1aWxkIGEgCnJhY2UtZnJlZSAqZXZlbnQg
+YmFzZWQqIFZNR2VuSUQgbWVjaGFuaXNtIGlmIHlvdSB3YW50IHRvIGFsbG93IGNsb25pbmcgCmF0
+IGFyYml0cmFyeSBwb2ludHMgaW4gdGltZS4KCgo+Cj4+IFRoZSBhY3R1YWwgaWRlbnRpZmllciBp
+cyB1cGRhdGVkIGJlZm9yZSB0aGUgVk0gcmVzdW1lcwo+PiBmcm9tIGl0cyBjbG9uZSBvcGVyYXRp
+b24sIHNvIGlmIHlvdSBtYXRjaCBvbiB0aGF0IHlvdSB3aWxsIGtub3cgd2hldGhlcgo+PiB5b3Ug
+YXJlIGluIGEgbmV3IG9yIG9sZCB3b3JsZC4gQW5kIHRoYXQgaXMgZW5vdWdoIHRvIGNyZWF0ZQo+
+PiB0cmFuc2FjdGlvbnM6IFNhdmUgdGhlIGlkZW50aWZpZXIgYmVmb3JlIGEgImNyeXB0byB0cmFu
+c2FjdGlvbiIsCj4+IHZhbGlkYXRlIGJlZm9yZSB5b3UgZmluaXNoLCBpZiB0aGV5IGRvbid0IG1h
+dGNoLCBhYm9ydCwgcmVzZWVkIGFuZCByZXBsYXkuCj4gUmlnaHQuIEJ1dCBtb3JlIHRoYW4ganVz
+dCB0cmFuc2FjdGlvbnMsIGl0J3MgdXNlZnVsIHRvIHByZXZlbnRpbmcga2V5Cj4gcmV1c2UgdnVs
+bmVyYWJpbGl0aWVzLCBpbiB3aGljaCBjYXNlLCB5b3Ugc3RvcmUgdGhlIGN1cnJlbnQgaWRlbnRp
+Zmllcgo+IGp1c3QgYmVmb3JlIGFuIGVwaGVtZXJhbCBrZXkgaXMgZ2VuZXJhdGVkLCBhbmQgdGhl
+biBzdWJzZXF1ZW50bHkgY2hlY2sKPiB0byBzZWUgdGhhdCB0aGUgaWRlbnRpZmllciBoYXNuJ3Qg
+Y2hhbmdlZCBiZWZvcmUgdHJhbnNtaXR0aW5nIGFueXRoaW5nCj4gcmVsYXRlZCB0byB0aGF0IGtl
+eS4KPgo+PiBJZiB5b3UgZm9sbG93IHRoZSBsb2dpYyBhdCB0aGUgYmVnaW5uaW5nIG9mIHRoZSBt
+YWlsLCB5b3UgY2FuIGNyZWF0ZQo+PiBzb21ldGhpbmcgcmFjZSBmcmVlIGlmIHlvdSBjb25zdW1l
+IHRoZSBoYXJkd2FyZSBWTUdlbklEIGNvdW50ZXIuIFlvdSBjYW4KPj4gbm90IG1ha2UgaXQgcmFj
+ZSBmcmVlIGlmIHlvdSByZWx5IG9uIHRoZSBpbnRlcnJ1cHQgbWVjaGFuaXNtLgo+IFllcywgYXMg
+bWVudGlvbmVkIGFuZCBkaXNjdXNzZWQgaW4gZGVwdGggYmVmb3JlLiBIb3dldmVyLCB5b3VyIHVz
+ZSBvZgo+IHRoZSB3b3JkICJjb3VudGVyIiBpcyBwcm9ibGVtYXRpYy4gVm1nZW5pZCBpcyBub3Qg
+YSBjb3VudGVyLiBJdCdzIGEKPiB1bmlxdWUgaWRlbnRpZmllci4gVGhhdCBtZWFucyB5b3UgY2Fu
+J3QgY29tcGFyZSBpdCB3aXRoIGEgc2luZ2xlIHdvcmQKPiBjb21wYXJpc29uIGJ1dCBoYXZlIHRv
+IGNvbXBhcmUgYWxsIG9mIHRoZSAxNiBieXRlcy4gVGhhdCBzZWVtcwo+IHBvdGVudGlhbGx5IGV4
+cGVuc2l2ZS4gSXQncyBmb3IgdGhhdCByZWFzb24gdGhhdCBJIHN1Z2dlc3RlZAo+IGF1Z21lbnRp
+bmcgdGhlIHZtZ2VuaWQgc3BlYyB3aXRoIGFuIGFkZGl0aW9uYWwgd29yZC1zaXplZCBfY291bnRl
+cl8KPiB0aGF0IGNvdWxkIGJlIG1hcHBlZCBpbnRvIHRoZSBrZXJuZWxzIGFuZCBpbnRvIHVzZXJz
+cGFjZXMuCgoKSSB0aGluayBNaWNoYWVsJ3MgYmVuY2htYXJrcyBzaG93IHF1aXRlIHdlbGwgdGhh
+dCBpdCdzIG5vdCBhbGwgdGhhdCAKZXhwZW5zaXZlLiBXZSdyZSB0YWxraW5nIDJ4IDY0Yml0IGNv
+bXBhcmVzIHdpdGhpbiB0aGUgc2FtZSBjYWNoZSBsaW5lLiAKWW91IGFscmVhZHkgcmVhbGl6ZWQg
+dGhhdCB3ZSBkb24ndCBuZWVkIHRoZW0gdG8gYmUgYXRvbWljIC0ganVzdCAKcHJvcGVybHkgYmFy
+cmllcmVkLgoKU28gd2hhdCBpZiB3ZSBjcmVhdGVkIGEgdnN5c2NhbGwgdGhhdCB0YWtlcyBhIGJ1
+ZmZlciBvZiAidXAgdG8gMTYgCmJ5dGVzIi4gSWYgd2UgbGF0ZXIgcmVhbGl6ZSB0aGF0IGFuIGFk
+ZGl0aW9uYWwgcGFnZSB3aXRoIGEgNCBieXRlIApjb3VudGVyIGlzIGEgdmlhYmxlIHBlcmZvcm1h
+bmNlIG9wdGltaXphdGlvbiwgd2UgY2FuIHdvcmsgd2l0aCBNUyB0byBhZGQgCnRoYXQgdG8gdGhl
+IHNwZWMuIEJ1dCB0aGUgdXNlciBzcGFjZSBpbnRlcmZhY2Ugd291bGQgc3RheSBpZGVudGljYWwu
+CgoKPgo+PiBTbyBmb2xsb3dpbmcgdGhhdCB0cmFpbiBvZiB0aG91Z2h0LCBpZiB5b3UgZXhwb3Nl
+IHRoZSBoYXJkd2FyZSBWTUdlbklECj4+IHRvIHVzZXIgc3BhY2UsIHlvdSBjb3VsZCBhbGxvdyB1
+c2VyIHNwYWNlIHRvIGFjdCByYWNlIGZyZWUgYmFzZWQgb24KPj4gVk1HZW5JRC4gVGhhdCBtZWFu
+cyBjb25zdW1lcnMgb2YgdXNlciBzcGFjZSBSTkdzIGNvdWxkIHZhbGlkYXRlIHdoZXRoZXIKPj4g
+dGhlIElEIGlzIGlkZW50aWNhbCBiZXR3ZWVuIHRoZSBiZWdpbm5pbmcgb2YgdGhlIGNyeXB0byBv
+cGVyYXRpb24gYW5kCj4+IHRoZSBlbmQuCj4gUmlnaHQuCj4KPj4gSG93ZXZlciwgdGhlcmUgYXJl
+IG1vcmUgY29tcGxpY2F0ZWQgY2FzZXMgYXMgd2VsbC4gV2hhdCBkbyB5b3UgZG8gd2l0aAo+PiBT
+YW1iYSBmb3IgZXhhbXBsZT8gSXQgbmVlZHMgdG8gZ2VuZXJhdGUgYSBuZXcgU0lEIGFmdGVyIHRo
+ZSBjbG9uZS4KPj4gVGhhdCdzIGEgc3VwZXIgaGVhdnkgb3BlcmF0aW9uLiBEbyB5b3Ugd2FudCB0
+byBoYXZlIHNtYmQgY29uc3RhbnRseSBwb2xsCj4+IG9uIHRoZSBWTUdlbklEIGp1c3QgdG8gc2Vl
+IHdoZXRoZXIgaXQgbmVlZHMgdG8ga2ljayBvZmYgc29tZQo+PiBhZG1pbmlzdHJhdGl2ZSBhY3Rp
+b25zPwo+IFdlcmUgaXQgYSBzaW5nbGUgd29yZC1zaXplZCBpbnRlZ2VyLCBtYXBwZWQgaW50byBt
+ZW1vcnksIHRoYXQgd291bGRuJ3QKPiBiZSBtdWNoIG9mIGEgcHJvYmxlbSBhdCBhbGwuIEl0IGNv
+dWxkIGNvbnN0YW50bHkgcmVhZCB0aGlzIGJlZm9yZSBhbmQKPiBhZnRlciBldmVyeSBvcGVyYXRp
+b24uIFRoZSBwcm9ibGVtIGlzIHRoYXQgaXQncyAxNiBieXRlcyBhbmQKPiB1bmRlcnN0YW5kYWJs
+eSBhcHBsaWNhdGlvbnMgZG9uJ3Qgd2FudCB0byBkZWFsIHdpdGggdGhhdCBjbHVua2luZXNzLgoK
+CkkgZG9uJ3QgdGhpbmsgYXBwbGljYXRpb25zIHNob3VsZCBiZSBpbiB0aGUgYnVzaW5lc3Mgb2Yg
+bWFwcGluZyAKYXJiaXRyYXJ5IGxvY2F0aW9ucyBvZiB0aGUgdmRzbyBzcGFjZSB0byBtYXRjaCBv
+biB0aGVtLiBXZSBuZWVkIHRvIGJ1aWxkIAphbiBpbnRlcmZhY2UgdGhhdCBpcyBmYXN0IGFuZCBm
+bGV4aWJsZSBlbm91Z2ggc28gdGhleSBjYW4ganVzdCBzYXkgImhlcmUgCmlzIGEgYnVmZmVyLCB0
+ZWxsIG1lIGlmIHRoZSBJRCBjaGFuZ2VkIi4gVGhhdCdzIHByYWN0aWNhbGx5IGFsbCB5b3UgbmVl
+ZCAKLSBvbiBpbml0IHlvdSBydW4gdGhhdCBvbmNlLiBMYXRlciBvbiwgeW91IGludm9rZSBpdCBl
+dmVyeSB0aW1lIGJldHdlZW4gCmZpbmlzaGluZyBhIGNyeXB0byBvcGVyYXRpb24gYW5kIHB1dHRp
+bmcgaXQgb24gdGhlIHdpcmUuCgoKPgo+PiBJbiB0aGF0IGNhc2UsIGFsbCB3ZSB3b3VsZCBuZWVk
+IGZyb20gdGhlIGtlcm5lbCBpcyBhbiBlYXNpbHkgcmVhZGFibGUKPj4gR2VuSUQgdGhhdCBjaGFu
+Z2VzCj4gQWN0dWFsbHksIG5vLCB5b3UgbmVlZCBldmVuIGxlc3MgdGhhbiB0aGF0LiBBbGwgdGhh
+dCdzIHJlcXVpcmVkIGlzIGEKPiBzeXNmcy9wcm9jZnMgZmlsZSB0aGF0IGNhbiBiZSBwb2xsKCkn
+ZCBvbi4gSXQgZG9lc24ndCBuZWVkIHRvIGhhdmUgYW55Cj4gY29udGVudC4gV2hlbiBwb2xsKCkg
+cmV0dXJucyByZWFkYWJsZSwgdGhlIFZNIGhhcyBiZWVuIGZvcmtlZC4gVGhlbgo+IHVzZXJzcGFj
+ZSBybmdzIGFuZCBvdGhlciB0aGluZ3MgbGlrZSB0aGF0IGNhbiBjYWxsIGdldHJhbmRvbSgpIHRv
+Cj4gcmVjZWl2ZSBhIGZyZXNoIHZhbHVlIHRvIG1peCBpbnRvIHdoYXRldmVyIHRoZWlyIG9wZXJh
+dGlvbiBpcy4gU2luY2UKPiBhbGwgd2UncmUgdGFsa2luZyBhYm91dCBoZXJlIGlzIF9ldmVudCBu
+b3RpZmljYXRpb25fLCBhbGwgd2UgbmVlZCBpcwo+IHRoYXQgZXZlbnQsIHdoaWNoIGlzIHdoYXQg
+cG9sbCgpIHByb3ZpZGVzLgo+Cj4+IEknbSBhbHNvIG5vdCBhIHN1cGVyIGJpZyBmYW4gb2YgcHV0
+dGluZyBhbGwgdGhhdCBsb2dpYyBpbnRvIHN5c3RlbWQuIEl0Cj4+IG1lYW5zIGFwcGxpY2F0aW9u
+cyBuZWVkIHRvIGNyZWF0ZSB0aGVpciBvd24gbm90aWZpY2F0aW9uIG1lY2hhbmlzbXMgdG8KPj4g
+cGFzcyB0aGF0IGNsb25pbmcgbm90aWZpY2F0aW9uIGludG8gYWN0dWFsIHByb2Nlc3Nlcy4gRG9u
+J3Qgd2UgaGF2ZSBhbnkKPj4gbWVjaGFuaXNtIHRoYXQgYXBwbGljYXRpb25zIGFuZCBsaWJyYXJp
+ZXMgY291bGQgdXNlIHRvIG5hdGl2ZWx5IGdldCBhbgo+PiBldmVudCB3aGVuIHRoZSBHZW5JRCBj
+aGFuZ2VzPwo+IFllcy4gcG9sbCgpIGNhbiBkbyB0aGlzLiBGb3IgdGhlIHB1cnBvc2VzIG9mIGRp
+c2N1c3Npb24sIEkndmUgcG9zdGVkCj4gYW4gaW1wbGVtZW50YXRpb24gb2YgdGhpcyBpZGVhIGhl
+cmU6Cj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDIyMDMwOTIxNTkwNy43NzUyNi0x
+LUphc29uQHp4MmM0LmNvbS8KPgo+IFdoYXQgSSdtIHNvcnQgb2YgbGVhbmluZyB0b3dhcmQgaXMg
+ZG9pbmcgc29tZXRoaW5nIGxpa2UgdGhhdCBwYXRjaCwKPiBhbmQgdGhlbiBsYXRlciBpZiB2bWdl
+bmlkIGV2ZXIgZ3Jvd3MgYW4gYWRkaXRpb25hbCB3b3JkLXNpemVkIGNvdW50ZXIsCj4gbW92aW5n
+IHRvIGV4cGxvcmUgdGhlIHJhY2UtZnJlZSBhcHByb2FjaC4gR2l2ZW4gdGhlIGFtb3VudCBvZgo+
+IHByb2dyYW1taW5nIHJlcXVpcmVkIHRvIGFjdHVhbGx5IGltcGxlbWVudCB0aGUgcmFjZS1mcmVl
+IGFwcHJvYWNoCj4gKHRyYW5zYWN0aW9ucyBhbmQgY2FyZWZ1bCBzdHVkeSBvZiBlYWNoIGNhc2Up
+LCB0aGUgcG9sbCgpIGZpbGUKPiBhcHByb2FjaCBtaWdodCBiZSBhIG1lZGl1bS1ncmFkZSBjb21w
+cm9taXNlIGZvciB0aGUgdGltZSBiZWluZy4KPiBFdmlkZW50bHkgdGhhdCdzIHdoYXQgTWljcm9z
+b2Z0IGRlY2lkZWQgdG9vLgoKCkkgYWdyZWUgb24gdGhlIHNsaWdodGx5IHJhY3kgY29tcHJvbWlz
+ZSBhbmQgdGhhdCBpdCdzIGEgc3RlcCBpbnRvIHRoZSAKcmlnaHQgZGlyZWN0aW9uLiBEb2luZyB0
+aGlzIGlzIGEgbm8gYnJhaW5lciBJTUhPIGFuZCBJIGxpa2UgdGhlIHByb2MgCmJhc2VkIHBvbGwg
+YXBwcm9hY2guCgpJIGhhdmUgYW4gYWRkaXRpb25hbCBwcm9ibGVtIHlvdSBtaWdodCBoYXZlIGFu
+IGlkZWEgZm9yIHdpdGggdGhlIHBvbGwgCmJhc2VkIHBhdGguIEluIGFkZGl0aW9uIHRvIHRoZSBj
+bG9uZSBub3RpZmljYXRpb24sIEknZCBuZWVkIHRvIGtub3cgYXQgCndoaWNoIHBvaW50IGV2ZXJ5
+b25lIHdobyB3YXMgbGlzdGVuaW5nIHRvIGEgY2xvbmUgbm90aWZpY2F0aW9uIGlzIApmaW5pc2hl
+ZCBhY3RpbmcgdXAgaXQuIElmIEkgc3Bhd24gYSB0aW55IFZNIHRvIGRvICJ3b3JrIiwgSSB3YW50
+IHRvIGtub3cgCndoZW4gaXQncyBzYWZlIHRvIGhhbmQgcmVxdWVzdHMgaW50byBpdC4gSG93IGRv
+IEkgZmluZCBvdXQgd2hlbiB0aGF0IApwb2ludCBpbiB0aW1lIGlzPwoKQXMgZmFyIGFzIHRoZSBy
+YWNlLWZyZWUgYXBwcm9hY2ggZ29lcywgSSB3b3VsZG4ndCBnZXQgaHVuZyB1cCBvbiA0IGJ5dGUg
+CnZzIDE2IGJ5dGUgVVVJRCB0byBtYXRjaCBhZ2FpbnN0LiBPdXRzaWRlIG9mIEZVRCB0aGF0IHRo
+aXMgbWlnaHQgCnBvdGVudGlhbGx5IGhhdmUgcGVyZm9ybWFuY2UgaW1wYWN0ICg0IGJ5dGUgcmVh
+ZHMgd2lsbCBoYXZlIGltcGFjdCAKdG9vISksIHRoZXJlJ3Mgbm90aGluZyB0aGF0IHdvdWxkIGtl
+ZXAgdXMgZnJvbSBpbXBsZW1lbnRpbmcgdGhhdCAKaW50ZXJmYWNlIGluIGFkZGl0aW9uIHRvIHRo
+ZSBwb2xsIHRvZGF5LgoKSSdtIGhhcHB5IHRvIHNlZSBhbGwgb2YgdGhlc2UgdGhpbmdzIGV2b2x2
+ZSBpbmNyZW1lbnRhbGx5IHRob3VnaC4gV2UgY2FuIApzdGFydCB3aXRoIHRoZSBwb2xsIGludGVy
+ZmFjZSBhbmQgdGhlbiBsYXRlciBpbXBsZW1lbnQgYSB2c3lzY2FsbCB0aGF0IAphbGxvd3MgdHJh
+bnNhY3Rpb25zIGluIGhvdCBwYXRocy4KCgpBbGV4CgoKCgpBbWF6b24gRGV2ZWxvcG1lbnQgQ2Vu
+dGVyIEdlcm1hbnkgR21iSApLcmF1c2Vuc3RyLiAzOAoxMDExNyBCZXJsaW4KR2VzY2hhZWZ0c2Z1
+ZWhydW5nOiBDaHJpc3RpYW4gU2NobGFlZ2VyLCBKb25hdGhhbiBXZWlzcwpFaW5nZXRyYWdlbiBh
+bSBBbXRzZ2VyaWNodCBDaGFybG90dGVuYnVyZyB1bnRlciBIUkIgMTQ5MTczIEIKU2l0ejogQmVy
+bGluClVzdC1JRDogREUgMjg5IDIzNyA4NzkKCgo=
 
