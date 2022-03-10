@@ -2,120 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E951AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E15C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbiCJGz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 01:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
+        id S239925AbiCJG4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 01:56:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiCJGzZ (ORCPT
+        with ESMTP id S236820AbiCJG4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 01:55:25 -0500
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE7EF955C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:54:17 -0800 (PST)
-X-QQ-mid: bizesmtp66t1646895241t8l07b1o
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 10 Mar 2022 14:53:56 +0800 (CST)
-X-QQ-SSF: 0140000000000070D000B00A0000000
-X-QQ-FEAT: k0yT7W7BRd0uDTHO9kj1Uf7jIM45xR2rYfRdY3qR4coREosYKAz9qXrIghk1q
-        B5TJCvuA2BCm0VQbcwpY0x4J+bmuc0LasytVBfsMKhzqFw+YEATCIZjnvqe47lQSD45wlct
-        B92aQCj+9Ru5dpzYNNCRkBBHu244CiE1SHNcb43MA39oIQhTyu/BprZaknI4sR/YSIuQZsO
-        hUxY59eP0hM/O5tdOhYlq6x0ND65I/zXusCkrnYWvBTOFeApIvR0vQDvwj0dNdbKXAtS0D+
-        C1MKj+MLWh+N0WOUkn963kC/yjrEKw0iaXdvs39Za4/3EnpMgMW4twMWtKpO5uOIQEK1KOd
-        zyKSzqxQ20jnHoQE3vJbh2thpk92g==
-X-QQ-GoodBg: 2
-From:   Zhen Ni <nizhen@uniontech.com>
-To:     broonie@kernel.org, tiwai@suse.com, perex@perex.cz
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH] ASoC: Intel: boards: Use temporary variable for struct device
-Date:   Thu, 10 Mar 2022 14:53:54 +0800
-Message-Id: <20220310065354.14493-1-nizhen@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 10 Mar 2022 01:56:42 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4D512F146
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:55:41 -0800 (PST)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KDfqx2c5yz9sZt;
+        Thu, 10 Mar 2022 14:51:57 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Mar
+ 2022 14:55:39 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <will@kernel.org>, <mark.rutland@arm.com>, <bbhushan2@marvell.com>,
+        <bbudiredla@marvell.com>, <arnd@arndb.de>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 -next] perf/marvell: cn10k Fix build error without CONFIG_OF
+Date:   Thu, 10 Mar 2022 14:50:45 +0800
+Message-ID: <20220310065045.24772-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign7
-X-QQ-Bgrelay: 1
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use temporary variable for struct device to make code neater.
+drivers/perf/marvell_cn10k_ddr_pmu.c:723:21: error: ‘cn10k_ddr_pmu_of_match’ undeclared here (not in a function); did you mean ‘cn10k_ddr_pmu_driver’?
+    	 .of_match_table = cn10k_ddr_pmu_of_match,
+      	                   ^~~~~~~~~~~~~~~~~~~~~~
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Remove the #ifdef around the match table, because CONFIG_OF is always enabled on arm64.
+
+Fixes: 7cf83e222bce ("perf/marvell: CN10k DDR performance monitor support")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- sound/soc/intel/boards/cht_bsw_max98090_ti.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+v2: Remove the #ifdef macro as Arnd suggested
+---
+ drivers/perf/marvell_cn10k_ddr_pmu.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/sound/soc/intel/boards/cht_bsw_max98090_ti.c b/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-index 1bc21434c9de..d9f4206e1f96 100644
---- a/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-+++ b/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-@@ -538,7 +538,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
- 	const char *platform_name;
- 	bool sof_parent;
+diff --git a/drivers/perf/marvell_cn10k_ddr_pmu.c b/drivers/perf/marvell_cn10k_ddr_pmu.c
+index 7f3146e71f99..bef0cee3a46a 100644
+--- a/drivers/perf/marvell_cn10k_ddr_pmu.c
++++ b/drivers/perf/marvell_cn10k_ddr_pmu.c
+@@ -709,13 +709,11 @@ static int cn10k_ddr_perf_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
--	drv = devm_kzalloc(&pdev->dev, sizeof(*drv), GFP_KERNEL);
-+	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
- 	if (!drv)
- 		return -ENOMEM;
+-#ifdef CONFIG_OF
+ static const struct of_device_id cn10k_ddr_pmu_of_match[] = {
+ 	{ .compatible = "marvell,cn10k-ddr-pmu", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, cn10k_ddr_pmu_of_match);
+-#endif
  
-@@ -559,8 +559,8 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
- 	}
- 
- 	/* override plaform name, if required */
--	snd_soc_card_cht.dev = &pdev->dev;
--	mach = pdev->dev.platform_data;
-+	snd_soc_card_cht.dev = dev;
-+	mach = dev->platform_data;
- 	platform_name = mach->mach_params.platform;
- 
- 	ret_val = snd_soc_fixup_dai_links_platform_name(&snd_soc_card_cht,
-@@ -576,9 +576,9 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
- 	else
- 		mclk_name = "pmc_plt_clk_3";
- 
--	drv->mclk = devm_clk_get(&pdev->dev, mclk_name);
-+	drv->mclk = devm_clk_get(dev, mclk_name);
- 	if (IS_ERR(drv->mclk)) {
--		dev_err(&pdev->dev,
-+		dev_err(dev,
- 			"Failed to get MCLK from %s: %ld\n",
- 			mclk_name, PTR_ERR(drv->mclk));
- 		return PTR_ERR(drv->mclk);
-@@ -594,12 +594,12 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
- 	if (drv->quirks & QUIRK_PMC_PLT_CLK_0) {
- 		ret_val = clk_prepare_enable(drv->mclk);
- 		if (ret_val < 0) {
--			dev_err(&pdev->dev, "MCLK enable error: %d\n", ret_val);
-+			dev_err(dev, "MCLK enable error: %d\n", ret_val);
- 			return ret_val;
- 		}
- 	}
- 
--	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
-+	sof_parent = snd_soc_acpi_sof_parent(dev);
- 
- 	/* set card and driver name */
- 	if (sof_parent) {
-@@ -614,9 +614,9 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
- 	if (sof_parent)
- 		dev->driver->pm = &snd_soc_pm_ops;
- 
--	ret_val = devm_snd_soc_register_card(&pdev->dev, &snd_soc_card_cht);
-+	ret_val = devm_snd_soc_register_card(dev, &snd_soc_card_cht);
- 	if (ret_val) {
--		dev_err(&pdev->dev,
-+		dev_err(dev,
- 			"snd_soc_register_card failed %d\n", ret_val);
- 		return ret_val;
- 	}
+ static struct platform_driver cn10k_ddr_pmu_driver = {
+ 	.driver	= {
 -- 
-2.20.1
-
-
+2.17.1
 
