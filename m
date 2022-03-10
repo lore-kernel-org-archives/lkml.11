@@ -2,130 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E95C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245321AbiCJSCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:02:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41842 "EHLO
+        id S245346AbiCJSDR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:03:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbiCJSCo (ORCPT
+        with ESMTP id S234616AbiCJSDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:02:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD8B197B78;
-        Thu, 10 Mar 2022 10:01:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3EA7B8278D;
-        Thu, 10 Mar 2022 18:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07274C340E8;
-        Thu, 10 Mar 2022 18:01:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646935300;
-        bh=Ehed+d1AEXVa5J2E1toVI+Dn/MDgVrfaiJcmSqyAOuU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=brMd6jeMiCgX3+4y+Xa9b0xDYmgzBPhI+UCeko4yYEy6Qt5M7usGrhriLweB1NWbz
-         buMDiSB/dO9anfLDyTS+b7ycQfNqBFzjLdMBys3+VyYlSFWDeG4a8a2RJXU3MYqsc2
-         8O131NBYY8lcHgDuYH8rGR5okCSXsBdEqOc4VhD63N1KRo9yLhymm+vk7uLcNlLorM
-         ZxSvANeo+8484M3uw5dBboFcCiand2dpj0e8YiPLzT+EDlarP7+d+zX+k2awVLpHuT
-         oRQyKqtEmFLbr8eq6wRS/tTOHE5IRFCq3Ni/r4p51ExFx8jJfACMsT+0RvcAq2PyxT
-         z8WeTllWfGrxA==
-Date:   Thu, 10 Mar 2022 20:00:55 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     linux-sgx@vger.kernel.org, stable@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] x86/sgx: Free backing memory after faulting the
- enclave page
-Message-ID: <Yio814lJVgutumd8@iki.fi>
-References: <20220303223859.273187-1-jarkko@kernel.org>
- <d476aa51-f855-bfb8-0738-3190439a2f72@intel.com>
- <YihezQsQca0RBuxT@iki.fi>
+        Thu, 10 Mar 2022 13:03:16 -0500
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A681986D0;
+        Thu, 10 Mar 2022 10:02:15 -0800 (PST)
+Received: by mail-lf1-f50.google.com with SMTP id w12so10786195lfr.9;
+        Thu, 10 Mar 2022 10:02:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ypo3GEUJC1KtfqbclWSczh3wzzpz31l4v4TAnVFfOKQ=;
+        b=HMPW1UUcpFhMy8isEZ7uPELPlk7y95JUUzmszyj38DUcZwzIcG5uz+gkrP08QJe/pZ
+         JmhcaqFFl7rppPyMLvInGHH5lZGvM1qgbFHVsHl4RbWZ5zR/Ki/rJ5IQevX/XIaw6Y5G
+         wkmbQ3W29O20o23MAWI23WIKUHl+OaK83SFnsS3okv9jVMn4i291npCc/XWkq253SPJ+
+         bSjAsp+NKmTy1OcDGaTKvSdN7qBWGQ8DXZjKv8ex8smYSGCRhKYrxeIoqMmn+z8+QcqD
+         CBS6qcldmTbctmdysVWu80MDjABHWnqBTq/cGLApPiyCqZqcS/0iCHpjd2NaQd/s+tTe
+         YQjg==
+X-Gm-Message-State: AOAM532Ns2SI3nAFC+NoET/q78wUPaSvo4xfBDogT3zpCF2AgO9aItrm
+        L+JRy12wLF0VOB+bU596vzSBNstY/lXOQ4lIUNI=
+X-Google-Smtp-Source: ABdhPJy51eanIMg92+jqiUEtWO4lxZQ1zmy8o8axSpuqYvSemW3E8n7aRNWkH4aVwnoYy70t+XbOHcTavLAu0dbi1G0=
+X-Received: by 2002:a05:6512:b9b:b0:448:3a53:e7d9 with SMTP id
+ b27-20020a0565120b9b00b004483a53e7d9mr3449708lfv.586.1646935333289; Thu, 10
+ Mar 2022 10:02:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YihezQsQca0RBuxT@iki.fi>
+References: <20220308135948.55336-1-zhouchengming@bytedance.com>
+ <CAM9d7chsbpmVhhtzBgqD29Agb6xTMpxfwvqUdo6RKx2K1WN-DQ@mail.gmail.com> <e561e36c-cc73-2078-4baa-cb9ab6b6eeac@bytedance.com>
+In-Reply-To: <e561e36c-cc73-2078-4baa-cb9ab6b6eeac@bytedance.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Thu, 10 Mar 2022 10:02:02 -0800
+Message-ID: <CAM9d7ciw+Jj1Z2j5qsz8f5YvAk5yh_w3+pZKO6gTAn2AHKQj2g@mail.gmail.com>
+Subject: Re: [Phishing Risk] [External] Re: [RFC PATCH] perf/core: fix cpuctx
+ cgrp warning
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Stephane Eranian <eranian@google.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        songmuchun@bytedance.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:01:17AM +0200, Jarkko Sakkinen wrote:
-> On Tue, Mar 08, 2022 at 11:16:19AM -0800, Reinette Chatre wrote:
-> > Hi,
-> > 
-> > On 3/3/2022 2:38 PM, Jarkko Sakkinen wrote:
-> > > There is a limited amount of SGX memory (EPC) on each system.  When that
-> > > memory is used up, SGX has its own swapping mechanism which is similar
-> > > in concept but totally separate from the core mm/* code.  Instead of
-> > > swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
-> > > comes from a shared memory pseudo-file and can itself be swapped by the
-> > > core mm code.  There is a hierarchy like this:
-> > > 
-> > > 	EPC <-> shmem <-> disk
-> > > 
-> > > After data is swapped back in from shmem to EPC, the shmem backing
-> > > storage needs to be freed.  Currently, the backing shmem is not freed.
-> > > This effectively wastes the shmem while the enclave is running.  The
-> > > memory is recovered when the enclave is destroyed and the backing
-> > > storage freed.
-> > > 
-> > > Sort this out by freeing memory with shmem_truncate_range(), as soon as
-> > > a page is faulted back to the EPC.  In addition, free the memory for
-> > > PCMD pages as soon as all PCMD's in a page have been marked as unused
-> > > by zeroing its contents.
-> > > 
-> > > Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
-> > > Cc: stable@vger.kernel.org
-> > > Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-> > > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > 
-> > I can reliably reproduce the issue this patch aims to solve by creating
-> > a virtual machine that has a significant portion of its memory consumed
-> > by EPC:
-> > 
-> > qemu-system-x86_64 -smp 4 -m 4G\
-> >  -enable-kvm \
-> >  -cpu host,+sgx-provisionkey \
-> >  -object memory-backend-ram,size=2G,host-nodes=0,policy=bind,id=node0 \
-> >  -object memory-backend-epc,id=mem0,size=1536M,prealloc=on,host-nodes=0,policy=bind \
-> >  -numa node,nodeid=0,cpus=0-1,memdev=node0 \
-> >  -object memory-backend-ram,size=2G,host-nodes=1,policy=bind,id=node1 \
-> >  -object memory-backend-epc,id=mem1,size=1536M,prealloc=on,host-nodes=1,policy=bind \
-> >  -numa node,nodeid=1,cpus=2-3,memdev=node1 \
-> >  -M sgx-epc.0.memdev=mem0,sgx-epc.0.node=0,sgx-epc.1.memdev=mem1,sgx-epc.1.node=1 \
-> >  ...
-> > 
-> > Before this patch, running the very stressful SGX2 over subscription test case
-> > (unclobbered_vdso_oversubscribed_remove) in this environment always triggers 
-> > the oom-killer but no amount of tasks killed can save the system
-> > with it always ending deadlocked on memory:
-> > 
-> > [   58.642719] Tasks state (memory values in pages):
-> > [   58.644324] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
-> > [   58.647237] [    195]     0   195     3153      197    45056        0         -1000 systemd-udevd
-> > [   58.650238] [    281]     0   281  1836367        0 10817536        0             0 test_sgx
-> > [   58.653088] Out of memory and no killable processes...
-> > [   58.654832] Kernel panic - not syncing: System is deadlocked on memory
-> > 
-> > After applying this patch I was able to run SGX2 selftest
-> > unclobbered_vdso_oversubscribed_remove ten times successfully.
-> > 
-> > Tested-by: Reinette Chatre <reinette.chatre@intel.com>
-> 
-> Thank you.
-> 
-> > Reinette
+On Thu, Mar 10, 2022 at 4:01 AM Chengming Zhou
+<zhouchengming@bytedance.com> wrote:
+>
+> Hello,
+>
+> On 2022/3/10 5:25 下午, Namhyung Kim wrote:
+> > Hello,
+> >
+> > On Tue, Mar 8, 2022 at 6:00 AM Chengming Zhou
+> > <zhouchengming@bytedance.com> wrote:
+> >>
+> >> There is a race problem that can trigger WARN_ON_ONCE(cpuctx->cgrp)
+> >> in perf_cgroup_switch().
+> >>
+> >> CPU1                                    CPU2
+> >> (in context_switch)                     (attach running task)
+> >> perf_cgroup_sched_out(task, next)
+> >>         if (cgrp1 != cgrp2) True
+> >>                                         task->cgroups = xxx
+> >>                                         perf_cgroup_attach()
+> >> perf_cgroup_sched_in(prev, task)
+> >>         if (cgrp1 != cgrp2) False
+> >
+> > But perf_cgroup_switch will be synchronized as the context switch
+> > disables the interrupt.  And right, it still can see the task->cgroups
+> > is changing in the middle.
+> >
+> >>
+> >> The commit a8d757ef076f ("perf events: Fix slow and broken cgroup
+> >> context switch code") would save cpuctx switch in/out when the
+> >> perf_cgroup of "prev" and "next" are the same.
+> >>
+> >> But perf_cgroup of task can change in concurrent with context_switch.
+> >> If cgrp1 == cgrp2 in sched_out(), cpuctx won't do switch out, then
+> >> task perf_cgroup changed cause cgrp1 != cgrp2 in sched_in(), cpuctx
+> >> will do switch in, and trigger WARN_ON_ONCE(cpuctx->cgrp).
+> >>
+> >> The perf_cgroup of "prev" and "next" can be changed at any time, so we
+> >> first have to combine perf_cgroup_sched_in() into perf_cgroup_sched_out(),
+> >> so we can get a consistent value of condition (cgrp1 == cgrp2).
+> >>
+> >> And we introduce a percpu "cpu_perf_cgroups" to track the current used
+> >> perf_cgroup, instead of using the unstable perf_cgroup of "prev", which
+> >> maybe not the cpuctx->cgrp we used to schedule cgroup events on cpu.
+> >
+> > Is this really needed?  I think the warning comes because the two
+> > cgroups were the same when in sched-out, but they became
+> > different when in sched-in.  So just combining sched-in/out should
+> > be ok, isn't it?
+>
+> If we get perf_cgroup from prev->cgroups that can be changed in the
+> context_switch(), make the condition (cgrp1 == cgrp2) is true, then
+> we won't do sched_out/in. So the events of prev's previous cgrp will
+> still be on the CPU.
+>
+> Even that CPU would receive IPI from perf_cgroup_attach() after
+> context_switch(), remote_function() will do nothing because prev task
+> is not current running anymore.
 
-Dave, can this be picked up?
+Right, so I don't care about changing prev->cgroups.  I can see these
+two scenarios.
 
-BR, Jarkko
+1. (cgrp1 == cgrp2) --> (cgrp1 != cgrp2)
+  This means the next task's cgroup (cgrp2) is the same as the
+  previous and it doesn't need to reschedule events even if the
+  cgrp1 is changed.
+
+2. (cgrp1 != cgrp2) --> (cgrp1 == cgrp2)
+  This will trigger rescheduling anyway, and we are fine.
+
+>
+> >
+> >>
+> >> Fixes: a8d757ef076f ("perf events: Fix slow and broken cgroup context
+> >> switch code")
+> >> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> >> ---
+> >>  kernel/events/core.c | 95 +++++++++++---------------------------------
+> >>  1 file changed, 23 insertions(+), 72 deletions(-)
+> >>
+> >> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> >> index 6859229497b1..f3bc2841141f 100644
+> >> --- a/kernel/events/core.c
+> >> +++ b/kernel/events/core.c
+> >> @@ -826,6 +826,7 @@ perf_cgroup_set_timestamp(struct task_struct *task,
+> >>         }
+> >>  }
+> >>
+> >> +static DEFINE_PER_CPU(struct perf_cgroup *, cpu_perf_cgroups);
+> >>  static DEFINE_PER_CPU(struct list_head, cgrp_cpuctx_list);
+> >>
+> >>  #define PERF_CGROUP_SWOUT      0x1 /* cgroup switch out every event */
+> >> @@ -837,8 +838,9 @@ static DEFINE_PER_CPU(struct list_head, cgrp_cpuctx_list);
+> >>   * mode SWOUT : schedule out everything
+> >>   * mode SWIN : schedule in based on cgroup for next
+> >
+> > You can remove this comment now.
+>
+> Ok, will do.
+>
+> >
+> >>   */
+> >> -static void perf_cgroup_switch(struct task_struct *task, int mode)
+> >> +static void perf_cgroup_switch(struct task_struct *task)
+> >>  {
+> >> +       struct perf_cgroup *cgrp;
+> >>         struct perf_cpu_context *cpuctx, *tmp;
+> >>         struct list_head *list;
+> >>         unsigned long flags;
+> >> @@ -849,6 +851,9 @@ static void perf_cgroup_switch(struct task_struct *task, int mode)
+> >>          */
+> >>         local_irq_save(flags);
+> >>
+> >> +       cgrp = perf_cgroup_from_task(task, NULL);
+> >> +       __this_cpu_write(cpu_perf_cgroups, cgrp);
+> >> +
+> >>         list = this_cpu_ptr(&cgrp_cpuctx_list);
+> >>         list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
+> >>                 WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
+> >> @@ -856,28 +861,15 @@ static void perf_cgroup_switch(struct task_struct *task, int mode)
+> >>                 perf_ctx_lock(cpuctx, cpuctx->task_ctx);
+> >>                 perf_pmu_disable(cpuctx->ctx.pmu);
+> >>
+> >> -               if (mode & PERF_CGROUP_SWOUT) {
+> >> -                       cpu_ctx_sched_out(cpuctx, EVENT_ALL);
+> >> -                       /*
+> >> -                        * must not be done before ctxswout due
+> >> -                        * to event_filter_match() in event_sched_out()
+> >
+> > Unrelated, but I don't see the event_filter_match() in
+> > event_sched_out() anymore.  Does it sched-out all
+> > non-cgroup cpu events here?
+>
+> Yes, I review the code and don't find event_filter_match(),
+> so cpu_ctx_sched_out() will sched-out all cpu events.
+>
+> And I find event_filter_match() won't work here too,
+> because perf_cgroup_match() return matched for any
+> non-cgroup event. Maybe we can add another function
+> like perf_cgroup_match_sched_out() to use when sched-out.
+
+And for sched-in too.
+
+But we should consider multiplexing in the timer as well.
+In that case it cannot know whether it needs to reschedule
+cpu or cgroup events, so it does the job for all events.
+
+But I think cgroup + multiplexing is broken already
+because it cannot guarantee it sees the same cgroup
+when the timer interrupt happens.
+
+Thanks,
+Namhyung
+
+>
+> >
+> >> -                        */
+> >> -                       cpuctx->cgrp = NULL;
+> >> -               }
+> >> +               cpu_ctx_sched_out(cpuctx, EVENT_ALL);
+> >> +               /*
+> >> +                * must not be done before ctxswout due
+> >> +                * to event_filter_match() in event_sched_out()
+> >> +                */
+> >> +               cpuctx->cgrp = cgrp;
+> >
+> > Maybe we can check cpuctx->cgrp is the same as task's
+> > cgroup before accessing the pmu.  As in the commit message
+> > it can call perf_cgroup_switch() after the context switch so
+> > the cgroup events might be scheduled already.
+>
+> Good point, will do.
+>
+> Thanks.
+>
+> >
+> > Thanks,
+> > Namhyung
+> >
+> >
+> >> +
+> >> +               cpu_ctx_sched_in(cpuctx, EVENT_ALL, task);
+> >>
+> >> -               if (mode & PERF_CGROUP_SWIN) {
+> >> -                       WARN_ON_ONCE(cpuctx->cgrp);
+> >> -                       /*
+> >> -                        * set cgrp before ctxsw in to allow
+> >> -                        * event_filter_match() to not have to pass
+> >> -                        * task around
+> >> -                        * we pass the cpuctx->ctx to perf_cgroup_from_task()
+> >> -                        * because cgorup events are only per-cpu
+> >> -                        */
+> >> -                       cpuctx->cgrp = perf_cgroup_from_task(task,
+> >> -                                                            &cpuctx->ctx);
+> >> -                       cpu_ctx_sched_in(cpuctx, EVENT_ALL, task);
+> >> -               }
+> >>                 perf_pmu_enable(cpuctx->ctx.pmu);
+> >>                 perf_ctx_unlock(cpuctx, cpuctx->task_ctx);
+> >>         }
