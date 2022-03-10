@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25912C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 898DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244823AbiCJRYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:24:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
+        id S244910AbiCJRYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244892AbiCJRW5 (ORCPT
+        with ESMTP id S244889AbiCJRW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 12:22:57 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C773019BE5A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:38 -0800 (PST)
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071E619BE53
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646932898; x=1678468898;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0slWJ+5xiaJpaEwCrss1KFKuknXVe7imrmVwQKVj/tA=;
-  b=HswqgHrCcRO16y5b+vHu6upC5VKOm2NIMTMKJmOQ66XyQ+HreB/pQXdO
-   d39V0ISxgPM791EUPXsoZpHEqJtqDzpC2k264+/0Bo2WpJIpJJvDyfVus
-   hz1yw50LqXTuykt/CDW3Lm9SP+BL085r2FQF5vk/jmJ5ZxOD8h7fd64ld
-   DhM9BDdrwGOnjQyWOjiBGv0IRFR/Ilfx8OGhM/UC8frAliNVn+JFXI3oM
-   bsMz8G7Uf+bDGiNTwnwrbW/JcxeEG3kZeGckr2elUsoMpROM7+2MGTI8L
-   Q+0oFIxZt2bJhH8h63gY+N+W+tSbxHD7PI2T7d9F3GzqkW9mr+VceH528
+  bh=pjVQUREbYYzrHUS+0aX34M7TywdtuvLjQwrvY4P+Gho=;
+  b=UwhDLa4eWXY3W95Z/oHa6q9F64Nuspo+pNiqzuwVxbHhRGx7rtVyw4ow
+   XclpwYVWKAj3pqyIlbgDvBXlamLxaO8yBRQr7+T/ldqmpmxBhtqc6tGyt
+   ez36fJrOxTquJ7nnuXmXQIGoH7Knv2CSJ+HkLpzShxexkcdW1tl2mn+g7
+   6VktKDZBiOXcggvT25DOLUqrq9WxAjGJBRoqaHffVbENHjePoNTxXW2/H
+   4taUD6QeFagqyTpqwJCF9M/REOa02rTxiYewYWDGnKA1HBWG0qO1U9ApQ
+   Qecu39rgnaSohbmYZKJ8dGOM5H04nEXBKNroFExGqVffnRmmQ1pZYpLzM
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235918685"
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316033141"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="235918685"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:28 -0800
+   d="scan'208";a="316033141"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:37 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="578874653"
+   d="scan'208";a="548091231"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:27 -0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:36 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 28/45] x86/fault: Print PKS MSR on fault
-Date:   Thu, 10 Mar 2022 09:20:02 -0800
-Message-Id: <20220310172019.850939-29-ira.weiny@intel.com>
+Subject: [PATCH V9 32/45] mm/pkeys: PKS testing, add test for all keys
+Date:   Thu, 10 Mar 2022 09:20:06 -0800
+Message-Id: <20220310172019.850939-33-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,150 +59,270 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-If a PKS fault occurs it will be easier to debug if the PKS MSR value at
-the time of the fault is known.
+To help test hardware and qemu it is necessary to be able to run through
+all the available pkeys and run the access checks.  However, running
+this test will conflict with normal PKS consumers.
 
-Add pks_show_regs() to __show_regs() to show the PKRS MSR on fault if
-enabled.
+Make a test, which is mutually exclusive from all other PKS consumers,
+that loops through all the pkeys and tests the various access modes.
 
-An 'executive summary' of the pt_regs are saved in __die_header() which
-ensures that the first registers are saved in the event of multiple
-faults.  Teach this code about the extended pt_registers such that the
-PKS code can get to the original pkrs value as well.
+Update the documentation.
 
-Suggested-by: Andy Lutomirski <luto@kernel.org>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	From Dave Hansen
-		Move this output to __show_regs() next to the PKRU
-			register dump
+	Update commit message
+	Create ENABLE_PKS_CONSUMER Kconfig to make this test mutually
+		exclusive with any other pks consumer
 
 Changes for V8
-	Split this into it's own patch.
+	Split this off from the large testing patch
+	Remove debugging version
 ---
- arch/x86/include/asm/pks.h   |  3 +++
- arch/x86/kernel/dumpstack.c  | 32 ++++++++++++++++++++++++++++++--
- arch/x86/kernel/process_64.c |  1 +
- arch/x86/mm/pkeys.c          | 11 +++++++++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
+ Documentation/core-api/protection-keys.rst | 12 +++----
+ arch/x86/mm/pkeys.c                        | 10 ++++++
+ include/linux/pks-keys.h                   |  5 +++
+ lib/Kconfig.debug                          | 21 +++++++++++
+ lib/pks/pks_test.c                         | 41 +++++++++++++++++++++-
+ mm/Kconfig                                 |  9 +++++
+ tools/testing/selftests/x86/test_pks.c     |  5 ++-
+ 7 files changed, 95 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-index b69e03a141fe..de67d5b5a2af 100644
---- a/arch/x86/include/asm/pks.h
-+++ b/arch/x86/include/asm/pks.h
-@@ -8,6 +8,7 @@ void pks_setup(void);
- void x86_pkrs_load(struct thread_struct *thread);
- void pks_save_pt_regs(struct pt_regs *regs);
- void pks_restore_pt_regs(struct pt_regs *regs);
-+void pks_show_regs(struct pt_regs *regs, const char *log_lvl);
+diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+index 22ad58a93423..68fe7a92cc98 100644
+--- a/Documentation/core-api/protection-keys.rst
++++ b/Documentation/core-api/protection-keys.rst
+@@ -117,20 +117,20 @@ Kconfig
+ -------
  
- bool pks_handle_key_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 			  unsigned long address);
-@@ -18,6 +19,8 @@ static inline void pks_setup(void) { }
- static inline void x86_pkrs_load(struct thread_struct *thread) { }
- static inline void pks_save_pt_regs(struct pt_regs *regs) { }
- static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
-+static inline void pks_show_regs(struct pt_regs *regs,
-+				 const char *log_lvl) { }
+ Kernel users intending to use PKS support should depend on
+-ARCH_HAS_SUPERVISOR_PKEYS, and select ARCH_ENABLE_SUPERVISOR_PKEYS to turn on
+-this support within the core.  For example:
++ARCH_HAS_SUPERVISOR_PKEYS, and select ARCH_ENABLE_PKS_CONSUMER to turn on this
++support within the core.  For example:
  
- static inline bool pks_handle_key_fault(struct pt_regs *regs,
- 					unsigned long hw_error_code,
-diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
-index 53de044e5654..38be69d15431 100644
---- a/arch/x86/kernel/dumpstack.c
-+++ b/arch/x86/kernel/dumpstack.c
-@@ -27,8 +27,36 @@ int panic_on_unrecovered_nmi;
- int panic_on_io_nmi;
- static int die_counter;
+ .. code-block:: c
  
-+#ifdef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
-+
-+static struct pt_regs_extended exec_summary_regs;
-+
-+static void save_exec_summary(struct pt_regs *regs)
-+{
-+	exec_summary_regs = *(to_extended_pt_regs(regs));
-+}
-+
-+static struct pt_regs *retrieve_exec_summary(void)
-+{
-+	return &exec_summary_regs.pt_regs;
-+}
-+
-+#else /* !CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
-+
- static struct pt_regs exec_summary_regs;
+         config MY_NEW_FEATURE
+                 depends on ARCH_HAS_SUPERVISOR_PKEYS
+-                select ARCH_ENABLE_SUPERVISOR_PKEYS
++                select ARCH_ENABLE_PKS_CONSUMER
  
-+static void save_exec_summary(struct pt_regs *regs)
-+{
-+	exec_summary_regs = *regs;
-+}
-+
-+static struct pt_regs *retrieve_exec_summary(void)
-+{
-+	return &exec_summary_regs;
-+}
-+
-+#endif /* CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
-+
- bool noinstr in_task_stack(unsigned long *stack, struct task_struct *task,
- 			   struct stack_info *info)
- {
-@@ -369,7 +397,7 @@ void oops_end(unsigned long flags, struct pt_regs *regs, int signr)
- 	oops_exit();
+ This will make "MY_NEW_FEATURE" unavailable unless the architecture sets
+ ARCH_HAS_SUPERVISOR_PKEYS.  It also makes it possible for multiple independent
+-features to "select ARCH_ENABLE_SUPERVISOR_PKEYS".  If no features enable PKS
+-by selecting ARCH_ENABLE_SUPERVISOR_PKEYS, PKS support will not be compiled
+-into the kernel.
++features to "select ARCH_ENABLE_PKS_CONSUMER".  If no features enable PKS by
++selecting ARCH_ENABLE_PKS_CONSUMER, PKS support will not be compiled into the
++kernel.
  
- 	/* Executive summary in case the oops scrolled away */
--	__show_regs(&exec_summary_regs, SHOW_REGS_ALL, KERN_DEFAULT);
-+	__show_regs(retrieve_exec_summary(), SHOW_REGS_ALL, KERN_DEFAULT);
- 
- 	if (!signr)
- 		return;
-@@ -396,7 +424,7 @@ static void __die_header(const char *str, struct pt_regs *regs, long err)
- 
- 	/* Save the regs of the first oops for the executive summary later. */
- 	if (!die_counter)
--		exec_summary_regs = *regs;
-+		save_exec_summary(regs);
- 
- 	if (IS_ENABLED(CONFIG_PREEMPTION))
- 		pr = IS_ENABLED(CONFIG_PREEMPT_RT) ? " PREEMPT_RT" : " PREEMPT";
-diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index e703cc451128..68d998ea3571 100644
---- a/arch/x86/kernel/process_64.c
-+++ b/arch/x86/kernel/process_64.c
-@@ -140,6 +140,7 @@ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
- 
- 	if (cpu_feature_enabled(X86_FEATURE_OSPKE))
- 		printk("%sPKRU: %08x\n", log_lvl, read_pkru());
-+	pks_show_regs(regs, log_lvl);
- }
- 
- void release_thread(struct task_struct *dead_task)
+ PKS Key Allocation
+ ------------------
 diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 29885dfb0980..7c8e4ea9f022 100644
+index 9b2a6a62d433..fd2ba269e64a 100644
 --- a/arch/x86/mm/pkeys.c
 +++ b/arch/x86/mm/pkeys.c
-@@ -378,6 +378,17 @@ void pks_restore_pt_regs(struct pt_regs *regs)
- 	pks_write_pkrs(current->thread.pkrs);
+@@ -243,12 +243,22 @@ __static_or_pks_test DEFINE_PER_CPU(u32, pkrs_cache);
+  *	#endif
+  *	};
+  */
++#ifndef CONFIG_PKS_TEST_ALL_KEYS
++
+ static const pks_key_callback pks_key_callbacks[PKS_KEY_MAX] = {
+ #ifdef CONFIG_PKS_TEST
+ 	[PKS_KEY_TEST]		= pks_test_fault_callback,
+ #endif
+ };
+ 
++#else /* CONFIG_PKS_TEST_ALL_KEYS */
++
++static const pks_key_callback pks_key_callbacks[PKS_KEY_MAX] = {
++	[1 ... (PKS_KEY_MAX-1)]	= pks_test_fault_callback,
++};
++
++#endif
++
+ static bool pks_call_fault_callback(struct pt_regs *regs, unsigned long address,
+ 				    bool write, u16 key)
+ {
+diff --git a/include/linux/pks-keys.h b/include/linux/pks-keys.h
+index 43e4ae42db2e..f7e82e462659 100644
+--- a/include/linux/pks-keys.h
++++ b/include/linux/pks-keys.h
+@@ -63,6 +63,11 @@
+ #define PKS_KEY_TEST		PKS_NEW_KEY(PKS_KEY_DEFAULT, CONFIG_PKS_TEST)
+ #define PKS_KEY_MAX		PKS_NEW_KEY(PKS_KEY_TEST, 1)
+ 
++#ifdef CONFIG_PKS_TEST_ALL_KEYS
++#undef PKS_KEY_MAX
++#define PKS_KEY_MAX PKS_NUM_PKEYS
++#endif
++
+ /* PKS_KEY_DEFAULT_INIT must be RW */
+ #define PKS_KEY_DEFAULT_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_DEFAULT, RW, 1)
+ #define PKS_KEY_TEST_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_TEST, AD, \
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 5cab2100c133..c9885c2ddea8 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2685,6 +2685,12 @@ config HYPERV_TESTING
+ 	help
+ 	  Select this option to enable Hyper-V vmbus testing.
+ 
++# PKS_TEST is a special PKS consumer and therefore sets
++# ARCH_ENABLE_SUPERVISOR_PKEYS directly rather than through
++# ARCH_ENABLE_PKS_CONSUMER
++#
++# This allows PKS_TEST_ALL_KEYS to remain mutially exclusive to any real PKS
++# consumer
+ config PKS_TEST
+ 	bool "PKey (S)upervisor testing"
+ 	depends on ARCH_HAS_SUPERVISOR_PKEYS
+@@ -2697,6 +2703,21 @@ config PKS_TEST
+ 
+ 	  If unsure, say N.
+ 
++config PKS_TEST_ALL_KEYS
++	bool "PKS test all keys"
++	depends on (PKS_TEST && !ARCH_ENABLE_PKS_CONSUMER)
++	help
++	  Select this option to enable testing of all the PKS keys available in
++	  the architecture.  This option is mutually exclusive with PKS
++	  consumers other than PKS_TEST.  This is because it will consume all
++	  PKS keys for testing purposes.
++
++	  Answer N if you don't know what supervisor keys are or want to have
++	  supervisor keys available for other consumers.
++
++	  If unsure, say N.
++
++
+ endmenu # "Kernel Testing and Coverage"
+ 
+ source "Documentation/Kconfig"
+diff --git a/lib/pks/pks_test.c b/lib/pks/pks_test.c
+index a9cd2a49abfa..e38a487c7065 100644
+--- a/lib/pks/pks_test.c
++++ b/lib/pks/pks_test.c
+@@ -50,12 +50,12 @@
+ #define CHECK_CTX_SWITCH	3
+ #define RUN_EXCEPTION		4
+ #define RUN_EXCEPTION_UPDATE	5
++#define RUN_ALL_KEYS		6
+ #define RUN_CRASH_TEST		9
+ 
+ DECLARE_PER_CPU(u32, pkrs_cache);
+ 
+ static struct dentry *pks_test_dentry;
+-
+ DEFINE_MUTEX(test_run_lock);
+ 
+ struct pks_test_ctx {
+@@ -439,6 +439,39 @@ static bool run_exception_test(struct pks_session_data *sd)
+ 	return pass;
  }
  
-+void pks_show_regs(struct pt_regs *regs, const char *log_lvl)
++#ifdef CONFIG_PKS_TEST_ALL_KEYS
++
++static bool run_all_keys(void)
 +{
-+	struct pt_regs_auxiliary *aux_pt_regs;
++	struct pks_test_ctx *ctx[PKS_NUM_PKEYS];
++	static char name[PKS_NUM_PKEYS][64];
++	int i;
++	bool rc = true;
 +
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
++	for (i = 1; i < PKS_NUM_PKEYS; i++) {
++		sprintf(name[i], "pks ctx %d", i);
++		ctx[i] = alloc_ctx(i);
++	}
 +
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	printk("%sPKRS: 0x%x\n", log_lvl, aux_pt_regs->pkrs);
++	for (i = 1; i < PKS_NUM_PKEYS; i++) {
++		pr_debug("Running pkey '%d'\n", i);
++		if (!IS_ERR(ctx[i])) {
++			/* sticky fail */
++			if (!test_ctx(ctx[i]))
++				rc = false;
++		}
++	}
++
++	for (i = 1; i < PKS_NUM_PKEYS; i++) {
++		if (!IS_ERR(ctx[i]))
++			free_ctx(ctx[i]);
++	}
++
++	return rc;
 +}
 +
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-  *
++#endif
++
+ static void crash_it(struct pks_session_data *sd)
+ {
+ 	struct pks_test_ctx *ctx;
+@@ -644,6 +677,12 @@ static ssize_t pks_write_file(struct file *file, const char __user *user_buf,
+ 		pr_debug("Fault clear test\n");
+ 		sd->last_test_pass = run_exception_update(file->private_data);
+ 		break;
++#ifdef CONFIG_PKS_TEST_ALL_KEYS
++	case RUN_ALL_KEYS:
++		pr_debug("Run all\n");
++		sd->last_test_pass = run_all_keys();
++		goto unlock_test;
++#endif
+ 	default:
+ 		pr_debug("Unknown test\n");
+ 		sd->last_test_pass = false;
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 46f2bb15aa4e..850372b6aaec 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -806,6 +806,15 @@ config ARCH_HAS_PKEYS
+ 	bool
+ config ARCH_HAS_SUPERVISOR_PKEYS
+ 	bool
++
++config ARCH_ENABLE_PKS_CONSUMER
++	select ARCH_ENABLE_SUPERVISOR_PKEYS
++	bool
++
++# WARNING Do not set ARCH_ENABLE_SUPERVISOR_PKEYS directly use
++# ARCH_ENABLE_PKS_CONSUMER instead.
++#
++# See the PKey (S)upervisor testing (PKS_TEST) config option for details.
+ config ARCH_ENABLE_SUPERVISOR_PKEYS
+ 	bool
+ 
+diff --git a/tools/testing/selftests/x86/test_pks.c b/tools/testing/selftests/x86/test_pks.c
+index 243347e48228..a2e5554e7fdb 100644
+--- a/tools/testing/selftests/x86/test_pks.c
++++ b/tools/testing/selftests/x86/test_pks.c
+@@ -37,6 +37,7 @@
+ #define CHECK_CTX_SWITCH	"3"
+ #define RUN_EXCEPTION		"4"
+ #define RUN_EXCEPTION_UPDATE	"5"
++#define RUN_ALL_KEYS		"6"
+ #define RUN_CRASH_TEST		"9"
+ 
+ time_t g_start_time;
+@@ -65,6 +66,7 @@ enum {
+ 	TEST_CTX_SWITCH,
+ 	TEST_EXCEPTION,
+ 	TEST_FAULT_CALLBACK,
++	TEST_ALL,
+ 	MAX_TESTS,
+ } tests;
+ 
+@@ -80,7 +82,8 @@ struct test_item {
+ 	{ "single", RUN_SINGLE, do_simple_test },
+ 	{ "context_switch", ARM_CTX_SWITCH, do_context_switch },
+ 	{ "exception", RUN_EXCEPTION, do_simple_test },
+-	{ "exception_update", RUN_EXCEPTION_UPDATE, do_simple_test }
++	{ "exception_update", RUN_EXCEPTION_UPDATE, do_simple_test },
++	{ "run_all", RUN_ALL_KEYS, do_simple_test }
+ };
+ 
+ static char *get_test_name(int test_num)
 -- 
 2.35.1
 
