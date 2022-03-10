@@ -2,209 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9060CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242458AbiCJNhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:37:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
+        id S242477AbiCJNht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:37:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242445AbiCJNhk (ORCPT
+        with ESMTP id S242452AbiCJNhm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:37:40 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1623D14E958;
-        Thu, 10 Mar 2022 05:36:34 -0800 (PST)
-X-UUID: bea02a7fddde472dbc27cfea5490503d-20220310
-X-UUID: bea02a7fddde472dbc27cfea5490503d-20220310
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 265800282; Thu, 10 Mar 2022 21:36:29 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 10 Mar 2022 21:36:27 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Mar 2022 21:36:27 +0800
-Message-ID: <d80c89fd5fb704ed03244a7e333d59d0ee972e8f.camel@mediatek.com>
-Subject: Re: [PATCH v2 01/15] dt-bindings: ARM: Mediatek: Add new document
- bindings of MT8186 clock
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 10 Mar 2022 21:36:27 +0800
-In-Reply-To: <YhkmnnIApvU7gRlZ@robh.at.kernel.org>
-References: <20220221015258.913-1-chun-jie.chen@mediatek.com>
-         <20220221015258.913-2-chun-jie.chen@mediatek.com>
-         <YhkmnnIApvU7gRlZ@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 10 Mar 2022 08:37:42 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6035B14EF41;
+        Thu, 10 Mar 2022 05:36:40 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id r7so9480096lfc.4;
+        Thu, 10 Mar 2022 05:36:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=1DB/xtUlg/bv2cuDVJn+P6RhKyQoRLt8abFtk957r6s=;
+        b=KBGIzYMTJcy4uw8dS+TAg5MvLQFgLkwp2dDT3D+ltBEnHvsAQgnYDBZONyDk4w0Axx
+         PVVD6ezuq5vH+cvZ8jHllKjdd9G/oTQggbuVa29313tGszcpcO5A+42DVTsP4sEtPJHF
+         rFjfeJuRAa5OeLyH49lDkzNLaQ+ThCDPZaQZkOxXNmni4mfRJIJ2M+kpomLff6L1IyaI
+         IU6tc5P1rlt0jsPyBlbYcETV/4IuQE/F2ezJU9KzTltndoCqOhlqnl4s3BW80ekQ1MX4
+         Q9fbbhfYZdo9jE310hgPS9x8zUdqvoRiuNEGZUeWuslxgEBq1cjHHLvNNBpY6gAUvjyL
+         mkWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=1DB/xtUlg/bv2cuDVJn+P6RhKyQoRLt8abFtk957r6s=;
+        b=aQ/aTdoz8SsGIBa2ZNL1QnKjc4bFG9HRdU2RoFtueyiJUSejgwOlLnpPTNxCdGaypP
+         BLO2SH9c1EPBeAjKyMkrIX589ZXo0FjRKq99FoaZZxCmu9FV7tj/iAwXc/OhyQCrWGag
+         mZyOOKJt/EU6IDDKrWfeE9+CRfgmWSPzyuJyZgk9WQ5sDIDP15G2TnZbiz08+J/niiW6
+         p/M6OpM3Qo6Ixuv2fDAo9kVB8YIBbpobV6CvLegfadwictsoo46n/by0tEdOrExCwJqh
+         fXfPBiBROAYC+10o4vupQV2o0t0+TUD/N3fAw95q6jhB+shUDJsiJCFF4YAAoLQmUVDW
+         YQzQ==
+X-Gm-Message-State: AOAM533OEW9xvg2774FewIaaeST3w+x0Vj9oALqgl3hJoYQb16dzZscC
+        vr6UaMhW/DqRz9WeSW7YCsY=
+X-Google-Smtp-Source: ABdhPJy2Fp0IQemgzjdj7RNcr85FsKQiGyYZMQp8zrY1JJ8cAi7qZVOQefmAvKJ21S0Lpl2rnOAR6w==
+X-Received: by 2002:a19:e00e:0:b0:443:127b:558d with SMTP id x14-20020a19e00e000000b00443127b558dmr3016797lfg.396.1646919398432;
+        Thu, 10 Mar 2022 05:36:38 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b00247d22bc318sm1060299lja.22.2022.03.10.05.36.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 05:36:37 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH iproute2-next 0/3] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
+Date:   Thu, 10 Mar 2022 14:36:14 +0100
+Message-Id: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-25 at 12:57 -0600, Rob Herring wrote:
-> On Mon, Feb 21, 2022 at 09:52:44AM +0800, Chun-Jie Chen wrote:
-> > This patch adds the new binding documentation for system clock
-> > and functional clock on Mediatek MT8186.
-> > 
-> > Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > ---
-> >  .../arm/mediatek/mediatek,mt8186-clock.yaml   |  56 +++
-> >  .../mediatek/mediatek,mt8186-sys-clock.yaml   |  54 +++
-> >  include/dt-bindings/clock/mt8186-clk.h        | 445
-> > ++++++++++++++++++
-> >  3 files changed, 555 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > clock.yaml
-> >  create mode 100644
-> > Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-
-> > clock.yaml
-> >  create mode 100644 include/dt-bindings/clock/mt8186-clk.h
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > clock.yaml
-> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > clock.yaml
-> > new file mode 100644
-> > index 000000000000..373e8a100da3
-> > --- /dev/null
-> > +++
-> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > clock.yaml
-> > @@ -0,0 +1,56 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: "
-> > https://urldefense.com/v3/__http://devicetree.org/schemas/arm/mediatek/mediatek,mt8186-clock.yaml*__;Iw!!CTRNKA9wMg0ARbw!xKDeg6ddrFWd8p__fZiG7r5F5Py9NVWCmi7zVue5fUzuxKtvqHCSu_pslcpXRWfJmMCT$
-> >  "
-> > +$schema: "
-> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!xKDeg6ddrFWd8p__fZiG7r5F5Py9NVWCmi7zVue5fUzuxKtvqHCSu_pslcpXRfM3OA21$
-> >  "
-> > +
-> > +title: Mediatek Functional Clock Controller for MT8186
-> > +
-> > +maintainers:
-> > +  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > +
-> > +description:
-> 
-> You need a '|' to preserve the formatting.
-> 
-> > +  The clock architecture in Mediatek like below
-> > +  PLLs -->
-> > +          dividers -->
-> > +                      muxes
-> > +                           -->
-> > +                              clock gate
-> > +
-> > +  The devices provide clock gate control in different IP blocks.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - enum:
-> > +          - mediatek,mt8186-imp_iic_wrap
-> > +          - mediatek,mt8186-mfgsys
-> > +          - mediatek,mt8186-wpesys
-> > +          - mediatek,mt8186-imgsys1
-> > +          - mediatek,mt8186-imgsys2
-> > +          - mediatek,mt8186-vdecsys
-> > +          - mediatek,mt8186-vencsys
-> > +          - mediatek,mt8186-camsys
-> > +          - mediatek,mt8186-camsys_rawa
-> > +          - mediatek,mt8186-camsys_rawb
-> > +          - mediatek,mt8186-mdpsys
-> > +          - mediatek,mt8186-ipesys
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  '#clock-cells':
-> > +    const: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    imp_iic_wrap: clock-controller@11017000 {
-> > +        compatible = "mediatek,mt8186-imp_iic_wrap";
-> > +        reg = <0x11017000 0x1000>;
-> > +        #clock-cells = <1>;
-> > +    };
-> > diff --git
-> > a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > sys-clock.yaml
-> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > sys-clock.yaml
-> > new file mode 100644
-> > index 000000000000..4c071dd66b76
-> > --- /dev/null
-> > +++
-> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-
-> > sys-clock.yaml
-> > @@ -0,0 +1,54 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: "
-> > https://urldefense.com/v3/__http://devicetree.org/schemas/arm/mediatek/mediatek,mt8186-sys-clock.yaml*__;Iw!!CTRNKA9wMg0ARbw!xKDeg6ddrFWd8p__fZiG7r5F5Py9NVWCmi7zVue5fUzuxKtvqHCSu_pslcpXRRtmGvUx$
-> >  "
-> > +$schema: "
-> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!xKDeg6ddrFWd8p__fZiG7r5F5Py9NVWCmi7zVue5fUzuxKtvqHCSu_pslcpXRfM3OA21$
-> >  "
-> > +
-> > +title: Mediatek System Clock Controller for MT8186
-> > +
-> > +maintainers:
-> > +  - Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> > +
-> > +description:
-> 
-> And here.
-> 
-> With that,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> 
+This patch set extends the locked port feature for devices
+that are behind a locked port, but do not have the ability to
+authorize themselves as a supplicant using IEEE 802.1X.
+Such devices can be printers, meters or anything related to
+fixed installations. Instead of 802.1X authorization, devices
+can get access based on their MAC addresses being whitelisted.
 
-Ok, I will fix it in next version.
+For an authorization daemon to detect that a device is trying
+to get access through a locked port, the bridge will add the
+MAC address of the device to the FDB with a locked flag to it.
+Thus the authorization daemon can catch the FDB add event and
+check if the MAC address is in the whitelist and if so replace
+the FDB entry without the locked flag enabled, and thus open
+the port for the device.
 
-Thanks!
+This feature is known as MAC-Auth or MAC Authentication Bypass
+(MAB) in Cisco terminology, where the full MAB concept involves
+additional Cisco infrastructure for authorization. There is no
+real authentication process, as the MAC address of the device
+is the only input the authorization daemon, in the general
+case, has to base the decision if to unlock the port or not.
 
-> > +  The clock architecture in Mediatek like below
-> > +  PLLs -->
-> > +          dividers -->
-> > +                      muxes
-> > +                           -->
-> > +                              clock gate
-> > +
-> > +  The apmixedsys provides most of PLLs which generated from SoC
-> > 26m.
-> > +  The topckgen provides dividers and muxes which provide the clock
-> > source to other IP blocks.
-> > +  The infracfg_ao provides clock gate in peripheral and
-> > infrastructure IP blocks.
-> > +  The mcusys provides mux control to select the clock source in AP
-> > MCU.
-> > +  The device nodes also provide the system control capacity for
-> > configuration.
+With this patch set, an implementation of the offloaded case is
+supplied for the mv88e6xxx driver. When a packet ingresses on
+a locked port, an ATU miss violation event will occur. When
+handling such ATU miss violation interrupts, the MAC address of
+the device is added to the FDB with a zero destination port
+vector (DPV) and the MAC address is communicated through the
+switchdev layer to the bridge, so that a FDB entry with the
+locked flag enabled can be added.
+
+Hans Schultz (3):
+  net: bridge: add fdb flag to extent locked port feature
+  net: switchdev: add support for offloading of fdb locked flag
+  net: dsa: mv88e6xxx: mac-auth/MAB implementation
+
+ drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+ drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+ drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+ drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+ drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+ .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+ .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+ drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+ drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+ include/net/switchdev.h                       |  3 +-
+ include/uapi/linux/neighbour.h                |  1 +
+ net/bridge/br.c                               |  3 +-
+ net/bridge/br_fdb.c                           | 13 +++-
+ net/bridge/br_input.c                         | 11 ++-
+ net/bridge/br_private.h                       |  5 +-
+ 15 files changed, 167 insertions(+), 14 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+
+-- 
+2.30.2
 
