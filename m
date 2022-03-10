@@ -2,57 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1448FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F359C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343717AbiCJTwI (ORCPT
+        id S1343727AbiCJTwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:52:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46706 "EHLO
+        Thu, 10 Mar 2022 14:52:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242956AbiCJTv5 (ORCPT
+        with ESMTP id S245386AbiCJTv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:51:57 -0500
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1637A199D57
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:50:56 -0800 (PST)
-Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AFrEHR006153
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:50:55 GMT
+        Thu, 10 Mar 2022 14:51:58 -0500
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21AD199D5A;
+        Thu, 10 Mar 2022 11:50:56 -0800 (PST)
+Received: from pps.filterd (m0148664.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AFr4Bw001432;
+        Thu, 10 Mar 2022 19:50:48 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pps0720;
- bh=Sa1gUyFWh5sicRpLKEHW9i3iQGJspT4tSnvDEO4hTzE=;
- b=alcjw0CFpVY6+h3D0wyH3Qwy6ddEWHKpFXyOOwxwmWhsXGbeC7OXW0qjv41uJ3KBhaqB
- j7juGzQWCDmOhIOjXC1OMgrtj9AwXG5vtzwMjZ5Md99R6v9KypWfOV3t78p0cr/8F6HH
- ZYefeeBMKDV3EDsHHWEJpKl22FEiKASP9r4zKyyMJieQWv0rNmeEhq08rWy1ZHZz2cgd
- qAcp9MKU0qpckEbx9MHImMF9SOtvxBG8k2+7WvvKHt38lx4zSi1thDk3gT+JPo1qMs2D
- tw1eVaqBkbbVyKNTxBS5d87L16wEasIFwFoO8fUiSLa9jPz5KI4nbtg0lVwJ8fPjUdte GA== 
+ : date : message-id : in-reply-to : references : mime-version; s=pps0720;
+ bh=SZx53i+eqeGI3co6VFGYV7MO2WwxuJ1mkjQXP17Pnz0=;
+ b=e1NWWGnIxZ7LYMZmLv3r2DEd4E7443VMK3tF5WGH1veCoU4y/WaZ+btwkMFWoUtqMPlo
+ KKV20IgspHhpwrtkYLstNUf5FJ77CDJ1vVDdr5TXRMaFoHek4Peu1vvOuRCbfVrwYih4
+ BHgReraPMugh/VmX5bBIOkydgCK3yI0lQbztjAPZykhwhzjb7wwCrY0OrlRZy56Eehbk
+ JMo3s8kvrfYgS4FG/k4/YM4Prn1dCE9jcIb86RyjlJYFya4itAJugCpIUtqGyCnXRWUi
+ CJAytaKjkr2Z/84IE/+WeNmGagTn+ea6IyHV7uR+OagM6CIktjpLqWewtbsy7bzWox68 WA== 
 Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3eqjfpk91g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:50:55 +0000
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3eqa3sgd6e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Mar 2022 19:50:47 +0000
 Received: from hpe.com (unknown [15.115.65.69])
-        by g2t2353.austin.hpe.com (Postfix) with ESMTP id E4C7465;
-        Thu, 10 Mar 2022 19:50:54 +0000 (UTC)
+        by g2t2353.austin.hpe.com (Postfix) with ESMTP id 1842D65;
+        Thu, 10 Mar 2022 19:50:47 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 10/10] maintainers: Introduce HPE GXP Architecture
-Date:   Thu, 10 Mar 2022 13:52:29 -0600
-Message-Id: <20220310195229.109477-10-nick.hawkins@hpe.com>
+Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 07/10] dt-bindings: arm: Add HPE GXP Binding
+Date:   Thu, 10 Mar 2022 13:52:26 -0600
+Message-Id: <20220310195229.109477-7-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
 References: <20220310195229.109477-1-nick.hawkins@hpe.com>
-X-Proofpoint-ORIG-GUID: JEsUgRydEmmd9UhQ_BaOwN6OaNBrfa4S
-X-Proofpoint-GUID: JEsUgRydEmmd9UhQ_BaOwN6OaNBrfa4S
+X-Proofpoint-GUID: HIJRNdhy7cjK5Yx4OZkTlJuZ0wbJd_Bs
+X-Proofpoint-ORIG-GUID: HIJRNdhy7cjK5Yx4OZkTlJuZ0wbJd_Bs
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-10_08,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- suspectscore=0 adultscore=0 clxscore=1015 impostorscore=0
- priorityscore=1501 mlxscore=0 spamscore=0 mlxlogscore=783 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0
+ mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2203100100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -60,39 +64,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Create a section in MAINTAINERS for the GXP HPE
-architecture.
+This adds support for the hpe,gxp binding. The GXP is based on
+the cortex a9 processor and supports arm7.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 ---
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ .../devicetree/bindings/arm/gxp.yaml          | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/gxp.yaml
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6db79f3b209e..f227d76ec43d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8791,6 +8791,20 @@ L:	platform-driver-x86@vger.kernel.org
- S:	Orphan
- F:	drivers/platform/x86/tc1100-wmi.c
- 
-+HPE GXP ARCHITECTURE
-+M:	Jean-Marie Verdun <verdun@hpe.com>
-+M:	Nick Hawkins <nick.hawkins@hpe.com>
-+S:	MAINTAINED
-+F:	Documentation/devicetree/bindings/arm/cpu-enable-method/hpe,gxp-cpu-init.yaml
-+F:	Documentation/devicetree/bindings/arm/gxp.yaml
-+F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-+F:	Documentation/devicetree/bindings/wdt/hpe,gxp-wdt.yaml
-+F:	arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-+F:	arch/arm/boot/dts/hpe-gxp.dtsi
-+F:	arch/arm/mach-hpe/gxp.c
-+F:	drivers/clocksource/gxp-timer.c
-+F:	drivers/watchdog/gxp-wdt.c
+diff --git a/Documentation/devicetree/bindings/arm/gxp.yaml b/Documentation/devicetree/bindings/arm/gxp.yaml
+new file mode 100644
+index 000000000000..edfd331c493e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/gxp.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/gxp.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- HPET:	High Precision Event Timers driver
- M:	Clemens Ladisch <clemens@ladisch.de>
- S:	Maintained
++title: HPE bmc GXP SoC driver
++
++maintainers:
++  - Nick Hawkins <nick.hawkins@hpe.com>
++  - Jean-Marie Verdun <verdun@hpe.com>
++
++properties:
++  compatible:
++    const: hpe,gxp
++
++  "#address-cells":
++    const: 1
++
++required:
++  - compatible
++
++additionalProperties: true
++
++examples:
++  - |
++      / {
++          model = "Hewlett Packard Enterprise GXP BMC";
++          compatible = "hpe,gxp";
++          #address-cells = <1>;
++          #size-cells = <1>;
++          cpus {
++              #address-cells = <1>;
++              #size-cells = <0>;
++
++              CPU0: cpu@0 {
++                  compatible = "arm,cortex-a9";
++                  device_type = "cpu";
++                  reg = <0>;
++              };
++          };
++
++          memory@40000000 {
++            device_type = "memory";
++            reg = <0x40000000 0x20000000>;
++          };
++
++          ahb {
++
++          };
++      };
++
++...
 -- 
 2.17.1
 
