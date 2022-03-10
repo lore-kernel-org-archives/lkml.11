@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CB6C38A2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0829AC4708E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244444AbiCJOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:33:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        id S244577AbiCJOdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:33:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244086AbiCJO22 (ORCPT
+        with ESMTP id S244254AbiCJO2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:28 -0500
+        Thu, 10 Mar 2022 09:28:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F79BD2F9;
-        Thu, 10 Mar 2022 06:23:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31B3C7E9B;
+        Thu, 10 Mar 2022 06:23:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C439BB82676;
-        Thu, 10 Mar 2022 14:23:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D6EC340E8;
-        Thu, 10 Mar 2022 14:23:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEB0EB8267B;
+        Thu, 10 Mar 2022 14:23:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FEE4C340EB;
+        Thu, 10 Mar 2022 14:23:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922185;
-        bh=uwDr3cv7AGRRm8ArEDBYRUPoxrkysORCSNU0BMP31ug=;
+        s=korg; t=1646922213;
+        bh=LVgMR7x7f/QGb4kjXXLf2lRP8FRdGB7xZ81j3KSgT2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nJx9bp65aNKA3h45xi2OrH9yPwVP9YqdTzpe7fdpJJwSZdkaW9R8xzBknnmCuY70a
-         AaMBVafDR8n5SHkLSMSFwF8hLqlnU3RXC2cU9wZk5O6vukW2JgQQioWCBbBp/DfqWR
-         4+yJvKG620vVeS8H0Z/d8MM08fob67//pFvjibp4=
+        b=Go6NS+Da4Vk8UFSWbX7gM4XJoFmj/VRScYoo+GO04il4sJMpHEZfevMmlNpXnkwPt
+         Fw1UnIXKHpSYiWC6Es9z8TD3wO8aqEfCMkhCkbvLniQvwhFMfsBI7fm3s0HtZXUUxE
+         GSfkn+6XmEz2AZE4MiCD4+bnqwHpbt9aR1S5GfbA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.19 31/33] xen/pvcalls: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:18:58 +0100
-Message-Id: <20220310140808.662126017@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 4.19 15/33] ARM: use LOADADDR() to get load address of sections
+Date:   Thu, 10 Mar 2022 15:18:42 +0100
+Message-Id: <20220310140808.195623663@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -50,48 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
+commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+Use the linker's LOADADDR() macro to get the load address of the
+sections, and provide a macro to set the start and end symbols.
 
-This is part of CVE-2022-23041 / XSA-396.
-
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/pvcalls-front.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/kernel/vmlinux.lds.h |   19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
---- a/drivers/xen/pvcalls-front.c
-+++ b/drivers/xen/pvcalls-front.c
-@@ -346,8 +346,8 @@ static void free_active_ring(struct sock
- 	if (!map->active.ring)
- 		return;
+--- a/arch/arm/kernel/vmlinux.lds.h
++++ b/arch/arm/kernel/vmlinux.lds.h
+@@ -25,6 +25,11 @@
+ #define ARM_MMU_DISCARD(x)	x
+ #endif
  
--	free_pages((unsigned long)map->active.data.in,
--			map->active.ring->ring_order);
-+	free_pages_exact(map->active.data.in,
-+			 PAGE_SIZE << map->active.ring->ring_order);
- 	free_page((unsigned long)map->active.ring);
- }
- 
-@@ -361,8 +361,8 @@ static int alloc_active_ring(struct sock
- 		goto out;
- 
- 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--					PVCALLS_RING_ORDER);
-+	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes)
- 		goto out;
++/* Set start/end symbol names to the LMA for the section */
++#define ARM_LMA(sym, section)						\
++	sym##_start = LOADADDR(section);				\
++	sym##_end = LOADADDR(section) + SIZEOF(section)
++
+ #define PROC_INFO							\
+ 		. = ALIGN(4);						\
+ 		__proc_info_begin = .;					\
+@@ -100,19 +105,19 @@
+  * only thing that matters is their relative offsets
+  */
+ #define ARM_VECTORS							\
+-	__vectors_start = .;						\
++	__vectors_lma = .;						\
+ 	.vectors 0xffff0000 : AT(__vectors_start) {			\
+ 		*(.vectors)						\
+ 	}								\
+-	. = __vectors_start + SIZEOF(.vectors);				\
+-	__vectors_end = .;						\
++	ARM_LMA(__vectors, .vectors);					\
++	. = __vectors_lma + SIZEOF(.vectors);				\
+ 									\
+-	__stubs_start = .;						\
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
++	__stubs_lma = .;						\
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
+ 		*(.stubs)						\
+ 	}								\
+-	. = __stubs_start + SIZEOF(.stubs);				\
+-	__stubs_end = .;						\
++	ARM_LMA(__stubs, .stubs);					\
++	. = __stubs_lma + SIZEOF(.stubs);				\
+ 									\
+ 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
  
 
 
