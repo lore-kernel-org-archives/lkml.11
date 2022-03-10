@@ -2,89 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD7DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69910C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239298AbiCJPo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
+        id S236678AbiCJPof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:44:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236938AbiCJPoY (ORCPT
+        with ESMTP id S236680AbiCJPoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:44:24 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7A7159286;
-        Thu, 10 Mar 2022 07:43:23 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id s207so6299003oie.11;
-        Thu, 10 Mar 2022 07:43:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=soUttN/B2ZCnCYNnwWUyVbvZvUR85ol+lks3Y4uSs3A=;
-        b=qSIU1x3rWNb6gAdYMjEzl55e3FRbyvbKCmhbd7jH3xT4AnCS0lE+1z0/DrokfuM+o5
-         4K46mGc2celL/2dzaUqDc2XvqIROC2XtQyuugifod4LA7aaxMstW/RWiWBLYwdt+0SjV
-         7x7eJcXHpU99E0xmJAoTkmgc/0cx/k3pmG8n4LxGxihh70EKCC8HhBwOyT0ud2plcUtE
-         5cNIOhom9MDguriaezi8NtvcAjdImpkMeUb3W44bD/i7TrdYNYXWXxert3Hk77qaCU0i
-         rniusVENO2tKjLYkGYe0pMSpjw/8eVUMmeQN6bmholdmf32M05zvaEXK7CkGjvJ3m3Bf
-         nQOA==
-X-Gm-Message-State: AOAM531ZcJKxEcquOnwo75Zgot9iGyIveCkxk4RxYzYwxNe1XYqMdFdl
-        QkXpJLJgvo9bew74YLVayI0hzM22aw==
-X-Google-Smtp-Source: ABdhPJx+RO+YLo1BVcqtSo3OVmm1tpYN5f4xdnCT6SLCcYDTlMGm/rRnaq3bxZF+sKnfJg0ZjUR2dw==
-X-Received: by 2002:a05:6808:118e:b0:2d9:a01a:4896 with SMTP id j14-20020a056808118e00b002d9a01a4896mr9645757oil.225.1646927002392;
-        Thu, 10 Mar 2022 07:43:22 -0800 (PST)
-Received: from robh.at.kernel.org ([2607:fb90:20d2:449c:e413:94ed:2767:f2c4])
-        by smtp.gmail.com with ESMTPSA id f10-20020a9d5e8a000000b0059fa2fa9b4bsm2455393otl.13.2022.03.10.07.43.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 07:43:21 -0800 (PST)
-Received: (nullmailer pid 1686207 invoked by uid 1000);
-        Thu, 10 Mar 2022 15:43:19 -0000
-Date:   Thu, 10 Mar 2022 09:43:19 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/7] dt-bindings: interrupt-controller: apple,aic2:
- New binding for AICv2
-Message-ID: <Yiocl203Ix7DLXKj@robh.at.kernel.org>
-References: <20220309192123.152028-1-marcan@marcan.st>
- <20220309192123.152028-3-marcan@marcan.st>
+        Thu, 10 Mar 2022 10:44:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1230B159286
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:43:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646927010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dMyajQDSkp6YalzQfQ6wdQt14hBp4G+RbVV9rQvsjRE=;
+        b=dc9naEyCP3Wqgdgg83GASrf/BLMqmlMKwDXlYh3Ei9esClJHx9AHVNZ6KfTPW3bTNpYiK/
+        19oVong1y5NGFKiIBxzQ8JKv8IunVIDvMwAc2Dwlrac+qKX+tC/nYSqxCwlDl5DSPS15aV
+        BXckt21p4O7Vn7IPHGhBA/BH9Hlu/0o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-490-p86hZfsrOQCzHfygGHy-RA-1; Thu, 10 Mar 2022 10:43:26 -0500
+X-MC-Unique: p86hZfsrOQCzHfygGHy-RA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D46A1091DA0;
+        Thu, 10 Mar 2022 15:43:24 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7073B7C037;
+        Thu, 10 Mar 2022 15:43:08 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 2215C416CE5D; Thu, 10 Mar 2022 10:22:13 -0300 (-03)
+Date:   Thu, 10 Mar 2022 10:22:12 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [patch v5] mm: lru_cache_disable: replace work queue synchronization
+ with synchronize_rcu
+Message-ID: <Yin7hDxdt0s/x+fp@fuller.cnet>
+References: <YhUI1wUtV8yguijO@fuller.cnet>
+ <YhUKRzEKxMvlGQ5n@fuller.cnet>
+ <YiI+a9gTr/UBCf0X@fuller.cnet>
+ <20220304163554.8872fe5d5a9d634f7a2884f5@linux-foundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220309192123.152028-3-marcan@marcan.st>
+In-Reply-To: <20220304163554.8872fe5d5a9d634f7a2884f5@linux-foundation.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 04:21:18AM +0900, Hector Martin wrote:
-> This new incompatible revision of the AIC peripheral introduces
-> multi-die support. This binding is based on apple,aic, but
-> changes interrupt-cells to add a new die argument.
-> 
-> Also adds a second reg entry to specify the offset of the event
-> register. Inexplicably, the capability registers allow us to compute
-> other register offsets, but not this one. This allows us to keep
-> forward-compatibility with future SoCs that will likely implement
-> different die counts, thus shifting the event register. Apple also
-> specify the offset explicitly in their their device tree...
 
-their their
+On systems that run FIFO:1 applications that busy loop,
+any SCHED_OTHER task that attempts to execute
+on such a CPU (such as work threads) will not
+be scheduled, which leads to system hangs.
 
-(checkpatch with codespell installed told me)
+Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU
+pagevec during the migration temporarily") relies on
+queueing work items on all online CPUs to ensure visibility
+of lru_disable_count.
 
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  .../interrupt-controller/apple,aic2.yaml      | 98 +++++++++++++++++++
->  MAINTAINERS                                   |  2 +-
->  2 files changed, 99 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
+To fix this, replace the usage of work items with synchronize_rcu,
+which provides the same guarantees.
 
-With that,
+Readers of lru_disable_count are protected by either disabling
+preemption or rcu_read_lock:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+preempt_disable, local_irq_disable  [bh_lru_lock()]
+rcu_read_lock                       [rt_spin_lock CONFIG_PREEMPT_RT]
+preempt_disable                     [local_lock !CONFIG_PREEMPT_RT]
+
+Since v5.1 kernel, synchronize_rcu() is guaranteed to wait on
+preempt_disable() regions of code. So any CPU which sees
+lru_disable_count = 0 will have exited the critical
+section when synchronize_rcu() returns.
+
+Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+
+---
+ 
+ v5: changelog improvements  		(Andrew Morton)
+ v4: improve comment clarity, mention synchronize_rcu guarantees
+     on v5.1				(Andrew Morton /
+						 Paul E. McKenney)
+ v3: update stale comment		(Nicolas Saenz Julienne)
+ v2: rt_spin_lock calls rcu_read_lock, no need
+ to add it before local_lock on swap.c	(Nicolas Saenz Julienne) 
+
+diff --git a/mm/swap.c b/mm/swap.c
+index bcf3ac288b56..b5ee163daa66 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
+ 	for_each_online_cpu(cpu) {
+ 		struct work_struct *work = &per_cpu(lru_add_drain_work, cpu);
+ 
+-		if (force_all_cpus ||
+-		    pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
++		if (pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
+ 		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
+ 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
+ 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
+@@ -876,15 +875,21 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
+ void lru_cache_disable(void)
+ {
+ 	atomic_inc(&lru_disable_count);
+-#ifdef CONFIG_SMP
+ 	/*
+-	 * lru_add_drain_all in the force mode will schedule draining on
+-	 * all online CPUs so any calls of lru_cache_disabled wrapped by
+-	 * local_lock or preemption disabled would be ordered by that.
+-	 * The atomic operation doesn't need to have stronger ordering
+-	 * requirements because that is enforced by the scheduling
+-	 * guarantees.
++	 * Readers of lru_disable_count are protected by either disabling
++	 * preemption or rcu_read_lock:
++	 *
++	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
++	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
++	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
++	 *
++	 * Since v5.1 kernel, synchronize_rcu() is guaranteed to wait on
++	 * preempt_disable() regions of code. So any CPU which sees
++	 * lru_disable_count = 0 will have exited the critical
++	 * section when synchronize_rcu() returns.
+ 	 */
++	synchronize_rcu();
++#ifdef CONFIG_SMP
+ 	__lru_add_drain_all(true);
+ #else
+ 	lru_add_and_bh_lrus_drain();
+
+
+
