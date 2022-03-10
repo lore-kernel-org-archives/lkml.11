@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9C0C352AA
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D1FC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244280AbiCJOdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:33:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        id S238431AbiCJOed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243971AbiCJO2H (ORCPT
+        with ESMTP id S244458AbiCJO25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EB3AF1CB;
-        Thu, 10 Mar 2022 06:23:04 -0800 (PST)
+        Thu, 10 Mar 2022 09:28:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58327D2079;
+        Thu, 10 Mar 2022 06:24:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF01AB825A7;
-        Thu, 10 Mar 2022 14:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EDD8C340EB;
-        Thu, 10 Mar 2022 14:23:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4080B825A7;
+        Thu, 10 Mar 2022 14:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1BB3C340E8;
+        Thu, 10 Mar 2022 14:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922182;
-        bh=Rf8d3UZKqR31JRCPZ7eaY38GzuetOV+dpywHxUuB33c=;
+        s=korg; t=1646922220;
+        bh=LzEuzEp1gkK+XkCfZ9yJFcbKa4Vp7YQdCRdeK3/79vc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uos8aJwCYIoJZqPLnpmvEXluFNTJYWHXgVYXCh5Pmd83OLqXsypHWXetRW2aN38Ll
-         lSYBwHa6PlLJfMDUTTFgLOXE+avfxXZM/gnJlJdlNw2fsvRRlpGp//pU7uRFqHCsSA
-         2M4LUB/+nEoNQOFBiJDZ4pn1LTGKiPHnHowwOmOs=
+        b=VTRfuazlrjw9j2nbtDAjik/I5fF75VbYC9U0KyjhUI+3cprSY6i3Z+rSFMuLjBWVI
+         R7nt32BNfQ5oAxZf+wv+F3AfbYv4SGUodOOQgen0F4Ys0WKWcU26jZbLrbvdgOd3Tk
+         Q4Bv9hbH6FGjSlAeRaxCAIy7rlCp1BXgnKRp4VyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.19 30/33] xen/9p: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:18:57 +0100
-Message-Id: <20220310140808.632516046@linuxfoundation.org>
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 01/58] x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+Date:   Thu, 10 Mar 2022 15:18:21 +0100
+Message-Id: <20220310140812.913098399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
-References: <20220310140807.749164737@linuxfoundation.org>
+In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
+References: <20220310140812.869208747@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,70 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-Commit 5cadd4bb1d7fc9ab201ac14620d1a478357e4ebd upstream.
+commit f8a66d608a3e471e1202778c2a36cbdc96bae73b upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+Currently Linux prevents usage of retpoline,amd on !AMD hardware, this
+is unfriendly and gets in the way of testing. Remove this restriction.
 
-By using the local variable "order" instead of ring->intf->ring_order
-in the error path of xen_9pfs_front_alloc_dataring() another bug is
-fixed, as the error path can be entered before ring->intf->ring_order
-is being set.
-
-By using alloc_pages_exact() the size in bytes is specified for the
-allocation, which fixes another bug for the case of
-order < (PAGE_SHIFT - XEN_PAGE_SHIFT).
-
-This is part of CVE-2022-23041 / XSA-396.
-
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120310.487348118@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/9p/trans_xen.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |    7 -------
+ 1 file changed, 7 deletions(-)
 
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -301,9 +301,9 @@ static void xen_9pfs_front_free(struct x
- 				ref = priv->rings[i].intf->ref[j];
- 				gnttab_end_foreign_access(ref, 0, 0);
- 			}
--			free_pages((unsigned long)priv->rings[i].data.in,
--				   XEN_9PFS_RING_ORDER -
--				   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+			free_pages_exact(priv->rings[i].data.in,
-+				   1UL << (XEN_9PFS_RING_ORDER +
-+					   XEN_PAGE_SHIFT));
- 		}
- 		gnttab_end_foreign_access(priv->rings[i].ref, 0, 0);
- 		free_page((unsigned long)priv->rings[i].intf);
-@@ -341,8 +341,8 @@ static int xen_9pfs_front_alloc_dataring
- 	if (ret < 0)
- 		goto out;
- 	ring->ref = ret;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--			XEN_9PFS_RING_ORDER - (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+	bytes = alloc_pages_exact(1UL << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT),
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -373,9 +373,7 @@ out:
- 	if (bytes) {
- 		for (i--; i >= 0; i--)
- 			gnttab_end_foreign_access(ring->intf->ref[i], 0, 0);
--		free_pages((unsigned long)bytes,
--			   XEN_9PFS_RING_ORDER -
--			   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+		free_pages_exact(bytes, 1UL << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT));
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -845,13 +845,6 @@ static enum spectre_v2_mitigation_cmd __
+ 		return SPECTRE_V2_CMD_AUTO;
  	}
- 	gnttab_end_foreign_access(ring->ref, 0, 0);
- 	free_page((unsigned long)ring->intf);
+ 
+-	if (cmd == SPECTRE_V2_CMD_RETPOLINE_AMD &&
+-	    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON &&
+-	    boot_cpu_data.x86_vendor != X86_VENDOR_AMD) {
+-		pr_err("retpoline,amd selected but CPU is not AMD. Switching to AUTO select\n");
+-		return SPECTRE_V2_CMD_AUTO;
+-	}
+-
+ 	spec_v2_print_cond(mitigation_options[i].option,
+ 			   mitigation_options[i].secure);
+ 	return cmd;
 
 
