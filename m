@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7A6C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF8DC3527B
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345419AbiCJOlw (ORCPT
+        id S1345361AbiCJOlu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
+        Thu, 10 Mar 2022 09:41:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245465AbiCJOac (ORCPT
+        with ESMTP id S245428AbiCJOa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:32 -0500
+        Thu, 10 Mar 2022 09:30:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E83180218;
-        Thu, 10 Mar 2022 06:26:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5B517FD02;
+        Thu, 10 Mar 2022 06:26:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30BF1B82615;
-        Thu, 10 Mar 2022 14:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6DEC340E8;
-        Thu, 10 Mar 2022 14:26:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 150D1B8267B;
+        Thu, 10 Mar 2022 14:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47450C340F4;
+        Thu, 10 Mar 2022 14:26:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922374;
-        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
+        s=korg; t=1646922364;
+        bh=Z76mI4D7yx4KPGKf1EO1KkTg3gHcQGJDisT/RVaxLNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLNi7cVzw8Yv8g+1ZqEdppnF6OdCJlf4H21GOaEBd3mkHnJfUDAHE/d6MPsUTmBUO
-         lXbyBZAWsmxY6IotBlYSSqaruwgb6hQnhzIyBEzLkNJs7tW0utAETRG/uYoPL1X4NS
-         O0ElGum20UYtEZmRgz5WuXhfv27PvJ92aohEdtBs=
+        b=a4CyY0650Y3JjtSbusyJyWL79rrD4nTuRR66lRskg0iFTW1dnOhKD/iUeDNtxaKnm
+         yvTNAx4615t3ABCIvUyLKjQ19l6B4L+lEV22Kj0L7/uZH/U5wsr+R4cJxpxy1VCBdJ
+         ZHkQVisFDFsm52D9XUB6j5P0E2ipbDcdF2bB0J8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.10 55/58] xen/pvcalls: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:19:15 +0100
-Message-Id: <20220310140814.433062031@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.10 17/58] arm64: Add Cortex-X2 CPU part definition
+Date:   Thu, 10 Mar 2022 15:18:37 +0100
+Message-Id: <20220310140813.365438626@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -51,48 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
+commit 72bb9dcb6c33cfac80282713c2b4f2b254cd24d1 upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+Add the CPU Partnumbers for the new Arm designs.
 
-This is part of CVE-2022-23041 / XSA-396.
-
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/1642994138-25887-2-git-send-email-anshuman.khandual@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/pvcalls-front.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/xen/pvcalls-front.c
-+++ b/drivers/xen/pvcalls-front.c
-@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
- 	if (!map->active.ring)
- 		return;
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -74,6 +74,7 @@
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
++#define ARM_CPU_PART_CORTEX_X2		0xD48
+ #define ARM_CPU_PART_NEOVERSE_N2	0xD49
  
--	free_pages((unsigned long)map->active.data.in,
--			map->active.ring->ring_order);
-+	free_pages_exact(map->active.data.in,
-+			 PAGE_SIZE << map->active.ring->ring_order);
- 	free_page((unsigned long)map->active.ring);
- }
- 
-@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
- 		goto out;
- 
- 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--					PVCALLS_RING_ORDER);
-+	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes)
- 		goto out;
- 
+ #define APM_CPU_PART_POTENZA		0x000
+@@ -116,6 +117,7 @@
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
++#define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
+ #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
 
 
