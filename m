@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087E1C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237393AbiCJOok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:44:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
+        id S242630AbiCJOpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:45:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344048AbiCJObj (ORCPT
+        with ESMTP id S244547AbiCJOda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C76EC5E1;
-        Thu, 10 Mar 2022 06:29:34 -0800 (PST)
+        Thu, 10 Mar 2022 09:33:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD3BEB159;
+        Thu, 10 Mar 2022 06:31:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E3061C0A;
-        Thu, 10 Mar 2022 14:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB22C340E8;
-        Thu, 10 Mar 2022 14:29:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A8F0B8266E;
+        Thu, 10 Mar 2022 14:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3112C340EB;
+        Thu, 10 Mar 2022 14:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922573;
-        bh=KCX8P+H2W0agVF1iCpkDtDeNldgE0W8QeXXKrS24w74=;
+        s=korg; t=1646922355;
+        bh=CDNfl4IGoyFCsE3oBTqgf51g83179xk1H8jlgFCafWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XiiJY71jaV9yhaYb5DWMR5jsEP1FsPUCpHxnz4Atlp+i3y/gRI9ucFAxcleWdmv6t
-         jsDxQatjFxguAmdcka/u6/J8XatB8xwI4yId5P+12hT8UMM78ZBtrS11qg3iGPXMX5
-         j0d4oLlN6wRxGy2AzP6nETphVBegmI981Gwn/98s=
+        b=WEH2owP8emqzU/Ir+0nxArXZhWHEGPxp5h4aG9IJZyt51nNPHUGXvwFCig2h4nyo0
+         537rM5qsw0r9ND7ZB8gb5cwx0fPI28kWkgQJuHuS6M0g28kr75vVtwD/Nhjlf3XzyP
+         RjKBvEWiFRA8nq/Ax7bEzTxzdF9bSn5GynhbZRG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 22/58] arm64: entry.S: Add ventry overflow sanity checks
-Date:   Thu, 10 Mar 2022 15:19:11 +0100
-Message-Id: <20220310140813.622418677@linuxfoundation.org>
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.10 50/58] xen/netfront: dont use gnttab_query_foreign_access() for mapped status
+Date:   Thu, 10 Mar 2022 15:19:10 +0100
+Message-Id: <20220310140814.292401122@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
-References: <20220310140812.983088611@linuxfoundation.org>
+In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
+References: <20220310140812.869208747@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
+Commit 31185df7e2b1d2fa1de4900247a12d7b9c7087eb upstream.
 
-Subsequent patches add even more code to the ventry slots.
-Ensure kernels that overflow a ventry slot don't get built.
+It isn't enough to check whether a grant is still being in use by
+calling gnttab_query_foreign_access(), as a mapping could be realized
+by the other side just after having called that function.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+In case the call was done in preparation of revoking a grant it is
+better to do so via gnttab_end_foreign_access_ref() and check the
+success of that operation instead.
+
+This is CVE-2022-23037 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/xen-netfront.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -37,6 +37,7 @@
- 
- 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
- 	.align 7
-+.Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
- alternative_if ARM64_UNMAP_KERNEL_AT_EL0
-@@ -95,6 +96,7 @@ alternative_else_nop_endif
- 	mrs	x0, tpidrro_el0
- #endif
- 	b	el\el\ht\()_\regsize\()_\label
-+.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_alias, dst, sym
-@@ -662,6 +664,7 @@ alternative_else_nop_endif
- 	add	x30, x30, #(1b - tramp_vectors)
- 	isb
- 	ret
-+.org 1b + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_exit, regsize = 64
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -424,14 +424,12 @@ static bool xennet_tx_buf_gc(struct netf
+ 			queue->tx_link[id] = TX_LINK_NONE;
+ 			skb = queue->tx_skbs[id];
+ 			queue->tx_skbs[id] = NULL;
+-			if (unlikely(gnttab_query_foreign_access(
+-				queue->grant_tx_ref[id]) != 0)) {
++			if (unlikely(!gnttab_end_foreign_access_ref(
++				queue->grant_tx_ref[id], GNTMAP_readonly))) {
+ 				dev_alert(dev,
+ 					  "Grant still in use by backend domain\n");
+ 				goto err;
+ 			}
+-			gnttab_end_foreign_access_ref(
+-				queue->grant_tx_ref[id], GNTMAP_readonly);
+ 			gnttab_release_grant_reference(
+ 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
+ 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
 
 
