@@ -2,170 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27000C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B95C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240632AbiCJJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
+        id S240655AbiCJJHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:07:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240621AbiCJJHh (ORCPT
+        with ESMTP id S240630AbiCJJHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:07:37 -0500
-X-Greylist: delayed 311 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 01:06:36 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1427137768;
-        Thu, 10 Mar 2022 01:06:36 -0800 (PST)
-Received: from quad ([82.142.8.122]) by mrelayeu.kundenserver.de (mreue109
- [212.227.15.183]) with ESMTPSA (Nemesis) id 1MvbO4-1oKbhb3Gdi-00seeS; Thu, 10
- Mar 2022 10:00:53 +0100
-From:   Laurent Vivier <laurent@vivier.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>,
-        Laurent Vivier <laurent@vivier.eu>
-Subject: [PATCH v15 3/5] rtc: goldfish: use gf_ioread32()/gf_iowrite32()
-Date:   Thu, 10 Mar 2022 10:00:46 +0100
-Message-Id: <20220310090048.1933020-4-laurent@vivier.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310090048.1933020-1-laurent@vivier.eu>
-References: <20220310090048.1933020-1-laurent@vivier.eu>
+        Thu, 10 Mar 2022 04:07:45 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43C7138591
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:06:43 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id m12so6047478edc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:06:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d6cIzH9Xv2kAkc5CGXg0dY9Os86ok8VlKX0nfdrGmxk=;
+        b=jpKZmPtf6ts6t37Un7YGRrU2DFJ6hgABzNVvc5F/xqhFGBYn9GtXPHLTuQm7KQXp3h
+         JVLx+o0Ii0Za6aEjUl6ek2ELUNyImfY0j1QNv95kYqfCunwKCfb/WigoihneECSzc/Hq
+         I+rjbreLPdBwTQdCm4VOy51pD5zuUb75iTlq/M4TTab7SJxclAPF5bQJSBTr1oi5YPfP
+         BeuHvw8NEaksj2ikNUsg3AiQpw9FRWPKvfTRP9xetRtZ8pdnAC4kt/OslkAYXUqoclrV
+         9St8KE95+2mCXuRADQFO7cFyZbNfY7BbLafpDzjxujdGy5VLrI1lGuyhjdLASHiFvjvv
+         tDbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d6cIzH9Xv2kAkc5CGXg0dY9Os86ok8VlKX0nfdrGmxk=;
+        b=vI5frQV3/c8D5qHSilEvYAbU0DBqXYsx3GfSW//crPvsujH2Cua1XQ+o1CHjcGVaZr
+         j+ScBCpqXljZcjB4mGJmcNc9ikR7reILB8kjgBwSB33+KulPgP96gBY8mQTRJTJkuzp7
+         VptNxzw6Wd5Wzup8CCQ2cimbcomOGl2Z7bWUbPk3k5dMBuvKPrj8eyfVJBWXUJM56xRb
+         O1vB+T/lyYKryv+Wke+4mnuViyMRhTq/fdyPxXm60zfNH4weJewZ5PZl5ALyNAlA4Znh
+         RiWWdEm/HdAu6KPaSx85WtuCQ1OX8KxkeecbQ/mZShipLzoXD9onm7YYCPc6ZN92E8BN
+         KnDg==
+X-Gm-Message-State: AOAM530Y37k9WJrVxV+jQwLxm7ejV6R/e24b3WLiC0LEj/GZA8v+TDZV
+        oETzZxkY0gwcR9byc5pqUVnQOhTisghiDEIp0Pg1DTqYaMo=
+X-Google-Smtp-Source: ABdhPJx7aWsbpdFfLgAkL53l1vKBP7Cca1RRlZ4Npp4WBGJ4Q+Lzy+ZFciMD2QfDYIxUv6TqceyCzIUYlLc+vLpWD8s=
+X-Received: by 2002:a05:6402:2550:b0:416:997f:1239 with SMTP id
+ l16-20020a056402255000b00416997f1239mr3312677edb.141.1646903202481; Thu, 10
+ Mar 2022 01:06:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Y1UXGbhiYyMqGUrRT8KMQ9UOt6Sx3ZUCeTlLC3SjudGFfuB5viq
- TO9Y4m/OvnjDvc+ehn3SgSIYKgGaBhGBZttatKB/DmemNTiYlS1/PGR7ulPVKJuBlNGzwhl
- ms5Aazjf4PVmfW7gryyA+1txrpXA3fSzFiEPn2i1NdnZgASoqb78SQqSiyOBdmcPxRH5wci
- /lz0wtZ6gTKm6yTJFkPig==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eO0M1qMlxTo=:QyEppZfr6HnBATDy98QkJt
- l/KmYvznQfz36VO5dFxmn7PgV+puYXjeByh7PYgE6CpcfBkrWOwe8/2DHFtqPE8+LcuEXZxLC
- PFQg6iVCxRee7x4CJke0XYO4E6j6phYZehASpAkf9csRIkIqsEpvoygyzYxwZW7YISx7IzQ04
- 0P5YF20AtZIeXbgE04o7v9nbF4BfaVp+gDFuRdvCzd4jLntYUCQeQaoRllWI/gnBP6bvzsCfZ
- ULSqVevsuUb6yzDQvGU+oRvXv5eUfhR1Z6f2pKMXkaYgy9QD26sbc6UOCoCWA5JnWq8SBlYKG
- jmqPuevbXYWAPAtSN5TMV7UPbAubDqPCpUWNvVEx9thUyWi8gHpOCliwmS5tlUoxaC0wbYD4g
- tM/phZGJxIU7YIfs9s5RrJSRFA4caLxVHshMzcLzBph+F+fran/1ec+K0bmMnr9XlOZU2QJ0D
- xxquAUxhLrYKH+WSQp++il5pKtDpGrSLAeipNiVym204e+Dt5yA9K1gUURGPUvAI/pm9WLBCo
- AtWyX56dJv5XOBSPWxMgUtB4wISRePsvV5desxTZDY5lGbU+HK6pfptuussXbR2BlYLf9GGKa
- rulidZ61VrD3DD6j8/z0aZs5h7RBcV7nj7NFbFuw06JS51Hyu/Qb0kRSbHKCuqp04/ixkF3s2
- H3DEztIPB+TmbI6a39ZXbW4EYwweKCjLd7U5tX2TuWAn0vzJF2qrjV9uvTntlr9m+euo=
+References: <20220310011617.29660-1-kris@embeddedTS.com> <20220310011617.29660-3-kris@embeddedTS.com>
+In-Reply-To: <20220310011617.29660-3-kris@embeddedTS.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 10 Mar 2022 10:06:22 +0100
+Message-ID: <CAMRc=McZng+m6Q9kCtwcVNB=No681mtChKR9ZAgANkfHx2fm7Q@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] gpio: ts4900: Use SPDX header
+To:     Kris Bahnsen <kris@embeddedts.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Featherston <mark@embeddedts.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-replace readl()/writel() by gf_ioread32()/gf_iowrite32()
-as done for goldfish-tty.
+On Thu, Mar 10, 2022 at 2:16 AM Kris Bahnsen <kris@embeddedts.com> wrote:
+>
+> Remove boilerplate, use the SPDX license identifier.
+>
+> Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+> ---
+>  drivers/gpio/gpio-ts4900.c | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+> index d918d2df4de2..69854fd2382a 100644
+> --- a/drivers/gpio/gpio-ts4900.c
+> +++ b/drivers/gpio/gpio-ts4900.c
+> @@ -1,17 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Digital I/O driver for Technologic Systems I2C FPGA Core
+>   *
+>   * Copyright (C) 2015, 2018 Technologic Systems
+>   * Copyright (C) 2016 Savoir-Faire Linux
+> - *
+> - * This program is free software; you can redistribute it and/or
+> - * modify it under the terms of the GNU General Public License version 2 as
+> - * published by the Free Software Foundation.
+> - *
+> - * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+> - * kind, whether expressed or implied; without even the implied warranty
+> - * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License version 2 for more details.
+>   */
+>
+>  #include <linux/gpio/driver.h>
+> --
+> 2.11.0
+>
 
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
----
- drivers/rtc/rtc-goldfish.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+Applied, thanks!
 
-diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
-index 7ab95d052644..eb1929b0cbb6 100644
---- a/drivers/rtc/rtc-goldfish.c
-+++ b/drivers/rtc/rtc-goldfish.c
-@@ -10,6 +10,7 @@
- #include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/rtc.h>
-+#include <linux/goldfish.h>
- 
- #define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
- 					/*   and update TIMER_TIME_HIGH  */
-@@ -41,8 +42,8 @@ static int goldfish_rtc_read_alarm(struct device *dev,
- 	rtcdrv = dev_get_drvdata(dev);
- 	base = rtcdrv->base;
- 
--	rtc_alarm_low = readl(base + TIMER_ALARM_LOW);
--	rtc_alarm_high = readl(base + TIMER_ALARM_HIGH);
-+	rtc_alarm_low = gf_ioread32(base + TIMER_ALARM_LOW);
-+	rtc_alarm_high = gf_ioread32(base + TIMER_ALARM_HIGH);
- 	rtc_alarm = (rtc_alarm_high << 32) | rtc_alarm_low;
- 
- 	do_div(rtc_alarm, NSEC_PER_SEC);
-@@ -50,7 +51,7 @@ static int goldfish_rtc_read_alarm(struct device *dev,
- 
- 	rtc_time64_to_tm(rtc_alarm, &alrm->time);
- 
--	if (readl(base + TIMER_ALARM_STATUS))
-+	if (gf_ioread32(base + TIMER_ALARM_STATUS))
- 		alrm->enabled = 1;
- 	else
- 		alrm->enabled = 0;
-@@ -71,18 +72,18 @@ static int goldfish_rtc_set_alarm(struct device *dev,
- 
- 	if (alrm->enabled) {
- 		rtc_alarm64 = rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
--		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
--		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
--		writel(1, base + TIMER_IRQ_ENABLED);
-+		gf_iowrite32((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
-+		gf_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
-+		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
- 	} else {
- 		/*
- 		 * if this function was called with enabled=0
- 		 * then it could mean that the application is
- 		 * trying to cancel an ongoing alarm
- 		 */
--		rtc_status_reg = readl(base + TIMER_ALARM_STATUS);
-+		rtc_status_reg = gf_ioread32(base + TIMER_ALARM_STATUS);
- 		if (rtc_status_reg)
--			writel(1, base + TIMER_CLEAR_ALARM);
-+			gf_iowrite32(1, base + TIMER_CLEAR_ALARM);
- 	}
- 
- 	return 0;
-@@ -98,9 +99,9 @@ static int goldfish_rtc_alarm_irq_enable(struct device *dev,
- 	base = rtcdrv->base;
- 
- 	if (enabled)
--		writel(1, base + TIMER_IRQ_ENABLED);
-+		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
- 	else
--		writel(0, base + TIMER_IRQ_ENABLED);
-+		gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
- 
- 	return 0;
- }
-@@ -110,7 +111,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq, void *dev_id)
- 	struct goldfish_rtc *rtcdrv = dev_id;
- 	void __iomem *base = rtcdrv->base;
- 
--	writel(1, base + TIMER_CLEAR_INTERRUPT);
-+	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
- 
- 	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
- 
-@@ -128,8 +129,8 @@ static int goldfish_rtc_read_time(struct device *dev, struct rtc_time *tm)
- 	rtcdrv = dev_get_drvdata(dev);
- 	base = rtcdrv->base;
- 
--	time_low = readl(base + TIMER_TIME_LOW);
--	time_high = readl(base + TIMER_TIME_HIGH);
-+	time_low = gf_ioread32(base + TIMER_TIME_LOW);
-+	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
- 	time = (time_high << 32) | time_low;
- 
- 	do_div(time, NSEC_PER_SEC);
-@@ -149,8 +150,8 @@ static int goldfish_rtc_set_time(struct device *dev, struct rtc_time *tm)
- 	base = rtcdrv->base;
- 
- 	now64 = rtc_tm_to_time64(tm) * NSEC_PER_SEC;
--	writel((now64 >> 32), base + TIMER_TIME_HIGH);
--	writel(now64, base + TIMER_TIME_LOW);
-+	gf_iowrite32((now64 >> 32), base + TIMER_TIME_HIGH);
-+	gf_iowrite32(now64, base + TIMER_TIME_LOW);
- 
- 	return 0;
- }
--- 
-2.35.1
-
+Bart
