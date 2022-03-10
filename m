@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58371C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1ACC35278
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245081AbiCJOi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
+        id S245165AbiCJOjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:39:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343676AbiCJObL (ORCPT
+        with ESMTP id S1343756AbiCJObR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:11 -0500
+        Thu, 10 Mar 2022 09:31:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D743187BAB;
-        Thu, 10 Mar 2022 06:27:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A2A7741;
+        Thu, 10 Mar 2022 06:27:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E932E61D3B;
-        Thu, 10 Mar 2022 14:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B050BC340F3;
-        Thu, 10 Mar 2022 14:26:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25EA161C0A;
+        Thu, 10 Mar 2022 14:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE81C340E8;
+        Thu, 10 Mar 2022 14:27:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922418;
-        bh=EnVmv+AiN0R1W1sI+v3RA0NxLd/Ul4yWb07HWKSxVoU=;
+        s=korg; t=1646922435;
+        bh=w36++WUv97piYmNXEkBNczAVt9D5KYUpOEOJW49HJsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRhRcs4fOQXmrPcGFF8loi3UNW3Yb4C76fW42McNPbMdfRe4oM8rybhCNIIUEYQJw
-         7mEK7bePKs4SwItOhJEABg3GE039mXHtBK4FrximOu2cTvFXpofB5dDmqLBL6XHZV8
-         OeTHIV2EZFHlxRnkP5jxBFn5RC4zFnoxrKwtNvGA=
+        b=GkYvfGjeLK9tTzdm8eByF9/lv0HMDBEjdiD4bO1U0f9s6m6AkmxsEtBV70CQ9N+tO
+         PY/pkMVTEmJML1XLopa/4RD+lZIZEIPOjpUxRFtN0No2mob2cd9GlwhymAg15OEgBq
+         Out/1xyrUPbCeZM52k5sOcygGxUXNBOo0VpLqu1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.4 12/33] arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
-Date:   Thu, 10 Mar 2022 15:19:13 +0100
-Message-Id: <20220310140809.107394999@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.4 03/33] x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+Date:   Thu, 10 Mar 2022 15:19:04 +0100
+Message-Id: <20220310140808.845254213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
 References: <20220310140808.741682643@linuxfoundation.org>
@@ -50,79 +51,193 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
 
-commit 6b7fe77c334ae59fed9500140e08f4f896b36871 upstream.
+commit d45476d9832409371537013ebdd8dc1a7781f97a upstream.
 
-SMCCC callers are currently amassing a collection of enums for the SMCCC
-conduit, and are having to dig into the PSCI driver's internals in order
-to figure out what to do.
+The RETPOLINE_AMD name is unfortunate since it isn't necessarily
+AMD only, in fact Hygon also uses it. Furthermore it will likely be
+sufficient for some Intel processors. Therefore rename the thing to
+RETPOLINE_LFENCE to better describe what it is.
 
-Let's clean this up, with common SMCCC_CONDUIT_* definitions, and an
-arm_smccc_1_1_get_conduit() helper that abstracts the PSCI driver's
-internal state.
+Add the spectre_v2=retpoline,lfence option as an alias to
+spectre_v2=retpoline,amd to preserve existing setups. However, the output
+of /sys/devices/system/cpu/vulnerabilities/spectre_v2 will be changed.
 
-We can kill off the PSCI_CONDUIT_* definitions once we've migrated users
-over to the new interface.
+  [ bp: Fix typos, massage. ]
 
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 5.4]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/psci/psci.c |   15 +++++++++++++++
- include/linux/arm-smccc.h    |   16 ++++++++++++++++
- 2 files changed, 31 insertions(+)
+ arch/x86/include/asm/cpufeatures.h       |    2 +-
+ arch/x86/include/asm/nospec-branch.h     |   12 ++++++------
+ arch/x86/kernel/cpu/bugs.c               |   29 ++++++++++++++++++-----------
+ tools/arch/x86/include/asm/cpufeatures.h |    2 +-
+ 4 files changed, 26 insertions(+), 19 deletions(-)
 
---- a/drivers/firmware/psci/psci.c
-+++ b/drivers/firmware/psci/psci.c
-@@ -57,6 +57,21 @@ struct psci_operations psci_ops = {
- 	.smccc_version = SMCCC_VERSION_1_0,
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -202,7 +202,7 @@
+ #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
+ #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
+ #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
+ #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
+ #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -115,7 +115,7 @@
+ 	ANNOTATE_NOSPEC_ALTERNATIVE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *\reg),	\
+ 		__stringify(RETPOLINE_JMP \reg), X86_FEATURE_RETPOLINE,	\
+-		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_AMD
++		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	jmp	*\reg
+ #endif
+@@ -126,7 +126,7 @@
+ 	ANNOTATE_NOSPEC_ALTERNATIVE
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; call *\reg),	\
+ 		__stringify(RETPOLINE_CALL \reg), X86_FEATURE_RETPOLINE,\
+-		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_AMD
++		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_LFENCE
+ #else
+ 	call	*\reg
+ #endif
+@@ -171,7 +171,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
+ 
+ #else /* CONFIG_X86_32 */
+@@ -201,7 +201,7 @@
+ 	"lfence;\n"						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+-	X86_FEATURE_RETPOLINE_AMD)
++	X86_FEATURE_RETPOLINE_LFENCE)
+ 
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
+ #endif
+@@ -213,8 +213,8 @@
+ /* The Spectre V2 mitigation variants */
+ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_NONE,
+-	SPECTRE_V2_RETPOLINE_GENERIC,
+-	SPECTRE_V2_RETPOLINE_AMD,
++	SPECTRE_V2_RETPOLINE,
++	SPECTRE_V2_LFENCE,
+ 	SPECTRE_V2_IBRS_ENHANCED,
  };
  
-+enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void)
-+{
-+	if (psci_ops.smccc_version < SMCCC_VERSION_1_1)
-+		return SMCCC_CONDUIT_NONE;
-+
-+	switch (psci_ops.conduit) {
-+	case PSCI_CONDUIT_SMC:
-+		return SMCCC_CONDUIT_SMC;
-+	case PSCI_CONDUIT_HVC:
-+		return SMCCC_CONDUIT_HVC;
-+	default:
-+		return SMCCC_CONDUIT_NONE;
-+	}
-+}
-+
- typedef unsigned long (psci_fn)(unsigned long, unsigned long,
- 				unsigned long, unsigned long);
- static psci_fn *invoke_psci_fn;
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -82,6 +82,22 @@
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -621,7 +621,7 @@ enum spectre_v2_mitigation_cmd {
+ 	SPECTRE_V2_CMD_FORCE,
+ 	SPECTRE_V2_CMD_RETPOLINE,
+ 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
+-	SPECTRE_V2_CMD_RETPOLINE_AMD,
++	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
+ };
  
- #include <linux/linkage.h>
- #include <linux/types.h>
+ enum spectre_v2_user_cmd {
+@@ -781,8 +781,8 @@ set_mode:
+ 
+ static const char * const spectre_v2_strings[] = {
+ 	[SPECTRE_V2_NONE]			= "Vulnerable",
+-	[SPECTRE_V2_RETPOLINE_GENERIC]		= "Mitigation: Full generic retpoline",
+-	[SPECTRE_V2_RETPOLINE_AMD]		= "Mitigation: Full AMD retpoline",
++	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
++	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
+ 	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
+ };
+ 
+@@ -794,7 +794,8 @@ static const struct {
+ 	{ "off",		SPECTRE_V2_CMD_NONE,		  false },
+ 	{ "on",			SPECTRE_V2_CMD_FORCE,		  true  },
+ 	{ "retpoline",		SPECTRE_V2_CMD_RETPOLINE,	  false },
+-	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_AMD,	  false },
++	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
++	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
+ 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
+ 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
+ };
+@@ -832,13 +833,19 @@ static enum spectre_v2_mitigation_cmd __
+ 	}
+ 
+ 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
+-	     cmd == SPECTRE_V2_CMD_RETPOLINE_AMD ||
++	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
+ 	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
+ 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
+ 		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
++	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
++	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
++		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
 +
-+enum arm_smccc_conduit {
-+	SMCCC_CONDUIT_NONE,
-+	SMCCC_CONDUIT_SMC,
-+	SMCCC_CONDUIT_HVC,
-+};
-+
-+/**
-+ * arm_smccc_1_1_get_conduit()
-+ *
-+ * Returns the conduit to be used for SMCCCv1.1 or later.
-+ *
-+ * When SMCCCv1.1 is not present, returns SMCCC_CONDUIT_NONE.
-+ */
-+enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void);
-+
- /**
-  * struct arm_smccc_res - Result from SMC/HVC call
-  * @a0-a3 result values from registers 0 to 3
+ 	spec_v2_print_cond(mitigation_options[i].option,
+ 			   mitigation_options[i].secure);
+ 	return cmd;
+@@ -873,9 +880,9 @@ static void __init spectre_v2_select_mit
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+ 			goto retpoline_auto;
+ 		break;
+-	case SPECTRE_V2_CMD_RETPOLINE_AMD:
++	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_amd;
++			goto retpoline_lfence;
+ 		break;
+ 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
+ 		if (IS_ENABLED(CONFIG_RETPOLINE))
+@@ -892,17 +899,17 @@ static void __init spectre_v2_select_mit
+ retpoline_auto:
+ 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ 	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-	retpoline_amd:
++	retpoline_lfence:
+ 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+ 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
+ 			goto retpoline_generic;
+ 		}
+-		mode = SPECTRE_V2_RETPOLINE_AMD;
+-		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
++		mode = SPECTRE_V2_LFENCE;
++		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+ 	} else {
+ 	retpoline_generic:
+-		mode = SPECTRE_V2_RETPOLINE_GENERIC;
++		mode = SPECTRE_V2_RETPOLINE;
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+ 	}
+ 
+--- a/tools/arch/x86/include/asm/cpufeatures.h
++++ b/tools/arch/x86/include/asm/cpufeatures.h
+@@ -202,7 +202,7 @@
+ #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
+ #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
+ #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
+ #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
+ #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
 
 
