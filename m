@@ -2,168 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25720C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79032C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbiCJA6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 19:58:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
+        id S239069AbiCJBAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 20:00:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238208AbiCJA6G (ORCPT
+        with ESMTP id S232874AbiCJBAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 19:58:06 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC710C0842
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:57:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646873826; x=1678409826;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EGCCGf78mu6c1NuKFEQ6fLhRTn1OWX4f7P2TPo065pc=;
-  b=cuC6WWF340+XQMp1CNHDScR/HNCjQ//6WmUHSVQTly6l5h3tLUovXwys
-   uEXltPU+VCTtfA/TGg7L1F21Y/zzz8eq6/qI+vp8y6+WcZhb3mUPZd9X8
-   TapzBxiMH6cXIztADjTInYrXL9UEUfD6ch3IYvTxvTkd26HAeVlJAx+S5
-   RsFSnNaanYb8qpXzJNvejq6CG/W9RC5RCoXbAWtDJ4cTn1QnEoj/+AvwQ
-   R9sTBOiEmvBo6iv4vKS1nW/hjXnpTzoQ6BBHqc8d/nJgKs+0eLrZeG37f
-   FAe6OG+vj0M6IvOiPvcXH3+JCrw1GCzvIsfcxSlOZuRZUT8qnsZqrVCVB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242572006"
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="242572006"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 16:57:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="642361390"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Mar 2022 16:57:04 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nS771-00045W-Fx; Thu, 10 Mar 2022 00:57:03 +0000
-Date:   Thu, 10 Mar 2022 08:56:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, Oscar Salvador <osalvador@suse.de>
-Subject: Re: [PATCH] mm: Only re-generate demotion targets when a numa node
- changes its N_CPU state
-Message-ID: <202203100830.iDtoMHKt-lkp@intel.com>
-References: <20220309144644.4278-1-osalvador@suse.de>
+        Wed, 9 Mar 2022 20:00:13 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A65011B5D3
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:59:13 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id e2so3447829pls.10
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 16:59:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NQaSIZIxO5KOdOicjkb1cFrwib5bGbIpCqk65gAppCI=;
+        b=VS2xx8r9PIGwCLa64CuDfWCjlfdzMZcrNjPDuGSm77clH/PVMaEZN2pFx9+sRO7bqW
+         NT6d5L8XGp5XpSuR6KuMouThtrdyDHbkITw+k9eisuQJylQgdSTzNjL6hXN+HdOsOAiQ
+         cpFH7NrpzwaP8f7q7dqp322hrR0wM5RwN+VGHbpilCz8ADGA8IPs2ZX55ZR+0G7xPGsC
+         CSwwKUf//3X1p7hREN0WgucPZ5yZc7YRbwvGPR1udtiTEZJao3XE/m/Hn1NBh7rCglRm
+         fbhq4iAW9AUvr0m7gEOlYSgkuwWgsA4XYTxNaspmnJFzTOItrpijpGdy7OsrHpvYytSU
+         Da9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NQaSIZIxO5KOdOicjkb1cFrwib5bGbIpCqk65gAppCI=;
+        b=hX5ATv3pmNHvgCmyPcMChr+wPttzqu+VuAseowg09rEqZAs+9qZQ0BEZFdSAUiu9/u
+         9l2YpxlJDYQGtRt7ioW2uE0ZW6ZurzhN99X1KDD2WT2w0IIGl95A8F3mUvDAPWN4FRLE
+         d+avDD0LPpWvDuIx9UeE+eTWiC5Ma5E0xy8Vrifws9F2K9B3v0L3LcGPopoYqKbxmZVj
+         TUxJU59poIV26Cf6kcDNfpapmMV+8YCmHf31dKOO+VZO2HWxp+vRPR0lfaPlhDKOEuHX
+         omJLPslTbg6KVpsu2gAa9JeX63o7wMnhrJgQ8zCkFdbBufJT47QAi4ECABD6QhnCns6q
+         wQ5Q==
+X-Gm-Message-State: AOAM532o+60EyTFT+yd7LpMIqdoY7p2cThZ7WST6PCktw6DML5KtC73V
+        GlbccOWqzKxE1AfN2TVP/2jonpLjF5zHuFS5/anmtHKJnVERXQ==
+X-Google-Smtp-Source: ABdhPJw96a/Eq6dU3OeebKd8y0NUTDNVyL9MKec/ynBgpi4ejJZav6ILrpB7Vds7D2x6nUx/OKPBrD3KR+tlbTRAg84=
+X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id
+ d22-20020a170902729600b0014b4bc60e81mr2486890pll.132.1646873952956; Wed, 09
+ Mar 2022 16:59:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309144644.4278-1-osalvador@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220302082718.32268-1-songmuchun@bytedance.com> <20220302082718.32268-6-songmuchun@bytedance.com>
+In-Reply-To: <20220302082718.32268-6-songmuchun@bytedance.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Wed, 9 Mar 2022 16:59:02 -0800
+Message-ID: <CAPcyv4hsMWe1AreVVhGJD-St3FGtGBMeA-BX7XbA_kVX97tw4Q@mail.gmail.com>
+Subject: Re: [PATCH v4 5/6] dax: fix missing writeprotect the pte entry
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Hugh Dickins <hughd@google.com>, xiyuyang19@fudan.edu.cn,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>, duanxiongchun@bytedance.com,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oscar,
+On Wed, Mar 2, 2022 at 12:30 AM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> Currently dax_mapping_entry_mkclean() fails to clean and write protect
+> the pte entry within a DAX PMD entry during an *sync operation. This
+> can result in data loss in the following sequence:
+>
+>   1) process A mmap write to DAX PMD, dirtying PMD radix tree entry and
+>      making the pmd entry dirty and writeable.
+>   2) process B mmap with the @offset (e.g. 4K) and @length (e.g. 4K)
+>      write to the same file, dirtying PMD radix tree entry (already
+>      done in 1)) and making the pte entry dirty and writeable.
+>   3) fsync, flushing out PMD data and cleaning the radix tree entry. We
+>      currently fail to mark the pte entry as clean and write protected
+>      since the vma of process B is not covered in dax_entry_mkclean().
+>   4) process B writes to the pte. These don't cause any page faults since
+>      the pte entry is dirty and writeable. The radix tree entry remains
+>      clean.
+>   5) fsync, which fails to flush the dirty PMD data because the radix tree
+>      entry was clean.
+>   6) crash - dirty data that should have been fsync'd as part of 5) could
+>      still have been in the processor cache, and is lost.
 
-Thank you for the patch! Perhaps something to improve:
+Excellent description.
 
-[auto build test WARNING on hnaz-mm/master]
+>
+> Just to use pfn_mkclean_range() to clean the pfns to fix this issue.
 
-url:    https://github.com/0day-ci/linux/commits/Oscar-Salvador/mm-Only-re-generate-demotion-targets-when-a-numa-node-changes-its-N_CPU-state/20220309-224707
-base:   https://github.com/hnaz/linux-mm master
-config: sparc-randconfig-r001-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100830.iDtoMHKt-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/8af0c9ff9475c64e31963a5810b127875081c5ff
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Oscar-Salvador/mm-Only-re-generate-demotion-targets-when-a-numa-node-changes-its-N_CPU-state/20220309-224707
-        git checkout 8af0c9ff9475c64e31963a5810b127875081c5ff
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash kernel/sched/
+So the original motivation for CONFIG_FS_DAX_LIMITED was for archs
+that do not have spare PTE bits to indicate pmd_devmap(). So this fix
+can only work in the CONFIG_FS_DAX_LIMITED=n case and in that case it
+seems you can use the current page_mkclean_one(), right? So perhaps
+the fix is to skip patch 3, keep patch 4 and make this patch use
+page_mkclean_one() along with this:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 7a2b11c0b803..42108adb7a78 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -83,6 +83,7 @@ config FS_DAX_PMD
+        depends on FS_DAX
+        depends on ZONE_DEVICE
+        depends on TRANSPARENT_HUGEPAGE
++       depends on !FS_DAX_LIMITED
 
-All warnings (new ones prefixed by >>):
+ # Selected by DAX drivers that do not expect filesystem DAX to support
+ # get_user_pages() of DAX mappings. I.e. "limited" indicates no support
 
-   In file included from kernel/sched/sched.h:53,
-                    from kernel/sched/core.c:13:
-   include/linux/migrate.h:54:20: error: function declaration isn't a prototype [-Werror=strict-prototypes]
-      54 | static inline void set_migration_target_nodes() {}
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/migrate.h: In function 'set_migration_target_nodes':
->> include/linux/migrate.h:54:20: warning: old-style function definition [-Wold-style-definition]
-   kernel/sched/core.c: At top level:
-   kernel/sched/core.c:3442:6: warning: no previous prototype for 'sched_set_stop_task' [-Wmissing-prototypes]
-    3442 | void sched_set_stop_task(int cpu, struct task_struct *stop)
-         |      ^~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   In file included from kernel/sched/sched.h:53,
-                    from kernel/sched/loadavg.c:9:
-   include/linux/migrate.h:54:20: error: function declaration isn't a prototype [-Werror=strict-prototypes]
-      54 | static inline void set_migration_target_nodes() {}
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/migrate.h: In function 'set_migration_target_nodes':
->> include/linux/migrate.h:54:20: warning: old-style function definition [-Wold-style-definition]
-   cc1: some warnings being treated as errors
---
-   In file included from kernel/sched/sched.h:53,
-                    from kernel/sched/fair.c:23:
-   include/linux/migrate.h:54:20: error: function declaration isn't a prototype [-Werror=strict-prototypes]
-      54 | static inline void set_migration_target_nodes() {}
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/migrate.h: In function 'set_migration_target_nodes':
->> include/linux/migrate.h:54:20: warning: old-style function definition [-Wold-style-definition]
-   kernel/sched/fair.c: At top level:
-   kernel/sched/fair.c:11135:6: warning: no previous prototype for 'task_vruntime_update' [-Wmissing-prototypes]
-   11135 | void task_vruntime_update(struct rq *rq, struct task_struct *p, bool in_fi)
-         |      ^~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   In file included from kernel/sched/sched.h:53,
-                    from kernel/sched/rt.c:6:
-   include/linux/migrate.h:54:20: error: function declaration isn't a prototype [-Werror=strict-prototypes]
-      54 | static inline void set_migration_target_nodes() {}
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/migrate.h: In function 'set_migration_target_nodes':
->> include/linux/migrate.h:54:20: warning: old-style function definition [-Wold-style-definition]
-   kernel/sched/rt.c: At top level:
-   kernel/sched/rt.c:730:6: warning: no previous prototype for 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
-     730 | bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +54 include/linux/migrate.h
-
-    36	
-    37	extern void migrate_page_states(struct page *newpage, struct page *page);
-    38	extern void migrate_page_copy(struct page *newpage, struct page *page);
-    39	extern int migrate_huge_page_move_mapping(struct address_space *mapping,
-    40					  struct page *newpage, struct page *page);
-    41	extern int migrate_page_move_mapping(struct address_space *mapping,
-    42			struct page *newpage, struct page *page, int extra_count);
-    43	void migration_entry_wait_on_locked(swp_entry_t entry, pte_t *ptep,
-    44					spinlock_t *ptl);
-    45	void folio_migrate_flags(struct folio *newfolio, struct folio *folio);
-    46	void folio_migrate_copy(struct folio *newfolio, struct folio *folio);
-    47	int folio_migrate_mapping(struct address_space *mapping,
-    48			struct folio *newfolio, struct folio *folio, int extra_count);
-    49	
-    50	extern bool numa_demotion_enabled;
-    51	#ifdef CONFIG_HOTPLUG_CPU
-    52	extern void set_migration_target_nodes(void);
-    53	#else
-  > 54	static inline void set_migration_target_nodes() {}
-    55	#endif
-    56	#else
-    57	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+...to preclude the pmd conflict in that case?
