@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49410C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25968C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343902AbiCJOnY (ORCPT
+        id S1343978AbiCJOnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:43:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
+        Thu, 10 Mar 2022 09:43:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344054AbiCJObj (ORCPT
+        with ESMTP id S1344058AbiCJObj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:31:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEB4EC5F4;
-        Thu, 10 Mar 2022 06:29:44 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFACC7E7D;
+        Thu, 10 Mar 2022 06:30:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 700F6B82544;
-        Thu, 10 Mar 2022 14:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE642C340E8;
-        Thu, 10 Mar 2022 14:29:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3B0B82544;
+        Thu, 10 Mar 2022 14:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD14C340E8;
+        Thu, 10 Mar 2022 14:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922583;
-        bh=jyBDepQzs3J3bAr8lcobZCUKcw7lYEkUHhe0ftiGO0I=;
+        s=korg; t=1646922598;
+        bh=xdJQTRGaTq4mpUn1+PLonlgXKiG2oKDP/uWJOZNH/V4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S3ZCoexj2KuGVncK+QPE5ujD2BRknMhaUOqwaH6Xf/nvxYrodHPjZv1rh/BxArSvb
-         7T7+jx+RDpYzfWg+no/qPy3lfmRpIuyz33i+3A4W9nc4Zr9Xbxm5P1AOFGp46v9YCL
-         JaTUf6Vu9eYloMkyW8cOwSPCX7lQ919DL3D5LqCk=
+        b=oQBTvHNjRV3EGBxISWVsvLGDObwyCgZL64OMhj8cwoZAS5xbGUljWcn967qj3xc0p
+         Ih89zH5WOtdZt76l2wjv60ESUT06qO6UN3H6CYjKFchb9dOoPWo1NYYT0GTNd1tHXY
+         Wy/EqQ2RFV4RoMhaf2YmgJv1xLAVfNrK449OT6JM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 07/58] x86/speculation: Use generic retpoline by default on AMD
-Date:   Thu, 10 Mar 2022 15:18:56 +0100
-Message-Id: <20220310140813.197314711@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 29/58] arm64: entry: Dont assume tramp_vectors is the start of the vectors
+Date:   Thu, 10 Mar 2022 15:19:18 +0100
+Message-Id: <20220310140813.819596813@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -49,42 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: James Morse <james.morse@arm.com>
 
-commit 244d00b5dd4755f8df892c86cab35fb2cfd4f14b upstream.
+commit ed50da7764535f1e24432ded289974f2bf2b0c5a upstream.
 
-AMD retpoline may be susceptible to speculation. The speculation
-execution window for an incorrect indirect branch prediction using
-LFENCE/JMP sequence may potentially be large enough to allow
-exploitation using Spectre V2.
+The tramp_ventry macro uses tramp_vectors as the address of the vectors
+when calculating which ventry in the 'full fat' vectors to branch to.
 
-By default, don't use retpoline,lfence on AMD.  Instead, use the
-generic retpoline.
+While there is one set of tramp_vectors, this will be true.
+Adding multiple sets of vectors will break this assumption.
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Move the generation of the vectors to a macro, and pass the start
+of the vectors as an argument to tramp_ventry.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    9 ---------
- 1 file changed, 9 deletions(-)
+ arch/arm64/kernel/entry.S |   30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -941,15 +941,6 @@ static enum spectre_v2_mitigation __init
- 		return SPECTRE_V2_NONE;
- 	}
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -652,7 +652,7 @@ alternative_else_nop_endif
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
  
--	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
--	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
--		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
--			pr_err("LFENCE not serializing, switching to generic retpoline\n");
--			return SPECTRE_V2_RETPOLINE;
--		}
--		return SPECTRE_V2_LFENCE;
--	}
+-	.macro tramp_ventry, regsize = 64
++	.macro tramp_ventry, vector_start, regsize
+ 	.align	7
+ 1:
+ 	.if	\regsize == 64
+@@ -675,10 +675,10 @@ alternative_insn isb, nop, ARM64_WORKARO
+ 	ldr	x30, =vectors
+ #endif
+ alternative_if_not ARM64_WORKAROUND_CAVIUM_TX2_219_PRFM
+-	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
++	prfm	plil1strm, [x30, #(1b - \vector_start)]
+ alternative_else_nop_endif
+ 	msr	vbar_el1, x30
+-	add	x30, x30, #(1b - tramp_vectors + 4)
++	add	x30, x30, #(1b - \vector_start + 4)
+ 	isb
+ 	ret
+ .org 1b + 128	// Did we overflow the ventry slot?
+@@ -697,19 +697,21 @@ alternative_else_nop_endif
+ 	sb
+ 	.endm
+ 
+-	.align	11
+-SYM_CODE_START_NOALIGN(tramp_vectors)
++	.macro	generate_tramp_vector
++.Lvector_start\@:
+ 	.space	0x400
+ 
+-	tramp_ventry
+-	tramp_ventry
+-	tramp_ventry
+-	tramp_ventry
 -
- 	return SPECTRE_V2_RETPOLINE;
- }
+-	tramp_ventry	32
+-	tramp_ventry	32
+-	tramp_ventry	32
+-	tramp_ventry	32
++	.rept	4
++	tramp_ventry	.Lvector_start\@, 64
++	.endr
++	.rept	4
++	tramp_ventry	.Lvector_start\@, 32
++	.endr
++	.endm
++
++	.align	11
++SYM_CODE_START_NOALIGN(tramp_vectors)
++	generate_tramp_vector
+ SYM_CODE_END(tramp_vectors)
  
+ SYM_CODE_START(tramp_exit_native)
 
 
