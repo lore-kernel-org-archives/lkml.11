@@ -2,198 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E887C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343758AbiCJT74 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:59:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
+        id S244421AbiCJUAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 15:00:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242308AbiCJT7y (ORCPT
+        with ESMTP id S242308AbiCJUAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:59:54 -0500
-X-Greylist: delayed 1500 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 11:58:52 PST
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.180.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB3A4D9DF
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:58:52 -0800 (PST)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 65E683F23E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:13:44 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id SOEKnrvj622u3SOEKnaFu6; Thu, 10 Mar 2022 13:13:44 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mb2llu6cUqKPxTlbEIr1Yx2wzBP2FczZ/P1WdCDimwo=; b=icOiBMOVuWpAcU57dA4s8wdshx
-        IA9xojyJTcwSPcVILmNhsMjlBz30tPcOCQBz9XVzj61RMgs+SOIhAwC64md/R/MlRqG34uvgh+rEu
-        sJHIeyDQeUcCozNULY/wqGo1azEog6vdBGH7U7KZfI3fH5Dbat0Fo0/Ta5vglwEgf/uhEidQR0k5p
-        DaqAiM+pmMmFqMY86j44may4ioxUCayWX2NxNh318QRFbtkC5W+JblazESYXiTqRU+O1cCYZARF5Q
-        Ey9c+7Jxmd4cJfkBsQF1IC7tGEKCXujsiCvyfTB89CXXLoiNexwlE73avvDMtC5PT3WEIJWD8LTOJ
-        PRUwN7dA==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57420 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nSOEJ-001yY6-NT; Thu, 10 Mar 2022 19:13:43 +0000
-Date:   Thu, 10 Mar 2022 11:13:42 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Renze Nicolai <renze@rnplus.nl>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/6] hwmon: (nct6775) Convert to regmap, add i2c
- support
-Message-ID: <20220310191342.GB803893@roeck-us.net>
-References: <20220309005047.5107-1-zev@bewilderbeest.net>
+        Thu, 10 Mar 2022 15:00:10 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFE44DF62
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:59:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646942348; x=1678478348;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lF0+CNF5nz8tK8GJlyBLSTkUD1qN/XW+oz3/veUSFrE=;
+  b=Vr3j/ffZOVK34Dcw5qyWZjoWWe0fAACgQmbGj4ZwZeEJj+6u1WlL8kug
+   69c3Nx8+JlozZaMLxmdvimFHb6a+XhtdgtMaJsAjnee8MFwpwWbZR4iYK
+   8kveZqSRFQtbsDRcLJ+agRu8grheTQbZf8AirngrCVGQrSOaFWrws6oA2
+   TLdZSF4DUQvl3/KtqefgmEHAz4RH24aQmom7XNetNK/StsdYvwF/PL57K
+   w/k5KWZMTLTvXEV1U3yuOdZlZ4uKOJdsj3+LfvN8bVUmPSEzEU34VlkI1
+   0LnodJKuIajWuFj8xM2bFP5sS1jw6UNUEb+3sCPwvGaVCTARdBzSWSHLH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="242812065"
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="242812065"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 11:59:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="578936968"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 10 Mar 2022 11:59:01 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSOw8-0005Kg-G6; Thu, 10 Mar 2022 19:59:00 +0000
+Date:   Fri, 11 Mar 2022 03:58:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.14-q-release
+ 2598/9999] kernel/trace/ftrace.c:6567:6: warning: no previous declaration
+ for 'ftrace_graph_return_stub'
+Message-ID: <202203110327.RrhhRaPm-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220309005047.5107-1-zev@bewilderbeest.net>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nSOEJ-001yY6-NT
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57420
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 9
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Sami,
 
-On Tue, Mar 08, 2022 at 04:50:41PM -0800, Zev Weiss wrote:
-> Hello,
-> 
-> This is v2 of my patches to add i2c support to the nct6775 driver.
-> 
+FYI, the error/warning still remains.
 
-Just to let you know, I won't have time to review - much less test - the series 
-before the commit window opens. Also, it is way too late for the upcoming release;
-the changes are substantial enough to warrant a large soak time in linux-next.
-The series will have to wait for v5.19.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.14-q-release
+head:   556853b32b4656f1072ed285ee06b9519bb5ed8b
+commit: 03002d0374dd37a1969c6c3aa5e16ffe9844af24 [2598/9999] ANDROID: ftrace: fix function type mismatches
+config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220311/202203110327.RrhhRaPm-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/03002d0374dd37a1969c6c3aa5e16ffe9844af24
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.14-q-release
+        git checkout 03002d0374dd37a1969c6c3aa5e16ffe9844af24
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Guenter
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Changes since v1 [0]:
->  - Added preparatory patch converting driver to regmap API [Guenter]
->  - Replaced ENOSPC with ENOBUFS and removed WARN_ON() in
->    nct6775_add_attr_group() [Guenter]
->  - Added dedicated symbol namespace [Guenter]
->  - Removed nct6775_write_temp() and nct6775_update_device() symbol
->    exports [Guenter]
->  - Reordered patches to put dt-bindings patch first [Krzysztof]
-> 
-> The nct6775-platform and nct6775-i2c drivers have both been tested on
-> the NCT6779D in an ASRock ROMED8HM3 system and the NCT6798 [1] in an
-> ASRock X570-D4U (the latter thanks to Renze, CCed); both seem to work
-> as expected on both systems.  I don't have access to any asuswmi
-> hardware, so testing of the nct6775-platform driver on that to ensure
-> it doesn't break there would be appreciated (Oleksandr, perhaps?).
-> 
-> [0] https://lore.kernel.org/linux-hwmon/20220226133047.6226-1-zev@bewilderbeest.net/
-> [1] Though it's physically labeled (mislabeled?) as an NCT6796, for
->     what that's worth.
-> 
-> A slightly edited version of the previous cover letter follows:
-> 
-> 
-> This patch series augments the existing nct6775 driver with support
-> for the hardware's i2c interface; along the way it converts the driver
-> to use the regmap API, and splits the LPC-specific platform driver
-> into a separate module from the interface-independent core.
-> 
-> Thus far the nct6775 driver has only supported the LPC interface,
-> which is the main interface by which the Super-I/O chip is typically
-> connected to the host (x86) processor.
-> 
-> However, these chips also provide an i2c interface, which can provide
-> a way for a BMC to also monitor sensor readings from them.  On some
-> systems (such as the ASRock Rack ROMED8HM3 and X570-D4U) this may be
-> the only way for the BMC to monitor host CPU temperatures (e.g. to
-> indirectly access a TSI interface); this functionality is thus an
-> important component of enabling OpenBMC to support such systems.
-> 
-> In such an arrangement the Super-I/O chip is simultaneously controlled
-> by two independent processors (the host and the BMC) which typically
-> do not coordinate their accesses with each other.  In order to avoid
-> conflicts between the two, the i2c driver avoids all writes to the
-> device, since the BMC's needs with the hardware are merely that it be
-> able to retrieve sensor readings.  This allows the host processor to
-> remain ultimately in control of the chip and unaware of the BMC's use
-> of it at all.
-> 
-> The sole exception to the "no writes" rule for the i2c driver is for
-> the bank-select register -- while I haven't been able to find any
-> explicit statement in the Nuvoton datasheets guaranteeing this,
-> testing via manual register accesses (as detailed in [2]) has
-> indicated that, as one might hope, the i2c interface has its own
-> bank-select register independent of the one used by the LPC interface.
-> 
-> In terms of code structure, the approach taken in this series is to
-> first convert the driver's register accesses to the regmap API, and
-> then split the LPC-specific parts of it out into a separate module
-> (called nct6775-platform), leaving the interface-independent parts in
-> a generic driver (called nct6775-core).  The nct6775-i2c driver is
-> then added as an additional consumer of the nct6775-core module's
-> functionality (essentially just providing its own set of regmap
-> read/write callback functions).
-> 
-> The first patch provides DT bindings for the nct6775, the second
-> contains the change to convert all register accesses to use a regmap.
-> The third and fourth patches make some relatively small
-> infrastructural changes to the driver.  The core/platform driver split
-> is in the fifth patch, and the final patch adds the i2c driver itself.
-> 
-> 
-> Thanks,
-> Zev
-> 
-> [2] https://lore.kernel.org/linux-hwmon/YhttzgDtGpcTniyw@hatter.bewilderbeest.net/
-> 
-> Zev Weiss (6):
->   dt-bindings: hwmon: Add nuvoton,nct6775
->   hwmon: (nct6775) Convert register access to regmap API
->   hwmon: (nct6775) Rearrange attr-group initialization
->   hwmon: (nct6775) Add read-only mode
->   hwmon: (nct6775) Split core and platform driver
->   hwmon: (nct6775) Add i2c driver
-> 
->  .../bindings/hwmon/nuvoton,nct6775.yaml       |   48 +
->  MAINTAINERS                                   |   12 +-
->  drivers/hwmon/Kconfig                         |   32 +-
->  drivers/hwmon/Makefile                        |    4 +-
->  drivers/hwmon/{nct6775.c => nct6775-core.c}   | 2310 +++++------------
->  drivers/hwmon/nct6775-i2c.c                   |  179 ++
->  drivers/hwmon/nct6775-platform.c              | 1232 +++++++++
->  drivers/hwmon/nct6775.h                       |  252 ++
->  8 files changed, 2382 insertions(+), 1687 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
->  rename drivers/hwmon/{nct6775.c => nct6775-core.c} (69%)
->  create mode 100644 drivers/hwmon/nct6775-i2c.c
->  create mode 100644 drivers/hwmon/nct6775-platform.c
->  create mode 100644 drivers/hwmon/nct6775.h
-> 
-> -- 
-> 2.35.1
-> 
+All warnings (new ones prefixed by >>):
+
+   kernel/trace/ftrace.c:2727:13: warning: no previous declaration for 'arch_ftrace_trampoline_free' [-Wmissing-declarations]
+    void __weak arch_ftrace_trampoline_free(struct ftrace_ops *ops)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:3488:1: warning: no previous declaration for 'arch_ftrace_trampoline_func' [-Wmissing-declarations]
+    arch_ftrace_trampoline_func(struct ftrace_ops *ops, struct dyn_ftrace *rec)
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:3726:15: warning: no previous declaration for 'arch_ftrace_match_adjust' [-Wmissing-declarations]
+    char * __weak arch_ftrace_match_adjust(char *str, const char *search)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c: In function 'process_mod_list':
+   kernel/trace/ftrace.c:4008:6: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
+     int ret;
+         ^~~
+   kernel/trace/ftrace.c: In function 'ftrace_regex_release':
+   kernel/trace/ftrace.c:5040:6: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
+     int ret;
+         ^~~
+   kernel/trace/ftrace.c: At top level:
+   kernel/trace/ftrace.c:5949:13: warning: no previous declaration for 'arch_ftrace_update_trampoline' [-Wmissing-declarations]
+    void __weak arch_ftrace_update_trampoline(struct ftrace_ops *ops)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/trace/ftrace.c:6567:6: warning: no previous declaration for 'ftrace_graph_return_stub' [-Wmissing-declarations]
+    void ftrace_graph_return_stub(struct ftrace_graph_ret *trace)
+         ^~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:6571:5: warning: no previous declaration for 'ftrace_graph_entry_stub' [-Wmissing-declarations]
+    int ftrace_graph_entry_stub(struct ftrace_graph_ent *trace)
+        ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:1093:27: warning: 'ftrace_swapper_pid' defined but not used [-Wunused-const-variable=]
+    static struct pid * const ftrace_swapper_pid = &init_struct_pid;
+                              ^~~~~~~~~~~~~~~~~~
+
+
+vim +/ftrace_graph_return_stub +6567 kernel/trace/ftrace.c
+
+  6566	
+> 6567	void ftrace_graph_return_stub(struct ftrace_graph_ret *trace)
+  6568	{
+  6569	}
+  6570	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
