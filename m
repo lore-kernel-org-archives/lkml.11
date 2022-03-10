@@ -2,63 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B68B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344398AbiCJPLW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43470 "EHLO
+        id S239025AbiCJPLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:11:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbiCJPKj (ORCPT
+        with ESMTP id S1344760AbiCJPKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 10:10:39 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD990195300
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:04:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA66195301;
+        Thu, 10 Mar 2022 07:04:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37D8561670
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:04:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CA2C340E8;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BE186167D;
+        Thu, 10 Mar 2022 15:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B86A5C340F3;
         Thu, 10 Mar 2022 15:04:50 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nSKLR-001DYf-E8;
+        id 1nSKLR-001DZo-Qg;
         Thu, 10 Mar 2022 10:04:49 -0500
-Message-ID: <20220310150431.248810778@goodmis.org>
+Message-ID: <20220310150449.656065937@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 10 Mar 2022 10:04:31 -0500
+Date:   Thu, 10 Mar 2022 10:04:33 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [for-linus][PATCH 0/3] tracing: Three fixes
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [for-linus][PATCH 2/3] tracing/osnoise: Force quiescent states while tracing
+References: <20220310150431.248810778@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
-Minor tracing fixes:
+At the moment running osnoise on a nohz_full CPU or uncontested FIFO
+priority and a PREEMPT_RCU kernel might have the side effect of
+extending grace periods too much. This will entice RCU to force a
+context switch on the wayward CPU to end the grace period, all while
+introducing unwarranted noise into the tracer. This behaviour is
+unavoidable as overly extending grace periods might exhaust the system's
+memory.
 
- - Fix unregistering the same event twice a the user could disable
-   the event osnoise will disable on unregistering.
+This same exact problem is what extended quiescent states (EQS) were
+created for, conversely, rcu_momentary_dyntick_idle() emulates them by
+performing a zero duration EQS. So let's make use of it.
 
- - Inform RCU of a quiescent state in the osnoise testing thread.
+In the common case rcu_momentary_dyntick_idle() is fairly inexpensive:
+atomically incrementing a local per-CPU counter and doing a store. So it
+shouldn't affect osnoise's measurements (which has a 1us granularity),
+so we'll call it unanimously.
 
- - Fix some kerneldoc comments.
+The uncommon case involve calling rcu_momentary_dyntick_idle() after
+having the osnoise process:
 
-Daniel Bristot de Oliveira (1):
-      tracing/osnoise: Do not unregister events twice
+ - Receive an expedited quiescent state IPI with preemption disabled or
+   during an RCU critical section. (activates rdp->cpu_no_qs.b.exp
+   code-path).
 
-Jiapeng Chong (1):
-      ftrace: Fix some W=1 warnings in kernel doc comments
+ - Being preempted within in an RCU critical section and having the
+   subsequent outermost rcu_read_unlock() called with interrupts
+   disabled. (t->rcu_read_unlock_special.b.blocked code-path).
 
-Nicolas Saenz Julienne (1):
-      tracing/osnoise: Force quiescent states while tracing
+Neither of those are possible at the moment, and are unlikely to be in
+the future given the osnoise's loop design. On top of this, the noise
+generated by the situations described above is unavoidable, and if not
+exposed by rcu_momentary_dyntick_idle() will be eventually seen in
+subsequent rcu_read_unlock() calls or schedule operations.
 
-----
- kernel/trace/ftrace.c        |  4 ++--
- kernel/trace/trace_osnoise.c | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 33 insertions(+), 2 deletions(-)
+Link: https://lkml.kernel.org/r/20220307180740.577607-1-nsaenzju@redhat.com
+
+Cc: stable@vger.kernel.org
+Fixes: bce29ac9ce0b ("trace: Add osnoise tracer")
+Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_osnoise.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index 2aa3efdca755..5e3c62a08fc0 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1386,6 +1386,26 @@ static int run_osnoise(void)
+ 					osnoise_stop_tracing();
+ 		}
+ 
++		/*
++		 * In some cases, notably when running on a nohz_full CPU with
++		 * a stopped tick PREEMPT_RCU has no way to account for QSs.
++		 * This will eventually cause unwarranted noise as PREEMPT_RCU
++		 * will force preemption as the means of ending the current
++		 * grace period. We avoid this problem by calling
++		 * rcu_momentary_dyntick_idle(), which performs a zero duration
++		 * EQS allowing PREEMPT_RCU to end the current grace period.
++		 * This call shouldn't be wrapped inside an RCU critical
++		 * section.
++		 *
++		 * Note that in non PREEMPT_RCU kernels QSs are handled through
++		 * cond_resched()
++		 */
++		if (IS_ENABLED(CONFIG_PREEMPT_RCU)) {
++			local_irq_disable();
++			rcu_momentary_dyntick_idle();
++			local_irq_enable();
++		}
++
+ 		/*
+ 		 * For the non-preemptive kernel config: let threads runs, if
+ 		 * they so wish.
+-- 
+2.34.1
