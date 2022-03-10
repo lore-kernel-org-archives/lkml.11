@@ -2,123 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE571C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240752AbiCJQaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S237930AbiCJQbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:31:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236422AbiCJQas (ORCPT
+        with ESMTP id S241402AbiCJQbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:30:48 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079FD6949B;
-        Thu, 10 Mar 2022 08:29:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ejZS1NaFt+D1u7JDe4Pf6ufoRNcAiKOWcsjiV2EAWPg=; b=GugiTkyVq8DEPtsode39T6/Gtg
-        wtBOpWrt7qA4XOldDsR9DRystNxFPn/IVl3e53qMF1yeCwZIS1e03ZHUWURapHvgZJ8J+mGy9koIc
-        3P0DL39qRqbqghrmDKQqmpSTaYP+d1gctihK6kr5dvP/8S+1Os3IwP7ezxsnbAY3Hf1AIoCadvRXr
-        WSRic3Ce6Gpqoe7ZaljwvI4r96AhUS9q0yfCBDVIfBqg1CMtmBFc/PnirxDgpgWjcsiQ4+3p0zPC+
-        EOLpzHwzD6gXk2YuinRAA3VOI67GjLCJ246AoEAVZ1Wz2Q5yiorPK45JN9WPBxwCP5yoMECDtbCUx
-        tyJIlO4g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSLf7-00H9mb-Qe; Thu, 10 Mar 2022 16:29:14 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8ED4B300242;
-        Thu, 10 Mar 2022 17:29:11 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4ECA03023FD01; Thu, 10 Mar 2022 17:29:11 +0100 (CET)
-Date:   Thu, 10 Mar 2022 17:29:11 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net>
-References: <20220308153011.021123062@infradead.org>
- <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
- <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net>
- <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
- <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
- <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
- <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
+        Thu, 10 Mar 2022 11:31:40 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07E7190C28;
+        Thu, 10 Mar 2022 08:30:38 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 993FC21106;
+        Thu, 10 Mar 2022 16:30:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646929837; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rtb1rpQqcRQCkvtCGrkuFprYkSi8v2+4VhQD8sTU1iQ=;
+        b=fTC/GF69dbM0prQum/0nJ3Pn9C7bea80Rr6+qNB0x1hp7/ZlBD9X2pvwglJpCvcc/+Ykbt
+        S5b2oKS292hYBN3q4ALs27OSkeVf/8ebPH4HUpnJzGeWErc3AKlXwY35yrreGb0k+9qP+k
+        YmhzroE5OASmlta5LQd2va+kFWy6joY=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7C0AAA3B83;
+        Thu, 10 Mar 2022 16:30:37 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 17:30:34 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     Miroslav Benes <mbenes@suse.cz>, jpoimboe@redhat.com,
+        jikos@kernel.org, joe.lawrence@redhat.com,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [External] Re: [PATCH v2] livepatch: Don't block removal of
+ patches that are safe to unload
+Message-ID: <Yionqn3d9OQF4UiT@alley>
+References: <20220303105446.7152-1-zhouchengming@bytedance.com>
+ <YicnIIatfgLc2NN2@alley>
+ <alpine.LSU.2.21.2203081842120.9394@pobox.suse.cz>
+ <849e57ee-d412-30bd-3cce-47ce3362409d@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <849e57ee-d412-30bd-3cce-47ce3362409d@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 02:47:18PM +0100, Peter Zijlstra wrote:
-> On Thu, Mar 10, 2022 at 10:35:32AM +0100, Peter Zijlstra wrote:
+On Thu 2022-03-10 20:57:54, Chengming Zhou wrote:
+> Hi,
 > 
-> > > $ test_progs -t fentry
-> > > test_fentry_fexit:PASS:fentry_skel_load 0 nsec
-> > > test_fentry_fexit:PASS:fexit_skel_load 0 nsec
-> > > test_fentry_fexit:PASS:fentry_attach 0 nsec
-> > > test_fentry_fexit:FAIL:fexit_attach unexpected error: -1 (errno 19)
-> > > #54 fentry_fexit:FAIL
+> On 2022/3/9 1:49 上午, Miroslav Benes wrote:
+> > On Tue, 8 Mar 2022, Petr Mladek wrote:
+> > 
+> >> On Thu 2022-03-03 18:54:46, Chengming Zhou wrote:
+> >>> module_put() is currently never called for a patch with forced flag, to block
+> >>> the removal of that patch module that might still be in use after a forced
+> >>> transition.
+> >>>
+> >>> But klp_force_transition() will set all patches on the list to be forced, since
+> >>> commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
+> >>> has removed stack ordering of the livepatches, it will cause all other patches can't
+> >>> be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+> >>>
+> >>> In fact, we don't need to set a patch to forced if it's a KLP_PATCHED forced
+> >>> transition. It can still be unloaded safely as long as it has passed through
+> >>> the consistency model in KLP_UNPATCHED transition.
+> >>
+> >> It really looks safe. klp_check_stack_func() makes sure that @new_func
+> >> is not on the stack when klp_target_state == KLP_UNPATCHED. As a
+> >> result, the system should not be using code from the livepatch module
+> >> when KLP_UNPATCHED transition cleanly finished.
+> >>
+> >>
+> >>> But the exception is when force transition of an atomic replace patch, we
+> >>> have to set all previous patches to forced, or they will be removed at
+> >>> the end of klp_try_complete_transition().
+> >>>
+> >>> This patch only set the klp_transition_patch to be forced in KLP_UNPATCHED
+> >>> case, and keep the old behavior when in atomic replace case.
+> >>>
+> >>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> >>> ---
+> >>> v2: interact nicely with the atomic replace feature noted by Miroslav.
+> >>> ---
+> >>>  kernel/livepatch/transition.c | 8 ++++++--
+> >>>  1 file changed, 6 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> >>> index 5683ac0d2566..34ffb8c014ed 100644
+> >>> --- a/kernel/livepatch/transition.c
+> >>> +++ b/kernel/livepatch/transition.c
+> >>> @@ -641,6 +641,10 @@ void klp_force_transition(void)
+> >>>  	for_each_possible_cpu(cpu)
+> >>>  		klp_update_patch_state(idle_task(cpu));
+> >>>  
+> >>> -	klp_for_each_patch(patch)
+> >>> -		patch->forced = true;
+> >>> +	if (klp_target_state == KLP_UNPATCHED)
+> >>> +		klp_transition_patch->forced = true;
+> >>> +	else if (klp_transition_patch->replace) {
+> >>> +		klp_for_each_patch(patch)
+> >>> +			patch->forced = true;
+> >>
+> >> This works only because there is should be only one patch when
+> >> klp_target_state == KLP_UNPATCHED and
+> >> klp_transition_patch->forced == true.
+> > 
+> > I probably misunderstand, but the above is not generally true, is it? I 
+> > mean, if the transition patch is forced during its disablement, it does 
+> > not say anything about the amount of enabled patches.
+> > 
+> >> But it is a bit tricky. I would do it the other way:
+> >>
+> >> 	if (klp_transition_patch->replace) {
+> >> 		klp_for_each_patch(patch)
+> >> 			patch->forced = true;
+> >> 	} else if (klp_target_state == KLP_UNPATCHED) {
+> >> 		klp_transition_patch->forced = true;
+> >> 	}
+> >>
+> >> It looks more sane. And it makes it more clear
+> >> that the special handling of KLP_UNPATCHED transition
+> >> is done only when the atomic replace is not used.
+> > 
+> > But it is not the same. ->replace being true only comes into play when a 
+> > patch is enabled. If it is disabled, then it behaves like any other patch.
+> > 
+> > So, if there is ->replace patch enabled (and it is the only patch present) 
+> > and then more !->replace patches are loaded and then if ->replace patch is 
+> > disabled and forced, your proposal would give a different result than what 
+> > Chengming submitted, because in your case all the other patches will get 
+> > ->forced set to true, while it is not the case in the original. It would 
+> > be an unnecessary restriction if I am not missing something.
 > 
-> This seems to cure the above. fexit_bpf2bpf is still failing, I'll dig
-> into that after lunch.
-> 
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index acb50fb7ed2d..2d86d3c09d64 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -5354,6 +5381,11 @@ int modify_ftrace_direct(unsigned long ip,
->  	mutex_lock(&direct_mutex);
->  
->  	mutex_lock(&ftrace_lock);
-> +
-> +	ip = ftrace_location(ip);
-> +	if (!ip)
-> +		goto out_unlock;
-> +
->  	entry = find_direct_entry(&ip, &rec);
->  	if (!entry)
->  		goto out_unlock;
+> At first glance, I thought both way is right. But after looking at the case
+> you mentioned above, they are not the same indeed. The original patch
+> treat ->replace and not ->replace patches the same in KLP_UNPATCHED transition,
+> and only set all patches to forced in the atomic replace transition.
 
-This seems to cure most of the rest. I'm still seeing one failure:
+I see. OK, Chengming's code makes sense. But we should make the commit
+message more clear. Something like:
 
-libbpf: prog 'connect_v4_prog': BPF program load failed: Invalid argument
-libbpf: failed to load program 'connect_v4_prog'
-libbpf: failed to load object './connect4_prog.o'
-test_fexit_bpf2bpf_common:FAIL:tgt_prog_load unexpected error: -22 (errno 22)
-#48/4 fexit_bpf2bpf/func_replace_verify:FAIL
+<draft>
+module_put() is not called for a patch with "forced" flag. It should
+block the removal of the livepatch module when the code might still
+be in use after forced transition.
 
-but the rest seems to be good again.
+klp_force_transition() currently sets "force" flag for all patches on
+the list.
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 2b1e266ff95c..3fecfe8c4429 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -384,6 +395,13 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		/* BPF poking in modules is not supported */
- 		return -EINVAL;
- 
-+	/*
-+	 * See emit_prologue(), for IBT builds the trampoline hook is preceded
-+	 * with an ENDBR instruction.
-+	 */
-+	if (is_endbr(*(u32 *)ip))
-+		ip += ENDBR_INSN_SIZE;
-+
- 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
- }
- 
+In fact, any patch can be safely unloaded when it passed through
+the consistency model in KLP_UNPATCHED transition.
+
+By other words, the "forced" flag must be set only for livepatches
+that are being removed. In particular, set the "forced" flag:
+
+  + only for klp_transition_patch when the transition to KLP_UNPATCHED
+    state was forced.
+
+  + all replaced patches when the transition to KLP_PATCHED state was
+    forced and the patch was replacing the existing patches.
+</draft>
+
+It means that we should could actually do:
+
+	if (klp_target_state == KLP_UNPATCHED) {
+		klp_transition_patch->forced = true;
+	} else if (klp_transition_patch->replace) {
+		klp_for_each_patch(patch) {
+			if (patch != klp_transition_patch)
+				patch->forced = true;
+		}
+	}
+
+Huh, that is tricky ;-)
+
+Best Regards,
+Petr
