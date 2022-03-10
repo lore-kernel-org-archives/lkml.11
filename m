@@ -2,68 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D82C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242401AbiCJN0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        id S239749AbiCJN3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:29:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238415AbiCJN0M (ORCPT
+        with ESMTP id S239631AbiCJN3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:26:12 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8E914D275
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:25:08 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KDqWz6Bjpzdb7R;
-        Thu, 10 Mar 2022 21:23:43 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Mar
- 2022 21:25:06 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <Herbert.van.den.Bergh@oracle.com>, <chris.mason@oracle.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/mlock: fix potential imbalanced rlimit ucounts adjustment
-Date:   Thu, 10 Mar 2022 21:24:17 +0800
-Message-ID: <20220310132417.41189-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+        Thu, 10 Mar 2022 08:29:43 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5399B7E097
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:28:42 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dbda4f6331so40445257b3.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:28:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Y7gj1hh0DB6tOe5ZHLoKoc4NT1CoUMRgYUbu9GMxm2c=;
+        b=PcVpr1GuJ8GWX7vf+TIimRwnGcf2+y85xAnLxuU2LUy2f3fQvacSZe04/oqKr+rH9u
+         z+Mzxnr08X1dcLD0Jay42IB6TJ5iGT0POTC0ttrQUJB1d61SU9fVUqhqUXx0zC5okjsX
+         0KX5+vyrQtwS5RL2K7LAYxFrds7AusjU+jQBzD48W1TRgQEmYztDpXMuKKywO7n/PaWb
+         /NQ60qbU+NJGzv0bccEORsiLVxhvmwKtUg3rORQFjXWU+/SNjP/fFGAQoaL/T5JtfHRA
+         MVach1kF0AFBZPtTCqeb/cE2ZeVUIJ1PzwUCGEeJCUamNwv40I1K6AkyAUKlmtSSS8rR
+         NJMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Y7gj1hh0DB6tOe5ZHLoKoc4NT1CoUMRgYUbu9GMxm2c=;
+        b=rpb9xaPPO9jCIztavzZWtoV1k+2t7Jme1q5nDDdJiQ1hEb8f6Jq+V0UxE4cCNhTylO
+         ROITv/tfvT7b3XXxkgLhgiM+ik7toudT+JMDlNcVJ0cQSY/P6hQQ+UsPj9LTSs+RLIOA
+         H5j/pnW7y+piJ59CChMxJJuweibBU78lTwW+HHeOkJpUE6+ltrBh+wzKK264rGVgDCt7
+         JdUr6w3dZYDE82z1zSxTyz1ntWPSH7LnbHJzDmtZrsky1KtqacAuI2fcOihTZmJURTLc
+         v2Mm+xPA8tbKl9FE37nYDUctbKSWEcDrklw26pYbtuc//l8FFyAejv61/CojqbauRcca
+         Uhpg==
+X-Gm-Message-State: AOAM530XJ78u53p4TagFXcBXYnkjeo0mFf44kO7Vr2XQwHTkncer/ONn
+        N8ro0rEEP8KzMc3autdsyCvt7Rg8Ohw=
+X-Google-Smtp-Source: ABdhPJzwtkhkPUqBI9gHc2Q828U5TjP3S4ysN896s6N7UbdNSqH6k6QsxiSTVNH6MbtAUxTir1E/uiQLaqI=
+X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
+ (user=jiyong job=sendgmr) by 2002:a25:7903:0:b0:622:3940:7c7c with SMTP id
+ u3-20020a257903000000b0062239407c7cmr4031710ybc.334.1646918921467; Thu, 10
+ Mar 2022 05:28:41 -0800 (PST)
+Date:   Thu, 10 Mar 2022 22:28:29 +0900
+Message-Id: <20220310132830.88203-1-jiyong@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH v2] vsock: each transport cycles only on its own sockets
+From:   Jiyong Park <jiyong@google.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-user_shm_lock forgets to set allowed to 0 when get_ucounts fails. So
-the later user_shm_unlock might do the extra dec_rlimit_ucounts. Fix
-this by resetting allowed to 0.
+When iterating over sockets using vsock_for_each_connected_socket, make
+sure that a transport filters out sockets that don't belong to the
+transport.
 
-Fixes: 5ed44a401ddf ("do not limit locked memory when RLIMIT_MEMLOCK is RLIM_INFINITY")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+There actually was an issue caused by this; in a nested VM
+configuration, destroying the nested VM (which often involves the
+closing of /dev/vhost-vsock if there was h2g connections to the nested
+VM) kills not only the h2g connections, but also all existing g2h
+connections to the (outmost) host which are totally unrelated.
+
+Tested: Executed the following steps on Cuttlefish (Android running on a
+VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+connection inside the VM, (2) open and then close /dev/vhost-vsock by
+`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+session is not reset.
+
+[1] https://android.googlesource.com/device/google/cuttlefish/
+
+Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+Signed-off-by: Jiyong Park <jiyong@google.com>
 ---
- mm/mlock.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes in v2:
+  - Squashed into a single patch
 
-diff --git a/mm/mlock.c b/mm/mlock.c
-index 29372c0eebe5..efd2dd2943de 100644
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -733,6 +733,7 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
+ drivers/vhost/vsock.c            | 3 ++-
+ include/net/af_vsock.h           | 3 ++-
+ net/vmw_vsock/af_vsock.c         | 9 +++++++--
+ net/vmw_vsock/virtio_transport.c | 7 +++++--
+ net/vmw_vsock/vmci_transport.c   | 3 ++-
+ 5 files changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 37f0b4274113..e6c9d41db1de 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 
+ 	/* Iterating over all connections for all CIDs to find orphans is
+ 	 * inefficient.  Room for improvement here. */
+-	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
++	vsock_for_each_connected_socket(&vhost_transport.transport,
++					vhost_vsock_reset_orphans);
+ 
+ 	/* Don't check the owner, because we are in the release path, so we
+ 	 * need to stop the vsock device in any case.
+diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+index ab207677e0a8..f742e50207fb 100644
+--- a/include/net/af_vsock.h
++++ b/include/net/af_vsock.h
+@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
+ struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
+ 					 struct sockaddr_vm *dst);
+ void vsock_remove_sock(struct vsock_sock *vsk);
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk));
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
+ bool vsock_find_cid(unsigned int cid);
+ 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 38baeb189d4e..f04abf662ec6 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
+ }
+ EXPORT_SYMBOL_GPL(vsock_remove_sock);
+ 
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk))
+ {
+ 	int i;
+ 
+@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+ 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
+ 		struct vsock_sock *vsk;
+ 		list_for_each_entry(vsk, &vsock_connected_table[i],
+-				    connected_table)
++				    connected_table) {
++			if (vsk->transport != transport)
++				continue;
++
+ 			fn(sk_vsock(vsk));
++		}
  	}
- 	if (!get_ucounts(ucounts)) {
- 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
-+		allowed = 0;
- 		goto out;
+ 
+ 	spin_unlock_bh(&vsock_table_lock);
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index fb3302fff627..5afc194a58bb 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -24,6 +24,7 @@
+ static struct workqueue_struct *virtio_vsock_workqueue;
+ static struct virtio_vsock __rcu *the_virtio_vsock;
+ static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
++static struct virtio_transport virtio_transport; /* forward declaration */
+ 
+ struct virtio_vsock {
+ 	struct virtio_device *vdev;
+@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
+ 	switch (le32_to_cpu(event->id)) {
+ 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
+ 		virtio_vsock_update_guest_cid(vsock);
+-		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++		vsock_for_each_connected_socket(&virtio_transport.transport,
++						virtio_vsock_reset_sock);
+ 		break;
  	}
- 	allowed = 1;
+ }
+@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+ 	synchronize_rcu();
+ 
+ 	/* Reset all connected sockets when the device disappear */
+-	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++	vsock_for_each_connected_socket(&virtio_transport.transport,
++					virtio_vsock_reset_sock);
+ 
+ 	/* Stop all work handlers to make sure no one is accessing the device,
+ 	 * so we can safely call virtio_reset_device().
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 7aef34e32bdf..735d5e14608a 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -882,7 +882,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
+ 					 const struct vmci_event_data *e_data,
+ 					 void *client_data)
+ {
+-	vsock_for_each_connected_socket(vmci_transport_handle_detach);
++	vsock_for_each_connected_socket(&vmci_transport,
++					vmci_transport_handle_detach);
+ }
+ 
+ static void vmci_transport_recv_pkt_work(struct work_struct *work)
+
+base-commit: 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
 -- 
-2.23.0
+2.35.1.723.g4982287a31-goog
 
