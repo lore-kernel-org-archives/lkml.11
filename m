@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D638C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245039AbiCJRgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:36:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S243488AbiCJRhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiCJRgA (ORCPT
+        with ESMTP id S238533AbiCJRh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:36:00 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207C318F216
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:34:56 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V6pLX5X_1646933689;
-Received: from e18g06460.et15sqa.tbsite.net(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V6pLX5X_1646933689)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 11 Mar 2022 01:34:54 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH] erofs: silence warnings related to impossible m_plen
-Date:   Fri, 11 Mar 2022 01:34:48 +0800
-Message-Id: <20220310173448.19962-1-hsiangkao@linux.alibaba.com>
-X-Mailer: git-send-email 2.24.4
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 10 Mar 2022 12:37:28 -0500
+Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C5F18DA81;
+        Thu, 10 Mar 2022 09:36:27 -0800 (PST)
+Received: from 1nSMi8-0007OR-VX by out3d.electric.net with emc1-ok (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1nSMiA-0007RW-TQ; Thu, 10 Mar 2022 09:36:26 -0800
+Received: by emcmailer; Thu, 10 Mar 2022 09:36:26 -0800
+Received: from [66.210.251.27] (helo=mail.embeddedts.com)
+        by out3d.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <kris@embeddedTS.com>)
+        id 1nSMi8-0007OR-VX; Thu, 10 Mar 2022 09:36:24 -0800
+Received: from tsdebian (unknown [75.164.75.221])
+        by mail.embeddedts.com (Postfix) with ESMTPSA id 09C892F5C;
+        Thu, 10 Mar 2022 10:36:24 -0700 (MST)
+Message-ID: <1646933773.2804.1.camel@embeddedTS.com>
+Subject: Re: [PATCH v3 1/2] gpio: ts4900: Do not set DAT and OE together
+From:   Kris Bahnsen <kris@embeddedTS.com>
+Reply-To: kris@embeddedTS.com
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Featherston <mark@embeddedts.com>
+Date:   Thu, 10 Mar 2022 09:36:13 -0800
+In-Reply-To: <CAHp75Vdu1r0S2ZCjH2mjToYZiwQTOiUAvY5v-T7f=u28tVuxcQ@mail.gmail.com>
+References: <20220310011617.29660-1-kris@embeddedTS.com>
+         <20220310011617.29660-2-kris@embeddedTS.com>
+         <CAHp75Vdu1r0S2ZCjH2mjToYZiwQTOiUAvY5v-T7f=u28tVuxcQ@mail.gmail.com>
+Organization: embeddedTS
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.22.6-1+deb9u2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Outbound-IP: 66.210.251.27
+X-Env-From: kris@embeddedTS.com
+X-Proto: esmtps
+X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
+X-HELO: mail.embeddedts.com
+X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
+X-Authenticated_ID: 
+X-Virus-Status: Scanned by VirusSMART (c)
+X-Virus-Status: Scanned by VirusSMART (b)
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Mime-Version:References:In-Reply-To:Date:To:From:Message-ID; bh=1FAV9s0Divigxh+nUf89EO0OPgHVoo4GOAY0f7g9/+g=;b=cVMEJL4SBd2BYmBxpAnrk9srTZpa/0kDx6fP41R57+aiw+gtegXkiGKis1bK8DCMv32dJmxlv8SBLSaAIF0Euz3e132sfe3IBWh1B6a8pfwMwKWt8xugsz8LZh1eUvUliSbd50yaupMAB5BsG5ztkkqQz8fYspb2aWm7u75Myb/JnDtr9SEQ7R7hdXFCNn8uw1zxHvpMyA1pO0jqZNexTgpSWlEdOAhWIdFJrcAAB93deL0Yi9HHAfifxptqdDKNyDjZc3WARlXNuffRL2rwE/9xj8OveI+HDRxy7Wtii6BqvOqVr+pk7zWg/I4KUmiSP/3HawELuB8nOvbuESsbzw==;
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
+X-FM-Delivery-Delay: 15749372,23518412
+X-PolicySMART: 13164782, 15749372, 26810492
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dan reported two smatch warnings [1],
-.. warn: should '1 << lclusterbits' be a 64 bit type?
-.. warn: should 'm->compressedlcs << lclusterbits' be a 64 bit type?
+On Thu, 2022-03-10 at 16:48 +0200, Andy Shevchenko wrote:
+> On Thu, Mar 10, 2022 at 2:22 PM Kris Bahnsen <kris@embeddedts.com> wrote:
+> > 
+> > From: Mark Featherston <mark@embeddedTS.com>
+> 
+> Same comments as per v2.
+> 
 
-In practice, m_plen cannot be more than 1MiB due to on-disk constraint
-for the compression mode, so we're always safe here.
-
-In order to make static analyzers happy and don't report again,
-let's silence them instead.
-
-[1] https://lore.kernel.org/r/202203091002.lJVzsX6e-lkp@intel.com
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
----
- fs/erofs/zmap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/fs/erofs/zmap.c b/fs/erofs/zmap.c
-index 361b1d6e4bf9..b4059b9c3bac 100644
---- a/fs/erofs/zmap.c
-+++ b/fs/erofs/zmap.c
-@@ -494,7 +494,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
- 	     !(vi->z_advise & Z_EROFS_ADVISE_BIG_PCLUSTER_1)) ||
- 	    ((m->headtype == Z_EROFS_VLE_CLUSTER_TYPE_HEAD2) &&
- 	     !(vi->z_advise & Z_EROFS_ADVISE_BIG_PCLUSTER_2))) {
--		map->m_plen = 1 << lclusterbits;
-+		map->m_plen = 1ULL << lclusterbits;
- 		return 0;
- 	}
- 	lcn = m->lcn + 1;
-@@ -540,7 +540,7 @@ static int z_erofs_get_extent_compressedlen(struct z_erofs_maprecorder *m,
- 		return -EFSCORRUPTED;
- 	}
- out:
--	map->m_plen = m->compressedlcs << lclusterbits;
-+	map->m_plen = (u64)m->compressedlcs << lclusterbits;
- 	return 0;
- err_bonus_cblkcnt:
- 	erofs_err(m->inode->i_sb,
--- 
-2.24.4
-
+Thanks, I'll get a v4 put together shortly to clean that up.
