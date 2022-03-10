@@ -2,331 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B81C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244613AbiCJPBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:01:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
+        id S244855AbiCJPBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345658AbiCJPBJ (ORCPT
+        with ESMTP id S1343499AbiCJO6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:01:09 -0500
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925F6195300
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:54:29 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 822B2320152C;
-        Thu, 10 Mar 2022 09:54:26 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Thu, 10 Mar 2022 09:54:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=XU39pyNSH2eq0dpZIXSxiHRUSiX+T3Vk8Q3C8r
-        t+Bns=; b=CdIft1aMeCbNbv0TO9CvaUp7I/vx6dR/lleAnxB64oXWo9lTwWoDm6
-        9kITFan62pf5xs28GR3xKlM70GR1LzW7TZh54EtZGw2oWTJnpbBnG2fwtGGsGvA8
-        xJs4QEFUtr8uGIRWjhdkN2qHg5syw7WeOGvOjUGT+oF8TBvxY2d4vQNGl28R7mfb
-        Dj4v+m9dx0sYjPCHK3ATIouVWr3mDUYL4X8eLQDEJStXqfHOSTSsHp8Xa+77VyLc
-        VntM05EyJv9Swq95xCMsd76uwhGnyr2nKPE2x/HNhdEN2gntgqQlK5M0gi/XKEOp
-        QtNXkMAhCIFv24nkHE3ar00otwBJEtkg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=XU39pyNSH2eq0dpZI
-        XSxiHRUSiX+T3Vk8Q3C8rt+Bns=; b=Z3Uw/cWIDpaTLYnYF3mDsBTqDh9zytv6V
-        8TQVAtCYvRn9+HjBWI4hdeu64risYhJoPL2Pl9sQ1qRHl1erXO7YHbH/8rX8stl5
-        j618SgsPnkGslSchsAf5PESDsmFtSz79k2y1ktIjroVEaU9/g4awyKaQVzQRtg+I
-        7qk38DWtYw/soWgnWZJvYFxys96oel1gL7mGjl7hTEj0mZ5rLz46klHAGgDF5sEZ
-        hblc17lnZbTiZ/ffLLpe0sEwHBm9ST5s9mbmQkniZh/M4DcgAI9crz4t11G4jlXv
-        DBX4S3Da75b76tulpk+Ty0DFh8RpmM2i3QN8SPJXEDpvMJ5Gc9m3g==
-X-ME-Sender: <xms:IREqYlLII4_wXUYdQVRP-i6fHZ3O7FJV43mek-MS4KlgX-gHkvZ74Q>
-    <xme:IREqYhITxCfNZxRZ3vVao_3Tce5QF-9F3v6uxIZooBk-54ZYLN43eUD-XGPW3ecmM
-    ndPpCEYQ7g9VrtKKAg>
-X-ME-Received: <xmr:IREqYtuilj9KfTCQizpd4BjsMdVJsLO4QjRgk8A162uYN0gdTbBpZaP16WH1EzQXfDG-G7B3qk_32vdrKZc3KaqkxDCY_H04NngEwZI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvtddgieelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucdnkfhovfculdeitddmnecujfgurhepfffhvffukf
-    hfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceo
-    mhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepleekgeehhf
-    dutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieehgedunecuvehluhhsthgv
-    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnh
-    hordhtvggthh
-X-ME-Proxy: <xmx:IREqYmaFO7qZzP3Pn4nnriSVUKEZ6b1cVrHusG10Wp2uGHpQG8aHPA>
-    <xmx:IREqYsY0fW-0oqfQ2w9NAwVG5FxXl7d_OlhlV6hHfQPhfRAqFnu3AQ>
-    <xmx:IREqYqD4J9E-rTiPC5PJ3sVgqD-VfM4014WEZN5WIbtSP36zLmEGKge9ng>
-    <xmx:IhEqYs6FgPet8aiL5pB1xWaWfJG2pv5uRZQ147eSex_wx73B39peYg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 10 Mar 2022 09:54:25 -0500 (EST)
-Date:   Thu, 10 Mar 2022 15:54:23 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jagan Teki <jagan@amarulasolutions.com>
-Subject: Re: [PATCH] drm: of: Properly try all possible cases for
- bridge/panel detection
-Message-ID: <20220310145423.but7r7ul4j7h3wxw@houat>
-References: <20220309143200.111292-1-paul.kocialkowski@bootlin.com>
+        Thu, 10 Mar 2022 09:58:20 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4DC188854
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:52:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=t73Bn5PoTBPP0h6uAMsqu927EETHhd4aAadtdVAgAbI=; b=GtrxBXAPcQ6W9QFb4AnsRDaHP/
+        kiSQAqB0AS19/oFYHmdKvwDO9nCZOBWN+iU9DWJKEjVu1wtnxR4xlOv50QPKef4JQNoJAtQ8q8i6F
+        NfR0hD8PF29RiTIFK1TJiAGqOkJnr5YpeSPnLr+rCR4ommax42/RENOPa5qi413UKaDIC7aAkuAvQ
+        rqfx4QbnNO46yN5K/29ItPfhuunkjA+iqyTcy8AbeR0GEXk7KpM4gArnxD4xE8qrNmVJbesTSsNRT
+        8xcM5Ok6SSyr0AprRM+Pih8y8h6rUlYFsGd0z/kiZzkUpS9F+4kEu7mdn0TqfEhHPr5R++7oB93Hf
+        1D1uiTyQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSK8a-00DDWC-JW; Thu, 10 Mar 2022 14:51:32 +0000
+Date:   Thu, 10 Mar 2022 06:51:32 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        brijesh.singh@amd.com, x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 27/30] x86/kvm: Use bounce buffers for TD guest
+Message-ID: <YioQdNNiGZlAIuJG@infradead.org>
+References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
+ <20220302142806.51844-28-kirill.shutemov@linux.intel.com>
+ <f368d524-f676-d112-5bd0-0eeba6b77ff5@intel.com>
+ <65577d45-8b15-08b6-2de4-3ca820e4d7a3@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lgbhzcypjjo7srta"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220309143200.111292-1-paul.kocialkowski@bootlin.com>
+In-Reply-To: <65577d45-8b15-08b6-2de4-3ca820e4d7a3@amd.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 10, 2022 at 08:29:01AM -0600, Tom Lendacky wrote:
+> > void __init mem_encrypt_init(void)
+> > {
+> >          if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> 
+> If you make this cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT), then it should
+> work for both, I would think. If you use CC_ATTR_MEM_ENCRYPT, you'll force
+> bare-metal SME to always use bounce buffers when doing I/O. But SME can do
+> I/O to encrypted memory if the device supports 64-bit DMA or if the IOMMU is
+> being used, so we don't want to force SWIOTLB in this case.
 
---lgbhzcypjjo7srta
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Paul,
-
-On Wed, Mar 09, 2022 at 03:32:00PM +0100, Paul Kocialkowski wrote:
-> While bridge/panel detection was initially relying on the usual
-> port/ports-based of graph detection, it was recently changed to
-> perform the lookup on any child node that is not port/ports
-> instead when such a node is available, with no fallback on the
-> usual way.
->=20
-> This results in breaking detection when a child node is present
-> but does not contain any panel or bridge node, even when the
-> usual port/ports-based of graph is there.
->=20
-> In order to support both situations properly, this commit reworks
-> the logic to try both options and not just one of the two: it will
-> only return -EPROBE_DEFER when both have failed.
->=20
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> Fixes: 80253168dbfd ("drm: of: Lookup if child node has panel or bridge")
-
-Thanks, it's in pretty good shape now, but I have a few bike sheds to paint=
- :)
-
-> ---
->  drivers/gpu/drm/drm_of.c | 93 +++++++++++++++++++++-------------------
->  1 file changed, 49 insertions(+), 44 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-> index 9d90cd75c457..67f1b7dfc892 100644
-> --- a/drivers/gpu/drm/drm_of.c
-> +++ b/drivers/gpu/drm/drm_of.c
-> @@ -219,6 +219,35 @@ int drm_of_encoder_active_endpoint(struct device_nod=
-e *node,
->  }
->  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
-> =20
-> +static int drm_of_find_remote_panel_or_bridge(struct device_node *remote,
-> +					      struct drm_panel **panel,
-> +					      struct drm_bridge **bridge)
-
-This function performs its look up directly on the struct device_node
-passed as argument, so I don't think the "remote" in the name is great.
-Since it's static, we can just call it find_panel_or_bridge, what do you
-think?
-
-> +{
-> +	int ret =3D -EPROBE_DEFER;
-> +
-> +	if (panel) {
-> +		*panel =3D of_drm_find_panel(remote);
-> +		if (!IS_ERR(*panel))
-> +			ret =3D 0;
-
-return 0?
-
-> +		else
-> +			*panel =3D NULL;
-> +
-> +	}
-> +
-> +	/* No panel found yet, check for a bridge next. */
-> +	if (bridge) {
-> +		if (ret) {
-
-And the return above allows to remove that test
-
-> +			*bridge =3D of_drm_find_bridge(remote);
-> +			if (*bridge)
-> +				ret =3D 0;
-
-return 0?
-
-> +		} else {
-> +			*bridge =3D NULL;
-> +		}
-> +
-> +	}
-> +
-> +	return ret;
-
-And here we can just return -EPROBE_DEFER
-
-> +}
-> +
-
->  /**
->   * drm_of_find_panel_or_bridge - return connected panel or bridge device
->   * @np: device tree node containing encoder output ports
-> @@ -249,57 +278,33 @@ int drm_of_find_panel_or_bridge(const struct device=
-_node *np,
->  	if (panel)
->  		*panel =3D NULL;
-> =20
-> -	/**
-> -	 * Devices can also be child nodes when we also control that device
-> -	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
-> -	 *
-> -	 * Lookup for a child node of the given parent that isn't either port
-> -	 * or ports.
-> -	 */
-> -	for_each_available_child_of_node(np, remote) {
-> -		if (of_node_name_eq(remote, "port") ||
-> -		    of_node_name_eq(remote, "ports"))
-> -			continue;
-> -
-> -		goto of_find_panel_or_bridge;
-> +	/* Check for a graph on the device node first. */
-> +	if (of_graph_is_present(np)) {
-> +		remote =3D of_graph_get_remote_node(np, port, endpoint);
-> +		if (remote) {
-> +			ret =3D drm_of_find_remote_panel_or_bridge(remote, panel,
-> +								 bridge);
-> +			of_node_put(remote);
-> +		}
->  	}
-> =20
-> -	/*
-> -	 * of_graph_get_remote_node() produces a noisy error message if port
-> -	 * node isn't found and the absence of the port is a legit case here,
-> -	 * so at first we silently check whether graph presents in the
-> -	 * device-tree node.
-> -	 */
-> -	if (!of_graph_is_present(np))
-> -		return -ENODEV;
-> -
-> -	remote =3D of_graph_get_remote_node(np, port, endpoint);
-> -
-> -of_find_panel_or_bridge:
-> -	if (!remote)
-> -		return -ENODEV;
-> +	/* Otherwise check for any child node other than port/ports. */
-> +	if (ret) {
-> +		for_each_available_child_of_node(np, remote) {
-> +			if (of_node_name_eq(remote, "port") ||
-> +			    of_node_name_eq(remote, "ports"))
-> +				continue;
-> =20
-> -	if (panel) {
-> -		*panel =3D of_drm_find_panel(remote);
-> -		if (!IS_ERR(*panel))
-> -			ret =3D 0;
-> -		else
-> -			*panel =3D NULL;
-> -	}
-> +			ret =3D drm_of_find_remote_panel_or_bridge(remote, panel,
-> +								 bridge);
-> +			of_node_put(remote);
-> =20
-> -	/* No panel found yet, check for a bridge next. */
-> -	if (bridge) {
-> -		if (ret) {
-> -			*bridge =3D of_drm_find_bridge(remote);
-> -			if (*bridge)
-> -				ret =3D 0;
-> -		} else {
-> -			*bridge =3D NULL;
-> +			/* Stop at the first found occurrence. */
-> +			if (!ret)
-> +				break;
->  		}
-> -
->  	}
-> =20
-> -	of_node_put(remote);
->  	return ret;
->  }
-
-So the diff is fairly hard to read, but it ends up as:
-
->        int ret =3D -EPROBE_DEFER;
->        struct device_node *remote;
->
->        if (!panel && !bridge)
->                return -EINVAL;
->        if (panel)
->                *panel =3D NULL;
->
->        /* Check for a graph on the device node first. */
->       if (of_graph_is_present(np)) {
->                remote =3D of_graph_get_remote_node(np, port, endpoint);
->                if (remote) {
->                        ret =3D drm_of_find_remote_panel_or_bridge(remote,=
- panel,
->                                                                 bridge);
->                        of_node_put(remote);
-
-I think we can simplify this by doing
-
-                        if (!ret)
-			        return ret;
-
->                }
->        }
->
->        /* Otherwise check for any child node other than port/ports. */
->        if (ret) {
-
-And thus we won't have to check for ret here
-
->                for_each_available_child_of_node(np, remote) {
-
-I'm a bit reluctant with variables that we reuse from one loop to
-another, especially since it's a bit misleading here. What about using a
-(loop local) remote variable in the of_graph path, and a loop-local
-variable node or child here?
-
->                        if (of_node_name_eq(remote, "port") ||
->                            of_node_name_eq(remote, "ports"))
->                                continue;
->
->                        ret =3D drm_of_find_remote_panel_or_bridge(remote,=
- panel,
->                                                                 bridge);
->                        of_node_put(remote);
->
->                        /* Stop at the first found occurrence. */
->                        if (!ret)
->                                break;
-
-Ditto, let's just return here
-
->                }
->       }
->
->        return ret;
-
-And then we can just return EPROBE_DEFER here (and get rid of ret entirely)
-
-Maxime
-
---lgbhzcypjjo7srta
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYioRHwAKCRDj7w1vZxhR
-xRlZAP98YkMuA9DQnqs5EI61id1YvE2ZQ+/gLGD36nrQVxFZwgD/aq9ge2+PLPGL
-TJgiShNyXnzB5UY6045THZf+j0+wqgE=
-=IMzz
------END PGP SIGNATURE-----
-
---lgbhzcypjjo7srta--
+http://git.infradead.org/users/hch/misc.git/commitdiff/18b0547fe0467cb48e64ee403f50f2587fe04e3a
