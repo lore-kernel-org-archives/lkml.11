@@ -2,66 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 907DAC3526E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49D7C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242918AbiCJObn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        id S244300AbiCJO2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:28:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243704AbiCJO0M (ORCPT
+        with ESMTP id S243449AbiCJOZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:26:12 -0500
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EAA1390F8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:22:17 -0800 (PST)
-Received: by mail-il1-f200.google.com with SMTP id r16-20020a92ac10000000b002c1ec9fa8edso3313111ilh.23
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:22:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=pt6H2yEOvbchK2G/mDFNXqaD9NNW74OxNiZGPSNIUtM=;
-        b=OI0NOsjzrpVu91ftMRMTk+vMZoojOevoOIyQqNHn+etkLkojmjoe7G5M6YIjzLXV1s
-         fNI7OaFHVR5+JJMkfGIm8jBLdDX9RJp3Z8ZfcGQKAaXA9qLF4dTtkkA8c/pzSXuJPH31
-         ISkeQO/KRHp6bcdgXOCCkq8Kt/oHCrwZ+EVkBp2BICJsEBskGt/VvoWSbNeWHO2/8GM6
-         qip/3WqxoBcP0FVZ+K+vg5qLzQ2/4yNjh/RIM94fgN3z3EzLca46s7JDP5uAr7i1B5yt
-         KI8rSNhcQuXUVL1gHh6lZqMQpC7T1Zo12NaJzNABbGDCT7Z9XIBEcx73Oko3AB2vQEa9
-         N7Mw==
-X-Gm-Message-State: AOAM530gb5byGMcw/xI3Sex88QR7Sa4AjSsrjqMPgBR9mjFkxNloHCHA
-        J5TZ0w9rR6tX16J1D3iqf2E5t3RUUWgG+TFEHLjXhdLU9xXu
-X-Google-Smtp-Source: ABdhPJxO5gO8RMGycxaiSjpAHPo/WwHF1PocT7lXNL6skBMH8eWBmrdKDQXngaT1plEH6LU71jfsudv/ZUBdL904rx77l8dJrn1D
+        Thu, 10 Mar 2022 09:25:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E8B164D1E;
+        Thu, 10 Mar 2022 06:22:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7613461CF0;
+        Thu, 10 Mar 2022 14:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A44EC340E8;
+        Thu, 10 Mar 2022 14:21:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922099;
+        bh=wBLb1JgeLGCmIlJRSZ+nBqsfFArPm7x3PghLmULm8JI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=x8qjqkDInkyjbcI6kLsrI+zQI5413+4DWpE86yK4s0a7FcqXFrzwchyyT3zMBuEUo
+         mDrX26qFA5povs9YpPSSfzIB6rUR1EiZ46Wny9OloGx+pzjuLhJ8KuQt+hMYbwLYvX
+         wxVaPyt2+BJBLr66vwDv890RmoY1Bwn/S5KyB0M0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 4.14 08/31] x86/speculation: Update link to AMD speculation whitepaper
+Date:   Thu, 10 Mar 2022 15:18:21 +0100
+Message-Id: <20220310140807.776338487@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
+References: <20220310140807.524313448@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2192:b0:2bf:e954:5588 with SMTP id
- j18-20020a056e02219200b002bfe9545588mr3904031ila.101.1646922130772; Thu, 10
- Mar 2022 06:22:10 -0800 (PST)
-Date:   Thu, 10 Mar 2022 06:22:10 -0800
-In-Reply-To: <20220310084247.1148-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000093d7ec05d9ddf04f@google.com>
-Subject: Re: [syzbot] INFO: task hung in port100_probe
-From:   syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Kim Phillips <kim.phillips@amd.com>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+commit e9b6013a7ce31535b04b02ba99babefe8a8599fa upstream.
 
-Reported-and-tested-by: syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com
+Update the link to the "Software Techniques for Managing Speculation
+on AMD Processors" whitepaper.
 
-Tested on:
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/admin-guide/hw-vuln/spectre.rst |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-commit:         1db333d9 Merge tag 'spi-fix-v5.17-rc7' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=16438642a37fea1
-dashboard link: https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -60,8 +60,8 @@ privileged data touched during the specu
+ Spectre variant 1 attacks take advantage of speculative execution of
+ conditional branches, while Spectre variant 2 attacks use speculative
+ execution of indirect branches to leak privileged memory.
+-See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[7] <spec_ref7>`
+-:ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
++See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[6] <spec_ref6>`
++:ref:`[7] <spec_ref7>` :ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
+ 
+ Spectre variant 1 (Bounds Check Bypass)
+ ---------------------------------------
+@@ -746,7 +746,7 @@ AMD white papers:
+ 
+ .. _spec_ref6:
+ 
+-[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/90343-B_SoftwareTechniquesforManagingSpeculation_WP_7-18Update_FNL.pdf>`_.
++[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/Managing-Speculation-on-AMD-Processors.pdf>`_.
+ 
+ ARM white papers:
+ 
 
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+
