@@ -2,151 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344563AbiCJXJj (ORCPT
+        id S1344567AbiCJXKI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 18:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51364 "EHLO
+        Thu, 10 Mar 2022 18:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232714AbiCJXJe (ORCPT
+        with ESMTP id S243519AbiCJXKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 18:09:34 -0500
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE6F8119F3E;
-        Thu, 10 Mar 2022 15:08:32 -0800 (PST)
-Received: from dread.disaster.area (pa49-186-150-27.pa.vic.optusnet.com.au [49.186.150.27])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 73D1310E29AA;
-        Fri, 11 Mar 2022 10:08:23 +1100 (AEDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nSRtO-003xhf-9L; Fri, 11 Mar 2022 10:08:22 +1100
-Date:   Fri, 11 Mar 2022 10:08:22 +1100
-From:   Dave Chinner <david@fromorbit.com>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 03/13] mm/shmem: Support memfile_notifier
-Message-ID: <20220310230822.GO661808@dread.disaster.area>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-4-chao.p.peng@linux.intel.com>
+        Thu, 10 Mar 2022 18:10:06 -0500
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAEB186BAA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:09:04 -0800 (PST)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2dc0364d2ceso75896717b3.7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:09:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A3ve4hF4svjPt8CakjTgSzf8dJz57xeyB2FGYpaeJb0=;
+        b=gEB1gLA0FdjCgPy3zWGGNa3KIy69udUJ6FIHuBowtWH0cGHtAvuuorwNBRlI3ou+8f
+         H3648lFdKykLS5K8nx0H9Y7/GVWHxjI7NlAyXObVrEXHGi9I5Fslkz5zVbyzwc8Wpx09
+         SVyyT1TmZNuO/rT15keSPpO5U9dXtctApeBzCeo6werhg8/MigISwVcOSAl3yH2geFfN
+         USL9OcF9JIOkdVWTo3Etj+GGb9Q3jb5F+rTpG7L3rFEBl76Q2kIbx/KFxFXgpLGPuRob
+         cbm2OhKEGkwsNGbrXBCbA0PhRrIgPEJ5aqLJ6z3bgmzzmq3Ep8qrvG2LrvnlMehneEgQ
+         ikOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A3ve4hF4svjPt8CakjTgSzf8dJz57xeyB2FGYpaeJb0=;
+        b=4CVtU2hMIt0Tb1wsgySXvxFiL8JwPaLvgxyhE3X46q/Jh85gkeBRP3SD+88C5YPjra
+         0cepbUgWrZXO0BK0/AvQ5yRSRqeudTfZbi14KH2dB4ZRJBBzkjfiCewCzYE3BBzmm371
+         rx8IrhA6OykaUIj3dZuff2vgLmXvOLrnoDPd2BxSrWFgU+tSXi0utbMEv3DWRdzjNgRR
+         4vmB5BT8/ENGURNCeUnSW2rTHHdCM0w4du/cJhB3dIKya1gethuwi20d7Eh9SQ/iKXBs
+         BcyMEOaqeOh2kOXke1/NEd63qPbRcJgMt9g78kNT+EOXxc8iPY/wn6gdRvO901AJtGhB
+         bgjA==
+X-Gm-Message-State: AOAM533XyCUkxAUrC72T85Y3srZOxmdPJsLSJhL4abrL83YUpxGBbDEY
+        X0RYNFixNOQMczM8e/pT25IViPTWdHXwQ5jCsX0k/g==
+X-Google-Smtp-Source: ABdhPJwCtSwgu9r8faG8SvIuVPWd5xwsC9EnUbfTiNTJjUCEV7M/uQ5BWwibvj8iMrw3ZivWxwgdcA5lDex+qWFYvA0=
+X-Received: by 2002:a0d:db15:0:b0:2dc:b6e4:cd2f with SMTP id
+ d21-20020a0ddb15000000b002dcb6e4cd2fmr6420087ywe.118.1646953743812; Thu, 10
+ Mar 2022 15:09:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310140911.50924-4-chao.p.peng@linux.intel.com>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=622a84f0
-        a=sPqof0Mm7fxWrhYUF33ZaQ==:117 a=sPqof0Mm7fxWrhYUF33ZaQ==:17
-        a=kj9zAlcOel0A:10 a=o8Y5sQTvuykA:10 a=QyXUC8HyAAAA:8 a=7-415B0cAAAA:8
-        a=RCrhQ6IY2R1Uy-UsxHgA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+References: <20220227134726.27584-1-lecopzer.chen@mediatek.com>
+In-Reply-To: <20220227134726.27584-1-lecopzer.chen@mediatek.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 11 Mar 2022 00:08:52 +0100
+Message-ID: <CACRpkdasAGFDth-=eKgUFo+4c-638uo2RMbaUap6ent5mmBXbw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/2] arm: kasan: support CONFIG_KASAN_VMALLOC
+To:     Lecopzer Chen <lecopzer.chen@mediatek.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     linux-kernel@vger.kernel.org, andreyknvl@gmail.com,
+        anshuman.khandual@arm.com, ardb@kernel.org, dvyukov@google.com,
+        geert+renesas@glider.be, glider@google.com,
+        kasan-dev@googlegroups.com, linux-arm-kernel@lists.infradead.org,
+        linux@armlinux.org.uk, lukas.bulwahn@gmail.com,
+        mark.rutland@arm.com, masahiroy@kernel.org, matthias.bgg@gmail.com,
+        rmk+kernel@armlinux.org.uk, ryabinin.a.a@gmail.com,
+        yj.chiang@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:09:01PM +0800, Chao Peng wrote:
-> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> 
-> It maintains a memfile_notifier list in shmem_inode_info structure and
-> implements memfile_pfn_ops callbacks defined by memfile_notifier. It
-> then exposes them to memfile_notifier via
-> shmem_get_memfile_notifier_info.
-> 
-> We use SGP_NOALLOC in shmem_get_lock_pfn since the pages should be
-> allocated by userspace for private memory. If there is no pages
-> allocated at the offset then error should be returned so KVM knows that
-> the memory is not private memory.
-> 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> ---
->  include/linux/shmem_fs.h |  4 +++
->  mm/shmem.c               | 76 ++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 80 insertions(+)
-> 
-> diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
-> index 2dde843f28ef..7bb16f2d2825 100644
-> --- a/include/linux/shmem_fs.h
-> +++ b/include/linux/shmem_fs.h
-> @@ -9,6 +9,7 @@
->  #include <linux/percpu_counter.h>
->  #include <linux/xattr.h>
->  #include <linux/fs_parser.h>
-> +#include <linux/memfile_notifier.h>
->  
->  /* inode in-kernel data */
->  
-> @@ -28,6 +29,9 @@ struct shmem_inode_info {
->  	struct simple_xattrs	xattrs;		/* list of xattrs */
->  	atomic_t		stop_eviction;	/* hold when working on inode */
->  	unsigned int		xflags;		/* shmem extended flags */
-> +#ifdef CONFIG_MEMFILE_NOTIFIER
-> +	struct memfile_notifier_list memfile_notifiers;
-> +#endif
->  	struct inode		vfs_inode;
->  };
->  
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index 9b31a7056009..7b43e274c9a2 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -903,6 +903,28 @@ static struct folio *shmem_get_partial_folio(struct inode *inode, pgoff_t index)
->  	return page ? page_folio(page) : NULL;
->  }
->  
-> +static void notify_fallocate(struct inode *inode, pgoff_t start, pgoff_t end)
-> +{
-> +#ifdef CONFIG_MEMFILE_NOTIFIER
-> +	struct shmem_inode_info *info = SHMEM_I(inode);
-> +
-> +	memfile_notifier_fallocate(&info->memfile_notifiers, start, end);
-> +#endif
-> +}
+On Sun, Feb 27, 2022 at 2:48 PM Lecopzer Chen
+<lecopzer.chen@mediatek.com> wrote:
 
-*notify_populate(), not fallocate.  This is a notification that a
-range has been populated, not that the fallocate() syscall was run
-to populate the backing store of a file.
+> Since the framework of KASAN_VMALLOC is well-developed,
+> It's easy to support for ARM that simply not to map shadow of VMALLOC
+> area on kasan_init.
+>
+> Since the virtual address of vmalloc for Arm is also between
+> MODULE_VADDR and 0x100000000 (ZONE_HIGHMEM), which means the shadow
+> address has already included between KASAN_SHADOW_START and
+> KASAN_SHADOW_END.
+> Thus we need to change nothing for memory map of Arm.
+>
+> This can fix ARM_MODULE_PLTS with KASan, support KASan for higmem
+> and provide the first step to support CONFIG_VMAP_STACK with Arm.
+>
+>
+> Test on
+> 1. Qemu with memory 2G and vmalloc=500M for 3G/1G mapping.
+> 2. Qemu with memory 2G and vmalloc=500M for 3G/1G mapping + LPAE.
+> 3. Qemu with memory 2G and vmalloc=500M for 2G/2G mapping.
+>
+> v3:
+>     rebase on 5.17-rc5.
+>     Add simple doc for "arm: kasan: support CONFIG_KASAN_VMALLOC"
+>     Tweak commit message.
 
-i.e.  fallocate is the name of a userspace filesystem API that can
-be used to manipulate the backing store of a file in various ways.
-It can both populate and punch away the backing store of a file, and
-some operations that fallocate() can run will do both (e.g.
-FALLOC_FL_ZERO_RANGE) and so could generate both
-notify_invalidate() and a notify_populate() events.
+Ater testing this with my kernel-in-vmalloc patches and some hacks, I got
+the kernel booting in the VMALLOC area with KASan enabled!
+See:
+https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/log/?h=kernel-in-vmalloc-v5.17-rc1
 
-Hence "fallocate" as an internal mm namespace or operation does not
-belong anywhere in core MM infrastructure - it should never get used
-anywhere other than the VFS/filesystem layers that implement the
-fallocate() syscall or use it directly.
+That's a pretty serious stress test. So:
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+for the series.
 
-Cheers,
+I suppose you could put this into Russell's patch tracker, it's gonna be
+for kernel v5.19 by now but why stress. It seems I can fix up
+kernel-in-vmalloc on top and submit that for v5.19 as well.
 
-Dave.
-
--- 
-Dave Chinner
-david@fromorbit.com
+Yours,
+Linus Walleij
