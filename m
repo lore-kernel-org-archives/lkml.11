@@ -2,97 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245023AbiCJRYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        id S236751AbiCJRYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:24:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245153AbiCJRXN (ORCPT
+        with ESMTP id S245169AbiCJRXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:23:13 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF67199E00
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:22:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932925; x=1678468925;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jWzVVihtrzaKMh9/jDZar+4C30ohWv7mGzMK4BGPHdc=;
-  b=jZbY161V5QlXPjyR9dEiA7euU8cAWuWEWJWNIus07BKHNMx91XpLbb15
-   JHSlsswUngqOf4Hms1QVwo4zmHp/RiQicjl9hXA3JoZIQJH+vrHkSMR9G
-   RQhT+g4smETHBfHv1M/nKsb+/r+yghZgUsMG01p8KRdl8RQn1gcsNQZqa
-   dhP2zgWrI58R+RqpoitnW205mFf9ivDUqN/aXTcniRIqKldC6bFSytRHv
-   2EGKPXCb7dgYb7B47c5lfyOhcV5xHggOsWSZ673ty9l9/7EzXgkSC+vKE
-   j9xpbrH5fFAGIuGlbGy9X6D2IdkJE0tBVJ64rrnRoMvTprJDjcYCdDNFj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="252879600"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="252879600"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:22:04 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="815940932"
-Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:22:04 -0800
-From:   ira.weiny@intel.com
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V9 45/45] devdax: Enable stray access protection
-Date:   Thu, 10 Mar 2022 09:20:19 -0800
-Message-Id: <20220310172019.850939-46-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
-References: <20220310172019.850939-1-ira.weiny@intel.com>
+        Thu, 10 Mar 2022 12:23:14 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBC6199E0D;
+        Thu, 10 Mar 2022 09:22:05 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id F04C31F45971
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646932924;
+        bh=i/m/QTnQZtO4pBYr23EP3F44855Vs8iYB2YeC5Sa160=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=lQNDzoqQcQHi40W8Q9fdlv96g/Qst7bGRrx7JPFO2XzG8cMyCq2/ljTUvOXR/3h6o
+         Q74NFnvFP+tWixKoVB8+4HgPFZZgqKYQDWyisnA10wrjz2r80y4OmnBBQ0ShSylOq7
+         o/J00VuAaH3/YLLFbNmRIjvHxGL8oXs+VjFpz4UgjCK3hLKefJoTiLNua9luhZT70Z
+         MPSFaZfACdLIC+p5CRmtJmNyiEiTkgOhe5zSuYc9Y6pSXdL0P0nn0tU5ARwrQKceSg
+         mGY8CbJbATym5tGu7VP54KoaA3rfzv5iQ8XOmcQ6wIRKo+JOI7+5AsxhVZuUirgC88
+         sSk+UGbI3Xb4A==
+Message-ID: <62c11336-cac1-8501-19fe-980ebfa050e9@collabora.com>
+Date:   Thu, 10 Mar 2022 22:21:57 +0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Cc:     usama.anjum@collabora.com, Shuah Khan <shuah@kernel.org>,
+        kernel@collabora.com, kernelci@groups.io,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] selftests/lkdtm: add config and turn off
+ CFI_FORWARD_PROTO
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>
+References: <20220217205620.2512094-1-usama.anjum@collabora.com>
+ <202203091122.A51B31230A@keescook>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <202203091122.A51B31230A@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+On 3/10/22 12:22 AM, Kees Cook wrote:
+> On Fri, Feb 18, 2022 at 01:56:19AM +0500, Muhammad Usama Anjum wrote:
+>> Add config options which are needed for LKDTM sub-tests.
+>> STACKLEAK_ERASING test needs GCC_PLUGIN_STACKLEAK config.
+>> READ_AFTER_FREE and READ_BUDDY_AFTER_FREE tests need
+>> INIT_ON_FREE_DEFAULT_ON config.
+>>
+>> CFI_FORWARD_PROTO always fails as there is no active CFI system of some
+>> kind. Turn it off for now by default until proper support.
+> 
+> Building under LTO Clang on arm64, this is available. What's the right
+> way to add a CONFIG that isn't always available?
+> 
+> -Kees
+Yeah, as you had mentioned
+(https://github.com/kernelci/kernelci-project/issues/84#issuecomment-1042015431):
 
-Device dax is primarily accessed through user space and kernel access is
-controlled through the kmap interfaces.
+CFI_FORWARD_PROTO is going to fail unless there is an active CFI system
+in place of some kind. Right now this depends on arm64+Clang. In the
+future, this will be arch-agnostic+Clang, but for the moment, it should
+be safe to exclude this test.
 
-Now that all valid kernel initiated access to dax devices have been
-accounted for, turn on PGMAP_PKEYS_PROTECT for device dax.
+In this patch, I'm turning off CFI_FORWARD_PROTO by default here. We can
+re-enable it when it becomes arch agnostic. CFI_FORWARD_PROTO cannot be
+turned off by using a config. Please let me know your thoughts otherwise.
 
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
----
-Changes for V9
-	Add Review tag
-
-Changes for V8
-	Rebase to 5.17-rc1
-	Use pgmap_protection_available()
-	s/PGMAP_PKEYS_PROTECT/PGMAP_PROTECTION/
----
- drivers/dax/device.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/dax/device.c b/drivers/dax/device.c
-index d33a0613ed0c..cee375ef2cac 100644
---- a/drivers/dax/device.c
-+++ b/drivers/dax/device.c
-@@ -452,6 +452,8 @@ int dev_dax_probe(struct dev_dax *dev_dax)
- 	if (dev_dax->align > PAGE_SIZE)
- 		pgmap->vmemmap_shift =
- 			order_base_2(dev_dax->align >> PAGE_SHIFT);
-+	if (pgmap_protection_available())
-+		pgmap->flags |= PGMAP_PROTECTION;
- 	addr = devm_memremap_pages(dev, pgmap);
- 	if (IS_ERR(addr))
- 		return PTR_ERR(addr);
 -- 
-2.35.1
-
+Muhammad Usama Anjum
