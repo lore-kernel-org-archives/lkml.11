@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F86C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2722C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243275AbiCJOgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:36:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
+        id S238270AbiCJOgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:36:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244952AbiCJO3l (ORCPT
+        with ESMTP id S244828AbiCJO3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:29:41 -0500
+        Thu, 10 Mar 2022 09:29:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9826156963;
-        Thu, 10 Mar 2022 06:25:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04B71405C1;
+        Thu, 10 Mar 2022 06:24:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B64BB8267B;
-        Thu, 10 Mar 2022 14:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1461C340E8;
-        Thu, 10 Mar 2022 14:24:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A005BB82683;
+        Thu, 10 Mar 2022 14:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A544C340E8;
+        Thu, 10 Mar 2022 14:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922296;
-        bh=BjhNuDswWhutw0Va1gA9M+7Vl6Iaj6ZmKGq889IWLoA=;
+        s=korg; t=1646922280;
+        bh=4V4EDjYNF4xqOm3IhKKiac1VO/Sb5F21Yw8VdkksPQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ma3yPSCd2gHee7LBAY3vHmWZ38u4+yYbQsbD8Xz5En6PlAfpGWCRIVa44xzyAWuGY
-         e6uIurMcZlzYh66dGILTw/Rs0mbYJD8oTiYwttKlZ1oo/H/Q7F1Y4Xnv8E5lORkRZn
-         WGrdZRvdZQzz2Kvo0rm8J87K1Y9xCKr0IUkFDiNE=
+        b=w3saS5Xj6cZUEJmIogVuASiA4vDsDsFN4TO3t8d5GL0HLAq+ymny/ykwUU6u/gsYC
+         KhlPP33jdOAavEet9LKbsR8NQbtx6R7GNbJPYhg+hQ+CTt2dAqN4EiHOHbC4B1bqLu
+         7mt3pntsW0983THvTRDBKThOrMiadtbYJmKzaj34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>
-Subject: [PATCH 5.10 15/58] arm64: cputype: Add CPU implementor & types for the Apple M1 cores
-Date:   Thu, 10 Mar 2022 15:18:35 +0100
-Message-Id: <20220310140813.310046847@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 28/58] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+Date:   Thu, 10 Mar 2022 15:18:48 +0100
+Message-Id: <20220310140813.678468825@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -48,50 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: James Morse <james.morse@arm.com>
 
-commit 11ecdad722daafcac09c4859dddf31b3d46449bc upstream.
+commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
 
-The implementor will be used to condition the FIQ support quirk.
+Systems using kpti enter and exit the kernel through a trampoline mapping
+that is always mapped, even when the kernel is not. tramp_valias is a macro
+to find the address of a symbol in the trampoline mapping.
 
-The specific CPU types are not used at the moment, but let's add them
-for documentation purposes.
+Adding extra sets of vectors will expand the size of the entry.tramp.text
+section to beyond 4K. tramp_valias will be unable to generate addresses
+for symbols beyond 4K as it uses the 12 bit immediate of the add
+instruction.
 
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Hector Martin <marcan@marcan.st>
+As there are now two registers available when tramp_alias is called,
+use the extra register to avoid the 4K limit of the 12 bit immediate.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cputype.h |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/kernel/entry.S |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -59,6 +59,7 @@
- #define ARM_CPU_IMP_NVIDIA		0x4E
- #define ARM_CPU_IMP_FUJITSU		0x46
- #define ARM_CPU_IMP_HISI		0x48
-+#define ARM_CPU_IMP_APPLE		0x61
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -128,9 +128,12 @@
+ .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
+ 	.endm
  
- #define ARM_CPU_PART_AEM_V8		0xD0F
- #define ARM_CPU_PART_FOUNDATION		0xD00
-@@ -99,6 +100,9 @@
+-	.macro tramp_alias, dst, sym
++	.macro tramp_alias, dst, sym, tmp
+ 	mov_q	\dst, TRAMP_VALIAS
+-	add	\dst, \dst, #(\sym - .entry.tramp.text)
++	adr_l	\tmp, \sym
++	add	\dst, \dst, \tmp
++	adr_l	\tmp, .entry.tramp.text
++	sub	\dst, \dst, \tmp
+ 	.endm
  
- #define HISI_CPU_PART_TSV110		0xD01
+ 	/*
+@@ -367,10 +370,10 @@ alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+ 	msr	far_el1, x29
+-	tramp_alias	x30, tramp_exit_native
++	tramp_alias	x30, tramp_exit_native, x29
+ 	br	x30
+ 4:
+-	tramp_alias	x30, tramp_exit_compat
++	tramp_alias	x30, tramp_exit_compat, x29
+ 	br	x30
+ #endif
+ 	.else
+@@ -1131,7 +1134,7 @@ alternative_if_not ARM64_UNMAP_KERNEL_AT
+ alternative_else_nop_endif
  
-+#define APPLE_CPU_PART_M1_ICESTORM	0x022
-+#define APPLE_CPU_PART_M1_FIRESTORM	0x023
-+
- #define MIDR_CORTEX_A53 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A53)
- #define MIDR_CORTEX_A57 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A57)
- #define MIDR_CORTEX_A72 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A72)
-@@ -127,6 +131,8 @@
- #define MIDR_NVIDIA_CARMEL MIDR_CPU_MODEL(ARM_CPU_IMP_NVIDIA, NVIDIA_CPU_PART_CARMEL)
- #define MIDR_FUJITSU_A64FX MIDR_CPU_MODEL(ARM_CPU_IMP_FUJITSU, FUJITSU_CPU_PART_A64FX)
- #define MIDR_HISI_TSV110 MIDR_CPU_MODEL(ARM_CPU_IMP_HISI, HISI_CPU_PART_TSV110)
-+#define MIDR_APPLE_M1_ICESTORM MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_ICESTORM)
-+#define MIDR_APPLE_M1_FIRESTORM MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_FIRESTORM)
- 
- /* Fujitsu Erratum 010001 affects A64FX 1.0 and 1.1, (v0r0 and v1r0) */
- #define MIDR_FUJITSU_ERRATUM_010001		MIDR_FUJITSU_A64FX
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline
++	tramp_alias	dst=x5, sym=__sdei_asm_exit_trampoline, tmp=x3
+ 	br	x5
+ #endif
+ SYM_CODE_END(__sdei_asm_handler)
 
 
