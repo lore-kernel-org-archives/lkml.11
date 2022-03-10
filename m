@@ -2,95 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC534C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245000AbiCJR16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:27:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        id S236248AbiCJR2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:28:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244915AbiCJR1q (ORCPT
+        with ESMTP id S244401AbiCJR2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:27:46 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DAA419BD
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:26:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646933205; x=1678469205;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5S2JUl9ToaDXhYDPYQuADaloWOS3nI2kB7v8hrMXauY=;
-  b=NjMw/3K3UsqbCaq+u+yCHG3cUybGOFPUrXYkvzNdqsJT3IsdEOP9CJ5d
-   pJsv2Ql5fF2M0gF/6K7rzvvUUEAGeOAsqDo+uz7pmynrT4H0cItEDXlsQ
-   Q0mBGzuj8uRKHaz70nPXM4dzafDFm7EJln+SESe4gfSLDfsh77Lk7Od0I
-   NZs6lSYk7gE/TP09hjTEdf2qfsvgpvhjllR8qWCJDTime67RcPTzWV3wX
-   PKXE1/uSE9aaVNpsqg9DQ4FKezWpPTeKYmaq/NCkKYnzxkGpe5xs7OfaZ
-   QQ0aDrhX4+Y4yhAF3qTigct7fnxgcNyZyDuKuhdE3tdiVYIrbMjBoo/ZW
+        Thu, 10 Mar 2022 12:28:46 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0BDB3E5F;
+        Thu, 10 Mar 2022 09:27:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646933264; x=1678469264;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UIbApzBbc+Vluf22x9IDYn+1LabeJBGdywRMKw75SoA=;
+  b=wKkZr47gF7MuidYPkJFVO1SfeFHxtEn0Dv1HgddNNb8U8T+4wb6ml9mV
+   UgUarHpeHu2SZP81YVNA/PdxbdYqU64jnKAzBqnifp2zgnlH/nX5NAxuk
+   908hMm2/VtMULusG3cLSNxqX8Y7Nxy5oaNwiZc2DSCJADNctsrW4HB9Mr
+   GEueAyNu4sR/Ii5GD+dcdkx0qNrPwg9304Nj4WQ0iJHIY4Qz3FcNG2lTX
+   sZafgnV9v6WK0n97hH9Op1h54gPfkXBNjJ0DN74eXwpcOmy4zYagLn8ua
+   Pfy2jo3kODjT62t0Gb6G9xDTrlBQC7QGpqrWZ0AF8Lr0E7bgbcXY8/t6+
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="252880822"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="252880822"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:26:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="548093052"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 10 Mar 2022 09:26:33 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSMYa-0005D3-LO; Thu, 10 Mar 2022 17:26:32 +0000
-Date:   Fri, 11 Mar 2022 01:25:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     glider <glider@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.14-stable
- 4757/9999] gcc-7: error: unrecognized command line option
- '-ftrivial-auto-var-init=pattern'
-Message-ID: <202203110155.PXGwFPtQ-lkp@intel.com>
+X-IronPort-AV: E=Sophos;i="5.90,171,1643698800"; 
+   d="scan'208";a="165312186"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 10:27:43 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 10 Mar 2022 10:27:42 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 10:27:36 -0700
+Message-ID: <5e6a9cc0d6c1c6928cafd83fe34c8a545198c3d9.camel@microchip.com>
+Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings
+ for microchip lan937x
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>, <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>,
+        <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>
+Date:   Thu, 10 Mar 2022 22:57:36 +0530
+In-Reply-To: <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+         <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
+         <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
+         <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
+         <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
+         <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi glider,
+Hi Rob/Florian,
 
-FYI, the error/warning still remains.
+On Wed, 2022-03-02 at 17:11 +0530, Prasanna Vengateshan wrote:
+> Hi Rob and Florian,
+> 
+> On Fri, 2022-02-11 at 19:56 -0800, Florian Fainelli wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> > content is safe
+> > 
+> > On 2/9/2022 3:58 AM, Prasanna Vengateshan wrote:
+> > > On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
+> > > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
+> > > > the
+> > > > content is safe
+> > > > 
+> > > > On 2/7/2022 9:21 AM, Prasanna Vengateshan wrote:
+> > > > > Documentation in .yaml format and updates to the MAINTAINERS
+> > > > > Also 'make dt_binding_check' is passed.
+> > > > > 
+> > > > > RGMII internal delay values for the mac is retrieved from
+> > > > > rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
+> > > > > v3 patch series.
+> > > > > https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
+> > > > > 
+> > > > > It supports only the delay value of 0ns and 2ns.
+> > > > > 
+> > > > > Signed-off-by: Prasanna Vengateshan <
+> > > > > prasanna.vengateshan@microchip.com>
+> > > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > > ---
+> > > > >    .../bindings/net/dsa/microchip,lan937x.yaml   | 179
+> > > > > ++++++++++++++++++
+> > > > >    MAINTAINERS                                   |   1 +
+> > > > >    2 files changed, 180 insertions(+)
+> > > > >    create mode 100644
+> > > > > Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> > > > > 
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  mdio:
+> > > > > +    $ref: /schemas/net/mdio.yaml#
+> > > > > +    unevaluatedProperties: false
+> > > > 
+> > > > This should be moved to dsa.yaml since this is about describing the
+> > > > switch's internal MDIO bus controller. This is applicable to any switch,
+> > > > really.
+> > > 
+> > > Thanks for your review and feedback. Do you mean that 'mdio' to be added
+> > > in
+> > > dsa.yaml instead adding here?
+> > 
+> > Yes indeed, since this is a common property of all DSA switches, it can
+> > be defined or not depending on whether the switch does have an internal
+> > MDIO bus controller or not.
+> > 
+> > > 
+> > > > 
+> > > > > +
+> > > > > +patternProperties:
+> > > > > +  "^(ethernet-)?ports$":
+> > > > > +    patternProperties:
+> > > > > +      "^(ethernet-)?port@[0-7]+$":
+> > > > > +        allOf:
+> > > > > +          - if:
+> > > > > +              properties:
+> > > > > +                phy-mode:
+> > > > > +                  contains:
+> > > > > +                    enum:
+> > > > > +                      - rgmii
+> > > > > +                      - rgmii-rxid
+> > > > > +                      - rgmii-txid
+> > > > > +                      - rgmii-id
+> > > > > +            then:
+> > > > > +              properties:
+> > > > > +                rx-internal-delay-ps:
+> > > > > +                  $ref: "#/$defs/internal-delay-ps"
+> > > > > +                tx-internal-delay-ps:
+> > > > > +                  $ref: "#/$defs/internal-delay-ps"
+> > > > 
+> > > > Likewise, this should actually be changed in ethernet-controller.yaml
+> > > 
+> > > There is *-internal-delay-ps property defined for mac in ethernet-
+> > > controller.yaml. Should that be changed like above?
+> > 
+> > It seems to me that these properties override whatever 'phy-mode'
+> > property is defined, but in premise you are right that this is largely
+> > applicable to RGMII only. I seem to recall that the QCA8K driver had
+> > some sort of similar delay being applied even in SGMII mode but I am not
+> > sure if we got to the bottom of this.
+> > 
+> > Please make sure that this does not create regressions for other DTS in
+> > the tree before going with that change in ethernet-controller.yaml.
+> > 
+> 
+> I just tried changing rx-internal-delay-ps & tx-internal-delay-ps on
+> conditional
+> basis like above in the ethernet-controller.yaml and it passed 'make
+> dt_binding_check' as well. 
+> 
+> It would be like below if existing *-internal-delay-ps are removed from
+> ethernet-controller.yaml.
+> 
+> allOf:
+>   - if:
+>       properties:
+>         phy-mode:
+>           contains:
+>             enum:
+>               - rgmii
+>               - rgmii-rxid
+>               - rgmii-txid
+>               - rgmii-id
+>             then:
+>               properties:
+>                 rx-internal-delay-ps:
+>                   description:
+>                     RGMII Receive Clock Delay defined in pico seconds.This is 
+>                     used for controllers that have configurable RX internal 
+>                     delays. If this property is present then the MAC applies 
+>                     the RX delay.
+>                 tx-internal-delay-ps:
+>                   description:
+>                     RGMII Transmit Clock Delay defined in pico seconds.This is
+>                     used for controllers that have configurable TX internal
+>                     delays. If this property is present then the MAC applies
+>                     the TX delay.   
+> 
+> After the above changes, these two properties descriptions are different
+> compare
+> to other properties. So i just wanted to know whether i am following the right
+> approach or are there any other proposal available? Thanks.
+> 
+> Prasanna V
+> 
+Is the above method looking good? Your feedback will be helpful. Thanks.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.14-stable
-head:   cb5d0103b1f8fc3aa997a696472fd774c67a1b1f
-commit: a7eda6eddca559c1c3a897a35692f9d49d46c9dd [4757/9999] BACKPORT: security: allow using Clang's zero initialization for stack variables
-config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220311/202203110155.PXGwFPtQ-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/a7eda6eddca559c1c3a897a35692f9d49d46c9dd
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.14-stable
-        git checkout a7eda6eddca559c1c3a897a35692f9d49d46c9dd
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 prepare
+Prasanna V
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> gcc-7: error: unrecognized command line option '-ftrivial-auto-var-init=pattern'
-   make[2]: *** [./Kbuild:22: kernel/bounds.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1214: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:146: sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
