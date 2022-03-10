@@ -2,843 +2,1013 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F717C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89399C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240663AbiCJJIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:08:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S240670AbiCJJIP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:08:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240666AbiCJJHv (ORCPT
+        with ESMTP id S240706AbiCJJH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:07:51 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FE9138588;
-        Thu, 10 Mar 2022 01:06:48 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KDjqV6D1Fz4xLX;
-        Thu, 10 Mar 2022 20:06:46 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1646903207;
-        bh=wd2HWGRjdLGcDMc+IRskuUWy7m7xn99l4OYZaCSoxz8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tieAkt9hamg5S7P9Se44detOjYH6hpvtKIhGgPFxzi+rZjaQDWekynzdo93F4z3ZT
-         JxQuuYlBye9ghSFKF9WBckP6dkGmtkgeBMrTmbFe7wkadpX0mRjW45WPei0cvNSww1
-         4xTvo8DoPJIcYokXkTEDhmnSObUtGw2mvgbQ5LYnSF9UKQjRwtGZ9PJXspjURdetPy
-         LQlL7F71z9xfwp/JDeEgzlW8kCIYrLIHrOyXoJ0H/uS+qUxJypOSwTKBvt7MQbX0zr
-         Nuet4ZbT3lUTUi1LUeXMvsxUea9xeQsZy+QjRsfIc/ReO7/LHDKMt9XHlaSbKjovCF
-         1ExtLnXZ4cGdQ==
-Date:   Thu, 10 Mar 2022 20:06:46 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: Tree for Mar 10
-Message-ID: <20220310200646.564068d8@canb.auug.org.au>
+        Thu, 10 Mar 2022 04:07:56 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0499F138588;
+        Thu, 10 Mar 2022 01:06:53 -0800 (PST)
+Received: from quad ([82.142.8.122]) by mrelayeu.kundenserver.de (mreue109
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1Macay-1nzdTZ3jWk-00c6Ge; Thu, 10
+ Mar 2022 10:00:56 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <john.stultz@linaro.org>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v15 5/5] m68k: introduce a virtual m68k machine
+Date:   Thu, 10 Mar 2022 10:00:48 +0100
+Message-Id: <20220310090048.1933020-6-laurent@vivier.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310090048.1933020-1-laurent@vivier.eu>
+References: <20220310090048.1933020-1-laurent@vivier.eu>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/d6UfjzQfabrKXu+4y.O9w=_";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:o0W1bKbKVmAx1FzRBBTB+YRGPUh3Ef5CxlFCAHOo3q7f38K/ZGx
+ p0FNCp2HVukKXvsm21kHUby73g6tReQoLSnE5Hiw4gRg3UjQ9VfStHviOhZ0SHRrT5V8pvZ
+ TipfkZp0wJHGs0SAsuQKqAsQ84vkyohj9znP/zCWttyc69uei0jrFp6D01CSzAkjNexSuJM
+ Qd7+B4qZwfAyGgvPY927w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:C02DYTLq1G4=:hccwqmO/XxrKL5jexhuPB3
+ ZiyJdTsBMAuwRfh78gm54RDquDeC6jHTpiIxClf7UWGFZ4sLj3wjusEqN4hccmp6+IdKjJrNc
+ 06NbSUBVp0IMQQSJWdFHkwlSS6yxWla+24zyqiljXlrMZC7l7m/FsksqGHOc+C+UTQzBZOuvn
+ PSTtTFdzEUti9o0GhPmSzbHyUcn70fU9vpUewm6CeIzFg/dBwJ5+2sKOnW4yHsywoPw41ky2M
+ DafKum3lgXKnpgjzDj/c6WtUQ7R6cJ6Udwa1csPh39MJb/46PxVQLwF2r1pYiZL5BLCMZ+lfA
+ Oh6f3L9YYlrPTILWefxNGRhbJbBjeTaKxI6wk0vLbtRmlCOraPflO4gPM+cSCSsnzUKn6Eq4Z
+ oCb53SKLI/TwVPH1QVIgVouozwNBxLslZV9Uymm6iul/0+EVOrGcxvoEzz1Q9DuQIj50f/ojF
+ CCZMBu+lZinWDCkz0uNyNRezLau1MP8Rwxqwx7mnDXBolAi310q5XSzdyMFikdckSu90ZXoOL
+ c7qf+8bpBSIgvOp4Bo7WSydCcCLXrS7lMyOJp285ZEgzCC1mWCSmmsqsholNVG4p9sjobYjmj
+ Zq+lRpNILXRk5YQ/Z6/WjFE8gvxbtWwzO+mDqhfd+R4z9vJY/a1iViAd+Hiesi60/EM/Xkwwo
+ 5XfQVkLoKICdJjgZ5pBrwnhgYMC6p1P7HgmgU6+3GBBV6fY3hsz5c1xXc3ZwZVKp4daA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/d6UfjzQfabrKXu+4y.O9w=_
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This machine allows to have up to 3.2 GiB and 128 Virtio devices.
 
-Hi all,
+It is based on android goldfish devices.
 
-Changes since 20220309:
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ arch/m68k/Kbuild                           |   1 +
+ arch/m68k/Kconfig.machine                  |  17 +++
+ arch/m68k/configs/virt_defconfig           |  68 +++++++++
+ arch/m68k/include/asm/config.h             |   2 +
+ arch/m68k/include/asm/io.h                 |   3 +
+ arch/m68k/include/asm/irq.h                |   3 +-
+ arch/m68k/include/asm/pgtable_mm.h         |   7 +
+ arch/m68k/include/asm/setup.h              |  44 ++++--
+ arch/m68k/include/asm/virt.h               |  25 ++++
+ arch/m68k/include/uapi/asm/bootinfo-virt.h |  18 +++
+ arch/m68k/include/uapi/asm/bootinfo.h      |   1 +
+ arch/m68k/kernel/Makefile                  |   1 +
+ arch/m68k/kernel/head.S                    |  31 +++++
+ arch/m68k/kernel/setup_mm.c                |   7 +
+ arch/m68k/mm/kmap.c                        |  21 ++-
+ arch/m68k/virt/Makefile                    |   6 +
+ arch/m68k/virt/config.c                    | 130 +++++++++++++++++
+ arch/m68k/virt/ints.c                      | 155 +++++++++++++++++++++
+ arch/m68k/virt/platform.c                  |  72 ++++++++++
+ 19 files changed, 595 insertions(+), 17 deletions(-)
+ create mode 100644 arch/m68k/configs/virt_defconfig
+ create mode 100644 arch/m68k/include/asm/virt.h
+ create mode 100644 arch/m68k/include/uapi/asm/bootinfo-virt.h
+ create mode 100644 arch/m68k/virt/Makefile
+ create mode 100644 arch/m68k/virt/config.c
+ create mode 100644 arch/m68k/virt/ints.c
+ create mode 100644 arch/m68k/virt/platform.c
 
-The net-next tree gained a conflict against the net tree.
+diff --git a/arch/m68k/Kbuild b/arch/m68k/Kbuild
+index 18abb35c26a1..7762af9f6def 100644
+--- a/arch/m68k/Kbuild
++++ b/arch/m68k/Kbuild
+@@ -17,3 +17,4 @@ obj-$(CONFIG_M68060)		+= ifpsp060/
+ obj-$(CONFIG_M68KFPU_EMU)	+= math-emu/
+ obj-$(CONFIG_M68000)		+= 68000/
+ obj-$(CONFIG_COLDFIRE)		+= coldfire/
++obj-$(CONFIG_VIRT)		+= virt/
+diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
+index eeab4f3e6c19..188a8f8a0104 100644
+--- a/arch/m68k/Kconfig.machine
++++ b/arch/m68k/Kconfig.machine
+@@ -149,6 +149,23 @@ config SUN3
+ 
+ 	  If you don't want to compile a kernel exclusively for a Sun 3, say N.
+ 
++config VIRT
++	bool "Virtual M68k Machine support"
++	depends on MMU
++	select GENERIC_CLOCKEVENTS
++	select GOLDFISH
++	select GOLDFISH_TIMER
++	select GOLDFISH_TTY
++	select M68040
++	select MMU_MOTOROLA if MMU
++	select RTC_CLASS
++	select RTC_DRV_GOLDFISH
++	select TTY
++	select VIRTIO_MMIO
++	help
++	  This options enable a pure virtual machine based on m68k,
++	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC)
++
+ config PILOT
+ 	bool
+ 
+diff --git a/arch/m68k/configs/virt_defconfig b/arch/m68k/configs/virt_defconfig
+new file mode 100644
+index 000000000000..8059bd618370
+--- /dev/null
++++ b/arch/m68k/configs/virt_defconfig
+@@ -0,0 +1,68 @@
++CONFIG_LOCALVERSION="-virt"
++CONFIG_SYSVIPC=y
++CONFIG_CGROUPS=y
++CONFIG_BLK_CGROUP=y
++CONFIG_CGROUP_SCHED=y
++CONFIG_CGROUP_PIDS=y
++CONFIG_CGROUP_RDMA=y
++CONFIG_CGROUP_FREEZER=y
++CONFIG_CGROUP_DEVICE=y
++CONFIG_CGROUP_CPUACCT=y
++CONFIG_VIRT=y
++CONFIG_PROC_HARDWARE=y
++CONFIG_PARTITION_ADVANCED=y
++CONFIG_AMIGA_PARTITION=y
++CONFIG_ATARI_PARTITION=y
++CONFIG_MAC_PARTITION=y
++CONFIG_BSD_DISKLABEL=y
++CONFIG_MINIX_SUBPARTITION=y
++CONFIG_SOLARIS_X86_PARTITION=y
++CONFIG_UNIXWARE_DISKLABEL=y
++CONFIG_LDM_PARTITION=y
++CONFIG_LDM_DEBUG=y
++CONFIG_SUN_PARTITION=y
++CONFIG_SYSV68_PARTITION=y
++CONFIG_NET=y
++CONFIG_PACKET=y
++CONFIG_UNIX=y
++CONFIG_INET=y
++CONFIG_IP_PNP=y
++CONFIG_IP_PNP_DHCP=y
++CONFIG_IP_PNP_BOOTP=y
++CONFIG_CGROUP_NET_PRIO=y
++CONFIG_CGROUP_NET_CLASSID=y
++CONFIG_NET_9P=y
++CONFIG_NET_9P_VIRTIO=y
++CONFIG_DEVTMPFS=y
++CONFIG_BLK_DEV_LOOP=y
++CONFIG_BLK_DEV_RAM=y
++CONFIG_VIRTIO_BLK=y
++CONFIG_SCSI=y
++CONFIG_BLK_DEV_SR=y
++CONFIG_SCSI_VIRTIO=y
++CONFIG_NETDEVICES=y
++CONFIG_VIRTIO_NET=y
++CONFIG_INPUT_MOUSEDEV=y
++CONFIG_INPUT_EVDEV=y
++CONFIG_VIRTIO_CONSOLE=y
++CONFIG_HW_RANDOM_VIRTIO=y
++CONFIG_DRM=y
++CONFIG_DRM_VIRTIO_GPU=y
++CONFIG_FB=y
++CONFIG_SOUND=y
++CONFIG_SND=y
++CONFIG_SND_VIRTIO=y
++CONFIG_VIRT_DRIVERS=y
++CONFIG_VIRTIO_INPUT=y
++CONFIG_EXT4_FS=y
++CONFIG_AUTOFS_FS=y
++CONFIG_ISO9660_FS=y
++CONFIG_JOLIET=y
++CONFIG_ZISOFS=y
++CONFIG_UDF_FS=y
++CONFIG_TMPFS=y
++CONFIG_TMPFS_POSIX_ACL=y
++CONFIG_9P_FS=y
++CONFIG_9P_FS_POSIX_ACL=y
++CONFIG_9P_FS_SECURITY=y
++CONFIG_EARLY_PRINTK=y
+diff --git a/arch/m68k/include/asm/config.h b/arch/m68k/include/asm/config.h
+index aae61070628b..b9dacc52f2c8 100644
+--- a/arch/m68k/include/asm/config.h
++++ b/arch/m68k/include/asm/config.h
+@@ -17,6 +17,7 @@ extern int mvme16x_parse_bootinfo(const struct bi_record *record);
+ extern int mvme147_parse_bootinfo(const struct bi_record *record);
+ extern int hp300_parse_bootinfo(const struct bi_record *record);
+ extern int apollo_parse_bootinfo(const struct bi_record *record);
++extern int virt_parse_bootinfo(const struct bi_record *record);
+ 
+ extern void config_amiga(void);
+ extern void config_atari(void);
+@@ -29,5 +30,6 @@ extern void config_bvme6000(void);
+ extern void config_hp300(void);
+ extern void config_q40(void);
+ extern void config_sun3x(void);
++extern void config_virt(void);
+ 
+ #endif /* _M68K_CONFIG_H */
+diff --git a/arch/m68k/include/asm/io.h b/arch/m68k/include/asm/io.h
+index aabe6420ead2..aaeabc65e63c 100644
+--- a/arch/m68k/include/asm/io.h
++++ b/arch/m68k/include/asm/io.h
+@@ -8,6 +8,9 @@
+ #include <asm/io_mm.h>
+ #endif
+ 
++#define gf_ioread32 ioread32be
++#define gf_iowrite32 iowrite32be
++
+ #include <asm-generic/io.h>
+ 
+ #endif /* _M68K_IO_H */
+diff --git a/arch/m68k/include/asm/irq.h b/arch/m68k/include/asm/irq.h
+index 91dd493791d7..7829e955ca04 100644
+--- a/arch/m68k/include/asm/irq.h
++++ b/arch/m68k/include/asm/irq.h
+@@ -12,7 +12,8 @@
+  */
+ #if defined(CONFIG_COLDFIRE)
+ #define NR_IRQS 256
+-#elif defined(CONFIG_VME) || defined(CONFIG_SUN3) || defined(CONFIG_SUN3X)
++#elif defined(CONFIG_VME) || defined(CONFIG_SUN3) || \
++      defined(CONFIG_SUN3X) || defined(CONFIG_VIRT)
+ #define NR_IRQS 200
+ #elif defined(CONFIG_ATARI)
+ #define NR_IRQS 141
+diff --git a/arch/m68k/include/asm/pgtable_mm.h b/arch/m68k/include/asm/pgtable_mm.h
+index 143ba7de9bda..9b4e2fe2ac82 100644
+--- a/arch/m68k/include/asm/pgtable_mm.h
++++ b/arch/m68k/include/asm/pgtable_mm.h
+@@ -80,6 +80,9 @@
+ #elif defined(CONFIG_COLDFIRE)
+ #define KMAP_START	0xe0000000
+ #define KMAP_END	0xf0000000
++#elif defined(CONFIG_VIRT)
++#define	KMAP_START	0xdf000000
++#define	KMAP_END	0xff000000
+ #else
+ #define	KMAP_START	0xd0000000
+ #define	KMAP_END	0xf0000000
+@@ -92,6 +95,10 @@ extern unsigned long m68k_vmalloc_end;
+ #elif defined(CONFIG_COLDFIRE)
+ #define VMALLOC_START	0xd0000000
+ #define VMALLOC_END	0xe0000000
++#elif defined(CONFIG_VIRT)
++#define VMALLOC_OFFSET	PAGE_SIZE
++#define VMALLOC_START (((unsigned long) high_memory + VMALLOC_OFFSET) & ~(VMALLOC_OFFSET-1))
++#define VMALLOC_END     KMAP_START
+ #else
+ /* Just any arbitrary offset to the start of the vmalloc VM area: the
+  * current 8MB value just means that there will be a 8MB "hole" after the
+diff --git a/arch/m68k/include/asm/setup.h b/arch/m68k/include/asm/setup.h
+index 8f2023f8c1c4..2c99477aaf89 100644
+--- a/arch/m68k/include/asm/setup.h
++++ b/arch/m68k/include/asm/setup.h
+@@ -37,7 +37,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_ATARI) || defined(CONFIG_MAC) || defined(CONFIG_APOLLO) \
+ 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)               \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                      \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                  \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_AMIGA (m68k_machtype == MACH_AMIGA)
+ #else
+ #  define MACH_AMIGA_ONLY
+@@ -50,7 +51,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_APOLLO) \
+ 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)               \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                      \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                  \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_ATARI (m68k_machtype == MACH_ATARI)
+ #else
+ #  define MACH_ATARI_ONLY
+@@ -63,7 +65,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_ATARI) || defined(CONFIG_APOLLO) \
+ 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)                 \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                        \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                    \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_MAC (m68k_machtype == MACH_MAC)
+ #else
+ #  define MACH_MAC_ONLY
+@@ -84,7 +87,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)              \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_APOLLO (m68k_machtype == MACH_APOLLO)
+ #else
+ #  define MACH_APOLLO_ONLY
+@@ -97,7 +101,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_BVME6000)               \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME16x)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME16x)                 \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_MVME147 (m68k_machtype == MACH_MVME147)
+ #else
+ #  define MACH_MVME147_ONLY
+@@ -110,7 +115,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_BVME6000)               \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_MVME16x (m68k_machtype == MACH_MVME16x)
+ #else
+ #  define MACH_MVME16x_ONLY
+@@ -123,7 +129,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
+ 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_BVME6000 (m68k_machtype == MACH_BVME6000)
+ #else
+ #  define MACH_BVME6000_ONLY
+@@ -136,7 +143,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x) \
+ 	|| defined(CONFIG_BVME6000) || defined(CONFIG_Q40) \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147) \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_HP300 (m68k_machtype == MACH_HP300)
+ #else
+ #  define MACH_HP300_ONLY
+@@ -149,7 +157,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
+ 	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
+-	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_Q40 (m68k_machtype == MACH_Q40)
+ #else
+ #  define MACH_Q40_ONLY
+@@ -162,7 +171,8 @@ extern unsigned long m68k_machtype;
+ #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+ 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
+ 	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
+-	|| defined(CONFIG_Q40) || defined(CONFIG_MVME147)
++	|| defined(CONFIG_Q40) || defined(CONFIG_MVME147)                   \
++	|| defined(CONFIG_VIRT)
+ #  define MACH_IS_SUN3X (m68k_machtype == MACH_SUN3X)
+ #else
+ #  define CONFIG_SUN3X_ONLY
+@@ -170,6 +180,20 @@ extern unsigned long m68k_machtype;
+ #  define MACH_TYPE (MACH_SUN3X)
+ #endif
+ 
++#if !defined(CONFIG_VIRT)
++#  define MACH_IS_VIRT (0)
++#elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
++	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
++	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
++	|| defined(CONFIG_Q40) || defined(CONFIG_SUN3X)                     \
++	|| defined(CONFIG_MVME147)
++#  define MACH_IS_VIRT (m68k_machtype == MACH_VIRT)
++#else
++#  define MACH_VIRT_ONLY
++#  define MACH_IS_VIRT (1)
++#  define MACH_TYPE (MACH_VIRT)
++#endif
++
+ #ifndef MACH_TYPE
+ #  define MACH_TYPE (m68k_machtype)
+ #endif
+diff --git a/arch/m68k/include/asm/virt.h b/arch/m68k/include/asm/virt.h
+new file mode 100644
+index 000000000000..d3320c954796
+--- /dev/null
++++ b/arch/m68k/include/asm/virt.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_VIRT_H
++#define __ASM_VIRT_H
++
++#define NUM_VIRT_SOURCES 200
++
++struct virt_booter_device_data {
++	u32 mmio;
++	u32 irq;
++};
++
++struct virt_booter_data {
++	u32 qemu_version;
++	struct virt_booter_device_data pic;
++	struct virt_booter_device_data rtc;
++	struct virt_booter_device_data tty;
++	struct virt_booter_device_data ctrl;
++	struct virt_booter_device_data virtio;
++};
++
++extern struct virt_booter_data virt_bi_data;
++
++extern void __init virt_init_IRQ(void);
++
++#endif
+diff --git a/arch/m68k/include/uapi/asm/bootinfo-virt.h b/arch/m68k/include/uapi/asm/bootinfo-virt.h
+new file mode 100644
+index 000000000000..e4db7e2213ab
+--- /dev/null
++++ b/arch/m68k/include/uapi/asm/bootinfo-virt.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * asm/bootinfo-virt.h -- Virtual-m68k-specific boot information definitions
++ */
++
++#ifndef _UAPI_ASM_M68K_BOOTINFO_VIRT_H
++#define _UAPI_ASM_M68K_BOOTINFO_VIRT_H
++
++#define BI_VIRT_QEMU_VERSION	0x8000
++#define BI_VIRT_GF_PIC_BASE	0x8001
++#define BI_VIRT_GF_RTC_BASE	0x8002
++#define BI_VIRT_GF_TTY_BASE	0x8003
++#define BI_VIRT_VIRTIO_BASE	0x8004
++#define BI_VIRT_CTRL_BASE	0x8005
++
++#define VIRT_BOOTI_VERSION	MK_BI_VERSION(2, 0)
++
++#endif /* _UAPI_ASM_M68K_BOOTINFO_MAC_H */
+diff --git a/arch/m68k/include/uapi/asm/bootinfo.h b/arch/m68k/include/uapi/asm/bootinfo.h
+index 38d3140381fa..203d9cbf9630 100644
+--- a/arch/m68k/include/uapi/asm/bootinfo.h
++++ b/arch/m68k/include/uapi/asm/bootinfo.h
+@@ -83,6 +83,7 @@ struct mem_info {
+ #define MACH_SUN3X		11
+ #define MACH_M54XX		12
+ #define MACH_M5441X		13
++#define MACH_VIRT		14
+ 
+ 
+     /*
+diff --git a/arch/m68k/kernel/Makefile b/arch/m68k/kernel/Makefile
+index dbac7f8743fc..c0833da6a2ca 100644
+--- a/arch/m68k/kernel/Makefile
++++ b/arch/m68k/kernel/Makefile
+@@ -11,6 +11,7 @@ extra-$(CONFIG_VME)	:= head.o
+ extra-$(CONFIG_HP300)	:= head.o
+ extra-$(CONFIG_Q40)	:= head.o
+ extra-$(CONFIG_SUN3X)	:= head.o
++extra-$(CONFIG_VIRT)	:= head.o
+ extra-$(CONFIG_SUN3)	:= sun3-head.o
+ extra-y			+= vmlinux.lds
+ 
+diff --git a/arch/m68k/kernel/head.S b/arch/m68k/kernel/head.S
+index 493c95db0e51..9e812d8606be 100644
+--- a/arch/m68k/kernel/head.S
++++ b/arch/m68k/kernel/head.S
+@@ -262,6 +262,7 @@
+ #include <asm/bootinfo-hp300.h>
+ #include <asm/bootinfo-mac.h>
+ #include <asm/bootinfo-q40.h>
++#include <asm/bootinfo-virt.h>
+ #include <asm/bootinfo-vme.h>
+ #include <asm/setup.h>
+ #include <asm/entry.h>
+@@ -534,6 +535,7 @@ func_define	putn,1
+ #define is_not_apollo(lab) cmpl &MACH_APOLLO,%pc@(m68k_machtype); jne lab
+ #define is_not_q40(lab) cmpl &MACH_Q40,%pc@(m68k_machtype); jne lab
+ #define is_not_sun3x(lab) cmpl &MACH_SUN3X,%pc@(m68k_machtype); jne lab
++#define is_not_virt(lab) cmpl &MACH_VIRT,%pc@(m68k_machtype); jne lab
+ 
+ #define hasnt_leds(lab) cmpl &MACH_HP300,%pc@(m68k_machtype); \
+ 			jeq 42f; \
+@@ -647,6 +649,14 @@ ENTRY(__start)
+ L(test_notmac):
+ #endif /* CONFIG_MAC */
+ 
++#ifdef CONFIG_VIRT
++	is_not_virt(L(test_notvirt))
++
++	get_bi_record BI_VIRT_GF_TTY_BASE
++	lea	%pc@(L(virt_gf_tty_base)),%a1
++	movel	%a0@,%a1@
++L(test_notvirt):
++#endif /* CONFIG_VIRT */
+ 
+ /*
+  * There are ultimately two pieces of information we want for all kinds of
+@@ -1237,6 +1247,13 @@ L(mmu_init_not_mac):
+ L(notsun3x):
+ #endif
+ 
++#ifdef CONFIG_VIRT
++	is_not_virt(L(novirt))
++	mmu_map_tt	#1,#0xFF000000,#0x01000000,#_PAGE_NOCACHE_S
++	jbra    L(mmu_init_done)
++L(novirt):
++#endif
++
+ #ifdef CONFIG_APOLLO
+ 	is_not_apollo(L(notapollo))
+ 
+@@ -3186,6 +3203,14 @@ func_start	serial_putc,%d0/%d1/%a0/%a1
+ 3:
+ #endif
+ 
++#ifdef CONFIG_VIRT
++	is_not_virt(1f)
++
++	movel L(virt_gf_tty_base),%a1
++	movel %d0,%a1@(GF_PUT_CHAR)
++1:
++#endif
++
+ L(serial_putc_done):
+ func_return	serial_putc
+ 
+@@ -3865,3 +3890,9 @@ q40_mem_cptr:
+ L(q40_do_debug):
+ 	.long	0
+ #endif
++
++#if defined(CONFIG_VIRT)
++GF_PUT_CHAR = 0x00
++L(virt_gf_tty_base):
++	.long 0
++#endif /* CONFIG_VIRT */
+diff --git a/arch/m68k/kernel/setup_mm.c b/arch/m68k/kernel/setup_mm.c
+index 8228275aae3e..39ba09ccb538 100644
+--- a/arch/m68k/kernel/setup_mm.c
++++ b/arch/m68k/kernel/setup_mm.c
+@@ -182,6 +182,8 @@ static void __init m68k_parse_bootinfo(const struct bi_record *record)
+ 				unknown = hp300_parse_bootinfo(record);
+ 			else if (MACH_IS_APOLLO)
+ 				unknown = apollo_parse_bootinfo(record);
++			else if (MACH_IS_VIRT)
++				unknown = virt_parse_bootinfo(record);
+ 			else
+ 				unknown = 1;
+ 		}
+@@ -312,6 +314,11 @@ void __init setup_arch(char **cmdline_p)
+ 		cf_mmu_context_init();
+ 		config_BSP(NULL, 0);
+ 		break;
++#endif
++#ifdef CONFIG_VIRT
++	case MACH_VIRT:
++		config_virt();
++		break;
+ #endif
+ 	default:
+ 		panic("No configuration setup");
+diff --git a/arch/m68k/mm/kmap.c b/arch/m68k/mm/kmap.c
+index 20ddf71b43d0..7594a945732b 100644
+--- a/arch/m68k/mm/kmap.c
++++ b/arch/m68k/mm/kmap.c
+@@ -179,6 +179,12 @@ void __iomem *__ioremap(unsigned long physaddr, unsigned long size, int cachefla
+ 			return (void __iomem *)physaddr;
+ 	}
+ #endif
++#ifdef CONFIG_VIRT
++	if (MACH_IS_VIRT) {
++		if (physaddr >= 0xff000000 && cacheflag == IOMAP_NOCACHE_SER)
++			return (void __iomem *)physaddr;
++	}
++#endif
+ #ifdef CONFIG_COLDFIRE
+ 	if (__cf_internalio(physaddr))
+ 		return (void __iomem *) physaddr;
+@@ -293,17 +299,20 @@ EXPORT_SYMBOL(__ioremap);
+ void iounmap(void __iomem *addr)
+ {
+ #ifdef CONFIG_AMIGA
+-	if ((!MACH_IS_AMIGA) ||
+-	    (((unsigned long)addr < 0x40000000) ||
+-	     ((unsigned long)addr > 0x60000000)))
+-			free_io_area((__force void *)addr);
+-#else
++	if (MACH_IS_AMIGA &&
++	    ((unsigned long)addr >= 0x40000000) &&
++	    ((unsigned long)addr < 0x60000000))
++		return;
++#endif
++#ifdef CONFIG_VIRT
++	if (MACH_IS_VIRT && (unsigned long)addr >= 0xff000000)
++		return;
++#endif
+ #ifdef CONFIG_COLDFIRE
+ 	if (cf_internalio(addr))
+ 		return;
+ #endif
+ 	free_io_area((__force void *)addr);
+-#endif
+ }
+ EXPORT_SYMBOL(iounmap);
+ 
+diff --git a/arch/m68k/virt/Makefile b/arch/m68k/virt/Makefile
+new file mode 100644
+index 000000000000..54b9b2866654
+--- /dev/null
++++ b/arch/m68k/virt/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for Linux arch/m68k/virt source directory
++#
++
++obj-y		:= config.o ints.o platform.o
+diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
+new file mode 100644
+index 000000000000..68d29c8b87e1
+--- /dev/null
++++ b/arch/m68k/virt/config.c
+@@ -0,0 +1,130 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/serial_core.h>
++#include <clocksource/timer-goldfish.h>
++
++#include <asm/bootinfo.h>
++#include <asm/bootinfo-virt.h>
++#include <asm/byteorder.h>
++#include <asm/machdep.h>
++#include <asm/virt.h>
++#include <asm/config.h>
++
++struct virt_booter_data virt_bi_data;
++
++#define VIRT_CTRL_REG_FEATURES	0x00
++#define VIRT_CTRL_REG_CMD	0x04
++
++static struct resource ctrlres;
++
++enum {
++	CMD_NOOP,
++	CMD_RESET,
++	CMD_HALT,
++	CMD_PANIC,
++};
++
++static void virt_get_model(char *str)
++{
++	/* str is 80 characters long */
++	sprintf(str, "QEMU Virtual M68K Machine (%u.%u.%u)",
++		(u8)(virt_bi_data.qemu_version >> 24),
++		(u8)(virt_bi_data.qemu_version >> 16),
++		(u8)(virt_bi_data.qemu_version >> 8));
++}
++
++static void virt_halt(void)
++{
++	void __iomem *base = (void __iomem *)virt_bi_data.ctrl.mmio;
++
++	iowrite32be(CMD_HALT, base + VIRT_CTRL_REG_CMD);
++	local_irq_disable();
++	while (1)
++		;
++}
++
++static void virt_reset(void)
++{
++	void __iomem *base = (void __iomem *)virt_bi_data.ctrl.mmio;
++
++	iowrite32be(CMD_RESET, base + VIRT_CTRL_REG_CMD);
++	local_irq_disable();
++	while (1)
++		;
++}
++
++/*
++ * Parse a virtual-m68k-specific record in the bootinfo
++ */
++
++int __init virt_parse_bootinfo(const struct bi_record *record)
++{
++	int unknown = 0;
++	const void *data = record->data;
++
++	switch (be16_to_cpu(record->tag)) {
++	case BI_VIRT_QEMU_VERSION:
++		virt_bi_data.qemu_version = be32_to_cpup(data);
++		break;
++	case BI_VIRT_GF_PIC_BASE:
++		virt_bi_data.pic.mmio = be32_to_cpup(data);
++		data += 4;
++		virt_bi_data.pic.irq = be32_to_cpup(data);
++		break;
++	case BI_VIRT_GF_RTC_BASE:
++		virt_bi_data.rtc.mmio = be32_to_cpup(data);
++		data += 4;
++		virt_bi_data.rtc.irq = be32_to_cpup(data);
++		break;
++	case BI_VIRT_GF_TTY_BASE:
++		virt_bi_data.tty.mmio = be32_to_cpup(data);
++		data += 4;
++		virt_bi_data.tty.irq = be32_to_cpup(data);
++		break;
++	case BI_VIRT_CTRL_BASE:
++		virt_bi_data.ctrl.mmio = be32_to_cpup(data);
++		data += 4;
++		virt_bi_data.ctrl.irq = be32_to_cpup(data);
++		break;
++	case BI_VIRT_VIRTIO_BASE:
++		virt_bi_data.virtio.mmio = be32_to_cpup(data);
++		data += 4;
++		virt_bi_data.virtio.irq = be32_to_cpup(data);
++		break;
++	default:
++		unknown = 1;
++		break;
++	}
++	return unknown;
++}
++
++static void __init virt_sched_init(void)
++{
++	goldfish_timer_init(virt_bi_data.rtc.irq,
++			    (void __iomem *)virt_bi_data.rtc.mmio);
++}
++
++void __init config_virt(void)
++{
++	char earlycon[24];
++
++	snprintf(earlycon, sizeof(earlycon), "early_gf_tty,0x%08x",
++		 virt_bi_data.tty.mmio);
++	setup_earlycon(earlycon);
++
++	ctrlres = (struct resource)
++		   DEFINE_RES_MEM_NAMED(virt_bi_data.ctrl.mmio, 0x100,
++					"virtctrl");
++
++	if (request_resource(&iomem_resource, &ctrlres)) {
++		pr_err("Cannot allocate virt controller resource\n");
++		return;
++	}
++
++	mach_init_IRQ = virt_init_IRQ;
++	mach_sched_init = virt_sched_init;
++	mach_get_model = virt_get_model;
++	mach_reset = virt_reset;
++	mach_halt = virt_halt;
++	mach_power_off = virt_halt;
++}
+diff --git a/arch/m68k/virt/ints.c b/arch/m68k/virt/ints.c
+new file mode 100644
+index 000000000000..95818f901ebe
+--- /dev/null
++++ b/arch/m68k/virt/ints.c
+@@ -0,0 +1,155 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/delay.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/kernel.h>
++#include <linux/sched.h>
++#include <linux/sched/debug.h>
++#include <linux/types.h>
++#include <linux/ioport.h>
++
++#include <asm/hwtest.h>
++#include <asm/irq.h>
++#include <asm/irq_regs.h>
++#include <asm/virt.h>
++
++#define GFPIC_REG_IRQ_PENDING           0x04
++#define GFPIC_REG_IRQ_DISABLE_ALL       0x08
++#define GFPIC_REG_IRQ_DISABLE           0x0c
++#define GFPIC_REG_IRQ_ENABLE            0x10
++
++extern void show_registers(struct pt_regs *regs);
++
++static struct resource picres[6];
++static const char *picname[6] = {
++	"goldfish_pic.0",
++	"goldfish_pic.1",
++	"goldfish_pic.2",
++	"goldfish_pic.3",
++	"goldfish_pic.4",
++	"goldfish_pic.5"
++};
++
++/*
++ * 6 goldfish-pic for CPU IRQ #1 to IRQ #6
++ * CPU IRQ #1 -> PIC #1
++ *               IRQ #1 to IRQ #31 -> unused
++ *               IRQ #32 -> goldfish-tty
++ * CPU IRQ #2 -> PIC #2
++ *               IRQ #1 to IRQ #32 -> virtio-mmio from 1 to 32
++ * CPU IRQ #3 -> PIC #3
++ *               IRQ #1 to IRQ #32 -> virtio-mmio from 33 to 64
++ * CPU IRQ #4 -> PIC #4
++ *               IRQ #1 to IRQ #32 -> virtio-mmio from 65 to 96
++ * CPU IRQ #5 -> PIC #5
++ *               IRQ #1 to IRQ #32 -> virtio-mmio from 97 to 128
++ * CPU IRQ #6 -> PIC #6
++ *               IRQ #1 -> goldfish-timer
++ *               IRQ #2 -> goldfish-rtc
++ *               IRQ #3 to IRQ #32 -> unused
++ * CPU IRQ #7 -> NMI
++ */
++
++static u32 gfpic_read(int pic, int reg)
++{
++	void __iomem *base = (void __iomem *)(virt_bi_data.pic.mmio +
++					      pic * 0x1000);
++
++	return ioread32be(base + reg);
++}
++
++static void gfpic_write(u32 value, int pic, int reg)
++{
++	void __iomem *base = (void __iomem *)(virt_bi_data.pic.mmio +
++					      pic * 0x1000);
++
++	iowrite32be(value, base + reg);
++}
++
++#define GF_PIC(irq) ((irq - IRQ_USER) / 32)
++#define GF_IRQ(irq) ((irq - IRQ_USER) % 32)
++
++static void virt_irq_enable(struct irq_data *data)
++{
++	gfpic_write(BIT(GF_IRQ(data->irq)), GF_PIC(data->irq),
++		    GFPIC_REG_IRQ_ENABLE);
++}
++
++static void virt_irq_disable(struct irq_data *data)
++{
++	gfpic_write(BIT(GF_IRQ(data->irq)), GF_PIC(data->irq),
++		    GFPIC_REG_IRQ_DISABLE);
++}
++
++static unsigned int virt_irq_startup(struct irq_data *data)
++{
++	virt_irq_enable(data);
++	return 0;
++}
++
++static irqreturn_t virt_nmi_handler(int irq, void *dev_id)
++{
++	static int in_nmi;
++
++	if (READ_ONCE(in_nmi))
++		return IRQ_HANDLED;
++	WRITE_ONCE(in_nmi, 1);
++
++	pr_warn("Non-Maskable Interrupt\n");
++	show_registers(get_irq_regs());
++
++	WRITE_ONCE(in_nmi, 0);
++	return IRQ_HANDLED;
++}
++
++static struct irq_chip virt_irq_chip = {
++	.name		= "virt",
++	.irq_enable	= virt_irq_enable,
++	.irq_disable	= virt_irq_disable,
++	.irq_startup	= virt_irq_startup,
++	.irq_shutdown	= virt_irq_disable,
++};
++
++static void goldfish_pic_irq(struct irq_desc *desc)
++{
++	u32 irq_pending;
++	unsigned int irq_num;
++	unsigned int pic = desc->irq_data.irq - 1;
++
++	irq_pending = gfpic_read(pic, GFPIC_REG_IRQ_PENDING);
++	irq_num = IRQ_USER + pic * 32;
++
++	do {
++		if (irq_pending & 1)
++			generic_handle_irq(irq_num);
++		++irq_num;
++		irq_pending >>= 1;
++	} while (irq_pending);
++}
++
++void __init virt_init_IRQ(void)
++{
++	unsigned int i;
++
++	m68k_setup_irq_controller(&virt_irq_chip, handle_simple_irq, IRQ_USER,
++				  NUM_VIRT_SOURCES - IRQ_USER);
++
++	for (i = 0; i < 6; i++) {
++
++		picres[i] = (struct resource)
++		    DEFINE_RES_MEM_NAMED(virt_bi_data.pic.mmio + i * 0x1000,
++					 0x1000, picname[i]);
++		if (request_resource(&iomem_resource, &picres[i])) {
++			pr_err("Cannot allocate %s resource\n", picname[i]);
++			return;
++		}
++
++		irq_set_chained_handler(virt_bi_data.pic.irq + i,
++					goldfish_pic_irq);
++	}
++
++	if (request_irq(IRQ_AUTO_7, virt_nmi_handler, 0, "NMI",
++			virt_nmi_handler))
++		pr_err("Couldn't register NMI\n");
++}
+diff --git a/arch/m68k/virt/platform.c b/arch/m68k/virt/platform.c
+new file mode 100644
+index 000000000000..cb820f19a221
+--- /dev/null
++++ b/arch/m68k/virt/platform.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/memblock.h>
++#include <asm/virt.h>
++#include <asm/irq.h>
++
++#define VIRTIO_BUS_NB	128
++
++static int __init virt_virtio_init(unsigned int id)
++{
++	const struct resource res[] = {
++		DEFINE_RES_MEM(virt_bi_data.virtio.mmio + id * 0x200, 0x200),
++		DEFINE_RES_IRQ(virt_bi_data.virtio.irq + id),
++	};
++	struct platform_device *pdev;
++
++	pdev = platform_device_register_simple("virtio-mmio", id,
++					       res, ARRAY_SIZE(res));
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	return 0;
++}
++
++static int __init virt_platform_init(void)
++{
++	const struct resource goldfish_tty_res[] = {
++		DEFINE_RES_MEM(virt_bi_data.tty.mmio, 1),
++		DEFINE_RES_IRQ(virt_bi_data.tty.irq),
++	};
++	/* this is the second gf-rtc, the first one is used by the scheduler */
++	const struct resource goldfish_rtc_res[] = {
++		DEFINE_RES_MEM(virt_bi_data.rtc.mmio + 0x1000, 0x1000),
++		DEFINE_RES_IRQ(virt_bi_data.rtc.irq + 1),
++	};
++	struct platform_device *pdev;
++	unsigned int i;
++
++	if (!MACH_IS_VIRT)
++		return -ENODEV;
++
++	/* We need this to have DMA'able memory provided to goldfish-tty */
++	min_low_pfn = 0;
++
++	pdev = platform_device_register_simple("goldfish_tty",
++					       PLATFORM_DEVID_NONE,
++					       goldfish_tty_res,
++					       ARRAY_SIZE(goldfish_tty_res));
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	pdev = platform_device_register_simple("goldfish_rtc",
++					       PLATFORM_DEVID_NONE,
++					       goldfish_rtc_res,
++					       ARRAY_SIZE(goldfish_rtc_res));
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	for (i = 0; i < VIRTIO_BUS_NB; i++) {
++		int err;
++
++		err = virt_virtio_init(i);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++arch_initcall(virt_platform_init);
+-- 
+2.35.1
 
-The block tree lost its build failure.
-
-The kspp tree lost its build failure.
-
-The akpm-current tree gained a semantic conflict against Linus' tree.
-
-Non-merge commits (relative to Linus' tree): 10866
- 10831 files changed, 946410 insertions(+), 246039 deletions(-)
-
-----------------------------------------------------------------------------
-
-I have created today's linux-next tree at
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-(patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
-are tracking the linux-next tree using git, you should not use "git pull"
-to do so as that will try to merge the new linux-next release with the
-old one.  You should use "git fetch" and checkout or reset to the new
-master.
-
-You can see which trees have been included by looking in the Next/Trees
-file in the source.  There are also quilt-import.log and merge.log
-files in the Next directory.  Between each merge, the tree was built
-with a ppc64_defconfig for powerpc, an allmodconfig for x86_64, a
-multi_v7_defconfig for arm and a native build of tools/perf. After
-the final fixups (if any), I do an x86_64 modules_install followed by
-builds for x86_64 allnoconfig, powerpc allnoconfig (32 and 64 bit),
-ppc44x_defconfig, allyesconfig and pseries_le_defconfig and i386,
-arm64, sparc and sparc64 defconfig and htmldocs. And finally, a simple
-boot test of the powerpc pseries_le_defconfig kernel in qemu (with and
-without kvm enabled).
-
-Below is a summary of the state of the merge.
-
-I am currently merging 346 trees (counting Linus' and 94 trees of bug
-fix patches pending for the current merge release).
-
-Stats about the size of the tree over time can be seen at
-http://neuling.org/linux-next-size.html .
-
-Status of my local build tests will be at
-http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
-advice about cross compilers/configs that work, we are always open to add
-more builds.
-
-Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
-Gortmaker for triage and bug fixes.
-
---=20
-Cheers,
-Stephen Rothwell
-
-$ git checkout master
-$ git reset --hard stable
-Merging origin/master (e7e19defa575 Merge tag 'arm64-fixes' of git://git.ke=
-rnel.org/pub/scm/linux/kernel/git/arm64/linux)
-Merging fixes/fixes (d06c942efea4 Merge tag 'for_linus' of git://git.kernel=
-.org/pub/scm/linux/kernel/git/mst/vhost)
-Merging kbuild-current/fixes (754e0b0e3560 Linux 5.17-rc4)
-Merging arc-current/for-curr (e783362eb54c Linux 5.17-rc1)
-Merging arm-current/fixes (7b83299e5b93 ARM: 9182/1: mmu: fix returns from =
-early_param() and __setup() functions)
-Merging arm64-fixes/for-next/fixes (b859ebedd1e7 arm64: kasan: fix include =
-error in MTE functions)
-Merging arm-soc-fixes/arm/fixes (d3258737afc0 Revert "arm64: dts: mt8183: j=
-acuzzi: Fix bus properties in anx's DSI endpoint")
-Merging drivers-memory-fixes/fixes (e783362eb54c Linux 5.17-rc1)
-Merging tee-fixes/fixes (6d8df1f9e8ae Merge tag 'optee-fix2-for-v5.17' into=
- fixes)
-Merging m68k-current/for-linus (1a0ae068bf6b m68k: defconfig: Update defcon=
-figs for v5.16-rc1)
-Merging powerpc-fixes/fixes (48015b632f77 powerpc: Fix STACKTRACE=3Dn build)
-Merging s390-fixes/fixes (c194dad21025 s390/extable: fix exception table so=
-rting)
-Merging sparc/master (05a59d79793d Merge git://git.kernel.org:/pub/scm/linu=
-x/kernel/git/netdev/net)
-Merging fscrypt-current/for-stable (80f6e3080bfc fs-verity: fix signed inte=
-ger overflow with i_size near S64_MAX)
-Merging net/master (cc7e2f596e64 Merge branch 'master' of git://git.kernel.=
-org/pub/scm/linux/kernel/git/klassert/ipsec)
-Merging bpf/master (18b1ab7aa76b xsk: Fix race at socket teardown)
-Merging ipsec/master (23c7f8d7989e net: Fix esp GSO on inter address family=
- tunnels.)
-Merging netfilter/master (f8e9bd34cedd Merge branch 'smc-fix')
-Merging ipvs/master (277f2bb14361 ibmvnic: schedule failover only if vioctl=
- fails)
-Merging wireless/main (e6e91ec966db iwlwifi: mvm: return value for request_=
-ownership)
-Merging rdma-fixes/for-rc (7e57714cd0ad Linux 5.17-rc6)
-Merging sound-current/for-linus (9cb727506704 ALSA: hda/realtek: Add quirk =
-for Clevo NP50PNJ)
-Merging sound-asoc-fixes/for-linus (5e02fb590e83 ASoC: cs35l41: Fix DSP mbo=
-x start command and global enable order)
-Merging regmap-fixes/for-linus (d04ad245d67a regmap-irq: Update interrupt c=
-lear register for proper reset)
-Merging regulator-fixes/for-linus (1a69f6b8c034 Merge remote-tracking branc=
-h 'regulator/for-5.16' into regulator-linus)
-Merging spi-fixes/for-linus (194a533b9841 Merge remote-tracking branch 'spi=
-/for-5.16' into spi-linus)
-Merging pci-current/for-linus (3f1271b54edc PCI: Mark all AMD Navi10 and Na=
-vi14 GPU ATS as broken)
-Merging driver-core.current/driver-core-linus (7e57714cd0ad Linux 5.17-rc6)
-Merging tty.current/tty-linus (7e57714cd0ad Linux 5.17-rc6)
-Merging usb.current/usb-linus (7e57714cd0ad Linux 5.17-rc6)
-Merging usb-gadget-fixes/fixes (e49d033bddf5 Linux 5.12-rc6)
-Merging usb-serial-fixes/usb-linus (7e57714cd0ad Linux 5.17-rc6)
-Merging usb-chipidea-fixes/for-usb-fixes (f130d08a8d79 usb: chipidea: ci_hd=
-rc_imx: Also search for 'phys' phandle)
-CONFLICT (content): Merge conflict in drivers/usb/chipidea/ci_hdrc_imx.c
-Merging phy/fixes (9a8406ba1a9a phy: dphy: Correct clk_pre parameter)
-Merging staging.current/staging-linus (342e7c6ea582 staging: rtl8723bs: Imp=
-rove the comment explaining the locking rules)
-Merging iio-fixes/fixes-togreg (123d838c4e7d iio: adc: xilinx-ams: Fix sing=
-le channel switching sequence)
-Merging counter-fixes/fixes-togreg (4a14311a3b93 counter: Stop using dev_ge=
-t_drvdata() to get the counter device)
-Merging char-misc.current/char-misc-linus (7e57714cd0ad Linux 5.17-rc6)
-Merging soundwire-fixes/fixes (e783362eb54c Linux 5.17-rc1)
-Merging thunderbolt-fixes/fixes (ffb217a13a2e Linux 5.17-rc7)
-Merging input-current/for-linus (327b89f0acc4 HID: add mapping for KEY_ALL_=
-APPLICATIONS)
-Merging crypto-current/master (c6ce9c5831ca crypto: api - Move cryptomgr so=
-ft dependency into algapi)
-Merging vfio-fixes/for-linus (8704e8934908 vfio/pci: Fix OpRegion read)
-Merging kselftest-fixes/fixes (6fec1ab67f8d selftests/ftrace: Do not trace =
-do_softirq because of PREEMPT_RT)
-Merging modules-fixes/modules-linus (a8e8f851e829 module: fix building with=
- sysfs disabled)
-Merging dmaengine-fixes/fixes (cfb92440ee71 Linux 5.17-rc5)
-Merging backlight-fixes/for-backlight-fixes (a38fd8748464 Linux 5.12-rc2)
-Merging mtd-fixes/mtd/fixes (42da5a4ba170 mtd: rawnand: omap2: Actually pre=
-vent invalid configuration and build error)
-Merging mfd-fixes/for-mfd-fixes (a61f4661fba4 mfd: intel_quark_i2c_gpio: Re=
-vert "Constify static struct resources")
-Merging v4l-dvb-fixes/fixes (d40f0b133b44 media: meson-ir-tx: remove incorr=
-ect doc comment)
-Merging reset-fixes/reset/fixes (92c959bae2e5 reset: renesas: Fix Runtime P=
-M usage)
-Merging mips-fixes/mips-fixes (5d8965704fe5 MIPS: ralink: mt7621: use bitwi=
-se NOT instead of logical)
-Merging at91-fixes/at91-fixes (26077968f838 dt-bindings: ARM: at91: update =
-maintainers entry)
-Merging omap-fixes/fixes (8840f5460a23 ARM: dts: Use 32KiHz oscillator on d=
-evkit8000)
-Merging kvm-fixes/master (8d25b7beca7e KVM: x86: pull kvm->srcu read-side t=
-o kvm_arch_vcpu_ioctl_run)
-Merging kvms390-fixes/master (0e9ff65f455d KVM: s390: preserve deliverable_=
-mask in __airqs_kick_single_vcpu)
-Merging hwmon-fixes/hwmon (686d303ee630 hwmon: (pmbus) Add mutex to regulat=
-or ops)
-Merging nvdimm-fixes/libnvdimm-fixes (3dd60fb9d95d nvdimm/pmem: stop using =
-q_usage_count as external pgmap refcount)
-Merging cxl-fixes/fixes (fae8817ae804 cxl/mem: Fix memory device capacity p=
-robing)
-Merging btrfs-fixes/next-fixes (e3727c6aef80 Merge branch 'misc-5.17' into =
-next-fixes)
-Merging vfs-fixes/fixes (9d2231c5d74e lib/iov_iter: initialize "flags" in n=
-ew pipe_buffer)
-Merging dma-mapping-fixes/for-linus (18a3c5f7abfd Merge tag 'for_linus' of =
-git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost)
-Merging i3c-fixes/i3c/fixes (fe07bfda2fb9 Linux 5.12-rc1)
-Merging drivers-x86-fixes/fixes (21d90aaee8d5 surface: surface3_power: Fix =
-battery readings on batteries without a serial number)
-Merging samsung-krzk-fixes/fixes (442b0c08db7e soc: samsung: Fix typo in CO=
-NFIG_EXYNOS_USI description)
-Merging pinctrl-samsung-fixes/fixes (e783362eb54c Linux 5.17-rc1)
-Merging devicetree-fixes/dt/linus (f6eafa4022dd dt-bindings: phy: ti,tcan10=
-4x-can: Document mux-states property)
-Merging scsi-fixes/fixes (10af11564617 scsi: ufs: core: Fix divide by zero =
-in ufshcd_map_queues())
-Merging drm-fixes/drm-fixes (ffb217a13a2e Linux 5.17-rc7)
-Merging amdgpu-fixes/drm-fixes (2c409ba81be2 drm/radeon: fix si_enable_smc_=
-cac() failed issue)
-Merging drm-intel-fixes/for-linux-next-fixes (804f46885317 drm/i915/psr: Se=
-t "SF Partial Frame Enable" also on full update)
-Merging mmc-fixes/fixes (1760fdb6fe9f mmc: core: Restore (almost) the busy =
-polling for MMC_SEND_OP_COND)
-Merging rtc-fixes/rtc-fixes (bd33335aa93d rtc: cmos: Disable irq around dir=
-ect invocation of cmos_interrupt())
-Merging gnss-fixes/gnss-linus (e783362eb54c Linux 5.17-rc1)
-Merging hyperv-fixes/hyperv-fixes (ffc58bc4af93 Drivers: hv: utils: Make us=
-e of the helper macro LIST_HEAD())
-Merging soc-fsl-fixes/fix (a222fd854139 soc: fsl: qe: Check of ioremap retu=
-rn value)
-Merging risc-v-fixes/fixes (74583f1b92cb riscv: dts: k210: fix broken IRQs =
-on hart1)
-Merging pidfd-fixes/fixes (03ba0fe4d09f file: simplify logic in __close_ran=
-ge())
-Merging fpga-fixes/fixes (8bb7eca972ad Linux 5.15)
-Merging spdx/spdx-linus (d8152cfe2f21 Merge tag 'pci-v5.17-fixes-5' of git:=
-//git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci)
-Merging gpio-brgl-fixes/gpio/for-current (a9a5b720dc82 gpio: sim: Declare g=
-pio_sim_hog_config_item_ops static)
-Merging gpio-intel-fixes/fixes (e783362eb54c Linux 5.17-rc1)
-Merging pinctrl-intel-fixes/fixes (6f66db29e241 pinctrl: tigerlake: Revert =
-"Add Alder Lake-M ACPI ID")
-Merging erofs-fixes/fixes (24331050a3e6 erofs: fix small compressed files i=
-nlining)
-Merging integrity-fixes/fixes (843385694721 evm: Fix a small race in init_d=
-esc())
-Merging kunit-fixes/kunit-fixes (92a68053c346 Documentation: KUnit: Fix usa=
-ge bug)
-Merging ubifs-fixes/fixes (c3c07fc25f37 ubi: fastmap: Return error code if =
-memory allocation fails in add_aeb())
-Merging memblock-fixes/fixes (c94afc46cae7 memblock: use kfree() to release=
- kmalloced memblock regions)
-Merging cel-fixes/for-rc (c306d737691e NFSD: Deprecate NFS_OFFSET_MAX)
-Merging irqchip-fixes/irq/irqchip-fixes (1d4df649cbb4 irqchip/sifive-plic: =
-Add missing thead,c900-plic match string)
-Merging renesas-fixes/fixes (432b52eea3dc ARM: shmobile: defconfig: Restore=
- graphical consoles)
-Merging perf-current/perf/urgent (ac84e82f78cb Merge tag 'block-5.17-2022-0=
-3-04' of git://git.kernel.dk/linux-block)
-Merging efi-fixes/urgent (9feaf8b387ee efi: fix return value of __setup han=
-dlers)
-Merging zstd-fixes/zstd-linus (88a309465b3f lib: zstd: clean up double word=
- in comment.)
-Merging drm-misc-fixes/for-linux-next-fixes (9470c29faa91 drm/sun4i: mixer:=
- Fix P010 and P210 format numbers)
-Merging kbuild/for-next (cf4a68247a20 Merge branch 'kbuild' into for-next)
-Merging perf/perf/core (56dce868198c libperf: Add API for allocating new th=
-read map array)
-Merging compiler-attributes/compiler-attributes (7c00621dcaee compiler_type=
-s: mark __compiletime_assert failure as __noreturn)
-Merging dma-mapping/for-next (80e439098161 dma-debug: fix return value of _=
-_setup handlers)
-Merging asm-generic/master (3edb65f4e8fd nds32: Remove the architecture)
-Merging arc/for-next (6880fa6c5660 Linux 5.15-rc1)
-Merging arm/for-next (341c6c03da34 Merge branch 'devel-stable' into for-nex=
-t)
-CONFLICT (content): Merge conflict in arch/arm/kernel/traps.c
-Merging arm64/for-next/core (7903522790f4 Merge branch 'for-next/spectre-bh=
-b' into for-next/core)
-Merging arm-perf/for-next/perf (602c873eb52e perf: Replace acpi_bus_get_dev=
-ice())
-Merging arm-soc/for-next (4d0d3c7a6571 soc: document merges)
-CONFLICT (content): Merge conflict in arch/arm/Kconfig
-Merging actions/for-next (444d018d8d38 ARM: dts: owl-s500-roseapplepi: Add =
-ATC2603C PMIC)
-Merging amlogic/for-next (305cab6f7645 Merge branch 'v5.18/drivers' into fo=
-r-next)
-Merging aspeed/for-next (d9540eeaa3d1 Merge branches 'nuvoton-dt-for-v5.18'=
- and 'dt-for-v5.18' into for-next)
-Merging at91/at91-next (a845fa592554 Merge branch 'clk-at91' into at91-next)
-Merging drivers-memory/for-next (560f9d092a9d Merge branch 'mem-ctrl-next' =
-into for-next)
-Merging imx-mxs/for-next (45550ada88f0 Merge branch 'imx/defconfig' into fo=
-r-next)
-Merging keystone/next (cb293d3b430e Merge branch 'for_5.15/drivers-soc' int=
-o next)
-Merging mediatek/for-next (6ceb6a96db4e Merge branch 'v5.17-fixes' into for=
--next)
-Merging mvebu/for-next (89756932b780 Merge branch 'mvebu/dt64' into mvebu/f=
-or-next)
-Merging omap/for-next (f9ecc209330a Merge branch 'omap-for-v5.18/dt' into f=
-or-next)
-Merging qcom/for-next (b8277c8275a1 Merge branches 'arm64-defconfig-for-5.1=
-8', 'arm64-for-5.18', 'clk-for-5.18', 'defconfig-for-5.18', 'drivers-for-5.=
-18', 'dts-for-5.18', 'arm64-fixes-for-5.17' and 'dts-fixes-for-5.17' into f=
-or-next)
-CONFLICT (content): Merge conflict in arch/arm/configs/multi_v7_defconfig
-CONFLICT (content): Merge conflict in arch/arm64/configs/defconfig
-Merging raspberrypi/for-next (c5915b53d4c2 dt-bindings: soc: bcm: Convert b=
-rcm,bcm2835-vchiq to json-schema)
-Merging renesas/next (dff7b84b4d2a Merge branch 'renesas-arm-dt-for-v5.18' =
-into renesas-next)
-Merging reset/reset/next (89e7a6698fdd reset: uniphier-glue: Use devm_add_a=
-ction_or_reset())
-Merging rockchip/for-next (ea80f22c4edd Merge branch 'v5.18-armsoc/dts64' i=
-nto for-next)
-CONFLICT (content): Merge conflict in arch/arm64/boot/dts/rockchip/rk356x.d=
-tsi
-Merging samsung-krzk/for-next (b2d5c4016a34 Merge branch 'for-v5.18/dt-clea=
-nup' into for-next)
-Merging scmi/for-linux-next (210b966b7e2f Merge tag 'scmi-updates-5.18' of =
-git://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux into for-l=
-inux-next)
-Merging stm32/stm32-next (74fa56279651 ARM: dts: stm32: Switch DWMAC RMII c=
-lock to MCO2 on DHCOM)
-Merging sunxi/sunxi/for-next (f25c47c67629 Merge branch 'sunxi/dt-for-5.18'=
- into sunxi/for-next)
-Merging tee/next (3e53bb2bd87b Merge branch 'tee_shm_vmalloc_for_v5.19' int=
-o next)
-Merging tegra/for-next (6d746e1eb2f6 Merge branch for-5.18/arm64/defconfig =
-into for-next)
-Merging ti/ti-next (183a6f5c6e1e Merge branches 'ti-k3-dts-next' and 'ti-dr=
-ivers-soc-next' into ti-next)
-Merging xilinx/for-next (3a14f0e61408 arm64: zynqmp: Rename dma to dma-cont=
-roller)
-Merging clk/clk-next (7da5e77a1b5f Merge branch 'clk-fixes' into clk-next)
-Merging clk-imx/for-next (b09c68dc57c9 clk: imx: pll14xx: Support dynamic r=
-ates)
-Merging clk-renesas/renesas-clk (73421f2a48e6 clk: renesas: r8a779f0: Add P=
-FC clock)
-Merging clk-samsung/for-next (45bd8166a1d8 clk: samsung: Add initial Exynos=
-7885 clock driver)
-Merging csky/linux-next (a0793fdad9a1 csky: fix typo of fpu config macro)
-Merging h8300/h8300-next (1ec10274d436 h8300: don't implement set_fs)
-CONFLICT (modify/delete): arch/h8300/mm/memory.c deleted in h8300/h8300-nex=
-t and modified in HEAD.  Version HEAD of arch/h8300/mm/memory.c left in tre=
-e.
-$ git rm -f arch/h8300/mm/memory.c
-Merging m68k/for-next (0d52a01a266b m68k: defconfig: Disable fbdev on Sun3/=
-3x)
-Merging m68knommu/for-next (e6e1e7b19fa1 m68k: coldfire/device.c: only buil=
-d for MCF_EDMA when h/w macros are defined)
-Merging microblaze/next (fcc619621df5 microblaze/PCI: Remove pci_phys_mem_a=
-ccess_prot() dead code)
-Merging mips/mips-next (3f059a7e8c13 mips: remove reference to "newer Loong=
-son-3")
-Merging nios2/for-next (7f7bc20bc41a nios2: Don't use _end for calculating =
-min_low_pfn)
-Merging openrisc/for-next (862cf8d5fd98 openrisc/boot: Remove unnecessary i=
-nitialisation in memcpy().)
-Merging parisc-hd/for-next (d21d3f34cf6e parisc/unaligned: Enhance user-spa=
-ce visible output)
-CONFLICT (content): Merge conflict in arch/parisc/lib/memcpy.c
-Merging powerpc/next (d79976918852 powerpc/64: Add UADDR64 relocation suppo=
-rt)
-Merging soc-fsl/next (1ce93cb102e7 soc: fsl: qe: Check of ioremap return va=
-lue)
-Merging risc-v/for-next (d56201d9440d riscv: defconfig: enable hugetlbfs op=
-tion)
-Merging s390/for-next (e32b16884708 Merge branch 'features' into for-next)
-Merging sh/for-next (8518e694203d sh: pgtable-3level: Fix cast to pointer f=
-rom integer of different size)
-Merging sparc-next/master (dd0d718152e4 Merge tag 'spi-fix-v5.8-rc2' of git=
-://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi)
-Merging uml/linux-next (db0dd9cee822 um: virtio_uml: Allow probing from dev=
-icetree)
-Merging xtensa/xtensa-for-next (5b835d4cade1 xtensa: use XCHAL_NUM_AREGS as=
- pt_regs::areg size)
-Merging pidfd/for-next (d52c14f5f9b3 Merge branch 'pidfd.fd_install' into f=
-or-next)
-Merging fscrypt/master (cdaa1b1941f6 fscrypt: update documentation for dire=
-ct I/O support)
-Merging fscache/fscache-next (e20856c1cc3a afs: Maintain netfs_i_context::r=
-emote_i_size)
-Merging afs/afs-next (26291c54e111 Linux 5.17-rc2)
-Merging btrfs/for-next (77848115626f Merge branch 'for-next-current-v5.16-2=
-0220308' into for-next-20220308)
-Merging ceph/master (ad5255c1ea9c ceph: misc fix for code style and logs)
-Merging cifs/for-next (4eb628dd74df cifs: during reconnect, update interfac=
-e if necessary)
-Merging configfs/for-next (84ec758fb2da configfs: fix a race in configfs_{,=
-un}register_subsystem())
-Merging ecryptfs/next (682a8e2b41ef Merge tag 'ecryptfs-5.13-rc1-updates' o=
-f git://git.kernel.org/pub/scm/linux/kernel/git/tyhicks/ecryptfs)
-Merging erofs/dev (d189849b4432 Documentation/filesystem/dax: update DAX de=
-scription on erofs)
-Merging exfat/dev (dd81e1c7d5fb Merge tag 'powerpc-5.17-2' of git://git.ker=
-nel.org/pub/scm/linux/kernel/git/powerpc/linux)
-Merging ext3/for_next (487606687984 Merge reiserfs deprecation patch.)
-Merging ext4/dev (cc5095747edf ext4: don't BUG if someone dirty pages witho=
-ut asking ext4 first)
-Merging f2fs/dev (6c4d1a169863 f2fs: introduce F2FS_UNFAIR_RWSEM to support=
- unfair rwsem)
-Merging fsverity/fsverity (07c99001312c fs-verity: support reading signatur=
-e with ioctl)
-Merging fuse/for-next (0c4bcfdecb1a fuse: fix pipe buffer lifetime for dire=
-ct_io)
-Merging gfs2/for-next (cf8da18f6c4d gfs2: Fix window size in should_fault_i=
-n_pages)
-Merging jfs/jfs-next (c48a14dca2cb JFS: fix memleak in jfs_mount)
-Merging ksmbd/ksmbd-for-next (1a927cda94ac Documentation: ksmbd: update Fea=
-ture Status table)
-Merging nfs/linux-next (6c984083ec24 NFS: Use of mapping_set_error() result=
-s in spurious errors)
-Merging nfs-anna/linux-next (d19e0183a883 NFS: Do not report writeback erro=
-rs in nfs_getattr())
-Merging nfsd/for-next (bf27a962851b fs/lock: only call lm_breaker_owns_leas=
-e if there is conflict.)
-Merging ntfs3/master (52e00ea6b26e fs/ntfs3: Update valid size if -EIOCBQUE=
-UED)
-Merging orangefs/for-next (40a74870b2d1 orangefs: Fix the size of a memory =
-allocation in orangefs_bufmap_alloc())
-Merging overlayfs/overlayfs-next (94fd19752b28 ovl: don't fail copy up if n=
-o fileattr support on upper)
-Merging ubifs/next (aa39cc675799 jffs2: GC deadlock reading a page that is =
-used in jffs2_write_begin())
-Merging v9fs/9p-next (22e424feb665 Revert "fs/9p: search open fids first")
-Merging xfs/for-next (b97cca3ba909 xfs: only bother with sync_filesystem du=
-ring readonly remount)
-Merging zonefs/for-next (95b115332a83 zonefs: remove redundant null bio che=
-ck)
-Merging iomap/iomap-for-next (ebb7fb1557b1 xfs, iomap: limit individual ioe=
-nd chain lengths in writeback)
-Merging djw-vfs/vfs-for-next (2d86293c7075 xfs: return errors in xfs_fs_syn=
-c_fs)
-Merging file-locks/locks-next (80d8e4d3f313 fs/locks: fix fcntl_getlk64/fcn=
-tl_setlk64 stub prototypes)
-Merging vfs/for-next (124f75f864f3 clean overflow checks in count_mounts() =
-a bit)
-CONFLICT (content): Merge conflict in arch/x86/um/Kconfig
-Merging printk/for-next (c5f75d490fc2 Merge branch 'for-5.18' into for-next)
-Merging pci/next (b3c57902bef6 Merge branch 'remotes/lorenzo/pci/uniphier')
-Merging pstore/for-next/pstore (023bbde3db41 pstore: Add prefix to ECC mess=
-ages)
-Merging hid/for-next (cde4b57a1c51 Merge branch 'for-5.17/upstream-fixes' i=
-nto for-next)
-Merging i2c/i2c/for-next (867dfe1041a0 Merge branch 'i2c/for-mergewindow' i=
-nto i2c/for-next)
-Merging i3c/i3c/next (6cbf8b38dfe3 i3c: fix uninitialized variable use in i=
-2c setup)
-Merging dmi/dmi-for-next (f97a2103f1a7 firmware: dmi: Move product_sku info=
- to the end of the modalias)
-Merging hwmon-staging/hwmon-next (5d4a2ea96b79 hwmon: (axi-fan-control) Use=
- hwmon_notify_event)
-Merging jc_docs/docs-next (0d6356d6cdd0 docs: fix 'make htmldocs' warning i=
-n perf)
-Merging v4l-dvb/master (2b891d3980f6 media: xilinx: csi2rxss: Use mipi-csi2=
-.h)
-Merging v4l-dvb-next/master (b3627647f9ea Merge tag 'br-v5.18s' of git://li=
-nuxtv.org/hverkuil/media_tree into media_stage)
-Merging pm/linux-next (cdd758e337cb Merge branch 'thermal' into linux-next)
-Merging cpufreq-arm/cpufreq/arm/linux-next (72951a77c00f cpufreq: blocklist=
- Qualcomm sc8280xp and sa8540p in cpufreq-dt-platdev)
-Merging cpupower/cpupower (8382dce5e483 cpupower: Add "perf" option to prin=
-t AMD P-State information)
-Merging devfreq/devfreq-next (26291c54e111 Linux 5.17-rc2)
-Merging opp/opp/linux-next (f48a0c475c2a Documentation: EM: Describe new re=
-gistration method using DT)
-Merging thermal/thermal/linux-next (1379d28e840f thermal: rcar_thermal: Use=
- platform_get_irq_optional() to get the interrupt)
-Merging ieee1394/for-next (54b3bd99f094 firewire: nosy: switch from 'pci_' =
-to 'dma_' API)
-Merging dlm/next (feae43f8aa88 fs: dlm: print cluster addr if non-cluster n=
-ode connects)
-Merging rdma/for-next (73f7e05609ec RDMA/hns: Refactor the alloc_cqc())
-Merging net-next/master (24055bb87977 net: tcp: fix shim definition of tcp_=
-inbound_md5_hash)
-CONFLICT (content): Merge conflict in drivers/hwmon/adt7310.c
-CONFLICT (content): Merge conflict in drivers/net/ethernet/intel/ice/ice.h
-CONFLICT (content): Merge conflict in drivers/staging/gdm724x/gdm_lte.c
-CONFLICT (content): Merge conflict in net/dsa/dsa2.c
-Merging bpf-next/for-next (de55c9a1967c Merge branch 'Add support for trans=
-mitting packets using XDP in bpf_prog_run()')
-Merging ipsec-next/master (2ecda181682e xfrm: delete duplicated functions t=
-hat calls same xfrm_api_check())
-Merging mlx5-next/mlx5-next (45fee8edb4b3 net/mlx5: Add clarification on sy=
-nc reset failure)
-Merging netfilter-next/master (c828414ac935 netfilter: nft_compat: suppress=
- comment match)
-Merging ipvs-next/master (c828414ac935 netfilter: nft_compat: suppress comm=
-ent match)
-Merging bluetooth/master (035e54ae7b1d Bluetooth: mgmt: remove redundant as=
-signment to variable cur_len)
-Merging wireless-next/main (12b604d4ba69 rtw89: declare HE capabilities in =
-6G band)
-CONFLICT (content): Merge conflict in net/mac80211/mlme.c
-Merging mtd/mtd/next (2365f91c861c mtd: parsers: trx: allow to use on Media=
-Tek MIPS SoCs)
-Merging nand/nand/next (ffb16c1c4267 mtd: rawnand: stm32_fmc2: Add NAND Wri=
-te Protect support)
-CONFLICT (content): Merge conflict in Documentation/devicetree/bindings/mtd=
-/nand-controller.yaml
-Merging spi-nor/spi-nor/next (151c6b49d679 mtd: spi-nor: Skip erase logic w=
-hen SPI_NOR_NO_ERASE is set)
-Merging crypto/master (cd6714f94091 crypto: arm64 - cleanup comments)
-Merging drm/drm-next (6de7e4f02640 Merge tag 'drm-msm-next-2022-03-01' of h=
-ttps://gitlab.freedesktop.org/drm/msm into drm-next)
-CONFLICT (modify/delete): Documentation/devicetree/bindings/display/mediate=
-k/mediatek,disp.txt deleted in drm/drm-next and modified in HEAD.  Version =
-HEAD of Documentation/devicetree/bindings/display/mediatek/mediatek,disp.tx=
-t left in tree.
-$ git rm -f Documentation/devicetree/bindings/display/mediatek/mediatek,dis=
-p.txt
-Applying: fix up for "media: dt-binding: mediatek: Get rid of mediatek,larb=
- for multimedia HW"
-Applying: fix up for "spi: make remove callback a void function"
-Merging drm-misc/for-linux-next (07f380da3ebd drm/panel: simple: Fix Innolu=
-x G070Y2-L01 BPP settings)
-Merging amdgpu/drm-next (74b121b6a354 drm/radeon: Add HD-audio component no=
-tifier support (v2))
-Merging drm-intel/for-linux-next (5e7f44b5c2c0 drm/i915/gtt: reduce overzea=
-lous alignment constraints for GGTT)
-Merging drm-tegra/drm/tegra/for-next (b53c24f69199 drm/tegra: Support YVYU,=
- VYUY and YU24 formats)
-Merging drm-msm/msm-next (05afd57f4d34 drm/msm/gpu: Fix crash on devices wi=
-thout devfreq support (v2))
-Merging imx-drm/imx-drm/next (20fbfc81e390 drm/imx: imx-tve: Make use of th=
-e helper function devm_platform_ioremap_resource())
-Merging etnaviv/etnaviv/next (cdd156955f94 drm/etnaviv: consider completed =
-fence seqno in hang check)
-Merging fbdev/for-next (a58c22cfbbf6 video: fbdev: omapfb: Add missing of_n=
-ode_put() in dvic_probe_of)
-Merging regmap/for-next (2d2329787ba2 regmap: irq: cleanup comments)
-Merging sound/for-next (7cacfa4a7b0d ALSA: hda: Add AlderLake-PS variant PC=
-I ID)
-Merging sound-asoc/for-next (0b7daa6bd0a4 Merge remote-tracking branch 'aso=
-c/for-5.18' into asoc-next)
-Merging modules/modules-next (719fce7539cd Merge tag 'soc-fixes-5.17-2' of =
-git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc)
-Merging input/next (f28af984e771 Input: mt6779-keypad - add MediaTek keypad=
- driver)
-Merging block/for-next (fda6476b98ff Merge branch 'for-5.18/64bit-pi' into =
-for-next)
-CONFLICT (content): Merge conflict in drivers/block/virtio_blk.c
-CONFLICT (content): Merge conflict in fs/iomap/direct-io.c
-Merging device-mapper/for-next (790ccc2ac9ae dm thin: use dm_submit_bio_rem=
-ap)
-Merging libata/for-next (5e776d7b20f0 ata: Drop commas after OF match table=
- sentinels)
-Merging pcmcia/pcmcia-next (3928cf08334e pcmcia: db1xxx_ss: restrict to MIP=
-S_DB1XXX boards)
-Merging mmc/next (52c92286b71e mmc: dw-mmc-rockchip: Fix handling invalid c=
-lock rates)
-Merging mfd/for-mfd-next (022bd5cae497 mfd: intel-lpss: Provide an SSP type=
- to the driver)
-CONFLICT (content): Merge conflict in Documentation/devicetree/bindings/soc=
-/samsung/exynos-usi.yaml
-Merging backlight/for-backlight-next (ec961cf32411 backlight: qcom-wled: Re=
-spect enabled-strings in set_brightness)
-Merging battery/for-next (75853406fa27 power: supply: Add a driver for Injo=
-inic power bank ICs)
-Merging regulator/for-next (7d37c5592332 Merge remote-tracking branch 'regu=
-lator/for-5.18' into regulator-next)
-Merging security/next-testing (047843bdb316 Merge branch 'landlock_lsm_v34'=
- into next-testing)
-Merging apparmor/apparmor-next (c2489617b3b9 apparmor: Fix undefined refere=
-nce to `zlib_deflate_workspacesize')
-Merging integrity/next-integrity (cd3bc044af48 KEYS: encrypted: Instantiate=
- key with user-provided decrypted data)
-Merging keys/keys-next (2d743660786e Merge branch 'fixes' of git://git.kern=
-el.org/pub/scm/linux/kernel/git/viro/vfs)
-Merging safesetid/safesetid-next (1b8b71922919 LSM: SafeSetID: Mark safeset=
-id_initialized as __initdata)
-Merging selinux/next (cdbec3ede0b8 selinux: shorten the policy capability e=
-num names)
-Merging smack/next (a5cd1ab7ab67 Fix incorrect type in assignment of ipv6 p=
-ort for audit)
-Merging tomoyo/master (b9c20da356db workqueue: Warn flushing of kernel-glob=
-al workqueues)
-Merging tpmdd/next (fb5abce6b2bb tpm: use try_get_ops() in tpm-space.c)
-Merging watchdog/master (cfb92440ee71 Linux 5.17-rc5)
-Merging iommu/next (e17c6debd4b2 Merge branches 'arm/mediatek', 'arm/msm', =
-'arm/renesas', 'arm/rockchip', 'arm/smmu', 'x86/vt-d' and 'x86/amd' into ne=
-xt)
-Merging audit/next (272ceeaea355 audit: log AUDIT_TIME_* records only from =
-rules)
-Merging devicetree/for-next (16d1f0a79385 dt-bindings: Add vendor prefix fo=
-r Xen hypervisor)
-Merging mailbox/mailbox-for-next (869b6ca39c08 dt-bindings: mailbox: Add mo=
-re protocol and client ID)
-Merging spi/for-next (064017096835 Merge remote-tracking branch 'spi/for-5.=
-18' into spi-next)
-CONFLICT (modify/delete): arch/arm/mach-pxa/stargate2.c deleted in HEAD and=
- modified in spi/for-next.  Version spi/for-next of arch/arm/mach-pxa/starg=
-ate2.c left in tree.
-$ git rm -f arch/arm/mach-pxa/stargate2.c
-Merging tip/auto-latest (7b03446f992d Merge x86/urgent into tip/master)
-CONFLICT (content): Merge conflict in drivers/iommu/intel/iommu.c
-Merging clockevents/timers/drivers/next (49c14f94ccfe clocksource/drivers/t=
-imer-of: check return value of of_iomap in timer_of_base_init())
-Merging edac/edac-for-next (1e2e0e53092b Merge branch 'edac-amd64' into eda=
-c-for-next)
-Merging irqchip/irq/irqchip-next (35821dcbafe5 Merge branch irq/aic-pmu int=
-o irq/irqchip-next)
-CONFLICT (content): Merge conflict in drivers/pinctrl/pinctrl-starfive.c
-Merging ftrace/for-next (864ea0e10cc9 user_events: Add documentation file)
-Merging rcu/rcu/next (1498a74770d7 torture: Enable CSD-lock stall reports f=
-or scftorture)
-CONFLICT (content): Merge conflict in kernel/rcu/tree_plugin.h
-Merging kvm/next (4a204f789587 KVM: SVM: Allow AVIC support on system w/ ph=
-ysical APIC ID > 255)
-Merging kvm-arm/next (9872e6bc08d6 Merge branch kvm-arm64/psci-1.1 into kvm=
-arm-master/next)
-Merging kvms390/next (f494ca3edc8c KVM: s390: selftests: Add error memop te=
-sts)
-Merging xen-tip/linux-next (ee3e6d69a21b drivers/xen: use helper macro __AT=
-TR_RW)
-Merging percpu/for-next (4e1f82dce05b Merge branch 'for-5.16-fixes' into fo=
-r-next)
-Merging workqueues/for-next (bc35f7ef9628 workqueue: Convert the type of po=
-ol->nr_running to int)
-Merging drivers-x86/for-next (10b29dd7eafe platform/x86: thinkpad_acpi: Don=
-'t use test_bit on an integer)
-CONFLICT (content): Merge conflict in drivers/platform/x86/thinkpad_acpi.c
-Merging chrome-platform/for-next (b579f139e470 platform/chrome: cros_ec_typ=
-ec: Update mux flags during partner removal)
-Merging hsi/for-next (e783362eb54c Linux 5.17-rc1)
-Merging leds/for-next (e26557a0aa68 leds: pca955x: Allow zero LEDs to be sp=
-ecified)
-Merging ipmi/for-next (f4676c8ec396 ipmi: kcs: aspeed: Remove old bindings =
-support)
-Merging driver-core/driver-core-next (4a248f85b3dd Merge 5.17-rc6 into driv=
-er-core-next)
-CONFLICT (content): Merge conflict in drivers/power/supply/ab8500_chargalg.c
-Merging usb/usb-next (98d107b84614 usb: host: xhci: Remove some unnecessary=
- return value initializations)
-CONFLICT (content): Merge conflict in arch/arm64/boot/dts/qcom/ipq6018.dtsi
-CONFLICT (content): Merge conflict in arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-Merging usb-gadget/next (e49d033bddf5 Linux 5.12-rc6)
-Merging usb-serial/usb-next (4ac56b1f1ef8 USB: serial: usb_wwan: remove red=
-undant assignment to variable i)
-Merging usb-chipidea-next/for-usb-next (78665f57c3fa usb: chipidea: udc: ma=
-ke controller hardware endpoint primed)
-Merging tty/tty-next (3631e48df0db serial: samsung: Add samsung_early_read =
-to support early kgdboc)
-CONFLICT (content): Merge conflict in MAINTAINERS
-Merging char-misc/char-misc-next (3dd9a926ec23 mmc: rtsx: Fix build errors/=
-warnings for unused variable)
-CONFLICT (content): Merge conflict in MAINTAINERS
-Merging extcon/extcon-next (7f3e22d68905 extcon: Fix some kernel-doc commen=
-ts)
-CONFLICT (content): Merge conflict in drivers/power/supply/max8997_charger.c
-Merging gnss/gnss-next (26291c54e111 Linux 5.17-rc2)
-Merging phy-next/next (c6455af54899 phy: qcom-qmp: add sc8280xp UFS PHY)
-CONFLICT (modify/delete): Documentation/devicetree/bindings/phy/qcom,usb-hs=
--phy.txt deleted in phy-next/next and modified in HEAD.  Version HEAD of Do=
-cumentation/devicetree/bindings/phy/qcom,usb-hs-phy.txt left in tree.
-$ git rm -f Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.txt
-Applying: merge fix for "dt-bindings: phy: qcom,usb-hs-phy: add MSM8226 com=
-patible"
-Merging soundwire/next (266fa94673d3 soundwire: qcom: use __maybe_unused fo=
-r swrm_runtime_resume())
-Merging thunderbolt/next (144c4a77a3e1 thunderbolt: Rename EEPROM handling =
-bits to match USB4 spec)
-Merging vfio/next (5b26f2c249b1 vfio/mlx5: Fix to not use 0 as NULL pointer)
-Merging staging/staging-next (b25c7dc13fb8 staging: rts5208: fix Lines shou=
-ld not end with a '('.)
-CONFLICT (content): Merge conflict in drivers/staging/fbtft/fbtft.h
-Merging iio/togreg (0bf126163c3e iio: adc: xilinx-ams: Fix single channel s=
-witching sequence)
-CONFLICT (content): Merge conflict in .mailmap
-CONFLICT (content): Merge conflict in drivers/iio/accel/fxls8962af-core.c
-Merging mux/for-next (0fcfb00b28c0 Linux 5.16-rc4)
-Merging icc/icc-next (52c85167e413 Merge branch 'icc-msm8939' into icc-next)
-Merging dmaengine/next (ea7c8f598c32 dmaengine: idxd: restore traffic class=
- defaults after wq reset)
-Merging cgroup/for-next (88ea791b5665 Merge branch 'for-5.17-fixes' into fo=
-r-next)
-Merging scsi/for-next (71bb9ab6e351 scsi: ufs: Fix runtime PM messages neve=
-r-ending cycle)
-CONFLICT (content): Merge conflict in block/blk-lib.c
-CONFLICT (content): Merge conflict in block/blk-merge.c
-CONFLICT (content): Merge conflict in drivers/block/drbd/drbd_worker.c
-CONFLICT (content): Merge conflict in drivers/block/rnbd/rnbd-clt.c
-Merging scsi-mkp/for-next (2bd3b6b75946 scsi: ufs: core: scsi_get_lba() err=
-or fix)
-Merging vhost/linux-next (aadaa2207cbb tools/virtio: fix after premapped bu=
-f support)
-Merging rpmsg/for-next (c060cc0014c9 Merge branch 'rproc-next' into for-nex=
-t)
-Merging gpio/for-next (7ac554888233 MAINTAINERS: Remove reference to non-ex=
-isting file)
-Merging gpio-brgl/gpio/for-next (243cfa6a6782 gpiolib: Use list_first_entry=
-()/list_last_entry())
-Merging gpio-intel/for-next (a1ce76e89907 gpio: tps68470: Allow building as=
- module)
-Merging gpio-sim/gpio/gpio-sim (0fcfb00b28c0 Linux 5.16-rc4)
-Merging pinctrl/for-next (842366d7cb68 Merge branch 'devel' into for-next)
-Merging pinctrl-intel/for-next (d25478e1d8f9 pinctrl: icelake: Add Ice Lake=
--N PCH pin controller support)
-Merging pinctrl-renesas/renesas-pinctrl (babe298e9caa pinctrl: renesas: r8a=
-779f0: Add Ethernet pins, groups, and functions)
-Merging pinctrl-samsung/for-next (3652dc070bad pinctrl: samsung: improve wa=
-ke irq info on console)
-Merging pwm/for-next (ed14d36498c8 pwm: rcar: Simplify multiplication/shift=
- logic)
-Merging userns/for-next (b0527562d525 Merge of prlimit-tasklist_lock-for-v5=
-.18, per-namespace-ipc-sysctls-for-v5.18, and coredump-vma-snapshot-fix-for=
--v5.18 for testing in linux-next)
-Merging ktest/for-next (170f4869e662 ktest.pl: Fix the logic for truncating=
- the size of the log file for email)
-Merging kselftest/next (f6d344cd5fa6 selftests: Fix build when $(O) points =
-to a relative path)
-Merging livepatching/for-next (b44a7f076ce1 Merge branch 'for-5.18/selftest=
-s-fixes' into for-next)
-Merging coresight/next (b54f53bc11a5 coresight: Drop unused 'none' enum val=
-ue for each component)
-Merging rtc/rtc-next (5e086367298d rtc: wm8350: Handle error for wm8350_reg=
-ister_irq)
-Merging nvdimm/libnvdimm-for-next (2166a9974902 dax: make sure inodes are f=
-lushed before destroy cache)
-Merging at24/at24/for-next (e783362eb54c Linux 5.17-rc1)
-Merging ntb/ntb-next (d2bda1500aa8 IDT: Fix Build warnings on some 32bit ar=
-chitectures.)
-Merging seccomp/for-next/seccomp (eed09ad26182 samples/seccomp: Adjust samp=
-le to also provide kill option)
-Merging cisco/for-next (9e98c678c2d6 Linux 5.1-rc1)
-Merging fsi/next (f2af60bb7ce2 fsi: Add trace events in initialization path)
-Merging slimbus/for-next (e783362eb54c Linux 5.17-rc1)
-Merging nvmem/for-next (bdf79b27260b dt-bindings: nvmem: brcm,nvram: add ba=
-sic NVMEM cells)
-CONFLICT (add/add): Merge conflict in Documentation/devicetree/bindings/nvm=
-em/sunplus,sp7021-ocotp.yaml
-CONFLICT (content): Merge conflict in MAINTAINERS
-Merging xarray/main (22f56b8e890d XArray: Include bitmap.h from xarray.h)
-Merging hyperv/hyperv-next (eeda29db98f4 x86/hyperv: Output host build info=
- as normal Windows version number)
-Merging auxdisplay/auxdisplay (9ed331f8a0fb auxdisplay: lcd2s: Use proper A=
-PI to free the instance of charlcd object)
-Merging kgdb/kgdb/for-next (b77dbc86d604 kdb: Adopt scheduler's task classi=
-fication)
-Merging hmm/hmm (6880fa6c5660 Linux 5.15-rc1)
-Merging fpga/for-next (21f0a239ecab fpga: dfl: pci: Remove usage of the dep=
-recated "pci-dma-compat.h" API)
-Merging kunit/test (e783362eb54c Linux 5.17-rc1)
-Merging cfi/cfi/next (e783362eb54c Linux 5.17-rc1)
-Merging kunit-next/kunit (5debe5bfa02c list: test: Add a test for list_entr=
-y_is_head())
-Merging trivial/for-next (081c8919b02b Documentation: remove trivial tree)
-Merging mhi/mhi-next (74fa3cd1db2a bus: mhi: ep: Add uevent support for mod=
-ule autoloading)
-Merging memblock/for-next (cc5a1e382509 memblock tests: Add TODO and README=
- files)
-Merging init/init-user-pointers (38b082236e77 initramfs: use vfs_utimes in =
-do_copy)
-Merging counters/counters (e71ba9452f0b Linux 5.11-rc2)
-Merging cxl/next (e6e17cc6ed75 cxl/core: Fix cxl_device_lock() class detect=
-ion)
-Merging folio-iomap/folio-iomap (4d7bd0eb72e5 iomap: Inline __iomap_zero_it=
-er into its caller)
-Merging zstd/zstd-next (88a309465b3f lib: zstd: clean up double word in com=
-ment.)
-Merging efi/next (e783362eb54c Linux 5.17-rc1)
-Merging unicode/for-next (5298d4bfe80f unicode: clean up the Kconfig symbol=
- confusion)
-Merging slab/for-next (3ccb7c9a44ff Merge branch 'slab/for-5.18/cleanups' i=
-nto slab/for-next)
-Merging random/master (d0563685f3b6 random: check for signal and try earlie=
-r when generating entropy)
-Merging landlock/next (7325fd5614aa Merge Landlock fixes into next)
-Merging rust/rust-next (847245fe812e init/Kconfig: Specify the interpreter =
-for rust-is-available.sh)
-Merging sysctl/sysctl-next (fc12aa67daba kernel/do_mount_initrd: move real_=
-root_dev sysctls to its own file)
-CONFLICT (content): Merge conflict in include/linux/sched/sysctl.h
-CONFLICT (content): Merge conflict in kernel/sysctl.c
-Merging folio/for-next (0488343ba3dd selftests/vm/transhuge-stress: Support=
- file-backed PMD folios)
-CONFLICT (modify/delete): arch/nds32/include/asm/pgtable.h deleted in HEAD =
-and modified in folio/for-next.  Version folio/for-next of arch/nds32/inclu=
-de/asm/pgtable.h left in tree.
-CONFLICT (content): Merge conflict in drivers/gpu/drm/drm_cache.c
-$ git rm -f arch/nds32/include/asm/pgtable.h
-Merging execve/for-next/execve (f451569b9da8 a.out: Stop building a.out/osf=
-1 support on alpha and m68k)
-Merging kspp/for-next/kspp (172864570c6d Merge branch 'for-next/pending-fix=
-es' into for-next/kspp)
-Merging kspp-gustavo/for-next/kspp (91adfbb14c00 Merge branch 'for-next/ksp=
-p-fam0' into for-next/kspp)
-Merging akpm-current/current (8c3c4d736c03 ipc/mqueue: use get_tree_nodev()=
- in mqueue_get_tree())
-CONFLICT (content): Merge conflict in Documentation/admin-guide/sysctl/kern=
-el.rst
-CONFLICT (modify/delete): arch/nds32/mm/init.c deleted in HEAD and modified=
- in akpm-current/current.  Version akpm-current/current of arch/nds32/mm/in=
-it.c left in tree.
-CONFLICT (content): Merge conflict in include/linux/sched/sysctl.h
-CONFLICT (content): Merge conflict in lib/Kconfig.debug
-CONFLICT (content): Merge conflict in mm/Kconfig
-CONFLICT (content): Merge conflict in mm/huge_memory.c
-CONFLICT (content): Merge conflict in mm/internal.h
-CONFLICT (content): Merge conflict in mm/memcontrol.c
-CONFLICT (content): Merge conflict in mm/memory-failure.c
-CONFLICT (content): Merge conflict in mm/memory.c
-CONFLICT (content): Merge conflict in mm/memremap.c
-CONFLICT (content): Merge conflict in mm/rmap.c
-CONFLICT (content): Merge conflict in mm/vmscan.c
-CONFLICT (modify/delete): tools/testing/radix-tree/linux/gfp.h deleted in H=
-EAD and modified in akpm-current/current.  Version akpm-current/current of =
-tools/testing/radix-tree/linux/gfp.h left in tree.
-$ git rm -f tools/testing/radix-tree/linux/gfp.h arch/nds32/mm/init.c
-Applying: fix up for "tools: Move gfp.h and slab.h from radix-tree to lib"
-$ git checkout -b akpm remotes/origin/akpm/master
-$ git rebase --onto master remotes/origin/akpm/master-base
-Merging akpm/master (d74b9221a504 kselftest/vm: override TARGETS from argum=
-ents)
-Applying: fixup for "mm: generalize ARCH_HAS_FILTER_PGPROT"
-
---Sig_/d6UfjzQfabrKXu+4y.O9w=_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIpv6YACgkQAVBC80lX
-0GxccwgApKgG0uLbb3dIxYeM5CPeFQ5dkSQjs1MfWheUSrxg+Fr33Qa4NaZwp1Hf
-5W48XgG5IXYQmP1At/gnM8Hxru04ghAjBRSN8+BYBMgUjYCqkeCQ19vo/F/GlbIJ
-9tj9cInReK/uJvUol1VbC6IzhwJtVh2TRUbUidcMjKjzxlOKLf8EkhgV4OtQSG3j
-MLekhBBk9ojK51ChCN9ZON3CyCVAXoLoi3D/RKSuNNil7tq0266xtkW2chGBuNb6
-zTc506n+qrSiCRXTwLRZih7TuhqPfoqRBoXTEw8Z3jaec6wEzDPjEgFdy6og1iVk
-Qjb41kk4zurLHyFWMXSnO4NP/SV/9w==
-=vwxu
------END PGP SIGNATURE-----
-
---Sig_/d6UfjzQfabrKXu+4y.O9w=_--
