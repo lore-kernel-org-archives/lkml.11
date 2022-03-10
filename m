@@ -2,174 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 23:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344937AbiCJXwB (ORCPT
+        id S1344953AbiCJXwk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 18:52:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
+        Thu, 10 Mar 2022 18:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242092AbiCJXv6 (ORCPT
+        with ESMTP id S244209AbiCJXwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 18:51:58 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC81719E716
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:50:56 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id t187so6049094pgb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:50:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=INgj8rTXvSAzUwJnpuawPcVUdKw6g6SAvhUFGBPa20w=;
-        b=fbWHVX62vUa8exJGyTct1ga0AZuEMcW93/RSwfhyfYd0KV0/zdmtLALmkjeYXPDWBs
-         kVyY27sewIxi+DJ45gNPp8FKm7OtDu3KUc4Zu3hgB/jx93UbW4Cm6klaLOF/3BlcVsXj
-         jLIs9bXJviSUvp4Aml/5x3hoGyv1EEgB/YH+i8JofknAH1oJkjoqPccSSeHuVQmUjl+b
-         WiILqgKpC4/Y3CPPcUpXAISKldi2IQ/WB350w3s4+n3jSuzL34+1DZ1PrYGYFHSIAXB4
-         TkkyKLi5OV11krzpmH4qHSIMxhFyAoD1GKADP6w6hemtbWDK4o/69nNypA2n7RB2+H0g
-         U2Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=INgj8rTXvSAzUwJnpuawPcVUdKw6g6SAvhUFGBPa20w=;
-        b=ZZ+s+FuKXcnFjSN6mDuCEZGLY9SrAahE5OFsl8rrqJc78vKUWc+shSsU3KIXNsYaby
-         +wT+ZZ1HEuL5wX05y+XtZ+6lAkllgpokJ550JdYPElJ7lnHl4KquBY51uPPB2Q4KKwdR
-         +hFxMpQswOrMP49zTUBr7YfzHPFnfeeXmq/oQC8z4kjrAlK/MONpPUJeEXlRKgIxyMtC
-         I1lnPiwCHR2WyQzQJK+oG+3QIJdu98zfwl45p3cBC0wFm8IV3eR5T9/Dpx2XO0vvmlgc
-         pPE/vjO7EPNcZwT4pqb9jG3JNWsfWYzxSF/C4tz7u7fTSxsXGMeNyXCS4Ax5tBs3FnWV
-         WbgQ==
-X-Gm-Message-State: AOAM531ZvxpK6Qt/CBD9AmdKI91A7LAh5l0xt3HUtsjac/tydziiICBO
-        yDrYC2WHmd1XB5lbbnlxX39b4eG2EA2UyQ==
-X-Google-Smtp-Source: ABdhPJwXJfHEQvMlhBajppaP3JQkQ/qujHp3qSdGTjciaGZUR7sqgIGDkyhI60/Ju+m1lkZSnfOJQw==
-X-Received: by 2002:a63:1c58:0:b0:380:bfd8:9e10 with SMTP id c24-20020a631c58000000b00380bfd89e10mr6183633pgm.422.1646956255724;
-        Thu, 10 Mar 2022 15:50:55 -0800 (PST)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id rm8-20020a17090b3ec800b001bcd57956desm7006323pjb.51.2022.03.10.15.50.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 15:50:55 -0800 (PST)
-Date:   Thu, 10 Mar 2022 15:50:55 -0800 (PST)
-X-Google-Original-Date: Thu, 10 Mar 2022 15:49:44 PST (-0800)
-Subject:     Re: [PATCH v5 0/6] Provide a fraemework for RISC-V ISA extensions 
-In-Reply-To: <20220222204811.2281949-1-atishp@rivosinc.com>
-CC:     linux-kernel@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        aou@eecs.berkeley.edu, atishp@atishpatra.org, anup@brainfault.org,
-        damien.lemoal@wdc.com, devicetree@vger.kernel.org,
-        jszhang@kernel.org, krzysztof.kozlowski@canonical.com,
-        linux-riscv@lists.infradead.org,
-        Paul Walmsley <paul.walmsley@sifive.com>, robh+dt@kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     Atish Patra <atishp@rivosinc.com>
-Message-ID: <mhng-4593ea1e-503d-47df-8e55-d2ef06f01518@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Thu, 10 Mar 2022 18:52:35 -0500
+Received: from sonic315-27.consmr.mail.ne1.yahoo.com (sonic315-27.consmr.mail.ne1.yahoo.com [66.163.190.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE4719E738
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 15:51:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956292; bh=j5PSxx7pxMuUob08WR476BkBCAlorDOEyvyzPeGaYoA=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=iTdfDZ8eI4pr+BhOrRpsZKPRbRKowKfHlxXR7D1YDdYl4tgmNhj+4b7h/oIOBYq5MFQXg650eV6zg+pF3GD56NEH0VGkz0RDBnX7d4Rwffbj3AXugKqhPUnpKaI1MlmdE1MElEPSJxggGBjx+H0bXd6q1AuspdSz7ZZfhEuNvCWw7GiVCKft0K40zPcmFiNtC00ZDA9VZEHD+zQstdG73NkAZiuOX5rc1jGLiHlBz+mv2mJlv+huGp1Gm7DABHtOTm7V38kccapJgkJDJuBqrFb0qnp2Rf0G2H6nmu5CbQYWwysjQC+NbIzjunW3uknmFqlpPTdJ+Co78HY2MnDWTw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956292; bh=DptinqG2ColU012LyJkUEyjlm8zZSqkDFpan41FTMsY=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=X656Ei2rV5uPy4DNbOhu99IUXqSqXhgmHfXxnhqfZgZOzhTWjARbV+6rgjqTCNT59rIDA2iekPjW4zgakdNXyd+ixa0A2m5fiVM6W0eif6AvC2pTPzC9LdS7h6uZTQtxif/IIXTjNYPNgzarIecekTTbcXVry+Wd4iJ7g84aZo4grcGcntwF29XlAvpunAmGosADsnhYbVr1zxA4NHu5BWai/t7bpagaUziuo2aj9Y11OrgSNaw8D/jikuT179xs+2Qv+5HRXlc5GWG8GwPCZap/T0UG1eYDhGWnmzhvZtJu9/H9xCMNrO2gNtgxp1EAhpKA+HXc3GGqAkTjgb4xvw==
+X-YMail-OSG: .jbe92UVM1k2UuecCC1FC4xDqNgz00Ua_AT_g0exjcVYmn.Jp3nqylaF41Nl46b
+ fCcWZM.aMMfCOWitJ3swWQhlrkh1995KC8Griq5vfv6xKVxFSAostnQPi_wNmpjVUMSQYRmaFJ4y
+ 3UrTInIoXqa8XTznJi2wk4B4VHnrhKqJJrDkO5O6VHhTDwvIzclXq16EoniFLuSODB376qL2TCkU
+ a7kFMHmBkl.UE1e.AzLame22qzIVo8LiZNAESUyPAnirdcU9zNz1Rl9WZOr.0T9DWLiyL1ANO3v6
+ sagazADYM9dzW6W76SqnUDi_VojuzSEbWZO45xiUPwdk_0ozb2Q7W442ZEJkLG4WUL2QWGFDZoTk
+ aG3yYTwjQwXngHDtAWWVMuCCAElUFpGgzhzriGyRhmWRMh5rurXRxIrf7Izcdv913Ju6qlrbomop
+ nn2o2DHfXLqCWzzEUyAKs0ykfsFLKOCMwzMbzqauxxNJFUcqWAZ3PwR4BDSWnHu_6ea8Sbyyo6pJ
+ FnqRPWYjqNWZ_qBH0hBxz1yUFXV7WXi5VMK2ImKQuYLxZoIoSbT3uSYl_lWvMYH5bGKNQsqInA6W
+ SoEVLb7oQ8Yh9DE5LvhLcF8NPYRfOjhI.aq_gIf8OANW6fIW0bOUw770HHU.dhFhe4EDaBL_5Q3w
+ O95Gwv39zfU0NhRAMj8fn9hxik57IprX5_vKUvcGFFUb_JUPfBlVTt0MDeDzG.PxzHIkCMId7sOw
+ oIzBCS76LwWXMG_dOWsFf8jNomV4JfHL3I272aWG2XKCCVfaKLjPLQB.E0xWTCdioZ1dN60YjqNc
+ n4n00l7.4TsRnZjlsX1r_g70sCq16w.X69YbbOJuYmY6AbkYrWwqMOyRlYbXM0RpskLkpJt85PsK
+ ePiCuKDUQWI56xYQmtvprlbJSe_4QOSGeUZdq2qBSKHU_3t10EF1uGSloXvBVivHry2nfMxLjvhl
+ n9jnHqZamn6lWEA6RAELXKwVeiEmBJxdHAoIH2lcZtVO.tkj.GBcVIijlKo.I1n0OFv1DDDrnZvm
+ mlzRbX_GP7fibkhZ9NYuGbQODOs5Fep9uquhncpGkpUdIhIUvIn8cuqk5TQC5BRZNEsu9flAGIDx
+ S5aYMaDEzD9GBAY3U0yb8yUJEBj5hkT7Km72SEpACOoqTqyfBPZrCbSV6PJcUZTT44rXr0yTXFmK
+ neK1cLdK3PGpAugzWLhZuV9_OvBb0rmixXNj1UdN4C_N3no0N3b8qKjoO3vy4pn6oaJ3tML6c5RB
+ FlbMl5iR4ATfsfPcFDQTFURhA.j4l5Y87FWf3AYUn0oIIacbFaTflH9r9PomkhasT1ZY8kwWjJ9Q
+ lILWGmEcbqfIQVdzboWlzpJahkxJmCCzm12wd6D26eh7nc6FkwbscZBJc01D9ADii2QCJY4qipV0
+ k05ShEEMcfQ9_BHPlD9J7CuMoaVgY1Nwcn0Pdd7qOhQR0SW32sZbZW5.qaNT1k_vmDjDQK1KVUPo
+ 7MUXa22E8BJKJjSajSqVu_jgH4YEymHHTInHnxkfUf27BLRGX037TnuvC_9.md5o9udqF92FG4R2
+ .7bBROnWjjjyB2siMhQvjTrsSRYXLdswy41p_H12L.ctpSUhkkl_jPyoyX218HDyMiUViK2rxnaS
+ vMD9.1pc5wtGp2ChHKvB1AxD1ucWC.nasbtZ5pt0psda5xtpISsMTQu5d0MsN5vEaZBlnfv400Cx
+ TkR01L4dJU2DGc6YGKlL7UFj5tFE_ZxrEmK99bEi65eMJBTtUk3M8escSkx214FraFOBs3_WiqG0
+ uRg5j7pTxqrMiuIZezRKguv6VChtH53ebeK6vW0yFUWAdzjbj95oQr8olIF61beXT1NN_8Dms5e1
+ VXAyDOajMM1zPcaBZfZuL.PPK.K8vg67qWPxO8UbnqdWjYNZYGjtWBollGJifaZe.sZRzIQcrj9g
+ Vd36767nBGjM.AVi7gXdP_y8OALEaCMZx9Acacxe2aTf2dEn59EoP6nWS_Y1z9ohCsBuEhdOmsG5
+ 8p2J._aKOliIk4Ob_fS4O3dU9u7KlVhohAdZSKIQy5iPjKfZYCiyW1LahO.468GxPGSBwyNaJnfY
+ EqYtGWi1F.ToSbTok5foAvkW2PjHs1NsVRuWcNWeV_I.9IO.y3tutPpYD0YnIrzJtkePWQ6u8XgQ
+ Sk_Fvp7gwc4xRH_VHYulPIbSiO_902E7ItY7N7OlXs7wXj_5pUOsCarEe.SV33FlvZUBAhCo01u5
+ B.tFxFDwbfCpF4DmyNfZygjXCmTJNXS4S38LAAYPq3KdylmMNkOND7.loNOfq4u1ZY8NvIXQ8ubn
+ cTqBPzjwQrS2WuaQmi7DzdSu6YRgQ
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic315.consmr.mail.ne1.yahoo.com with HTTP; Thu, 10 Mar 2022 23:51:32 +0000
+Received: by kubenode514.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 02d0d7342d647b4cf843030be84eedee;
+          Thu, 10 Mar 2022 23:51:28 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v33 10/29] LSM: Use lsmblob in security_ipc_getsecid
+Date:   Thu, 10 Mar 2022 15:46:13 -0800
+Message-Id: <20220310234632.16194-11-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220310234632.16194-1-casey@schaufler-ca.com>
+References: <20220310234632.16194-1-casey@schaufler-ca.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 12:48:05 PST (-0800), Atish Patra wrote:
-> This series implements a generic framework to parse multi-letter ISA
-> extensions. This series is based on Tsukasa's v3 isa extension improvement
-> series[1]. I have fixed few bugs and improved comments from that series
-> (PATCH1-3). I have not used PATCH 4 from that series as we are not using
-> ISA extension versioning as of now. We can add that later if required.
->
-> PATCH 4 allows the probing of multi-letter extensions via a macro.
-> It continues to use the common isa extensions between all the harts.
-> Thus hetergenous hart systems will only see the common ISA extensions.
->
-> PATCH 6 improves the /proc/cpuinfo interface for the available ISA extensions
-> via /proc/cpuinfo.
->
-> Here is the example output of /proc/cpuinfo:
-> (with debug patches in Qemu and Linux kernel)
->
-> # cat /proc/cpuinfo
-> processor	: 0
-> hart		: 0
-> isa		: rv64imafdch
-> isa-ext		: svpbmt svnapot svinval
+There may be more than one LSM that provides IPC data
+for auditing. Change security_ipc_getsecid() to fill in
+a lsmblob structure instead of the u32 secid. The
+audit data structure containing the secid will be updated
+later, so there is a bit of scaffolding here.
 
-I know it might seem a bit pedantic, but I really don't want to 
-introduce a new format for encoding ISA extensions -- doubly so if this 
-is the only way we're giving this info to userspace, as then we're just 
-asking folks to turn this into a defacto ABI.  Every time we try to do 
-something that's sort of like an ISA string but not exactly what's in 
-the spec we end up getting burned, and while I don't see a specific way 
-that could happen here that's what's happened so many times before I 
-just don't want to risk it.
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: John Johansen <john.johansen@canonical.com>
+Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
+Acked-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Cc: linux-audit@redhat.com
+---
+ include/linux/security.h |  7 ++++---
+ kernel/auditsc.c         |  7 ++++++-
+ security/security.c      | 12 +++++++++---
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
-I've gone ahead and removed some of this information (isa-ext, and all 
-the single-letter extensions we can't properly turn on yet) from 
-/proc/cpuinfo, modifying the last patch to do so.  It's at 
-palmer/riscv-isa, LMK if that's OK.
+diff --git a/include/linux/security.h b/include/linux/security.h
+index a104ec0759c2..1814516509ec 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -520,7 +520,7 @@ int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 			unsigned long arg4, unsigned long arg5);
+ void security_task_to_inode(struct task_struct *p, struct inode *inode);
+ int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag);
+-void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid);
++void security_ipc_getsecid(struct kern_ipc_perm *ipcp, struct lsmblob *blob);
+ int security_msg_msg_alloc(struct msg_msg *msg);
+ void security_msg_msg_free(struct msg_msg *msg);
+ int security_msg_queue_alloc(struct kern_ipc_perm *msq);
+@@ -1277,9 +1277,10 @@ static inline int security_ipc_permission(struct kern_ipc_perm *ipcp,
+ 	return 0;
+ }
+ 
+-static inline void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid)
++static inline void security_ipc_getsecid(struct kern_ipc_perm *ipcp,
++					 struct lsmblob *blob)
+ {
+-	*secid = 0;
++	lsmblob_init(blob, 0);
+ }
+ 
+ static inline int security_msg_msg_alloc(struct msg_msg *msg)
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index 5edb16cb12e0..598e0de45b04 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -2610,12 +2610,17 @@ void __audit_mq_getsetattr(mqd_t mqdes, struct mq_attr *mqstat)
+ void __audit_ipc_obj(struct kern_ipc_perm *ipcp)
+ {
+ 	struct audit_context *context = audit_context();
++	struct lsmblob blob;
+ 
+ 	context->ipc.uid = ipcp->uid;
+ 	context->ipc.gid = ipcp->gid;
+ 	context->ipc.mode = ipcp->mode;
+ 	context->ipc.has_perm = 0;
+-	security_ipc_getsecid(ipcp, &context->ipc.osid);
++	security_ipc_getsecid(ipcp, &blob);
++	/* context->ipc.osid will be changed to a lsmblob later in
++	 * the patch series. This will allow auditing of all the object
++	 * labels associated with the ipc object. */
++	context->ipc.osid = lsmblob_value(&blob);
+ 	context->type = AUDIT_IPC;
+ }
+ 
+diff --git a/security/security.c b/security/security.c
+index ffdd366d2098..815200684bcf 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -1999,10 +1999,16 @@ int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
+ 	return call_int_hook(ipc_permission, 0, ipcp, flag);
+ }
+ 
+-void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid)
++void security_ipc_getsecid(struct kern_ipc_perm *ipcp, struct lsmblob *blob)
+ {
+-	*secid = 0;
+-	call_void_hook(ipc_getsecid, ipcp, secid);
++	struct security_hook_list *hp;
++
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.ipc_getsecid, list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		hp->hook.ipc_getsecid(ipcp, &blob->secid[hp->lsmid->slot]);
++	}
+ }
+ 
+ int security_msg_msg_alloc(struct msg_msg *msg)
+-- 
+2.31.1
 
-I'm not opposed to doing something here, I just really don't want to 
-rush into it as we've already got enough complexity around the various 
-flavors of ISA strings.  I don't see a big pressing need to provide this 
-information to userspace, but having the rest of this sorted out is 
-great (and there's some dependencies on this) so I'd prefer to just 
-stick to what we know is good.
-
-> mmu		: sv48
->
-> processor	: 1
-> hart		: 1
-> isa		: rv64imafdch
-> isa-ext		: svpbmt svnapot svinval
-> mmu		: sv48
->
-> processor	: 2
-> hart		: 2
-> isa		: rv64imafdch
-> isa-ext		: svpbmt svnapot svinval
-> mmu		: sv48
->
-> processor	: 3
-> hart		: 3
-> isa		: rv64imafdch
-> isa-ext		: svpbmt svnapot svinval
-> mmu		: sv48
->
-> Anybody adding support for any new multi-letter extensions should add an
-> entry to the riscv_isa_ext_id and the isa extension array.
-> E.g. The patch[2] adds the support for various ISA extensions.
->
-> [1] https://lore.kernel.org/all/0f568515-a05e-8204-aae3-035975af3ee8@irq.a4lg.com/T/
-> [2] https://github.com/atishp04/linux/commit/e9e240c9a854dceb434ceb53bdbe82a657bee5f2
->
-> Changes from v4->v5:
-> 1. Improved the /proc/cpuinfo to include only valid & enabled extensions
-> 2. Improved the multi-letter parsing by skipping the 'su' modes generated in
->    Qemu as suggested by Tsukasa.
->
-> Changes from v3->v4:
-> 1. Changed temporary variable for current hart isa to a bitmap
-> 2. Added reviewed-by tags.
-> 3. Improved comments
->
-> Changes from v2->v3:
-> 1. Updated comments to mark clearly a fix required for Qemu only.
-> 2. Fixed a bug where the 1st multi-letter extension can be present without _
-> 3. Added Tested by tags.
->
-> Changes from v1->v2:
-> 1. Instead of adding a separate DT property use the riscv,isa property.
-> 2. Based on Tsukasa's v3 isa extension improvement series.
->
-> Atish Patra (3):
-> RISC-V: Implement multi-letter ISA extension probing framework
-> RISC-V: Do no continue isa string parsing without correct XLEN
-> RISC-V: Improve /proc/cpuinfo output for ISA extensions
->
-> Tsukasa OI (3):
-> RISC-V: Correctly print supported extensions
-> RISC-V: Minimal parser for "riscv, isa" strings
-> RISC-V: Extract multi-letter extension names from "riscv, isa"
->
-> arch/riscv/include/asm/hwcap.h |  25 +++++++
-> arch/riscv/kernel/cpu.c        |  51 ++++++++++++-
-> arch/riscv/kernel/cpufeature.c | 130 +++++++++++++++++++++++++++------
-> 3 files changed, 183 insertions(+), 23 deletions(-)
