@@ -2,178 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2868CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240434AbiCJIgv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        id S239859AbiCJIhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:37:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234183AbiCJIgr (ORCPT
+        with ESMTP id S230179AbiCJIhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:36:47 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B58DCE20
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:35:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646901346; x=1678437346;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TOmmHXBy4Vw8h+IYfazTSOkCfXOokZJIGk+zAXH08VY=;
-  b=CRqmWzwiUMXqxSOCkKn9FCE2l0QtwDahElZku8h0X36d21xuhE2GgBUr
-   /sQjFzkzhQbpMuc9epuafSAOenI95onasnhTZ1MaB7ctgki5FCMQ/oziZ
-   V2tSpUVHNBhr/wBxDDRAgVlfDwNFXzv5Odjv09mn+sFDRqzbIcpIJESzy
-   ymiRQ5RiujKPECnm9sAZai4cNaSY0t6HVgq4B3AQdvzkVDxp0nXX6N3JX
-   RuGoiwL+fTjHeiR3okXX31NCs4UaATIaBCxzspzN4hjbZVW/0T+sbLuBD
-   BUWRPcH8LanJkIRHgNtV1bf/dtLD6hTA0EQvPZAic1tawaou8oeX0iZTd
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255381100"
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="255381100"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 00:35:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="712277523"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 10 Mar 2022 00:35:44 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSEGt-0004eX-LL; Thu, 10 Mar 2022 08:35:43 +0000
-Date:   Thu, 10 Mar 2022 16:34:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: arch/arm/mm/proc-v7-bugs.c:111:15: warning: more '%' conversions
- than data arguments
-Message-ID: <202203101629.dia0kbU5-lkp@intel.com>
+        Thu, 10 Mar 2022 03:37:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46A3813687C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:36:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646901366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SdlbI2z0RghsFTWZjvxfS4BIInXiDN0dAMJn9Yvl9ms=;
+        b=Ypi38RE7k5kIB8XQ2TbYeXUHXzL+IwMMcrmytvzRvYZrduAFS8nBTM4woRDbkuYPHkw+46
+        aPhygsd9ziWuearKOR6fPs8gnuqqcDW7ksbQtWHv+t40LdNDxvWPYxgv3zrWO23n9kQGVJ
+        u6vzgf/xum4tlSTz/kdUfUqZyRh5gPs=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-540-vsefvOMMP5WNTW_a_-hGBQ-1; Thu, 10 Mar 2022 03:36:05 -0500
+X-MC-Unique: vsefvOMMP5WNTW_a_-hGBQ-1
+Received: by mail-wm1-f70.google.com with SMTP id f189-20020a1c38c6000000b0037d1bee4847so3773748wma.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:36:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=SdlbI2z0RghsFTWZjvxfS4BIInXiDN0dAMJn9Yvl9ms=;
+        b=l3cD9TvgLGky9ilsWOy+zG0/nk6hq6C0rPcRUMMKLnCm1ByGSmJ+fKA6sxPFZIETyi
+         b8GpYF1Nv1pT7ZeNAMJ4utOJnywu6bz0U50bT2wEXHPIXVetOznONQehn3dRqONjwZBU
+         wRc/0dffFwl12nvhmGBkJLIILSJsTPWn+ptr2UyF+yFNIVj3AcIsdxcG/HhSMkwmxwSo
+         JnmdqHzB/Pw0BQQ3rjFJfVlzXu7u4XGLDAFpivjMuXpNp1c45MT1eCxHFWjBWQO4WH/2
+         jM4jUji1hwf5AZtRN0LSoXbodj0rdENEXU919NUfMd5UnsowlC1yADxv5kKE7hmKpXSZ
+         qNxA==
+X-Gm-Message-State: AOAM533feB11to4xXBqKD1uQPgrWSR0mAfp2fy5Aiudn0hY+FyCduCa0
+        A+U2caAqj0YN3oaRyT34syK3kES8BvGqOCbGGEnypn2T/rD7ECpxHgt2qQDc5AYU5Di8sZkkD9F
+        Lj6ORHpL0mBcdb4cfmbnTcFzH
+X-Received: by 2002:a05:6000:1a88:b0:203:8de9:47cc with SMTP id f8-20020a0560001a8800b002038de947ccmr597577wry.182.1646901363981;
+        Thu, 10 Mar 2022 00:36:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx0/MVki2Z/ZQZyp83Cw46INv+11717p3ZQf2EERKrA2i3GnigoGYETZX7KVL9NMjBmjgCyWg==
+X-Received: by 2002:a05:6000:1a88:b0:203:8de9:47cc with SMTP id f8-20020a0560001a8800b002038de947ccmr597565wry.182.1646901363670;
+        Thu, 10 Mar 2022 00:36:03 -0800 (PST)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id ay9-20020a5d6f09000000b001f1f3330fc5sm3692426wrb.28.2022.03.10.00.36.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 00:36:03 -0800 (PST)
+Message-ID: <f6730c85-096d-c523-661e-bb2ad80d96fe@redhat.com>
+Date:   Thu, 10 Mar 2022 09:36:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <YikTHqjv4S6ZQ3Fv@casper.infradead.org>
+ <CAHk-=wiKSXZyKu+LhZjXp+UnDa7kcOyPPG+C8n3K-3AQ3KgMhA@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC] Free up a page flag
+In-Reply-To: <CAHk-=wiKSXZyKu+LhZjXp+UnDa7kcOyPPG+C8n3K-3AQ3KgMhA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
-commit: 9dd78194a3722fa6712192cdd4f7032d45112a9a ARM: report Spectre v2 status through sysfs
-date:   5 days ago
-config: arm-randconfig-r035-20220310 (https://download.01.org/0day-ci/archive/20220310/202203101629.dia0kbU5-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9dd78194a3722fa6712192cdd4f7032d45112a9a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9dd78194a3722fa6712192cdd4f7032d45112a9a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mm/
+On 09.03.22 23:07, Linus Torvalds wrote:
+> On Wed, Mar 9, 2022 at 12:50 PM Matthew Wilcox <willy@infradead.org> wrote:
+>>
+>> We're always running out of page flags.  Here's an attempt to free one
+>> up for the next time somebody wants one.
+> 
+> Ugh. This is too ugly for words.
+> 
+> I wouldn't mind something along the conceptual lines of "these bits
+> are only used for this type", but I think it would need to be much
+> more organized and explicit, not this kind of randomness.
+> 
+> For example, quite a few of the page bits really only make sense for
+> the "page cache and anonymous pages" kind.
+> 
+> I think this includes some really fundamental bits like the lock bit
+> (and the associated waiters bit), along with a lot of the "owner" aka
+> "this can be used by the filesystem" bits.
+> 
+> I think it _also_ includes all the LRU and workingset bits etc.
+> 
+> So if we consider that kind of case the "normal" case, the not-normal
+> case is likely (a) slab, (b) reserved pages and (c) zspages.,
+> 
+> Which is pretty close to your "xyzzy" bit (I think you came to the
+> same list of "slab or reserved" conclusion because of the fundamental
+> issues above), but my point is that I think this approach is
+> acceptable if we make it much less random, and make it a lot more
+> explicit and thought through.
+> 
+> And we'd probably need to actually *verify* that we don't do things
+> like lock (or LRU) those non-normal pages.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Looking at isolate_movable_page(), I think we can easily end up locking
+random pages temporarily. And especially non-lru page migration makes
+use of it as well.
 
-All warnings (new ones prefixed by >>):
+Personally, I'd not try restricting PG_lock and PG_waiter for specific
+page types, it IMHO a way to generic infrastructure.
 
->> arch/arm/mm/proc-v7-bugs.c:111:15: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
-           pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
-                       ~^
-   include/linux/printk.h:523:26: note: expanded from macro 'pr_info'
-           printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-                                   ^~~
-   include/linux/printk.h:340:21: note: expanded from macro 'pr_fmt'
-   #define pr_fmt(fmt) fmt
-                       ^~~
-   include/linux/printk.h:450:53: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ^~~
-   include/linux/printk.h:422:11: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ^~~~
-   arch/arm/mm/proc-v7-bugs.c:205:6: warning: no previous prototype for function 'cpu_v7_ca8_ibe' [-Wmissing-prototypes]
-   void cpu_v7_ca8_ibe(void)
-        ^
-   arch/arm/mm/proc-v7-bugs.c:205:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void cpu_v7_ca8_ibe(void)
-   ^
-   static 
-   arch/arm/mm/proc-v7-bugs.c:211:6: warning: no previous prototype for function 'cpu_v7_ca15_ibe' [-Wmissing-prototypes]
-   void cpu_v7_ca15_ibe(void)
-        ^
-   arch/arm/mm/proc-v7-bugs.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void cpu_v7_ca15_ibe(void)
-   ^
-   static 
-   arch/arm/mm/proc-v7-bugs.c:217:6: warning: no previous prototype for function 'cpu_v7_bugs_init' [-Wmissing-prototypes]
-   void cpu_v7_bugs_init(void)
-        ^
-   arch/arm/mm/proc-v7-bugs.c:217:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void cpu_v7_bugs_init(void)
-   ^
-   static 
-   4 warnings generated.
+Other page flags are different and we already reuse them in different
+context: e.g., reusing PG_uptodate for buddy pages via PG_reported.
 
+-- 
+Thanks,
 
-vim +111 arch/arm/mm/proc-v7-bugs.c
+David / dhildenb
 
-    65	
-    66	static unsigned int spectre_v2_install_workaround(unsigned int method)
-    67	{
-    68		const char *spectre_v2_method = NULL;
-    69		int cpu = smp_processor_id();
-    70	
-    71		if (per_cpu(harden_branch_predictor_fn, cpu))
-    72			return SPECTRE_MITIGATED;
-    73	
-    74		switch (method) {
-    75		case SPECTRE_V2_METHOD_BPIALL:
-    76			per_cpu(harden_branch_predictor_fn, cpu) =
-    77				harden_branch_predictor_bpiall;
-    78			spectre_v2_method = "BPIALL";
-    79			break;
-    80	
-    81		case SPECTRE_V2_METHOD_ICIALLU:
-    82			per_cpu(harden_branch_predictor_fn, cpu) =
-    83				harden_branch_predictor_iciallu;
-    84			spectre_v2_method = "ICIALLU";
-    85			break;
-    86	
-    87		case SPECTRE_V2_METHOD_HVC:
-    88			per_cpu(harden_branch_predictor_fn, cpu) =
-    89				call_hvc_arch_workaround_1;
-    90			cpu_do_switch_mm = cpu_v7_hvc_switch_mm;
-    91			spectre_v2_method = "hypervisor";
-    92			break;
-    93	
-    94		case SPECTRE_V2_METHOD_SMC:
-    95			per_cpu(harden_branch_predictor_fn, cpu) =
-    96				call_smc_arch_workaround_1;
-    97			cpu_do_switch_mm = cpu_v7_smc_switch_mm;
-    98			spectre_v2_method = "firmware";
-    99			break;
-   100		}
-   101	
-   102		if (spectre_v2_method)
-   103			pr_info("CPU%u: Spectre v2: using %s workaround\n",
-   104				smp_processor_id(), spectre_v2_method);
-   105	
-   106		return SPECTRE_MITIGATED;
-   107	}
-   108	#else
-   109	static unsigned int spectre_v2_install_workaround(unsigned int method)
-   110	{
- > 111		pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
-   112	
-   113		return SPECTRE_VULNERABLE;
-   114	}
-   115	#endif
-   116	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
