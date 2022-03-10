@@ -2,127 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243769AbiCJO1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
+        id S243775AbiCJO1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243746AbiCJOXN (ORCPT
+        with ESMTP id S243774AbiCJOXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:23:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1D6158794;
-        Thu, 10 Mar 2022 06:21:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C674B825A7;
-        Thu, 10 Mar 2022 14:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAE7C340F5;
-        Thu, 10 Mar 2022 14:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922071;
-        bh=T/mHRVpyB/klvNBKNmoZm1usKzPz4/NT8r60/gXuNsc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qh1+6HPJAwpLhZerrbYE5m4qhqcGDTakEcjsqBkHe0q82f0z1fq6BLoKBZhoFEjS8
-         yLjkqWNQX++iiTK6BGcsJurTEWUDHKexZufLWE8LQ8K+cs9d6bzs3hkTpY1asyo7yR
-         aVYj+A5V41h76buxqJEeIgwviYXsNjos5rNceGtk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.14 27/31] xen/gntalloc: dont use gnttab_query_foreign_access()
-Date:   Thu, 10 Mar 2022 15:18:40 +0100
-Message-Id: <20220310140808.332010211@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
-References: <20220310140807.524313448@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:23:15 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E380158D89
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:21:15 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0720C1691;
+        Thu, 10 Mar 2022 06:21:07 -0800 (PST)
+Received: from [10.57.43.53] (unknown [10.57.43.53])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C7B03FA20;
+        Thu, 10 Mar 2022 06:21:04 -0800 (PST)
+Message-ID: <39f8d67f-dd0b-e8de-e007-619eee86c98e@arm.com>
+Date:   Thu, 10 Mar 2022 14:21:00 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
+Content-Language: en-GB
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Vladimir Murzin <vladimir.murzin@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Anshuman Khandual <anshuman.khandual@arm.com>
+References: <20220309144138.360482-1-arnd@kernel.org>
+ <20220309144138.360482-2-arnd@kernel.org>
+ <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com>
+ <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
+ <CACRpkdbxico4SDottfB9Z8PHsXKG4fNA6G0XNyuaY+LObOovuw@mail.gmail.com>
+ <CAK8P3a02a-+k=ChdT_Lg=xvHYZ4WTb-Efu7aQq-yBP1Gn37TgA@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAK8P3a02a-+k=ChdT_Lg=xvHYZ4WTb-Efu7aQq-yBP1Gn37TgA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+On 2022-03-10 09:23, Arnd Bergmann wrote:
+> On Thu, Mar 10, 2022 at 2:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+>>
+>> On Wed, Mar 9, 2022 at 5:17 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>>> Robin
+>>>> In that case, it would probably make sense to garbage-collect all the
+>>>> configs, setup code and other stuff relating to older MMU-less CPU cores
+>>>> like ARM1156, ARM940, etc. at the same time.
+>>>
+>>> Right, good idea. These are only selected by CONFIG_ARCH_INTEGRATOR,
+>>> but that in turn doesn't build for CONFIG_MMU=n because it depends on
+>>> ARCH_MULTIPLATFORM. I'll send a patch for these.
+>>
+>> Just delete these, I do have these CPU tiles around but they are so obscure
+>> and I never got around to even testing to boot them.
+> 
+> Right, of course you couldn't boot test them because it has been
+> impossible to even select them in Kconfig for years. I've added
+> a patch to completely remove the five v4/v5 NOMMU cores now,
+> will send that later.
+> 
+> There are five more cores that are only referenced by mach-integrator
+> that are supposed to work (922T, 1020, 1020E, 1022, 1026). Have you
+> ever tested those, or should we consider removing them as well?
+> 
+> At some point, there was a proposal to add an arm10 based SoC
+> to mainline, but that never happened and I'm fairly sure it won't
+> come back now.
 
-Commit d3b6372c5881cb54925212abb62c521df8ba4809 upstream.
+FWIW I have an Integrator/CM1026 that I'd love to play with purely for 
+giggles, but it needs some serious archaeology to find and flash some 
+firmware for it first.
 
-Using gnttab_query_foreign_access() is unsafe, as it is racy by design.
+I also have a couple of "real" ARM1026s in the form of Conexant 
+Solos-based routers[1] which I've done a little hacking on, but don't 
+see myself ever realistically having enough time or motivation to 
+actually upstream anything. And at this point I don't see OpenWRT having 
+any more interest in boards with only 15MB of RAM (yes, they really do 
+boot with "mem=15M" to reserve 1MB for the modem...)
 
-The use case in the gntalloc driver is not needed at all. While at it
-replace the call of gnttab_end_foreign_access_ref() with a call of
-gnttab_end_foreign_access(), which is what is really wanted there. In
-case the grant wasn't used due to an allocation failure, just free the
-grant via gnttab_free_grant_reference().
+Cheers,
+Robin.
 
-This is CVE-2022-23039 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/xen/gntalloc.c |   25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
-
---- a/drivers/xen/gntalloc.c
-+++ b/drivers/xen/gntalloc.c
-@@ -169,20 +169,14 @@ undo:
- 		__del_gref(gref);
- 	}
- 
--	/* It's possible for the target domain to map the just-allocated grant
--	 * references by blindly guessing their IDs; if this is done, then
--	 * __del_gref will leave them in the queue_gref list. They need to be
--	 * added to the global list so that we can free them when they are no
--	 * longer referenced.
--	 */
--	if (unlikely(!list_empty(&queue_gref)))
--		list_splice_tail(&queue_gref, &gref_list);
- 	mutex_unlock(&gref_mutex);
- 	return rc;
- }
- 
- static void __del_gref(struct gntalloc_gref *gref)
- {
-+	unsigned long addr;
-+
- 	if (gref->notify.flags & UNMAP_NOTIFY_CLEAR_BYTE) {
- 		uint8_t *tmp = kmap(gref->page);
- 		tmp[gref->notify.pgoff] = 0;
-@@ -196,21 +190,16 @@ static void __del_gref(struct gntalloc_g
- 	gref->notify.flags = 0;
- 
- 	if (gref->gref_id) {
--		if (gnttab_query_foreign_access(gref->gref_id))
--			return;
--
--		if (!gnttab_end_foreign_access_ref(gref->gref_id, 0))
--			return;
--
--		gnttab_free_grant_reference(gref->gref_id);
-+		if (gref->page) {
-+			addr = (unsigned long)page_to_virt(gref->page);
-+			gnttab_end_foreign_access(gref->gref_id, 0, addr);
-+		} else
-+			gnttab_free_grant_reference(gref->gref_id);
- 	}
- 
- 	gref_size--;
- 	list_del(&gref->next_gref);
- 
--	if (gref->page)
--		__free_page(gref->page);
--
- 	kfree(gref);
- }
- 
-
-
+[1] https://openwrt.org/toh/linksys/wag54g2
