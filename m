@@ -2,74 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E846BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3745DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242045AbiCJPYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:24:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        id S243497AbiCJPYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244699AbiCJPYD (ORCPT
+        with ESMTP id S244062AbiCJPXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:24:03 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA5CC086F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:23:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646925781; x=1678461781;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=X65sOg9tpfwezm9F7oPR3l1yoJm0wZybxcJ2SYM0o5E=;
-  b=UQpT2f3VQlQaRHImne6qFArLOl16RZ7WyfvZ7IqoHXncfmnrTdG1eCCk
-   Fu6vRaM1AAz06/Mx+Wg2NxJ7OHQncLfIa0MsCXYjrrUueZlqFxFmWnLTo
-   PP38jGvCqmlEqQCUISXjbzLuMVCeVNj94vNa9dU7V5v1fJof41GDWGvk0
-   Vf544FF5rJsWjGX4tnP//fzJrax0K721lm/dlDiB8taiNw6mCjRlunq5O
-   ysqzLDt7M0MBauxPKLpLvI6hznMXia9hw1obKYb9cItCO1MTabyYPhrxE
-   wUFKpEjRI+V9uzUq5VxRrmCPJ4MvhyyQV7diyJQpbpflVjZGbJ3vSW0oF
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="318499356"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="318499356"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 07:22:40 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="688688356"
-Received: from efrantz-mobl1.amr.corp.intel.com (HELO [10.212.252.101]) ([10.212.252.101])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 07:22:39 -0800
-Message-ID: <2b26fc5b-d709-f2e1-0c8f-a6a548008216@intel.com>
-Date:   Thu, 10 Mar 2022 07:22:32 -0800
+        Thu, 10 Mar 2022 10:23:36 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12B365DC;
+        Thu, 10 Mar 2022 07:22:33 -0800 (PST)
+Received: from Monstersaurus.ksquared.org.uk.beta.tailscale.net (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 7E0AA491;
+        Thu, 10 Mar 2022 16:22:30 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1646925751;
+        bh=f1cZwxY3Sz3yLsut2yWbhLFFNJnpn/cbPONcZc3vM9M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MAz8Uo8ZMfT8UYYCHhyBAylyu4XYtKLCwPeeJzgEli2Nrvg8f0N/4msdI8EVmE0ne
+         ogL9DanCVjuvWuUD0Agtolgb3TwMWPFNoU4bg6ie3kCGxb2IAHULCtXSJ/b+gB4dRY
+         QRX2aBgfcopymVWqhvLtI8b3B+CdkZ4l7xG1HKDg=
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+To:     dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Subject: [PATCH v3 0/3] drm/bridge: ti-sn65dsi86: Support non-eDP DisplayPort connectors
+Date:   Thu, 10 Mar 2022 15:22:24 +0000
+Message-Id: <20220310152227.2122960-1-kieran.bingham+renesas@ideasonboard.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Bharata B Rao <bharata@amd.com>, linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, x86@kernel.org,
-        kirill.shutemov@linux.intel.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        oleg@redhat.com, ananth.narayan@amd.com
-References: <20220310111545.10852-1-bharata@amd.com>
- <81b6f618-05bc-f7d0-5461-4c3f0ca42d3f@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
-In-Reply-To: <81b6f618-05bc-f7d0-5461-4c3f0ca42d3f@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/10/22 07:16, Dave Hansen wrote:
-> I'd also highly suggest going over Kirill's patch set in detail.  There
-> are things like this:
-> 
->> https://lore.kernel.org/linux-mm/20210205151631.43511-10-kirill.shutemov@linux.intel.com/
-> which seem pretty sane to me but which are (I think) missing in this set.
+Implement support for non eDP connectors on the TI-SN65DSI86 bridge, and
+provide IRQ based hotplug detect to identify when the connector is
+present.
 
-Oh silly me, that's just for LAM_U48 which ignores more bits than
-LAM_U57 or UAI.
+no-hpd is extended to be the default behaviour for non DisplayPort
+connectors.
 
-Either way, I know you've looked at Kirill's set, but please do go over
-it in detail to make sure there's nothing else you need to lift out of
-there.
+This series is based upon Sam Ravnborgs and Rob Clarks series [0] to
+support DRM_BRIDGE_STATE_OPS and NO_CONNECTOR support on the SN65DSI86,
+however some extra modifications have been made on the top of Sam's
+series to fix compile breakage and the NO_CONNECTOR support.
+
+A full branch with these changes is available at [1]
+
+[0] https://lore.kernel.org/all/20220206154405.1243333-1-sam@ravnborg.org/
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/kbingham/rcar.git
+    branch: kbingham/drm-misc/next/sn65dsi86/hpd
+
+Kieran Bingham (1):
+  drm/bridge: ti-sn65dsi86: Support hotplug detection
+
+Laurent Pinchart (2):
+  drm/bridge: ti-sn65dsi86: Support DisplayPort (non-eDP) mode
+  drm/bridge: ti-sn65dsi86: Implement bridge connector operations
+
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 180 +++++++++++++++++++++++---
+ 1 file changed, 165 insertions(+), 15 deletions(-)
+
+-- 
+2.32.0
+
