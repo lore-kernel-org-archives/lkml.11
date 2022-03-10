@@ -2,221 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E57D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238879AbiCJAwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 19:52:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
+        id S238750AbiCJA6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 19:58:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbiCJAwd (ORCPT
+        with ESMTP id S229889AbiCJA6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 19:52:33 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D25A6E56B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:51:33 -0800 (PST)
+        Wed, 9 Mar 2022 19:58:06 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20E6B0C50
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:57:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646873493; x=1678409493;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lkeupvj4kynTUScTDJhfQz76mAOO5ubgDQN4+bqAFrA=;
-  b=jMHOnKYQi2RrjC34divGYtrvX/ZFvgoK4u64V+GJoE6YHUo4PkpxfpTZ
-   3f8DltYDBka2bWPkjnkv0XDxuorTqxTPS5gvijlVA/lxPTmu/6unHPeWQ
-   Txct4qZDi1qJ4FjGVoF1dqkj+rAIA0utWsSoS/7kkalgn61Djeq564qAp
-   nx1zNtxwt85Wc2y6JfxiAHd3T/h0FiDpMWA/CQFhYACn7gOiW+bRO1R81
-   60SB1QX5cP/kJIRbfu5ZYxdkxr6V7ehlkA6/wknq9ZvFGFUv99VYlFwIr
-   En+L0cMiBHYLTP8QjKUlGAVT/p+FBSPKEPrcaJXtmvjkmXYuzl/Yd6T8F
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255313771"
+  t=1646873826; x=1678409826;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JcpHmwGFE2qI7hzwLXL7EP/3u2PJjU58F0ibQ3fKEvs=;
+  b=SQHaIRsXHCBSsnsU3IX4ychDFrHFY1ppEUI0EdXQJP6VVOwWdiH6+Pfy
+   SLOO/DyGyLa2wPWWWz/M88tx979qrJpBgQzMLcHaG8YEnBHi/trw7FlPk
+   WgsSyFnPBe9dKFPmMalVQDT6o90cNoZmbdFCE9nM7bVRZGdvrApvCF/hu
+   xuFdGsn2SiXHk5Y6ep1d13Jhyox0InFnQoiTzNFoCluUTtimCWRlAw0fA
+   tpyhO92R67IDaup7yD3s0h4A7rs11roEZ4ev9u+23iHRy3BFdKjWG/Zz5
+   zifFoCRop2rkZGMk0AnOb1zmK646v6GsH2zf+WClQOsvVDhNAmsOuqB86
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237295713"
 X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="255313771"
+   d="scan'208";a="237295713"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 16:51:33 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 16:57:06 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="496053296"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 09 Mar 2022 16:51:26 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 70C69211; Thu, 10 Mar 2022 02:51:45 +0200 (EET)
-Date:   Thu, 10 Mar 2022 03:51:45 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv5 11/30] x86/tdx: Handle in-kernel MMIO
-Message-ID: <20220310005145.hzv2lzxgs7uxblfr@black.fi.intel.com>
-References: <20220302142806.51844-1-kirill.shutemov@linux.intel.com>
- <20220302142806.51844-12-kirill.shutemov@linux.intel.com>
- <81a7ad6d-6bd9-7674-3229-67a5cd2e485a@intel.com>
+   d="scan'208";a="496054610"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 09 Mar 2022 16:57:04 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nS771-00045T-Ey; Thu, 10 Mar 2022 00:57:03 +0000
+Date:   Thu, 10 Mar 2022 08:56:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Subject: block/blk-mq.c:1241:9: sparse: sparse: cast from restricted
+ req_flags_t
+Message-ID: <202203100836.WQYjRe2U-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <81a7ad6d-6bd9-7674-3229-67a5cd2e485a@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 01:26:28PM -0800, Dave Hansen wrote:
-> On 3/2/22 06:27, Kirill A. Shutemov wrote:
-> > In non-TDX VMs, MMIO is implemented by providing the guest a mapping
-> > which will cause a VMEXIT on access and then the VMM emulating the
-> > instruction that caused the VMEXIT. That's not possible for TDX VM.
-> > 
-> > To emulate an instruction an emulator needs two things:
-> > 
-> >   - R/W access to the register file to read/modify instruction arguments
-> >     and see RIP of the faulted instruction.
-> > 
-> >   - Read access to memory where instruction is placed to see what to
-> >     emulate. In this case it is guest kernel text.
-> > 
-> > Both of them are not available to VMM in TDX environment:
-> > 
-> >   - Register file is never exposed to VMM. When a TD exits to the module,
-> >     it saves registers into the state-save area allocated for that TD.
-> >     The module then scrubs these registers before returning execution
-> >     control to the VMM, to help prevent leakage of TD state.
-> > 
-> >   - Memory is encrypted a TD-private key. The CPU disallows software
-> >     other than the TDX module and TDs from making memory accesses using
-> >     the private key.
-> 
-> Memory encryption has zero to do with this.  The TDX isolation
-> mechanisms are totally discrete from memory encryption, although they
-> are "neighbors" of sorts.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   330f4c53d3c2d8b11d86ec03a964b86dc81452f5
+commit: 4054cff92c357813b6861b622122b344990f7e31 block: remove blk-exec.c
+date:   3 months ago
+config: mips-randconfig-s032-20220309 (https://download.01.org/0day-ci/archive/20220310/202203100836.WQYjRe2U-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4054cff92c357813b6861b622122b344990f7e31
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 4054cff92c357813b6861b622122b344990f7e31
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash
 
-Hm. I don't see why you say encryption is not relevant. VMM (host kernel)
-has ultimate access to guest memory cypher text. It can read it as
-cypher text without any issue (using KeyID-0).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Could you elaborate on the point?
 
-> > == Patching TDX drivers ==
-> > 
-> > Rather than touching the entire kernel, it might also be possible to
-> > just go after drivers that use MMIO in TDX guests.  Right now, that's
-> > limited only to virtio and some x86-specific drivers.
-> > 
-> > All virtio MMIO appears to be done through a single function, which
-> > makes virtio eminently easy to patch.
-> > 
-> > This approach will be adopted in the future, removing the bulk of
-> > MMIO #VEs. The #VE-based MMIO will remain serving non-virtio use cases.
-> 
-> This still doesn't *quite* do it for me for a justification.  Why can't
-> the non-virtio cases be converted as well?  Why doesn't the "patching
-> MMIO sites" work for x86 code too?
-> 
-> You really need to convince us that *this* approach will be required
-> forever.
+sparse warnings: (new ones prefixed by >>)
+   command-line: note: in included file:
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
+   builtin:0:0: sparse: this was the original definition
+   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
+   builtin:0:0: sparse: this was the original definition
+   block/blk-mq.c:1071:36: sparse: sparse: cast from restricted blk_status_t
+   block/blk-mq.c:1164:17: sparse: sparse: cast to restricted blk_status_t
+>> block/blk-mq.c:1241:9: sparse: sparse: cast from restricted req_flags_t
 
-What if I add:
+vim +1241 block/blk-mq.c
 
-	Many drivers can potentially be used inside TDX guest (e.g. via device
-	passthough or random device emulation by VMM), but very few will.
-	Patching every possible driver is not practical. #VE-based MMIO provides
-	functionality for everybody. Performance-critical cases can be optimized
-	as needed.
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1230  
+2b053aca76b48e Bart Van Assche   2016-10-28  1231  void blk_mq_add_to_requeue_list(struct request *rq, bool at_head,
+2b053aca76b48e Bart Van Assche   2016-10-28  1232  				bool kick_requeue_list)
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1233  {
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1234  	struct request_queue *q = rq->q;
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1235  	unsigned long flags;
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1236  
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1237  	/*
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1238  	 * We abuse this flag that is otherwise used by the I/O scheduler to
+ff821d271415f1 Jens Axboe        2017-11-10  1239  	 * request head insertion from the workqueue.
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1240  	 */
+e806402130c9c4 Christoph Hellwig 2016-10-20 @1241  	BUG_ON(rq->rq_flags & RQF_SOFTBARRIER);
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1242  
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1243  	spin_lock_irqsave(&q->requeue_lock, flags);
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1244  	if (at_head) {
+e806402130c9c4 Christoph Hellwig 2016-10-20  1245  		rq->rq_flags |= RQF_SOFTBARRIER;
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1246  		list_add(&rq->queuelist, &q->requeue_list);
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1247  	} else {
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1248  		list_add_tail(&rq->queuelist, &q->requeue_list);
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1249  	}
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1250  	spin_unlock_irqrestore(&q->requeue_lock, flags);
+2b053aca76b48e Bart Van Assche   2016-10-28  1251  
+2b053aca76b48e Bart Van Assche   2016-10-28  1252  	if (kick_requeue_list)
+2b053aca76b48e Bart Van Assche   2016-10-28  1253  		blk_mq_kick_requeue_list(q);
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1254  }
+6fca6a611c27f1 Christoph Hellwig 2014-05-28  1255  
 
-?
+:::::: The code at line 1241 was first introduced by commit
+:::::: e806402130c9c494e22c73ae9ead4e79d2a5811c block: split out request-only flags into a new namespace
 
-> > +static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-> > +{
-> > +	char buffer[MAX_INSN_SIZE];
-> > +	unsigned long *reg, val;
-> > +	struct insn insn = {};
-> > +	enum mmio_type mmio;
-> > +	int size, extend_size;
-> > +	u8 extend_val = 0;
-> > +
-> > +	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
-> > +		return false;
-> > +
-> > +	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-> > +		return false;
-> > +
-> > +	mmio = insn_decode_mmio(&insn, &size);
-> > +	if (WARN_ON_ONCE(mmio == MMIO_DECODE_FAILED))
-> > +		return false;
-> > +
-> > +	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
-> > +		reg = insn_get_modrm_reg_ptr(&insn, regs);
-> > +		if (!reg)
-> > +			return false;
-> > +	}
-> > +
-> > +	ve->instr_len = insn.length;
-> > +
-> > +	switch (mmio) {
-> > +	case MMIO_WRITE:
-> > +		memcpy(&val, reg, size);
-> > +		return mmio_write(size, ve->gpa, val);
-> > +	case MMIO_WRITE_IMM:
-> > +		val = insn.immediate.value;
-> > +		return mmio_write(size, ve->gpa, val);
-> > +	case MMIO_READ:
-> > +	case MMIO_READ_ZERO_EXTEND:
-> > +	case MMIO_READ_SIGN_EXTEND:
-> > +		break;
-> > +	case MMIO_MOVS:
-> > +	case MMIO_DECODE_FAILED:
-> > +		/*
-> > +		 * MMIO was accessed with an instruction that could not be
-> > +		 * decoded or handled properly. It was likely not using io.h
-> > +		 * helpers or accessed MMIO accidentally.
-> > +		 */
-> > +		return false;
-> > +	default:
-> > +		/* Unknown insn_decode_mmio() decode value? */
-> > +		BUG();
-> > +	}
-> 
-> BUG()s are bad.  The set of insn_decode_mmio() return codes is known at
-> compile time.  If we're really on the lookout for unknown values, why
-> not just:
-> 
-> 	BUILD_BUG_ON(NR_MMIO_TYPES != 6); // or whatever
+:::::: TO: Christoph Hellwig <hch@lst.de>
+:::::: CC: Jens Axboe <axboe@fb.com>
 
-This doesn't work.
-
-We can pretend that the function only forced to return values from the
-enum. The truth is that it can return whatever int it wants. Type system
-in C is too week to guarantee anything here. The BUG() is backstop for it.
-
-This BUILD_BUG_ON() is useless. Compiler complains about missing case in
-the switch anyway.
-
-> Also, there are *lots* of ways for this function to just fall over and
-> fail.  Why does this particular failure mode deserve a BUG()?
-> 
-> Is there a reason a BUG() is better than returning failure which
-> presumably sets off the #GP-like logic?
-
-BUG() here makes it clear that the handler itself is buggy. Returning
-false and kicking in #GP-like logic indicates that something wrong with
-the code that triggered #VE. I think it is an important distinction.
-
-> Also, now that I've read this a few times, I've been confused by the
-> same thing a few times.  This is handling instructions that might read
-> or write or do both, correct?
-> 
-> Should that be made explicit in a function comment?
-
-Hm. Okay. Something like
-
-/* Handle reads from and writes to MMIO region. */
-
-before the function?
-
--- 
- Kirill A. Shutemov
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
