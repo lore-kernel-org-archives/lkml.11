@@ -2,113 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45ACEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 02:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 02:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236660AbiCJCwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 21:52:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
+        id S237161AbiCJCxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 21:53:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbiCJCwf (ORCPT
+        with ESMTP id S236425AbiCJCxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 21:52:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815AA125591
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 18:51:35 -0800 (PST)
+        Wed, 9 Mar 2022 21:53:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C46E6C
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 18:52:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 275BF61552
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F309C340E8;
-        Thu, 10 Mar 2022 02:51:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 966CDB81EA4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AEBDC340E8;
+        Thu, 10 Mar 2022 02:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646880694;
-        bh=wnMbY2M5xbXyRTNGfw/R/oyMLMef861Nh511DGSVEUY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b4LYAoe7BpzUz5yzavMhQrLSYbktYNURouVVoJvApDaEtt2v2S3r7gQvTuXEG5Qp4
-         kntjBeYSqVKJ86Xi9eOe9d7mza7ec9rlDiqmAQWvJxw0N84T+QO8IKXAlGhqCIQ+e9
-         2i6ui4O4+CpwErc+Kjn1ky93AYAVO9V0FDV/Y099Bx9cNTPdrmG/Q6Y3pBVEOEe3Ut
-         3v1+YacxfoW5tLpB1exeiJt7QWyvuxwCfSQK4PeE0T55isKef/WdtmSiT2mOz0YRW8
-         g8Y7x/w4LJm2qUdSuLFkR/EN80j1EKYQbCVR3OYNVVXRHruFqOV7TRseNFKOAoTv/h
-         dlBWvsY9hoStQ==
-Date:   Wed, 9 Mar 2022 18:51:32 -0800
+        s=k20201202; t=1646880751;
+        bh=HpVTTTr8PbusXmul2H66Jzw0dd3D6fNFf0OwnRc1hII=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=f4MWATkQ+7vf8dtfeA81v0X/sgvqFAu+mM4dunCMdO8EAU2Y4LotDp/fkVC0H9HeO
+         aUPaIIEPx92v6JQd7DetqSe6bQQBKE19S0mUnQcs7nSpEVh4bhsW9Yi1tNZjwWIdmR
+         3CE728pFYvQ5y0l3GwP2iKSOVjIMEVXHi/RD1THzMRWHh0agFf4W5DOH6oIUz66mPr
+         P4HgUoL+IeVvZ5zXdX80GHxUq6ayMUCRSPclsuJH9ZOIA10ec6X1l+dcSpQVFpgOie
+         KOrjP9Q0VSmGoARLl5LhsBlIcDhOlsqpdLPCpvAZ9X+vMPncAK5WrKw/yiIV3TRCbd
+         eSXe+HjxrYxwg==
+Date:   Wed, 9 Mar 2022 18:52:29 -0800
 From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
+To:     linux-kernel@vger.kernel.org,
         linux-f2fs-devel@lists.sourceforge.net
-Subject: Re: [f2fs-dev] [PATCH 2/2] f2fs: use spin_lock to avoid hang
-Message-ID: <YilntIMrQchFfq9n@google.com>
+Subject: Re: [PATCH 1/2 v2] f2fs: do not expose unwritten blocks to user by
+ DIO
+Message-ID: <Yiln7Q/YgCzw1y9G@google.com>
 References: <20220309214834.3408741-1-jaegeuk@kernel.org>
- <20220309214834.3408741-2-jaegeuk@kernel.org>
- <7b12573b-cad4-45b0-9e8a-9cc40a08b856@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7b12573b-cad4-45b0-9e8a-9cc40a08b856@kernel.org>
+In-Reply-To: <20220309214834.3408741-1-jaegeuk@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/10, Chao Yu wrote:
-> On 2022/3/10 5:48, Jaegeuk Kim wrote:
-> > [14696.634553] task:cat             state:D stack:    0 pid:1613738 ppid:1613735 flags:0x00000004
-> > [14696.638285] Call Trace:
-> > [14696.639038]  <TASK>
-> > [14696.640032]  __schedule+0x302/0x930
-> > [14696.640969]  schedule+0x58/0xd0
-> > [14696.641799]  schedule_preempt_disabled+0x18/0x30
-> > [14696.642890]  __mutex_lock.constprop.0+0x2fb/0x4f0
-> > [14696.644035]  ? mod_objcg_state+0x10c/0x310
-> > [14696.645040]  ? obj_cgroup_charge+0xe1/0x170
-> > [14696.646067]  __mutex_lock_slowpath+0x13/0x20
-> > [14696.647126]  mutex_lock+0x34/0x40
-> > [14696.648070]  stat_show+0x25/0x17c0 [f2fs]
-> > [14696.649218]  seq_read_iter+0x120/0x4b0
-> > [14696.650289]  ? aa_file_perm+0x12a/0x500
-> > [14696.651357]  ? lru_cache_add+0x1c/0x20
-> > [14696.652470]  seq_read+0xfd/0x140
-> > [14696.653445]  full_proxy_read+0x5c/0x80
-> > [14696.654535]  vfs_read+0xa0/0x1a0
-> > [14696.655497]  ksys_read+0x67/0xe0
-> > [14696.656502]  __x64_sys_read+0x1a/0x20
-> > [14696.657580]  do_syscall_64+0x3b/0xc0
-> > [14696.658671]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > [14696.660068] RIP: 0033:0x7efe39df1cb2
-> > [14696.661133] RSP: 002b:00007ffc8badd948 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> > [14696.662958] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007efe39df1cb2
-> > [14696.664757] RDX: 0000000000020000 RSI: 00007efe399df000 RDI: 0000000000000003
-> > [14696.666542] RBP: 00007efe399df000 R08: 00007efe399de010 R09: 00007efe399de010
-> > [14696.668363] R10: 0000000000000022 R11: 0000000000000246 R12: 0000000000000000
-> > [14696.670155] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000000020000
-> > [14696.671965]  </TASK>
-> > [14696.672826] task:umount          state:D stack:    0 pid:1614985 ppid:1614984 flags:0x00004000
-> > [14696.674930] Call Trace:
-> > [14696.675903]  <TASK>
-> > [14696.676780]  __schedule+0x302/0x930
-> > [14696.677927]  schedule+0x58/0xd0
-> > [14696.679019]  schedule_preempt_disabled+0x18/0x30
-> > [14696.680412]  __mutex_lock.constprop.0+0x2fb/0x4f0
-> > [14696.681783]  ? destroy_inode+0x65/0x80
-> > [14696.683006]  __mutex_lock_slowpath+0x13/0x20
-> > [14696.684305]  mutex_lock+0x34/0x40
-> > [14696.685442]  f2fs_destroy_stats+0x1e/0x60 [f2fs]
-> > [14696.686803]  f2fs_put_super+0x158/0x390 [f2fs]
-> > [14696.688238]  generic_shutdown_super+0x7a/0x120
-> > [14696.689621]  kill_block_super+0x27/0x50
-> > [14696.690894]  kill_f2fs_super+0x7f/0x100 [f2fs]
-> > [14696.692311]  deactivate_locked_super+0x35/0xa0
-> > [14696.693698]  deactivate_super+0x40/0x50
-> > [14696.694985]  cleanup_mnt+0x139/0x190
-> > [14696.696209]  __cleanup_mnt+0x12/0x20
-> > [14696.697390]  task_work_run+0x64/0xa0
-> > [14696.698587]  exit_to_user_mode_prepare+0x1b7/0x1c0
-> > [14696.700053]  syscall_exit_to_user_mode+0x27/0x50
-> > [14696.701418]  do_syscall_64+0x48/0xc0
-> > [14696.702630]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> Any race case here? I didn't catch the root cause here...
+DIO preallocates physical blocks before writing data, but if an error occurrs
+or power-cut happens, we can see block contents from the disk. This patch tries
+to fix it by 1) turning to buffered writes for DIO into holes, 2) truncating
+unwritten blocks from error or power-cut.
 
-This is the only clue that I could use. :(
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ - log from v1: added documentation
 
-> Thanks,
+ fs/f2fs/data.c  |  5 ++++-
+ fs/f2fs/f2fs.h  |  5 +++++
+ fs/f2fs/file.c  | 27 ++++++++++++++++++---------
+ fs/f2fs/inode.c |  8 ++++++++
+ 4 files changed, 35 insertions(+), 10 deletions(-)
+
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 3db0f3049b90..9c867de1ec29 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -1543,8 +1543,11 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
+ 					flag != F2FS_GET_BLOCK_DIO);
+ 				err = __allocate_data_block(&dn,
+ 							map->m_seg_type);
+-				if (!err)
++				if (!err) {
++					if (flag == F2FS_GET_BLOCK_PRE_DIO)
++						file_need_truncate(inode);
+ 					set_inode_flag(inode, FI_APPEND_WRITE);
++				}
+ 			}
+ 			if (err)
+ 				goto sync_out;
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 6f196621f772..d7435fcb9658 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -654,6 +654,7 @@ enum {
+ #define FADVISE_KEEP_SIZE_BIT	0x10
+ #define FADVISE_HOT_BIT		0x20
+ #define FADVISE_VERITY_BIT	0x40
++#define FADVISE_TRUNC_BIT	0x80
+ 
+ #define FADVISE_MODIFIABLE_BITS	(FADVISE_COLD_BIT | FADVISE_HOT_BIT)
+ 
+@@ -681,6 +682,10 @@ enum {
+ #define file_is_verity(inode)	is_file(inode, FADVISE_VERITY_BIT)
+ #define file_set_verity(inode)	set_file(inode, FADVISE_VERITY_BIT)
+ 
++#define file_should_truncate(inode)	is_file(inode, FADVISE_TRUNC_BIT)
++#define file_need_truncate(inode)	set_file(inode, FADVISE_TRUNC_BIT)
++#define file_dont_truncate(inode)	clear_file(inode, FADVISE_TRUNC_BIT)
++
+ #define DEF_DIR_LEVEL		0
+ 
+ enum {
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 808a7c24d993..e1445cf915ea 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1687,6 +1687,7 @@ static int expand_inode_data(struct inode *inode, loff_t offset,
+ 
+ 		map.m_seg_type = CURSEG_COLD_DATA_PINNED;
+ 		err = f2fs_map_blocks(inode, &map, 1, F2FS_GET_BLOCK_PRE_DIO);
++		file_dont_truncate(inode);
+ 
+ 		up_write(&sbi->pin_sem);
+ 
+@@ -4257,6 +4258,13 @@ static int f2fs_preallocate_blocks(struct kiocb *iocb, struct iov_iter *iter)
+ 	/* If it will be an out-of-place direct write, don't bother. */
+ 	if (dio && f2fs_lfs_mode(sbi))
+ 		return 0;
++	/*
++	 * Don't preallocate holes aligned to DIO_SKIP_HOLES which turns into
++	 * buffered IO, if DIO meets any holes.
++	 */
++	if (dio && i_size_read(inode) &&
++		(F2FS_BYTES_TO_BLK(pos) < F2FS_BLK_ALIGN(i_size_read(inode))))
++		return 0;
+ 
+ 	/* No-wait I/O can't allocate blocks. */
+ 	if (iocb->ki_flags & IOCB_NOWAIT)
+@@ -4292,8 +4300,8 @@ static int f2fs_preallocate_blocks(struct kiocb *iocb, struct iov_iter *iter)
+ 	}
+ 
+ 	ret = f2fs_map_blocks(inode, &map, 1, flag);
+-	/* -ENOSPC is only a fatal error if no blocks could be allocated. */
+-	if (ret < 0 && !(ret == -ENOSPC && map.m_len > 0))
++	/* -ENOSPC|-EDQUOT are fine to report the number of allocated blocks. */
++	if (ret < 0 && !((ret == -ENOSPC || ret == -EDQUOT) && map.m_len > 0))
+ 		return ret;
+ 	if (ret == 0)
+ 		set_inode_flag(inode, FI_PREALLOCATED_ALL);
+@@ -4359,20 +4367,21 @@ static ssize_t f2fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	/* Possibly preallocate the blocks for the write. */
+ 	target_size = iocb->ki_pos + iov_iter_count(from);
+ 	preallocated = f2fs_preallocate_blocks(iocb, from);
+-	if (preallocated < 0) {
++	if (preallocated < 0)
+ 		ret = preallocated;
+-		goto out_unlock;
+-	}
+-
+-	ret = __generic_file_write_iter(iocb, from);
++	else
++		ret = __generic_file_write_iter(iocb, from);
+ 
+ 	/* Don't leave any preallocated blocks around past i_size. */
+-	if (preallocated > 0 && i_size_read(inode) < target_size) {
++	if (preallocated && i_size_read(inode) < target_size) {
+ 		down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
+ 		filemap_invalidate_lock(inode->i_mapping);
+-		f2fs_truncate(inode);
++		if (!f2fs_truncate(inode))
++			file_dont_truncate(inode);
+ 		filemap_invalidate_unlock(inode->i_mapping);
+ 		up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
++	} else {
++		file_dont_truncate(inode);
+ 	}
+ 
+ 	clear_inode_flag(inode, FI_PREALLOCATED_ALL);
+diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+index 0f8b2df3e1e0..6998eb1d6bdb 100644
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -544,6 +544,14 @@ struct inode *f2fs_iget(struct super_block *sb, unsigned long ino)
+ 		goto bad_inode;
+ 	}
+ 	f2fs_set_inode_flags(inode);
++
++	if (file_should_truncate(inode)) {
++		ret = f2fs_truncate(inode);
++		if (ret)
++			goto bad_inode;
++		file_dont_truncate(inode);
++	}
++
+ 	unlock_new_inode(inode);
+ 	trace_f2fs_iget(inode);
+ 	return inode;
+-- 
+2.34.1.400.ga245620fadb-goog
+
