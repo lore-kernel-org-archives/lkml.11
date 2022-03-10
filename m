@@ -2,183 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64590C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7C1C48BE5
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244936AbiCJOeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:34:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        id S245045AbiCJOeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:34:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244108AbiCJO2a (ORCPT
+        with ESMTP id S243996AbiCJO2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258BABDE67;
-        Thu, 10 Mar 2022 06:23:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C91CB81E9E;
-        Thu, 10 Mar 2022 14:23:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D465C340E8;
-        Thu, 10 Mar 2022 14:23:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922189;
-        bh=ns34xK5Ax7X9DdpK7iJHoh+YVWxk0ZHepyBDIJGlKaI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tpJarEEpOU8+y8BIrDy8qGSxm+mbAKn7U9VuCqvMQB13NJ1s7rB3j2KFMV0/iRuZY
-         2doWHaQ/72/hxcgTPEbic//ZBEvRRhwjrg+04eMN0x10awt8kMybExrqC2JAAmiRxr
-         y2xv6uvQUURspqV/m+3XlQ1ocJsEWm6N09WyXGQQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.19 32/33] xen/gnttab: fix gnttab_end_foreign_access() without page specified
-Date:   Thu, 10 Mar 2022 15:18:59 +0100
-Message-Id: <20220310140808.690699183@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
-References: <20220310140807.749164737@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:28:09 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44E3B2D6C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:23:07 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id w27so9732522lfa.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:23:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+mgizJNjOYF4lch4iTAKF7piDFY6Ykg49t6OGyo4hho=;
+        b=H97fj5Xc9OYd/KWfmpTAh3vt0Gmh7v3twAo/7Y+iRLHI1rglIJs8yAG/HuTkBnnUE5
+         7LlMAKLiPw+FiRiIMh73MYSiLInF5I3Ij/jGq45LOIuY0gZqSNgdnAAVgrB8sVF2LscA
+         ywS5RXFZWN0s7pCP/xcixRch5bTE6FUvJwoQmV8IAUioaq/ao9sq+yhG43AOjiCC3idW
+         lFHW40TW4ZrC8rpggm9YpSHwVy08NxMpWgHvh4J3LqPt26aqgWh47f5Hds7ZA/53a6ew
+         lBD4thx0TyjxK1TJZmhYXCb2OoMSdgy6WCqrG1lttLVVtev+MkS2Ms/f8rR1Jf/3MRJ4
+         fL4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+mgizJNjOYF4lch4iTAKF7piDFY6Ykg49t6OGyo4hho=;
+        b=YOSTejpJwdfJ0Nmw637vXt6B1ZJvpPdqFnlMbaNdKW0bz2aFthHhhQe/BrGpVuv9mO
+         d2Z2za4EhmlqlArFRVrtcXiLcVuS+OksFzoosRoC92wXm+sqqma7RZFBL0yBy7uQf77l
+         ViIlVGS4scCmKtUJbq6c8YZqa2t77OBj58T4yW7AEq+53Ah1FJQCw/iFd/bXwi91KOwo
+         Fjr/duA6i3t0fhdKOxUEiI8FFCD6h5cM7nVQ9/eQOHQcHPrpnC7xbPxn8+nm6NlPuBOl
+         pOURpzTPvgYFeEUtFjKsdblqlOoAsCSq/ISmxIfnpBvTZKa5YBQv7wqCh2ddtyJwOifH
+         vKYA==
+X-Gm-Message-State: AOAM531Gkufm5PKjpyDlZRQiDu47VN4Ic9nd6kJb9SSi/IrQClQTw0Wm
+        xZ5XumWrmk0VGw0U/lgFRrCq4boU9uOeQA==
+X-Google-Smtp-Source: ABdhPJy8W5W97zwjQGUdYTRF8dxaIBmJza5DDIfiUsHku/UJSAHqRnHnDwpVLS/0u+lMaWugKl+UqA==
+X-Received: by 2002:ac2:4342:0:b0:445:b98c:edd3 with SMTP id o2-20020ac24342000000b00445b98cedd3mr3190060lfl.348.1646922179267;
+        Thu, 10 Mar 2022 06:22:59 -0800 (PST)
+Received: from dabros-l.roam.corp.google.com ([185.157.14.92])
+        by smtp.gmail.com with ESMTPSA id cf12-20020a056512280c00b004485b8f37b7sm676993lfb.277.2022.03.10.06.22.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:22:58 -0800 (PST)
+From:   Jan Dabros <jsd@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com
+Cc:     wsa@kernel.org, upstream@semihalf.com, jsd@semihalf.com
+Subject: [PATCH -next] i2c: designware: Add helper to remove redundancy
+Date:   Thu, 10 Mar 2022 15:22:36 +0100
+Message-Id: <20220310142236.192811-1-jsd@semihalf.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+Simplify code by adding an extra static function for sending I2C
+requests and verifying results.
 
-Commit 42baefac638f06314298087394b982ead9ec444b upstream.
-
-gnttab_end_foreign_access() is used to free a grant reference and
-optionally to free the associated page. In case the grant is still in
-use by the other side processing is being deferred. This leads to a
-problem in case no page to be freed is specified by the caller: the
-caller doesn't know that the page is still mapped by the other side
-and thus should not be used for other purposes.
-
-The correct way to handle this situation is to take an additional
-reference to the granted page in case handling is being deferred and
-to drop that reference when the grant reference could be freed
-finally.
-
-This requires that there are no users of gnttab_end_foreign_access()
-left directly repurposing the granted page after the call, as this
-might result in clobbered data or information leaks via the not yet
-freed grant reference.
-
-This is part of CVE-2022-23041 / XSA-396.
-
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jan Dabros <jsd@semihalf.com>
 ---
- drivers/xen/grant-table.c |   36 +++++++++++++++++++++++++++++-------
- include/xen/grant_table.h |    7 ++++++-
- 2 files changed, 35 insertions(+), 8 deletions(-)
+ drivers/i2c/busses/i2c-designware-amdpsp.c | 44 ++++++++++++----------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -134,6 +134,10 @@ struct gnttab_ops {
- 	 * return the frame.
- 	 */
- 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
-+	/*
-+	 * Read the frame number related to a given grant reference.
-+	 */
-+	unsigned long (*read_frame)(grant_ref_t ref);
- };
- 
- struct unmap_refs_callback_data {
-@@ -331,6 +335,16 @@ int gnttab_end_foreign_access_ref(grant_
+diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/busses/i2c-designware-amdpsp.c
+index c64e459afb5c..cc758792f150 100644
+--- a/drivers/i2c/busses/i2c-designware-amdpsp.c
++++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+@@ -229,6 +229,26 @@ static int psp_send_i2c_req(enum psp_i2c_req_type i2c_req_type)
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
  
-+static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
++static int psp_send_i2c_req_check_err(enum psp_i2c_req_type request)
 +{
-+	return gnttab_shared.v1[ref].frame;
-+}
++	int status;
 +
-+static unsigned long gnttab_read_frame_v2(grant_ref_t ref)
-+{
-+	return gnttab_shared.v2[ref].full_page.frame;
-+}
++	status = psp_send_i2c_req(request);
++	if (status) {
++		if (status == -ETIMEDOUT)
++			dev_err(psp_i2c_dev, "Timed out waiting for PSP to %s I2C bus\n",
++				(request == PSP_I2C_REQ_ACQUIRE) ?
++				"release" : "acquire");
++		else
++			dev_err(psp_i2c_dev, "PSP communication error\n");
 +
- struct deferred_entry {
- 	struct list_head list;
- 	grant_ref_t ref;
-@@ -360,12 +374,9 @@ static void gnttab_handle_deferred(struc
- 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
- 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
- 			put_free_entry(entry->ref);
--			if (entry->page) {
--				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
--					 entry->ref, page_to_pfn(entry->page));
--				put_page(entry->page);
--			} else
--				pr_info("freeing g.e. %#x\n", entry->ref);
-+			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
-+				 entry->ref, page_to_pfn(entry->page));
-+			put_page(entry->page);
- 			kfree(entry);
- 			entry = NULL;
- 		} else {
-@@ -390,9 +401,18 @@ static void gnttab_handle_deferred(struc
- static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
- 				struct page *page)
- {
--	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-+	struct deferred_entry *entry;
-+	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
- 	const char *what = KERN_WARNING "leaking";
- 
-+	entry = kmalloc(sizeof(*entry), gfp);
-+	if (!page) {
-+		unsigned long gfn = gnttab_interface->read_frame(ref);
-+
-+		page = pfn_to_page(gfn_to_pfn(gfn));
-+		get_page(page);
++		dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive host usage\n");
++		psp_i2c_mbox_fail = true;
 +	}
 +
- 	if (entry) {
- 		unsigned long flags;
++	return status;
++}
++
+ static int psp_acquire_i2c_bus(void)
+ {
+ 	int status;
+@@ -248,17 +268,9 @@ static int psp_acquire_i2c_bus(void)
+ 		goto cleanup;
+ 	};
  
-@@ -1284,6 +1304,7 @@ static const struct gnttab_ops gnttab_v1
- 	.update_entry			= gnttab_update_entry_v1,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
-+	.read_frame			= gnttab_read_frame_v1,
- };
+-	status = psp_send_i2c_req(PSP_I2C_REQ_ACQUIRE);
+-	if (status) {
+-		if (status == -ETIMEDOUT)
+-			dev_err(psp_i2c_dev, "Timed out waiting for PSP to release I2C bus\n");
+-		else
+-			dev_err(psp_i2c_dev, "PSP communication error\n");
+-
+-		dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive host usage\n");
+-		psp_i2c_mbox_fail = true;
++	status = psp_send_i2c_req_check_err(PSP_I2C_REQ_ACQUIRE);
++	if (status)
+ 		goto cleanup;
+-	}
  
- static const struct gnttab_ops gnttab_v2_ops = {
-@@ -1295,6 +1316,7 @@ static const struct gnttab_ops gnttab_v2
- 	.update_entry			= gnttab_update_entry_v2,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v2,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v2,
-+	.read_frame			= gnttab_read_frame_v2,
- };
+ 	psp_i2c_sem_acquired = jiffies;
+ 	psp_i2c_access_count++;
+@@ -293,17 +305,9 @@ static void psp_release_i2c_bus(void)
+ 		goto cleanup;
  
- static bool gnttab_need_v2(void)
---- a/include/xen/grant_table.h
-+++ b/include/xen/grant_table.h
-@@ -100,7 +100,12 @@ int gnttab_end_foreign_access_ref(grant_
-  * Note that the granted page might still be accessed (read or write) by the
-  * other side after gnttab_end_foreign_access() returns, so even if page was
-  * specified as 0 it is not allowed to just reuse the page for other
-- * purposes immediately.
-+ * purposes immediately. gnttab_end_foreign_access() will take an additional
-+ * reference to the granted page in this case, which is dropped only after
-+ * the grant is no longer in use.
-+ * This requires that multi page allocations for areas subject to
-+ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
-+ * via free_pages_exact()) in order to avoid high order pages.
-  */
- void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
- 			       unsigned long page);
-
+ 	/* Send a release command to PSP */
+-	status = psp_send_i2c_req(PSP_I2C_REQ_RELEASE);
+-	if (status) {
+-		if (status == -ETIMEDOUT)
+-			dev_err(psp_i2c_dev, "Timed out waiting for PSP to acquire I2C bus\n");
+-		else
+-			dev_err(psp_i2c_dev, "PSP communication error\n");
+-
+-		dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive host usage\n");
+-		psp_i2c_mbox_fail = true;
++	status = psp_send_i2c_req_check_err(PSP_I2C_REQ_RELEASE);
++	if (status)
+ 		goto cleanup;
+-	}
+ 
+ 	dev_dbg(psp_i2c_dev, "PSP semaphore held for %ums\n",
+ 		jiffies_to_msecs(jiffies - psp_i2c_sem_acquired));
+-- 
+2.35.1.616.g0bdcbb4464-goog
 
