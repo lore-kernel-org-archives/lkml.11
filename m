@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26049C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A977C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241468AbiCJKyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
+        id S241494AbiCJKyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiCJKxu (ORCPT
+        with ESMTP id S241448AbiCJKxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:53:50 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4D0657BC;
-        Thu, 10 Mar 2022 02:52:50 -0800 (PST)
+        Thu, 10 Mar 2022 05:53:46 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB1D6C90E;
+        Thu, 10 Mar 2022 02:52:46 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 269221F454C5
+        with ESMTPSA id D1F101F454CA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646909569;
-        bh=iM/1XC/zadOOdMC+ehiMYu8LqXfTfpqxVNTVGPIz4ak=;
+        s=mail; t=1646909564;
+        bh=iaPl/wBMV7VEkkcx27N58lqaWdw70k/KuIUFajX1kAc=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=CKZKwZeYzpdBBdWxzFLGHrVWcfB374NYeB7p/pSSnIeGzkseq98R5w3u38lj/wpfK
-         6rZ2CzKu0kfWDa6BecZLU8Re1vcGs2VQX1JLYhqeWosG4R3vTToB2isp0zT8zP1Fop
-         g9Ja/V9oYMpus8OMJ0bJTTUiV3FfrlkBogS858chItubiOY2qGcypOD2vwidlAYtct
-         sYA0lwaqQEPAlYW/ICEJ9m+UUzolusgqh3d/rGcYxlnPUDP7MLDq3dlq6Ew7hoixAR
-         lJoDfSgmWo3fPRfOSGa9hjAmFPu3niRHm5RJqeirzYPBfP+PbKpIu0rVARoMdG7AKa
-         EpJydpVAPvjXw==
-Message-ID: <67650f2e-bb7a-9350-e945-017f3848f642@collabora.com>
-Date:   Thu, 10 Mar 2022 11:52:45 +0100
+        b=RILJR2YqXjGkvpAHxHrr3jwAbnum4SVrq42QjIyfd/U6mzmjVmXEwJGA3GDPB3DO4
+         Jfb1HW8xJ6A3wl7fHbqrEm7YD2TsgEnlZGBjSNeyfjaHLlf29Yu4AYdPtPL73kEBPH
+         +AFNY5/CqC0Ye48VGs4aa8KRAfYFVqmahs8rP9TQSzuJ9TXA8MCMqjMKGQ1Mx/K9lU
+         bh+pbHvJIBw1NQQ6aZSkEd74YAket+2FFoq2/OYhuXB3zT/unQkyXk+MI261elMb9T
+         1angw0DoqnGORe/su+wRIb94Pt30V/6rjLwS7lueq2PJKZ/t7nKfw4jkU1h5F5SuN+
+         w4EuDulUnha8g==
+Message-ID: <ab0dd83f-7630-4c2a-2d7e-14b4d7399736@collabora.com>
+Date:   Thu, 10 Mar 2022 11:52:41 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v14 13/22] drm/mediatek: add display merge mute/unmute
- support for MT8195
+Subject: Re: [PATCH v14 12/22] drm/mediatek: add display merge start/stop API
+ for cmdq support
 Content-Language: en-US
 To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -54,10 +54,10 @@ Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         singo.chang@mediatek.com, srv_heupstream@mediatek.com,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220310035515.16881-1-nancy.lin@mediatek.com>
- <20220310035515.16881-14-nancy.lin@mediatek.com>
+ <20220310035515.16881-13-nancy.lin@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220310035515.16881-14-nancy.lin@mediatek.com>
+In-Reply-To: <20220310035515.16881-13-nancy.lin@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -65,8 +65,10 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 10/03/22 04:55, Nancy.Lin ha scritto:
-> Add merge mute/unmute setting for MT8195.
-> MT8195 Vdosys1 merge1~merge4 support HW mute function.
+> Add merge start/stop API for cmdq support. The ovl_adaptor merges
+> are configured with each drm plane update. Need to enable/disable
+> merge with cmdq making sure all the settings taken effect in the
+> same vblank.
 > 
 > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
 > Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
@@ -74,6 +76,7 @@ Il 10/03/22 04:55, Nancy.Lin ha scritto:
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 > ---
->   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
+>   drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 ++
+>   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 20 +++++++++++++++++---
+>   2 files changed, 19 insertions(+), 3 deletions(-)
 > 
