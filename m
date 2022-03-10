@@ -2,77 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75BCC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB326C3527B
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245260AbiCJOjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:39:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S245280AbiCJOjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:39:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343855AbiCJObZ (ORCPT
+        with ESMTP id S1343879AbiCJOb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:25 -0500
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3FAC6261
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:27:40 -0800 (PST)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id B305468B05; Thu, 10 Mar 2022 15:27:36 +0100 (CET)
-Date:   Thu, 10 Mar 2022 15:27:36 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] task_work: simplify the task_work_add() interface
-Message-ID: <20220310142736.GA1103@lst.de>
-References: <20220223072754.616027-1-hch@lst.de> <58c5f828-df7d-6698-e2d6-2a869e134dd4@kernel.dk>
+        Thu, 10 Mar 2022 09:31:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B700E0A32;
+        Thu, 10 Mar 2022 06:27:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A440C61B23;
+        Thu, 10 Mar 2022 14:27:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D2DC340EB;
+        Thu, 10 Mar 2022 14:27:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922470;
+        bh=T/mHRVpyB/klvNBKNmoZm1usKzPz4/NT8r60/gXuNsc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L8QSqMggP32Yc7zXvOt1o/nKStFkv2ZsDu2bjhjyaP4a8rXc6mneL3rc7cEbhS2ok
+         sUKE9/khhkdGIGM1xSL+6nGW1Uy7c7vCJlQpHI3rpOOc0HUYiyB5/oMM5ZFKdGkmCu
+         W1CHESpLKbQ+rnrIGHPFQzYtwwl59SkyQMvuWk4U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.4 27/33] xen/gntalloc: dont use gnttab_query_foreign_access()
+Date:   Thu, 10 Mar 2022 15:19:28 +0100
+Message-Id: <20220310140809.540137918@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
+References: <20220310140808.741682643@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <58c5f828-df7d-6698-e2d6-2a869e134dd4@kernel.dk>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 05:43:25AM -0700, Jens Axboe wrote:
-> On 2/23/22 12:27 AM, Christoph Hellwig wrote:
-> > Provide a low-level task_work_add_nonotify interface that just adds
-> > the work to the list and open code the TWA_SIGNAL and TWA_NONE callers
-> > using it.  task_work_add() itself now only handles the common TWA_RESUME
-> > case and can drop the notify argument.
-> 
-> Not sure this is much of a cleanup, and a potential fast case of
-> TWA_NONE will now still still set TIF_NOTIFY_RESUME. Also:
+From: Juergen Gross <jgross@suse.com>
 
-No, the old TWA_NONE case is switched to task_work_add_nonotify and
-does not set TIF_NOTIFY_RESUME.
+Commit d3b6372c5881cb54925212abb62c521df8ba4809 upstream.
 
-> 
-> > diff --git a/fs/io_uring.c b/fs/io_uring.c
-> > index 77b9c7e4793bf..94116a102dc61 100644
-> > --- a/fs/io_uring.c
-> > +++ b/fs/io_uring.c
-> > @@ -9606,7 +9606,7 @@ static __cold void io_ring_exit_work(struct work_struct *work)
-> >  					ctx_node);
-> >  		/* don't spin on a single task if cancellation failed */
-> >  		list_rotate_left(&ctx->tctx_list);
-> > -		ret = task_work_add(node->task, &exit.task_work, TWA_SIGNAL);
-> > +		ret = task_work_add_nonotify(node->task, &exit.task_work);
-> >  		if (WARN_ON_ONCE(ret))
-> >  			continue;
-> 
-> This one is now no longer setting TIF_NOTIFY_SIGNAL.
+Using gnttab_query_foreign_access() is unsafe, as it is racy by design.
 
-Yes, this was a rebase bug.
+The use case in the gntalloc driver is not needed at all. While at it
+replace the call of gnttab_end_foreign_access_ref() with a call of
+gnttab_end_foreign_access(), which is what is really wanted there. In
+case the grant wasn't used due to an allocation failure, just free the
+grant via gnttab_free_grant_reference().
 
-> If you want to get rid of the argument, why not just have separate
-> helpers? task_work_add_signal(), task_work_add_resume(),
-> task_work_add(). Setting TWA_RESUME unconditionally because it's the
-> common use case doesn't seem ideal.
+This is CVE-2022-23039 / part of XSA-396.
 
-In this series, task_work_add_nonotify is what you seems to call
-task_work_add, task_work_add is this series is what you call
-task_work_add_resume and task_work_add_signal is open coded because
-there aren't a whole lot of users.  But if you want I can add
-task_work_add_signal and rename task_work_add to task_work_add_resume,
-but I think keeping the task_work_add_nonotify name for the low-level
-helper is a lot more descriptive.
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/gntalloc.c |   25 +++++++------------------
+ 1 file changed, 7 insertions(+), 18 deletions(-)
+
+--- a/drivers/xen/gntalloc.c
++++ b/drivers/xen/gntalloc.c
+@@ -169,20 +169,14 @@ undo:
+ 		__del_gref(gref);
+ 	}
+ 
+-	/* It's possible for the target domain to map the just-allocated grant
+-	 * references by blindly guessing their IDs; if this is done, then
+-	 * __del_gref will leave them in the queue_gref list. They need to be
+-	 * added to the global list so that we can free them when they are no
+-	 * longer referenced.
+-	 */
+-	if (unlikely(!list_empty(&queue_gref)))
+-		list_splice_tail(&queue_gref, &gref_list);
+ 	mutex_unlock(&gref_mutex);
+ 	return rc;
+ }
+ 
+ static void __del_gref(struct gntalloc_gref *gref)
+ {
++	unsigned long addr;
++
+ 	if (gref->notify.flags & UNMAP_NOTIFY_CLEAR_BYTE) {
+ 		uint8_t *tmp = kmap(gref->page);
+ 		tmp[gref->notify.pgoff] = 0;
+@@ -196,21 +190,16 @@ static void __del_gref(struct gntalloc_g
+ 	gref->notify.flags = 0;
+ 
+ 	if (gref->gref_id) {
+-		if (gnttab_query_foreign_access(gref->gref_id))
+-			return;
+-
+-		if (!gnttab_end_foreign_access_ref(gref->gref_id, 0))
+-			return;
+-
+-		gnttab_free_grant_reference(gref->gref_id);
++		if (gref->page) {
++			addr = (unsigned long)page_to_virt(gref->page);
++			gnttab_end_foreign_access(gref->gref_id, 0, addr);
++		} else
++			gnttab_free_grant_reference(gref->gref_id);
+ 	}
+ 
+ 	gref_size--;
+ 	list_del(&gref->next_gref);
+ 
+-	if (gref->page)
+-		__free_page(gref->page);
+-
+ 	kfree(gref);
+ }
+ 
+
+
