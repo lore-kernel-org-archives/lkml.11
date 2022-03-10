@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F424C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B0B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243686AbiCJO12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        id S243633AbiCJO1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243672AbiCJOYt (ORCPT
+        with ESMTP id S243614AbiCJOY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:24:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F1515C188;
-        Thu, 10 Mar 2022 06:21:31 -0800 (PST)
+        Thu, 10 Mar 2022 09:24:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66B015B987;
+        Thu, 10 Mar 2022 06:21:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0593B82676;
-        Thu, 10 Mar 2022 14:21:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43856C340EB;
-        Thu, 10 Mar 2022 14:21:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A96AB825F3;
+        Thu, 10 Mar 2022 14:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA4B2C340EB;
+        Thu, 10 Mar 2022 14:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922076;
-        bh=Rf8d3UZKqR31JRCPZ7eaY38GzuetOV+dpywHxUuB33c=;
+        s=korg; t=1646922085;
+        bh=1FnLQ0yxm0hkWZ8SMoKBS8VcDsHIwTu4gSbaHuCNTJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jg2cw7RRVcC+aiSn+SqHZmAdmWbcAgoyEdxB0nNwzHJW4SqNqVsSfeQAn2Vl+fa5I
-         IVoF2Lmrcc5KnH6kzolq9NdvhUyqbHSdn/+553cE0FYG3+1Mtlemfo4Wqchukn+j+H
-         3htezVYUtfNkx0hKPnSzDihW+sr0ZsgQ5BIlVbHw=
+        b=Q/8VpjkgOH+eGOhdALlAInI5M6e6BFLK5so/2egbXX3IpJ35ZbsJQTgt+d83xwpG/
+         HJphT/DlHujIzo86EXlZinrWjbaDBcU3S4UrLLeisWIi7mnynmeWWaJgKLMh2mnLUB
+         L56XD2sEAUMs5es42lVG35bW3KI/rundAQF4h+Tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
         Juergen Gross <jgross@suse.com>,
         Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.14 29/31] xen/9p: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:18:42 +0100
-Message-Id: <20220310140808.390344695@linuxfoundation.org>
+Subject: [PATCH 4.14 31/31] xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
+Date:   Thu, 10 Mar 2022 15:18:44 +0100
+Message-Id: <20220310140808.447773285@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
 References: <20220310140807.524313448@linuxfoundation.org>
@@ -52,68 +52,137 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Juergen Gross <jgross@suse.com>
 
-Commit 5cadd4bb1d7fc9ab201ac14620d1a478357e4ebd upstream.
+Commit 66e3531b33ee51dad17c463b4d9c9f52e341503d upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+When calling gnttab_end_foreign_access_ref() the returned value must
+be tested and the reaction to that value should be appropriate.
 
-By using the local variable "order" instead of ring->intf->ring_order
-in the error path of xen_9pfs_front_alloc_dataring() another bug is
-fixed, as the error path can be entered before ring->intf->ring_order
-is being set.
+In case of failure in xennet_get_responses() the reaction should not be
+to crash the system, but to disable the network device.
 
-By using alloc_pages_exact() the size in bytes is specified for the
-allocation, which fixes another bug for the case of
-order < (PAGE_SHIFT - XEN_PAGE_SHIFT).
+The calls in setup_netfront() can be replaced by calls of
+gnttab_end_foreign_access(). While at it avoid double free of ring
+pages and grant references via xennet_disconnect_backend() in this case.
 
-This is part of CVE-2022-23041 / XSA-396.
+This is CVE-2022-23042 / part of XSA-396.
 
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/9p/trans_xen.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/net/xen-netfront.c |   48 +++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
 
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -301,9 +301,9 @@ static void xen_9pfs_front_free(struct x
- 				ref = priv->rings[i].intf->ref[j];
- 				gnttab_end_foreign_access(ref, 0, 0);
- 			}
--			free_pages((unsigned long)priv->rings[i].data.in,
--				   XEN_9PFS_RING_ORDER -
--				   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+			free_pages_exact(priv->rings[i].data.in,
-+				   1UL << (XEN_9PFS_RING_ORDER +
-+					   XEN_PAGE_SHIFT));
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -839,7 +839,6 @@ static int xennet_get_responses(struct n
+ 	int max = XEN_NETIF_NR_SLOTS_MIN + (rx->status <= RX_COPY_THRESHOLD);
+ 	int slots = 1;
+ 	int err = 0;
+-	unsigned long ret;
+ 
+ 	if (rx->flags & XEN_NETRXF_extra_info) {
+ 		err = xennet_get_extras(queue, extras, rp);
+@@ -870,8 +869,13 @@ static int xennet_get_responses(struct n
+ 			goto next;
  		}
- 		gnttab_end_foreign_access(priv->rings[i].ref, 0, 0);
- 		free_page((unsigned long)priv->rings[i].intf);
-@@ -341,8 +341,8 @@ static int xen_9pfs_front_alloc_dataring
- 	if (ret < 0)
- 		goto out;
- 	ring->ref = ret;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--			XEN_9PFS_RING_ORDER - (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+	bytes = alloc_pages_exact(1UL << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT),
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -373,9 +373,7 @@ out:
- 	if (bytes) {
- 		for (i--; i >= 0; i--)
- 			gnttab_end_foreign_access(ring->intf->ref[i], 0, 0);
--		free_pages((unsigned long)bytes,
--			   XEN_9PFS_RING_ORDER -
--			   (PAGE_SHIFT - XEN_PAGE_SHIFT));
-+		free_pages_exact(bytes, 1UL << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT));
+ 
+-		ret = gnttab_end_foreign_access_ref(ref, 0);
+-		BUG_ON(!ret);
++		if (!gnttab_end_foreign_access_ref(ref, 0)) {
++			dev_alert(dev,
++				  "Grant still in use by backend domain\n");
++			queue->info->broken = true;
++			dev_alert(dev, "Disabled for further use\n");
++			return -EINVAL;
++		}
+ 
+ 		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+ 
+@@ -1075,6 +1079,10 @@ static int xennet_poll(struct napi_struc
+ 		err = xennet_get_responses(queue, &rinfo, rp, &tmpq);
+ 
+ 		if (unlikely(err)) {
++			if (queue->info->broken) {
++				spin_unlock(&queue->rx_lock);
++				return 0;
++			}
+ err:
+ 			while ((skb = __skb_dequeue(&tmpq)))
+ 				__skb_queue_tail(&errq, skb);
+@@ -1652,7 +1660,7 @@ static int setup_netfront(struct xenbus_
+ 			struct netfront_queue *queue, unsigned int feature_split_evtchn)
+ {
+ 	struct xen_netif_tx_sring *txs;
+-	struct xen_netif_rx_sring *rxs;
++	struct xen_netif_rx_sring *rxs = NULL;
+ 	grant_ref_t gref;
+ 	int err;
+ 
+@@ -1672,21 +1680,21 @@ static int setup_netfront(struct xenbus_
+ 
+ 	err = xenbus_grant_ring(dev, txs, 1, &gref);
+ 	if (err < 0)
+-		goto grant_tx_ring_fail;
++		goto fail;
+ 	queue->tx_ring_ref = gref;
+ 
+ 	rxs = (struct xen_netif_rx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
+ 	if (!rxs) {
+ 		err = -ENOMEM;
+ 		xenbus_dev_fatal(dev, err, "allocating rx ring page");
+-		goto alloc_rx_ring_fail;
++		goto fail;
  	}
- 	gnttab_end_foreign_access(ring->ref, 0, 0);
- 	free_page((unsigned long)ring->intf);
+ 	SHARED_RING_INIT(rxs);
+ 	FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
+ 
+ 	err = xenbus_grant_ring(dev, rxs, 1, &gref);
+ 	if (err < 0)
+-		goto grant_rx_ring_fail;
++		goto fail;
+ 	queue->rx_ring_ref = gref;
+ 
+ 	if (feature_split_evtchn)
+@@ -1699,22 +1707,28 @@ static int setup_netfront(struct xenbus_
+ 		err = setup_netfront_single(queue);
+ 
+ 	if (err)
+-		goto alloc_evtchn_fail;
++		goto fail;
+ 
+ 	return 0;
+ 
+ 	/* If we fail to setup netfront, it is safe to just revoke access to
+ 	 * granted pages because backend is not accessing it at this point.
+ 	 */
+-alloc_evtchn_fail:
+-	gnttab_end_foreign_access_ref(queue->rx_ring_ref, 0);
+-grant_rx_ring_fail:
+-	free_page((unsigned long)rxs);
+-alloc_rx_ring_fail:
+-	gnttab_end_foreign_access_ref(queue->tx_ring_ref, 0);
+-grant_tx_ring_fail:
+-	free_page((unsigned long)txs);
+-fail:
++ fail:
++	if (queue->rx_ring_ref != GRANT_INVALID_REF) {
++		gnttab_end_foreign_access(queue->rx_ring_ref, 0,
++					  (unsigned long)rxs);
++		queue->rx_ring_ref = GRANT_INVALID_REF;
++	} else {
++		free_page((unsigned long)rxs);
++	}
++	if (queue->tx_ring_ref != GRANT_INVALID_REF) {
++		gnttab_end_foreign_access(queue->tx_ring_ref, 0,
++					  (unsigned long)txs);
++		queue->tx_ring_ref = GRANT_INVALID_REF;
++	} else {
++		free_page((unsigned long)txs);
++	}
+ 	return err;
+ }
+ 
 
 
