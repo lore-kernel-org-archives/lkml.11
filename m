@@ -2,285 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B56F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A984AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240186AbiCJIGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:06:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
+        id S240198AbiCJIH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:07:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240178AbiCJIF5 (ORCPT
+        with ESMTP id S230087AbiCJIH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:05:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E01CB6BDCE
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:04:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646899496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jJJEBQ+w2Vafoy7ek6WQcusu0z7dxIM3DM3nYEAv/d0=;
-        b=TwSqkYQA6iWkeOodD8x//X4JvZRnVHYaFjuqtNudQTtRsBf4jI+SsiXMm7yKLi2ZFiP8dW
-        866VQhDOWnF++MXReC/xoSnefxt4Ye6vTmA8+jJiM10jPJn1dqbzs3WTV0GqciKXgnii8A
-        SoTdP8WaIBiqrNmrBCoXA2B62Ah6dYM=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-600-zZi6BHisOoGhT3EGyi_7ug-1; Thu, 10 Mar 2022 03:04:55 -0500
-X-MC-Unique: zZi6BHisOoGhT3EGyi_7ug-1
-Received: by mail-io1-f71.google.com with SMTP id x16-20020a6bfe10000000b006409f03e39eso3384176ioh.7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:04:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jJJEBQ+w2Vafoy7ek6WQcusu0z7dxIM3DM3nYEAv/d0=;
-        b=1bL+XBx8XasC0BrAEih2O9Kyq/gH/AmnuyULtBD/wn9jBLSrJnW/FotyjcTiDRAp4D
-         Mg0Zis1GR/N2VkEwfQ+sWrQKgJpjlt3DjvfeHsX2Nsqho49Qf/GzO+PuQO4jqvCSR7l1
-         hODToBN6OyGIYhHcffrAMCgBijbBemUBpToBXmyi4fzd9oMzF1bvN9nljfBvsl5ghm5u
-         1wBjV8gGFcX5GwZCZSywPRx/WqhvHfzFcdDZEYMM/dYMQWop6NpJzeVYmsMifBl7/4vu
-         iAvhMlzT1ZGnpqY3aPOYqOlGb0OA7uUEhRzEiRDSHkssusTzqK1EnazrlowT6w61NPRG
-         HoDQ==
-X-Gm-Message-State: AOAM533UnwFW0tSEwfWlYUyQxCqUTtv5FVV3gjKGZTq8QTzxdWghbCX0
-        KTwRPzG8qo1Nmv0mub9y3B66wzXROSY8vU1d8u/TC1DEefg/mIUtB/4RlfEjZ66EVn9RM+0y8NA
-        H59iQtok2Z72ZfoXIWLgCc1Hy908Sl1M7r5VufKQ+
-X-Received: by 2002:a05:6e02:198c:b0:2c2:5bde:d230 with SMTP id g12-20020a056e02198c00b002c25bded230mr2622254ilf.43.1646899493750;
-        Thu, 10 Mar 2022 00:04:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyxMTbHvONjPD3iIsh1r1QK0f5HooAWaf7InSp+UoDtmnrLwwtjjlmvH/dMJJKyD8wxJ4lZB6jGTbeHvkjjKt0=
-X-Received: by 2002:a05:6e02:198c:b0:2c2:5bde:d230 with SMTP id
- g12-20020a056e02198c00b002c25bded230mr2622221ilf.43.1646899493106; Thu, 10
- Mar 2022 00:04:53 -0800 (PST)
+        Thu, 10 Mar 2022 03:07:56 -0500
+Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-eopbgr1300130.outbound.protection.outlook.com [40.107.130.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5964A133954;
+        Thu, 10 Mar 2022 00:06:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F2hYd/cbEZRAqEbMLPk3/tLrV4n2Ans//VMNzv8OQXnJp+kPyRTKruAeE6RgzXBGOcxxhBjbFVX3R/PTteOn1L1gaTlI+3CWeL1HoYPYEkd4apmKDcSSSWeI7wdGjOK1y8g5ogEXGGGOLJB5NLYOuO7AKG00pdJPNy/SEVTCWYaxMzTuBAMmUWMPP1FBTf5QQC9vOpx3D3vex+DLnWeh0o2fIOFlTudnrnFGRdztzTca8QfwLkW45MM9GihN67MbfQKs/Xx3gt3tGmS8Dy6pCf8lv11EX3wtkgJ1/5UcypzIb1r1vnZsdLvVneKL/JtgM7nMPH/mQNLysNtwYkMWIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iAR4LpgmIaYJqS8fYMRF6xKJYQZAO6krE8CN/9k7z8Q=;
+ b=esq8hikeeIVQxmECpmKKss/1SNmJho9SDWEUM0pdYGnysQ0ivR4IGkw1QnRxG663b6I11YDViPRzWEZbbVzsDJbjJLZKnRb+TCs+bY7mjBRloVRTZjdyvhn4LH3xsfUSG4oLoJ4orFNlowj3z571kUPH+Od5wbXO7Jd0e+G8LXVNkujvmL4/8g+Ye9x3id6Cv20gVRtNw+TNvjrsrGA9vpEBUdSO58Lml0T5aaMXpH+uR3qDrop6uRuGGv8RaNLZLBkCOGqnrdoC0vLWb3IQAXJIoqgu0Pgm27pXhvhK6kghX0sRbs1qD+XkkMOG+rzdkoXHRQohRpqd+KgYo1Ad3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iAR4LpgmIaYJqS8fYMRF6xKJYQZAO6krE8CN/9k7z8Q=;
+ b=WZT6B+P4BXMXhXeDwfcZxCabcMlPkr8N244P/nVK6VyT6fhrgAiz4xBLwDScBaAI2APKJJqOT0rgYM9y4sCTiddTzw7M7Yy5Ac8si6b0PRytx3Yi60mJlIY5u0/LVlGedHIrna2FDv7/+5ZzSPmT8zWmM/bMjPHeCo3B24kMaP4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
+ by KL1PR0601MB4671.apcprd06.prod.outlook.com (2603:1096:820:88::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 10 Mar
+ 2022 08:06:52 +0000
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::30ce:609e:c8e8:8a06]) by TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::30ce:609e:c8e8:8a06%4]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
+ 08:06:52 +0000
+From:   Yihao Han <hanyihao@vivo.com>
+To:     Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com, Yihao Han <hanyihao@vivo.com>
+Subject: [PATCH] media: mtk-vcodec: fix platform_get_irq.cocci warning
+Date:   Thu, 10 Mar 2022 00:06:38 -0800
+Message-Id: <20220310080639.12757-1-hanyihao@vivo.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0217.apcprd06.prod.outlook.com
+ (2603:1096:4:68::25) To TYZPR06MB4173.apcprd06.prod.outlook.com
+ (2603:1096:400:26::14)
 MIME-Version: 1.0
-References: <202107070458.FO35EqwU-lkp@intel.com> <CACT4ouey2QXf=PJThXG8adrLmCet4Ptu+VDDKBy2hOARqsghXQ@mail.gmail.com>
-In-Reply-To: <CACT4ouey2QXf=PJThXG8adrLmCet4Ptu+VDDKBy2hOARqsghXQ@mail.gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Thu, 10 Mar 2022 09:04:42 +0100
-Message-ID: <CACT4oufM_G3YxcvcNFAPWRoQaW1mTF5bsjU-bKwDiKm3J7iijg@mail.gmail.com>
-Subject: Re: drivers/net/ethernet/chelsio/cxgb4/sge.c:2571 cxgb4_ethofld_send_flowc()
- warn: missing error code 'ret'
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b355d796-02ac-437d-b7f3-08da026cef6a
+X-MS-TrafficTypeDiagnostic: KL1PR0601MB4671:EE_
+X-Microsoft-Antispam-PRVS: <KL1PR0601MB46711518D380F9370E30C23BA20B9@KL1PR0601MB4671.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QGOAB1kUx7mWedA8qmXUatP3W6RQzSQg4OZj/maoBBD8coJb6HRPsui0pWDyH6QyfD2hNluY6bxvx854xgJAuIYY+djspl/ukJ7DH7NhoqoeBwRw503rGle9pebCFA/6QqJk1gafeExtFZEvg4uvgPpzzj819N/x2Wvp78njVPQ/JHTEXi5J++hPoswe1o+5rw/fBAIKnekQAM3FipQ1gdXkFjzAXG0P2V9pTTYPUDIkqu11fDT16A1j/ksJPMoCKfQUtrB7KVb/cI5m3whKySK17GLUU7imvt5Wn9f7lWlWIG2aKwgbkZZ6AheZSUciHLT6ldEyOaPNavg2JGIv9rizv9RXgyFHuYufklWwt0UxD8sqVlFNMG2ixBMPC/jwPuJLfZEWsf4skKyWmK2a0w9Rf3Mncx8n5Gt0KoRoGuo8aTVmTDgaZM0kkyRqT6OUVk3+u+3V+NYqSzLbqx/60hlI5HfTcyUXhURu5+cdnb8UF9+cEUqwi+8HOsneaOxIRK5KP9YETw1D7Epgo14DACkAJpd+OOSSaUS413tScC10o7nSoLMFcS4lJ5RSK0G1z5c1v+oaqG4Q7ECwKiSC+PwmAtAyRngWfIhZNHTOlPkg+wSiEkXHBicd2oKcVaC772/KW6jU68U0D/ZfHHSx/gVKF477eN7lgXBMshhCLRgALq0GId8qRH+MDDSAtPjBzybrkpeUItGpljOojperuA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(6666004)(4326008)(26005)(8936002)(66556008)(66476007)(8676002)(4744005)(1076003)(110136005)(186003)(5660300002)(36756003)(83380400001)(6506007)(52116002)(6486002)(86362001)(107886003)(2906002)(6512007)(2616005)(508600001)(38100700002)(38350700002)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rMx0cG3QWaxJaUeaLzSjqn0IHW66B/DM73HQkdXQRGNC+YfULNar3TOw1ddP?=
+ =?us-ascii?Q?U8oBlJjgScvl+SwSFzU6ni3NjaJgIqadgVl4kKsaKyBtSzLVTUQrFwTdlb1c?=
+ =?us-ascii?Q?bpz0TaW9frwCmHCCt6t475ovKxitV2NbI76pMB14zuq9KkmH4Hbwx/DZ8N0+?=
+ =?us-ascii?Q?E8xwbGPoHvJs/AQgcMP4jUKCRXTeaekKaDrtwIxu75M25BfmJGdV94oi5c6W?=
+ =?us-ascii?Q?8y5J3cO5h6VDiI166iRnoz6nubb7qjAwCOzMyjTY7cPosLwv12HWfp5byTEA?=
+ =?us-ascii?Q?8TdPZkw9TuI3tCgWv7t+s09TcFt6t1II7vKPsd569aTqNa830r+bUHiNEx2j?=
+ =?us-ascii?Q?kLCBSpBnTrP7qB8MSjnkZwLCCNIYRZhn/obFe5lByZz+C01r5mitdVvo1GSz?=
+ =?us-ascii?Q?brXZyiStbCAIS+c15NOl1WBZpDmauxIh/F3LWhlpm+CtOmCCVqYwJ/DHno6j?=
+ =?us-ascii?Q?+pLADoLXDzT7AzqlMxtUUR7HlD9Jjx5SHow02gdWNQkCFao0gx3VAbBXRGcs?=
+ =?us-ascii?Q?uHBDh8i1Hw6q00oNTKLbm+QMkHCNvc2W6FtXAS597bl+j9kMcd5GXUzLkvXA?=
+ =?us-ascii?Q?uVN1bb2GPDZmZnZnv20zKBsv76EkVyG3bGd4QzjPYxWiMn9pt5DilSuvOfmu?=
+ =?us-ascii?Q?9vt09OoR+jxHf0ChBysV+D4eoRTwMTt50Kkh2l1zHNSkrQjByTnp0A/3n3q5?=
+ =?us-ascii?Q?QFZgx+Bh2zKQO0mI9bPv2o7awwNWpbyLk0JC6yY/myVyhepPNRAbpUSX5qde?=
+ =?us-ascii?Q?jC8+P0TLsBjXkcULQmdeL6337Q+QF12OhQgLYWgQYUsDhHpec0weHOmOFbEs?=
+ =?us-ascii?Q?/fTEY7Al36cJySPvd73Pi6FCNZpwRzz2MCDiosD0ZpEmPLryAbFZqBOn4y3+?=
+ =?us-ascii?Q?rsGB/zmlyCuILBX0HbAHy8lRedxunp3V1/HyyCOx+9LOLAXkjOJIleI3qNoE?=
+ =?us-ascii?Q?mINaTCJdM8q40ntUBwOoFYzv4Tzgw1+8qQ09RZfGAsYxzHvDEZZVkds1OmAT?=
+ =?us-ascii?Q?WbjnHLYo1mFf608N923nYXec6V/TK43TJXsh6Tbt3M6ONJBvg7hzaVLoNGdi?=
+ =?us-ascii?Q?rn0Guvlv/tRm210Re3Q9C6h8/OshLatwZL8SOQaVDjjwbZRt6JP+6P8btSWD?=
+ =?us-ascii?Q?Y6BbzfpdTfXK3OUVtS+jGyus+K4bKjfp6+JMfmMZLKVPIWsIss7dxTwEH5UU?=
+ =?us-ascii?Q?iGczaDqjx0sZmfXAEu2kubtdtq2zzkW+nN241X9btvr7vTNF+o1o9FL+0Mme?=
+ =?us-ascii?Q?MAMD1fXwu1dkdyB7JWgGlZTpXUXAtpL8UbfcG8xasTwhfeY4yDeLAXVq4Ts2?=
+ =?us-ascii?Q?DFHeRuDAO3hygV5lkk2V2KWXr8f7+0K0wnNu8DIpHWVsu07iSFbmQbioOpsi?=
+ =?us-ascii?Q?W42ABr5V+JwMEEPphtvCGfr2mx+v0BYwwLEmmhklIBotdT41KY9Y1dAyZPaL?=
+ =?us-ascii?Q?PwU9ugnGjx9BhATaF7GtU52v3UmTXF5wMEyU5cyUWsgUVAyWlflvh2GAWKJF?=
+ =?us-ascii?Q?o39jEsnexxRlru8kjeCKT+1A6RxeO1jXeW4EoWbIX7KR5QNsj1fAich6h/BS?=
+ =?us-ascii?Q?5b0Jm6demnJdv/6N7DnBgPI78F60Vt/+0dMdClcd0g1U5X1GSF5FeHeaj5Cx?=
+ =?us-ascii?Q?FIj8ersBKD3DEgX+rXQ/Abk=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b355d796-02ac-437d-b7f3-08da026cef6a
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 08:06:52.4693
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iRYPIjtGw8bg5/IrIrEWGydJHKG3hp/blNizGN0+HA2FdY+kYJYD05OtDhv9/7HNOl0YOTK6ai3O+fIMoSbQtA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4671
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 9:00 AM =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com>=
- wrote:
->
-> On Wed, Jul 7, 2021 at 9:37 AM Dan Carpenter <dan.carpenter@oracle.com> w=
-rote:
-> >
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.=
-git master
-> > head:   79160a603bdb51916226caf4a6616cc4e1c58a58
-> > commit: 52bfcdd87e83d9e69d22da5f26b1512ffc81deed net:CXGB4: fix leak if=
- sk_buff is not used
-> > config: x86_64-randconfig-m001-20210706 (attached as .config)
-> > compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> >
-> > New smatch warnings:
-> > drivers/net/ethernet/chelsio/cxgb4/sge.c:2571 cxgb4_ethofld_send_flowc(=
-) warn: missing error code 'ret'
->
-> This was already reported here:
-> https://lore.kernel.org/all/202107070458.FO35EqwU-lkp@intel.com/
->
-> CCing again Chelsio maintainer to see if they can tell whether an
-> error code is needed or not. My understanding is that it's not needed
-> in this case, but not 100% sure.
+Remove dev_err() messages after platform_get_irq*() failures.
+platform_get_irq() already prints an error.
 
-I get "The message you sent to rajur@chelsio.com couldn't be delivered
-due to: Recipient email address is possibly incorrect.", but that's
-the email listed in MAINTAINERS.
+Generated by: scripts/coccinelle/api/platform_get_irq.cocci
 
->
-> >
-> > vim +/ret +2571 drivers/net/ethernet/chelsio/cxgb4/sge.c
-> >
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2535  int cxgb4_ethofld_=
-send_flowc(struct net_device *dev, u32 eotid, u32 tc)
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2536  {
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2537     struct port_inf=
-o *pi =3D netdev2pinfo(dev);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2538     struct adapter =
-*adap =3D netdev2adap(dev);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2539     enum sge_eosw_s=
-tate next_state;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2540     struct sge_eosw=
-_txq *eosw_txq;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2541     u32 len, len16,=
- nparams =3D 6;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2542     struct fw_flowc=
-_wr *flowc;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2543     struct eotid_en=
-try *entry;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2544     struct sge_ofld=
-_rxq *rxq;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2545     struct sk_buff =
-*skb;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2546     int ret =3D 0;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2547
-> > a422d5ff6defb1 Gustavo A. R. Silva 2020-06-19  2548     len =3D struct_=
-size(flowc, mnemval, nparams);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2549     len16 =3D DIV_R=
-OUND_UP(len, 16);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2550
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2551     entry =3D cxgb4=
-_lookup_eotid(&adap->tids, eotid);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2552     if (!entry)
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2553             return =
--ENOMEM;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2554
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2555     eosw_txq =3D (s=
-truct sge_eosw_txq *)entry->data;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2556     if (!eosw_txq)
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2557             return =
--ENOMEM;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2558
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2559     skb =3D alloc_s=
-kb(len, GFP_KERNEL);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2560     if (!skb)
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2561             return =
--ENOMEM;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2562
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2563     spin_lock_bh(&e=
-osw_txq->lock);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2564     if (tc !=3D FW_=
-SCHED_CLS_NONE) {
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2565             if (eos=
-w_txq->state !=3D CXGB4_EO_STATE_CLOSED)
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2566          =
-           goto out_free_skb;
-> >                                                                        =
- ^^^^^^^^^^^^^^^^^
-> >
-> > Are these error paths?
-> >
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2567
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2568             next_st=
-ate =3D CXGB4_EO_STATE_FLOWC_OPEN_SEND;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2569     } else {
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2570             if (eos=
-w_txq->state !=3D CXGB4_EO_STATE_ACTIVE)
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05 @2571          =
-           goto out_free_skb;
-> >
-> > Here too
-> >
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2572
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2573             next_st=
-ate =3D CXGB4_EO_STATE_FLOWC_CLOSE_SEND;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2574     }
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2575
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2576     flowc =3D __skb=
-_put(skb, len);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2577     memset(flowc, 0=
-, len);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2578
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2579     rxq =3D &adap->=
-sge.eohw_rxq[eosw_txq->hwqid];
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2580     flowc->flowid_l=
-en16 =3D cpu_to_be32(FW_WR_LEN16_V(len16) |
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2581                    =
-                   FW_WR_FLOWID_V(eosw_txq->hwtid));
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2582     flowc->op_to_np=
-arams =3D cpu_to_be32(FW_WR_OP_V(FW_FLOWC_WR) |
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2583                    =
-                    FW_FLOWC_WR_NPARAMS_V(nparams) |
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2584                    =
-                    FW_WR_COMPL_V(1));
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2585     flowc->mnemval[=
-0].mnemonic =3D FW_FLOWC_MNEM_PFNVFN;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2586     flowc->mnemval[=
-0].val =3D cpu_to_be32(FW_PFVF_CMD_PFN_V(adap->pf));
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2587     flowc->mnemval[=
-1].mnemonic =3D FW_FLOWC_MNEM_CH;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2588     flowc->mnemval[=
-1].val =3D cpu_to_be32(pi->tx_chan);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2589     flowc->mnemval[=
-2].mnemonic =3D FW_FLOWC_MNEM_PORT;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2590     flowc->mnemval[=
-2].val =3D cpu_to_be32(pi->tx_chan);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2591     flowc->mnemval[=
-3].mnemonic =3D FW_FLOWC_MNEM_IQID;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2592     flowc->mnemval[=
-3].val =3D cpu_to_be32(rxq->rspq.abs_id);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2593     flowc->mnemval[=
-4].mnemonic =3D FW_FLOWC_MNEM_SCHEDCLASS;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2594     flowc->mnemval[=
-4].val =3D cpu_to_be32(tc);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2595     flowc->mnemval[=
-5].mnemonic =3D FW_FLOWC_MNEM_EOSTATE;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2596     flowc->mnemval[=
-5].val =3D cpu_to_be32(tc =3D=3D FW_SCHED_CLS_NONE ?
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2597                    =
-                     FW_FLOWC_MNEM_EOSTATE_CLOSING :
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2598                    =
-                     FW_FLOWC_MNEM_EOSTATE_ESTABLISHED);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2599
-> > 69422a7e5d578a Rahul Lakkireddy    2020-04-30  2600     /* Free up any =
-pending skbs to ensure there's room for
-> > 69422a7e5d578a Rahul Lakkireddy    2020-04-30  2601      * termination =
-FLOWC.
-> > 69422a7e5d578a Rahul Lakkireddy    2020-04-30  2602      */
-> > 69422a7e5d578a Rahul Lakkireddy    2020-04-30  2603     if (tc =3D=3D F=
-W_SCHED_CLS_NONE)
-> > 69422a7e5d578a Rahul Lakkireddy    2020-04-30  2604             eosw_tx=
-q_flush_pending_skbs(eosw_txq);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2605
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2606     ret =3D eosw_tx=
-q_enqueue(eosw_txq, skb);
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2607     if (r=
-et)
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2608          =
-   goto out_free_skb;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2609
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2610     eosw_txq->state=
- =3D next_state;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2611     eosw_txq->flowc=
-_idx =3D eosw_txq->pidx;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2612     eosw_txq_advanc=
-e(eosw_txq, 1);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2613     ethofld_xmit(de=
-v, eosw_txq);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2614
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2615     spin_=
-unlock_bh(&eosw_txq->lock);
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2616     retur=
-n 0;
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2617
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2618  out_free=
-_skb:
-> > 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2619     dev_c=
-onsume_skb_any(skb);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2620     spin_unlock_bh(=
-&eosw_txq->lock);
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2621     return ret;
-> > 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2622  }
-> >
-> > ---
-> > 0-DAY CI Kernel Test Service, Intel Corporation
-> > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> >
->
->
-> --
-> =C3=8D=C3=B1igo Huguet
+Signed-off-by: Yihao Han <hanyihao@vivo.com>
+---
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-
-
---=20
-=C3=8D=C3=B1igo Huguet
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
+index 8d2a641d92f1..5f07313676bb 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
+@@ -99,10 +99,8 @@ static int mtk_vdec_hw_init_irq(struct mtk_vdec_hw_dev *dev)
+ 	int ret;
+ 
+ 	dev->dec_irq = platform_get_irq(pdev, 0);
+-	if (dev->dec_irq < 0) {
+-		dev_err(&pdev->dev, "Failed to get irq resource");
++	if (dev->dec_irq < 0)
+ 		return dev->dec_irq;
+-	}
+ 
+ 	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
+ 	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
+-- 
+2.17.1
 
