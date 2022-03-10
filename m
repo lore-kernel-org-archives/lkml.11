@@ -2,80 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E51C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245021AbiCJUbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 15:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
+        id S244836AbiCJUd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 15:33:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiCJUbN (ORCPT
+        with ESMTP id S232725AbiCJUdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 15:31:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB96ECB10;
-        Thu, 10 Mar 2022 12:30:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD1616179E;
-        Thu, 10 Mar 2022 20:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 39F9BC340F7;
-        Thu, 10 Mar 2022 20:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646944210;
-        bh=eREIy7aXyXOJiNE/a+y3BVUxOQadsmenqakhiafoC0s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QgMbCyroHXEFfM5i5u1MfFEghBG0gbawl16KY3a3t7lhPUV0SRh0fEb3qSieURQbU
-         pbADUMJFe46PI8F2ke5jKo5P59bzkjbtb4Fand4ZobKA/lK12hKCJJi6fWqXE9B+8J
-         6jFfPEZIOflaNfav7kIwk8ylw6ccyHPqctJadf9evkGI8ZFEeTma2BLadQORurmEwO
-         1YDxu29zRjjZTcIkx6Ip1X9vlLXZ2QYyutEifigbPeR56jIoEkZrkI51Tae9EJWC9W
-         ZtXFsS6JRAFGgthTrKJQX/MTzjTJ9giJvQGEw2ZI351BB7hoEephjvl7DoelwAwwSF
-         S/F6adZNpZrUw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 18610F0383F;
-        Thu, 10 Mar 2022 20:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 10 Mar 2022 15:33:22 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B022F3284
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:32:20 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id x4so7872383iop.7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:32:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DLr3mQYXmDHbd+LBhBUi7dTKTmk6a0trl2Y2FAGkhQk=;
+        b=I/+Xd9JvfV4nd6qZCvwS8Ojf1XjyRTKJ2gaOyW9PLvPZXe72yXxjTZDQVFwtIOA4CD
+         7gj7jC/qRFTME2IISxgQqFam3G3Cee2O3wpazRsMEMN0TEh3VVhYaDwyCKAK+rlwrZ7b
+         5z2UClc6rkg6OE+PGBWlvmDS4qeULrf+P2Kiw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DLr3mQYXmDHbd+LBhBUi7dTKTmk6a0trl2Y2FAGkhQk=;
+        b=VKIXqVGoohL2NcoMeYG6HiBOtoxkRg3Ml//F6aW95lydXH3dZdAUnFM3mfj+O1Hl4j
+         rzsfoKGPkPjMsL9Q717560+S29uthoZlRpCuVK4r+OKUajGI+SEZ12kunSHad+CWNUTq
+         M4bT5Me6M+aSR8sL/YEtf2n5vOSvcz/8KJsPsz2FfsFZVuqmpK2u2yRpVarCUSeiShH2
+         krpPIYAkQ/Y0aem49qKRDpCqL7ZZ2XGH0yjLaANafZ/Q6HiCJ0wnIKQGo9qaKK2bVNVJ
+         bDHceNbzONV0HcMEIqjhULJ16fpd1BBAmjEt6NXkLCi0ePqSwxx0nVbf/lQOHY1c3zkq
+         ETHg==
+X-Gm-Message-State: AOAM532pwY7ch3nTl1TjPqxGxxNA6/z4YOP6Iy17Sk1sSOJ2EbZceR4G
+        E5hX+p8PZ9Rcz0MLoRAiT1KEcQ==
+X-Google-Smtp-Source: ABdhPJzGYJJ66lGrR9KD/M0EG6Zi/5nRvruDQV4FiOAuS/Sc7kzsbS/JS9cK6MUhafBgg6dI6oMGQg==
+X-Received: by 2002:a6b:ce01:0:b0:610:8f2:3b7 with SMTP id p1-20020a6bce01000000b0061008f203b7mr5389673iob.25.1646944339851;
+        Thu, 10 Mar 2022 12:32:19 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id b10-20020a056602000a00b0064074921986sm3169961ioa.41.2022.03.10.12.32.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 12:32:19 -0800 (PST)
+Subject: Re: [PATCH v3] selftests/resctrl: Print a message if the result of
+ MBM&CMT tests is failed on Intel cpu
+To:     "tan.shaopeng@fujitsu.com" <tan.shaopeng@fujitsu.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220304103957.487660-1-tan.shaopeng@jp.fujitsu.com>
+ <9647f7ed-6a02-8603-0de4-3292d4d13157@linuxfoundation.org>
+ <TYAPR01MB63307F1C04270DD2D09ACF238B0B9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <480705b1-6f22-e129-2db0-2a9c5841eacc@linuxfoundation.org>
+Date:   Thu, 10 Mar 2022 13:32:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] gianfar: ethtool: Fix refcount leak in
- gfar_get_ts_info
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164694421009.25928.3425721477014489869.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Mar 2022 20:30:10 +0000
-References: <20220310015313.14938-1-linmq006@gmail.com>
-In-Reply-To: <20220310015313.14938-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        yangbo.lu@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+In-Reply-To: <TYAPR01MB63307F1C04270DD2D09ACF238B0B9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 10 Mar 2022 01:53:13 +0000 you wrote:
-> The of_find_compatible_node() function returns a node pointer with
-> refcount incremented, We should use of_node_put() on it when done
-> Add the missing of_node_put() to release the refcount.
+On 3/10/22 1:18 AM, tan.shaopeng@fujitsu.com wrote:
+> Hi Shuah,
 > 
-> Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+>> On 3/4/22 3:39 AM, Shaopeng Tan wrote:
+
+>> Also need to be rebased on mainline latest
 > 
-> [...]
+> I will rebased on mainline latest in next version.
+> 
 
-Here is the summary with links:
-  - [net,v2] gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
-    https://git.kernel.org/netdev/net/c/2ac5b58e645c
+>> Why is this a global? I am not seeing a reason. These detect_*()s could be
+>> moved to resctrl.h and get rid of globals.
+>>
+>> Instead of adding intel check to detect_amd() add detect_intel() or is_intel()
+>> and have ut return true of it detects intel.
+> 
+> "is_amd" and "is_intel" are called many times,
+> in this way, detect_vendor is called only once.
+> 
+You can do the lookup once and save the value to return for
+subsequent calls instead of using global values is_amd
+and is_intel.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+thanks,
+-- Shuah
 
