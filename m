@@ -2,225 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 539B0C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE119C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242474AbiCJNiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:38:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S242536AbiCJNiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:38:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242467AbiCJNht (ORCPT
+        with ESMTP id S242501AbiCJNhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:37:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76CE514F282
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:36:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646919407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B8DIEevWYvuYglJFjyQWsQEqu5VB35wMbcBWRZHjc4g=;
-        b=OVzj/u0vea9Ey+kGL1pZBj4cQXxUtXa/Nr/cW2j4L6nIq4Sdab51TYsqguO1j+Ch39TPUd
-        yPa2ijlSNJcbNL/y7J1mKrNpn7U3zRdrBCq2fZ6VyBQbGTrg14LCiphbffcZvMAmTQSmyN
-        cceWrr6jeRUHBVjZm8161GLQSY1bKUQ=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-9N9800ZlOCmhow0BwbIhmg-1; Thu, 10 Mar 2022 08:36:44 -0500
-X-MC-Unique: 9N9800ZlOCmhow0BwbIhmg-1
-Received: by mail-wr1-f69.google.com with SMTP id n4-20020a5d4844000000b001f1ed76e943so1702534wrs.22
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:36:44 -0800 (PST)
+        Thu, 10 Mar 2022 08:37:54 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1470314F285;
+        Thu, 10 Mar 2022 05:36:50 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id h11so7755062ljb.2;
+        Thu, 10 Mar 2022 05:36:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
+        b=gkiTNDi5pZ9lk4PtAzuCZONXJq/Ix6gNIP6lS2X8nIxEocHHlWsxFVlQnakJrBoTpF
+         oHT9ruoMDwEr5cLAj0Z3erdEOCp1ualiI3kJq7TIN7mYN1pqCvOzfqEhbFM6W/r8MOxb
+         OS+q7KTn5rQEM8yha5bL9Hq8q4fBL0ePKYvUqYCvVhV4IZx+JI+ExouAmFZjPFZvFySd
+         hn3IA4krwCpeyTjYje2DPMcl0ZVOwG12by+T3JqVPQc8xK/20D3EuGbTTf2JRWiXmTo9
+         SI/bK9q33kbzhW+ElY1YHK16eercCeiIESDKv96IPGEMz+GYJqaSirVRbsAm6XulchXk
+         Co+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=B8DIEevWYvuYglJFjyQWsQEqu5VB35wMbcBWRZHjc4g=;
-        b=TxNDfPohHADJrrdy9utZ0AVVXfz+82Usm+L7dT5k1uOFNv6HeS7GFkLlZ6swq9xkDR
-         uHBfCuUZG8PljXOFoFL3B8ZjYC71aYRzbMFGKR1N8uyxu3Y6CY65Yz0NnBsygVOoz3qD
-         gDjcVQ9aoxA9wF2oGaRBSVU50cd6E9ZCCRThvEZMRQk+UJ1izlchk3b/RpJXlMDhhoaU
-         g7Kk74vE/ZE9x9AYImguYjZ2z6Q0Xj4YJjDJWq3REkq0cjs229W2pC6Mm6cTwdfGv6F2
-         nlovo/BbUd/LzoWzmMlLIVBJC9yyGP7cQ8fBVgKQVybkd9yFiiRHEsUDFxDTqniN1f3o
-         tVGA==
-X-Gm-Message-State: AOAM530ACEbTiExGt4DqlvrY3NJzCM79J9rJCMJVtfoQJXMQKdxrX+L2
-        N7qVYGQKRWkJS5UGWuXUKjhX5c0ZHpFOAtPPy0WA77XhAjH0ItNsPl3IDHG6TDDobDCKK6gDqHE
-        RXfDgjoGUwsmAuWxW/eLhuXT+
-X-Received: by 2002:a5d:64af:0:b0:203:88d0:716e with SMTP id m15-20020a5d64af000000b0020388d0716emr2293137wrp.327.1646919403153;
-        Thu, 10 Mar 2022 05:36:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwuoJ4lMptl/9JtRj644DNUVPlOVcLNnwLXnsnQ/usq1lertQQMLVXHPv/RU79B5g3EKng7UA==
-X-Received: by 2002:a5d:64af:0:b0:203:88d0:716e with SMTP id m15-20020a5d64af000000b0020388d0716emr2293118wrp.327.1646919402923;
-        Thu, 10 Mar 2022 05:36:42 -0800 (PST)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id 9-20020a1c0209000000b003868897278asm6818979wmc.23.2022.03.10.05.36.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
+        b=4k7Fj78dDW+gaZG621lpreKcGx8DbW1TuP9KgRri2xjZGubGjsBlnAt1MxiC2Lqo+m
+         pNMvuFfOF2wHwFqbzzKgJEmQ1IYabfBF87w2GmbMD/cOxlLSuLcuYPTuTUk3KMU93Znc
+         GahAls2YD0EjvT5qiKlsUMB0gSD+r/06rRUZWGI1jt7aAbvQ9LoLOU36RishyMnua02+
+         FR6NXWn0hpS3TWlnAKvnTavbrMulqal44CrMBzGcJ/QR+ru2EZSTfze+QAXfaGH+qj7H
+         GhWPQwA5onKKUOL8wMYJmWzwmevDLUNG6D0YZ00lAMcuNSTN5nszJjykap6UVY+sv/G0
+         JjJw==
+X-Gm-Message-State: AOAM531MRImuYAgAD0LK/llHdK5ddhqZth7bh3WbBlQq4LhVsmoQ/j9A
+        E5XV4zsUgSkgJTSAhylINSc=
+X-Google-Smtp-Source: ABdhPJzALSN85vM/MYGsqF+G/jpOWjdpM2jeGicHF1VoQtP/X7X4iNq+rg9zM5dEvzLmFwOgRPNbzQ==
+X-Received: by 2002:a2e:3004:0:b0:223:c126:5d1a with SMTP id w4-20020a2e3004000000b00223c1265d1amr3079728ljw.408.1646919408328;
+        Thu, 10 Mar 2022 05:36:48 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b00247d22bc318sm1060299lja.22.2022.03.10.05.36.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 05:36:42 -0800 (PST)
-Date:   Thu, 10 Mar 2022 14:36:38 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jiyong Park <jiyong@google.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, adelva@google.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] vsock: each transport cycles only on its own sockets
-Message-ID: <20220310133638.qe7eevwsmcbku2mc@sgarzare-redhat>
-References: <20220310132830.88203-1-jiyong@google.com>
+        Thu, 10 Mar 2022 05:36:47 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH iproute2-next 2/3] net: switchdev: add support for offloading of fdb locked flag
+Date:   Thu, 10 Mar 2022 14:36:16 +0100
+Message-Id: <20220310133617.575673-3-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220310132830.88203-1-jiyong@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:28:29PM +0900, Jiyong Park wrote:
->When iterating over sockets using vsock_for_each_connected_socket, make
->sure that a transport filters out sockets that don't belong to the
->transport.
->
->There actually was an issue caused by this; in a nested VM
->configuration, destroying the nested VM (which often involves the
->closing of /dev/vhost-vsock if there was h2g connections to the nested
->VM) kills not only the h2g connections, but also all existing g2h
->connections to the (outmost) host which are totally unrelated.
->
->Tested: Executed the following steps on Cuttlefish (Android running on a
->VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
->connection inside the VM, (2) open and then close /dev/vhost-vsock by
->`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
->session is not reset.
->
->[1] https://android.googlesource.com/device/google/cuttlefish/
->
->Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
->Signed-off-by: Jiyong Park <jiyong@google.com>
->---
->Changes in v2:
->  - Squashed into a single patch
->
-> drivers/vhost/vsock.c            | 3 ++-
-> include/net/af_vsock.h           | 3 ++-
-> net/vmw_vsock/af_vsock.c         | 9 +++++++--
-> net/vmw_vsock/virtio_transport.c | 7 +++++--
-> net/vmw_vsock/vmci_transport.c   | 3 ++-
-> 5 files changed, 18 insertions(+), 7 deletions(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index 37f0b4274113..e6c9d41db1de 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
->
-> 	/* Iterating over all connections for all CIDs to find orphans is
-> 	 * inefficient.  Room for improvement here. */
->-	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
->+	vsock_for_each_connected_socket(&vhost_transport.transport,
->+					vhost_vsock_reset_orphans);
->
-> 	/* Don't check the owner, because we are in the release path, so we
-> 	 * need to stop the vsock device in any case.
->diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
->index ab207677e0a8..f742e50207fb 100644
->--- a/include/net/af_vsock.h
->+++ b/include/net/af_vsock.h
->@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
-> struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
-> 					 struct sockaddr_vm *dst);
-> void vsock_remove_sock(struct vsock_sock *vsk);
->-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
->+void vsock_for_each_connected_socket(struct vsock_transport *transport,
->+				     void (*fn)(struct sock *sk));
-> int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
-> bool vsock_find_cid(unsigned int cid);
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 38baeb189d4e..f04abf662ec6 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
-> }
-> EXPORT_SYMBOL_GPL(vsock_remove_sock);
->
->-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
->+void vsock_for_each_connected_socket(struct vsock_transport *transport,
->+				     void (*fn)(struct sock *sk))
-> {
-> 	int i;
->
->@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-> 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
-> 		struct vsock_sock *vsk;
-> 		list_for_each_entry(vsk, &vsock_connected_table[i],
->-				    connected_table)
->+				    connected_table) {
->+			if (vsk->transport != transport)
->+				continue;
->+
-> 			fn(sk_vsock(vsk));
->+		}
-> 	}
->
-> 	spin_unlock_bh(&vsock_table_lock);
->diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->index fb3302fff627..5afc194a58bb 100644
->--- a/net/vmw_vsock/virtio_transport.c
->+++ b/net/vmw_vsock/virtio_transport.c
->@@ -24,6 +24,7 @@
-> static struct workqueue_struct *virtio_vsock_workqueue;
-> static struct virtio_vsock __rcu *the_virtio_vsock;
-> static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
->+static struct virtio_transport virtio_transport; /* forward declaration */
->
-> struct virtio_vsock {
-> 	struct virtio_device *vdev;
->@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
-> 	switch (le32_to_cpu(event->id)) {
-> 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
-> 		virtio_vsock_update_guest_cid(vsock);
->-		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
->+		vsock_for_each_connected_socket(&virtio_transport.transport,
->+						virtio_vsock_reset_sock);
-> 		break;
-> 	}
-> }
->@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
-> 	synchronize_rcu();
->
-> 	/* Reset all connected sockets when the device disappear */
->-	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
->+	vsock_for_each_connected_socket(&virtio_transport.transport,
->+					virtio_vsock_reset_sock);
->
-> 	/* Stop all work handlers to make sure no one is accessing the device,
-> 	 * so we can safely call virtio_reset_device().
->diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
->index 7aef34e32bdf..735d5e14608a 100644
->--- a/net/vmw_vsock/vmci_transport.c
->+++ b/net/vmw_vsock/vmci_transport.c
->@@ -882,7 +882,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
-> 					 const struct vmci_event_data *e_data,
-> 					 void *client_data)
-> {
->-	vsock_for_each_connected_socket(vmci_transport_handle_detach);
->+	vsock_for_each_connected_socket(&vmci_transport,
->+					vmci_transport_handle_detach);
-> }
->
-> static void vmci_transport_recv_pkt_work(struct work_struct *work)
+Used for Mac-auth/MAB feature in the offloaded case.
 
-This breaks the build of vmci-transport:
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+---
+ include/net/switchdev.h | 3 ++-
+ net/bridge/br.c         | 3 ++-
+ net/bridge/br_fdb.c     | 7 +++++--
+ net/bridge/br_private.h | 2 +-
+ 4 files changed, 10 insertions(+), 5 deletions(-)
 
-../net/vmw_vsock/vmci_transport.c: In function ‘vmci_transport_qp_resumed_cb’:
-../net/vmw_vsock/vmci_transport.c:885:42: error: ‘vmci_transport’ undeclared (first use in this function)
-   885 |         vsock_for_each_connected_socket(&vmci_transport,
-       |                                          ^~~~~~~~~~~~~~
-../net/vmw_vsock/vmci_transport.c:885:42: note: each undeclared identifier is reported only once for each function it appears in
-
-
-Stefano
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 3e424d40fae3..d5d923411f5e 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -229,7 +229,8 @@ struct switchdev_notifier_fdb_info {
+ 	u16 vid;
+ 	u8 added_by_user:1,
+ 	   is_local:1,
+-	   offloaded:1;
++	   offloaded:1,
++	   locked:1;
+ };
+ 
+ struct switchdev_notifier_port_obj_info {
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index b1dea3febeea..adcdbecbc218 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
+ 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+ 		fdb_info = ptr;
+ 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+-						fdb_info->vid, false);
++						fdb_info->vid, false,
++						fdb_info->locked);
+ 		if (err) {
+ 			err = notifier_from_errno(err);
+ 			break;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 396dcf3084cf..91387aa7e400 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -987,7 +987,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+ 					   "FDB entry towards bridge must be permanent");
+ 			return -EINVAL;
+ 		}
+-		err = br_fdb_external_learn_add(br, p, addr, vid, true);
++		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
+ 	} else {
+ 		spin_lock_bh(&br->hash_lock);
+ 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+@@ -1216,7 +1216,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+ 
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify)
++			      bool swdev_notify, bool locked)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 	bool modified = false;
+@@ -1236,6 +1236,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 		if (!p)
+ 			flags |= BIT(BR_FDB_LOCAL);
+ 
++		if (locked)
++			flags |= BIT(BR_FDB_ENTRY_LOCKED);
++
+ 		fdb = fdb_create(br, p, addr, vid, flags);
+ 		if (!fdb) {
+ 			err = -ENOMEM;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index f5a0b68c4857..3275e33b112f 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -790,7 +790,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify);
++			      bool swdev_notify, bool locked);
+ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+ 			      bool swdev_notify);
+-- 
+2.30.2
 
