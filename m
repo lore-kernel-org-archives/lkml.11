@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09353C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0249C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344315AbiCJOkj (ORCPT
+        id S1344111AbiCJOk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:40:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
+        Thu, 10 Mar 2022 09:40:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243957AbiCJO2H (ORCPT
+        with ESMTP id S1343950AbiCJObb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:07 -0500
+        Thu, 10 Mar 2022 09:31:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE490AD103;
-        Thu, 10 Mar 2022 06:23:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1009B82F5;
+        Thu, 10 Mar 2022 06:29:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 959A2B8254A;
-        Thu, 10 Mar 2022 14:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8931C340E8;
-        Thu, 10 Mar 2022 14:22:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55238B825A7;
+        Thu, 10 Mar 2022 14:29:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F223C340E8;
+        Thu, 10 Mar 2022 14:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922179;
-        bh=eC4iea9yKTTY+ZmvRYiJf8svQPFbiRA7Fe4eO3z/pvE=;
+        s=korg; t=1646922546;
+        bh=rKln5HfmJ7CAsIJqUftQHhI05Ko1JEKlKJ2HDsRvn3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hxGi/JzJIHfk0wYRcksqWJ3iWJUOFKbRaoMU/31n3nYUsYQY6HNQRQLc/tbk/SB4M
-         JZ6n5D6akI4jneqDIoKEn8z1+kG4qwpQclTeffTpbhIAIACa++7KUppbQktDoPfb95
-         WsGggwygciXbj+30CPFnXqMBkWhvWPoBH1ZZ/xZ0=
+        b=X6DyEcpX9RNrwgCr/grd7SetyrN/qJkv6k1DmbVa8Kg7khOQAbE7q8X7FGlX4RYvo
+         C/iyJ0BdmusBtwSEEWWqNckA9jU5ZDGTa59n76c2gUozZa2VxBk5rqaLyEjbO8kzna
+         OtHUN7DXUw0cEcOEoajAZQ1NPEtxhv5rxUbUykgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.19 29/33] xen: remove gnttab_query_foreign_access()
-Date:   Thu, 10 Mar 2022 15:18:56 +0100
-Message-Id: <20220310140808.603008484@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.15 06/58] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+Date:   Thu, 10 Mar 2022 15:18:55 +0100
+Message-Id: <20220310140813.169073156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
-References: <20220310140807.749164737@linuxfoundation.org>
+In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
+References: <20220310140812.983088611@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,91 +51,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-Commit 1dbd11ca75fe664d3e54607547771d021f531f59 upstream.
+commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
 
-Remove gnttab_query_foreign_access(), as it is unused and unsafe to
-use.
+With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
+to Spectre v2 BHB-based attacks.
 
-All previous use cases assumed a grant would not be in use after
-gnttab_query_foreign_access() returned 0. This information is useless
-in best case, as it only refers to a situation in the past, which could
-have changed already.
+When both are enabled, print a warning message and report it in the
+'spectre_v2' sysfs vulnerabilities file.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 5.15]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/grant-table.c |   25 -------------------------
- include/xen/grant_table.h |    2 --
- 2 files changed, 27 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
+ include/linux/bpf.h        |   12 ++++++++++++
+ kernel/sysctl.c            |    7 +++++++
+ 3 files changed, 48 insertions(+), 6 deletions(-)
 
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -134,13 +134,6 @@ struct gnttab_ops {
- 	 * return the frame.
- 	 */
- 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
--	/*
--	 * Query the status of a grant entry. Ref parameter is reference of
--	 * queried grant entry, return value is the status of queried entry.
--	 * Detailed status(writing/reading) can be gotten from the return value
--	 * by bit operations.
--	 */
--	int (*query_foreign_access)(grant_ref_t ref);
- };
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -16,6 +16,7 @@
+ #include <linux/prctl.h>
+ #include <linux/sched/smt.h>
+ #include <linux/pgtable.h>
++#include <linux/bpf.h>
  
- struct unmap_refs_callback_data {
-@@ -285,22 +278,6 @@ int gnttab_grant_foreign_access(domid_t
- }
- EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access);
+ #include <asm/spec-ctrl.h>
+ #include <asm/cmdline.h>
+@@ -650,6 +651,16 @@ static inline const char *spectre_v2_mod
+ static inline const char *spectre_v2_module_string(void) { return ""; }
+ #endif
  
--static int gnttab_query_foreign_access_v1(grant_ref_t ref)
--{
--	return gnttab_shared.v1[ref].flags & (GTF_reading|GTF_writing);
--}
--
--static int gnttab_query_foreign_access_v2(grant_ref_t ref)
--{
--	return grstatus[ref] & (GTF_reading|GTF_writing);
--}
--
--int gnttab_query_foreign_access(grant_ref_t ref)
--{
--	return gnttab_interface->query_foreign_access(ref);
--}
--EXPORT_SYMBOL_GPL(gnttab_query_foreign_access);
--
- static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref, int readonly)
++#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
++
++#ifdef CONFIG_BPF_SYSCALL
++void unpriv_ebpf_notify(int new_state)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++}
++#endif
++
+ static inline bool match_option(const char *arg, int arglen, const char *opt)
  {
- 	u16 flags, nflags;
-@@ -1307,7 +1284,6 @@ static const struct gnttab_ops gnttab_v1
- 	.update_entry			= gnttab_update_entry_v1,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
--	.query_foreign_access		= gnttab_query_foreign_access_v1,
- };
+ 	int len = strlen(opt);
+@@ -994,6 +1005,9 @@ static void __init spectre_v2_select_mit
+ 		break;
+ 	}
  
- static const struct gnttab_ops gnttab_v2_ops = {
-@@ -1319,7 +1295,6 @@ static const struct gnttab_ops gnttab_v2
- 	.update_entry			= gnttab_update_entry_v2,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v2,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v2,
--	.query_foreign_access		= gnttab_query_foreign_access_v2,
- };
++	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+@@ -1780,6 +1794,20 @@ static char *ibpb_state(void)
+ 	return "";
+ }
  
- static bool gnttab_need_v2(void)
---- a/include/xen/grant_table.h
-+++ b/include/xen/grant_table.h
-@@ -118,8 +118,6 @@ int gnttab_grant_foreign_transfer(domid_
- unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
- unsigned long gnttab_end_foreign_transfer(grant_ref_t ref);
++static ssize_t spectre_v2_show_state(char *buf)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
++	return sprintf(buf, "%s%s%s%s%s%s\n",
++		       spectre_v2_strings[spectre_v2_enabled],
++		       ibpb_state(),
++		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
++		       stibp_state(),
++		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
++		       spectre_v2_module_string());
++}
++
+ static ssize_t srbds_show_state(char *buf)
+ {
+ 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
+@@ -1805,12 +1833,7 @@ static ssize_t cpu_show_common(struct de
+ 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
  
--int gnttab_query_foreign_access(grant_ref_t ref);
--
- /*
-  * operations on reserved batches of grant references
-  */
+ 	case X86_BUG_SPECTRE_V2:
+-		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
+-			       ibpb_state(),
+-			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
+-			       stibp_state(),
+-			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
+-			       spectre_v2_module_string());
++		return spectre_v2_show_state(buf);
+ 
+ 	case X86_BUG_SPEC_STORE_BYPASS:
+ 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1666,6 +1666,12 @@ bool bpf_prog_has_kfunc_call(const struc
+ const struct btf_func_model *
+ bpf_jit_find_kfunc_model(const struct bpf_prog *prog,
+ 			 const struct bpf_insn *insn);
++
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return !sysctl_unprivileged_bpf_disabled;
++}
++
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ {
+@@ -1884,6 +1890,12 @@ bpf_jit_find_kfunc_model(const struct bp
+ {
+ 	return NULL;
+ }
++
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return false;
++}
++
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
+ void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -228,6 +228,10 @@ static int bpf_stats_handler(struct ctl_
+ 	return ret;
+ }
+ 
++void __weak unpriv_ebpf_notify(int new_state)
++{
++}
++
+ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+ 			      void *buffer, size_t *lenp, loff_t *ppos)
+ {
+@@ -245,6 +249,9 @@ static int bpf_unpriv_handler(struct ctl
+ 			return -EPERM;
+ 		*(int *)table->data = unpriv_enable;
+ 	}
++
++	unpriv_ebpf_notify(unpriv_enable);
++
+ 	return ret;
+ }
+ #endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
 
 
