@@ -2,199 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A938FC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75BCC4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245218AbiCJOjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:39:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
+        id S245260AbiCJOjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:39:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343810AbiCJObW (ORCPT
+        with ESMTP id S1343855AbiCJObZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDE2DF62;
-        Thu, 10 Mar 2022 06:27:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12DCBB82544;
-        Thu, 10 Mar 2022 14:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34CCDC340EB;
-        Thu, 10 Mar 2022 14:27:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922445;
-        bh=89JcRwzpPQWsm4ynWokjCyskjgS1HkJfGu3hLUmkuPM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sRMxG2abW2gLpYTzu8OA3jsQye2Ijxtn0rEHiR1IXoV92E80eHlUhnqcwEvhf35w/
-         PxH5/trTC0IkOEKFngMmWvqr03xzMbQ7V+er0rTXc4w04C97Mcsd2dPAZnaTjKjj/X
-         nCFB4Xen03w/Cc4DpSZggTviRcJN/nE+CWpvQDCc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Frank van der Linden <fllinden@amazon.com>
-Subject: [PATCH 5.4 06/33] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Thu, 10 Mar 2022 15:19:07 +0100
-Message-Id: <20220310140808.933873567@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
-References: <20220310140808.741682643@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:31:25 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3FAC6261
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:27:40 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id B305468B05; Thu, 10 Mar 2022 15:27:36 +0100 (CET)
+Date:   Thu, 10 Mar 2022 15:27:36 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] task_work: simplify the task_work_add() interface
+Message-ID: <20220310142736.GA1103@lst.de>
+References: <20220223072754.616027-1-hch@lst.de> <58c5f828-df7d-6698-e2d6-2a869e134dd4@kernel.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <58c5f828-df7d-6698-e2d6-2a869e134dd4@kernel.dk>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+On Thu, Mar 10, 2022 at 05:43:25AM -0700, Jens Axboe wrote:
+> On 2/23/22 12:27 AM, Christoph Hellwig wrote:
+> > Provide a low-level task_work_add_nonotify interface that just adds
+> > the work to the list and open code the TWA_SIGNAL and TWA_NONE callers
+> > using it.  task_work_add() itself now only handles the common TWA_RESUME
+> > case and can drop the notify argument.
+> 
+> Not sure this is much of a cleanup, and a potential fast case of
+> TWA_NONE will now still still set TIF_NOTIFY_RESUME. Also:
 
-commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
+No, the old TWA_NONE case is switched to task_work_add_nonotify and
+does not set TIF_NOTIFY_RESUME.
 
-With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
-to Spectre v2 BHB-based attacks.
+> 
+> > diff --git a/fs/io_uring.c b/fs/io_uring.c
+> > index 77b9c7e4793bf..94116a102dc61 100644
+> > --- a/fs/io_uring.c
+> > +++ b/fs/io_uring.c
+> > @@ -9606,7 +9606,7 @@ static __cold void io_ring_exit_work(struct work_struct *work)
+> >  					ctx_node);
+> >  		/* don't spin on a single task if cancellation failed */
+> >  		list_rotate_left(&ctx->tctx_list);
+> > -		ret = task_work_add(node->task, &exit.task_work, TWA_SIGNAL);
+> > +		ret = task_work_add_nonotify(node->task, &exit.task_work);
+> >  		if (WARN_ON_ONCE(ret))
+> >  			continue;
+> 
+> This one is now no longer setting TIF_NOTIFY_SIGNAL.
 
-When both are enabled, print a warning message and report it in the
-'spectre_v2' sysfs vulnerabilities file.
+Yes, this was a rebase bug.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-[fllinden@amazon.com: backported to 5.4]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
- include/linux/bpf.h        |   12 ++++++++++++
- kernel/sysctl.c            |    8 ++++++++
- 3 files changed, 49 insertions(+), 6 deletions(-)
+> If you want to get rid of the argument, why not just have separate
+> helpers? task_work_add_signal(), task_work_add_resume(),
+> task_work_add(). Setting TWA_RESUME unconditionally because it's the
+> common use case doesn't seem ideal.
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -31,6 +31,7 @@
- #include <asm/intel-family.h>
- #include <asm/e820/api.h>
- #include <asm/hypervisor.h>
-+#include <linux/bpf.h>
- 
- #include "cpu.h"
- 
-@@ -607,6 +608,16 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
- 
-+#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
-+
-+#ifdef CONFIG_BPF_SYSCALL
-+void unpriv_ebpf_notify(int new_state)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+}
-+#endif
-+
- static inline bool match_option(const char *arg, int arglen, const char *opt)
- {
- 	int len = strlen(opt);
-@@ -951,6 +962,9 @@ static void __init spectre_v2_select_mit
- 		break;
- 	}
- 
-+	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
-@@ -1698,6 +1712,20 @@ static char *ibpb_state(void)
- 	return "";
- }
- 
-+static ssize_t spectre_v2_show_state(char *buf)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
-+	return sprintf(buf, "%s%s%s%s%s%s\n",
-+		       spectre_v2_strings[spectre_v2_enabled],
-+		       ibpb_state(),
-+		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
-+		       stibp_state(),
-+		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
-+		       spectre_v2_module_string());
-+}
-+
- static ssize_t srbds_show_state(char *buf)
- {
- 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
-@@ -1723,12 +1751,7 @@ static ssize_t cpu_show_common(struct de
- 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
- 
- 	case X86_BUG_SPECTRE_V2:
--		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
--			       ibpb_state(),
--			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
--			       stibp_state(),
--			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
--			       spectre_v2_module_string());
-+		return spectre_v2_show_state(buf);
- 
- 	case X86_BUG_SPEC_STORE_BYPASS:
- 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -751,6 +751,12 @@ int bpf_prog_test_run_skb(struct bpf_pro
- int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 				     const union bpf_attr *kattr,
- 				     union bpf_attr __user *uattr);
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return !sysctl_unprivileged_bpf_disabled;
-+}
-+
- #else /* !CONFIG_BPF_SYSCALL */
- static inline struct bpf_prog *bpf_prog_get(u32 ufd)
- {
-@@ -881,6 +887,12 @@ static inline int bpf_prog_test_run_flow
- {
- 	return -ENOTSUPP;
- }
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_BPF_SYSCALL */
- 
- static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -251,6 +251,11 @@ static int sysrq_sysctl_handler(struct c
- #endif
- 
- #ifdef CONFIG_BPF_SYSCALL
-+
-+void __weak unpriv_ebpf_notify(int new_state)
-+{
-+}
-+
- static int bpf_unpriv_handler(struct ctl_table *table, int write,
-                              void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -268,6 +273,9 @@ static int bpf_unpriv_handler(struct ctl
- 			return -EPERM;
- 		*(int *)table->data = unpriv_enable;
- 	}
-+
-+	unpriv_ebpf_notify(unpriv_enable);
-+
- 	return ret;
- }
- #endif
-
-
+In this series, task_work_add_nonotify is what you seems to call
+task_work_add, task_work_add is this series is what you call
+task_work_add_resume and task_work_add_signal is open coded because
+there aren't a whole lot of users.  But if you want I can add
+task_work_add_signal and rename task_work_add to task_work_add_resume,
+but I think keeping the task_work_add_nonotify name for the low-level
+helper is a lot more descriptive.
