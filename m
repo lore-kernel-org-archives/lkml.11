@@ -2,100 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7529C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45941C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244117AbiCJRUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:20:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
+        id S244427AbiCJRVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:21:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235295AbiCJRUt (ORCPT
+        with ESMTP id S233484AbiCJRVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:20:49 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D33F518DABD
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:19:47 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-220-GAll5PICOlaorzjpFG4RBw-1; Thu, 10 Mar 2022 17:19:42 +0000
-X-MC-Unique: GAll5PICOlaorzjpFG4RBw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 10 Mar 2022 17:19:40 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 10 Mar 2022 17:19:40 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Dave Hansen' <dave.hansen@intel.com>,
-        'Bharata B Rao' <bharata@amd.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "oleg@redhat.com" <oleg@redhat.com>,
-        "ananth.narayan@amd.com" <ananth.narayan@amd.com>
-Subject: RE: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
-Thread-Topic: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
-Thread-Index: AQHYNHBEWuVw0etF4EmWwhK6DFJ++Ky4rWmQgAAmSACAAAWIEA==
-Date:   Thu, 10 Mar 2022 17:19:40 +0000
-Message-ID: <f6212ddf70bc408a80d7eb690c46bccc@AcuMS.aculab.com>
-References: <20220310111545.10852-1-bharata@amd.com>
- <699fb763ac054833bc8c29c9814c63b2@AcuMS.aculab.com>
- <286efdb9-7dbf-82f3-b172-29c575a3791b@intel.com>
-In-Reply-To: <286efdb9-7dbf-82f3-b172-29c575a3791b@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 10 Mar 2022 12:21:13 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5341918DABD
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:12 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EB4AD1F381;
+        Thu, 10 Mar 2022 17:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646932810; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y2qHs0Wjl9zJzGdGxDrgMP6oGxVwLROgKQ2hwHB4Zl0=;
+        b=cJWyOjQ/cay6MLEYucd1t8/5qgEOabdfrwDOkZM9KeHEfZn+gPWqf5IETP5D4hgIQSKgQP
+        SOSHdPu3j4DosiKwQ+PY5jHuAzB6vhawjN6yvWs6EpSloZXin+pjF3w1/nQXl/QWnaVuS+
+        xQOx2AwY2i1AtdoFo+6kpAvVILSnM/Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646932810;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y2qHs0Wjl9zJzGdGxDrgMP6oGxVwLROgKQ2hwHB4Zl0=;
+        b=IB7kr07EZbKhyhiioW1RbT1MKzjN0sJDozOhy8mg9LKuqmOPxqbWH+iqa6BUXOJB/qKUHG
+        KNZQOTJJzYudviAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B5DB313A66;
+        Thu, 10 Mar 2022 17:20:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id vQSfK0ozKmKgLgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 10 Mar 2022 17:20:10 +0000
+Message-ID: <e36be28d-b4a3-966e-e067-0942784485ac@suse.cz>
+Date:   Thu, 10 Mar 2022 18:20:10 +0100
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 0/2] Cleanups for slab
 Content-Language: en-US
+To:     sxwjean@me.com, cl@linux.com, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com,
+        akpm@linux-foundation.org, longman@redhat.com, guro@fb.com,
+        willy@infradead.org, roman.gushchin@linux.dev
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Xiongwei Song <sxwjean@gmail.com>
+References: <20220310140701.87908-1-sxwjean@me.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220310140701.87908-1-sxwjean@me.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogRGF2ZSBIYW5zZW4gPGRhdmUuaGFuc2VuQGludGVsLmNvbT4NCj4gU2VudDogMTAgTWFy
-Y2ggMjAyMiAxNjo0Ng0KPiANCj4gT24gMy8xMC8yMiAwNjozMiwgRGF2aWQgTGFpZ2h0IHdyb3Rl
-Og0KPiA+PiBVQUkgYWxsb3dzIHNvZnR3YXJlIHRvIHN0b3JlIGEgdGFnIGluIHRoZSB1cHBlciA3
-IGJpdHMgb2YgYSBsb2dpY2FsDQo+ID4+IGFkZHJlc3MgWzYzOjU3XS4gV2hlbiBlbmFibGVkLCB0
-aGUgcHJvY2Vzc29yIHdpbGwgc3VwcHJlc3MgdGhlDQo+ID4+IHRyYWRpdGlvbmFsIGNhbm9uaWNh
-bCBhZGRyZXNzIGNoZWNrcyBvbiB0aGUgYWRkcmVzc2VzLiBNb3JlIGluZm9ybWF0aW9uDQo+ID4+
-IGFib3V0IFVBSSBjYW4gYmUgZm91bmQgaW4gc2VjdGlvbiA1LjEwIG9mICdBTUQ2NCBBcmNoaXRl
-Y3R1cmUNCj4gPj4gUHJvZ3JhbW1lcidzIE1hbnVhbCwgVm9sIDI6IFN5c3RlbSBQcm9ncmFtbWlu
-Zycgd2hpY2ggaXMgYXZhaWxhYmxlIGZyb20NCj4gPj4NCj4gPj4gaHR0cHM6Ly9idWd6aWxsYS5r
-ZXJuZWwub3JnL2F0dGFjaG1lbnQuY2dpP2lkPTMwMDU0OQ0KPiA+IElzIHRoYXQgcmVhbGx5IGFs
-bG93aW5nIGJpdCA2MyB0byBiZSB1c2VkPw0KPiA+IFRoYXQgaXMgbm9ybWFsbHkgdGhlIHVzZXIt
-a2VybmVsIGJpdC4NCj4gPiBJIGNhbid0IGhlbHAgZmVlbGluZyB0aGF0IHdpbGwganVzdCBiYWRs
-eSBicmVhayB0aGluZ3MuDQo+IA0KPiBZZWFoLCB0aGlzIGRvZXMgc2VlbSB3b3JyaXNvbWUuICBU
-aGUgTEFNIGFwcHJvYWNoWzFdIHJldGFpbnMNCj4gY2Fub25pY2FsaXR5IGNoZWNraW5nIGZvciBi
-aXQgNjMuDQoNCkFjdHVhbGx5IGl0IGlzIHJhdGhlciB3b3JzZSB0aGFuICd3b3JyaXNvbWUnLg0K
-QWxsb3dpbmcgdGhlIHVzZXIgYWxsIGFkZHJlc3MgdXB0byB0aGUgYmFzZSBvZiB0aGUgdmFsaWQN
-Cmtlcm5lbCBhZGRyZXNzZXMgKHByb2JhYmx5IHRhZ3MgdG8gM2UsIGJ1dCBub3QgM2YpDQptZWFu
-cyB0aGF0IHlvdSBjYW4ndCB1c2UgYSBmYXN0IGFkZHJlc3MgY2hlY2sgaW4gYWNjZXNzX29rKCku
-DQpZb3UgYXJlIGZvcmNlZCB0byB1c2UgdGhlIHN0cmljdCB0ZXN0IHRoYXQgMzJiaXQga2VybmVs
-cyB1c2UuDQoNCk90aGVyd2lzZSBmb3IgNjRiaXQgYWNjZXNzX29rKCkgbmVlZCBvbmx5IHRlc3Qg
-YWRkcmVzcyA8IDANCmFuZCByZWx5IG9uIGtlcm5lbCBjb2RlIHJlYWRpbmcgc29tZXRoaW5nIGJl
-bG93IHRoZSAoYmlnKQ0Kb2Zmc2V0IHRvIHZhbGlkIGtlcm5lbCBhZGRyZXNzZXMuDQpObyByZWFs
-IG5lZWQgdG8gaW5jbHVkZSB0aGUgbGVuZ3RoIGF0IGFsbC4NCg0KSWYgdGhlIGhhcmR3YXJlIGlz
-IGp1c3QgaWdub3JpbmcgdGhlIGhpZ2ggYWRkcmVzcyBiaXRzDQp0aGVuIHRoZSBzaG91bGQgYmUg
-bm8gbmVlZCB0byBtYXNrIHRoZW0gaW4ga2VybmVsLg0KVGhlIHJlcXVpcmVkIGtlcm5lbCBhY2Nl
-c3NlcyB0byB1c2VyIG1lbW9yeSBzaG91bGQgJ2p1c3Qgd29yaycuDQoNCk9mIGNvdXJzZSwgdGhl
-IGJpdCB0byBlbmFibGUgdGhpcyAod2hlcmV2ZXIgaXQgaXMpIG5lZWRzDQp0byBiZSByZXN0b3Jl
-ZCBvbiBldmVyeSBwcm9jZXNzIHN3aXRjaC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRk
-cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
-SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+On 3/10/22 15:06, sxwjean@me.com wrote:
+> From: Xiongwei Song <sxwjean@gmail.com>
+> 
+> 2 cleanups, no functionality changed.
+
+Thanks, added to slab for-next
+
+> ---
+> Since v2:
+>  - Add the detailed history of parameter @s of alloc_slab_page(),
+>    message from Matthew Wilcox.
+>  - Collect Reviewed-by and Acked-by. Thanks Matthew Wilcox, David Rientjes
+>    and Roman Gushchin.
+> 
+> Since v1:
+>  - https://lore.kernel.org/all/20220309145052.219138-1-sxwjean@me.com/
+> ---
+> 
+> Xiongwei Song (2):
+>   mm: slab: Delete unused SLAB_DEACTIVATED flag
+>   mm: slub: Delete useless parameter of alloc_slab_page()
+> 
+>  include/linux/slab.h | 3 ---
+>  mm/slub.c            | 8 ++++----
+>  2 files changed, 4 insertions(+), 7 deletions(-)
+> 
 
