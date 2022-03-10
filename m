@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6211C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243627AbiCJOYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        id S237948AbiCJOYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:24:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243725AbiCJOSU (ORCPT
+        with ESMTP id S243761AbiCJOSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:18:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0341164D28;
-        Thu, 10 Mar 2022 06:14:37 -0800 (PST)
+        Thu, 10 Mar 2022 09:18:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CBD1662D7;
+        Thu, 10 Mar 2022 06:14:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71AAE61B36;
-        Thu, 10 Mar 2022 14:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F746C340E8;
-        Thu, 10 Mar 2022 14:14:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A0E6B825F3;
+        Thu, 10 Mar 2022 14:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A43D0C340E8;
+        Thu, 10 Mar 2022 14:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921655;
-        bh=B8Kqgr1X+xDFQnu3Mxsih+Dcynf9OwVEriW613XzwTI=;
+        s=korg; t=1646921680;
+        bh=9xSbW6RIMMhTdHAqKKPczN6O01gAoWr/nHWbJelAumw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TGPao9fSUwUorJ3+XYRpU+iNpnRSJGM2Ck1+k41TrWce+Dt/NNO8wvv7taHYiEwWw
-         RWD3FPQsReosXVR5hYRgO+PG3KamFDKLBTwexaSH3ICAszxI4eNKB8TYxe8kCk2QdU
-         fk+bmoGhjiJFRxWOgIFkQ39TNkzpSPx4Szu76Ub0=
+        b=HZ3G9PrEV+RwmnYjAIgtWy2EH9RfcWeEAhtJzmJEYng1DXWyB52/GAWva2ZHteE4X
+         410jeH12h2EX0iB+jooaeKGlB7sidUFRrX5Yh81xoN2UBjrEklnvPZrFvAH0ntywaP
+         I1l5xAAAJyx1lxGlTMDGTy9hxWNC81OjGc4L5+ZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Zhenzhong Duan <zhenzhong.duan@oracle.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Frank van der Linden <fllinden@amazon.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 12/38] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-Date:   Thu, 10 Mar 2022 15:13:25 +0100
-Message-Id: <20220310140808.495542009@linuxfoundation.org>
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        srinivas.eeda@oracle.com, Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.9 02/38] x86/retpoline: Make CONFIG_RETPOLINE depend on compiler support
+Date:   Thu, 10 Mar 2022 15:13:15 +0100
+Message-Id: <20220310140808.209912532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -51,152 +58,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Zhenzhong Duan <zhenzhong.duan@oracle.com>
 
-commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
+commit 4cd24de3a0980bf3100c9dcb08ef65ca7c31af48 upstream.
 
-With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
-to Spectre v2 BHB-based attacks.
+Since retpoline capable compilers are widely available, make
+CONFIG_RETPOLINE hard depend on the compiler capability.
 
-When both are enabled, print a warning message and report it in the
-'spectre_v2' sysfs vulnerabilities file.
+Break the build when CONFIG_RETPOLINE is enabled and the compiler does not
+support it. Emit an error message in that case:
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-[fllinden@amazon.com: backported to 4.19]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
-[bwh: Backported to 4.9: adjust context]
+ "arch/x86/Makefile:226: *** You are building kernel with non-retpoline
+  compiler, please update your compiler..  Stop."
+
+[dwmw: Fail the build with non-retpoline compiler]
+
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Zhenzhong Duan <zhenzhong.duan@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: Michal Marek <michal.lkml@markovi.net>
+Cc: <srinivas.eeda@oracle.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/cca0cb20-f9e2-4094-840b-fb0f8810cd34@default
+[bwh: Backported to 4.9:
+ - Drop change to objtool options
+ - Adjust context, indentation]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
- include/linux/bpf.h        |   11 +++++++++++
- kernel/sysctl.c            |    8 ++++++++
- 3 files changed, 48 insertions(+), 6 deletions(-)
+ arch/x86/Kconfig                     |    4 ----
+ arch/x86/Makefile                    |    5 +++--
+ arch/x86/include/asm/nospec-branch.h |   10 ++++++----
+ arch/x86/kernel/cpu/bugs.c           |    2 +-
+ 4 files changed, 10 insertions(+), 11 deletions(-)
 
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -418,10 +418,6 @@ config RETPOLINE
+ 	  branches. Requires a compiler with -mindirect-branch=thunk-extern
+ 	  support for full protection. The kernel may run slower.
+ 
+-	  Without compiler support, at least indirect branches in assembler
+-	  code are eliminated. Since this includes the syscall entry path,
+-	  it is not entirely pointless.
+-
+ if X86_32
+ config X86_EXTENDED_PLATFORM
+ 	bool "Support for extended (non-PC) x86 platforms"
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -221,9 +221,10 @@ ifdef CONFIG_RETPOLINE
+     RETPOLINE_CFLAGS_CLANG := -mretpoline-external-thunk
+ 
+     RETPOLINE_CFLAGS += $(call cc-option,$(RETPOLINE_CFLAGS_GCC),$(call cc-option,$(RETPOLINE_CFLAGS_CLANG)))
+-    ifneq ($(RETPOLINE_CFLAGS),)
+-        KBUILD_CFLAGS += $(RETPOLINE_CFLAGS) -DRETPOLINE
++    ifeq ($(RETPOLINE_CFLAGS),)
++      $(error You are building kernel with non-retpoline compiler, please update your compiler.)
+     endif
++    KBUILD_CFLAGS += $(RETPOLINE_CFLAGS)
+ endif
+ 
+ archscripts: scripts_basic
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -164,11 +164,12 @@
+ 	_ASM_PTR " 999b\n\t"					\
+ 	".popsection\n\t"
+ 
+-#if defined(CONFIG_X86_64) && defined(RETPOLINE)
++#ifdef CONFIG_RETPOLINE
++#ifdef CONFIG_X86_64
+ 
+ /*
+- * Since the inline asm uses the %V modifier which is only in newer GCC,
+- * the 64-bit one is dependent on RETPOLINE not CONFIG_RETPOLINE.
++ * Inline asm uses the %V modifier which is only in newer GCC
++ * which is ensured when CONFIG_RETPOLINE is defined.
+  */
+ # define CALL_NOSPEC						\
+ 	ANNOTATE_NOSPEC_ALTERNATIVE				\
+@@ -183,7 +184,7 @@
+ 	X86_FEATURE_RETPOLINE_AMD)
+ # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
+ 
+-#elif defined(CONFIG_X86_32) && defined(CONFIG_RETPOLINE)
++#else /* CONFIG_X86_32 */
+ /*
+  * For i386 we use the original ret-equivalent retpoline, because
+  * otherwise we'll run out of registers. We don't care about CET
+@@ -213,6 +214,7 @@
+ 	X86_FEATURE_RETPOLINE_AMD)
+ 
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
++#endif
+ #else /* No retpoline for C / inline asm */
+ # define CALL_NOSPEC "call *%[thunk_target]\n"
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -30,6 +30,7 @@
- #include <asm/cacheflush.h>
- #include <asm/intel-family.h>
- #include <asm/e820.h>
-+#include <linux/bpf.h>
+@@ -812,7 +812,7 @@ static void __init spec_v2_print_cond(co
  
- #include "cpu.h"
- 
-@@ -606,6 +607,16 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
- 
-+#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
-+
-+#ifdef CONFIG_BPF_SYSCALL
-+void unpriv_ebpf_notify(int new_state)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+}
-+#endif
-+
- static inline bool match_option(const char *arg, int arglen, const char *opt)
+ static inline bool retp_compiler(void)
  {
- 	int len = strlen(opt);
-@@ -949,6 +960,9 @@ static void __init spectre_v2_select_mit
- 		break;
- 	}
- 
-+	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
-+
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
-@@ -1686,6 +1700,20 @@ static char *ibpb_state(void)
- 	return "";
+-	return __is_defined(RETPOLINE);
++	return __is_defined(CONFIG_RETPOLINE);
  }
  
-+static ssize_t spectre_v2_show_state(char *buf)
-+{
-+	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
-+	return sprintf(buf, "%s%s%s%s%s%s\n",
-+		       spectre_v2_strings[spectre_v2_enabled],
-+		       ibpb_state(),
-+		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
-+		       stibp_state(),
-+		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
-+		       spectre_v2_module_string());
-+}
-+
- static ssize_t srbds_show_state(char *buf)
- {
- 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
-@@ -1708,12 +1736,7 @@ static ssize_t cpu_show_common(struct de
- 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
- 
- 	case X86_BUG_SPECTRE_V2:
--		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
--			       ibpb_state(),
--			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
--			       stibp_state(),
--			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
--			       spectre_v2_module_string());
-+		return spectre_v2_show_state(buf);
- 
- 	case X86_BUG_SPEC_STORE_BYPASS:
- 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -295,6 +295,11 @@ static inline void bpf_long_memcpy(void
- 
- /* verify correctness of eBPF program */
- int bpf_check(struct bpf_prog **fp, union bpf_attr *attr);
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return !sysctl_unprivileged_bpf_disabled;
-+}
- #else
- static inline void bpf_register_prog_type(struct bpf_prog_type_list *tl)
- {
-@@ -322,6 +327,12 @@ static inline struct bpf_prog *bpf_prog_
- {
- 	return ERR_PTR(-EOPNOTSUPP);
- }
-+
-+static inline bool unprivileged_ebpf_enabled(void)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_BPF_SYSCALL */
- 
- /* verifier prototypes for helper functions called from eBPF programs */
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -222,6 +222,11 @@ static int sysrq_sysctl_handler(struct c
- #endif
- 
- #ifdef CONFIG_BPF_SYSCALL
-+
-+void __weak unpriv_ebpf_notify(int new_state)
-+{
-+}
-+
- static int bpf_unpriv_handler(struct ctl_table *table, int write,
-                              void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -239,6 +244,9 @@ static int bpf_unpriv_handler(struct ctl
- 			return -EPERM;
- 		*(int *)table->data = unpriv_enable;
- 	}
-+
-+	unpriv_ebpf_notify(unpriv_enable);
-+
- 	return ret;
- }
- #endif
+ static enum spectre_v2_mitigation_cmd __init spectre_v2_parse_cmdline(void)
 
 
