@@ -2,106 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E640FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245544AbiCJSp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
+        id S245560AbiCJSqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:46:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236161AbiCJSpY (ORCPT
+        with ESMTP id S236161AbiCJSqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:45:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DEC410BBE4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:44:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646937862;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=C26Xd5SFA51JD8n7O4vVJ7Y+klB3lT6XQZ97SKJ4BDw=;
-        b=T96twDB1RFOdqJ/zsVsRWlp9kly05C160klIxtMr2eXTzE6NCCmQ8gGZvkmK8EWVHgXNnQ
-        pS/S5VNmEbQSj+dWRiYrCjKXjEACvEYElHwZGC4pnUvgz4sARbnDjCMBbt3+n1DuE3WagG
-        HeYFtyOqAT/bYsQq3OeBYGL2Geck020=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-252-unP1m22ZMr6noMVdO7thwA-1; Thu, 10 Mar 2022 13:44:16 -0500
-X-MC-Unique: unP1m22ZMr6noMVdO7thwA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E85F31854E21;
-        Thu, 10 Mar 2022 18:44:14 +0000 (UTC)
-Received: from RHTPC1VM0NT (unknown [10.22.17.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3C930841CF;
-        Thu, 10 Mar 2022 18:44:12 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Roi Dayan <roid@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
- with existing user space
-References: <20220309222033.3018976-1-i.maximets@ovn.org>
-Date:   Thu, 10 Mar 2022 13:44:12 -0500
-In-Reply-To: <20220309222033.3018976-1-i.maximets@ovn.org> (Ilya Maximets's
-        message of "Wed, 9 Mar 2022 23:20:33 +0100")
-Message-ID: <f7ty21hir5v.fsf@redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Thu, 10 Mar 2022 13:46:10 -0500
+X-Greylist: delayed 547 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 10:45:07 PST
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CF116E7D3;
+        Thu, 10 Mar 2022 10:45:07 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C9AFE3EB76;
+        Thu, 10 Mar 2022 19:35:50 +0100 (CET)
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Remi Pommarel <repk@triplefau.lt>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: [PATCH net] mac80211: fix potential double free on mesh join
+Date:   Thu, 10 Mar 2022 19:35:13 +0100
+Message-Id: <20220310183513.28589-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ilya Maximets <i.maximets@ovn.org> writes:
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-> Few years ago OVS user space made a strange choice in the commit [1]
-> to define types only valid for the user space inside the copy of a
-> kernel uAPI header.  '#ifndef __KERNEL__' and another attribute was
-> added later.
->
-> This leads to the inevitable clash between user space and kernel types
-> when the kernel uAPI is extended.  The issue was unveiled with the
-> addition of a new type for IPv6 extension header in kernel uAPI.
->
-> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to the
-> older user space application, application tries to parse it as
-> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message as
-> malformed.  Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied along with
-> every IPv6 packet that goes to the user space, IPv6 support is fully
-> broken.
->
-> Fixing that by bringing these user space attributes to the kernel
-> uAPI to avoid the clash.  Strictly speaking this is not the problem
-> of the kernel uAPI, but changing it is the only way to avoid breakage
-> of the older user space applications at this point.
->
-> These 2 types are explicitly rejected now since they should not be
-> passed to the kernel.  Additionally, OVS_KEY_ATTR_TUNNEL_INFO moved
-> out from the '#ifdef __KERNEL__' as there is no good reason to hide
-> it from the userspace.  And it's also explicitly rejected now, because
-> it's for in-kernel use only.
->
-> Comments with warnings were added to avoid the problem coming back.
->
-> (1 << type) converted to (1ULL << type) to avoid integer overflow on
-> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
->
->  [1] beb75a40fdc2 ("userspace: Switching of L3 packets in L2 pipeline")
->
-> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extension header support")
-> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com
-> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
-> Reported-by: Roi Dayan <roid@nvidia.com>
-> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-> ---
+While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
+mesh") fixed a memory leak on mesh leave / teardown it introduced a
+potential memory corruption caused by a double free when rejoining the
+mesh:
 
-Acked-by: Aaron Conole <aconole@redhat.com>
+  ieee80211_leave_mesh()
+  -> kfree(sdata->u.mesh.ie);
+  ...
+  ieee80211_join_mesh()
+  -> copy_mesh_setup()
+     -> old_ie = ifmsh->ie;
+     -> kfree(old_ie);
+
+This double free / kernel panics can be reproduced by using wpa_supplicant
+with an encrypted mesh (if set up without encryption via "iw" then
+ifmsh->ie is always NULL, which avoids this issue). And then calling:
+
+  $ iw dev mesh0 mesh leave
+  $ iw dev mesh0 mesh join my-mesh
+
+Note that typically these commands are not used / working when using
+wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
+through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
+where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
+default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
+the memory corruption, too.
+
+The issue was first observed in an application which was not using
+wpa_supplicant but "Senf" instead, which implements its own calls to
+nl80211.
+
+Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
+join function and leaving it solely up to the mesh leave to free the
+mesh IE.
+
+Link: https://gitlab.fit.fraunhofer.de/wiback/senf
+Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
+Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+---
+ net/mac80211/cfg.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 87a208089caf..58ff57dc669c 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2148,14 +2148,12 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+ 		const struct mesh_setup *setup)
+ {
+ 	u8 *new_ie;
+-	const u8 *old_ie;
+ 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
+ 					struct ieee80211_sub_if_data, u.mesh);
+ 	int i;
+ 
+ 	/* allocate information elements */
+ 	new_ie = NULL;
+-	old_ie = ifmsh->ie;
+ 
+ 	if (setup->ie_len) {
+ 		new_ie = kmemdup(setup->ie, setup->ie_len,
+@@ -2165,7 +2163,6 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+ 	}
+ 	ifmsh->ie_len = setup->ie_len;
+ 	ifmsh->ie = new_ie;
+-	kfree(old_ie);
+ 
+ 	/* now copy the rest of the setup parameters */
+ 	ifmsh->mesh_id_len = setup->mesh_id_len;
+-- 
+2.34.1
 
