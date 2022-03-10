@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E05CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25912C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244876AbiCJRY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:24:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
+        id S244823AbiCJRYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:24:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245008AbiCJRXA (ORCPT
+        with ESMTP id S244892AbiCJRW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:23:00 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E34919CCE8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:47 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:57 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C773019BE5A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932907; x=1678468907;
+  t=1646932898; x=1678468898;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wDzy7/RxYYla9YQcCGWvWwhXgP+kSYMWIjEIrYoEqH4=;
-  b=JBgHT1ygOpimoYGEBoEaZaLErJWIYwqrHaTbkj09FHYYV2qCcm0GQWOj
-   nfnDkWAeL6XVlSNlQ/9aKRHkZ0gL/0tCxjGz4gOfaxpmaNBe8GQVupE3z
-   dfdw5dyW1agJ+Q7QsDIs9s1yP35o1OQOeUqKq9qvrb52gWmywaWyfnH84
-   dZ/pp8e5jMNJeq0FOK6QTK6b3IYVkWdVFAMNIutVzwuOE5y651Tgsxlg8
-   YQUR0RsgV1JBjHLICFbwcyyP527AzWQEqA2TQ6bbGSKE7F76y98Bl8JSi
-   KBf/2kNoiK+06scGjOuKeASvNzuBwmooap/MKvGHvTPVuCn1lkZMec66C
+  bh=0slWJ+5xiaJpaEwCrss1KFKuknXVe7imrmVwQKVj/tA=;
+  b=HswqgHrCcRO16y5b+vHu6upC5VKOm2NIMTMKJmOQ66XyQ+HreB/pQXdO
+   d39V0ISxgPM791EUPXsoZpHEqJtqDzpC2k264+/0Bo2WpJIpJJvDyfVus
+   hz1yw50LqXTuykt/CDW3Lm9SP+BL085r2FQF5vk/jmJ5ZxOD8h7fd64ld
+   DhM9BDdrwGOnjQyWOjiBGv0IRFR/Ilfx8OGhM/UC8frAliNVn+JFXI3oM
+   bsMz8G7Uf+bDGiNTwnwrbW/JcxeEG3kZeGckr2elUsoMpROM7+2MGTI8L
+   Q+0oFIxZt2bJhH8h63gY+N+W+tSbxHD7PI2T7d9F3GzqkW9mr+VceH528
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255505014"
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235918685"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="255505014"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:21 -0800
+   d="scan'208";a="235918685"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:28 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="688732500"
+   d="scan'208";a="578874653"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:21 -0800
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:27 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 25/45] entry: Add calls for save/restore auxiliary pt_regs
-Date:   Thu, 10 Mar 2022 09:19:59 -0800
-Message-Id: <20220310172019.850939-26-ira.weiny@intel.com>
+Subject: [PATCH V9 28/45] x86/fault: Print PKS MSR on fault
+Date:   Thu, 10 Mar 2022 09:20:02 -0800
+Message-Id: <20220310172019.850939-29-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,120 +59,150 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Some architectures have auxiliary pt_regs space which is available to
-store extra information on the stack.  For ease of implementation the
-common C code was left to fill in the data when needed.
+If a PKS fault occurs it will be easier to debug if the PKS MSR value at
+the time of the fault is known.
 
-Add calls to the architecture save and restore auxiliary pt_regs
-functions.  Define empty calls for any architecture which does not have
-auxiliary pt_regs.
+Add pks_show_regs() to __show_regs() to show the PKRS MSR on fault if
+enabled.
 
-NOTE: Due to the split nature of the Xen exit code
-irqentry_exit_cond_resched() requires an unbalanced call to
-arch_restore_aux_pt_regs() regardless of the nature of the preemption
-configuration.
+An 'executive summary' of the pt_regs are saved in __die_header() which
+ensures that the first registers are saved in the event of multiple
+faults.  Teach this code about the extended pt_registers such that the
+PKS code can get to the original pkrs value as well.
 
+Suggested-by: Andy Lutomirski <luto@kernel.org>
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Update commit message
+	From Dave Hansen
+		Move this output to __show_regs() next to the PKRU
+			register dump
 
 Changes for V8
-	New patch which introduces a generic auxiliary pt_register save
-		restore.
+	Split this into it's own patch.
 ---
- include/linux/entry-common.h |  7 +++++++
- kernel/entry/common.c        | 16 ++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/pks.h   |  3 +++
+ arch/x86/kernel/dumpstack.c  | 32 ++++++++++++++++++++++++++++++--
+ arch/x86/kernel/process_64.c |  1 +
+ arch/x86/mm/pkeys.c          | 11 +++++++++++
+ 4 files changed, 45 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 14fd329847e7..b243f1cfd491 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -99,6 +99,13 @@ static inline __must_check int arch_syscall_enter_tracehook(struct pt_regs *regs
- }
- #endif
+diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
+index b69e03a141fe..de67d5b5a2af 100644
+--- a/arch/x86/include/asm/pks.h
++++ b/arch/x86/include/asm/pks.h
+@@ -8,6 +8,7 @@ void pks_setup(void);
+ void x86_pkrs_load(struct thread_struct *thread);
+ void pks_save_pt_regs(struct pt_regs *regs);
+ void pks_restore_pt_regs(struct pt_regs *regs);
++void pks_show_regs(struct pt_regs *regs, const char *log_lvl);
  
-+#ifndef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
+ bool pks_handle_key_fault(struct pt_regs *regs, unsigned long hw_error_code,
+ 			  unsigned long address);
+@@ -18,6 +19,8 @@ static inline void pks_setup(void) { }
+ static inline void x86_pkrs_load(struct thread_struct *thread) { }
+ static inline void pks_save_pt_regs(struct pt_regs *regs) { }
+ static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
++static inline void pks_show_regs(struct pt_regs *regs,
++				 const char *log_lvl) { }
+ 
+ static inline bool pks_handle_key_fault(struct pt_regs *regs,
+ 					unsigned long hw_error_code,
+diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
+index 53de044e5654..38be69d15431 100644
+--- a/arch/x86/kernel/dumpstack.c
++++ b/arch/x86/kernel/dumpstack.c
+@@ -27,8 +27,36 @@ int panic_on_unrecovered_nmi;
+ int panic_on_io_nmi;
+ static int die_counter;
+ 
++#ifdef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
 +
-+static inline void arch_save_aux_pt_regs(struct pt_regs *regs) { }
-+static inline void arch_restore_aux_pt_regs(struct pt_regs *regs) { }
++static struct pt_regs_extended exec_summary_regs;
 +
-+#endif
++static void save_exec_summary(struct pt_regs *regs)
++{
++	exec_summary_regs = *(to_extended_pt_regs(regs));
++}
 +
- /**
-  * enter_from_user_mode - Establish state when coming from user mode
++static struct pt_regs *retrieve_exec_summary(void)
++{
++	return &exec_summary_regs.pt_regs;
++}
++
++#else /* !CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
++
+ static struct pt_regs exec_summary_regs;
+ 
++static void save_exec_summary(struct pt_regs *regs)
++{
++	exec_summary_regs = *regs;
++}
++
++static struct pt_regs *retrieve_exec_summary(void)
++{
++	return &exec_summary_regs;
++}
++
++#endif /* CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
++
+ bool noinstr in_task_stack(unsigned long *stack, struct task_struct *task,
+ 			   struct stack_info *info)
+ {
+@@ -369,7 +397,7 @@ void oops_end(unsigned long flags, struct pt_regs *regs, int signr)
+ 	oops_exit();
+ 
+ 	/* Executive summary in case the oops scrolled away */
+-	__show_regs(&exec_summary_regs, SHOW_REGS_ALL, KERN_DEFAULT);
++	__show_regs(retrieve_exec_summary(), SHOW_REGS_ALL, KERN_DEFAULT);
+ 
+ 	if (!signr)
+ 		return;
+@@ -396,7 +424,7 @@ static void __die_header(const char *str, struct pt_regs *regs, long err)
+ 
+ 	/* Save the regs of the first oops for the executive summary later. */
+ 	if (!die_counter)
+-		exec_summary_regs = *regs;
++		save_exec_summary(regs);
+ 
+ 	if (IS_ENABLED(CONFIG_PREEMPTION))
+ 		pr = IS_ENABLED(CONFIG_PREEMPT_RT) ? " PREEMPT_RT" : " PREEMPT";
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index e703cc451128..68d998ea3571 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -140,6 +140,7 @@ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
+ 
+ 	if (cpu_feature_enabled(X86_FEATURE_OSPKE))
+ 		printk("%sPKRU: %08x\n", log_lvl, read_pkru());
++	pks_show_regs(regs, log_lvl);
+ }
+ 
+ void release_thread(struct task_struct *dead_task)
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index 29885dfb0980..7c8e4ea9f022 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -378,6 +378,17 @@ void pks_restore_pt_regs(struct pt_regs *regs)
+ 	pks_write_pkrs(current->thread.pkrs);
+ }
+ 
++void pks_show_regs(struct pt_regs *regs, const char *log_lvl)
++{
++	struct pt_regs_auxiliary *aux_pt_regs;
++
++	if (!cpu_feature_enabled(X86_FEATURE_PKS))
++		return;
++
++	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
++	printk("%sPKRS: 0x%x\n", log_lvl, aux_pt_regs->pkrs);
++}
++
+ /*
+  * PKS is independent of PKU and either or both may be supported on a CPU.
   *
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index f4210a7fc84d..c778e9783361 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -323,7 +323,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -362,7 +362,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 		instrumentation_end();
- 
- 		ret.exit_rcu = true;
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -377,6 +377,11 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
- 
-+aux_save:
-+	instrumentation_begin();
-+	arch_save_aux_pt_regs(regs);
-+	instrumentation_end();
-+
- 	return ret;
- }
- 
-@@ -408,6 +413,7 @@ static void exit_cond_resched(void)
- 
- void irqentry_exit_cond_resched(struct pt_regs *regs)
- {
-+	arch_restore_aux_pt_regs(regs);
- 	exit_cond_resched();
- }
- 
-@@ -415,6 +421,10 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- {
- 	lockdep_assert_irqs_disabled();
- 
-+	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
-+	instrumentation_end();
-+
- 	/* Check whether this returns to user mode */
- 	if (user_mode(regs)) {
- 		irqentry_exit_to_user_mode(regs);
-@@ -464,6 +474,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 	instrumentation_begin();
- 	trace_hardirqs_off_finish();
- 	ftrace_nmi_enter();
-+	arch_save_aux_pt_regs(regs);
- 	instrumentation_end();
- 
- 	return irq_state;
-@@ -472,6 +483,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
- {
- 	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
- 	ftrace_nmi_exit();
- 	if (irq_state.lockdep) {
- 		trace_hardirqs_on_prepare();
 -- 
 2.35.1
 
