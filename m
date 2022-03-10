@@ -2,198 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7ED2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240580AbiCJJGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
+        id S240598AbiCJJGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:06:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiCJJGN (ORCPT
+        with ESMTP id S233760AbiCJJGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:06:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A6111375BA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:05:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646903111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 10 Mar 2022 04:06:33 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AE213774A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:05:29 -0800 (PST)
+Date:   Thu, 10 Mar 2022 09:05:24 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646903127;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=sAYCq9czLIZzoXPdYqqCAowC2htPopAKPdrkAbY8Cbo=;
-        b=JwXMsmw+FLdmqNGqQ0Lh7EMQmBiHI9JmeojpSGdQ8EoJgZk17qz0YM+aEtnWhNGjQAfidq
-        NY0Z61oBGDVtkG0ff47pFNfgVdWbTV7SqCytgyvrJRCFkOG9NsNkNFrF7hQlb9JfoSVpzc
-        clgBhwpsXw01qMills+CIESXyGlW/5A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-462-_ju_elblO9-AfG_HY91MiA-1; Thu, 10 Mar 2022 04:05:08 -0500
-X-MC-Unique: _ju_elblO9-AfG_HY91MiA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F06D91006AA5;
-        Thu, 10 Mar 2022 09:05:06 +0000 (UTC)
-Received: from lacos-laptop-7.usersys.redhat.com (unknown [10.39.194.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B0C741059157;
-        Thu, 10 Mar 2022 09:05:05 +0000 (UTC)
-Subject: Re: [PATCH] dt-bindings: arm: Convert QEMU fw-cfg to DT schema
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220310013552.549590-1-robh@kernel.org>
-From:   Laszlo Ersek <lersek@redhat.com>
-Message-ID: <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
-Date:   Thu, 10 Mar 2022 10:05:04 +0100
+        bh=c3LN9tbjUzKhY8RdE4seLNj3gQk1WEmV55c4SIzaR1k=;
+        b=i4O6jjs98gBRt1sPdElKfFMk3Xc0gDwQVMcS22MSBoCbSmZQ3z+Z1mkiY9aOKeZ0/adSpz
+        0OfvkrLVG1jpOq4lAUAgNnRQaVIOw2HEPfK3ABO6n9xDBo4n7DcmaQPaUSSU5QkBa5ROLC
+        mBuQ+Iei5IjVHR5jJ7342kebVPcVz7jGyIaVIgf18LO4MLcA1NZssYJwGhPKFHxcm9iHqU
+        FE7SdNEpItVR1LphueuNjmSYb5lkygLdP2G066KnBcyTKSAhmIGAUWMvyBt4B5H6dlZ6Ds
+        4v6Vn0zC+UsuD0VneF8zFStsQdnpku2tqe3Z4rWDkZNIX3rMpa/uACKDS9XEww==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646903127;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c3LN9tbjUzKhY8RdE4seLNj3gQk1WEmV55c4SIzaR1k=;
+        b=POHiQqKRNwzaan4oOHI3ceHRzRjIiDsQKalpLf/Z/7raDopIqgEx03jjPfaTmkKMVvpvXS
+        E273Kp82HE2PIZDg==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] irqchip/apple-aic: Fix cpumask allocation
+ for FIQs
+Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220310050238.4478-1-guozhengkui@vivo.com>
+References: <20220310050238.4478-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
-In-Reply-To: <20220310013552.549590-1-robh@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Message-ID: <164690312459.16921.18336689219451954515.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/10/22 02:35, Rob Herring wrote:
-> Convert the QEMU fw-cfg binding to DT schema format. As this binding is
-> also used on Risc-V now, drop any architecture references and move to a
-> common location. The fw-cfg interface has also gained some DMA support
-> which is coherent, so add the missing 'dma-coherent'.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/arm/fw-cfg.txt        | 38 -------------
->  .../bindings/firmware/qemu,fw-cfg-mmio.yaml   | 54 +++++++++++++++++++
->  2 files changed, 54 insertions(+), 38 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/fw-cfg.txt
->  create mode 100644 Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/fw-cfg.txt b/Documentation/devicetree/bindings/arm/fw-cfg.txt
-> deleted file mode 100644
-> index fd54e1db2156..000000000000
-> --- a/Documentation/devicetree/bindings/arm/fw-cfg.txt
-> +++ /dev/null
-> @@ -1,38 +0,0 @@
-> -* QEMU Firmware Configuration bindings for ARM
-> -
-> -QEMU's arm-softmmu and aarch64-softmmu emulation / virtualization targets
-> -provide the following Firmware Configuration interface on the "virt" machine
-> -type:
-> -
-> -- A write-only, 16-bit wide selector (or control) register,
-> -- a read-write, 64-bit wide data register.
-> -
-> -QEMU exposes the control and data register to ARM guests as memory mapped
-> -registers; their location is communicated to the guest's UEFI firmware in the
-> -DTB that QEMU places at the bottom of the guest's DRAM.
-> -
-> -The authoritative guest-side hardware interface documentation to the fw_cfg
-> -device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
-> -
-> -
-> -Required properties:
-> -
-> -- compatible: "qemu,fw-cfg-mmio".
-> -
-> -- reg: the MMIO region used by the device.
-> -  * Bytes 0x0 to 0x7 cover the data register.
-> -  * Bytes 0x8 to 0x9 cover the selector register.
-> -  * Further registers may be appended to the region in case of future interface
-> -    revisions / feature bits.
-> -
-> -Example:
-> -
-> -/ {
-> -	#size-cells = <0x2>;
-> -	#address-cells = <0x2>;
-> -
-> -	fw-cfg@9020000 {
-> -		compatible = "qemu,fw-cfg-mmio";
-> -		reg = <0x0 0x9020000 0x0 0xa>;
-> -	};
-> -};
-> diff --git a/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> new file mode 100644
-> index 000000000000..3aac9448e7f1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> @@ -0,0 +1,54 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/firmware/qemu,fw-cfg-mmio.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: QEMU Firmware Configuration bindings
-> +
-> +maintainers:
-> +  - Laszlo Ersek <lersek@redhat.com>
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Ugh :) I guess this is based on my authorship of historical commit
-53275a61bc7a ("devicetree: document ARM bindings for QEMU's Firmware
-Config interface", 2015-01-13), and prehaps my R-b on commit
-92aed5d6ba90 ("devicetree: update documentation for fw_cfg ARM
-bindings", 2016-02-09).
+Commit-ID:     dc29812dbc873ae00bf19a4b8661984d7cce7a2e
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/dc29812dbc873ae00bf19a4b8661984d7cce7a2e
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 10 Mar 2022 08:34:58 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Thu, 10 Mar 2022 08:58:34 
 
-However -- I totally can't maintain this file. (I mean I've probably not
-done anything related to it in the past seven years, so I guess it's
-time to admit that fact!)
+irqchip/apple-aic: Fix cpumask allocation for FIQs
 
-Rob, would you please consider taking it over?
+An emparassing typo: allocating a pointer instead of the object
+pointed to. No harm done, as the pointer is large enough for
+what we are using the object for, but still...
 
-With my name+email replaced with yours:
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220310050238.4478-1-guozhengkui@vivo.com
+---
+ drivers/irqchip/irq-apple-aic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Laszlo Ersek <lersek@redhat.com>
-
-Thank you!
-Laszlo
-
-
-> +
-> +description: |
-> +  Various QEMU emulation / virtualization targets provide the following
-> +  Firmware Configuration interface on the "virt" machine type:
-> +
-> +  - A write-only, 16-bit wide selector (or control) register,
-> +  - a read-write, 64-bit wide data register.
-> +
-> +  QEMU exposes the control and data register to guests as memory mapped
-> +  registers; their location is communicated to the guest's UEFI firmware in the
-> +  DTB that QEMU places at the bottom of the guest's DRAM.
-> +
-> +  The authoritative guest-side hardware interface documentation to the fw_cfg
-> +  device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
-> +
-> +
-> +properties:
-> +  compatible:
-> +    const: qemu,fw-cfg-mmio
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: |
-> +      * Bytes 0x0 to 0x7 cover the data register.
-> +      * Bytes 0x8 to 0x9 cover the selector register.
-> +      * Further registers may be appended to the region in case of future interface
-> +        revisions / feature bits.
-> +
-> +  dma-coherent: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +
-> +    fw-cfg@9020000 {
-> +        compatible = "qemu,fw-cfg-mmio";
-> +        reg = <0x9020000 0xa>;
-> +    };
-> +...
-> 
-
+diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+index b40199c..3f1d2f3 100644
+--- a/drivers/irqchip/irq-apple-aic.c
++++ b/drivers/irqchip/irq-apple-aic.c
+@@ -810,7 +810,7 @@ static void build_fiq_affinity(struct aic_irq_chip *ic, struct device_node *aff)
+ 	if (WARN_ON(n < 0))
+ 		return;
+ 
+-	ic->fiq_aff[fiq] = kzalloc(sizeof(ic->fiq_aff[fiq]), GFP_KERNEL);
++	ic->fiq_aff[fiq] = kzalloc(sizeof(*ic->fiq_aff[fiq]), GFP_KERNEL);
+ 	if (!ic->fiq_aff[fiq])
+ 		return;
+ 
