@@ -2,117 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4433C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240615AbiCJO41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:56:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S245426AbiCJO4c convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:56:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347324AbiCJOuo (ORCPT
+        with ESMTP id S1347939AbiCJOvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:50:44 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EBF190B41;
-        Thu, 10 Mar 2022 06:46:11 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id t1so7070879edc.3;
-        Thu, 10 Mar 2022 06:46:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i/OcMJYeAJz76fpGpL1BhdswPSzuq4p72rQrJmplRqo=;
-        b=I/pSVESgWvRlX/daCIkweMDKc+r9MeMeWRXT8XKR8W1KKF5BxwAY/50ma1E+b7oLpv
-         Etf2mEUpXqHBZsaOEW6nJLugtcshs1jujWbmWWehWPJNCvh+qqIKen75iGiashWEWO5L
-         pEzOLnptXb3tCtrZpwEouBZeX9Plnvyu+MkjtVRPX0mDm0agtRhGbq+HMHfHyC4N2ofp
-         X/EfZDUjO2Xrvih0ns5ZHt+83blptPStWrFnzC5Z0kUhXkWHSHlM0HEbH/rbgwMikzIb
-         6hmoIjOCxG/HL0sOal4UeASD7HI2jLia0thANuhiG+rkn+0f3TE9LccFy5BbDNTJwrwC
-         spMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i/OcMJYeAJz76fpGpL1BhdswPSzuq4p72rQrJmplRqo=;
-        b=H+/EwCTqBunFMEm0ybwwNcQM2jgJXoJvX1U8uIq8KRbqq1yQ/zwYaI1WkNIpG1DsZK
-         iIF2vVI5NSU2jLM+BnIlalQ0zEJiYusVk/tf0ZCKjItXEs7V+XgNNCCIU201BQvHF/CE
-         6O4877hrqxB4/WFUnwwx9ZsIJPAVQX+pBaZTWOtpbkyrVjtqhsLA9eaU+zWKFOCOABax
-         k2c1LufNRSuzPm3lgqK/9yRVfJu49w0z0Z1U17xUwwKdqtiXbTs663nRcx1+4zI0KGVg
-         6kLDPR9yyMq2jlMhvWBhepWZLc8jv4w2HyXQhJRgBxUxCDBtf2zu3X/rbbVxz3SFVjh3
-         hHPQ==
-X-Gm-Message-State: AOAM530lgKCFlD/LFrNvsGV8dkwO3vPUv0CUjfRwkUEutD5MtMh8Y5QE
-        +AzMEjk1zj4n4nm07n+gFCrQog6A+2VZ7WMIJ7g=
-X-Google-Smtp-Source: ABdhPJxi7WPo/ObF4ZQ39dkIM68JLY3zRmGdYSzrVMJ71w2IE9gIQuraxffPU92TGUtlaspbTcOVuF3difPVKovHVqI=
-X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id
- i23-20020a05640200d700b004130673ba2fmr4621843edu.29.1646923570051; Thu, 10
- Mar 2022 06:46:10 -0800 (PST)
+        Thu, 10 Mar 2022 09:51:35 -0500
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C819C35;
+        Thu, 10 Mar 2022 06:50:32 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nSK7V-0004bE-W9; Thu, 10 Mar 2022 15:50:26 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Sandy Huang <hjc@rock-chips.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, knaerzche@gmail.com
+Subject: Re: [PATCH] drm/rockchip: remove redundant assignment to pointer connector
+Date:   Thu, 10 Mar 2022 15:50:25 +0100
+Message-ID: <4453075.DPozGzHrQt@diego>
+In-Reply-To: <CAKwvOdkXNGRJkZDd7Cg8jhL9Ex7R+VPYqEEc+VpwDyi9NJKXQQ@mail.gmail.com>
+References: <20220307181704.149076-1-colin.i.king@gmail.com> <CAKwvOdkXNGRJkZDd7Cg8jhL9Ex7R+VPYqEEc+VpwDyi9NJKXQQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220310132108.225387-1-shreeya.patel@collabora.com>
-In-Reply-To: <20220310132108.225387-1-shreeya.patel@collabora.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 10 Mar 2022 16:44:53 +0200
-Message-ID: <CAHp75VdGWxnxRzEhSknXHRZf1SX0x=pvca_CL0VinWNFcqCQwg@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Restrict usage of gc irq members before initialization
-To:     Shreeya Patel <shreeya.patel@collabora.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, krisman@collabora.com,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 3:22 PM Shreeya Patel
-<shreeya.patel@collabora.com> wrote:
->
-> gc irq members are exposed before they could be completely
-> initialized and this leads to race conditions.
->
-> One such issue was observed for the gc->irq.domain variable which
-> was accessed through the I2C interface in gpiochip_to_irq() before
-> it could be initialized by gpiochip_add_irqchip(). This resulted in
-> Kernel NULL pointer dereference.
->
-> To avoid such scenarios, restrict usage of gc irq members before
-> they are completely initialized.
+Hi,
 
-Fixes tag?
+looks like I wasn't in the original recipient list, so only got Nick's
+answer.
 
-...
+Am Mittwoch, 9. März 2022, 00:10:31 CET schrieb Nick Desaulniers:
+> On Mon, Mar 7, 2022 at 10:17 AM Colin Ian King <colin.i.king@gmail.com> wrote:
+> >
+> > The pointer connector is being assigned a value that is never read,
+> > it is being re-assigned in the following statement. The assignment
+> > is redundant and can be removed.
+> >
+> > Cleans up clang scan build warning:
+> > drivers/gpu/drm/rockchip/rockchip_rgb.c:153:2: warning: Value stored
+> > to 'connector' is never read [deadcode.DeadStores]
+> 
+> + Author & reviewer of:
+> Fixes: 2e87bf389e13 ("drm/rockchip: add DRM_BRIDGE_ATTACH_NO_CONNECTOR
+> flag to drm_bridge_attach")
+> 
+> >
+> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> > ---
+> >  drivers/gpu/drm/rockchip/rockchip_rgb.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> >
+> > diff --git a/drivers/gpu/drm/rockchip/rockchip_rgb.c b/drivers/gpu/drm/rockchip/rockchip_rgb.c
+> > index 2494b079489d..92a727931a49 100644
+> > --- a/drivers/gpu/drm/rockchip/rockchip_rgb.c
+> > +++ b/drivers/gpu/drm/rockchip/rockchip_rgb.c
+> > @@ -150,7 +150,6 @@ struct rockchip_rgb *rockchip_rgb_init(struct device *dev,
+> >         if (ret)
+> >                 goto err_free_encoder;
+> >
+> > -       connector = &rgb->connector;
+> >         connector = drm_bridge_connector_init(rgb->drm_dev, encoder);
 
-> +bool gc_irq_initialized;
+I don't think this will work as expected.
 
-Non-static?
+Yes, the whole thing looks a bit broken right now, but the connector
+field in the rockchip_rgb struct still exists and rockchip_rgb_fini also
+still uses it when calling drm_connector_cleanup.
 
-Why is it global?
+Same issue seems to exist in in rockchip_lvds.c with drm_connector_cleanup
+it seems.
 
-...
+I guess drm_bridge_connector_destroy() is responsible for the cleanup so
+the drm_connector_cleanup call both in rockchip_rgb and rockchip_lvds
+as well as the local connector elements can go away as well?
 
-> @@ -1593,6 +1594,8 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
->
->         acpi_gpiochip_request_interrupts(gc);
->
-> +       gc_irq_initialized = true;
 
-This is wrong. Imagine a system where you have more than one GPIO chip.
+Heiko
 
-...
 
-> -       if (gc->to_irq) {
-> +       if (gc->to_irq && gc_irq_initialized) {
->                 int retirq = gc->to_irq(gc, offset);
+> >         if (IS_ERR(connector)) {
+> >                 DRM_DEV_ERROR(drm_dev->dev,
+> > --
+> > 2.35.1
+> >
+> >
+> 
+> 
+> 
 
-Shouldn't it rather be something like
 
-  if (gc->to_irq) {
-    if (! ..._initialized)
-      return -EPROBE_DEFER;
-    ...
-  }
 
-?
 
---
-With Best Regards,
-Andy Shevchenko
