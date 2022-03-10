@@ -2,106 +2,368 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE868C3527E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFB3C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245174AbiCJOeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:34:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        id S243799AbiCJOeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:34:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244412AbiCJO2y (ORCPT
+        with ESMTP id S244418AbiCJO2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:28:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFE3D10A5;
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDF3D109F;
         Thu, 10 Mar 2022 06:23:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DF55B82672;
-        Thu, 10 Mar 2022 14:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B29DCC340E8;
-        Thu, 10 Mar 2022 14:23:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922230;
-        bh=iG4dGyVQTtgev5VOsQ8d1I4SvBWcNj19Mn9JiAy+Rwo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EACZd+laC1OYAHRa7MnhKtmtwsF/b1jPGjhKfyB1J3XDHpBwEXjFIPWz2SfDLgN3K
-         b0asMn5jWG9libXqx0H6er3eJ1WePPDA7gc0T2eLrm5Oa81PkOd9vS+sHJXYWWGHsd
-         L2OGUsvY+p7DgMBuy0O++kKj20eCBqTqy/UEYa0I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.10 12/58] ARM: use LOADADDR() to get load address of sections
-Date:   Thu, 10 Mar 2022 15:18:32 +0100
-Message-Id: <20220310140813.225153043@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-References: <20220310140812.869208747@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: by mail-lf1-x12b.google.com with SMTP id s25so9687716lfs.10;
+        Thu, 10 Mar 2022 06:23:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=07et7HwSY9BHxN5Q8Cx8ST5Jg0BuLcxMuRIlXW2fIcQ=;
+        b=ck7d7Ixtes0T6imc+MFhHEuci+p6XMi1jVkv0oQgX4c/a0RHwucBs/ikAk9n0LHeGw
+         2h0mrhbjG+oTaEZ+C4qlu1SyjvybAGOhsWPMpgqfjwmqU0NG+tCG9df08ZIAhE1JEto+
+         FYz6cJGsbjVoD8omWIzxMjC0Fud9Q/i7Ey30Dfu62vFw5owRDTPQ8kL2iNxVzXY86k3U
+         WuAUNkFmYFJI4mVW514rJx6Gb9nMiDEeUfC8ifsw92UpUJZgkVuXXOEZqym2KbDuIn61
+         B2okrjkJK4GKRAMSuEmMTy8LPeQ+7RLUBJi9jKqzYsgsPpo6PJ1wdG31m0tcNpbV+zWa
+         1qOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=07et7HwSY9BHxN5Q8Cx8ST5Jg0BuLcxMuRIlXW2fIcQ=;
+        b=tylyFoeeXZTpEWpyU6s1K/4cZpk4Bstm82GxRl6BXHBmO9gsSHgPkpCgKo4ob+c/od
+         yhssCAhkZZhtthgrsTMq/KMu1kCge84cD8/NWpQiMtk6vTrgB2yhEjXp6C8blRZMkkdQ
+         lPHc5QLeJnzcQX4aO77BCa75y/b71+KO5lnF2yQX55AUX5YyRzQ28jmCbNNZRMO4XlnO
+         fwaZ3gTkTqUe5TyJ2kN+iyH9a83HzD+xktx+8UB62huaDPhUiMh3TYHOycgefR50iI17
+         LHCOYQE43WQktgbdWtSoYxwFJUHr9Z/3SoABFR6/Hu2oSdIWr3uMWadu8mFGbNFuK1RG
+         o+gQ==
+X-Gm-Message-State: AOAM530xQhMbo7YuiDpinSDIHE6wJKigRt7oNzvXdXn5p0XahWmsiIZd
+        G+CHgeIKidLWLIVGxHkQZvs=
+X-Google-Smtp-Source: ABdhPJyy/jn+6tMfQIsZVFwUZZV+QETTJ/CnrVbOxOmnnzG9gICK/yXmLQOnk8FS8iWeR6Jfi2pjAQ==
+X-Received: by 2002:a05:6512:4015:b0:448:2d9a:14f with SMTP id br21-20020a056512401500b004482d9a014fmr3111728lfb.156.1646922230642;
+        Thu, 10 Mar 2022 06:23:50 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id 10-20020a2e080a000000b00247f82bbc6fsm1088932lji.54.2022.03.10.06.23.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:23:50 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB implementation
+Date:   Thu, 10 Mar 2022 15:23:20 +0100
+Message-Id: <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+This implementation for the Marvell mv88e6xxx chip series, is
+based on handling ATU miss violations occurring when packets
+ingress on a port that is locked. The mac address triggering
+the ATU miss violation is communicated through switchdev to
+the bridge module, which adds a fdb entry with the fdb locked
+flag set.
+Note: The locked port must have learning enabled for the ATU
+miss violation to occur.
 
-commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
-
-Use the linker's LOADADDR() macro to get the load address of the
-sections, and provide a macro to set the start and end symbols.
-
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- arch/arm/include/asm/vmlinux.lds.h |   19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+ drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+ drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+ drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+ drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+ .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+ .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+ drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+ drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+ 9 files changed, 138 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
 
---- a/arch/arm/include/asm/vmlinux.lds.h
-+++ b/arch/arm/include/asm/vmlinux.lds.h
-@@ -26,6 +26,11 @@
- #define ARM_MMU_DISCARD(x)	x
- #endif
+diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
+index c8eca2b6f959..3ca57709730d 100644
+--- a/drivers/net/dsa/mv88e6xxx/Makefile
++++ b/drivers/net/dsa/mv88e6xxx/Makefile
+@@ -15,3 +15,4 @@ mv88e6xxx-objs += port_hidden.o
+ mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
+ mv88e6xxx-objs += serdes.o
+ mv88e6xxx-objs += smi.o
++mv88e6xxx-objs += mv88e6xxx_switchdev.o
+\ No newline at end of file
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 84b90fc36c58..e1b6bd738085 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1714,11 +1714,11 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
+ 	return err;
+ }
  
-+/* Set start/end symbol names to the LMA for the section */
-+#define ARM_LMA(sym, section)						\
-+	sym##_start = LOADADDR(section);				\
-+	sym##_end = LOADADDR(section) + SIZEOF(section)
+-static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
+-			      int (*cb)(struct mv88e6xxx_chip *chip,
+-					const struct mv88e6xxx_vtu_entry *entry,
+-					void *priv),
+-			      void *priv)
++int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
++		       int (*cb)(struct mv88e6xxx_chip *chip,
++				 const struct mv88e6xxx_vtu_entry *entry,
++				 void *priv),
++		       void *priv)
+ {
+ 	struct mv88e6xxx_vtu_entry entry = {
+ 		.vid = mv88e6xxx_max_vid(chip),
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 30b92a265613..64e8fc470fdf 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -763,6 +763,11 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
+ 	mutex_unlock(&chip->reg_lock);
+ }
+ 
++int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
++		       int (*cb)(struct mv88e6xxx_chip *chip,
++				 const struct mv88e6xxx_vtu_entry *entry,
++				 void *priv),
++		       void *priv);
+ int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
+ 
+ #endif /* _MV88E6XXX_CHIP_H */
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+index 2c1607c858a1..729cc0610d9a 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.h
++++ b/drivers/net/dsa/mv88e6xxx/global1.h
+@@ -136,6 +136,7 @@
+ #define MV88E6XXX_G1_ATU_DATA_TRUNK				0x8000
+ #define MV88E6XXX_G1_ATU_DATA_TRUNK_ID_MASK			0x00f0
+ #define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_MASK			0x3ff0
++#define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS		0x0000
+ #define MV88E6XXX_G1_ATU_DATA_STATE_MASK			0x000f
+ #define MV88E6XXX_G1_ATU_DATA_STATE_UC_UNUSED			0x0000
+ #define MV88E6XXX_G1_ATU_DATA_STATE_UC_AGE_1_OLDEST		0x0001
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+index 40bd67a5c8e9..afa54fe8667e 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+@@ -12,6 +12,8 @@
+ 
+ #include "chip.h"
+ #include "global1.h"
++#include "port.h"
++#include "mv88e6xxx_switchdev.h"
+ 
+ /* Offset 0x01: ATU FID Register */
+ 
+@@ -114,6 +116,18 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
+ }
+ 
++static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
++{
++	int err;
 +
- #define PROC_INFO							\
- 		. = ALIGN(4);						\
- 		__proc_info_begin = .;					\
-@@ -110,19 +115,19 @@
-  * only thing that matters is their relative offsets
-  */
- #define ARM_VECTORS							\
--	__vectors_start = .;						\
-+	__vectors_lma = .;						\
- 	.vectors 0xffff0000 : AT(__vectors_start) {			\
- 		*(.vectors)						\
- 	}								\
--	. = __vectors_start + SIZEOF(.vectors);				\
--	__vectors_end = .;						\
-+	ARM_LMA(__vectors, .vectors);					\
-+	. = __vectors_lma + SIZEOF(.vectors);				\
- 									\
--	__stubs_start = .;						\
--	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
-+	__stubs_lma = .;						\
-+	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
- 		*(.stubs)						\
- 	}								\
--	. = __stubs_start + SIZEOF(.stubs);				\
--	__stubs_end = .;						\
-+	ARM_LMA(__stubs, .stubs);					\
-+	. = __stubs_lma + SIZEOF(.stubs);				\
- 									\
- 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
++	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
++				 MV88E6XXX_G1_ATU_OP_BUSY | MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	if (err)
++		return err;
++
++	return mv88e6xxx_g1_atu_op_wait(chip);
++}
++
+ static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
+ {
+ 	u16 val;
+@@ -356,11 +370,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 	int spid;
+ 	int err;
+ 	u16 val;
++	u16 fid;
  
-
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-	err = mv88e6xxx_g1_atu_op(chip, 0,
+-				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	err = mv88e6xxx_g1_read_atu_violation(chip);
+ 	if (err)
+ 		goto out;
+ 
+@@ -368,6 +382,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 	if (err)
+ 		goto out;
+ 
++	err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &fid);
++	if (err)
++		goto out;
++
+ 	err = mv88e6xxx_g1_atu_data_read(chip, &entry);
+ 	if (err)
+ 		goto out;
+@@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 				    "ATU miss violation for %pM portvec %x spid %d\n",
+ 				    entry.mac, entry.portvec, spid);
+ 		chip->ports[spid].atu_miss_violation++;
++		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
++			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
++									    chip->ports[spid].port,
++									    &entry,
++									    fid);
++		if (err)
++			goto out;
+ 	}
+ 
+ 	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
+diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+new file mode 100644
+index 000000000000..e0ca452b6f86
+--- /dev/null
++++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+@@ -0,0 +1,67 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * mv88e6xxx_switchdev.c
++ *
++ *	Authors:
++ *	Hans J. Schultz		<hans.schultz@westermo.com>
++ *
++ */
++
++#include <net/switchdev.h>
++#include "chip.h"
++#include "global1.h"
++
++struct mv88e6xxx_fid_search_ctx {
++	u16 fid_search;
++	u16 vid_found;
++};
++
++static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
++					      const struct mv88e6xxx_vtu_entry *entry,
++					      void *priv)
++{
++	struct mv88e6xxx_fid_search_ctx *ctx = priv;
++
++	if (ctx->fid_search == entry->fid) {
++		ctx->vid_found = entry->vid;
++		return 1;
++	}
++	return 0;
++}
++
++int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
++						  int port,
++						  struct mv88e6xxx_atu_entry *entry,
++						  u16 fid)
++{
++	struct switchdev_notifier_fdb_info info = {
++		.addr = entry->mac,
++		.vid = 0,
++		.added_by_user = false,
++		.is_local = false,
++		.offloaded = true,
++		.locked = true,
++	};
++	struct mv88e6xxx_fid_search_ctx ctx;
++	struct netlink_ext_ack *extack;
++	struct net_device *brport;
++	struct dsa_port *dp;
++	int err;
++
++	ctx.fid_search = fid;
++	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
++	if (err < 0)
++		return err;
++	if (err == 1)
++		info.vid = ctx.vid_found;
++	else
++		return -ENODATA;
++
++	dp = dsa_to_port(chip->ds, port);
++	brport = dsa_port_to_bridge_port(dp);
++	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE, brport, &info.info, extack);
++	if (err)
++		return err;
++	entry->portvec = MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS;
++	return mv88e6xxx_g1_atu_loadpurge(chip, fid, entry);
++}
+diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+new file mode 100644
+index 000000000000..127f3098f745
+--- /dev/null
++++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later
++ *
++ * mv88e6xxx_switchdev.h
++ *
++ *	Authors:
++ *	Hans J. Schultz		<hans.schultz@westermo.com>
++ *
++ */
++
++#ifndef DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
++#define DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
++
++#include <net/switchdev.h>
++
++int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
++						  int port,
++						  struct mv88e6xxx_atu_entry *entry,
++						  u16 fid);
++
++#endif /* DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_ */
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 795b3128768f..6b375b0caa2c 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -1239,6 +1239,17 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
+ 	return err;
+ }
+ 
++bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port)
++{
++	u16 reg;
++
++	if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
++		return false;
++	if (!(reg & MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK))
++		return false;
++	return true;
++}
++
+ int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
+ 			    bool locked)
+ {
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index e0a705d82019..09ea8f1615bb 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -374,6 +374,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
+ int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
+ int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
+ 
++bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port);
+ int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
+ 			    bool locked);
+ 
+-- 
+2.30.2
 
