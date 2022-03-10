@@ -2,145 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69631C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241233AbiCJKZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
+        id S241239AbiCJKZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:25:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241193AbiCJKZX (ORCPT
+        with ESMTP id S241194AbiCJKZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:25:23 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185B113D57A;
-        Thu, 10 Mar 2022 02:24:22 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id v130so9871216ybe.13;
-        Thu, 10 Mar 2022 02:24:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6naJd+0sZQ29BmCLcmFwDc35DHsyxjzyXnqa9Mk7bLE=;
-        b=bSUZuST0uigI2zFO4tPzF0IC7azGrfKIj/PG+/k1xdEKtZiiElVwRoCQvZfuqmeAeZ
-         OVrZZGYYLEp4dDZ3LHEBQqB0JNg6h53oiyOOHsCpMC3nldgnHnjDjx+AT02qR4NQ9lEQ
-         2dCaSvQ+V66ETNXQDHi+C+1pyJcUcHDqLMV35SJzQy/24nzyI805Nm1Swc3ENM29yfIu
-         YHxvyM33XVMEikCfvHJAY97oDxtLUsBU4Fn8/L4AVjtoMCEDn4AE9qxy88wzqXvZHoY+
-         AKgwTTxGrKVYK7bYNmsRFj5f76CvdUv0KSC0ZDGeUU+Umyq70LJgDqW6pnLIMMyuPvYY
-         gARQ==
+        Thu, 10 Mar 2022 05:25:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B466F70D7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:24:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646907862;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zln+MaotO9F3OZWBQkZ8RRcCDDlcbIVRMz8zB5PgPNY=;
+        b=iwIbBldS/uzkG+HxBmwSrc5sMLiUtkl6va6tpMmHvLodSJarGmqDcqKsee1qrp3teGRbfL
+        dS4EZlY5FeyLTLlowNjqkjzMdkl2gZNHJZB1nvd4zwX7zXSPmVVd6VRa2acDy8SKZ+1yCT
+        Jup/wL9suNprX3ELNEBF6CmF6TXfRqI=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-100-05gwJ4yPMB6sXTaFt395pg-1; Thu, 10 Mar 2022 05:24:21 -0500
+X-MC-Unique: 05gwJ4yPMB6sXTaFt395pg-1
+Received: by mail-wr1-f72.google.com with SMTP id f9-20020a5d58e9000000b001f0247e5e96so1522748wrd.15
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:24:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6naJd+0sZQ29BmCLcmFwDc35DHsyxjzyXnqa9Mk7bLE=;
-        b=SXclgPT57sSz/q/lcX2knUvgYzeMIuMovYl9nLM8Uew9rkKgY/1u/qmANLPSi4p2SX
-         +iwxEyHy7e5GgsqmlLbHSymj4N/7+069Npaz0r/9++YqYFDYZKLMbg1+lz2tj9MVUFcx
-         BHRIQWVdu8JYMddHFHaCanQAS2NxR9Q6DX5i0jhRVtukseIVXOYDabDQRy30vU0Yp9ro
-         E14ONmqAooeAtHHz2iF5SNjL5Y4ztfJh5C5gNCkSm9mjRZLUHz02ZLQKKBkH8OPy7ryS
-         rUXBXRefKw5MrzHWM5X+xMM0HE9nbfbOgIWJ4eXD52lNj7et3f4kR3h/PDywswGndHsi
-         2pSg==
-X-Gm-Message-State: AOAM531J6LeWf3x0ngzaQOX4HqSIJOY11xm4MMvGKbgGlRtPk1A06Ktv
-        ClagK7K8pfiYUGgdFy85bTVirDrIwhA0BTUIjCI=
-X-Google-Smtp-Source: ABdhPJwOa/BYCFgn16nyNygqP/E7e04kCx1eOH+kxuWtpClYMQmITCAztH4hZgVdpFrkt0U1rwRQrR4cizObCrrlTwk=
-X-Received: by 2002:a5b:246:0:b0:619:5651:3907 with SMTP id
- g6-20020a5b0246000000b0061956513907mr3209140ybp.190.1646907861259; Thu, 10
- Mar 2022 02:24:21 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Zln+MaotO9F3OZWBQkZ8RRcCDDlcbIVRMz8zB5PgPNY=;
+        b=UbSx9X5PNfFgOJg9vrEmCNuDDfJmDhkDctwgZz1BghGV7QSA56wIOUuLElUVkJpKc9
+         KY0ACvOLGhPVDCdeWCzg3hlqWX/9QZED6A2LEjZUJ7ZWb7TCcoSKpTBffTl+x4WSzfI6
+         0dPzIQEXJdy34YiMQkktC6iDZzuZcD0phVQnyvbiV7DaKj9MRqKP7ec8PZuC/bBGuWXK
+         n+0RFJtL2UGxRZGgc0qEQJB+8dy2DO+Uf7nQb+Wqj/XUcZB3b+Jfpno2Nd/9SYPn4mGn
+         qFArpN40JQRt105+I3UqyxibiGb2N8CHBUueEsoH53zzkQsLWCdZRIHKSTUKHv7EvLt5
+         39FQ==
+X-Gm-Message-State: AOAM532PKV4WbHz/xCmCOtCNYYuFBzkVNZis6DC6NaedzfExOE2+d52+
+        KuZXt/Rf3d29mDgoypZsOwk0vswOhiGibOVvzDPJZv2k9Vs8jmcXZRTD9znM+9NVs/ZEbgpj4M2
+        /NdMUbBjOGeXEF9PhF2QDWHY=
+X-Received: by 2002:adf:8b9d:0:b0:1f1:deb6:5607 with SMTP id o29-20020adf8b9d000000b001f1deb65607mr2898700wra.125.1646907860151;
+        Thu, 10 Mar 2022 02:24:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJweWv0RKrVmS2LB0J6otlaOeOM8tWh3gB/Ilz7OujiA3W2eZ8wcYwZRhNt3P2NVKdD+/5ZluQ==
+X-Received: by 2002:adf:8b9d:0:b0:1f1:deb6:5607 with SMTP id o29-20020adf8b9d000000b001f1deb65607mr2898680wra.125.1646907859922;
+        Thu, 10 Mar 2022 02:24:19 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm5509758wmq.35.2022.03.10.02.24.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 02:24:19 -0800 (PST)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org, christophe.leroy@csgroup.eu
+Cc:     cl@linux.com, mbenes@suse.cz, akpm@linux-foundation.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, void@manifault.com,
+        atomlin@atomlin.com, allen.lkml@gmail.com, joe@perches.com,
+        msuchanek@suse.de, oleksandr@natalenko.name,
+        jason.wessel@windriver.com, pmladek@suse.com,
+        daniel.thompson@linaro.org, hch@infradead.org
+Subject: [PATCH v11 02/14] module: Simple refactor in preparation for split
+Date:   Thu, 10 Mar 2022 10:24:01 +0000
+Message-Id: <20220310102413.3438665-3-atomlin@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220310102413.3438665-1-atomlin@redhat.com>
+References: <20220310102413.3438665-1-atomlin@redhat.com>
 MIME-Version: 1.0
-References: <20211224161334.31123-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211224161334.31123-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <c5ea7235-8642-6a89-f4ce-bd0861b6e4aa@linaro.org>
-In-Reply-To: <c5ea7235-8642-6a89-f4ce-bd0861b6e4aa@linaro.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 10 Mar 2022 10:23:55 +0000
-Message-ID: <CA+V-a8tkhERx+8zDae5aWkNQ9Oxd1AamRL=i4TDC2X8RGgAo0w@mail.gmail.com>
-Subject: Re: [PATCH] slimbus: qcom-ngd-ctrl: Use platform_get_irq() to get the interrupt
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org,
-        alsa-devel <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:16 AM Srinivas Kandagatla
-<srinivas.kandagatla@linaro.org> wrote:
->
->
->
-> On 24/12/2021 16:13, Lad Prabhakar wrote:
-> > platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-> > allocation of IRQ resources in DT core code, this causes an issue
->
-> Are you saying that we should not be using platform_get_resource(pdev,
-> IORESOURCE_IRQ, ...) on drivers that support DT?
->
-> > when using hierarchical interrupt domains using "interrupts" property
-> > in the node as this bypasses the hierarchical setup and messes up the
-> > irq chaining.
->
-> Should this not be fixed in the DT core itself?
->
-Yes the plan is to fix in the DT core itself (refer [0]).
+No functional change.
 
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+This patch makes it possible to move non-essential code
+out of core module code.
 
-> >
-> > In preparation for removal of static setup of IRQ resource from DT core
-> > code use platform_get_irq().
->
-> I would prefer this patch to be part of the series that removes IRQ
-> resource handling from DT core.
->
-Since there are too many users (which are in different subsystems)
-getting this all in single series would be a pain. As a result it is
-split up into individual subsystems.
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ kernel/module/internal.h | 21 +++++++++++++++++++++
+ kernel/module/main.c     | 22 ++--------------------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
-Cheers,
-Prabhakar
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 8c381c99062f..ea8c4c02614c 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -7,6 +7,27 @@
+ 
+ #include <linux/elf.h>
+ #include <asm/module.h>
++#include <linux/mutex.h>
++
++#ifndef ARCH_SHF_SMALL
++#define ARCH_SHF_SMALL 0
++#endif
++
++/* If this is set, the section belongs in the init part of the module */
++#define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG - 1))
++/* Maximum number of characters written by module_flags() */
++#define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
++
++extern struct mutex module_mutex;
++extern struct list_head modules;
++
++/* Provided by the linker */
++extern const struct kernel_symbol __start___ksymtab[];
++extern const struct kernel_symbol __stop___ksymtab[];
++extern const struct kernel_symbol __start___ksymtab_gpl[];
++extern const struct kernel_symbol __stop___ksymtab_gpl[];
++extern const s32 __start___kcrctab[];
++extern const s32 __start___kcrctab_gpl[];
+ 
+ struct load_info {
+ 	const char *name;
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 34a2b0cf3c3e..5f5e21f972dd 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -63,10 +63,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+ 
+-#ifndef ARCH_SHF_SMALL
+-#define ARCH_SHF_SMALL 0
+-#endif
+-
+ /*
+  * Modules' sections will be aligned on page boundaries
+  * to ensure complete separation of code and data, but
+@@ -78,9 +74,6 @@
+ # define debug_align(X) (X)
+ #endif
+ 
+-/* If this is set, the section belongs in the init part of the module */
+-#define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG-1))
+-
+ /*
+  * Mutex protects:
+  * 1) List of modules (also safely readable with preempt_disable),
+@@ -88,8 +81,8 @@
+  * 3) module_addr_min/module_addr_max.
+  * (delete and add uses RCU list operations).
+  */
+-static DEFINE_MUTEX(module_mutex);
+-static LIST_HEAD(modules);
++DEFINE_MUTEX(module_mutex);
++LIST_HEAD(modules);
+ 
+ /* Work queue for freeing init sections in success case */
+ static void do_free_init(struct work_struct *w);
+@@ -408,14 +401,6 @@ static __maybe_unused void *any_section_objs(const struct load_info *info,
+ 	return (void *)info->sechdrs[sec].sh_addr;
+ }
+ 
+-/* Provided by the linker */
+-extern const struct kernel_symbol __start___ksymtab[];
+-extern const struct kernel_symbol __stop___ksymtab[];
+-extern const struct kernel_symbol __start___ksymtab_gpl[];
+-extern const struct kernel_symbol __stop___ksymtab_gpl[];
+-extern const s32 __start___kcrctab[];
+-extern const s32 __start___kcrctab_gpl[];
+-
+ #ifndef CONFIG_MODVERSIONS
+ #define symversion(base, idx) NULL
+ #else
+@@ -4542,9 +4527,6 @@ static void cfi_cleanup(struct module *mod)
+ #endif
+ }
+ 
+-/* Maximum number of characters written by module_flags() */
+-#define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
+-
+ /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
+ static char *module_flags(struct module *mod, char *buf)
+ {
+-- 
+2.34.1
 
->
-> --srini
->
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> > Hi,
-> >
-> > Dropping usage of platform_get_resource() was agreed based on
-> > the discussion [0].
-> >
-> > [0] https://patchwork.kernel.org/project/linux-renesas-soc/
-> > patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-> >
-> > Cheers,
-> > Prabhakar
-> > ---
-> >   drivers/slimbus/qcom-ngd-ctrl.c | 10 ++++------
-> >   1 file changed, 4 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
-> > index 7040293c2ee8..0f29a08b4c09 100644
-> > --- a/drivers/slimbus/qcom-ngd-ctrl.c
-> > +++ b/drivers/slimbus/qcom-ngd-ctrl.c
-> > @@ -1526,13 +1526,11 @@ static int qcom_slim_ngd_ctrl_probe(struct platform_device *pdev)
-> >       if (IS_ERR(ctrl->base))
-> >               return PTR_ERR(ctrl->base);
-> >
-> > -     res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> > -     if (!res) {
-> > -             dev_err(&pdev->dev, "no slimbus IRQ resource\n");
-> > -             return -ENODEV;
-> > -     }
-> > +     ret = platform_get_irq(pdev, 0);
-> > +     if (ret < 0)
-> > +             return ret;
-> >
-> > -     ret = devm_request_irq(dev, res->start, qcom_slim_ngd_interrupt,
-> > +     ret = devm_request_irq(dev, ret, qcom_slim_ngd_interrupt,
-> >                              IRQF_TRIGGER_HIGH, "slim-ngd", ctrl);
-> >       if (ret) {
-> >               dev_err(&pdev->dev, "request IRQ failed\n");
