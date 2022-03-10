@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4674FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73DD8C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244009AbiCJO2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        id S244054AbiCJO2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243507AbiCJOZV (ORCPT
+        with ESMTP id S243529AbiCJOZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:25:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D37163D6F;
-        Thu, 10 Mar 2022 06:21:57 -0800 (PST)
+        Thu, 10 Mar 2022 09:25:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01BAF94F5;
+        Thu, 10 Mar 2022 06:22:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BA19B82615;
-        Thu, 10 Mar 2022 14:21:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49BE8C340E8;
-        Thu, 10 Mar 2022 14:21:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ADBD61B63;
+        Thu, 10 Mar 2022 14:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F121C340E8;
+        Thu, 10 Mar 2022 14:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922096;
+        s=korg; t=1646922128;
         bh=rSTOUX5LUvBCX6WBogDAqooyuvYNrP66hsRf3uWRExc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=etQWfusepoaDPgs89qzff3MGdp9mz4jVA1Y+e28o8VcM2+eX8I0jenvb6A2BG0R+j
-         e6mNIviKxr4tav9YAmVdxF1rqUonLB8R4eCTsLAX0ZvU6Y2WPmtRkcOqTVhYF7a1oC
-         1ky7JlIi4rvkwOfkmmE5Cc4jLk1o45SC+nzTakMk=
+        b=SAgKYSgKURonAmjkHsHT5TkFzrDKNLN1m87C12SWq7Bu3n0Ho1Sn9TTVD+lKBTw76
+         PrdmdBdxsedPGxGPiSLwN4j0iosI563wblcqMqUS74ontKfQI3LkELC1+vXZJYF0V+
+         PoYI0R9ArEL/fhIOreeg235XjI8jD1OP1DR3oXcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.14 07/31] x86/speculation: Use generic retpoline by default on AMD
-Date:   Thu, 10 Mar 2022 15:18:20 +0100
-Message-Id: <20220310140807.747262309@linuxfoundation.org>
+Subject: [PATCH 4.19 07/33] x86/speculation: Use generic retpoline by default on AMD
+Date:   Thu, 10 Mar 2022 15:18:34 +0100
+Message-Id: <20220310140807.965113257@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
-References: <20220310140807.524313448@linuxfoundation.org>
+In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
+References: <20220310140807.749164737@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
