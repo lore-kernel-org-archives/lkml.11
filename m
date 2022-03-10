@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D663C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B92BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244568AbiCJRWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
+        id S244576AbiCJRWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244518AbiCJRV4 (ORCPT
+        with ESMTP id S244563AbiCJRVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:21:56 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4202199D5E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:52 -0800 (PST)
+        Thu, 10 Mar 2022 12:21:55 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEB6199D4E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932852; x=1678468852;
+  t=1646932851; x=1678468851;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3NA1AOfkWvyInGYP3ZXXPe9wyH6gcZKqLJYd1GBzKOE=;
-  b=YhgKXsoXU30wU+Imqa+J1zcg7w+Ef+0rv1HoYnA5cxiCKRHFn9b3FVOP
-   t9bZQyz5I55HVu8Rmm0hX2KBs4dwmGnLVw84XSuNUziwG/vrQlPcWTNd+
-   nHGkgTLEKmZxlyD2f3NaFk0igl6xSRlxM2tWqe0nt1v90G6qWuEJd7IvM
-   RkBzcYwWvXsbWAYnTKK//J0lUN3HO26xuQo5yhqu7nrF8V/LUrKhXL0CU
-   TlWtWFbuJATkRXXo/sbvyz+71jd4LSCrvcLHiDjVrcZf1S7iEHlzuJHhp
-   xF3A068M4Yb8irAFqWVoE3XO82F/smXTLkxt7/EC5k9o4f6dMaHhFN5WN
+  bh=DbZsZ6xt0aToaFxqzZYCHwWp4Qz97QZqzybMffDtHFs=;
+  b=AsS64bMNQzgTVIsj+oAkRdeYm5jd1xCF/YllyLppXBsn1y67PlDE6pz+
+   DqYeXRqxDTq8RjQaAg8xpOtAdzGUYdVLp6YGzTW6TXUUQUjK8l2ZtHarj
+   xDTvScwlsnrsk6VdtfxiRSl88t0lKUoVb155KB6RhJQoBVoroEtbn5sN3
+   0R5ZBQNeU8/H+Thdflg+sBGjKrFZywZ+GTQO8Ij6UPf7VRzElSWDLnFtO
+   Ckn2DejPD06OX/JfGdriH3YQCEQbebA4cUMVAHKQfZ+WmhVT+imCC6plE
+   giNh2PP2vpkd0tCbTyJw374UHsaQ9en8jOIcyH1CFvANH6WPI9EVPQDQ+
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="242758931"
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235261290"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="242758931"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:48 -0800
+   d="scan'208";a="235261290"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:28 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="510983950"
+   d="scan'208";a="633064260"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:47 -0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:28 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 10/45] mm/pkeys: Provide for PKS key allocation
-Date:   Thu, 10 Mar 2022 09:19:44 -0800
-Message-Id: <20220310172019.850939-11-ira.weiny@intel.com>
+Subject: [PATCH V9 01/45] entry: Create an internal irqentry_exit_cond_resched() call
+Date:   Thu, 10 Mar 2022 09:19:35 -0800
+Message-Id: <20220310172019.850939-2-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,182 +59,185 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Kernel consumers of PKS need a way to allocate a PKS pkey and assign the
-initial permissions for that key.  It is desirable to not allocate keys
-for consumers which are not configured.
+The static call to irqentry_exit_cond_resched() was not properly being
+overridden when called from xen_pv_evtchn_do_upcall().
 
-Introduce a macro to allocate keys sequentially based on which consumers
-are configured.  In addition define a macro to set the proper permission
-bits based on the actual pkey value allocated.
+Define __irqentry_exit_cond_resched() as the static call and place the
+override logic in irqentry_exit_cond_resched().
 
-pks-keys.h is added as a new header with minimal header dependencies.
-This allows the use of PKS_INIT_VALUE within other headers where the
-additional includes from other pkey headers caused major conflicts.  The
-main conflict was using PKS_INIT_VALUE for INIT_TRHEAD in
-asm/processor.h
-
-Add documentation.
-
-Suggested-by: Dan Williams <dan.j.williams@intel.com>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Reword the commit message
-	Move this patch ahead of the enable patch so that the enable
-		patch can use PKS_INIT_VALUE
-	From Dan Williams
-		Use Dan's macro magic
-			enhanced it to account for the max number of
-			keys
-		Update documentation for the change
-	From Dave Hansen
-		use pkey
-		s/PKR_RW_KEY/PKR_RW_MASK
+	Update the commit message a bit
 
-Changes for V8
-	Create pks-keys.h to solve header conflicts in subsequent
-		patches.
-	Remove create_initial_pkrs_value() which did not work
-		Replace it with PKS_INIT_VALUE
-		Fix up documentation to match
-	s/PKR_RW_BIT/PKR_RW_KEY()/
-	s/PKRS_INIT_VALUE/PKS_INIT_VALUE
-	Split this off of the previous patch
-	Update documentation and embed it in the code to help ensure it
-	is kept up to date.
+Because this was found via code inspection and it does not actually fix
+any seen bug I've not added a fixes tag.
 
-Changes for V7
-	Create a dynamic pkrs_initial_value in early init code.
-	Clean up comments
-	Add comment to macro guard
+But for reference:
+Fixes: 40607ee97e4e ("preempt/dynamic: Provide irqentry_exit_cond_resched() static call")
 ---
- Documentation/core-api/protection-keys.rst |  5 ++
- arch/x86/include/asm/pkeys_common.h        |  9 ++-
- include/linux/pks-keys.h                   | 78 ++++++++++++++++++++++
- 3 files changed, 91 insertions(+), 1 deletion(-)
- create mode 100644 include/linux/pks-keys.h
+ include/linux/entry-common.h |  5 ++++-
+ kernel/entry/common.c        | 23 +++++++++++++--------
+ kernel/sched/core.c          | 40 ++++++++++++++++++------------------
+ 3 files changed, 38 insertions(+), 30 deletions(-)
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index 13eedb0119e1..d501bd27ee29 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -131,3 +131,8 @@ ARCH_HAS_SUPERVISOR_PKEYS.  It also makes it possible for multiple independent
- features to "select ARCH_ENABLE_SUPERVISOR_PKEYS".  If no features enable PKS
- by selecting ARCH_ENABLE_SUPERVISOR_PKEYS, PKS support will not be compiled
- into the kernel.
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index 2e2b8d6140ed..ddaffc983e62 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -455,10 +455,13 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
+  * Conditional reschedule with additional sanity checks.
+  */
+ void irqentry_exit_cond_resched(void);
 +
-+PKS Key Allocation
-+------------------
-+.. kernel-doc:: include/linux/pks-keys.h
-+        :doc: PKS_KEY_ALLOCATION
-diff --git a/arch/x86/include/asm/pkeys_common.h b/arch/x86/include/asm/pkeys_common.h
-index 359b94cdcc0c..b28a72dea22b 100644
---- a/arch/x86/include/asm/pkeys_common.h
-+++ b/arch/x86/include/asm/pkeys_common.h
-@@ -2,10 +2,17 @@
- #ifndef _ASM_X86_PKEYS_COMMON_H
- #define _ASM_X86_PKEYS_COMMON_H
++void __irqentry_exit_cond_resched(void);
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+-DECLARE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++DECLARE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ #endif
  
-+#define PKS_NUM_PKEYS 16
-+#define PKS_ALL_AD (0x55555555UL)
 +
- #define PKR_AD_BIT 0x1u
- #define PKR_WD_BIT 0x2u
- #define PKR_BITS_PER_PKEY 2
+ /**
+  * irqentry_exit - Handle return from exception that used irqentry_enter()
+  * @regs:	Pointer to pt_regs (exception entry regs)
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index bad713684c2e..490442a48332 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -380,7 +380,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+ 	return ret;
+ }
  
--#define PKR_AD_MASK(pkey)	(PKR_AD_BIT << ((pkey) * PKR_BITS_PER_PKEY))
-+#define PKR_PKEY_SHIFT(pkey)	(pkey * PKR_BITS_PER_PKEY)
-+
-+#define PKR_RW_MASK(pkey)	(0          << PKR_PKEY_SHIFT(pkey))
-+#define PKR_AD_MASK(pkey)	(PKR_AD_BIT << PKR_PKEY_SHIFT(pkey))
-+#define PKR_WD_MASK(pkey)	(PKR_WD_BIT << PKR_PKEY_SHIFT(pkey))
+-void irqentry_exit_cond_resched(void)
++void __irqentry_exit_cond_resched(void)
+ {
+ 	if (!preempt_count()) {
+ 		/* Sanity check RCU and thread stack */
+@@ -392,9 +392,20 @@ void irqentry_exit_cond_resched(void)
+ 	}
+ }
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+-DEFINE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++DEFINE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ #endif
  
- #endif /*_ASM_X86_PKEYS_COMMON_H */
-diff --git a/include/linux/pks-keys.h b/include/linux/pks-keys.h
-new file mode 100644
-index 000000000000..c914afecb2d3
---- /dev/null
-+++ b/include/linux/pks-keys.h
-@@ -0,0 +1,78 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_PKS_KEYS_H
-+#define _LINUX_PKS_KEYS_H
++void irqentry_exit_cond_resched(void)
++{
++	if (IS_ENABLED(CONFIG_PREEMPTION)) {
++#ifdef CONFIG_PREEMPT_DYNAMIC
++		static_call(__irqentry_exit_cond_resched)();
++#else
++		__irqentry_exit_cond_resched();
++#endif
++	}
++}
 +
-+/*
-+ * The contents of this header should be limited to assigning PKS keys and
-+ * default values to avoid intricate header dependencies.
-+ */
-+
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+
-+#include <asm/pkeys_common.h>
-+
-+#define PKS_NEW_KEY(prev, config) \
-+	(prev + __is_defined(config))
-+#define PKS_DECLARE_INIT_VALUE(pkey, value, config) \
-+	(PKR_##value##_MASK(pkey) * __is_defined(config))
-+
-+/**
-+ * DOC: PKS_KEY_ALLOCATION
-+ *
-+ * Users reserve a key value in 5 steps.
-+ *	1) Use PKS_NEW_KEY to create a new key
-+ *	2) Ensure that the last key value is specified in the PKS_NEW_KEY macro
-+ *	3) Adjust PKS_KEY_MAX to use the newly defined key value
-+ *	4) Use PKS_DECLARE_INIT_VALUE to define an initial value
-+ *	5) Add the new PKS default value to PKS_INIT_VALUE
-+ *
-+ * The PKS_NEW_KEY and PKS_DECLARE_INIT_VALUE macros require the Kconfig
-+ * option to be specified to automatically adjust the number of keys used.
-+ *
-+ * PKS_KEY_DEFAULT must remain 0 with a default of PKS_DECLARE_INIT_VALUE(...,
-+ * RW, ...) to support non-pks protected pages.
-+ *
-+ * Example: to configure a key for 'MY_FEATURE' with a default of Write
-+ * Disabled.
-+ *
-+ * .. code-block:: c
-+ *
-+ *	#define PKS_KEY_DEFAULT		0
-+ *
-+ *	// 1) Use PKS_NEW_KEY to create a new key
-+ *	// 2) Ensure that the last key value is specified (eg PKS_KEY_DEFAULT)
-+ *	#define PKS_KEY_MY_FEATURE PKS_NEW_KEY(PKS_KEY_DEFAULT, CONFIG_MY_FEATURE)
-+ *
-+ *	// 3) Adjust PKS_KEY_MAX
-+ *	#define PKS_KEY_MAX	   PKS_NEW_KEY(PKS_KEY_MY_FEATURE, 1)
-+ *
-+ *	// 4) Define initial value
-+ *	#define PKS_KEY_MY_FEATURE_INIT PKS_DECLARE_INIT_VALUE(PKS_KEY_MY_FEATURE, \
-+ *								WD, CONFIG_MY_FEATURE)
-+ *
-+ *
-+ *	// 5) Add initial value to PKS_INIT_VALUE
-+ *	#define PKS_INIT_VALUE ((PKS_ALL_AD & PKS_ALL_AD_MASK) | \
-+ *				PKS_KEY_DEFAULT_INIT | \
-+ *				PKS_KEY_MY_FEATURE_INIT \
-+ *				)
-+ */
-+
-+/* PKS_KEY_DEFAULT must be 0 */
-+#define PKS_KEY_DEFAULT		0
-+#define PKS_KEY_MAX		PKS_NEW_KEY(PKS_KEY_DEFAULT, 1)
-+
-+/* PKS_KEY_DEFAULT_INIT must be RW */
-+#define PKS_KEY_DEFAULT_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_DEFAULT, RW, 1)
-+
-+#define PKS_ALL_AD_MASK \
-+	GENMASK(PKS_NUM_PKEYS * PKR_BITS_PER_PKEY, \
-+		PKS_KEY_MAX * PKR_BITS_PER_PKEY)
-+
-+#define PKS_INIT_VALUE ((PKS_ALL_AD & PKS_ALL_AD_MASK) | \
-+			PKS_KEY_DEFAULT_INIT \
-+			)
-+
-+#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+#endif /* _LINUX_PKS_KEYS_H */
+ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ {
+ 	lockdep_assert_irqs_disabled();
+@@ -420,13 +431,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ 		}
+ 
+ 		instrumentation_begin();
+-		if (IS_ENABLED(CONFIG_PREEMPTION)) {
+-#ifdef CONFIG_PREEMPT_DYNAMIC
+-			static_call(irqentry_exit_cond_resched)();
+-#else
+-			irqentry_exit_cond_resched();
+-#endif
+-		}
++		irqentry_exit_cond_resched();
+ 		/* Covers both tracing and lockdep */
+ 		trace_hardirqs_on();
+ 		instrumentation_end();
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 9745613d531c..f56db4bd9730 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6571,29 +6571,29 @@ EXPORT_STATIC_CALL_TRAMP(preempt_schedule_notrace);
+  * SC:might_resched
+  * SC:preempt_schedule
+  * SC:preempt_schedule_notrace
+- * SC:irqentry_exit_cond_resched
++ * SC:__irqentry_exit_cond_resched
+  *
+  *
+  * NONE:
+- *   cond_resched               <- __cond_resched
+- *   might_resched              <- RET0
+- *   preempt_schedule           <- NOP
+- *   preempt_schedule_notrace   <- NOP
+- *   irqentry_exit_cond_resched <- NOP
++ *   cond_resched                 <- __cond_resched
++ *   might_resched                <- RET0
++ *   preempt_schedule             <- NOP
++ *   preempt_schedule_notrace     <- NOP
++ *   __irqentry_exit_cond_resched <- NOP
+  *
+  * VOLUNTARY:
+- *   cond_resched               <- __cond_resched
+- *   might_resched              <- __cond_resched
+- *   preempt_schedule           <- NOP
+- *   preempt_schedule_notrace   <- NOP
+- *   irqentry_exit_cond_resched <- NOP
++ *   cond_resched                 <- __cond_resched
++ *   might_resched                <- __cond_resched
++ *   preempt_schedule             <- NOP
++ *   preempt_schedule_notrace     <- NOP
++ *   __irqentry_exit_cond_resched <- NOP
+  *
+  * FULL:
+- *   cond_resched               <- RET0
+- *   might_resched              <- RET0
+- *   preempt_schedule           <- preempt_schedule
+- *   preempt_schedule_notrace   <- preempt_schedule_notrace
+- *   irqentry_exit_cond_resched <- irqentry_exit_cond_resched
++ *   cond_resched                 <- RET0
++ *   might_resched                <- RET0
++ *   preempt_schedule             <- preempt_schedule
++ *   preempt_schedule_notrace     <- preempt_schedule_notrace
++ *   __irqentry_exit_cond_resched <- __irqentry_exit_cond_resched
+  */
+ 
+ enum {
+@@ -6629,7 +6629,7 @@ void sched_dynamic_update(int mode)
+ 	static_call_update(might_resched, __cond_resched);
+ 	static_call_update(preempt_schedule, __preempt_schedule_func);
+ 	static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
+-	static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++	static_call_update(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ 
+ 	switch (mode) {
+ 	case preempt_dynamic_none:
+@@ -6637,7 +6637,7 @@ void sched_dynamic_update(int mode)
+ 		static_call_update(might_resched, (void *)&__static_call_return0);
+ 		static_call_update(preempt_schedule, NULL);
+ 		static_call_update(preempt_schedule_notrace, NULL);
+-		static_call_update(irqentry_exit_cond_resched, NULL);
++		static_call_update(__irqentry_exit_cond_resched, NULL);
+ 		pr_info("Dynamic Preempt: none\n");
+ 		break;
+ 
+@@ -6646,7 +6646,7 @@ void sched_dynamic_update(int mode)
+ 		static_call_update(might_resched, __cond_resched);
+ 		static_call_update(preempt_schedule, NULL);
+ 		static_call_update(preempt_schedule_notrace, NULL);
+-		static_call_update(irqentry_exit_cond_resched, NULL);
++		static_call_update(__irqentry_exit_cond_resched, NULL);
+ 		pr_info("Dynamic Preempt: voluntary\n");
+ 		break;
+ 
+@@ -6655,7 +6655,7 @@ void sched_dynamic_update(int mode)
+ 		static_call_update(might_resched, (void *)&__static_call_return0);
+ 		static_call_update(preempt_schedule, __preempt_schedule_func);
+ 		static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
+-		static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++		static_call_update(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ 		pr_info("Dynamic Preempt: full\n");
+ 		break;
+ 	}
 -- 
 2.35.1
 
