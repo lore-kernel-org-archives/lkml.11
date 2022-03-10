@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiCJOwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S245601AbiCJOwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:52:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243592AbiCJObw (ORCPT
+        with ESMTP id S236528AbiCJObl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:52 -0500
+        Thu, 10 Mar 2022 09:31:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFA99F3B5;
-        Thu, 10 Mar 2022 06:30:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DEB2AF3;
+        Thu, 10 Mar 2022 06:30:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D03761DF8;
-        Thu, 10 Mar 2022 14:30:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A954C36AE2;
-        Thu, 10 Mar 2022 14:30:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F9C761CF0;
+        Thu, 10 Mar 2022 14:30:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4621BC340E8;
+        Thu, 10 Mar 2022 14:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922648;
-        bh=ZwwrUYRY5dio8pDaWYDTlGOjhbR2smNpyr8q2xrywcw=;
+        s=korg; t=1646922626;
+        bh=O7bwEJKYJXRVJIDfJwdzLbTR7ZgsTiITRhcn192SuLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vIKUG3VxLoN8QTNxGWX/ufF9dyEwrmZ0oRUxGhgtT7oOUxFdYTw6iDlR0GoBpa7BS
-         YX3Saj5lHKWjuFXt76TclOjzP+cw/2doB6ALWtE88ne3vn3mP9pwcf+GlEe5MBAGcU
-         H+H1Ni3wPZ01BVIE7lw+ruCDPIt0z/Iwu6qFMU/0=
+        b=2RAthD9s6ktVntmKp24aOcSGQjN+K262Ess0z2W/4lp63TddtqhTapwjrB2VStiRX
+         OxO/mWQQlWpfjOA2m5hubLQAS+dp/PzHmF9NaU1JLuqDLhTdbvgvgLp2ALhzSWDttX
+         58aEp7yWXp7aP4zw3HwG8vSdWnG8cMHp3BjX/GU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 44/58] ARM: Do not use NOCROSSREFS directive with ld.lld
-Date:   Thu, 10 Mar 2022 15:19:33 +0100
-Message-Id: <20220310140814.238366909@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 37/58] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Thu, 10 Mar 2022 15:19:26 +0100
+Message-Id: <20220310140814.041905678@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -48,47 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: James Morse <james.morse@arm.com>
 
-commit 36168e387fa7d0f1fe0cd5cf76c8cea7aee714fa upstream.
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
 
-ld.lld does not support the NOCROSSREFS directive at the moment, which
-breaks the build after commit b9baf5c8c5c3 ("ARM: Spectre-BHB
-workaround"):
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
 
-  ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got NOCROSSREFS
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
 
-Support for this directive will eventually be implemented, at which
-point a version check can be added. To avoid breaking the build in the
-meantime, just define NOCROSSREFS to nothing when using ld.lld, with a
-link to the issue for tracking.
-
-Cc: stable@vger.kernel.org
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1609
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/vmlinux.lds.h |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/include/asm/spectre.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
---- a/arch/arm/include/asm/vmlinux.lds.h
-+++ b/arch/arm/include/asm/vmlinux.lds.h
-@@ -26,6 +26,14 @@
- #define ARM_MMU_DISCARD(x)	x
- #endif
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -93,5 +93,7 @@ void spectre_v4_enable_task_mitigation(s
  
-+/*
-+ * ld.lld does not support NOCROSSREFS:
-+ * https://github.com/ClangBuiltLinux/linux/issues/1609
-+ */
-+#ifdef CONFIG_LD_IS_LLD
-+#define NOCROSSREFS
-+#endif
+ enum mitigation_state arm64_get_meltdown_state(void);
+ 
++enum mitigation_state arm64_get_spectre_bhb_state(void);
 +
- /* Set start/end symbol names to the LMA for the section */
- #define ARM_LMA(sym, section)						\
- 	sym##_start = LOADADDR(section);				\
+ #endif	/* __ASSEMBLY__ */
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -96,14 +96,39 @@ static bool spectre_v2_mitigations_off(v
+ 	return ret;
+ }
+ 
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
++
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
++
+ 	switch (spectre_v2_state) {
+ 	case SPECTRE_UNAFFECTED:
+-		return sprintf(buf, "Not affected\n");
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
++
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++		fallthrough;
+ 	case SPECTRE_MITIGATED:
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 	case SPECTRE_VULNERABLE:
+ 		fallthrough;
+ 	default:
+@@ -771,6 +796,13 @@ int arch_prctl_spec_ctrl_get(struct task
+ 	}
+ }
+ 
++static enum mitigation_state spectre_bhb_state;
++
++enum mitigation_state arm64_get_spectre_bhb_state(void)
++{
++	return spectre_bhb_state;
++}
++
+ /* Patched to NOP when enabled */
+ void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
+ 						     __le32 *origptr,
 
 
