@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD48C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244987AbiCJOwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:52:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        id S244601AbiCJOwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344073AbiCJObl (ORCPT
+        with ESMTP id S233668AbiCJObl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:31:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB7AE2C;
-        Thu, 10 Mar 2022 06:30:24 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD4CDF62;
+        Thu, 10 Mar 2022 06:30:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4544B61B63;
-        Thu, 10 Mar 2022 14:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487F6C340F3;
-        Thu, 10 Mar 2022 14:30:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E5061C0A;
+        Thu, 10 Mar 2022 14:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F4DC340E8;
+        Thu, 10 Mar 2022 14:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922623;
-        bh=AxC1teQyuVkVP30iRuUx5rWcdT5vrE/3hwpQ9jN7DcA=;
+        s=korg; t=1646922632;
+        bh=aznECDtrCLjMhduI5pusl4speT9yyZT4RO1s2dy+4IM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iJrKo/8ruAJJTdY0Ocw9H9J6yI9rU3i5QOxCO0jAGZuzbkM84FCokeOYCXimysQcn
-         5A3/axFVlQ7eOJt73F85pLVvFxDVVMa7B25ZCT/HySnFGT3FUiG+LF3yH5uhzK6qgt
-         q93uWpch6FqInVauspU8AIO+svhB5bqNaoMcOxbs=
+        b=mahVTAik+bLAkDkkQl+4aeG0NwwK4rFNCTFKr1cX7gK+kVtKu48uY9UEniGl2CL1u
+         CXu8lkn088HmH1mBGdpjJuefyXzAEkotCZKUo7OmZhN9oRboq6mVElu8pD4DZVvfjM
+         tp0BxA87u8b7B86Nd854OOVGGvB9pytjJAcu9gvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.15 36/58] arm64: Add percpu vectors for EL1
-Date:   Thu, 10 Mar 2022 15:19:25 +0100
-Message-Id: <20220310140814.014662756@linuxfoundation.org>
+Subject: [PATCH 5.15 39/58] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+Date:   Thu, 10 Mar 2022 15:19:28 +0100
+Message-Id: <20220310140814.096796487@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -50,196 +52,113 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit bd09128d16fac3c34b80bd6a29088ac632e8ce09 upstream.
+commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
 
-The Spectre-BHB workaround adds a firmware call to the vectors. This
-is needed on some CPUs, but not others. To avoid the unaffected CPU in
-a big/little pair from making the firmware call, create per cpu vectors.
+KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
+implemented, and to preserve that state during migration through its
+firmware register interface.
 
-The per-cpu vectors only apply when returning from EL0.
+Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
 
-Systems using KPTI can use the canonical 'full-fat' vectors directly at
-EL1, the trampoline exit code will switch to this_cpu_vector on exit to
-EL0. Systems not using KPTI should always use this_cpu_vector.
-
-this_cpu_vector will point at a vector in tramp_vecs or
-__bp_harden_el1_vectors, depending on whether KPTI is in use.
-
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/vectors.h |   29 ++++++++++++++++++++++++++++-
- arch/arm64/kernel/cpufeature.c   |   11 +++++++++++
- arch/arm64/kernel/entry.S        |   12 ++++++------
- arch/arm64/kvm/hyp/vhe/switch.c  |    9 +++++++--
- 4 files changed, 52 insertions(+), 9 deletions(-)
+ arch/arm64/include/uapi/asm/kvm.h |    5 +++++
+ arch/arm64/kvm/hypercalls.c       |   12 ++++++++++++
+ arch/arm64/kvm/psci.c             |   18 +++++++++++++++++-
+ 3 files changed, 34 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -5,6 +5,15 @@
- #ifndef __ASM_VECTORS_H
- #define __ASM_VECTORS_H
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -281,6 +281,11 @@ struct kvm_arm_copy_mte_tags {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED     	(1U << 4)
  
-+#include <linux/bug.h>
-+#include <linux/percpu.h>
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
 +
-+#include <asm/fixmap.h>
-+
-+extern char vectors[];
-+extern char tramp_vectors[];
-+extern char __bp_harden_el1_vectors[];
-+
- /*
-  * Note: the order of this enum corresponds to two arrays in entry.S:
-  * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
-@@ -29,6 +38,24 @@ enum arm64_bp_harden_el1_vectors {
- 	 * Remap the kernel before branching to the canonical vectors.
- 	 */
- 	EL1_VECTOR_KPTI,
--+};
-+};
-+
-+/* The vectors to use on return from EL0. e.g. to remap the kernel */
-+DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
-+
-+#ifndef CONFIG_UNMAP_KERNEL_AT_EL0
-+#define TRAMP_VALIAS	0
-+#endif
-+
-+static inline const char *
-+arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
-+{
-+	if (arm64_kernel_unmapped_at_el0())
-+		return (char *)TRAMP_VALIAS + SZ_2K * slot;
-+
-+	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
-+
-+	return __bp_harden_el1_vectors + SZ_2K * slot;
-+}
+ /* SVE registers */
+ #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
  
- #endif /* __ASM_VECTORS_H */
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -73,6 +73,8 @@
- #include <linux/mm.h>
- #include <linux/cpu.h>
- #include <linux/kasan.h>
-+#include <linux/percpu.h>
-+
- #include <asm/cpu.h>
- #include <asm/cpufeature.h>
- #include <asm/cpu_ops.h>
-@@ -85,6 +87,7 @@
- #include <asm/smp.h>
- #include <asm/sysreg.h>
- #include <asm/traps.h>
-+#include <asm/vectors.h>
- #include <asm/virt.h>
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -107,6 +107,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu
+ 				break;
+ 			}
+ 			break;
++		case ARM_SMCCC_ARCH_WORKAROUND_3:
++			switch (arm64_get_spectre_bhb_state()) {
++			case SPECTRE_VULNERABLE:
++				break;
++			case SPECTRE_MITIGATED:
++				val[0] = SMCCC_RET_SUCCESS;
++				break;
++			case SPECTRE_UNAFFECTED:
++				val[0] = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
++				break;
++			}
++			break;
+ 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
+ 			val[0] = SMCCC_RET_SUCCESS;
+ 			break;
+--- a/arch/arm64/kvm/psci.c
++++ b/arch/arm64/kvm/psci.c
+@@ -406,7 +406,7 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
  
- /* Kernel representation of AT_HWCAP and AT_HWCAP2 */
-@@ -110,6 +113,8 @@ DECLARE_BITMAP(boot_capabilities, ARM64_
- bool arm64_use_ng_mappings = false;
- EXPORT_SYMBOL(arm64_use_ng_mappings);
- 
-+DEFINE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector) = vectors;
-+
- /*
-  * Permit PER_LINUX32 and execve() of 32-bit binaries even if not all CPUs
-  * support it?
-@@ -1590,6 +1595,12 @@ kpti_install_ng_mappings(const struct ar
- 
- 	int cpu = smp_processor_id();
- 
-+	if (__this_cpu_read(this_cpu_vector) == vectors) {
-+		const char *v = arm64_get_bp_hardening_vector(EL1_VECTOR_KPTI);
-+
-+		__this_cpu_write(this_cpu_vector, v);
-+	}
-+
- 	/*
- 	 * We don't need to rewrite the page-tables if either we've done
- 	 * it already or we have KASLR enabled and therefore have not
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -38,7 +38,6 @@
- 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
- 	.align 7
- .Lventry_start\@:
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
- 	/*
- 	 * This must be the first instruction of the EL0 vector entries. It is
-@@ -53,7 +52,6 @@
- 	.endif
- .Lskip_tramp_vectors_cleanup\@:
- 	.endif
--#endif
- 
- 	sub	sp, sp, #PT_REGS_SIZE
- #ifdef CONFIG_VMAP_STACK
-@@ -712,10 +710,10 @@ alternative_else_nop_endif
- 	.endm
- 
- 	.macro tramp_exit, regsize = 64
--	adr	x30, tramp_vectors
--#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
--	add	x30, x30, SZ_4K
--#endif
-+	tramp_data_read_var	x30, this_cpu_vector
-+	get_this_cpu_offset x29
-+	ldr	x30, [x30, x29]
-+
- 	msr	vbar_el1, x30
- 	ldr	lr, [sp, #S_LR]
- 	tramp_unmap_kernel	x29
-@@ -775,6 +773,8 @@ __entry_tramp_data_vectors:
- __entry_tramp_data___sdei_asm_handler:
- 	.quad	__sdei_asm_handler
- #endif /* CONFIG_ARM_SDE_INTERFACE */
-+__entry_tramp_data_this_cpu_vector:
-+	.quad	this_cpu_vector
- SYM_DATA_END(__entry_tramp_data_start)
- 	.popsection				// .rodata
- #endif /* CONFIG_RANDOMIZE_BASE */
---- a/arch/arm64/kvm/hyp/vhe/switch.c
-+++ b/arch/arm64/kvm/hyp/vhe/switch.c
-@@ -10,6 +10,7 @@
- #include <linux/kvm_host.h>
- #include <linux/types.h>
- #include <linux/jump_label.h>
-+#include <linux/percpu.h>
- #include <uapi/linux/psci.h>
- 
- #include <kvm/arm_psci.h>
-@@ -25,6 +26,7 @@
- #include <asm/debug-monitors.h>
- #include <asm/processor.h>
- #include <asm/thread_info.h>
-+#include <asm/vectors.h>
- 
- /* VHE specific context */
- DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
-@@ -68,7 +70,7 @@ NOKPROBE_SYMBOL(__activate_traps);
- 
- static void __deactivate_traps(struct kvm_vcpu *vcpu)
+ int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
  {
--	extern char vectors[];	/* kernel exception vectors */
-+	const char *host_vectors = vectors;
- 
- 	___deactivate_traps(vcpu);
- 
-@@ -82,7 +84,10 @@ static void __deactivate_traps(struct kv
- 	asm(ALTERNATIVE("nop", "isb", ARM64_WORKAROUND_SPECULATIVE_AT));
- 
- 	write_sysreg(CPACR_EL1_DEFAULT, cpacr_el1);
--	write_sysreg(vectors, vbar_el1);
-+
-+	if (!arm64_kernel_unmapped_at_el0())
-+		host_vectors = __this_cpu_read(this_cpu_vector);
-+	write_sysreg(host_vectors, vbar_el1);
+-	return 3;		/* PSCI version and two workaround registers */
++	return 4;		/* PSCI version and three workaround registers */
  }
- NOKPROBE_SYMBOL(__deactivate_traps);
+ 
+ int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+@@ -420,6 +420,9 @@ int kvm_arm_copy_fw_reg_indices(struct k
+ 	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
+ 		return -EFAULT;
+ 
++	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
++		return -EFAULT;
++
+ 	return 0;
+ }
+ 
+@@ -459,6 +462,17 @@ static int get_kernel_wa_level(u64 regid
+ 		case SPECTRE_VULNERABLE:
+ 			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+ 		}
++		break;
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
++		switch (arm64_get_spectre_bhb_state()) {
++		case SPECTRE_VULNERABLE:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
++		case SPECTRE_MITIGATED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
++		case SPECTRE_UNAFFECTED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
++		}
++		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -475,6 +489,7 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *
+ 		break;
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+ 		break;
+ 	default:
+@@ -520,6 +535,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *
+ 	}
+ 
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+ 			return -EINVAL;
  
 
 
