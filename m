@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3136CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA9AC4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344448AbiCJOkx (ORCPT
+        id S1344480AbiCJOk4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:40:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
+        Thu, 10 Mar 2022 09:40:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244248AbiCJO2j (ORCPT
+        with ESMTP id S244172AbiCJO2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042D9C7D72;
-        Thu, 10 Mar 2022 06:23:35 -0800 (PST)
+        Thu, 10 Mar 2022 09:28:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC34C2E78;
+        Thu, 10 Mar 2022 06:23:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E621B8267A;
-        Thu, 10 Mar 2022 14:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCB45C340E8;
-        Thu, 10 Mar 2022 14:23:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D28ADB82678;
+        Thu, 10 Mar 2022 14:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2801CC340E8;
+        Thu, 10 Mar 2022 14:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922195;
-        bh=XLsp/kinIQTkJ2i0QRtYM3XMnLfGdTKwwzZbbZDHJbM=;
+        s=korg; t=1646922201;
+        bh=O/puTpS0vTBgPhZGErm9BWdP2JhT+u4Mnv+wuMe7TjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ptMpzVxvqcrFwLXNTeEc5cWVzMNY8BXshPnmbYtQYJbWMcv3Kg/ONeA2RVl7gFM4Z
-         tqr9+F1Eyo9Z0OaRT9cZ1yGgw3b4cluc5lh1P6g/gwPA16u4pu7N1D2ojaFQnb5Xv8
-         pgvSq7IwvNa0qa/eHtkKggWxmPcozmrMDikfB5Tw=
+        b=ETab7GX5Gyj3ySFWakyMkyDiz2rFdQtoX+cs/s5sJeCOLwztIwxR0N81uP1dAn2qO
+         To0BBFb1gJaOosumL1tSEsZJJi5XXbMVRUCqPuh7WJZR0EkHcahqRG8oUzWLYUdIGe
+         1F3EMBLYcYgqHxn/44H+qEsGL9DWQoe3NKlNrWLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.19 09/33] x86/speculation: Warn about Spectre v2 LFENCE mitigation
-Date:   Thu, 10 Mar 2022 15:18:36 +0100
-Message-Id: <20220310140808.022176563@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 4.19 11/33] arm/arm64: Provide a wrapper for SMCCC 1.1 calls
+Date:   Thu, 10 Mar 2022 15:18:38 +0100
+Message-Id: <20220310140808.079209100@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -49,62 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Steven Price <steven.price@arm.com>
 
-commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
+commit 541625ac47ce9d0835efaee0fcbaa251b0000a37 upstream.
 
-With:
+SMCCC 1.1 calls may use either HVC or SMC depending on the PSCI
+conduit. Rather than coding this in every call site, provide a macro
+which uses the correct instruction. The macro also handles the case
+where no conduit is configured/available returning a not supported error
+in res, along with returning the conduit used for the call.
 
-  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
+This allow us to remove some duplicated code and will be useful later
+when adding paravirtualized time hypervisor calls.
 
-it became possible to enable the LFENCE "retpoline" on Intel. However,
-Intel doesn't recommend it, as it has some weaknesses compared to
-retpoline.
-
-Now AMD doesn't recommend it either.
-
-It can still be left available as a cmdline option. It's faster than
-retpoline but is weaker in certain scenarios -- particularly SMT, but
-even non-SMT may be vulnerable in some cases.
-
-So just unconditionally warn if the user requests it on the cmdline.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ include/linux/arm-smccc.h |   58 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -608,6 +608,7 @@ static inline const char *spectre_v2_mod
- static inline const char *spectre_v2_module_string(void) { return ""; }
- #endif
+--- a/include/linux/arm-smccc.h
++++ b/include/linux/arm-smccc.h
+@@ -311,5 +311,63 @@ asmlinkage void __arm_smccc_hvc(unsigned
+ #define SMCCC_RET_NOT_SUPPORTED			-1
+ #define SMCCC_RET_NOT_REQUIRED			-2
  
-+#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
- #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
- 
- #ifdef CONFIG_BPF_SYSCALL
-@@ -929,6 +930,7 @@ static void __init spectre_v2_select_mit
- 		break;
- 
- 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
-+		pr_err(SPECTRE_V2_LFENCE_MSG);
- 		mode = SPECTRE_V2_LFENCE;
- 		break;
- 
-@@ -1693,6 +1695,9 @@ static char *ibpb_state(void)
- 
- static ssize_t spectre_v2_show_state(char *buf)
- {
-+	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
-+		return sprintf(buf, "Vulnerable: LFENCE\n");
++/*
++ * Like arm_smccc_1_1* but always returns SMCCC_RET_NOT_SUPPORTED.
++ * Used when the SMCCC conduit is not defined. The empty asm statement
++ * avoids compiler warnings about unused variables.
++ */
++#define __fail_smccc_1_1(...)						\
++	do {								\
++		__declare_args(__count_args(__VA_ARGS__), __VA_ARGS__);	\
++		asm ("" __constraints(__count_args(__VA_ARGS__)));	\
++		if (___res)						\
++			___res->a0 = SMCCC_RET_NOT_SUPPORTED;		\
++	} while (0)
 +
- 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
- 
++/*
++ * arm_smccc_1_1_invoke() - make an SMCCC v1.1 compliant call
++ *
++ * This is a variadic macro taking one to eight source arguments, and
++ * an optional return structure.
++ *
++ * @a0-a7: arguments passed in registers 0 to 7
++ * @res: result values from registers 0 to 3
++ *
++ * This macro will make either an HVC call or an SMC call depending on the
++ * current SMCCC conduit. If no valid conduit is available then -1
++ * (SMCCC_RET_NOT_SUPPORTED) is returned in @res.a0 (if supplied).
++ *
++ * The return value also provides the conduit that was used.
++ */
++#define arm_smccc_1_1_invoke(...) ({					\
++		int method = arm_smccc_1_1_get_conduit();		\
++		switch (method) {					\
++		case SMCCC_CONDUIT_HVC:					\
++			arm_smccc_1_1_hvc(__VA_ARGS__);			\
++			break;						\
++		case SMCCC_CONDUIT_SMC:					\
++			arm_smccc_1_1_smc(__VA_ARGS__);			\
++			break;						\
++		default:						\
++			__fail_smccc_1_1(__VA_ARGS__);			\
++			method = SMCCC_CONDUIT_NONE;			\
++			break;						\
++		}							\
++		method;							\
++	})
++
++/* Paravirtualised time calls (defined by ARM DEN0057A) */
++#define ARM_SMCCC_HV_PV_TIME_FEATURES				\
++	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
++			   ARM_SMCCC_SMC_64,			\
++			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
++			   0x20)
++
++#define ARM_SMCCC_HV_PV_TIME_ST					\
++	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
++			   ARM_SMCCC_SMC_64,			\
++			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
++			   0x21)
++
+ #endif /*__ASSEMBLY__*/
+ #endif /*__LINUX_ARM_SMCCC_H*/
 
 
