@@ -2,192 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 088A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E22DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245396AbiCJOzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:55:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
+        id S244353AbiCJOzs convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:55:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238187AbiCJOoC (ORCPT
+        with ESMTP id S245476AbiCJOjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:44:02 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB961405D9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:42:55 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id r22so8030501ljd.4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:42:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oX+0+0DrmOoX0UExiTkiHRjD/PO3ZH5Ft00ctb+zEKI=;
-        b=BPRxLuF7n9XtXKwdeuqh95S7kLErSQclSFQdNbqGbFJzJDWmH3Wb/7tEyV1xG95wMw
-         3kfJn51SgR+rTE1KpBjnUHqhhPoUXLJkWK+2Sf6IzO+SXdPbgjlz4oTP4PumMIuY1Kh9
-         82W408Q+3DHPUpvvBOA94keBEAhpUUShpbH0B+Pc+PJD2Ftg49ukCTKAiwNEOvfhD/Lf
-         0TMEKTsBipQwuvdQH7hRdmkTpVhg84LKl76WgqErn7VycOpPuBNIXbyTdgEBwpCnlBB1
-         VmWf2fE/wBz0r3YFwYTUg3Bg7BE2NJX8UgNpaxHiC/UtDM0JXF4h6uIS0ZkI0vC+k1zS
-         cKeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oX+0+0DrmOoX0UExiTkiHRjD/PO3ZH5Ft00ctb+zEKI=;
-        b=lVc8yjPR3YAV6egdpM5GoD4AfbG32jVFy6oZ0GR4BIIPERfMdc4GMflXykxbFKKOT6
-         p4v8Y2Y/4IMzn3tiIrDGgb5Cq/5+z3AItN0zt/w4W6DD8U9kmY1fmsEDxWDpkliMGXcB
-         yAgF/ov42tNLrm/wxmN/oMzqnNLjKjFWkPGhmKI7HA/MYj2nTruvYdUnSjpqKhmH+o/H
-         JHJEjy16sa6ofU711KJarvc5yD6DWpslPVWHB/38vRJ4aOC5iW/NkZRPrjvGYM5aK8Hp
-         2v7S5z1kAjwoVdZw77p1KfpWt8THdFKmAX65eAmtRPoOJQVtMp2wO8+T16rPHFQfy7ME
-         kIvQ==
-X-Gm-Message-State: AOAM531kpWtNk6bbMq+CvE9iKd8+z0xRMu+eE3ivE/2yKAQiOqVVa2Rc
-        YLThkRFMm0goFGdh2yFMiM0WFQ==
-X-Google-Smtp-Source: ABdhPJzP722lajsvMrc+HnxWeW8vAyZEGMHRiNsgRflMATS3Pym4yKLaKJpYUjtyELBKGe+n4wy8BQ==
-X-Received: by 2002:a2e:8745:0:b0:248:600:6649 with SMTP id q5-20020a2e8745000000b0024806006649mr3207422ljj.63.1646923373450;
-        Thu, 10 Mar 2022 06:42:53 -0800 (PST)
-Received: from [192.168.51.243] ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id t2-20020a2e2d02000000b00244dc8ba5absm1100714ljt.117.2022.03.10.06.42.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 06:42:53 -0800 (PST)
-Message-ID: <0eeaf59f-e7eb-7439-3c0a-17e7ac6741f0@blackwall.org>
-Date:   Thu, 10 Mar 2022 16:42:51 +0200
+        Thu, 10 Mar 2022 09:39:42 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 313A2D4447
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:32:51 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-110-jc5_mpacNNeGF6-wP0QCGQ-1; Thu, 10 Mar 2022 14:32:48 +0000
+X-MC-Unique: jc5_mpacNNeGF6-wP0QCGQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 10 Mar 2022 14:32:46 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 10 Mar 2022 14:32:46 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Bharata B Rao' <bharata@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "ananth.narayan@amd.com" <ananth.narayan@amd.com>
+Subject: RE: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+Thread-Topic: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+Thread-Index: AQHYNHBEWuVw0etF4EmWwhK6DFJ++Ky4rWmQ
+Date:   Thu, 10 Mar 2022 14:32:46 +0000
+Message-ID: <699fb763ac054833bc8c29c9814c63b2@AcuMS.aculab.com>
+References: <20220310111545.10852-1-bharata@amd.com>
+In-Reply-To: <20220310111545.10852-1-bharata@amd.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked
- port feature
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/03/2022 16:23, Hans Schultz wrote:
-> Add an intermediate state for clients behind a locked port to allow for
-> possible opening of the port for said clients. This feature corresponds
-> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
-> latter defined by Cisco.
+From: Bharata B Rao <bharata@amd.com>
+> Sent: 10 March 2022 11:16
 > 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
->   include/uapi/linux/neighbour.h |  1 +
->   net/bridge/br_fdb.c            |  6 ++++++
->   net/bridge/br_input.c          | 11 ++++++++++-
->   net/bridge/br_private.h        |  3 ++-
->   4 files changed, 19 insertions(+), 2 deletions(-)
+> This patchset makes use of Upper Address Ignore (UAI) feature available
+> on upcoming AMD processors to provide user address tagging support for x86/AMD.
 > 
-> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-> index db05fb55055e..83115a592d58 100644
-> --- a/include/uapi/linux/neighbour.h
-> +++ b/include/uapi/linux/neighbour.h
-> @@ -208,6 +208,7 @@ enum {
->   	NFEA_UNSPEC,
->   	NFEA_ACTIVITY_NOTIFY,
->   	NFEA_DONT_REFRESH,
-> +	NFEA_LOCKED,
->   	__NFEA_MAX
->   };
+> UAI allows software to store a tag in the upper 7 bits of a logical
+> address [63:57]. When enabled, the processor will suppress the
+> traditional canonical address checks on the addresses. More information
+> about UAI can be found in section 5.10 of 'AMD64 Architecture
+> Programmer's Manual, Vol 2: System Programming' which is available from
+> 
+> https://bugzilla.kernel.org/attachment.cgi?id=300549
 
-Hmm, can you use NDA_FLAGS_EXT instead ?
-That should simplify things and reduce the nl size.
+Is that really allowing bit 63 to be used?
+That is normally the user-kernel bit.
+I can't help feeling that will just badly break things.
 
->   #define NFEA_MAX (__NFEA_MAX - 1)
-> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-> index 6ccda68bd473..396dcf3084cf 100644
-> --- a/net/bridge/br_fdb.c
-> +++ b/net/bridge/br_fdb.c
-> @@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
->   	struct nda_cacheinfo ci;
->   	struct nlmsghdr *nlh;
->   	struct ndmsg *ndm;
-> +	u8 ext_flags = 0;
->   
->   	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
->   	if (nlh == NULL)
-> @@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
->   		ndm->ndm_flags |= NTF_EXT_LEARNED;
->   	if (test_bit(BR_FDB_STICKY, &fdb->flags))
->   		ndm->ndm_flags |= NTF_STICKY;
-> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
-> +		ext_flags |= 1 << NFEA_LOCKED;
->   
->   	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
->   		goto nla_put_failure;
->   	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
->   		goto nla_put_failure;
-> +	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
-> +		goto nla_put_failure;
-> +
->   	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
->   	ci.ndm_confirmed = 0;
->   	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index e0c13fcc50ed..897908484b18 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->   	struct net_bridge_mcast *brmctx;
->   	struct net_bridge_vlan *vlan;
->   	struct net_bridge *br;
-> +	unsigned long flags = 0;
+Otherwise the best thing is just to change access_ok()
+to only reject addresses with the top bit set.
+Then you shouldn't need any extra tests in the fast-path
+of access_ok().
 
-Please move this below...
+	David
 
->   	u16 vid = 0;
->   	u8 state;
->   
-> @@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->   			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
->   
->   		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
-> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
-> +			if (!fdb_src) {
-
-... here where it's only used.
-
-> +				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
-> +				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
-> +			}
->   			goto drop;
-> +		} else {
-> +			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
-> +				goto drop;
-> +		}
->   	}
->   
->   	nbp_switchdev_frame_mark(p, skb);
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 48bc61ebc211..f5a0b68c4857 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -248,7 +248,8 @@ enum {
->   	BR_FDB_ADDED_BY_EXT_LEARN,
->   	BR_FDB_OFFLOADED,
->   	BR_FDB_NOTIFY,
-> -	BR_FDB_NOTIFY_INACTIVE
-> +	BR_FDB_NOTIFY_INACTIVE,
-> +	BR_FDB_ENTRY_LOCKED,
->   };
->   
->   struct net_bridge_fdb_key {
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
