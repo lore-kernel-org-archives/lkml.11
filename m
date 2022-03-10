@@ -2,83 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241014AbiCJJyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:54:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
+        id S241047AbiCJJyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:54:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241031AbiCJJyE (ORCPT
+        with ESMTP id S241033AbiCJJyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 04:54:04 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8314197BBE;
-        Thu, 10 Mar 2022 01:52:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646905980; x=1678441980;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hQ88M2thWVMv951o9xrRQLwqeDq6XC6dMQcAlluRG0w=;
-  b=xcXGUsW/73AN8zZ7DfTy7EDdqSIx/bAgKYeDkS46PmxravGub54bg7Hc
-   QVs7RjQAna8yxWQ7cTl012QkRclgcFGv0MjWpuw0kSAbrTLeXfZZfN2Gp
-   DmiVohWxvrNsD1GaQC7G54DXyYUNeU04fmTXg9sb1IZSr/H/XxFq8+0wa
-   BEaipf7/aIU8VhGTsFd/6SDv/cafAazA2TMjv7n6Lpc3r7aMDgz+5Q+kw
-   RedvIT24dCmHfYkwj+aBcr5WmqGy+0Pis/8eie2l0qQ53IzI/vNJqnrgO
-   t4YxHR/UZ2YcmNz869RJEaypxhf9Dv+D6QEAdR5CNn8eJr4tg4EolZIo7
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,170,1643698800"; 
-   d="scan'208";a="155948566"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 02:52:57 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Mar 2022 02:52:56 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 02:52:54 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH v9 09/13] media: atmel: atmel-sama7g5-isc: remove stray line
-Date:   Thu, 10 Mar 2022 11:51:58 +0200
-Message-ID: <20220310095202.2701399-10-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220310095202.2701399-1-eugen.hristev@microchip.com>
-References: <20220310095202.2701399-1-eugen.hristev@microchip.com>
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8163B434A1;
+        Thu, 10 Mar 2022 01:52:53 -0800 (PST)
+Received: from zn.tnic (p200300ea97193878fa50b3d92789953a.dip0.t-ipconnect.de [IPv6:2003:ea:9719:3878:fa50:b3d9:2789:953a])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 292681EC0644;
+        Thu, 10 Mar 2022 10:52:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646905972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V0Fb300fSebS4i9B9w/sAZrMoYBxU/8cREsoOOVoTbM=;
+        b=Yp3eidbngjg7IwQDczK2Pm2FpoQo2PycDMK2CzW4MJdqHg8+FMfvGunUWnrf+4nKCw0BQA
+        Q+4LuiBqLoSAlSrWt5Lca5mFlELxdtsVwglrd72jhG/6Xuwhh+rLGfaLulkj49PgP1WGDh
+        wkc3W2lj5Qv5430qmZ6Shw7KdIU3hRw=
+From:   Borislav Petkov <bp@alien8.de>
+To:     linux-edac <linux-edac@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/5] EDAC/pci: Get rid of the silly one-shot memory allocation in edac_pci_alloc_ctl_info()
+Date:   Thu, 10 Mar 2022 10:52:51 +0100
+Message-Id: <20220310095254.1510-3-bp@alien8.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220310095254.1510-1-bp@alien8.de>
+References: <20220310095254.1510-1-bp@alien8.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove stray line from formats struct.
+From: Borislav Petkov <bp@suse.de>
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Use boring kzalloc() instead.
+
+There should be no functional changes resulting from this.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
 ---
- drivers/media/platform/atmel/atmel-sama7g5-isc.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/edac/edac_pci.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama7g5-isc.c b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-index a0d60cfdba7b..638af8da2694 100644
---- a/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama7g5-isc.c
-@@ -225,7 +225,6 @@ static struct isc_format sama7g5_formats_list[] = {
- 		.mbus_code	= MEDIA_BUS_FMT_Y10_1X10,
- 		.pfe_cfg0_bps	= ISC_PFG_CFG0_BPS_TEN,
- 	},
--
- };
+diff --git a/drivers/edac/edac_pci.c b/drivers/edac/edac_pci.c
+index 48c844a72a27..2205d7e731db 100644
+--- a/drivers/edac/edac_pci.c
++++ b/drivers/edac/edac_pci.c
+@@ -29,32 +29,31 @@ static LIST_HEAD(edac_pci_list);
+ static atomic_t pci_indexes = ATOMIC_INIT(0);
  
- static void isc_sama7g5_config_csc(struct isc_device *isc)
+ struct edac_pci_ctl_info *edac_pci_alloc_ctl_info(unsigned int sz_pvt,
+-						const char *edac_pci_name)
++						  const char *edac_pci_name)
+ {
+ 	struct edac_pci_ctl_info *pci;
+-	void *p = NULL, *pvt;
+-	unsigned int size;
+ 
+ 	edac_dbg(1, "\n");
+ 
+-	pci = edac_align_ptr(&p, sizeof(*pci), 1);
+-	pvt = edac_align_ptr(&p, 1, sz_pvt);
+-	size = ((unsigned long)pvt) + sz_pvt;
+-
+-	/* Alloc the needed control struct memory */
+-	pci = kzalloc(size, GFP_KERNEL);
+-	if (pci  == NULL)
++	pci = kzalloc(sizeof(struct edac_pci_ctl_info), GFP_KERNEL);
++	if (!pci)
+ 		return NULL;
+ 
+-	/* Now much private space */
+-	pvt = sz_pvt ? ((char *)pci) + ((unsigned long)pvt) : NULL;
++	if (sz_pvt) {
++		pci->pvt_info = kzalloc(sz_pvt, GFP_KERNEL);
++		if (!pci->pvt_info)
++			goto free;
++	}
+ 
+-	pci->pvt_info = pvt;
+ 	pci->op_state = OP_ALLOC;
+ 
+ 	snprintf(pci->name, strlen(edac_pci_name) + 1, "%s", edac_pci_name);
+ 
+ 	return pci;
++
++free:
++	kfree(pci);
++	return NULL;
+ }
+ EXPORT_SYMBOL_GPL(edac_pci_alloc_ctl_info);
+ 
 -- 
-2.25.1
+2.29.2
 
