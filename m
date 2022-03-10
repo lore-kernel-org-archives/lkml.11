@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0756C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243685AbiCJOYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        id S243695AbiCJOYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244160AbiCJOS7 (ORCPT
+        with ESMTP id S244221AbiCJOTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:18:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A671B251A;
-        Thu, 10 Mar 2022 06:15:39 -0800 (PST)
+        Thu, 10 Mar 2022 09:19:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A08016EA89;
+        Thu, 10 Mar 2022 06:15:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BA2261C67;
-        Thu, 10 Mar 2022 14:15:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EFDDC340EB;
-        Thu, 10 Mar 2022 14:15:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B380DB82670;
+        Thu, 10 Mar 2022 14:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04FB5C340E8;
+        Thu, 10 Mar 2022 14:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921730;
-        bh=0SlhBY9FVbky4lNAtCvq+QSM2Rt7IiNUXbD6lBysKLc=;
+        s=korg; t=1646921739;
+        bh=j/EL99Pu2UnuISmJdrysYZRkmrG+zl/CC4wcBIFNKFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UFdYgh6FsYyGQ7q7XfxNsSGATpZUv/rCFqabsEK7FGXO2merKw+w/O3ZXHFDFAEDZ
-         aHhTa3QxPMH93gLRz/8YzcqWyEZjqjIeb7KpeZDfgl8cW4xiaDSOXt+dYfWW65lupV
-         Alb7/h4JzYqaKX/+3p1XR6YxyG4H4+Ea+f+/qLbo=
+        b=2izOunQE91Ns77DBUm9EBUkwOhTqAww1px4w78JylOZsb0y9dSEndqs958OZRyhA1
+         VX9aaXnmn8Jw0RXdVvxB2EN8YGOEn5uPxbk66WgTRYRyv4OBa/YVkogUlFv1PQ9BFX
+         OhW0QrYhBkUEmf2B/UpPJgnigmjfmtcxLOD3mg/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Demi Marie Obenour <demi@invisiblethingslab.com>,
         Juergen Gross <jgross@suse.com>,
         Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.9 35/38] xen/gntalloc: dont use gnttab_query_foreign_access()
-Date:   Thu, 10 Mar 2022 15:13:48 +0100
-Message-Id: <20220310140809.157981695@linuxfoundation.org>
+Subject: [PATCH 4.9 38/38] xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
+Date:   Thu, 10 Mar 2022 15:13:51 +0100
+Message-Id: <20220310140809.242977132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -52,76 +52,136 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Juergen Gross <jgross@suse.com>
 
-Commit d3b6372c5881cb54925212abb62c521df8ba4809 upstream.
+Commit 66e3531b33ee51dad17c463b4d9c9f52e341503d upstream.
 
-Using gnttab_query_foreign_access() is unsafe, as it is racy by design.
+When calling gnttab_end_foreign_access_ref() the returned value must
+be tested and the reaction to that value should be appropriate.
 
-The use case in the gntalloc driver is not needed at all. While at it
-replace the call of gnttab_end_foreign_access_ref() with a call of
-gnttab_end_foreign_access(), which is what is really wanted there. In
-case the grant wasn't used due to an allocation failure, just free the
-grant via gnttab_free_grant_reference().
+In case of failure in xennet_get_responses() the reaction should not be
+to crash the system, but to disable the network device.
 
-This is CVE-2022-23039 / part of XSA-396.
+The calls in setup_netfront() can be replaced by calls of
+gnttab_end_foreign_access(). While at it avoid double free of ring
+pages and grant references via xennet_disconnect_backend() in this case.
+
+This is CVE-2022-23042 / part of XSA-396.
 
 Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/gntalloc.c |   25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ drivers/net/xen-netfront.c |   48 +++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
 
---- a/drivers/xen/gntalloc.c
-+++ b/drivers/xen/gntalloc.c
-@@ -166,20 +166,14 @@ undo:
- 		__del_gref(gref);
- 	}
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -838,7 +838,6 @@ static int xennet_get_responses(struct n
+ 	int max = XEN_NETIF_NR_SLOTS_MIN + (rx->status <= RX_COPY_THRESHOLD);
+ 	int slots = 1;
+ 	int err = 0;
+-	unsigned long ret;
  
--	/* It's possible for the target domain to map the just-allocated grant
--	 * references by blindly guessing their IDs; if this is done, then
--	 * __del_gref will leave them in the queue_gref list. They need to be
--	 * added to the global list so that we can free them when they are no
--	 * longer referenced.
--	 */
--	if (unlikely(!list_empty(&queue_gref)))
--		list_splice_tail(&queue_gref, &gref_list);
- 	mutex_unlock(&gref_mutex);
- 	return rc;
- }
+ 	if (rx->flags & XEN_NETRXF_extra_info) {
+ 		err = xennet_get_extras(queue, extras, rp);
+@@ -869,8 +868,13 @@ static int xennet_get_responses(struct n
+ 			goto next;
+ 		}
  
- static void __del_gref(struct gntalloc_gref *gref)
+-		ret = gnttab_end_foreign_access_ref(ref, 0);
+-		BUG_ON(!ret);
++		if (!gnttab_end_foreign_access_ref(ref, 0)) {
++			dev_alert(dev,
++				  "Grant still in use by backend domain\n");
++			queue->info->broken = true;
++			dev_alert(dev, "Disabled for further use\n");
++			return -EINVAL;
++		}
+ 
+ 		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+ 
+@@ -1074,6 +1078,10 @@ static int xennet_poll(struct napi_struc
+ 		err = xennet_get_responses(queue, &rinfo, rp, &tmpq);
+ 
+ 		if (unlikely(err)) {
++			if (queue->info->broken) {
++				spin_unlock(&queue->rx_lock);
++				return 0;
++			}
+ err:
+ 			while ((skb = __skb_dequeue(&tmpq)))
+ 				__skb_queue_tail(&errq, skb);
+@@ -1671,7 +1679,7 @@ static int setup_netfront(struct xenbus_
+ 			struct netfront_queue *queue, unsigned int feature_split_evtchn)
  {
-+	unsigned long addr;
-+
- 	if (gref->notify.flags & UNMAP_NOTIFY_CLEAR_BYTE) {
- 		uint8_t *tmp = kmap(gref->page);
- 		tmp[gref->notify.pgoff] = 0;
-@@ -193,21 +187,16 @@ static void __del_gref(struct gntalloc_g
- 	gref->notify.flags = 0;
+ 	struct xen_netif_tx_sring *txs;
+-	struct xen_netif_rx_sring *rxs;
++	struct xen_netif_rx_sring *rxs = NULL;
+ 	grant_ref_t gref;
+ 	int err;
  
- 	if (gref->gref_id) {
--		if (gnttab_query_foreign_access(gref->gref_id))
--			return;
--
--		if (!gnttab_end_foreign_access_ref(gref->gref_id, 0))
--			return;
--
--		gnttab_free_grant_reference(gref->gref_id);
-+		if (gref->page) {
-+			addr = (unsigned long)page_to_virt(gref->page);
-+			gnttab_end_foreign_access(gref->gref_id, 0, addr);
-+		} else
-+			gnttab_free_grant_reference(gref->gref_id);
+@@ -1691,21 +1699,21 @@ static int setup_netfront(struct xenbus_
+ 
+ 	err = xenbus_grant_ring(dev, txs, 1, &gref);
+ 	if (err < 0)
+-		goto grant_tx_ring_fail;
++		goto fail;
+ 	queue->tx_ring_ref = gref;
+ 
+ 	rxs = (struct xen_netif_rx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
+ 	if (!rxs) {
+ 		err = -ENOMEM;
+ 		xenbus_dev_fatal(dev, err, "allocating rx ring page");
+-		goto alloc_rx_ring_fail;
++		goto fail;
  	}
+ 	SHARED_RING_INIT(rxs);
+ 	FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
  
- 	gref_size--;
- 	list_del(&gref->next_gref);
+ 	err = xenbus_grant_ring(dev, rxs, 1, &gref);
+ 	if (err < 0)
+-		goto grant_rx_ring_fail;
++		goto fail;
+ 	queue->rx_ring_ref = gref;
  
--	if (gref->page)
--		__free_page(gref->page);
--
- 	kfree(gref);
+ 	if (feature_split_evtchn)
+@@ -1718,22 +1726,28 @@ static int setup_netfront(struct xenbus_
+ 		err = setup_netfront_single(queue);
+ 
+ 	if (err)
+-		goto alloc_evtchn_fail;
++		goto fail;
+ 
+ 	return 0;
+ 
+ 	/* If we fail to setup netfront, it is safe to just revoke access to
+ 	 * granted pages because backend is not accessing it at this point.
+ 	 */
+-alloc_evtchn_fail:
+-	gnttab_end_foreign_access_ref(queue->rx_ring_ref, 0);
+-grant_rx_ring_fail:
+-	free_page((unsigned long)rxs);
+-alloc_rx_ring_fail:
+-	gnttab_end_foreign_access_ref(queue->tx_ring_ref, 0);
+-grant_tx_ring_fail:
+-	free_page((unsigned long)txs);
+-fail:
++ fail:
++	if (queue->rx_ring_ref != GRANT_INVALID_REF) {
++		gnttab_end_foreign_access(queue->rx_ring_ref, 0,
++					  (unsigned long)rxs);
++		queue->rx_ring_ref = GRANT_INVALID_REF;
++	} else {
++		free_page((unsigned long)rxs);
++	}
++	if (queue->tx_ring_ref != GRANT_INVALID_REF) {
++		gnttab_end_foreign_access(queue->tx_ring_ref, 0,
++					  (unsigned long)txs);
++		queue->tx_ring_ref = GRANT_INVALID_REF;
++	} else {
++		free_page((unsigned long)txs);
++	}
+ 	return err;
  }
  
 
