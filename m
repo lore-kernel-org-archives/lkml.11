@@ -2,255 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A985C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B399C38161
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343685AbiCJOkD (ORCPT
+        id S1344538AbiCJOlA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:40:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
+        Thu, 10 Mar 2022 09:41:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343939AbiCJOba (ORCPT
+        with ESMTP id S244409AbiCJO2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A24EAC7D;
-        Thu, 10 Mar 2022 06:28:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 935DBB825F3;
-        Thu, 10 Mar 2022 14:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082A0C340E8;
-        Thu, 10 Mar 2022 14:28:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922534;
-        bh=/203vQ7Ll4HsnUOWWBIXgzSMnM3kMkROhnTKxdLW5Ns=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wKrPHDLLjVlXyrv5rt6W32vQtqMnuxCQPNjBspXE+HGaRKnk8RpFuOt9NinuQDZ1A
-         Y21xgdA9sWf8h9p0symY66jWVBBAehMb7eJMHcbHfLhF/a3cQxZtUm5xiahtFAvmxm
-         9Xu1VM2tyCMJxbo97BigGtWLMEoiM8KZJcU+wopE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Frank van der Linden <fllinden@amazon.com>
-Subject: [PATCH 5.15 03/58] x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
-Date:   Thu, 10 Mar 2022 15:18:52 +0100
-Message-Id: <20220310140813.083886118@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
-References: <20220310140812.983088611@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:28:54 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EECD108F;
+        Thu, 10 Mar 2022 06:23:56 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id 3so9730128lfr.7;
+        Thu, 10 Mar 2022 06:23:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
+        b=nCKpcv8pOchn2LpC3a/sEnI8cxJFMz8viJQDl7VV8+p0GiE3TYJ7Tvz1BJEHn/4MfZ
+         T7gX/nVKdlYi3BEEDxDduv+dwNSZ6h3g6OBm0IvBc8qgolkU0UP0kMcjP+RYSQpZM9I+
+         NFQmUbZGwC2h1JkqvAY5XbGLqyvEWKrisf/O0hMRFPLuXTaD/TYBtiR/W5Br/qxcoxev
+         hHid6O4YHi50rYahmytGQ36sGAdlyvB6xYuq5pfU/UWIQXGXDpLenJwB/pX08zahrUEK
+         6NUOjLb80aPnM8ZT8Y0VsVa1rz6SiO0yAowTfsS4eSbX/c0iRZwRzu+vjyBhUT99hebH
+         WAKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
+        b=hOEqqfbIiXViWCCCbadv5e88pbo7B+FQePZxU8Uo8mtDxuIMu7joFqrOO2uXVGPona
+         L7PdZ2MGv1PDIwA14tVffBv0/pVfkjSZtTxu80XWe85GR2CxsSsF+I6q1KOcUUTYzbi7
+         n57Zr5plKL+XWBtJsJvZHH3glalGMLT7HUb62OB01js6z4gJNzxt7CPyja3lh3YZ3J+R
+         VRSApQbq162lCo3gVDMD4kdQQ5cBLkO6jmS1834NNTnOGfF//J2URBZBGCwmr9v6KvW3
+         o14NihTvKxYIWlujc40e522i4+2kbGEN0nvVvI0b/v3RVnQj1oYqkwlv1edqRrEE8jRs
+         AVJg==
+X-Gm-Message-State: AOAM531jj9e7CtOvwmfmFdcCVAJwcBP7ZSi1ungmW2vSN8bBRtvc83ZC
+        kT1jAEzYdsK0gAcpvEt11NY=
+X-Google-Smtp-Source: ABdhPJycknNX5QY9A00iArbnxz8DgutUT/nn0zkVJ+dDezoA+QItx/kkE8HXhBp2tgEHq05zhytS0w==
+X-Received: by 2002:a05:6512:1698:b0:445:bc1d:3835 with SMTP id bu24-20020a056512169800b00445bc1d3835mr3065989lfb.122.1646922227753;
+        Thu, 10 Mar 2022 06:23:47 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id 10-20020a2e080a000000b00247f82bbc6fsm1088932lji.54.2022.03.10.06.23.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:23:47 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH net-next 2/3] net: switchdev: add support for offloading of fdb locked flag
+Date:   Thu, 10 Mar 2022 15:23:19 +0100
+Message-Id: <20220310142320.611738-3-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Used for Mac-auth/MAB feature in the offloaded case.
 
-commit d45476d9832409371537013ebdd8dc1a7781f97a upstream.
-
-The RETPOLINE_AMD name is unfortunate since it isn't necessarily
-AMD only, in fact Hygon also uses it. Furthermore it will likely be
-sufficient for some Intel processors. Therefore rename the thing to
-RETPOLINE_LFENCE to better describe what it is.
-
-Add the spectre_v2=retpoline,lfence option as an alias to
-spectre_v2=retpoline,amd to preserve existing setups. However, the output
-of /sys/devices/system/cpu/vulnerabilities/spectre_v2 will be changed.
-
-  [ bp: Fix typos, massage. ]
-
-Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-[fllinden@amazon.com: backported to 5.15]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- arch/x86/include/asm/cpufeatures.h       |    2 +-
- arch/x86/include/asm/nospec-branch.h     |   12 ++++++------
- arch/x86/kernel/cpu/bugs.c               |   29 ++++++++++++++++++-----------
- arch/x86/lib/retpoline.S                 |    2 +-
- tools/arch/x86/include/asm/cpufeatures.h |    2 +-
- 5 files changed, 27 insertions(+), 20 deletions(-)
+ include/net/switchdev.h | 3 ++-
+ net/bridge/br.c         | 3 ++-
+ net/bridge/br_fdb.c     | 7 +++++--
+ net/bridge/br_private.h | 2 +-
+ 4 files changed, 10 insertions(+), 5 deletions(-)
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -204,7 +204,7 @@
- /* FREE!                                ( 7*32+10) */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
- #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
--#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
-+#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -81,7 +81,7 @@
- #ifdef CONFIG_RETPOLINE
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
- 		      __stringify(jmp __x86_indirect_thunk_\reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_AMD
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
- #else
- 	jmp	*%\reg
- #endif
-@@ -91,7 +91,7 @@
- #ifdef CONFIG_RETPOLINE
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; call *%\reg), \
- 		      __stringify(call __x86_indirect_thunk_\reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *%\reg), X86_FEATURE_RETPOLINE_AMD
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *%\reg), X86_FEATURE_RETPOLINE_LFENCE
- #else
- 	call	*%\reg
- #endif
-@@ -133,7 +133,7 @@
- 	"lfence;\n"						\
- 	ANNOTATE_RETPOLINE_SAFE					\
- 	"call *%[thunk_target]\n",				\
--	X86_FEATURE_RETPOLINE_AMD)
-+	X86_FEATURE_RETPOLINE_LFENCE)
- 
- # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
- 
-@@ -163,7 +163,7 @@
- 	"lfence;\n"						\
- 	ANNOTATE_RETPOLINE_SAFE					\
- 	"call *%[thunk_target]\n",				\
--	X86_FEATURE_RETPOLINE_AMD)
-+	X86_FEATURE_RETPOLINE_LFENCE)
- 
- # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
- #endif
-@@ -175,8 +175,8 @@
- /* The Spectre V2 mitigation variants */
- enum spectre_v2_mitigation {
- 	SPECTRE_V2_NONE,
--	SPECTRE_V2_RETPOLINE_GENERIC,
--	SPECTRE_V2_RETPOLINE_AMD,
-+	SPECTRE_V2_RETPOLINE,
-+	SPECTRE_V2_LFENCE,
- 	SPECTRE_V2_IBRS_ENHANCED,
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 3e424d40fae3..d5d923411f5e 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -229,7 +229,8 @@ struct switchdev_notifier_fdb_info {
+ 	u16 vid;
+ 	u8 added_by_user:1,
+ 	   is_local:1,
+-	   offloaded:1;
++	   offloaded:1,
++	   locked:1;
  };
  
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -664,7 +664,7 @@ enum spectre_v2_mitigation_cmd {
- 	SPECTRE_V2_CMD_FORCE,
- 	SPECTRE_V2_CMD_RETPOLINE,
- 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
--	SPECTRE_V2_CMD_RETPOLINE_AMD,
-+	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
- };
- 
- enum spectre_v2_user_cmd {
-@@ -824,8 +824,8 @@ set_mode:
- 
- static const char * const spectre_v2_strings[] = {
- 	[SPECTRE_V2_NONE]			= "Vulnerable",
--	[SPECTRE_V2_RETPOLINE_GENERIC]		= "Mitigation: Full generic retpoline",
--	[SPECTRE_V2_RETPOLINE_AMD]		= "Mitigation: Full AMD retpoline",
-+	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
-+	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
- 	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
- };
- 
-@@ -837,7 +837,8 @@ static const struct {
- 	{ "off",		SPECTRE_V2_CMD_NONE,		  false },
- 	{ "on",			SPECTRE_V2_CMD_FORCE,		  true  },
- 	{ "retpoline",		SPECTRE_V2_CMD_RETPOLINE,	  false },
--	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_AMD,	  false },
-+	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
-+	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
- 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
- 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
- };
-@@ -875,13 +876,19 @@ static enum spectre_v2_mitigation_cmd __
- 	}
- 
- 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
--	     cmd == SPECTRE_V2_CMD_RETPOLINE_AMD ||
-+	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
- 	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
- 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
- 		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
- 		return SPECTRE_V2_CMD_AUTO;
- 	}
- 
-+	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
-+	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
-+		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
-+		return SPECTRE_V2_CMD_AUTO;
-+	}
-+
- 	spec_v2_print_cond(mitigation_options[i].option,
- 			   mitigation_options[i].secure);
- 	return cmd;
-@@ -916,9 +923,9 @@ static void __init spectre_v2_select_mit
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
- 			goto retpoline_auto;
- 		break;
--	case SPECTRE_V2_CMD_RETPOLINE_AMD:
-+	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
--			goto retpoline_amd;
-+			goto retpoline_lfence;
- 		break;
- 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
-@@ -935,17 +942,17 @@ static void __init spectre_v2_select_mit
- retpoline_auto:
- 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
- 	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
--	retpoline_amd:
-+	retpoline_lfence:
- 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
- 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
- 			goto retpoline_generic;
+ struct switchdev_notifier_port_obj_info {
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index b1dea3febeea..adcdbecbc218 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
+ 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+ 		fdb_info = ptr;
+ 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+-						fdb_info->vid, false);
++						fdb_info->vid, false,
++						fdb_info->locked);
+ 		if (err) {
+ 			err = notifier_from_errno(err);
+ 			break;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 396dcf3084cf..91387aa7e400 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -987,7 +987,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+ 					   "FDB entry towards bridge must be permanent");
+ 			return -EINVAL;
  		}
--		mode = SPECTRE_V2_RETPOLINE_AMD;
--		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
-+		mode = SPECTRE_V2_LFENCE;
-+		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+-		err = br_fdb_external_learn_add(br, p, addr, vid, true);
++		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
  	} else {
- 	retpoline_generic:
--		mode = SPECTRE_V2_RETPOLINE_GENERIC;
-+		mode = SPECTRE_V2_RETPOLINE;
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
- 	}
+ 		spin_lock_bh(&br->hash_lock);
+ 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+@@ -1216,7 +1216,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
  
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -34,7 +34,7 @@ SYM_FUNC_START(__x86_indirect_thunk_\reg
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify)
++			      bool swdev_notify, bool locked)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 	bool modified = false;
+@@ -1236,6 +1236,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 		if (!p)
+ 			flags |= BIT(BR_FDB_LOCAL);
  
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
- 		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_AMD
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
- 
- SYM_FUNC_END(__x86_indirect_thunk_\reg)
- 
---- a/tools/arch/x86/include/asm/cpufeatures.h
-+++ b/tools/arch/x86/include/asm/cpufeatures.h
-@@ -204,7 +204,7 @@
- /* FREE!                                ( 7*32+10) */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
- #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
--#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
-+#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
-
++		if (locked)
++			flags |= BIT(BR_FDB_ENTRY_LOCKED);
++
+ 		fdb = fdb_create(br, p, addr, vid, flags);
+ 		if (!fdb) {
+ 			err = -ENOMEM;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index f5a0b68c4857..3275e33b112f 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -790,7 +790,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify);
++			      bool swdev_notify, bool locked);
+ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+ 			      bool swdev_notify);
+-- 
+2.30.2
 
