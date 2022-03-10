@@ -2,241 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E83C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C380AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242382AbiCJNZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
+        id S242389AbiCJNZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:25:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236943AbiCJNZN (ORCPT
+        with ESMTP id S236943AbiCJNZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:25:13 -0500
-X-Greylist: delayed 652 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 05:24:10 PST
-Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB979A4DC;
-        Thu, 10 Mar 2022 05:24:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1646917891;
-        bh=pmnm+l4Ris569uSGaDzzAWRmTE1k7P6kzMdlq+dUBJU=;
-        h=From:To:CC:Subject:Date:From;
-        b=IEYJKJPTVm6IOq4bFF/sqtLs/b1NqX7NZant+U2HkO2ybbBVF1ouTkmXAZxpFCNvO
-         uPKG7rkztrUh4a/4De4gSUHeQ3uOk+TM4pimYj6jH6EAnS7iTsKs+yyL4U3um/BRuA
-         kBccWgEp66MweKLrnhVCtjYzyFfm++5bI6XiEQqULuOkGQHXFQEUCxIN/8vXCBitcN
-         0bgcpa79nFuZi0nBvZQoEdqW2JOVGFZKzt0bEJul7KJoujxgs9nP/y5D59h0BngDAl
-         fQTcara+u9IHnCttbfu7VtyoAtDXIR8SQgQBNx6umXul3Q1FNIvVCRj/ezXKiLoKAL
-         nCKe7LW2I51NA==
-X-secureTransport-forwarded: yes
-From:   Dominik Kierner <dkierner@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To:     "javierm@redhat.com" <javierm@redhat.com>
-CC:     "airlied@linux.ie" <airlied@linux.ie>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "maxime@cerno.tech" <maxime@cerno.tech>,
-        "noralf@tronnes.org" <noralf@tronnes.org>,
-        "sam@ravnborg.org" <sam@ravnborg.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
-Thread-Topic: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED
- displays
-Thread-Index: Adg0f9qHOCAIrgXYTGq8frgJBu/0lA==
-Date:   Thu, 10 Mar 2022 13:11:27 +0000
-Message-ID: <5d817ea54144414aa7865a72694b5811@dh-electronics.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 10 Mar 2022 08:25:49 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679C7CF38E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:24:48 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 260653F30F
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:24:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646918687;
+        bh=AC2QV+BOHtvgXwOifEM5ca7aMnsr4tiE4ebM/MHFh6A=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=qyHJdoGNlIK0srWqi4VrDXjZsdZ9cWdy7a87s78PZy32tSo2ZAktOA2rI8z+fMNm+
+         +saeeae/TAO2ttLDHFHqzUu/9aphnYtcsgypfsBP7sxGcuAaKO8NmfVwKVYSigYByf
+         Sshb7APxwH4ydWUVWyt0TUtm4SdFxJJjvjlSlBOXBDHJzazFY6uaOmjV2hhSMGMvHl
+         x0rW+PoOurcjywDK+1XQg82Hae0rDxfYB8BGsdtlIfaOYAyczU2lzIuwlheDrLdCSp
+         CLKYIwDlPhubJQYkW8oDPdm7jjqqCiV7D+R2PdBH+hmkn0WeTYAxH59Rk/hFV4zG+c
+         v714aKTmfD1PQ==
+Received: by mail-ej1-f71.google.com with SMTP id q22-20020a1709064cd600b006db14922f93so3106968ejt.7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:24:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AC2QV+BOHtvgXwOifEM5ca7aMnsr4tiE4ebM/MHFh6A=;
+        b=Cl+6uForhGqMn1uWF6v040pGCQ0eKcpWbi8dN4AtwKo6Y0pbt5ylDC/j7n3FcJTX1W
+         hCKESov8EdY/J39u9dDVd3lQPRg0YHHIO2WnHh2Zy7YYPbzcB5gR5JmFuowjpRDMJnrd
+         YfbyysMNPq81EiyOdbczJAsYNgBSqGyTzDTCvAF8DM/obQhZIQ9gCi+9BKpxlVmfKGZ9
+         vbEYXZguH7fF0yGifqzD2EBbYe2jBrjjP2Q5jwNfkxQlQG/XFJlwUhS31aanRarpvSuB
+         z+MmfGxhlObooqnBiik0zHjCjkqGyQyzSOyoCCDSbxpJ63Tkco7x18bJ6QB89EEOZ/0v
+         caDA==
+X-Gm-Message-State: AOAM533BB2H6GV/dPUEL+luZ9kOzM/1WFNPzuNgYU/JqM1C4HBcmzppS
+        4R/cegdLacljqa35C3k2qFTQ2GynSaXwih8zR3esFO5mXoxrioekULGNADQHhzYe0IrjLnKj8Av
+        acSg4uxtetwTwWx5d8ZDANeUGbiy2iqX5obEfX1KS4Q==
+X-Received: by 2002:a17:907:c16:b0:6db:682:c8c9 with SMTP id ga22-20020a1709070c1600b006db0682c8c9mr4311065ejc.153.1646918686614;
+        Thu, 10 Mar 2022 05:24:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxh96pIcaZjepw8fDG5gEIFBY3lCXTrIeHF6wSWe/4lVWb3KtEgtjp2SDkTN4L1ahVqkj5lJg==
+X-Received: by 2002:a17:907:c16:b0:6db:682:c8c9 with SMTP id ga22-20020a1709070c1600b006db0682c8c9mr4311039ejc.153.1646918686230;
+        Thu, 10 Mar 2022 05:24:46 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id m24-20020a170906161800b006d420027b63sm1780101ejd.18.2022.03.10.05.24.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 05:24:45 -0800 (PST)
+Message-ID: <6f34f80e-da06-337d-167e-2410309e0f4d@canonical.com>
+Date:   Thu, 10 Mar 2022 14:24:45 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root
+ Port
+Content-Language: en-US
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     lorenzo.pieralisi@arm.com, bhelgaas@google.com, michals@xilinx.com,
+        robh@kernel.org
+References: <20220309120025.6721-1-bharat.kumar.gogada@xilinx.com>
+ <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Javier,
+On 09/03/2022 13:00, Bharat Kumar Gogada wrote:
+> Xilinx Versal Premium series has CPM5 block which supports Root Port
+> functioning at Gen5 speed.
+> 
+> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
+> 
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> ---
+>  .../bindings/pci/xilinx-versal-cpm.yaml       | 47 ++++++++++++++++---
+>  1 file changed, 40 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> index 32f4641085bc..97c7229d7f91 100644
+> --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> @@ -14,17 +14,21 @@ allOf:
+>  
+>  properties:
+>    compatible:
+> -    const: xlnx,versal-cpm-host-1.00
+> +    contains:
+> +      enum:
+> +        - xlnx,versal-cpm-host-1.00
+> +        - xlnx,versal-cpm5-host-1.00
+>  
+>    reg:
+> -    items:
+> -      - description: Configuration space region and bridge registers.
+> -      - description: CPM system level control and status registers.
+> +    description: |
+> +      Should contain cpm_slcr, cfg registers location and length.
+> +      For xlnx,versal-cpm5-host-1.00, it should also contain cpm_csr.
+> +    minItems: 2
+> +    maxItems: 3
 
-I was working on a SSD130x driver as well, although with a different
-(drm_panel) approach and hit a bit of a roadblock.
-Now that Your driver is quite a bit maturer than mine,
-I will happily provide You with the source of my draft,
-so that any useful bits can be incorporated in Your driver.
-I know that links are a bit frowned upon,
-but I'd rather avoid cluttering the thread with my draft code,
-which is unfinished and incompatible with the code in this thread.
+You removed here list of items, which should stay. See also
+https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/example-schema.yaml#L91
+how to do it.
 
-https://github.com/dh-electronics/panel-solomon-ssd130x-draft
-https://github.com/dh-electronics/panel-solomon-ssd130x-draft/tree/drm-ssd1=
-30x/drivers/gpu/drm/panel
+>  
+>    reg-names:
+> -    items:
+> -      - const: cfg
+> -      - const: cpm_slcr
+> +    minItems: 2
+> +    maxItems: 3
 
-The code was designed as a rewrite from scratch, as I assumed that a new
-DRM driver that accommodates for I2C, 3- and 4-wire-SPI,
-will probably need a new DTS interface for differentiating the
-protocol-specific drivers, which would obviously break compatibility.
-
-I do have few suggestions though:
-
-# Atomic Configuration of Display Driving Regulator and the Charge Pump
-
-The regulator VBAT is the SSD1306-specific low-voltage (3.3 V to 5 V)
-regulator for the charge pump and takes the place of the voltage
-regulator VCC, that would otherwise supply the OLED driver block with
-7 V to 15 V.
-The charge pump is never enabled when a VCC with 7 V to 15 V is present.
-Configuring the charge pump based on the available regulators,
-would provide an atomic configuration for either low-voltage +
-charge pump or the regular voltage.
-
-This way, the device tree boolean for enabling the charge pump could be
-removed by probing for an optional VBAT first, which replaces VCC,
-and falling back to a mandatory VCC otherwise:
-
-```
-[...]
-struct ssd130x_panel {
-...
-	struct regulator *vdd;		/* Core logic supply */
-	union {
-		struct regulator *vcc;	/* Panel driving supply */
-		struct regulator *vbat;	/* Charge pump regulator supply */
-	};
-	struct backlight_device *backlight;
-		struct {
-		unsigned int com_scan_dir_inv : 1;
-		unsigned int com_seq_pin_cfg : 1;
-		unsigned int com_lr_remap : 1;
-		unsigned int seg_remap : 1;
-		unsigned int inverse_display : 1;
-		unsigned int use_charge_pump : 1;
-		uint8_t height;
-		uint8_t width;
-		uint8_t height_mm;
-		uint8_t width_mm;
-		uint8_t display_start_line;
-		uint8_t com_offset ;
-		uint8_t contrast;
-		uint8_t pre_charge_period_dclocks_phase1;
-		uint8_t pre_charge_period_dclocks_phase2;
-		uint8_t vcomh_deselect_level;
-		uint8_t clock_divide_ratio;
-		uint8_t oscillator_frequency;
-	} display_settings;
-	bool prepared;
-	bool enabled;
-
-[...]
-
-ssd130x->vbat =3D devm_regulator_get_optional(dev, "vbat");
-if (IS_ERR(ssd130x->vbat)) {
-	ret =3D PTR_ERR(ssd130x->vbat);
-
-	if (ret !=3D -ENODEV) {
-		if (ret !=3D -EPROBE_DEFER)
-			dev_err(dev,
-				"failed to request regulator: %d\n",
-				ret);
-		return ret;
-	}
-
-	ssd130x->vbat =3D NULL;
-}
-else {
-	ssd130x->display_settings.use_charge_pump =3D true;
-}
-
-/* Get panel driving supply */
-If (!ssd130x->vbat) {
-	ssd130x->vcc =3D devm_regulator_get(dev, "vcc");
-	if (IS_ERR(ssd130x->vcc)){
-		ret =3D PTR_ERR(ssd130x->vcc);
-		return ret;
-	}
-	else {
-		ssd130x->display_settings.use_charge_pump =3D false;
-	}
-}
-```
-
-Splitting in VCC/VBAT and VDD and enforcing their presence is
-of course compatibility breaking.
-
-https://github.com/dh-electronics/panel-solomon-ssd130x-draft/blob/drm-ssd1=
-30x/drivers/gpu/drm/panel/panel-solomon-ssd130x.h#L85
-https://github.com/dh-electronics/panel-solomon-ssd130x-draft/blob/drm-ssd1=
-30x/drivers/gpu/drm/panel/panel-solomon-ssd130x.c#L80
+The same.
 
 
-# Static or Dynamic Configuration for SPI-Modes 3-Wire and 4-Wire
-
-For the SPI-protocol drivers I see two possible approaches:
-* Dynamic configuration by determining the presence/absence of the
-  D/C-GPIO and assigning the functions accordingly.
-  This way a single driver file for both SPI modes could be sufficient.
-* Static configuration by using the device-tree names
-  (ssd130x-spi-3wire/-4wire) to differentiate between the SPI protocol
-  drivers.
-  This would obviously necessitate two drivers files.
-
-Which one do you think would be the best approach for this?
-
-
-# DRM Mode Configuration via Device Tree
-
-In the old fbdev driver, the display modes are hard-coded, which means
-for every new display configuration, a new patch needs to be mainlined,
-which slows down official Kernel support and
-puts burden on the maintainers.
-Additionally, with the DRM-subsystem supporting height and length
-information, for scaling, this opens up a lot of new combinations.
-The SSD1306 for example, is available in multiple resolutions like
-128x64 and 96x16 and comes in different sizes per resolution as well.
-Just to name a few:
-* 128x64 0.96" (22x11mm)
-* 128x64 1.3" (30x15mm)
-* 96x16 0.69" (18x3mm)
-
-Instead of hard-coding, I would suggest something along the lines of
-of_get_drm_display_mode().
-The displays won't need to support multiple modes at the same time,
-let alone support for switching between them,
-so the one-time invocation of this expensive function might be worth it.=20
-maybe a new and simpler function that could be named:
-of_get_drm_display_mode_simple()
-
-Providing a mode could later prove useful for a conversion to
-drm_panel, if that is feasible.
-
-But for a function like this, I have to chicken out.
-
-
-# DRM Panel
-
-The reason why I decided for the drm_panel approach in my code,
-was power management and a clean handling of the software backlight
-dependency, which requires powered display regulators to be powered.
-
-Prepare/unprepare would power on/off the display logic regulator VDD.
-
-Enable/disable would power on/off VCC/VBAT, optionally turn on/off
-the charge pump and send the DISPLAY_ON/OFF commands.
-The SSD1305's PWM part would likely be placed in enable/disable as well.
-
-What is Your opinion on using drm_panel for Your driver?
-
-
-Mit freundlichen Gr=FC=DFen / Best regards
-
-Dominik Kierner
-Student Employee
-Research & Development
-DH electronics
-
+Best regards,
+Krzysztof
