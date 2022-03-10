@@ -2,102 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ED8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16395C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244344AbiCJRL4 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S244385AbiCJRQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbiCJRLy (ORCPT
+        with ESMTP id S230394AbiCJRQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:11:54 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A6215D3A3;
-        Thu, 10 Mar 2022 09:10:53 -0800 (PST)
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MVubb-1ncZTj3dn3-00RsYH; Thu, 10 Mar 2022 18:10:50 +0100
-Received: by mail-wm1-f42.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so3795999wmp.5;
-        Thu, 10 Mar 2022 09:10:50 -0800 (PST)
-X-Gm-Message-State: AOAM533Pva/6bc6aKl5NsMGMPWfBgB9p++ShzNiUPxMEGAXBCb4lmMad
-        N8GKHnFe8nFPkZPHSy72vli44q0P5iV4TltTq94=
-X-Google-Smtp-Source: ABdhPJxY8hGm9BEQKWwA3R6ukJGTZsnEU2TjUOjQUHCfOHpxv80mjDHnXeVwtelmj78dbQthb1oQ3YX63RkYL8slNoM=
-X-Received: by 2002:a1c:f20b:0:b0:389:c99a:4360 with SMTP id
- s11-20020a1cf20b000000b00389c99a4360mr10282657wmc.174.1646932250447; Thu, 10
- Mar 2022 09:10:50 -0800 (PST)
+        Thu, 10 Mar 2022 12:16:01 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530A6184602
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:15:00 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id v4so5875051pjh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:15:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TPBQdtbwOmlVYwAm75BFwhcIX+dQ//6h0EnbuKsG+sU=;
+        b=Ur6lep8Ry6UQr79uHPM2mS0Y8zxWlv9paJGLd5Pz5xCuu3h3wbaj0DUdtxwLG01M3+
+         p5kGGkTH9GfXo11W9gNqUrUcTRtZmYbKGFrvyjaDIxCwgS0sGg4ZwS2QDd9xkcA+cK3k
+         2rXFZZHPmQy/rZ2fc3C/1A/v+f7kwVm67+8236LNjp1S79ig5HAdAfSsyZ/ZqO4URUUZ
+         2kg2/FZitlv+ObTsRkfpECA7d9/habQnCKgubwJIuHNNuHT8jxXNgrl53qzpSN3fncBu
+         4LBkRRdr7uYEs0wsz/X4C1H2NY9RrlEVixp5tmE0IVNImhcU7iqzxp6jhDRrlsDjSSbJ
+         vc8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TPBQdtbwOmlVYwAm75BFwhcIX+dQ//6h0EnbuKsG+sU=;
+        b=G7Fm3Ts/1gnGsl/e7zNlnIirkeBSqlG8+9JFqJCKbg9LUclWr6dQDfAiMaD9tVqbyS
+         0B+pXqKcJjQnNE56v+aSSVxBQCRY+tywmJVVt7/0W3QSn7qtKJ8r5i8bFTUF8zlYvGMo
+         FyZik/BB4sx7kCWFh8wxbKXjG0D4X6xxFW0RYKWjTMKyT12bi3vbT0/q8n9piWD70csQ
+         mwbX/2aVoGjzc9nNrYv2eE1l0GCLBZ9Qth2avoIdiSTafeOC6SYVYW12eyIoOUadoDVJ
+         5iuff/crSGGtDdZaMENzZRT3GvppEJM0tiOya7nh5y0IzWnQ4XWXkXGzEZuXb6+daqJr
+         ybXw==
+X-Gm-Message-State: AOAM531HbiKGcPSEK0Ra8XnLnw0kl6XnVL/IawxfQcIxb35IcOd4UkVr
+        t2Z4pt+nUml1oKSgjMhJoNOldA==
+X-Google-Smtp-Source: ABdhPJybOygWPx/LvPXMP9Xv/cIRttLOmJATcGvThhrinrYKNGRgYMqwH0Y07fNfO7GsJowtYBJIPA==
+X-Received: by 2002:a17:902:d888:b0:151:6fe8:6e68 with SMTP id b8-20020a170902d88800b001516fe86e68mr5897412plz.158.1646932499643;
+        Thu, 10 Mar 2022 09:14:59 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id e18-20020a63d952000000b00372a1295210sm5907148pgj.51.2022.03.10.09.14.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 09:14:58 -0800 (PST)
+Date:   Thu, 10 Mar 2022 17:14:54 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zhenzhong Duan <zhenzhong.duan@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org
+Subject: Re: [PATCH] KVM: x86: Remove redundant vm_entry_controls_clearbit()
+ call
+Message-ID: <YioyDu+9VoGmTWlD@google.com>
+References: <20220310111354.504565-1-zhenzhong.duan@intel.com>
 MIME-Version: 1.0
-References: <20220310072924.0EF1EC340EC@smtp.kernel.org> <c0eb0b0f-1fdb-b653-fbf9-4b1bd7c26efa@infradead.org>
-In-Reply-To: <c0eb0b0f-1fdb-b653-fbf9-4b1bd7c26efa@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 10 Mar 2022 18:10:34 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a23aduadfJsSEFdXB3a0B_krC9LLEfa-erSsSXcqzVqtw@mail.gmail.com>
-Message-ID: <CAK8P3a23aduadfJsSEFdXB3a0B_krC9LLEfa-erSsSXcqzVqtw@mail.gmail.com>
-Subject: Re: mmotm 2022-03-09-23-28 uploaded (drivers/perf/marvell_cn10k_ddr_pmu.c)
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>, Michal Hocko <mhocko@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mm-commits@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:M7v+Mq5EbLAcuH2nYt7VJxsI46M2PrCK7TQVAAoFnYFrbqEGMRu
- VogCi2EPJhfb9Swue5MgWnXjXk7ihfznZWshF5Ddt7LO9ZgIAitWKoTadRjOZBRXBsUJlYl
- leTGBxjRHR02d8ztcrmvo1IzNcWYtsvKYq8s6MUL+1gBPPsyOFrQ4ih0+yAIa4fRrLtEWNn
- nfoHGkcGiSHdlejkPronA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9aSgktNS7nM=:4WZK+WY6ORo1deaLb2MVKm
- sVK1XWvJhQPlEDUx5dWw27gKovOkzZzv0OPu5+6QP41aytxAyiHJ++HZjdbOIZQHGdFKTSW7/
- IrUGBg1ZvzLBrGHUMJt8SSa6fsETsZatVOX3z054xdXyg3Qe8V5qmqj0e+3cpGUvZXxMrHRXt
- CSpQEfGLR5PpvmMXreqCRoyNacNvQpPYWsIa9Vjk5hLwl/pIDLf7OFptwBd6N4VjXyPH5uclw
- nykRRUqjnr1RBT1pJZUUjN4uvf+5INgUMChpC7R7t8cTXPn23P+hPM5t5at2Z0MZr8kMNI8To
- Wz7wORa9tDvbI1vs1GzU2otzuZGVxfc+8DrqcuMhJKNVBKzblxFDUpGhIGWZ2yxtLQIa0cewq
- Rf50JR7lk6K0vNnBp/okUmtggJyM7LZSIxjXQnCeTTM3yayL/PI92j+iywU4kio2pJTv0UrSw
- VPjQe4TnmubJ9uJdMTHbqmYnZEtRjjgZt7Im4ZTxOWS/1VFC/P8nkncPM1rlInXyEIydqhWaV
- htVxRWgJB5IwAuRSZstzsLBUqrUimfdNNJx0UXeZu3pBiNoDJ/DHOqCzEPD5C9VVsiMrexpa0
- RjwwZNFpa2IfuKgy8zwyF+3LKzLvmBRn063edbqNQV0MPfSIJIK661zxK8h8tdBVqoYSsPnKk
- I0dz11y7GWAdy5Ws9y1lyzugSjY96QoPur43R8VEiM3Es4/pnpw2TKePpw/DMoyvPl8M=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310111354.504565-1-zhenzhong.duan@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 5:34 PM Randy Dunlap <rdunlap@infradead.org> wrote:
-> On 3/9/22 23:29, Andrew Morton wrote:
-> > The mm-of-the-moment snapshot 2022-03-09-23-28 has been uploaded to
-> >
-> >    https://www.ozlabs.org/~akpm/mmotm/
-> >
-> > mmotm-readme.txt says
-> >
-> > README for mm-of-the-moment:
-> >
-> > https://www.ozlabs.org/~akpm/mmotm/
-> >
-> > This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> > more than once a week.
-> >
-> > You will need quilt to apply these patches to the latest Linus release (5.x
-> > or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> > https://ozlabs.org/~akpm/mmotm/series
->
-> on x86_64:
->
-> ../drivers/perf/marvell_cn10k_ddr_pmu.c:723:21: error: ‘cn10k_ddr_pmu_of_match’ undeclared here (not in a function); did you mean ‘cn10k_ddr_pmu_driver’?
->    .of_match_table = cn10k_ddr_pmu_of_match,
->                      ^~~~~~~~~~~~~~~~~~~~~~
->
-> Full randconfig file is attached.
->
+On Thu, Mar 10, 2022, Zhenzhong Duan wrote:
+> When emulating exit from long mode, EFER_LMA is cleared which lead to
+> efer writing emulation, which will unset VM_ENTRY_IA32E_MODE control
+> bit as requested by SDM. So no need to unset VM_ENTRY_IA32E_MODE again
+> in exit_lmode() explicitly.
+> 
+> In fact benefited from shadow controls mechanism, this change doesn't
+> eliminate vmread or vmwrite.
+> 
+> Opportunistically remove unnecessory assignment to uret MSR data field
+> as vmx_setup_uret_msrs() will do the same thing.
 
-I suppose this is caused by having two different fixes applied, one that removes
-the of_match_ptr(), and one that adds an #ifdef. Either one would be correct,
-but the combination is not.
+This needs to be a separate patch, it's much more subtle than "xyz will do the
+same thing".  update_transition_efer() doesn't unconditionally set uret->data,
+which on the surface makes this look suspect, but it's safe because uret->data
+is consumed if and only if uret->load_into_hardware is true, and it's (a) set to
+false if uret->data isn't updated and (b) uret->data is guaranteed to be updated
+before it's set to true.
 
-       Arnd
+> In case EFER isn't supported by hardware, long mode isn't supported,
+> so this will no break.
+>
+> 
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+> ---
+>  arch/x86/kvm/vmx/vmx.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index b730d799c26e..b04588dc7faa 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -2878,14 +2878,11 @@ int vmx_set_efer(struct kvm_vcpu *vcpu, u64 efer)
+>  		return 0;
+>  
+>  	vcpu->arch.efer = efer;
+> -	if (efer & EFER_LMA) {
+> +	if (efer & EFER_LMA)
+>  		vm_entry_controls_setbit(to_vmx(vcpu), VM_ENTRY_IA32E_MODE);
+> -		msr->data = efer;
+> -	} else {
+> +	else
+>  		vm_entry_controls_clearbit(to_vmx(vcpu), VM_ENTRY_IA32E_MODE);
+>  
+> -		msr->data = efer & ~EFER_LME;
+> -	}
+
+While you're doing opportunistic cleanups, drop the local "msr" and use "vmx"
+directly instead of redoing to_vmx(), i.e. this
+
+int vmx_set_efer(struct kvm_vcpu *vcpu, u64 efer)
+{
+	struct vcpu_vmx *vmx = to_vmx(vcpu);
+
+	/* Nothing to do if hardware doesn't support EFER. */
+	if (!vmx_find_uret_msr(vmx, MSR_EFER))
+		return 0;
+
+	vcpu->arch.efer = efer;
+	if (efer & EFER_LMA)
+		vm_entry_controls_setbit(vmx, VM_ENTRY_IA32E_MODE);
+	else
+		vm_entry_controls_clearbit(vmx, VM_ENTRY_IA32E_MODE);
+
+	vmx_setup_uret_msrs(vmx);
+	return 0;
+}
