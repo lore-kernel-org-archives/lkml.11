@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B98C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243649AbiCJO1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
+        id S243681AbiCJO1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243342AbiCJOZA (ORCPT
+        with ESMTP id S243712AbiCJOZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:25:00 -0500
+        Thu, 10 Mar 2022 09:25:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD6515C9E5;
-        Thu, 10 Mar 2022 06:21:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537B015F373;
+        Thu, 10 Mar 2022 06:21:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B86AFB8267B;
-        Thu, 10 Mar 2022 14:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F185EC36AE3;
-        Thu, 10 Mar 2022 14:21:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 931D6B82678;
+        Thu, 10 Mar 2022 14:21:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D72F1C340EB;
+        Thu, 10 Mar 2022 14:21:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922079;
-        bh=yHBwrv2aWD/9H1DZRrYgDaAP2sk5Lz5EFwkKNbq0IRo=;
+        s=korg; t=1646922082;
+        bh=WMBsDGoFwKsBC3UgmdydLX9aTvQjG9Z/G7T0quQ9LAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvvsHoyH1pbyQYhXL0/jIa/SJfhbvONAPUII3SRxnMT+Bdij4u/QO7Hl5WlIJ+fDW
-         RZHfaIkxVwOvHifJNOumcgJE8vI4HOABaxJO1qObA2bhNj8YyIKZzEfkJbOYlXUbtl
-         IYGAjD1aJGh3wpnaDkAcICh19G+2vtpHkVjr7NTE=
+        b=Zb7Ot0ZLD3/IpdTGiL2I+T+bKCl54QkryaeFAiyaihphbFHL8BsHpmCe+amaPMRlx
+         RBMCQSmEJFZKiuR9xeIxdH3KtgsHnPU4KEXBF+lpAx72u3pwGSbQ5DleqgtQxEv4pG
+         vz8LAFF/ZckAtWtQgmKVKm33XycdbABeWz765yAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Frank van der Linden <fllinden@amazon.com>
-Subject: [PATCH 4.14 03/31] x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
-Date:   Thu, 10 Mar 2022 15:18:16 +0100
-Message-Id: <20220310140807.628938039@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.14 30/31] xen/gnttab: fix gnttab_end_foreign_access() without page specified
+Date:   Thu, 10 Mar 2022 15:18:43 +0100
+Message-Id: <20220310140808.419605112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
 References: <20220310140807.524313448@linuxfoundation.org>
@@ -51,193 +50,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+From: Juergen Gross <jgross@suse.com>
 
-commit d45476d9832409371537013ebdd8dc1a7781f97a upstream.
+Commit 42baefac638f06314298087394b982ead9ec444b upstream.
 
-The RETPOLINE_AMD name is unfortunate since it isn't necessarily
-AMD only, in fact Hygon also uses it. Furthermore it will likely be
-sufficient for some Intel processors. Therefore rename the thing to
-RETPOLINE_LFENCE to better describe what it is.
+gnttab_end_foreign_access() is used to free a grant reference and
+optionally to free the associated page. In case the grant is still in
+use by the other side processing is being deferred. This leads to a
+problem in case no page to be freed is specified by the caller: the
+caller doesn't know that the page is still mapped by the other side
+and thus should not be used for other purposes.
 
-Add the spectre_v2=retpoline,lfence option as an alias to
-spectre_v2=retpoline,amd to preserve existing setups. However, the output
-of /sys/devices/system/cpu/vulnerabilities/spectre_v2 will be changed.
+The correct way to handle this situation is to take an additional
+reference to the granted page in case handling is being deferred and
+to drop that reference when the grant reference could be freed
+finally.
 
-  [ bp: Fix typos, massage. ]
+This requires that there are no users of gnttab_end_foreign_access()
+left directly repurposing the granted page after the call, as this
+might result in clobbered data or information leaks via the not yet
+freed grant reference.
 
-Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-[fllinden@amazon.com: backported to 4.14]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+This is part of CVE-2022-23041 / XSA-396.
+
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/cpufeatures.h       |    2 +-
- arch/x86/include/asm/nospec-branch.h     |   12 ++++++------
- arch/x86/kernel/cpu/bugs.c               |   29 ++++++++++++++++++-----------
- tools/arch/x86/include/asm/cpufeatures.h |    2 +-
- 4 files changed, 26 insertions(+), 19 deletions(-)
+ drivers/xen/grant-table.c |   30 +++++++++++++++++++++++-------
+ include/xen/grant_table.h |    7 ++++++-
+ 2 files changed, 29 insertions(+), 8 deletions(-)
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -203,7 +203,7 @@
- #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
- #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
--#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
-+#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -119,7 +119,7 @@
- 	ANNOTATE_NOSPEC_ALTERNATIVE
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *\reg),	\
- 		__stringify(RETPOLINE_JMP \reg), X86_FEATURE_RETPOLINE,	\
--		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_AMD
-+		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *\reg), X86_FEATURE_RETPOLINE_LFENCE
- #else
- 	jmp	*\reg
- #endif
-@@ -130,7 +130,7 @@
- 	ANNOTATE_NOSPEC_ALTERNATIVE
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; call *\reg),	\
- 		__stringify(RETPOLINE_CALL \reg), X86_FEATURE_RETPOLINE,\
--		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_AMD
-+		__stringify(lfence; ANNOTATE_RETPOLINE_SAFE; call *\reg), X86_FEATURE_RETPOLINE_LFENCE
- #else
- 	call	*\reg
- #endif
-@@ -181,7 +181,7 @@
- 	"lfence;\n"						\
- 	ANNOTATE_RETPOLINE_SAFE					\
- 	"call *%[thunk_target]\n",				\
--	X86_FEATURE_RETPOLINE_AMD)
-+	X86_FEATURE_RETPOLINE_LFENCE)
- # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
- 
- #else /* CONFIG_X86_32 */
-@@ -211,7 +211,7 @@
- 	"lfence;\n"						\
- 	ANNOTATE_RETPOLINE_SAFE					\
- 	"call *%[thunk_target]\n",				\
--	X86_FEATURE_RETPOLINE_AMD)
-+	X86_FEATURE_RETPOLINE_LFENCE)
- 
- # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
- #endif
-@@ -223,8 +223,8 @@
- /* The Spectre V2 mitigation variants */
- enum spectre_v2_mitigation {
- 	SPECTRE_V2_NONE,
--	SPECTRE_V2_RETPOLINE_GENERIC,
--	SPECTRE_V2_RETPOLINE_AMD,
-+	SPECTRE_V2_RETPOLINE,
-+	SPECTRE_V2_LFENCE,
- 	SPECTRE_V2_IBRS_ENHANCED,
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -114,6 +114,10 @@ struct gnttab_ops {
+ 	 * return the frame.
+ 	 */
+ 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
++	/*
++	 * Read the frame number related to a given grant reference.
++	 */
++	unsigned long (*read_frame)(grant_ref_t ref);
  };
  
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -621,7 +621,7 @@ enum spectre_v2_mitigation_cmd {
- 	SPECTRE_V2_CMD_FORCE,
- 	SPECTRE_V2_CMD_RETPOLINE,
- 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
--	SPECTRE_V2_CMD_RETPOLINE_AMD,
-+	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
- };
+ struct unmap_refs_callback_data {
+@@ -278,6 +282,11 @@ int gnttab_end_foreign_access_ref(grant_
+ }
+ EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
  
- enum spectre_v2_user_cmd {
-@@ -781,8 +781,8 @@ set_mode:
++static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
++{
++	return gnttab_shared.v1[ref].frame;
++}
++
+ struct deferred_entry {
+ 	struct list_head list;
+ 	grant_ref_t ref;
+@@ -307,12 +316,9 @@ static void gnttab_handle_deferred(unsig
+ 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
+ 			put_free_entry(entry->ref);
+-			if (entry->page) {
+-				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
+-					 entry->ref, page_to_pfn(entry->page));
+-				put_page(entry->page);
+-			} else
+-				pr_info("freeing g.e. %#x\n", entry->ref);
++			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
++				 entry->ref, page_to_pfn(entry->page));
++			put_page(entry->page);
+ 			kfree(entry);
+ 			entry = NULL;
+ 		} else {
+@@ -337,9 +343,18 @@ static void gnttab_handle_deferred(unsig
+ static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
+ 				struct page *page)
+ {
+-	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
++	struct deferred_entry *entry;
++	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
+ 	const char *what = KERN_WARNING "leaking";
  
- static const char * const spectre_v2_strings[] = {
- 	[SPECTRE_V2_NONE]			= "Vulnerable",
--	[SPECTRE_V2_RETPOLINE_GENERIC]		= "Mitigation: Full generic retpoline",
--	[SPECTRE_V2_RETPOLINE_AMD]		= "Mitigation: Full AMD retpoline",
-+	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
-+	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
- 	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
- };
- 
-@@ -794,7 +794,8 @@ static const struct {
- 	{ "off",		SPECTRE_V2_CMD_NONE,		  false },
- 	{ "on",			SPECTRE_V2_CMD_FORCE,		  true  },
- 	{ "retpoline",		SPECTRE_V2_CMD_RETPOLINE,	  false },
--	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_AMD,	  false },
-+	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
-+	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
- 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
- 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
- };
-@@ -832,13 +833,19 @@ static enum spectre_v2_mitigation_cmd __
- 	}
- 
- 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
--	     cmd == SPECTRE_V2_CMD_RETPOLINE_AMD ||
-+	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
- 	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
- 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
- 		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
- 		return SPECTRE_V2_CMD_AUTO;
- 	}
- 
-+	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
-+	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
-+		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
-+		return SPECTRE_V2_CMD_AUTO;
++	entry = kmalloc(sizeof(*entry), gfp);
++	if (!page) {
++		unsigned long gfn = gnttab_interface->read_frame(ref);
++
++		page = pfn_to_page(gfn_to_pfn(gfn));
++		get_page(page);
 +	}
 +
- 	spec_v2_print_cond(mitigation_options[i].option,
- 			   mitigation_options[i].secure);
- 	return cmd;
-@@ -873,9 +880,9 @@ static void __init spectre_v2_select_mit
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
- 			goto retpoline_auto;
- 		break;
--	case SPECTRE_V2_CMD_RETPOLINE_AMD:
-+	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
--			goto retpoline_amd;
-+			goto retpoline_lfence;
- 		break;
- 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
- 		if (IS_ENABLED(CONFIG_RETPOLINE))
-@@ -891,17 +898,17 @@ static void __init spectre_v2_select_mit
+ 	if (entry) {
+ 		unsigned long flags;
  
- retpoline_auto:
- 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
--	retpoline_amd:
-+	retpoline_lfence:
- 		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
- 			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
- 			goto retpoline_generic;
- 		}
--		mode = SPECTRE_V2_RETPOLINE_AMD;
--		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_AMD);
-+		mode = SPECTRE_V2_LFENCE;
-+		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
- 	} else {
- 	retpoline_generic:
--		mode = SPECTRE_V2_RETPOLINE_GENERIC;
-+		mode = SPECTRE_V2_RETPOLINE;
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
- 	}
+@@ -1011,6 +1026,7 @@ static const struct gnttab_ops gnttab_v1
+ 	.update_entry			= gnttab_update_entry_v1,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
++	.read_frame			= gnttab_read_frame_v1,
+ };
  
---- a/tools/arch/x86/include/asm/cpufeatures.h
-+++ b/tools/arch/x86/include/asm/cpufeatures.h
-@@ -203,7 +203,7 @@
- #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
- #define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
--#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
-+#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- 
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+ static void gnttab_request_version(void)
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -100,7 +100,12 @@ int gnttab_end_foreign_access_ref(grant_
+  * Note that the granted page might still be accessed (read or write) by the
+  * other side after gnttab_end_foreign_access() returns, so even if page was
+  * specified as 0 it is not allowed to just reuse the page for other
+- * purposes immediately.
++ * purposes immediately. gnttab_end_foreign_access() will take an additional
++ * reference to the granted page in this case, which is dropped only after
++ * the grant is no longer in use.
++ * This requires that multi page allocations for areas subject to
++ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
++ * via free_pages_exact()) in order to avoid high order pages.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
 
 
