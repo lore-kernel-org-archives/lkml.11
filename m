@@ -2,138 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 985DCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1448FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343583AbiCJTwG (ORCPT
+        id S1343717AbiCJTwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:52:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
+        Thu, 10 Mar 2022 14:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343652AbiCJTvy (ORCPT
+        with ESMTP id S242956AbiCJTv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:51:54 -0500
+        Thu, 10 Mar 2022 14:51:57 -0500
 Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF47B199D4F;
-        Thu, 10 Mar 2022 11:50:52 -0800 (PST)
-Received: from pps.filterd (m0134421.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AFrS8g030113;
-        Thu, 10 Mar 2022 19:50:42 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1637A199D57
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:50:56 -0800 (PST)
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AFrEHR006153
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:50:55 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version; s=pps0720;
- bh=gQPB1eRowvWJArtUO7a6OZAQ/oABoNMsxaUIqYwGI2o=;
- b=R+E4lakRjgJNuuuM64UkVdKp1IPOmiqPuJUKPSaUaAevLsFHcxD3pJUYD+v1COWqfc4I
- mbojYCsR1RkwP+TOaQEGUARtiOUUVfyoZtN4ADjsXP5YKW/LrrU2pFmWlWXuAXd+n/IN
- qmZ9B1RfFlYaRTyuAlRh5HyHBzkC6XJayUwOJbRfff5jOHIbaV84HKXHMlJFeAJH8XXi
- tafrAK7BWgzcw/rd7vJwxg/hvvdSbfy1L9Vs2h8VueDEY7uen8q1c45ilwQYozEE+CBb
- OzjMWfY8xDv1OuqFuCStRyPLDaETUUvKeoVWum8oaZ3lustvm5HqT9cPbun/adYo1ZHq JA== 
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=Sa1gUyFWh5sicRpLKEHW9i3iQGJspT4tSnvDEO4hTzE=;
+ b=alcjw0CFpVY6+h3D0wyH3Qwy6ddEWHKpFXyOOwxwmWhsXGbeC7OXW0qjv41uJ3KBhaqB
+ j7juGzQWCDmOhIOjXC1OMgrtj9AwXG5vtzwMjZ5Md99R6v9KypWfOV3t78p0cr/8F6HH
+ ZYefeeBMKDV3EDsHHWEJpKl22FEiKASP9r4zKyyMJieQWv0rNmeEhq08rWy1ZHZz2cgd
+ qAcp9MKU0qpckEbx9MHImMF9SOtvxBG8k2+7WvvKHt38lx4zSi1thDk3gT+JPo1qMs2D
+ tw1eVaqBkbbVyKNTxBS5d87L16wEasIFwFoO8fUiSLa9jPz5KI4nbtg0lVwJ8fPjUdte GA== 
 Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3eqmarsyhr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 19:50:42 +0000
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3eqjfpk91g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:50:55 +0000
 Received: from hpe.com (unknown [15.115.65.69])
-        by g2t2353.austin.hpe.com (Postfix) with ESMTP id 59E2077;
-        Thu, 10 Mar 2022 19:50:41 +0000 (UTC)
+        by g2t2353.austin.hpe.com (Postfix) with ESMTP id E4C7465;
+        Thu, 10 Mar 2022 19:50:54 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v3 05/10] dt-bindings: timer: Add HPE GXP Timer Binding
-Date:   Thu, 10 Mar 2022 13:52:24 -0600
-Message-Id: <20220310195229.109477-5-nick.hawkins@hpe.com>
+Cc:     Nick Hawkins <nick.hawkins@hpe.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 10/10] maintainers: Introduce HPE GXP Architecture
+Date:   Thu, 10 Mar 2022 13:52:29 -0600
+Message-Id: <20220310195229.109477-10-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
 References: <20220310195229.109477-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: GxTfFqPbar1nazPRQkQ7K4t26soLV8Ik
-X-Proofpoint-ORIG-GUID: GxTfFqPbar1nazPRQkQ7K4t26soLV8Ik
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-ORIG-GUID: JEsUgRydEmmd9UhQ_BaOwN6OaNBrfa4S
+X-Proofpoint-GUID: JEsUgRydEmmd9UhQ_BaOwN6OaNBrfa4S
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-10_08,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=753 clxscore=1015
- lowpriorityscore=0 malwarescore=0 spamscore=0 mlxscore=0 phishscore=0
- adultscore=0 impostorscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203100100
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ suspectscore=0 adultscore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 mlxlogscore=783 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203100100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Creating binding for gxp timer in device tree hpe,gxp-timer
-Although there are multiple times on the SoC we are only
-enabling one at this time.
+Create a section in MAINTAINERS for the GXP HPE
+architecture.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
-
-----
-
-v2:
- *Removed maintainer change from patch
- *Verified there was no compilation errors
- *Added reference code in separate patch of patchset
 ---
- .../bindings/timer/hpe,gxp-timer.yaml         | 45 +++++++++++++++++++
- 1 file changed, 45 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+ MAINTAINERS | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-new file mode 100644
-index 000000000000..1f4e345c5fb8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/timer/hpe,gxp-timer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6db79f3b209e..f227d76ec43d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8791,6 +8791,20 @@ L:	platform-driver-x86@vger.kernel.org
+ S:	Orphan
+ F:	drivers/platform/x86/tc1100-wmi.c
+ 
++HPE GXP ARCHITECTURE
++M:	Jean-Marie Verdun <verdun@hpe.com>
++M:	Nick Hawkins <nick.hawkins@hpe.com>
++S:	MAINTAINED
++F:	Documentation/devicetree/bindings/arm/cpu-enable-method/hpe,gxp-cpu-init.yaml
++F:	Documentation/devicetree/bindings/arm/gxp.yaml
++F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
++F:	Documentation/devicetree/bindings/wdt/hpe,gxp-wdt.yaml
++F:	arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
++F:	arch/arm/boot/dts/hpe-gxp.dtsi
++F:	arch/arm/mach-hpe/gxp.c
++F:	drivers/clocksource/gxp-timer.c
++F:	drivers/watchdog/gxp-wdt.c
 +
-+title: HPE GXP TIMER
-+
-+maintainers:
-+  - Nick Hawkins <nick.hawkins@hpe.com>
-+  - Jean-Marie Verdun <verdun@hpe.com>
-+
-+properties:
-+  compatible:
-+    const: hpe,gxp-timer
-+
-+  reg:
-+    items:
-+      - description: T0CNT register
-+      - description: T0CS register
-+      - description: TIMELO register
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clock-frequency:
-+    description: The frequency of the clock that drives the counter, in Hz.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clock-frequency
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    timer@10003000 {
-+        compatible = "hpe,gxp-timer";
-+        reg = <0xc0000080 0x1>, <0xc0000094 0x01>, <0xc0000088 0x08>;
-+        interrupts = <0>;
-+        interrupt-parent = <&vic0>;
-+        clock-frequency = <400000000>;
-+    };
+ HPET:	High Precision Event Timers driver
+ M:	Clemens Ladisch <clemens@ladisch.de>
+ S:	Maintained
 -- 
 2.17.1
 
