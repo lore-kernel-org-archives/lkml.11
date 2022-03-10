@@ -2,87 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D94B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 06:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239749AbiCJGXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 01:23:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
+        id S239755AbiCJGYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 01:24:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234293AbiCJGXh (ORCPT
+        with ESMTP id S231267AbiCJGYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 01:23:37 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E507ECFC;
-        Wed,  9 Mar 2022 22:22:36 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id s8so4248340pfk.12;
-        Wed, 09 Mar 2022 22:22:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1QvrxHVnbuN951iuLJ5i5Z8epnWXoTEiu0JfRkCwdNc=;
-        b=pauh/m4aXdFskskvW2uqn4VO4FEdiv275dFzvGGgPZj1M+B2jiaawooUxtFCYorgLW
-         M4r9zycfjJgFk+EIEnCsxwQaz+OzY4Dp/l5BggCR0X66VWff2dcuGEj1RYb6DHCkXR10
-         mR+LPzascD4moLvPknZn9ObjSp7fJAaaV7kcM0VKIU9ncsClRYsRsLrgWE7yA7T/HgzS
-         jfYa6o/wpPwczaWqNE1NeXWRJpivcuYr/y2Tr4v2nnlOFv/7Buls2dM1/pkLzaE3PTlM
-         95LXQ8jyEg3Js6rAaeZZEjLRuy7Ku6PzsZf86eIk6IuEc1Skmn+oUtItGnTVS0sqCn3v
-         zzXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1QvrxHVnbuN951iuLJ5i5Z8epnWXoTEiu0JfRkCwdNc=;
-        b=f+xqBPy2c2JphOSxtCpIXVfn4kXfcIf7arbx3/G3Q5uNN10PpxHvEuqWLzm9oRNjTk
-         NRTMJokHrGd0c9xivb1vo/qs1DoArKB5DNxkgMf3e5lIElqGRwWN42zPKahFSdCb7fjZ
-         PsCGBXREb4yVQvCm7/82LUI2044ZkCitM3idQsborEy4LoAt1ULUk6kq+dUzoksDvdCG
-         3GCIP93HFrmruk/NodSAST2Imo82GatmwJbdmStRNpmgTXGKRVAI5Zor6HaBExChsq4x
-         bV9kcgsyPLRDX9PUJpZWwL0cLrBp3bvmxUCd0O2db/AaFisEP/3z8UF6TbHPfBasVp7P
-         h//w==
-X-Gm-Message-State: AOAM5333vSYVrAqKAlFrX+eFXLf3GnNQblFSXgY1T+ZPxY7ctMLDubWH
-        ezw+9bUYbknkUGkip0EWNbg=
-X-Google-Smtp-Source: ABdhPJyCvUa8NQpFHlM0rAOEJiMBlBi0dQ8fZLU0+6GrXUQ3ahIwxnK2e2aNk3bpNWYnUNVmwue1Pw==
-X-Received: by 2002:a65:6201:0:b0:369:4a47:aff1 with SMTP id d1-20020a656201000000b003694a47aff1mr2838506pgv.238.1646893356508;
-        Wed, 09 Mar 2022 22:22:36 -0800 (PST)
-Received: from [192.168.43.80] (subs03-180-214-233-29.three.co.id. [180.214.233.29])
-        by smtp.gmail.com with ESMTPSA id i187-20020a626dc4000000b004f6e0f346e7sm5315733pfc.39.2022.03.09.22.22.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 22:22:35 -0800 (PST)
-Message-ID: <49ee6347-1e2f-8894-627f-f90bc8356f84@gmail.com>
-Date:   Thu, 10 Mar 2022 13:22:30 +0700
+        Thu, 10 Mar 2022 01:24:39 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D587A3F8B4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 22:23:38 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V6nNtMc_1646893414;
+Received: from 30.97.48.73(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V6nNtMc_1646893414)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Mar 2022 14:23:35 +0800
+Message-ID: <be249da5-1f10-165a-02a4-a2342cd18692@linux.alibaba.com>
+Date:   Thu, 10 Mar 2022 14:24:38 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.2
-Subject: Re: [PATCH 5.10 00/43] 5.10.105-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH] mm: Only re-generate demotion targets when a numa node
+ changes its N_CPU state
+To:     Oscar Salvador <osalvador@suse.de>,
+        "Huang, Ying" <ying.huang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Abhishek Goel <huntbag@linux.vnet.ibm.com>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220309155859.239810747@linuxfoundation.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220309155859.239810747@linuxfoundation.org>
+References: <20220309144644.4278-1-osalvador@suse.de>
+ <87bkyefxnq.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <YimRJS9XFE8nswkd@localhost.localdomain>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YimRJS9XFE8nswkd@localhost.localdomain>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/22 22.59, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.105 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Hi Oscar,
+
+On 3/10/2022 1:48 PM, Oscar Salvador wrote:
+> On Thu, Mar 10, 2022 at 08:39:53AM +0800, Huang, Ying wrote:
+>> We need to call set_migration_target_nodes() during system boot
+>> somewhere, either here or in init_mm_internals().
 > 
+> Hi Huang Ying,
+> 
+> vmstat_cpu_online() already gets called during boot:
+> 
+> static struct cpuhp_step cpuhp_hp_states[] = {
+> ...
+> 	#ifdef CONFIG_SMP
+> 	[CPUHP_CREATE_THREADS]= {
+> 		.name			= "threads:prepare",
+> 		.startup.single		= smpboot_create_threads,
+> 		.teardown.single	= NULL,
+> 		.cant_stop		= true,
+> 	},
+> ...
+> 
+> smpboot_create_threads
+>   __smpboot_create_thread
+>    smpboot_thread_fn
+>     ht->thread_fn()
+>      cpuhp_thread_fun
+>       cpuhp_invoke_callback
+>        vmstat_cpu_online
+> 
+> That for every CPU that is brought up during boot.
+> 
+> So unless I am missing something, I would say we are already covered
+> there, right?
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig, gcc 11.2.0).
+I've tested your patch, unfortunately it can not work. It already set 
+the node with N_CPU state in init_cpu_node_state() earlier, so in 
+vmstat_cpu_online() ,the sentence 'if(!node_state(cpu_to_node(cpu), 
+N_CPU))' is always false, which means it will not call 
+set_migration_target_nodes().
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
--- 
-An old man doll... just what I always wanted! - Clara
+Like Huang Ying said, we should call set_migration_target_nodes() in 
+migrate_on_reclaim_init() or init_mm_internals().
