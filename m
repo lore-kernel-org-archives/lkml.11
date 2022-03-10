@@ -2,165 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B399C38161
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA430C3527E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344538AbiCJOlA (ORCPT
+        id S1345767AbiCJOmN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        Thu, 10 Mar 2022 09:42:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244409AbiCJO2y (ORCPT
+        with ESMTP id S1343845AbiCJObY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:54 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EECD108F;
-        Thu, 10 Mar 2022 06:23:56 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id 3so9730128lfr.7;
-        Thu, 10 Mar 2022 06:23:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
-        b=nCKpcv8pOchn2LpC3a/sEnI8cxJFMz8viJQDl7VV8+p0GiE3TYJ7Tvz1BJEHn/4MfZ
-         T7gX/nVKdlYi3BEEDxDduv+dwNSZ6h3g6OBm0IvBc8qgolkU0UP0kMcjP+RYSQpZM9I+
-         NFQmUbZGwC2h1JkqvAY5XbGLqyvEWKrisf/O0hMRFPLuXTaD/TYBtiR/W5Br/qxcoxev
-         hHid6O4YHi50rYahmytGQ36sGAdlyvB6xYuq5pfU/UWIQXGXDpLenJwB/pX08zahrUEK
-         6NUOjLb80aPnM8ZT8Y0VsVa1rz6SiO0yAowTfsS4eSbX/c0iRZwRzu+vjyBhUT99hebH
-         WAKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=NqCB67vT/c9mnsvCZbyxsMiWwZnjZ99KtMNG9ZRMdjE=;
-        b=hOEqqfbIiXViWCCCbadv5e88pbo7B+FQePZxU8Uo8mtDxuIMu7joFqrOO2uXVGPona
-         L7PdZ2MGv1PDIwA14tVffBv0/pVfkjSZtTxu80XWe85GR2CxsSsF+I6q1KOcUUTYzbi7
-         n57Zr5plKL+XWBtJsJvZHH3glalGMLT7HUb62OB01js6z4gJNzxt7CPyja3lh3YZ3J+R
-         VRSApQbq162lCo3gVDMD4kdQQ5cBLkO6jmS1834NNTnOGfF//J2URBZBGCwmr9v6KvW3
-         o14NihTvKxYIWlujc40e522i4+2kbGEN0nvVvI0b/v3RVnQj1oYqkwlv1edqRrEE8jRs
-         AVJg==
-X-Gm-Message-State: AOAM531jj9e7CtOvwmfmFdcCVAJwcBP7ZSi1ungmW2vSN8bBRtvc83ZC
-        kT1jAEzYdsK0gAcpvEt11NY=
-X-Google-Smtp-Source: ABdhPJycknNX5QY9A00iArbnxz8DgutUT/nn0zkVJ+dDezoA+QItx/kkE8HXhBp2tgEHq05zhytS0w==
-X-Received: by 2002:a05:6512:1698:b0:445:bc1d:3835 with SMTP id bu24-20020a056512169800b00445bc1d3835mr3065989lfb.122.1646922227753;
-        Thu, 10 Mar 2022 06:23:47 -0800 (PST)
-Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id 10-20020a2e080a000000b00247f82bbc6fsm1088932lji.54.2022.03.10.06.23.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:23:47 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH net-next 2/3] net: switchdev: add support for offloading of fdb locked flag
-Date:   Thu, 10 Mar 2022 15:23:19 +0100
-Message-Id: <20220310142320.611738-3-schultz.hans+netdev@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+        Thu, 10 Mar 2022 09:31:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D65E02C2;
+        Thu, 10 Mar 2022 06:27:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39EF8B81FE1;
+        Thu, 10 Mar 2022 14:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4B0C340E8;
+        Thu, 10 Mar 2022 14:27:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922453;
+        bh=wBLb1JgeLGCmIlJRSZ+nBqsfFArPm7x3PghLmULm8JI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bNQB+XxZ91+u9y5Kr5htoRbeqJSQpXcqUWZ1CX/kbdhix11vn4HuVr/+mU0ikfoV/
+         nd+fIEP3oBM/9FKmzbPQOto7z5998tmCurhm395FrqdlUZ804EdIgD6dPpc1SnS3EX
+         J3uvKfDlndZEenhCEhQDqjC83/95lNA/RlqcSfiY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.4 08/33] x86/speculation: Update link to AMD speculation whitepaper
+Date:   Thu, 10 Mar 2022 15:19:09 +0100
+Message-Id: <20220310140808.992989439@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
+References: <20220310140808.741682643@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Used for Mac-auth/MAB feature in the offloaded case.
+From: Kim Phillips <kim.phillips@amd.com>
 
-Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+commit e9b6013a7ce31535b04b02ba99babefe8a8599fa upstream.
+
+Update the link to the "Software Techniques for Managing Speculation
+on AMD Processors" whitepaper.
+
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/switchdev.h | 3 ++-
- net/bridge/br.c         | 3 ++-
- net/bridge/br_fdb.c     | 7 +++++--
- net/bridge/br_private.h | 2 +-
- 4 files changed, 10 insertions(+), 5 deletions(-)
+ Documentation/admin-guide/hw-vuln/spectre.rst |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 3e424d40fae3..d5d923411f5e 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -229,7 +229,8 @@ struct switchdev_notifier_fdb_info {
- 	u16 vid;
- 	u8 added_by_user:1,
- 	   is_local:1,
--	   offloaded:1;
-+	   offloaded:1,
-+	   locked:1;
- };
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -60,8 +60,8 @@ privileged data touched during the specu
+ Spectre variant 1 attacks take advantage of speculative execution of
+ conditional branches, while Spectre variant 2 attacks use speculative
+ execution of indirect branches to leak privileged memory.
+-See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[7] <spec_ref7>`
+-:ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
++See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[6] <spec_ref6>`
++:ref:`[7] <spec_ref7>` :ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
  
- struct switchdev_notifier_port_obj_info {
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index b1dea3febeea..adcdbecbc218 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
- 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
- 		fdb_info = ptr;
- 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
--						fdb_info->vid, false);
-+						fdb_info->vid, false,
-+						fdb_info->locked);
- 		if (err) {
- 			err = notifier_from_errno(err);
- 			break;
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 396dcf3084cf..91387aa7e400 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -987,7 +987,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 					   "FDB entry towards bridge must be permanent");
- 			return -EINVAL;
- 		}
--		err = br_fdb_external_learn_add(br, p, addr, vid, true);
-+		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
- 	} else {
- 		spin_lock_bh(&br->hash_lock);
- 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-@@ -1216,7 +1216,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+ Spectre variant 1 (Bounds Check Bypass)
+ ---------------------------------------
+@@ -746,7 +746,7 @@ AMD white papers:
  
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
--			      bool swdev_notify)
-+			      bool swdev_notify, bool locked)
- {
- 	struct net_bridge_fdb_entry *fdb;
- 	bool modified = false;
-@@ -1236,6 +1236,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 		if (!p)
- 			flags |= BIT(BR_FDB_LOCAL);
+ .. _spec_ref6:
  
-+		if (locked)
-+			flags |= BIT(BR_FDB_ENTRY_LOCKED);
-+
- 		fdb = fdb_create(br, p, addr, vid, flags);
- 		if (!fdb) {
- 			err = -ENOMEM;
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index f5a0b68c4857..3275e33b112f 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -790,7 +790,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
- void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
--			      bool swdev_notify);
-+			      bool swdev_notify, bool locked);
- int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
- 			      bool swdev_notify);
--- 
-2.30.2
+-[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/90343-B_SoftwareTechniquesforManagingSpeculation_WP_7-18Update_FNL.pdf>`_.
++[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/Managing-Speculation-on-AMD-Processors.pdf>`_.
+ 
+ ARM white papers:
+ 
+
 
