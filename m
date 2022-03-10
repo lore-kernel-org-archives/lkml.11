@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A476FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244503AbiCJRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:21:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52282 "EHLO
+        id S244513AbiCJRVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:21:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244487AbiCJRVj (ORCPT
+        with ESMTP id S244497AbiCJRVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:21:39 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBE41986E6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:38 -0800 (PST)
+        Thu, 10 Mar 2022 12:21:41 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A5B18E41E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932838; x=1678468838;
+  t=1646932840; x=1678468840;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=93jFsX4NWL0obNPFh5T/xV2MAM630r0feBd5fmn2ZFc=;
-  b=XUQl6A3r4OUljL0x5FGnppaLm3T2Yg0ShfIZJag1LVCZ6X9N0Ko3NZY6
-   6hE2Z/nvyy28SXz4/0+PX0sAqG2bda0mhDTG35G82GEsoKtqrs+UMTiqj
-   TkCWwSJmtLySXMQOuUkl+lINr9Ry1yGWosquUVCIl4WHdlppLGwc9Ifvf
-   8z81jUvO/uCkT9p/45UW0d0su1T+Pp+qVVTSS512Y4RDwkHo1dJQF9ZX8
-   s60OAPp25UYyRFCxx7wBCuEgQBySB41jz7j74gzI0SM8dQwhs8nSyztzX
-   fttn0Z8xCP9ZhERDW4eMvqetXfPC52JtDtoAg1uwWKVb6Onp+7QkT8/CU
+  bh=rre21y0NXsE36v+stW7kudjkkUumdSmZPMmPYFQ3UdM=;
+  b=UbcETU3GA3VcbyJCdW7xUFDaMb+R4QNWfcHDFMTPK07cJnKKZBDUE/Wx
+   RWSVEPWhr4UbaqHsKC5cyR/EQb29/2Hs+JZ1vDkM+fH9RMMKv9LYL6MVU
+   6RVpWihYW6HNrnaM35I3S1m6rls4aFyM40UXF+h58UjtKO+VPA3M/aY9+
+   7cIyLxyzqW4iwHdmrNdOEf1spzmIvlqgYSnyx5xBs0zApibvbkslOw7CR
+   aZmlfW918HFbtJ+n2uOvzmY3WMNOLYpEa1W5on998/26Ixlvtk03yXzCG
+   p6kth8D6ziVimt2TPYUlzPROzWXW+rK/EjKXvWyKhQUq1Nm3217BuALm+
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="280050663"
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="237484201"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="280050663"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:37 -0800
+   d="scan'208";a="237484201"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:39 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="611815891"
+   d="scan'208";a="633064293"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:37 -0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:39 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 05/45] x86/fpu: Refactor arch_set_user_pkey_access()
-Date:   Thu, 10 Mar 2022 09:19:39 -0800
-Message-Id: <20220310172019.850939-6-ira.weiny@intel.com>
+Subject: [PATCH V9 06/45] mm/pkeys: Add Kconfig options for PKS
+Date:   Thu, 10 Mar 2022 09:19:40 -0800
+Message-Id: <20220310172019.850939-7-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,108 +59,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Both PKU and PKS update their register values in the same way.  They can
-therefore share the update code.
+Consumers wishing to implement additional protections on memory pages
+can use PKS.  However, PKS is only available on some architectures.
 
-Define a helper, pkey_update_pkval(), which will be used to support both
-Protection Key User (PKU) and the new Protection Key for Supervisor
-(PKS) in subsequent patches.
+For this reason PKS code, both in the core and in the consumers, is dead
+code without PKS being both available and used.
 
-pkey_update_pkval() contributed by Thomas
+Add Kconfig options to allow for the elimination of unneeded code by
+detecting architecture PKS support (ARCH_HAS_SUPERVISOR_PKEYS) and
+requiring an indication of consumer need (ARCH_ENABLE_SUPERVISOR_PKEYS).
 
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Co-developed-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+In this patch ARCH_ENABLE_SUPERVISOR_PKEYS remains off until the first
+kernel consumer sets it.
+
+Cc: "Moger, Babu" <Babu.Moger@amd.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-Update for V8:
-	From Rick Edgecombe
-		Change pkey type to u8
-	Replace the code Peter provided in update_pkey_reg() for
-	Thomas' pkey_update_pkval()
-		-- https://lore.kernel.org/lkml/20200717085442.GX10769@hirez.programming.kicks-ass.net/
----
- arch/x86/include/asm/pkeys.h |  2 ++
- arch/x86/kernel/fpu/xstate.c | 22 ++++------------------
- arch/x86/mm/pkeys.c          | 16 ++++++++++++++++
- 3 files changed, 22 insertions(+), 18 deletions(-)
+Changes for V9
+	Dave Hansen
+		Don't exclude AMD, cpu supported bits will properly turn
+		the feature off.
+		Clarify commit message
+		Depend on CPU_SUP_INTEL
 
-diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
-index 1d5f14aff5f6..26616cbe19e2 100644
---- a/arch/x86/include/asm/pkeys.h
-+++ b/arch/x86/include/asm/pkeys.h
-@@ -131,4 +131,6 @@ static inline int vma_pkey(struct vm_area_struct *vma)
- 	return (vma->vm_flags & vma_pkey_mask) >> VM_PKEY_SHIFT;
- }
+Changes for V8
+	Split this out to a single change patch
+---
+ arch/x86/Kconfig | 1 +
+ mm/Kconfig       | 4 ++++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..459948622a73 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1868,6 +1868,7 @@ config X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	depends on X86_64 && (CPU_SUP_INTEL || CPU_SUP_AMD)
+ 	select ARCH_USES_HIGH_VMA_FLAGS
+ 	select ARCH_HAS_PKEYS
++	select ARCH_HAS_SUPERVISOR_PKEYS
+ 	help
+ 	  Memory Protection Keys provides a mechanism for enforcing
+ 	  page-based protections, but without requiring modification of the
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 3326ee3903f3..46f2bb15aa4e 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -804,6 +804,10 @@ config ARCH_USES_HIGH_VMA_FLAGS
+ 	bool
+ config ARCH_HAS_PKEYS
+ 	bool
++config ARCH_HAS_SUPERVISOR_PKEYS
++	bool
++config ARCH_ENABLE_SUPERVISOR_PKEYS
++	bool
  
-+u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits);
-+
- #endif /*_ASM_X86_PKEYS_H */
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index d090867c9de3..c8a8dadd9f87 100644
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -1071,8 +1071,7 @@ void *get_xsave_addr(struct xregs_state *xsave, int xfeature_nr)
- int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
- 			      unsigned long init_val)
- {
--	u32 old_pkru, new_pkru_bits = 0;
--	int pkey_shift;
-+	u32 pkru;
- 
- 	/*
- 	 * This check implies XSAVE support.  OSPKE only gets
-@@ -1089,22 +1088,9 @@ int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
- 	if (WARN_ON_ONCE(pkey >= arch_max_pkey()))
- 		return -EINVAL;
- 
--	/* Set the bits needed in PKRU:  */
--	if (init_val & PKEY_DISABLE_ACCESS)
--		new_pkru_bits |= PKR_AD_BIT;
--	if (init_val & PKEY_DISABLE_WRITE)
--		new_pkru_bits |= PKR_WD_BIT;
--
--	/* Shift the bits in to the correct place in PKRU for pkey: */
--	pkey_shift = pkey * PKR_BITS_PER_PKEY;
--	new_pkru_bits <<= pkey_shift;
--
--	/* Get old PKRU and mask off any old bits in place: */
--	old_pkru = read_pkru();
--	old_pkru &= ~((PKR_AD_BIT|PKR_WD_BIT) << pkey_shift);
--
--	/* Write old part along with new part: */
--	write_pkru(old_pkru | new_pkru_bits);
-+	pkru = read_pkru();
-+	pkru = pkey_update_pkval(pkru, pkey, init_val);
-+	write_pkru(pkru);
- 
- 	return 0;
- }
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index e1527b4619e1..7c90b2188c5f 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -193,3 +193,19 @@ static __init int setup_init_pkru(char *opt)
- 	return 1;
- }
- __setup("init_pkru=", setup_init_pkru);
-+
-+/*
-+ * Kernel users use the same flags as user space:
-+ *     PKEY_DISABLE_ACCESS
-+ *     PKEY_DISABLE_WRITE
-+ */
-+u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
-+{
-+	int shift = pkey * PKR_BITS_PER_PKEY;
-+
-+	if (WARN_ON_ONCE(accessbits & ~PKEY_ACCESS_MASK))
-+		accessbits &= PKEY_ACCESS_MASK;
-+
-+	pkval &= ~(PKEY_ACCESS_MASK << shift);
-+	return pkval | accessbits << shift;
-+}
+ config PERCPU_STATS
+ 	bool "Collect percpu memory statistics"
 -- 
 2.35.1
 
