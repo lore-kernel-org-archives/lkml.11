@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D685BC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C83DCC4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345076AbiCJOlf (ORCPT
+        id S1345043AbiCJOlc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        Thu, 10 Mar 2022 09:41:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245157AbiCJOaK (ORCPT
+        with ESMTP id S245233AbiCJOaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:10 -0500
+        Thu, 10 Mar 2022 09:30:16 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED811693B3;
-        Thu, 10 Mar 2022 06:25:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EC91704D0;
+        Thu, 10 Mar 2022 06:25:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7928B825F3;
-        Thu, 10 Mar 2022 14:25:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF90C340E8;
-        Thu, 10 Mar 2022 14:25:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0638B82676;
+        Thu, 10 Mar 2022 14:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4080FC340F5;
+        Thu, 10 Mar 2022 14:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922333;
-        bh=dBM59trElM9mKdvh5X3TAf3lhidiLDUO/YzmBUoNg2U=;
+        s=korg; t=1646922311;
+        bh=RqzeAQhcKiZiQ5wOPHZeqLujTq7UN4gy/nboCZyWHbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lpMG6FxCnSS49LGw2rHSuxC4lGcFuR1X+coPbr8lHRovmOZb42XTI7UShVe7q6/B7
-         7hF6QKY1LlC4P31KNf0RCmOIdq1A9aaRCTNJ6L/yhEsgikpIX+frwm3OBbOhzh51q/
-         uc3N+7U+3UncP7o8l5nmgEaaNUSleBEq78wjVZrc=
+        b=hB2xNvgDCpTrumpjhINTKNtDYM0hJVXoKHUJc+ukIVVUrGH39yche5RNf4lfDteAJ
+         T1JBo944bcTT4SW5uylgyEVCzFMJrKU4j/MeWuSXqNUx8WhKBYqUxDbeVg7AD962Og
+         52kZBwnx8/URmJeoOLrT8q2U7g35WlvIJmESQTTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 43/58] ARM: fix build error when BPF_SYSCALL is disabled
-Date:   Thu, 10 Mar 2022 15:19:03 +0100
-Message-Id: <20220310140814.097294178@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.10 37/58] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Thu, 10 Mar 2022 15:18:57 +0100
+Message-Id: <20220310140813.928124989@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -51,31 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+From: James Morse <james.morse@arm.com>
 
-commit 330f4c53d3c2d8b11d86ec03a964b86dc81452f5 upstream.
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
 
-It was missing a semicolon.
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
 
-Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Fixes: 25875aa71dfe ("ARM: include unprivileged BPF status in Spectre V2 reporting").
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/spectre.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(v
- #ifdef CONFIG_BPF_SYSCALL
- 	return !sysctl_unprivileged_bpf_disabled;
- #else
--	return false
-+	return false;
- #endif
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -29,4 +29,6 @@ bool has_spectre_v4(const struct arm64_c
+ void spectre_v4_enable_mitigation(const struct arm64_cpu_capabilities *__unused);
+ void spectre_v4_enable_task_mitigation(struct task_struct *tsk);
+ 
++enum mitigation_state arm64_get_spectre_bhb_state(void);
++
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -94,14 +94,39 @@ static bool spectre_v2_mitigations_off(v
+ 	return ret;
  }
  
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
++
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
++
+ 	switch (spectre_v2_state) {
+ 	case SPECTRE_UNAFFECTED:
+-		return sprintf(buf, "Not affected\n");
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
++
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++		fallthrough;
+ 	case SPECTRE_MITIGATED:
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 	case SPECTRE_VULNERABLE:
+ 		fallthrough;
+ 	default:
+@@ -787,3 +812,10 @@ int arch_prctl_spec_ctrl_get(struct task
+ 		return -ENODEV;
+ 	}
+ }
++
++static enum mitigation_state spectre_bhb_state;
++
++enum mitigation_state arm64_get_spectre_bhb_state(void)
++{
++	return spectre_bhb_state;
++}
 
 
