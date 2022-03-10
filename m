@@ -2,136 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C024C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD114C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245609AbiCJSwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:52:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        id S245628AbiCJSxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:53:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiCJSwA (ORCPT
+        with ESMTP id S233311AbiCJSxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:52:00 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744D4F94FA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:50:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646938259; x=1678474259;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gPJHila5zLpPmYhvasnJNpKqqfvFsbmocAlOkHlc8nA=;
-  b=G3lhrTFwMDErU6kxwuEfe0l3Q4AB0GtKBQp/XFpN7LNaiXgJThZ0U9qb
-   nOIgZ8LP+7d56796AYRnXrA7iO/JivMrqxVAuFA59F3uphEAwWhWcqNoY
-   HqBslJ1qfi8mBd1xeCz9BPlFRu/y951XhLbGfFbaJzNiJUFj1HhOA7PvA
-   A7gY4XOEStVUcDsInxQj1emYkIYOkOXHyseHfxJ7RE7oJWXRxk+jchux/
-   NAVHtbx1Mqpr0SeGr3xVlBiHj8Ggr3Z5qkzMO1PdGyeiD6fvW9ssAdkMV
-   ieK3OApDbMPx58wZS1AKkwVNGWnMh4WpW/h+sDBHurGeD7WXXisnNaIE5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="237512180"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="237512180"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 10:50:58 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="816005666"
-Received: from maxdorn-mobl.amr.corp.intel.com (HELO [10.209.77.185]) ([10.209.77.185])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 10:50:57 -0800
-Message-ID: <1371b991-ba9e-f1a8-db6a-f5cd645e7ba6@linux.intel.com>
-Date:   Thu, 10 Mar 2022 09:30:32 -0600
+        Thu, 10 Mar 2022 13:53:40 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8969A776C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:52:38 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id e13so5697583plh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to;
+        bh=gxKg5aXp0WecSyswMkXEgj8d6dIj43+Fc95JslNAllo=;
+        b=Em+sGhH2e2MKDMgVneSbPOT4yBJUfVdWIFzy7xKwjpodHnakWel9qtQo9NgJejHwWc
+         GCIsvo+DJVEAZXLSpcpTIPj3muAb0xUtJmpgrfqxCaDzzwc0ELiBnLasUN4j1OG+K+3f
+         mIP2TzDV1zjan61jMF2KXuroK1lptfM6jf+no=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to;
+        bh=gxKg5aXp0WecSyswMkXEgj8d6dIj43+Fc95JslNAllo=;
+        b=71OFddBulOm0kARMUHS52tgrdh5NPKWz3dOhz/y84yIPhktYFOtSq8OC1Tl2vBQNLu
+         IzFVx6FHBnAcfIThR0EQi9NMCEc1twj5jKgliIelRV+fj3oHpe8W/ueTXEZbtyljzGaO
+         PWm6JHayIvV7LAyeqBWeYD8/PVSPsjJh4wB9n4+iWt2ValXynWovbjcKkGUu1g30rK1t
+         RP3TaCBum8Fl8zDeWERT5Kc330X7/kySLy+gi8hAi5JCOlj34SQENcHeUVi9z0Etbv2e
+         xEQvsrGWgdVIpH6Mtsk3Wx+DeDRvHVAqkMdtwgpEhk32Lqee02J7+IpTc2FuJhpxSn2B
+         eH/A==
+X-Gm-Message-State: AOAM532V0NxJLzpXuiD0mHBXw4fApkG1vegGMQJxfXAtIuZg7t61i6Iz
+        M8fVtH4z8IrQtvJImEhr11p8uA==
+X-Google-Smtp-Source: ABdhPJxbDT19n9OaGBVhD6r3PiV0z+kK9ZZaiun+kgbmIVCkUiwuXHP1eBT/aKlm/+QYDelBtjtjVg==
+X-Received: by 2002:a17:903:32d2:b0:151:e18b:5411 with SMTP id i18-20020a17090332d200b00151e18b5411mr6498548plr.29.1646938358328;
+        Thu, 10 Mar 2022 10:52:38 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id pj13-20020a17090b4f4d00b001bf2ff56430sm11409457pjb.30.2022.03.10.10.52.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 10:52:37 -0800 (PST)
+Subject: Re: [PATCH] net: bcmgenet: Don't claim WOL when its not available
+To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, pbrobinson@gmail.com
+References: <20220310045535.224450-1-jeremy.linton@arm.com>
+From:   Florian Fainelli <florian.fainelli@broadcom.com>
+Message-ID: <e527a328-0a65-bb1f-8d87-b25504f0b663@broadcom.com>
+Date:   Thu, 10 Mar 2022 10:52:29 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH] ASoC: Intel: boards: Use temporary variable for struct
- device
-Content-Language: en-US
-To:     Zhen Ni <nizhen@uniontech.com>, broonie@kernel.org, tiwai@suse.com,
-        perex@perex.cz
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-References: <20220310065354.14493-1-nizhen@uniontech.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220310065354.14493-1-nizhen@uniontech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220310045535.224450-1-jeremy.linton@arm.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000d5736d05d9e1b7ab"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--000000000000d5736d05d9e1b7ab
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 
-
-On 3/10/22 00:53, Zhen Ni wrote:
-> Use temporary variable for struct device to make code neater. >
-> Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-
-There's quite a few Intel machine drivers where we have the same sort of 
-code, we'll need to do a wider cleanup at some point.
-
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-
-> ---
->   sound/soc/intel/boards/cht_bsw_max98090_ti.c | 18 +++++++++---------
->   1 file changed, 9 insertions(+), 9 deletions(-)
+On 3/9/22 8:55 PM, Jeremy Linton wrote:
+> Some of the bcmgenet platforms don't correctly support WOL, yet
+> ethtool returns:
 > 
-> diff --git a/sound/soc/intel/boards/cht_bsw_max98090_ti.c b/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-> index 1bc21434c9de..d9f4206e1f96 100644
-> --- a/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-> +++ b/sound/soc/intel/boards/cht_bsw_max98090_ti.c
-> @@ -538,7 +538,7 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
->   	const char *platform_name;
->   	bool sof_parent;
->   
-> -	drv = devm_kzalloc(&pdev->dev, sizeof(*drv), GFP_KERNEL);
-> +	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
->   	if (!drv)
->   		return -ENOMEM;
->   
-> @@ -559,8 +559,8 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
->   	}
->   
->   	/* override plaform name, if required */
-> -	snd_soc_card_cht.dev = &pdev->dev;
-> -	mach = pdev->dev.platform_data;
-> +	snd_soc_card_cht.dev = dev;
-> +	mach = dev->platform_data;
->   	platform_name = mach->mach_params.platform;
->   
->   	ret_val = snd_soc_fixup_dai_links_platform_name(&snd_soc_card_cht,
-> @@ -576,9 +576,9 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
->   	else
->   		mclk_name = "pmc_plt_clk_3";
->   
-> -	drv->mclk = devm_clk_get(&pdev->dev, mclk_name);
-> +	drv->mclk = devm_clk_get(dev, mclk_name);
->   	if (IS_ERR(drv->mclk)) {
-> -		dev_err(&pdev->dev,
-> +		dev_err(dev,
->   			"Failed to get MCLK from %s: %ld\n",
->   			mclk_name, PTR_ERR(drv->mclk));
->   		return PTR_ERR(drv->mclk);
-> @@ -594,12 +594,12 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
->   	if (drv->quirks & QUIRK_PMC_PLT_CLK_0) {
->   		ret_val = clk_prepare_enable(drv->mclk);
->   		if (ret_val < 0) {
-> -			dev_err(&pdev->dev, "MCLK enable error: %d\n", ret_val);
-> +			dev_err(dev, "MCLK enable error: %d\n", ret_val);
->   			return ret_val;
->   		}
->   	}
->   
-> -	sof_parent = snd_soc_acpi_sof_parent(&pdev->dev);
-> +	sof_parent = snd_soc_acpi_sof_parent(dev);
->   
->   	/* set card and driver name */
->   	if (sof_parent) {
-> @@ -614,9 +614,9 @@ static int snd_cht_mc_probe(struct platform_device *pdev)
->   	if (sof_parent)
->   		dev->driver->pm = &snd_soc_pm_ops;
->   
-> -	ret_val = devm_snd_soc_register_card(&pdev->dev, &snd_soc_card_cht);
-> +	ret_val = devm_snd_soc_register_card(dev, &snd_soc_card_cht);
->   	if (ret_val) {
-> -		dev_err(&pdev->dev,
-> +		dev_err(dev,
->   			"snd_soc_register_card failed %d\n", ret_val);
->   		return ret_val;
->   	}
+> "Supports Wake-on: gsf"
+> 
+> which is false.
+> 
+> Ideally if there isn't a wol_irq, or there is something else that
+> keeps the device from being able to wakeup it should display:
+> 
+> "Supports Wake-on: d"
+> 
+> This patch checks whether the device can wakup, before using the
+> hard-coded supported flags. This corrects the ethtool reporting, as
+> well as the WOL configuration because ethtool verifies that the mode
+> is supported before attempting it.
+> 
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
+
+Thanks Jeremy!
+-- 
+Florian
+
+--000000000000d5736d05d9e1b7ab
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDHG7gDNoanCGtqaNhjANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNjU3MTBaFw0yMjA5MDUwNzA3MjNaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAu10WSl35INx8Ma97NH54zM3XKzx8Lo/KErWP5HPBtIxzYjBL20TDg9Jmnnbs
+rZjwEVNKY30HiBRJcooDpalBATQpdw3kdYEgojrrXjVz4a+YaWhLbV0OwQ54QAkwKsdYTnuUX0B4
+YLYGuUBDXYkcFWZv5BiAF4L97ClbTnUUCry8bhV9SP8b/tbivOhWUSjHLsQ9gEjuLhVId3Xgs9dA
+TtoyOTJVs6HDth0+/13gxSrB3BwSY4wtw7EPHshswD1fzSV1fZf7QUQedadjH8BMBaKKseIieb6M
+bhjsippX2btWEJOuUFS5RkK5HFFkzcGtIQd+gltZHQHohAcopF+cSwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUIDZLMN77
+IWw6rnhSvGm2V4nv3AowDQYJKoZIhvcNAQELBQADggEBADVdzyh3BQZiABHSdL7LQPNr6/6OQwg7
+65j9Ggyr2Rdl2RnQIifKtGGodVlJ8e9XCYt5rCNU8PriYstIk4jlMJp6SziSN0CLE+A+FujmTqZJ
+X8vEct7sdLXqdlBvR23TLvnkxbS3RwED7FDDTxpIv5j87o78e+wrZOPvDskdrYXVWGUu23xmd2IS
+kYMLAXNeGrVe6HovEKCJPw07+B35iJvwdpZBXiti5hFa3q1L0+K5nGMpceIrj4dOOkSNB2ipHR6H
+Q5HbB0UbWMkRv1PYpxf5eMjyDqxNigsE2JIFa1nk8ckA8hoTKbypCoALjcSuNqdZZyOnMBSKguHJ
+Zz4bBBwxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxx
+u4AzaGpwhramjYYwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPp/U2QI2RBzinbi
+05A9/LFOpxc2MP/mrjEJPbkhqXMZMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDMxMDE4NTIzOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQARo7n+uoFAPpaM+KxfX9PiTGTLKX4GbqUS
+C0l9rvB6g9ZOEL91tJpsXv4Dko/x3LwiG1pmmlcLqLVr9z+PjczLv33yfIEY+rWeMROfv7StnWeZ
+J5VTVnFPb3+h4+h6qCa/Fa3nh8d/Fr7mLU6zRRXb2t384vgL1u0CVvXcFl8JEECX0ggW7NbKBzmH
+o52uROgp7lI7u4hGnSxANopbPnBRz6oHBmk/y1Xzb+aCC/Pmi7MsSBKvjRF2CMUer2evTp4UWq72
+Qojol5Nl3T+rV9fbxvrS4XQg/HBEfGUfE6o9+Umn8GXX447tfwVFsy1oTC/dxNvGgdYdTzr0LFbp
+ZBa2
+--000000000000d5736d05d9e1b7ab--
