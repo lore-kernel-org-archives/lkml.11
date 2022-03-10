@@ -2,81 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 04:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 04:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239420AbiCJEEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 23:04:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S239427AbiCJEIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 23:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiCJEEI (ORCPT
+        with ESMTP id S232620AbiCJEIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 23:04:08 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12FD710F6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 20:03:07 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id b24so5361232edu.10
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 20:03:07 -0800 (PST)
+        Wed, 9 Mar 2022 23:08:51 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B727487A;
+        Wed,  9 Mar 2022 20:07:51 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so4115009pjl.4;
+        Wed, 09 Mar 2022 20:07:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GrKdFSYsZlVt8uhCN2U6sNHmV3u4KOt5mcwLajvsZOw=;
-        b=ONrKwNauEyspuXAuyaYf+2s7frYnXQgKz3I3C/XTvDB8gnwd6/YlZl1iyEk5kZ2T9s
-         CflKU1uQ3xl/8qFQRFY21+vq6dhEYhcFsbFQSMmoStDu0ZoDIcmz4pWksO1uCcP5vX2b
-         UlrJuWB0okTvlUvCk92Sb8C9A4PlLlPLdBTVRDRdynYexSvalJOaM+uiDgfbbfn9mGph
-         UkcupGs9lFCOqR+O5d7tp2IeOcyUUwZRS4C98tiYq3YE9X4Lgervcc4mnfH+/FM/xFnU
-         IxfufytJXbxJI+AxXNgaE37NoMNafJs1zKfW9mF15vroPEb2zGDpC8giAcxDjTKstxsn
-         HEeQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lOGsKXR40MzrVcMHWeC6U8EP187W1cfPMllbU9spfy4=;
+        b=d7SXPpbqzZKYTwjwgiswjOYgBLV2yzAX6epBBVnzbsvzqfkbqsv45dSgDabXv+Ww4R
+         eEdK5ZY4qxdWrTm43XPt/0xRBv5Pc+oXe4eRUlAEGHLoYFMPgQJTPuksVAipGrsDgCCe
+         mSm+nNrJuOEw5OOM/bVZTfBUAK3l8ibzuP8dA5ktGGPv1vsekyCw0ZAwDAUOcKpEBCWN
+         94v7iArjTMpWmkSj+2xUimKDXiapWSZ6ZVhmF7tmrItbuQimRq4Kxv+vFRt5qMlPrl5v
+         lRs3aHrbw0OZotvO6GuQHXp7zON2mXsgp18ZObafKdAU/VWjB254Uvj2K+YTwCGna5R0
+         a/aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GrKdFSYsZlVt8uhCN2U6sNHmV3u4KOt5mcwLajvsZOw=;
-        b=T64ac2HFtDaXKeTQz8IVmV/ENQ2816nAnOOdthIxFuFBZSTiRbPWkykMfHBqfqa/O9
-         g9jueQQp1ZDnZk1Dt/BPNFFBSQMOJGc6NKiO6d1R1DdF328FkGMm5jie64qwVtqjIir2
-         RhN8fK8gphcpDliufZM2jddr0W4xTQRSsUHVea7gX6lq7CnNfWJJyg7ukrNd0lxQi1fk
-         ZunIxY4PS9KAzroWfMkK2RPrVdQcv4uSaKAmua4l6OpIPd4E/taWqFf6t5ZYYR7gCFGs
-         NiFjuYQeIyYJhKhHKRyDOhuf34vxE7Acaxdcf2PpKLaSF1uHxK2Dp2mHqIyIu1Kei699
-         /ifg==
-X-Gm-Message-State: AOAM533faput2FvuXi2YavBQhsvNcGsU0ryUwDPSQM5v4H5CUTzXlqVB
-        JrC6ZvOpj/feNEHKXhtn99k56fgESxnA5YahN1g=
-X-Google-Smtp-Source: ABdhPJwkgjgmWZTe/uzCw13LmTJ+AMMbnaHvJVc7YxhfBh+pWiN0kj2TdHmcSbojsH78j+QzOvhAaEGenMZA45d4jKA=
-X-Received: by 2002:a50:9d0f:0:b0:416:95a3:1611 with SMTP id
- v15-20020a509d0f000000b0041695a31611mr2430187ede.77.1646884986448; Wed, 09
- Mar 2022 20:03:06 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lOGsKXR40MzrVcMHWeC6U8EP187W1cfPMllbU9spfy4=;
+        b=nUL0zUf/ewJ3bEehvWrdGTt8b9whPND3krbT7L4QQEyYJ7x8qXaFfph5ENBBnTgKHy
+         fwQQfw56rIFgnLI0je1idp6DuvnMNri1IOCdweTMldOL2H5fcdiHZ8VHbBsHyH4H6mUa
+         vcKGliRtaTJUGrk/sHG+h1JaHkgsrh3jQIDIFeVQ8AQRjIKPAqFehPHWNiOcuRZk/7r/
+         Vrjwj+PPAO2x3p3yMb9JGg0Gp2H2b25QAJZePZ3zhmIZHuj0DzIqn8omxIJXTVNAp4op
+         FXcgJZeB1d5sa1iUZcgOjbDAa0k/lQNZqFWdOGPLEn8qc4BN/3mBBD3rvcGTfuQd7fmX
+         EJ8Q==
+X-Gm-Message-State: AOAM531hMglLWz0C52TYfhLn0+7vea9wRvSwD/elB7YLZpb9JM4YTY/E
+        WfRmZuDmhwpEXFtAJr6LaUaCBRUCMTI=
+X-Google-Smtp-Source: ABdhPJwLY0RJraH7XmAsX5Ei/ShC0xAnGUWkGghiC29+Cx21rIozy0GcStFFB36LfBDaRKvIOwpgNQ==
+X-Received: by 2002:a17:902:f145:b0:151:a441:433a with SMTP id d5-20020a170902f14500b00151a441433amr2939864plb.44.1646885270738;
+        Wed, 09 Mar 2022 20:07:50 -0800 (PST)
+Received: from [192.168.43.80] (subs32-116-206-28-60.three.co.id. [116.206.28.60])
+        by smtp.gmail.com with ESMTPSA id k19-20020a056a00135300b004f734327960sm4995550pfu.106.2022.03.09.20.07.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 20:07:49 -0800 (PST)
+Message-ID: <9c2ea46f-57f9-29e6-7232-c2482acfed15@gmail.com>
+Date:   Thu, 10 Mar 2022 11:07:46 +0700
 MIME-Version: 1.0
-References: <1646879863-27711-1-git-send-email-shengjiu.wang@nxp.com>
-In-Reply-To: <1646879863-27711-1-git-send-email-shengjiu.wang@nxp.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Thu, 10 Mar 2022 01:02:54 -0300
-Message-ID: <CAOMZO5DCm8TzajeLCECxpdsoKBMOzr2MgmoYbUSN7SDYRhPL4A@mail.gmail.com>
-Subject: Re: [PATCH] ASoC: fsl_spdif: Disable TX clock when stop
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     Nicolin Chen <nicoleotsuka@gmail.com>,
-        Xiubo Li <Xiubo.Lee@gmail.com>,
-        Shengjiu Wang <shengjiu.wang@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] Documentation: describe how to apply incremental stable
+ patches
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     SeongJae Park <sjpark@amazon.de>, linux-kernel@vger.kernel.org
+References: <20220307063340.256671-1-bagasdotme@gmail.com>
+ <87mthy7lif.fsf@meer.lwn.net>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <87mthy7lif.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 11:46 PM Shengjiu Wang <shengjiu.wang@nxp.com> wrote:
->
-> The TX clock source may be changed in next case, need to
-> disable it when stop, otherwise the TX may not work after
-> changing the clock source, error log is:
->
-> aplay: pcm_write:2058: write error: Input/output error
->
-> Fixes: a2388a498ad2 ("ASoC: fsl: Add S/PDIF CPU DAI driver")
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+On 10/03/22 06.29, Jonathan Corbet wrote:
+> I've applied this, thanks.  I do have to wonder, though, how useful this
+> information is anymore.  Does anybody actually apply kernel-patch files
+> this far into the Git era?
+> 
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+I think most people don't use Git to track kernel sources, so they just
+download full tarball from kernel.org, then applying stable update
+patches (normal or incremental). I also used to do the same, but now I use
+Git because when there is stable kernel update, I can simply `git fetch`,
+then checkout desired stable branch, and `git merge`.
+
+-- 
+An old man doll... just what I always wanted! - Clara
