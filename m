@@ -2,158 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B25C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241268AbiCJQU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:20:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S242341AbiCJQVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236664AbiCJQUi (ORCPT
+        with ESMTP id S242547AbiCJQUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:20:38 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED3E199D58;
-        Thu, 10 Mar 2022 08:18:55 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 179FB491;
-        Thu, 10 Mar 2022 17:18:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646929121;
-        bh=IigNmedq/u5cq+uo4SiOOQpiDOP+uOQZNVbqmVyBaLw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=H+Ip+sLggMnFavGSB11bgBBXLtNPbzXIzKaioFZTMeua44tvb+OG4ptOFE/EQ0R3N
-         NY4MlbyFC+mU8T+V8e5Ff/Dy3JNxRUXUmvexwXHREdbWMochDKS+qdv3AQo5jZLmnC
-         Tu26812mZn+lAnBum/+p4CdA/qrEY++dNe+X4Vug=
-Date:   Thu, 10 Mar 2022 18:18:25 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-kernel@vger.kernel.org,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v3 1/3] drm/bridge: ti-sn65dsi86: Support DisplayPort
- (non-eDP) mode
-Message-ID: <Yiok0XZUgDyveWKj@pendragon.ideasonboard.com>
-References: <20220310152227.2122960-1-kieran.bingham+renesas@ideasonboard.com>
- <20220310152227.2122960-2-kieran.bingham+renesas@ideasonboard.com>
+        Thu, 10 Mar 2022 11:20:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA1D5199D49
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:18:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646929099;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yBPK8CspGb1y+c3hE8EUfpnQvHO/Br5Ffw6ncR1/NAw=;
+        b=WlW1/LLFNtepyqABivISAvzLCkZo3nGA7ARvINKtJC74p1S38MEfnKRNPeTnUw74MIPHKN
+        didJgSo51+/BhZJDHRm3TiPpLjBM64/5Rg7qCYHVREdbSD3J09bAlyEzt7JLNG1Moxzc16
+        sg9egT04TqbqjeXZ0Gsy3Ik5KJzoIok=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-248-JS7KWOs7Or626loUa-PHuw-1; Thu, 10 Mar 2022 11:18:15 -0500
+X-MC-Unique: JS7KWOs7Or626loUa-PHuw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FD741091DA0;
+        Thu, 10 Mar 2022 16:18:13 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C9AA278C1B;
+        Thu, 10 Mar 2022 16:17:57 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH v3 12/20] ceph: Make ceph_init_request() check caps on
+ readahead
+From:   David Howells <dhowells@redhat.com>
+To:     linux-cachefs@redhat.com
+Cc:     ceph-devel@vger.kernel.org, dhowells@redhat.com,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jeff Layton <jlayton@redhat.com>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 10 Mar 2022 16:17:56 +0000
+Message-ID: <164692907694.2099075.10081819855690054094.stgit@warthog.procyon.org.uk>
+In-Reply-To: <164692883658.2099075.5745824552116419504.stgit@warthog.procyon.org.uk>
+References: <164692883658.2099075.5745824552116419504.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220310152227.2122960-2-kieran.bingham+renesas@ideasonboard.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kieran,
+Move the caps check from ceph_readahead() to ceph_init_request(),
+conditional on the origin being NETFS_READAHEAD so that in a future patch,
+ceph can point its ->readahead() vector directly at netfs_readahead().
 
-Thank you for the patch.
+Changes
+=======
+ver #3)
+ - Split from the patch to add a netfs inode context[1].
+ - Need to store the caps got in rreq->netfs_priv for later freeing.
 
-On Thu, Mar 10, 2022 at 03:22:25PM +0000, Kieran Bingham wrote:
-> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> 
-> Despite the SN65DSI86 being an eDP bridge, on some systems its output is
-> routed to a DisplayPort connector. Enable DisplayPort mode when the next
-> component in the display pipeline is detected as a DisplayPort
-> connector, and disable eDP features in that case.
-> 
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> Reworked to set bridge type based on the next bridge/connector.
-> Signed-off-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: ceph-devel@vger.kernel.org
+cc: linux-cachefs@redhat.com
+Link: https://lore.kernel.org/r/8af0d47f17d89c06bbf602496dd845f2b0bf25b3.camel@kernel.org/ [1]
+---
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+ fs/ceph/addr.c |   69 +++++++++++++++++++++++++++++++++-----------------------
+ 1 file changed, 41 insertions(+), 28 deletions(-)
 
-(I know I'm listed as the author, but your changes look good :-))
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index 9189257476f8..6d056db41f50 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -354,6 +354,45 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
+ 	dout("%s: result %d\n", __func__, err);
+ }
+ 
++static int ceph_init_request(struct netfs_io_request *rreq, struct file *file)
++{
++	struct inode *inode = rreq->inode;
++	int got = 0, want = CEPH_CAP_FILE_CACHE;
++	int ret = 0;
++
++	if (file) {
++		struct ceph_rw_context *rw_ctx;
++		struct ceph_file_info *fi = file->private_data;
++
++		rw_ctx = ceph_find_rw_context(fi);
++		if (rw_ctx)
++			return 0;
++	}
++
++	if (rreq->origin != NETFS_READAHEAD)
++		return 0;
++
++	/*
++	 * readahead callers do not necessarily hold Fcb caps
++	 * (e.g. fadvise, madvise).
++	 */
++	ret = ceph_try_get_caps(inode, CEPH_CAP_FILE_RD, want, true, &got);
++	if (ret < 0) {
++		dout("start_read %p, error getting cap\n", inode);
++		return ret;
++	}
++
++	if (!(got & want)) {
++		dout("start_read %p, no cache cap\n", inode);
++		return -EACCES;
++	}
++	if (ret == 0)
++		return -EACCES;
++
++	rreq->netfs_priv = (void *)(uintptr_t)got;
++	return 0;
++}
++
+ static void ceph_readahead_cleanup(struct address_space *mapping, void *priv)
+ {
+ 	struct inode *inode = mapping->host;
+@@ -365,7 +404,7 @@ static void ceph_readahead_cleanup(struct address_space *mapping, void *priv)
+ }
+ 
+ static const struct netfs_request_ops ceph_netfs_read_ops = {
+-	.is_cache_enabled	= ceph_is_cache_enabled,
++	.init_request		= ceph_init_request,
+ 	.begin_cache_operation	= ceph_begin_cache_operation,
+ 	.issue_read		= ceph_netfs_issue_read,
+ 	.expand_readahead	= ceph_netfs_expand_readahead,
+@@ -393,33 +432,7 @@ static int ceph_readpage(struct file *file, struct page *subpage)
+ 
+ static void ceph_readahead(struct readahead_control *ractl)
+ {
+-	struct inode *inode = file_inode(ractl->file);
+-	struct ceph_file_info *fi = ractl->file->private_data;
+-	struct ceph_rw_context *rw_ctx;
+-	int got = 0;
+-	int ret = 0;
+-
+-	if (ceph_inode(inode)->i_inline_version != CEPH_INLINE_NONE)
+-		return;
+-
+-	rw_ctx = ceph_find_rw_context(fi);
+-	if (!rw_ctx) {
+-		/*
+-		 * readahead callers do not necessarily hold Fcb caps
+-		 * (e.g. fadvise, madvise).
+-		 */
+-		int want = CEPH_CAP_FILE_CACHE;
+-
+-		ret = ceph_try_get_caps(inode, CEPH_CAP_FILE_RD, want, true, &got);
+-		if (ret < 0)
+-			dout("start_read %p, error getting cap\n", inode);
+-		else if (!(got & want))
+-			dout("start_read %p, no cache cap\n", inode);
+-
+-		if (ret <= 0)
+-			return;
+-	}
+-	netfs_readahead(ractl, &ceph_netfs_read_ops, (void *)(uintptr_t)got);
++	netfs_readahead(ractl, &ceph_netfs_read_ops, NULL);
+ }
+ 
+ #ifdef CONFIG_CEPH_FSCACHE
 
-> --
-> Changes since v1/RFC:
->  - Rebased on top of "drm/bridge: ti-sn65dsi86: switch to
->    devm_drm_of_get_bridge"
->  - eDP/DP mode determined from the next bridge connector type.
-> 
-> Changes since v2:
->  - Remove setting of Standard DP Scrambler Seed. (It's read-only).
->  - Prevent setting DP_EDP_CONFIGURATION_SET in
->    ti_sn_bridge_atomic_enable()
->  - Use Doug's suggested text for disabling ASSR on DP mode.
-> 
->  drivers/gpu/drm/bridge/ti-sn65dsi86.c | 23 ++++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> index c892ecba91c7..93b54fcba8ba 100644
-> --- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> +++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> @@ -62,6 +62,7 @@
->  #define SN_LN_ASSIGN_REG			0x59
->  #define  LN_ASSIGN_WIDTH			2
->  #define SN_ENH_FRAME_REG			0x5A
-> +#define  ASSR_CONTROL				BIT(0)
->  #define  VSTREAM_ENABLE				BIT(3)
->  #define  LN_POLRS_OFFSET			4
->  #define  LN_POLRS_MASK				0xf0
-> @@ -93,6 +94,8 @@
->  #define SN_DATARATE_CONFIG_REG			0x94
->  #define  DP_DATARATE_MASK			GENMASK(7, 5)
->  #define  DP_DATARATE(x)				((x) << 5)
-> +#define SN_TRAINING_SETTING_REG			0x95
-> +#define  SCRAMBLE_DISABLE			BIT(4)
->  #define SN_ML_TX_MODE_REG			0x96
->  #define  ML_TX_MAIN_LINK_OFF			0
->  #define  ML_TX_NORMAL_MODE			BIT(0)
-> @@ -982,6 +985,17 @@ static int ti_sn_link_training(struct ti_sn65dsi86 *pdata, int dp_rate_idx,
->  		goto exit;
->  	}
->  
-> +	/*
-> +	 * eDP panels use an Alternate Scrambler Seed compared to displays
-> +	 * hooked up via a full DisplayPort connector. SN65DSI86 only supports
-> +	 * the alternate scrambler seed, not the normal one, so the only way we
-> +	 * can support full DisplayPort displays is by fully turning off the
-> +	 * scrambler.
-> +	 */
-> +	if (pdata->bridge.type == DRM_MODE_CONNECTOR_DisplayPort)
-> +		regmap_update_bits(pdata->regmap, SN_TRAINING_SETTING_REG,
-> +				   SCRAMBLE_DISABLE, SCRAMBLE_DISABLE);
-> +
->  	/*
->  	 * We'll try to link train several times.  As part of link training
->  	 * the bridge chip will write DP_SET_POWER_D0 to DP_SET_POWER.  If
-> @@ -1046,12 +1060,13 @@ static void ti_sn_bridge_atomic_enable(struct drm_bridge *bridge,
->  
->  	/*
->  	 * The SN65DSI86 only supports ASSR Display Authentication method and
-> -	 * this method is enabled by default. An eDP panel must support this
-> +	 * this method is enabled for eDP panels. An eDP panel must support this
->  	 * authentication method. We need to enable this method in the eDP panel
->  	 * at DisplayPort address 0x0010A prior to link training.
->  	 */
-> -	drm_dp_dpcd_writeb(&pdata->aux, DP_EDP_CONFIGURATION_SET,
-> -			   DP_ALTERNATE_SCRAMBLER_RESET_ENABLE);
-> +	if (pdata->bridge.type == DRM_MODE_CONNECTOR_eDP)
-> +		drm_dp_dpcd_writeb(&pdata->aux, DP_EDP_CONFIGURATION_SET,
-> +				   DP_ALTERNATE_SCRAMBLER_RESET_ENABLE);
->  
->  	/* Set the DP output format (18 bpp or 24 bpp) */
->  	val = (ti_sn_bridge_get_bpp(old_bridge_state) == 18) ? BPP_18_RGB : 0;
-> @@ -1215,6 +1230,8 @@ static int ti_sn_bridge_probe(struct auxiliary_device *adev,
->  
->  	pdata->bridge.funcs = &ti_sn_bridge_funcs;
->  	pdata->bridge.of_node = np;
-> +	pdata->bridge.type = pdata->next_bridge->type == DRM_MODE_CONNECTOR_DisplayPort
-> +			   ? DRM_MODE_CONNECTOR_DisplayPort : DRM_MODE_CONNECTOR_eDP;
->  
->  	drm_bridge_add(&pdata->bridge);
->  
 
--- 
-Regards,
-
-Laurent Pinchart
