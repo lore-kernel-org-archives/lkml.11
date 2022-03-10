@@ -2,93 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E990DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244592AbiCJTve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
+        id S242143AbiCJTvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 14:51:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244053AbiCJTva (ORCPT
+        with ESMTP id S243919AbiCJTv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:51:30 -0500
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E52143470
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:50:29 -0800 (PST)
-Received: from pps.filterd (m0134421.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AG1t91022382;
-        Thu, 10 Mar 2022 19:50:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pps0720;
- bh=Ykj4cszWHOqas1sdtRsDOMTT3R1YCNKROtLHY70yCAM=;
- b=DbCvb3YKLnbJLu5rfAFIl3MyQ00xDb7y4clRW+9PwaCR1fqUnLHyYCYqIsN1u9MUmGqJ
- fDOEXuQVyrD0hH2YApQy4Lm70lpOkJSaGoASiBlBAuoTrLgbeQS1TvUt51m1B5orl58R
- gnE1ucnmvvpanllhH/2m43wJgPuPSp7lOjYN8OY3fM5+UW0qQMXruA9Pjj4iPhvmA7Ki
- arwXVsrgJZgisrcMAt2+P4J2EvyIU+5g1EQHTxtylwl7Fa6V+A+DKaVNt0N4ePImb1LK
- bWjDWuWQ4cxHPCprqpqZryyhlsDmF+uto/R1wFKhxxn5Fw8swKFiXaV5zVSIz/u53df8 Dw== 
-Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3eqmarsyf1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 19:50:24 +0000
-Received: from hpe.com (unknown [15.115.65.69])
-        by g2t2353.austin.hpe.com (Postfix) with ESMTP id 69B8365;
-        Thu, 10 Mar 2022 19:50:23 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     verdun@hpe.com
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 02/10] arch: arm: configs: multi_v7_defconfig
-Date:   Thu, 10 Mar 2022 13:52:21 -0600
-Message-Id: <20220310195229.109477-2-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
-References: <20220310195229.109477-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: osNuSt80d9MFPtaFrdYTH06WWa9JlW5q
-X-Proofpoint-ORIG-GUID: osNuSt80d9MFPtaFrdYTH06WWa9JlW5q
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-10_08,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=541 clxscore=1015
- lowpriorityscore=0 malwarescore=0 spamscore=0 mlxscore=0 phishscore=0
- adultscore=0 impostorscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203100100
+        Thu, 10 Mar 2022 14:51:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AC21390DD;
+        Thu, 10 Mar 2022 11:50:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01ABDB8276F;
+        Thu, 10 Mar 2022 19:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A6ADC340E9;
+        Thu, 10 Mar 2022 19:50:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646941825;
+        bh=hw2Lwu8uiGlVaaRZU6xCEXkOOb6VGkkDy0670anUTD8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Kh3KjQIKFqV/UT649PJd/Gf+X+4Oj073YPak/CQ8NMX/jJ8s+OOAAXMI7IUCUtIGE
+         NVd9c0QwEKmhrS4w35LvSxVjY3ZgD0YSx9phON4bF92iD/ZJ4i8bIH7cHqn/haWBJB
+         soVKrDlOtZV5ZblBlobBQ5j7Utjhjdq1gZRPhJsBsEkAFJyvOBiAOWC5MCz/KhI+zc
+         y0BuqmRz6+1xX2DAKBc9Bt4CYt9e4JX9j+jqtsjIa2sjBocs+cG48FyJWAx/Z19mWY
+         U7a6b/AJw3gkovbMmCynKdDo0j20GVcaitqyjcrvUIgqFsvLDsozWTQTG7RIsaCQGZ
+         NL7i3N4gZBjlw==
+Date:   Thu, 10 Mar 2022 13:50:24 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Ben Dooks <ben.dooks@codethink.co.uk>
+Cc:     linux-pci@vger.kernel.org, paul.walmsley@sifive.com,
+        greentime.hu@sifive.com, lorenzo.pieralisi@arm.com,
+        robh@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC] PCI: fu740: Force Gen1 to fix initial device probing on
+ some boards
+Message-ID: <20220310195023.GA177539@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53bccf99-c183-78f9-f6cb-2921228ced48@codethink.co.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+On Thu, Mar 10, 2022 at 09:06:08AM +0000, Ben Dooks wrote:
+> On 10/03/2022 00:15, Bjorn Helgaas wrote:
 
-Add support for the HPE GXP Processor by modifing the
-multi_v7_defconfig instead. This adds basic HPE and GXP
-architecture as well as enables the watchdog which is part
-of this patch set.
+> > Seems like this isn't quite baked yet.  Lorenzo has the v4 of this on
+> > his pci/fu740 branch, but I'm going to drop that for now because (a)
+> > this one is better and (b) it'd be nice to have an ack from a FU740
+> > maintainer (Paul or Greentime).
+> 
+> Yes. I'll fix the comments up and try and get this out later in the
+> week. I hope the GPIO patch is easier and can be merged on its own.
 
-Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
----
- arch/arm/configs/multi_v7_defconfig | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 8863fa969ede..b93d213b7e60 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -1006,6 +1006,8 @@ CONFIG_QCOM_GSBI=y
- CONFIG_QCOM_SMD_RPM=m
- CONFIG_QCOM_WCNSS_CTRL=m
- CONFIG_ARCH_EMEV2=y
-+CONFIG_ARCH_HPE=y
-+CONFIG_ARCH_HPE_GXP=y
- CONFIG_ARCH_R8A7794=y
- CONFIG_ARCH_R8A7779=y
- CONFIG_ARCH_R8A7790=y
-@@ -1169,3 +1171,4 @@ CONFIG_CMA_SIZE_MBYTES=64
- CONFIG_PRINTK_TIME=y
- CONFIG_MAGIC_SYSRQ=y
- CONFIG_DEBUG_FS=y
-+CONFIG_GXP_WATCHDOG=y
--- 
-2.17.1
-
+Yes, it's in -next now.
