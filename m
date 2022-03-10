@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 100A9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F38C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343632AbiCJOqe (ORCPT
+        id S1344317AbiCJOsF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        Thu, 10 Mar 2022 09:48:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244863AbiCJOeD (ORCPT
+        with ESMTP id S245225AbiCJOed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:34:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA7211C7F3;
-        Thu, 10 Mar 2022 06:31:23 -0800 (PST)
+        Thu, 10 Mar 2022 09:34:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934E113983B;
+        Thu, 10 Mar 2022 06:31:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83BC5B825F3;
-        Thu, 10 Mar 2022 14:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFE34C340E8;
-        Thu, 10 Mar 2022 14:31:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADBB2B825A7;
+        Thu, 10 Mar 2022 14:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CDCC340F8;
+        Thu, 10 Mar 2022 14:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922682;
-        bh=CDNfl4IGoyFCsE3oBTqgf51g83179xk1H8jlgFCafWo=;
+        s=korg; t=1646922696;
+        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D2ARQzY5a8SlKBxSJv1XINVLbHlAky0sMNdCOk/Xr3qabXyYSDE5bkb8WgnQvA+45
-         glMUjZ3jlTKl9+wBAdK5Yy03xPQDSonZBTptbFWedcJH9FRTTt7vf9/B2n/mhSWT5P
-         H+IVyYbmTqkq3Phb+dO4/8PG1fukXWMm7r4fPNIY=
+        b=jQnfXzCDCBXhVadlje73izFR4dgrDr3wAD0pB4ZwebByobVL5iLeePDwj5x0y3kVc
+         Yb9XLdKoYjnjPmQz1ZB/ex7md6wcpsaICukQubuPtFSnrrvPqXqjQBtF89lxGhfVgf
+         vTEI139URcLPcJAOU+D2+YpAZhgAZW3ArhB9sUS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Simon Gaiser <simon@invisiblethingslab.com>,
         Juergen Gross <jgross@suse.com>,
         Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.15 50/58] xen/netfront: dont use gnttab_query_foreign_access() for mapped status
-Date:   Thu, 10 Mar 2022 15:19:39 +0100
-Message-Id: <20220310140814.405218537@linuxfoundation.org>
+Subject: [PATCH 5.15 55/58] xen/pvcalls: use alloc/free_pages_exact()
+Date:   Thu, 10 Mar 2022 15:19:44 +0100
+Message-Id: <20220310140814.545085349@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -53,44 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Juergen Gross <jgross@suse.com>
 
-Commit 31185df7e2b1d2fa1de4900247a12d7b9c7087eb upstream.
+Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
 
-It isn't enough to check whether a grant is still being in use by
-calling gnttab_query_foreign_access(), as a mapping could be realized
-by the other side just after having called that function.
+Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
+and free_pages_exact(). This is in preparation of a change of
+gnttab_end_foreign_access() which will prohibit use of high-order
+pages.
 
-In case the call was done in preparation of revoking a grant it is
-better to do so via gnttab_end_foreign_access_ref() and check the
-success of that operation instead.
+This is part of CVE-2022-23041 / XSA-396.
 
-This is CVE-2022-23037 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
 Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/xen-netfront.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/xen/pvcalls-front.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -424,14 +424,12 @@ static bool xennet_tx_buf_gc(struct netf
- 			queue->tx_link[id] = TX_LINK_NONE;
- 			skb = queue->tx_skbs[id];
- 			queue->tx_skbs[id] = NULL;
--			if (unlikely(gnttab_query_foreign_access(
--				queue->grant_tx_ref[id]) != 0)) {
-+			if (unlikely(!gnttab_end_foreign_access_ref(
-+				queue->grant_tx_ref[id], GNTMAP_readonly))) {
- 				dev_alert(dev,
- 					  "Grant still in use by backend domain\n");
- 				goto err;
- 			}
--			gnttab_end_foreign_access_ref(
--				queue->grant_tx_ref[id], GNTMAP_readonly);
- 			gnttab_release_grant_reference(
- 				&queue->gref_tx_head, queue->grant_tx_ref[id]);
- 			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
+ 	if (!map->active.ring)
+ 		return;
+ 
+-	free_pages((unsigned long)map->active.data.in,
+-			map->active.ring->ring_order);
++	free_pages_exact(map->active.data.in,
++			 PAGE_SIZE << map->active.ring->ring_order);
+ 	free_page((unsigned long)map->active.ring);
+ }
+ 
+@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
+ 		goto out;
+ 
+ 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
+-	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+-					PVCALLS_RING_ORDER);
++	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
++				  GFP_KERNEL | __GFP_ZERO);
+ 	if (!bytes)
+ 		goto out;
+ 
 
 
