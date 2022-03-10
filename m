@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F27B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC797C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243775AbiCJO1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        id S243782AbiCJO1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243774AbiCJOXP (ORCPT
+        with ESMTP id S243446AbiCJOXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:23:15 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E380158D89
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:21:15 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0720C1691;
-        Thu, 10 Mar 2022 06:21:07 -0800 (PST)
-Received: from [10.57.43.53] (unknown [10.57.43.53])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C7B03FA20;
-        Thu, 10 Mar 2022 06:21:04 -0800 (PST)
-Message-ID: <39f8d67f-dd0b-e8de-e007-619eee86c98e@arm.com>
-Date:   Thu, 10 Mar 2022 14:21:00 +0000
+        Thu, 10 Mar 2022 09:23:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C0BC0848;
+        Thu, 10 Mar 2022 06:21:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F166861B1F;
+        Thu, 10 Mar 2022 14:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F9EC340F3;
+        Thu, 10 Mar 2022 14:21:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922068;
+        bh=a//jtcByFiHXOCJ+/M4jiKQWdvoAGv/83F2/7HhgSnI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NyYIpXODMGCgB8IrRaQr0BmaGqjxx6PXsVLObvVw7npUvhLAzOLVGdXb9PRtFvple
+         zkIgRJ4956kfGlpKeWPfE7UBlUZh17NCDhk7T0FGS37wLPHQbOHJhezUBEEEvQJghl
+         yfwE7c5Up2PaX9SrFqv7+x9PlNzi3QNb+H1ZdW5s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.14 26/31] xen/scsifront: dont use gnttab_query_foreign_access() for mapped status
+Date:   Thu, 10 Mar 2022 15:18:39 +0100
+Message-Id: <20220310140808.303290685@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
+References: <20220310140807.524313448@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH 2/2] ARM: remove support for NOMMU ARMv4/v5
-Content-Language: en-GB
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-References: <20220309144138.360482-1-arnd@kernel.org>
- <20220309144138.360482-2-arnd@kernel.org>
- <27250b4e-cf04-0dab-d658-bb472face5ea@arm.com>
- <CAK8P3a20ccBbAwgVkq3n6tMehFH4YEyzquTkF3V=nJ46Tk4ePg@mail.gmail.com>
- <CACRpkdbxico4SDottfB9Z8PHsXKG4fNA6G0XNyuaY+LObOovuw@mail.gmail.com>
- <CAK8P3a02a-+k=ChdT_Lg=xvHYZ4WTb-Efu7aQq-yBP1Gn37TgA@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAK8P3a02a-+k=ChdT_Lg=xvHYZ4WTb-Efu7aQq-yBP1Gn37TgA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-10 09:23, Arnd Bergmann wrote:
-> On Thu, Mar 10, 2022 at 2:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->>
->> On Wed, Mar 9, 2022 at 5:17 PM Arnd Bergmann <arnd@kernel.org> wrote:
->>> Robin
->>>> In that case, it would probably make sense to garbage-collect all the
->>>> configs, setup code and other stuff relating to older MMU-less CPU cores
->>>> like ARM1156, ARM940, etc. at the same time.
->>>
->>> Right, good idea. These are only selected by CONFIG_ARCH_INTEGRATOR,
->>> but that in turn doesn't build for CONFIG_MMU=n because it depends on
->>> ARCH_MULTIPLATFORM. I'll send a patch for these.
->>
->> Just delete these, I do have these CPU tiles around but they are so obscure
->> and I never got around to even testing to boot them.
-> 
-> Right, of course you couldn't boot test them because it has been
-> impossible to even select them in Kconfig for years. I've added
-> a patch to completely remove the five v4/v5 NOMMU cores now,
-> will send that later.
-> 
-> There are five more cores that are only referenced by mach-integrator
-> that are supposed to work (922T, 1020, 1020E, 1022, 1026). Have you
-> ever tested those, or should we consider removing them as well?
-> 
-> At some point, there was a proposal to add an arm10 based SoC
-> to mainline, but that never happened and I'm fairly sure it won't
-> come back now.
+From: Juergen Gross <jgross@suse.com>
 
-FWIW I have an Integrator/CM1026 that I'd love to play with purely for 
-giggles, but it needs some serious archaeology to find and flash some 
-firmware for it first.
+Commit 33172ab50a53578a95691310f49567c9266968b0 upstream.
 
-I also have a couple of "real" ARM1026s in the form of Conexant 
-Solos-based routers[1] which I've done a little hacking on, but don't 
-see myself ever realistically having enough time or motivation to 
-actually upstream anything. And at this point I don't see OpenWRT having 
-any more interest in boards with only 15MB of RAM (yes, they really do 
-boot with "mem=15M" to reserve 1MB for the modem...)
+It isn't enough to check whether a grant is still being in use by
+calling gnttab_query_foreign_access(), as a mapping could be realized
+by the other side just after having called that function.
 
-Cheers,
-Robin.
+In case the call was done in preparation of revoking a grant it is
+better to do so via gnttab_try_end_foreign_access() and check the
+success of that operation instead.
 
-[1] https://openwrt.org/toh/linksys/wag54g2
+This is CVE-2022-23038 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/xen-scsifront.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/scsi/xen-scsifront.c
++++ b/drivers/scsi/xen-scsifront.c
+@@ -233,12 +233,11 @@ static void scsifront_gnttab_done(struct
+ 		return;
+ 
+ 	for (i = 0; i < shadow->nr_grants; i++) {
+-		if (unlikely(gnttab_query_foreign_access(shadow->gref[i]))) {
++		if (unlikely(!gnttab_try_end_foreign_access(shadow->gref[i]))) {
+ 			shost_printk(KERN_ALERT, info->host, KBUILD_MODNAME
+ 				     "grant still in use by backend\n");
+ 			BUG();
+ 		}
+-		gnttab_end_foreign_access(shadow->gref[i], 0, 0UL);
+ 	}
+ 
+ 	kfree(shadow->sg);
+
+
