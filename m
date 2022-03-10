@@ -2,197 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6454C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240343AbiCJQGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:06:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
+        id S240436AbiCJQHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:07:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239706AbiCJQGm (ORCPT
+        with ESMTP id S240541AbiCJQG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:06:42 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B0C187B81
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:05:39 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id u7so8347465ljk.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:05:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=a47/kfMIXmMimdkS0oL0JoxaVtTsUq4puZeDbeGUm9Y=;
-        b=04IWU311iyNWvLh+4z6efV3IVimCg+0iXV/HO6uNNlDwrOjW8ZhyHR4SuudlVDuTum
-         gqZVmZReaIp6IBpYdIONB8k97GEYu3RMgnjWcytVYtlZC+m5/D3tZZOk9RtPgWsgRTX9
-         5S0ShUCrhTY36HShqYZB/KcEFIsfQcgRXYYrDkyXF+P7qHqVkEiTgiaw/eqJcRLMaxLz
-         oYgakxqRrR/MCiS3Zt8tB2qNRm7bUSX94KJjWKWXyDSYUkgbhRDJp4aMpxmIiUWlH9n5
-         ZtSV23o6uIaELOrquC+AVpftGUgiYGUIKp4YM4X6sEZVQ/gBkfUqwR+wNuQNrKL6gYrz
-         JKVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=a47/kfMIXmMimdkS0oL0JoxaVtTsUq4puZeDbeGUm9Y=;
-        b=XgY4rW8dNo26UOmMNL6JejbpCEEruLSzyE8ivWlyYeeYIxdTe0Bc82hVFtQzEqDXlW
-         CfcZ31ktd9PWRl80Hopg+uuSBeuWnrnnYXDfTB+xrBS3GpS//hyJRccQo6xFeC2QI6bD
-         VLuIUnVdTOojPld5of4xFa+F07WQ96woW2wTSyBwJCpyztVTI9BJkc4650LXqm+0yXEl
-         QhQzg3A9FwW8NPZpjydRYbg9oEpt+KrH6qIWvUduNSMzPJST6Sz6/UlEIcmpI9aKbpIG
-         Hle0seMrIvOsTEGyGx9KO9VGstigrQ5DdjNBtAT7FdJpmFA7njLtRYrrD/fC7hSgWKF2
-         5kew==
-X-Gm-Message-State: AOAM5325Ed9QXyKDawUpW1EBwWvYbWK3YRzV3OTf/1fTd5RVZCvlEgkD
-        Rn6abKdgNe/IjIFuBHgbPZDuVg==
-X-Google-Smtp-Source: ABdhPJzx3mtbb/gT8X71tN1JhdwgyQSxq7uztMR3ML5AdHZG7wEGIrsGIXSDxImZa1L96XG2jyoXbg==
-X-Received: by 2002:a2e:b0cc:0:b0:235:dcdf:e6e9 with SMTP id g12-20020a2eb0cc000000b00235dcdfe6e9mr3635773ljl.88.1646928337313;
-        Thu, 10 Mar 2022 08:05:37 -0800 (PST)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id bu20-20020a056512169400b0043eaf37af75sm1045976lfb.199.2022.03.10.08.05.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 08:05:36 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 07/10] net: dsa: Pass MST state changes to
- driver
-In-Reply-To: <20220310103509.g35syl776kyh5j2n@skbuf>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-8-tobias@waldekranz.com>
- <20220303222055.7a5pr4la3wmuuekc@skbuf> <87mthymblh.fsf@waldekranz.com>
- <20220310103509.g35syl776kyh5j2n@skbuf>
-Date:   Thu, 10 Mar 2022 17:05:35 +0100
-Message-ID: <87h785n67k.fsf@waldekranz.com>
+        Thu, 10 Mar 2022 11:06:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BB2186469;
+        Thu, 10 Mar 2022 08:05:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48F1261A97;
+        Thu, 10 Mar 2022 16:05:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7F57C340E8;
+        Thu, 10 Mar 2022 16:05:54 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 11:05:53 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Ritesh Harjani <riteshh@linux.ibm.com>
+Cc:     linux-ext4@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 00/10] ext4: Improve FC trace events
+Message-ID: <20220310110553.431cc997@gandalf.local.home>
+In-Reply-To: <cover.1646922487.git.riteshh@linux.ibm.com>
+References: <cover.1646922487.git.riteshh@linux.ibm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 12:35, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Mar 10, 2022 at 09:54:34AM +0100, Tobias Waldekranz wrote:
->> >> +	if (!dsa_port_can_configure_learning(dp) || dp->learning) {
->> >> +		switch (state->state) {
->> >> +		case BR_STATE_DISABLED:
->> >> +		case BR_STATE_BLOCKING:
->> >> +		case BR_STATE_LISTENING:
->> >> +			/* Ideally we would only fast age entries
->> >> +			 * belonging to VLANs controlled by this
->> >> +			 * MST.
->> >> +			 */
->> >> +			dsa_port_fast_age(dp);
->> >
->> > Does mv88e6xxx support this? If it does, you might just as well
->> > introduce another variant of ds->ops->port_fast_age() for an msti.
->> 
->> You can limit ATU operations to a particular FID. So the way I see it we
->> could either have:
->> 
->> int (*port_vlan_fast_age)(struct dsa_switch *ds, int port, u16 vid)
->> 
->> + Maybe more generic. You could imagine there being a way to trigger
->>   this operation from userspace for example.
->> - We would have to keep the VLAN<->MSTI mapping in the DSA layer in
->>   order to be able to do the fan-out in dsa_port_set_mst_state.
->> 
->> or:
->> 
->> int (*port_msti_fast_age)(struct dsa_switch *ds, int port, u16 msti)
->> 
->> + Let's the mapping be an internal affair in the driver.
->> - Perhaps, less generically useful.
->> 
->> Which one do you prefer? Or is there a hidden third option? :)
->
-> Yes, I was thinking of "port_msti_fast_age". I don't see a cheap way of
-> keeping VLAN to MSTI associations in the DSA layer. Only if we could
-> retrieve this mapping from the bridge layer - maybe with something
-> analogous to br_vlan_get_info(), but br_mst_get_info(), and this gets
-> passed a VLAN_N_VID sized bitmap, which the bridge populates with ones
-> and zeroes.
+On Thu, 10 Mar 2022 21:28:54 +0530
+Ritesh Harjani <riteshh@linux.ibm.com> wrote:
 
-That can easily be done. Given that, should we go for port_vlan_fast_age
-instead? port_msti_fast_age feels like an awkward interface, since I
-don't think there is any hardware out there that can actually perform
-that operation without internally fanning it out over all affected VIDs
-(or FIDs in the case of mv88e6xxx).
+> Note:- I still couldn't figure out how to expose EXT4_FC_REASON_MAX in patch-2
+> which (I think) might be (only) needed by trace-cmd or perf record for trace_ext4_fc_stats.
+> But it seems "cat /sys/kernel/debug/tracing/trace_pipe" gives the right output
+> for ext4_fc_stats trace event (as shown below).
+> 
+> So with above reasoning, do you think we should take these patches in?
+> And we can later see how to provide EXT4_FC_REASON_MAX definition available to
+> libtraceevent?
 
-> The reason why I asked for this is because I'm not sure of the
-> implications of flushing the entire FDB of the port for a single MSTP
-> state change. It would trigger temporary useless flooding in other MSTIs
-> at the very least. There isn't any backwards compatibility concern to
-> speak of, so we can at least try from the beginning to limit the
-> flushing to the required VLANs.
+I don't see EXT4_FC_REASON_MAX being used in the TP_printk(). If it isn't
+used there, it doesn't need to be exposed. Or did I miss something?
 
-Aside from the performance implications of flows being temporarily
-flooded I don't think there are any.
-
-I suppose if you've disabled flooding of unknown unicast on that port,
-you would loose the flow until you see some return traffic (or when one
-side gives up and ARPs). While somewhat esoteric, it would be nice to
-handle this case if the hardware supports it.
-
-> What I didn't think about, and will be a problem, is
-> dsa_port_notify_bridge_fdb_flush() - we don't know the vid to flush.
-> The easy way out here would be to export dsa_port_notify_bridge_fdb_flush(),
-> add a "vid" argument to it, and let drivers call it. Thoughts?
-
-To me, this seems to be another argument in favor of
-port_vlan_fast_age. That way you would know the VIDs being flushed at
-the DSA layer, and driver writers needn't concern themselves with having
-to remember to generate the proper notifications back to the bridge.
-
-> Alternatively, if you think that cross-flushing FDBs of multiple MSTIs
-> isn't a real problem, I suppose we could keep the "port_fast_age" method.
-
-What about falling back to it if the driver doesn't support per-VLAN
-flushing? Flushing all entries will work in most cases, at the cost of
-some temporary flooding. Seems more useful than refusing the offload
-completely.
-
->> > And since it is new code, you could require that drivers _do_ support
->> > configuring learning before they could support MSTP. After all, we don't
->> > want to keep legacy mechanisms in place forever.
->> 
->> By "configuring learning", do you mean this new fast-age-per-vid/msti,
->> or being able to enable/disable learning per port? If it's the latter,
->> I'm not sure I understand how those two are related.
->
-> The code from dsa_port_set_state() which you've copied:
->
-> 	if (!dsa_port_can_configure_learning(dp) ||
-> 	    (do_fast_age && dp->learning)) {
->
-> has this explanation:
->
-> 1. DSA keeps standalone ports in the FORWARDING state.
-> 2. DSA also disables address learning on standalone ports, where this is
->    possible (dsa_port_can_configure_learning(dp) == true).
-> 3. When a port joins a bridge, it leaves its FORWARDING state from
->    standalone mode and inherits the bridge port's BLOCKING state
-> 4. dsa_port_set_state() treats a port transition from FORWARDING to
->    BLOCKING as a transition requiring an FDB flush
-> 5. due to (2), the FDB flush at stage (4) is in fact not needed, because
->    the FDB of that port should already be empty. Flushing the FDB may be
->    a costly operation for some drivers, so it is avoided if possible.
->
-> So this is why the "dsa_port_can_configure_learning()" check is there -
-> for compatibility with drivers that can't configure learning => they
-> keep learning enabled also in standalone mode => they need an FDB flush
-> when a standalone port joins a bridge.
->
-> What I'm saying is: for drivers that offload MSTP, let's force them to
-> get the basics right first (have configurable learning), rather than go
-> forward forever with a backwards compatibility mode.
-
-Makes sense, I'll just move it up to the initial capability check.
+-- Steve
