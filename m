@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 01:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A95EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 01:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238766AbiCJByq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 20:54:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
+        id S238970AbiCJBys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 20:54:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbiCJByn (ORCPT
+        with ESMTP id S235354AbiCJByo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 20:54:43 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45629127D71;
-        Wed,  9 Mar 2022 17:53:43 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id z16so3839648pfh.3;
-        Wed, 09 Mar 2022 17:53:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dLb2n0RcDsJQsrbzpWVQ2xqxk5FmoVIUuzbwO80ccoo=;
-        b=maI1PORr7yUNN7F+N6qrHT/tZYOhkPl4ZDm+KQKIQZFYcNzAW95ZVwxKv//10DGIl7
-         g3o7u+xjnH+lf4EIBJtZ6LZ+4xMBlO5hVj5rSYsl+a/YmxBPhnkhnN6nvNRq6TQR6dib
-         mIFWdzquoNNUR4wyy5caPEc3GQp9NjkSGNRhoX6eEwqvwcvdBBUfuC8lGGSuKVg+Jh+n
-         R8hyx7WTrHZZZ6HPeWBWYyeXFmQwLZnfLN8T2B3I1Subn4XWYslpqknKhTKTg4m2c8so
-         nPtQhQUXjXAY7jye+Sj7yN54pHfdL/5ICrbUzXK781lz8qFvzxIGzcdq+x0oyzZzZNV1
-         gZ+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=dLb2n0RcDsJQsrbzpWVQ2xqxk5FmoVIUuzbwO80ccoo=;
-        b=mssy/48u5MRx5k4N5kaKPZHW1Jg2x1iUcER/NyxdvRQmZGXVPbL4DR9LpUvlzIeCwA
-         OD2uCb8ks/CD1w6wFHG+JjWdpP+1KIXP7QJtOMmj60gzHz4cisiBEVrtFSr57hBrs1RX
-         W5zSNT4WOw4otCV9xcLclvHXRmJdRc2pEbuPfLW9ON3e+VpH2xaPix2fbIDkfcFlqW9w
-         RaXDuJPK3SuCYtVGkIEk0UrkYCXtjkU+I5yAxv4p1kzBFwq1Dzvu0NFZigZY/aigMOZB
-         n89giypcE19tE1YqPoR3u48tlNQn1nhotUY9C14CAykc9tN88HnWuYzvG73EFUKeqPdX
-         ZU2Q==
-X-Gm-Message-State: AOAM531Jr94IKiQm2bUMwyA5Sf3taI4utyunsgTQ0zv1KT7W1heJwNkh
-        hqBU35pMSuiAzQo4ofiNK8Q=
-X-Google-Smtp-Source: ABdhPJyumqgNWoQ7hfqeItdHDUxdMX3gau9P7t5NL5NiPUXNs7T98fAdH1ZRgLljOFNhXsVGgyjAvA==
-X-Received: by 2002:a63:8049:0:b0:380:b83e:9550 with SMTP id j70-20020a638049000000b00380b83e9550mr2113464pgd.97.1646877222798;
-        Wed, 09 Mar 2022 17:53:42 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id w23-20020a627b17000000b004f6cf170070sm4292637pfc.186.2022.03.09.17.53.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 17:53:42 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH net v2] gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
-Date:   Thu, 10 Mar 2022 01:53:13 +0000
-Message-Id: <20220310015313.14938-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <e68aa1f1-233f-6e5b-21a6-0443d565ca65@intel.com>
-References: <e68aa1f1-233f-6e5b-21a6-0443d565ca65@intel.com>
+        Wed, 9 Mar 2022 20:54:44 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB27128581;
+        Wed,  9 Mar 2022 17:53:44 -0800 (PST)
+Received: from integral2.. (unknown [114.10.7.234])
+        by gnuweeb.org (Postfix) with ESMTPSA id 0374F7E2CC;
+        Thu, 10 Mar 2022 01:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1646877223;
+        bh=VgvFD5PbNA6rugPitfY9YWmZEniNGGoHTmksEfV3s5g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y2ogKybWOlxy7/UPV3zKqH5BrFkKd1xUhTr4NS0ZSaHHd7p/xDuMumAn/y5f5vA8z
+         9J98xi8r+omMB/qCvmLVpaI3WVqvp/yMHgGenDInz0Hy8+njGonEZPJG8atDYTMqQE
+         kHsSavRTvHIbMhBov1XzSILqM4qqgf7jN1DDSEzhUC+QLmfWWGsvZEDfLRruKiIaYt
+         Ds0DAvdEwKfzv3Bo/9hmNUzadj/haNEkhU7Ylq0V5N+zrkN8FLwfWvP+nuWSUO5Ep/
+         lZaSnPTtbIn410Ouay0Urj2F3PRA3r5/sE7WX4WrldZUNJ3iUV1Qjw4QihHaLfx8vk
+         vGM/Zzt0FpgLQ==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, gwml@vger.gnuweeb.org, x86@kernel.org
+Subject: [PATCH v5 0/2] Two x86 fixes
+Date:   Thu, 10 Mar 2022 08:53:04 +0700
+Message-Id: <20220310015306.445359-1-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+Hi,
 
-Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
-changes in v2:
-- Fix the subject
----
- drivers/net/ethernet/freescale/gianfar_ethtool.c | 1 +
- 1 file changed, 1 insertion(+)
+Two x86 fixes in this series.
 
-diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-index ff756265d58f..9a2c16d69e2c 100644
---- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
-+++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-@@ -1464,6 +1464,7 @@ static int gfar_get_ts_info(struct net_device *dev,
- 	ptp_node = of_find_compatible_node(NULL, NULL, "fsl,etsec-ptp");
- 	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
- 		if (ptp_dev)
- 			ptp = platform_get_drvdata(ptp_dev);
- 	}
+1) x86/delay: Fix the wrong Assembly constraint in delay_loop() function.
+2) x86/MCE/AMD: Fix memory leak when `threshold_create_bank()` fails.
+
+## Changelog
+
+v5:
+  - Mark patch #1 for stable.
+  - Commit message improvement for patch #1 and #2.
+  - Fold in changes from Yazen and Alviro (for patch #2).
+
+v4:
+  - Address comment from Greg, sha1 commit Fixes only needs
+    to be 12 chars.
+  - Add the author of the fixed commit to the CC list.
+
+v3:
+  - Fold in changes from Alviro, the previous version is still
+    leaking @bank[n].
+
+v2:
+  - Fix wrong copy/paste.
+
+Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+
+Ammar Faizi (2):
+  x86/delay: Fix the wrong asm constraint in `delay_loop()`
+  x86/MCE/AMD: Fix memory leak when `threshold_create_bank()` fails
+
+ arch/x86/kernel/cpu/mce/amd.c | 32 +++++++++++++++++++-------------
+ arch/x86/lib/delay.c          |  4 ++--
+ 2 files changed, 21 insertions(+), 15 deletions(-)
+
+
+base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
 -- 
-2.17.1
+Ammar Faizi
 
