@@ -2,74 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB18C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D663C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244559AbiCJRWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S244568AbiCJRWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244495AbiCJRVy (ORCPT
+        with ESMTP id S244518AbiCJRV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:21:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53404198EE5;
-        Thu, 10 Mar 2022 09:20:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDB20B82717;
-        Thu, 10 Mar 2022 17:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BABC340E8;
-        Thu, 10 Mar 2022 17:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646932843;
-        bh=aqZ6qfSaJ4ZT3MvuYHmkAUdH5yODv/pa6W9FZCUG3jY=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=XVN+3gV/pjdKqqFKUwH9gg20w19VyJManoJeniyXzKCG/8ijSP6zG6EulhfFAWNp0
-         WMuECX5DL+uDY+0cgk5HMkLALQ99sUflLJaMB0XWivClUxZhKop8gcCuuf7iyzND9d
-         reXmrMrmSFWZdnIzbbPJCJrSYwUHk6TqqbUP2TnXk9nQvdYb9B1e11gnyJ1DLOBEx9
-         9iJ0KFAxIepQ6YjI3/L2j9A3rNwGsTMHgIR83We9evNLG/YTykrktTMylze5vA9baV
-         86wWHaaEefN6xQHMXEivmld/ddBezH/d008w2/7Ql/WF8xwBolkdWbBUUdismvYVa9
-         3B8NLM9eagatA==
-Date:   Thu, 10 Mar 2022 09:20:42 -0800 (PST)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-cc:     Rob Herring <robh@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: Add vendor prefix for Xen
- hypervisor
-In-Reply-To: <20220310113833.GA187897@EPUAKYIW015D>
-Message-ID: <alpine.DEB.2.22.394.2203100919410.3261@ubuntu-linux-20-04-desktop>
-References: <cover.1646639462.git.oleksii_moisieiev@epam.com> <aece6fd976980131120456800de3558e1e2308a0.1646639462.git.oleksii_moisieiev@epam.com> <Yie5P/vcBz44QcPd@robh.at.kernel.org> <20220310113833.GA187897@EPUAKYIW015D>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Thu, 10 Mar 2022 12:21:56 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4202199D5E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646932852; x=1678468852;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3NA1AOfkWvyInGYP3ZXXPe9wyH6gcZKqLJYd1GBzKOE=;
+  b=YhgKXsoXU30wU+Imqa+J1zcg7w+Ef+0rv1HoYnA5cxiCKRHFn9b3FVOP
+   t9bZQyz5I55HVu8Rmm0hX2KBs4dwmGnLVw84XSuNUziwG/vrQlPcWTNd+
+   nHGkgTLEKmZxlyD2f3NaFk0igl6xSRlxM2tWqe0nt1v90G6qWuEJd7IvM
+   RkBzcYwWvXsbWAYnTKK//J0lUN3HO26xuQo5yhqu7nrF8V/LUrKhXL0CU
+   TlWtWFbuJATkRXXo/sbvyz+71jd4LSCrvcLHiDjVrcZf1S7iEHlzuJHhp
+   xF3A068M4Yb8irAFqWVoE3XO82F/smXTLkxt7/EC5k9o4f6dMaHhFN5WN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="242758931"
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="242758931"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:48 -0800
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="510983950"
+Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:47 -0800
+From:   ira.weiny@intel.com
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V9 10/45] mm/pkeys: Provide for PKS key allocation
+Date:   Thu, 10 Mar 2022 09:19:44 -0800
+Message-Id: <20220310172019.850939-11-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
+References: <20220310172019.850939-1-ira.weiny@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022, Oleksii Moisieiev wrote:
-> On Tue, Mar 08, 2022 at 02:14:55PM -0600, Rob Herring wrote:
-> > On Mon, 07 Mar 2022 08:17:43 +0000, Oleksii Moisieiev wrote:
-> > > Xen is an open source stage-1 hypervisor.
-> > > 
-> > > Signed-off-by: Oleksii Moisieiev <oleksii_moisieiev@epam.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > > 
-> > 
-> > As 'xen' has been missing regardless of patch 2, I fixed up the commit 
-> > message and applied, thanks!
-> 
-> So IIUC - this patch is already applied and I don't need to add it v3?
+From: Ira Weiny <ira.weiny@intel.com>
 
-Yes, that's right. Congratulations for your first official device tree
-binding change :-)
+Kernel consumers of PKS need a way to allocate a PKS pkey and assign the
+initial permissions for that key.  It is desirable to not allocate keys
+for consumers which are not configured.
+
+Introduce a macro to allocate keys sequentially based on which consumers
+are configured.  In addition define a macro to set the proper permission
+bits based on the actual pkey value allocated.
+
+pks-keys.h is added as a new header with minimal header dependencies.
+This allows the use of PKS_INIT_VALUE within other headers where the
+additional includes from other pkey headers caused major conflicts.  The
+main conflict was using PKS_INIT_VALUE for INIT_TRHEAD in
+asm/processor.h
+
+Add documentation.
+
+Suggested-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
+---
+Changes for V9
+	Reword the commit message
+	Move this patch ahead of the enable patch so that the enable
+		patch can use PKS_INIT_VALUE
+	From Dan Williams
+		Use Dan's macro magic
+			enhanced it to account for the max number of
+			keys
+		Update documentation for the change
+	From Dave Hansen
+		use pkey
+		s/PKR_RW_KEY/PKR_RW_MASK
+
+Changes for V8
+	Create pks-keys.h to solve header conflicts in subsequent
+		patches.
+	Remove create_initial_pkrs_value() which did not work
+		Replace it with PKS_INIT_VALUE
+		Fix up documentation to match
+	s/PKR_RW_BIT/PKR_RW_KEY()/
+	s/PKRS_INIT_VALUE/PKS_INIT_VALUE
+	Split this off of the previous patch
+	Update documentation and embed it in the code to help ensure it
+	is kept up to date.
+
+Changes for V7
+	Create a dynamic pkrs_initial_value in early init code.
+	Clean up comments
+	Add comment to macro guard
+---
+ Documentation/core-api/protection-keys.rst |  5 ++
+ arch/x86/include/asm/pkeys_common.h        |  9 ++-
+ include/linux/pks-keys.h                   | 78 ++++++++++++++++++++++
+ 3 files changed, 91 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/pks-keys.h
+
+diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+index 13eedb0119e1..d501bd27ee29 100644
+--- a/Documentation/core-api/protection-keys.rst
++++ b/Documentation/core-api/protection-keys.rst
+@@ -131,3 +131,8 @@ ARCH_HAS_SUPERVISOR_PKEYS.  It also makes it possible for multiple independent
+ features to "select ARCH_ENABLE_SUPERVISOR_PKEYS".  If no features enable PKS
+ by selecting ARCH_ENABLE_SUPERVISOR_PKEYS, PKS support will not be compiled
+ into the kernel.
++
++PKS Key Allocation
++------------------
++.. kernel-doc:: include/linux/pks-keys.h
++        :doc: PKS_KEY_ALLOCATION
+diff --git a/arch/x86/include/asm/pkeys_common.h b/arch/x86/include/asm/pkeys_common.h
+index 359b94cdcc0c..b28a72dea22b 100644
+--- a/arch/x86/include/asm/pkeys_common.h
++++ b/arch/x86/include/asm/pkeys_common.h
+@@ -2,10 +2,17 @@
+ #ifndef _ASM_X86_PKEYS_COMMON_H
+ #define _ASM_X86_PKEYS_COMMON_H
+ 
++#define PKS_NUM_PKEYS 16
++#define PKS_ALL_AD (0x55555555UL)
++
+ #define PKR_AD_BIT 0x1u
+ #define PKR_WD_BIT 0x2u
+ #define PKR_BITS_PER_PKEY 2
+ 
+-#define PKR_AD_MASK(pkey)	(PKR_AD_BIT << ((pkey) * PKR_BITS_PER_PKEY))
++#define PKR_PKEY_SHIFT(pkey)	(pkey * PKR_BITS_PER_PKEY)
++
++#define PKR_RW_MASK(pkey)	(0          << PKR_PKEY_SHIFT(pkey))
++#define PKR_AD_MASK(pkey)	(PKR_AD_BIT << PKR_PKEY_SHIFT(pkey))
++#define PKR_WD_MASK(pkey)	(PKR_WD_BIT << PKR_PKEY_SHIFT(pkey))
+ 
+ #endif /*_ASM_X86_PKEYS_COMMON_H */
+diff --git a/include/linux/pks-keys.h b/include/linux/pks-keys.h
+new file mode 100644
+index 000000000000..c914afecb2d3
+--- /dev/null
++++ b/include/linux/pks-keys.h
+@@ -0,0 +1,78 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_PKS_KEYS_H
++#define _LINUX_PKS_KEYS_H
++
++/*
++ * The contents of this header should be limited to assigning PKS keys and
++ * default values to avoid intricate header dependencies.
++ */
++
++#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++
++#include <asm/pkeys_common.h>
++
++#define PKS_NEW_KEY(prev, config) \
++	(prev + __is_defined(config))
++#define PKS_DECLARE_INIT_VALUE(pkey, value, config) \
++	(PKR_##value##_MASK(pkey) * __is_defined(config))
++
++/**
++ * DOC: PKS_KEY_ALLOCATION
++ *
++ * Users reserve a key value in 5 steps.
++ *	1) Use PKS_NEW_KEY to create a new key
++ *	2) Ensure that the last key value is specified in the PKS_NEW_KEY macro
++ *	3) Adjust PKS_KEY_MAX to use the newly defined key value
++ *	4) Use PKS_DECLARE_INIT_VALUE to define an initial value
++ *	5) Add the new PKS default value to PKS_INIT_VALUE
++ *
++ * The PKS_NEW_KEY and PKS_DECLARE_INIT_VALUE macros require the Kconfig
++ * option to be specified to automatically adjust the number of keys used.
++ *
++ * PKS_KEY_DEFAULT must remain 0 with a default of PKS_DECLARE_INIT_VALUE(...,
++ * RW, ...) to support non-pks protected pages.
++ *
++ * Example: to configure a key for 'MY_FEATURE' with a default of Write
++ * Disabled.
++ *
++ * .. code-block:: c
++ *
++ *	#define PKS_KEY_DEFAULT		0
++ *
++ *	// 1) Use PKS_NEW_KEY to create a new key
++ *	// 2) Ensure that the last key value is specified (eg PKS_KEY_DEFAULT)
++ *	#define PKS_KEY_MY_FEATURE PKS_NEW_KEY(PKS_KEY_DEFAULT, CONFIG_MY_FEATURE)
++ *
++ *	// 3) Adjust PKS_KEY_MAX
++ *	#define PKS_KEY_MAX	   PKS_NEW_KEY(PKS_KEY_MY_FEATURE, 1)
++ *
++ *	// 4) Define initial value
++ *	#define PKS_KEY_MY_FEATURE_INIT PKS_DECLARE_INIT_VALUE(PKS_KEY_MY_FEATURE, \
++ *								WD, CONFIG_MY_FEATURE)
++ *
++ *
++ *	// 5) Add initial value to PKS_INIT_VALUE
++ *	#define PKS_INIT_VALUE ((PKS_ALL_AD & PKS_ALL_AD_MASK) | \
++ *				PKS_KEY_DEFAULT_INIT | \
++ *				PKS_KEY_MY_FEATURE_INIT \
++ *				)
++ */
++
++/* PKS_KEY_DEFAULT must be 0 */
++#define PKS_KEY_DEFAULT		0
++#define PKS_KEY_MAX		PKS_NEW_KEY(PKS_KEY_DEFAULT, 1)
++
++/* PKS_KEY_DEFAULT_INIT must be RW */
++#define PKS_KEY_DEFAULT_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_DEFAULT, RW, 1)
++
++#define PKS_ALL_AD_MASK \
++	GENMASK(PKS_NUM_PKEYS * PKR_BITS_PER_PKEY, \
++		PKS_KEY_MAX * PKR_BITS_PER_PKEY)
++
++#define PKS_INIT_VALUE ((PKS_ALL_AD & PKS_ALL_AD_MASK) | \
++			PKS_KEY_DEFAULT_INIT \
++			)
++
++#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
++
++#endif /* _LINUX_PKS_KEYS_H */
+-- 
+2.35.1
+
