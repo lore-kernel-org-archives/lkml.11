@@ -2,201 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27000C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240622AbiCJJHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:07:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S240632AbiCJJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:07:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240614AbiCJJHO (ORCPT
+        with ESMTP id S240621AbiCJJHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:07:14 -0500
-Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EF5137766;
-        Thu, 10 Mar 2022 01:06:12 -0800 (PST)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
-        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1nSEkK-0006xw-Oi; Thu, 10 Mar 2022 09:06:08 +0000
-Message-ID: <53bccf99-c183-78f9-f6cb-2921228ced48@codethink.co.uk>
-Date:   Thu, 10 Mar 2022 09:06:08 +0000
+        Thu, 10 Mar 2022 04:07:37 -0500
+X-Greylist: delayed 311 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 01:06:36 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1427137768;
+        Thu, 10 Mar 2022 01:06:36 -0800 (PST)
+Received: from quad ([82.142.8.122]) by mrelayeu.kundenserver.de (mreue109
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1MvbO4-1oKbhb3Gdi-00seeS; Thu, 10
+ Mar 2022 10:00:53 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <john.stultz@linaro.org>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v15 3/5] rtc: goldfish: use gf_ioread32()/gf_iowrite32()
+Date:   Thu, 10 Mar 2022 10:00:46 +0100
+Message-Id: <20220310090048.1933020-4-laurent@vivier.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310090048.1933020-1-laurent@vivier.eu>
+References: <20220310090048.1933020-1-laurent@vivier.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RFC] PCI: fu740: Force Gen1 to fix initial device probing on
- some boards
-Content-Language: en-GB
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     linux-pci@vger.kernel.org, paul.walmsley@sifive.com,
-        greentime.hu@sifive.com, lorenzo.pieralisi@arm.com,
-        robh@kernel.org, linux-kernel@vger.kernel.org
-References: <20220310001539.GA94315@bhelgaas>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <20220310001539.GA94315@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:Y1UXGbhiYyMqGUrRT8KMQ9UOt6Sx3ZUCeTlLC3SjudGFfuB5viq
+ TO9Y4m/OvnjDvc+ehn3SgSIYKgGaBhGBZttatKB/DmemNTiYlS1/PGR7ulPVKJuBlNGzwhl
+ ms5Aazjf4PVmfW7gryyA+1txrpXA3fSzFiEPn2i1NdnZgASoqb78SQqSiyOBdmcPxRH5wci
+ /lz0wtZ6gTKm6yTJFkPig==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eO0M1qMlxTo=:QyEppZfr6HnBATDy98QkJt
+ l/KmYvznQfz36VO5dFxmn7PgV+puYXjeByh7PYgE6CpcfBkrWOwe8/2DHFtqPE8+LcuEXZxLC
+ PFQg6iVCxRee7x4CJke0XYO4E6j6phYZehASpAkf9csRIkIqsEpvoygyzYxwZW7YISx7IzQ04
+ 0P5YF20AtZIeXbgE04o7v9nbF4BfaVp+gDFuRdvCzd4jLntYUCQeQaoRllWI/gnBP6bvzsCfZ
+ ULSqVevsuUb6yzDQvGU+oRvXv5eUfhR1Z6f2pKMXkaYgy9QD26sbc6UOCoCWA5JnWq8SBlYKG
+ jmqPuevbXYWAPAtSN5TMV7UPbAubDqPCpUWNvVEx9thUyWi8gHpOCliwmS5tlUoxaC0wbYD4g
+ tM/phZGJxIU7YIfs9s5RrJSRFA4caLxVHshMzcLzBph+F+fran/1ec+K0bmMnr9XlOZU2QJ0D
+ xxquAUxhLrYKH+WSQp++il5pKtDpGrSLAeipNiVym204e+Dt5yA9K1gUURGPUvAI/pm9WLBCo
+ AtWyX56dJv5XOBSPWxMgUtB4wISRePsvV5desxTZDY5lGbU+HK6pfptuussXbR2BlYLf9GGKa
+ rulidZ61VrD3DD6j8/z0aZs5h7RBcV7nj7NFbFuw06JS51Hyu/Qb0kRSbHKCuqp04/ixkF3s2
+ H3DEztIPB+TmbI6a39ZXbW4EYwweKCjLd7U5tX2TuWAn0vzJF2qrjV9uvTntlr9m+euo=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/03/2022 00:15, Bjorn Helgaas wrote:
-> On Tue, Mar 08, 2022 at 09:45:36AM +0000, Ben Dooks wrote:
->> On 28/02/2022 23:22, Ben Dooks wrote:
->>> The fu740 PCIe core does not probe any devices on the SiFive Unmatched
->>> board without this fix (or having U-Boot explicitly start the PCIe via
->>> either boot-script or user command). The fix is to start the link at
->>> Gen1 speeds and once the link is up then change the speed back.
->>>
->>> The U-Boot driver claims to set the link-speed to Gen1 to get the probe
->>> to work (and U-Boot does print link up at Gen1) in the following code:
->>> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
->>>
->>> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
->>> --
->>> Note, this patch has had significant re-work since the previous 4
->>> sets, including trying to fix style, message, reliance on the U-Boot
->>> fix and the comments about usage of LINK_CAP and reserved fields.
->>
->> The internal feedback is this version is passing on our CI.
->>
->> If there are no comments on this soon, I will post this as either the
->> v5 of the original or as a new patch.
-> 
-> Seems like this isn't quite baked yet.  Lorenzo has the v4 of this on
-> his pci/fu740 branch, but I'm going to drop that for now because (a)
-> this one is better and (b) it'd be nice to have an ack from a FU740
-> maintainer (Paul or Greentime).
+replace readl()/writel() by gf_ioread32()/gf_iowrite32()
+as done for goldfish-tty.
 
-Yes. I'll fix the comments up and try and get this out later in the
-week. I hope the GPIO patch is easier and can be merged on its own.
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ drivers/rtc/rtc-goldfish.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-It would be great if someone at SiFive could comment on this, I don't
-really have a lot of info other than this doesn't work for any of our
-boards. I just assume that everyone else boots from NVME and it just
-works for them.
-
-> I'm also not clear on whether this works around a general FU740 defect
-> or something specific to the Unmatched board or the ASMedia ASM2824
-> switch.  This patch currently limits to 2.5GT/s on *all* FU740
-> devices.
-
-I am not sure on this either, all I have is a pair of Unmatched boards
-and neither work without this fix in. Has the FU740 been used by anyone
-other than this board?
-
-I have not verified with a speed test any of this yet. It should do
-2.5GT/s as initial probe and then attempt to get the link back to
-the maximum speed once the device has probed. It seems once the
-ASM2824 has done the first initialisation it will then continue
-back at the higher speed.
-
-Once the ASM2824 is working it seems the rest will follow.
-
-> I'd prefer to use "2.5GT/s" instead of "Gen1" in the subject, commit
-> log, and comments because it's more specific and matches the
-> PCI_EXP_LNKCAP_SLS_2_5GB in the code.
-
-Ok, will do.
-
->>> ---
->>>    drivers/pci/controller/dwc/pcie-fu740.c | 51 ++++++++++++++++++++++++-
->>>    1 file changed, 50 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
->>> index 842b7202b96e..16ad52f53490 100644
->>> --- a/drivers/pci/controller/dwc/pcie-fu740.c
->>> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
->>> @@ -181,10 +181,59 @@ static int fu740_pcie_start_link(struct dw_pcie *pci)
->>>    {
->>>    	struct device *dev = pci->dev;
->>>    	struct fu740_pcie *afp = dev_get_drvdata(dev);
->>> +	u8 cap_exp = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
->>> +	int ret;
->>> +	u32 orig, tmp;
->>> +
->>> +	/*
->>> +	 * Force Gen1 when starting link, due to some devices not
->>> +	 * probing at higher speeds. This happens with the PCIe switch
->>> +	 * on the Unmatched board. The fix in U-Boot is to force Gen1
->>> +	 * and hope later resets will clear this capaility.
-> 
-> s/capaility/capability/
-> 
-> But the sentence still doesn't quite make sense.  Are you saying that
-> if we bring the link up at 2.5GT/s, it will stay there?
-> 
-> And that a future reset may clear Link Capabilities?  Actually, I
-> guess you don't want it *cleared*, you would just want it to
-> accurately reflect the real max link speed, which would not be 0000b
-> in the register (since that's not even a defined encoding).
-
-So what I've seen is if U-boot does the initial probe at 2.5GT/s and
-then Linux comes along and does the reset itself, the LINKCAP gets
-set back to the original full speed then the device probe works under
-Linux. I've not verified with any NVME speed test yet.
-
-> And the reset would also cause link retrain that would then use the
-> real max link speed?
-
-I think so, the only verification I have done is lspci to check what
-the link is reporting.
-
->>> +	dev_dbg(dev, "cap_exp at %x\n", cap_exp);
->>> +	dw_pcie_dbi_ro_wr_en(pci);
->>> +
->>> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
->>> +	orig = tmp & PCI_EXP_LNKCAP_SLS;
->>> +	tmp &= ~PCI_EXP_LNKCAP_SLS;
->>> +	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
->>> +	dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
->>>    	/* Enable LTSSM */
->>>    	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
->>> -	return 0;
->>> +
->>> +	ret = dw_pcie_wait_for_link(pci);
->>> +	if (ret) {
->>> +		dev_err(dev, "error: link did not start\n");
->>> +		goto err;
->>> +	}
->>> +
->>> +	tmp = dw_pcie_readl_dbi(pci, cap_exp + PCI_EXP_LNKCAP);
->>> +	if ((tmp & PCI_EXP_LNKCAP_SLS) != orig) {
->>> +		dev_dbg(dev, "changing speed back to original\n");
->>> +
->>> +		tmp &= ~PCI_EXP_LNKCAP_SLS;
->>> +		tmp |= orig;
->>> +		dw_pcie_writel_dbi(pci, cap_exp + PCI_EXP_LNKCAP, tmp);
->>> +
->>> +		tmp = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
->>> +		tmp |= PORT_LOGIC_SPEED_CHANGE;
->>> +		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
->>> +
->>> +		ret = dw_pcie_wait_for_link(pci);
->>> +		if (ret) {
->>> +			dev_err(dev, "error: link did not start at new speed\n");
->>> +			goto err;
->>> +		}
->>> +	}
->>> +
->>> +	ret = 0;
->>> +err:
->>> +	// todo - if we do have an unliekly error, what do we do here?
-> 
-> Wrong comment style (use /* */, not //), and s/unliekly/unlikely/
-
-Ok, if no-one has a better idea I am just going to return the error
-code for now.
-
-> 
->>> +	dw_pcie_dbi_ro_wr_dis(pci);
->>> +	return ret;
->>>    }
-> 
-
-
+diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
+index 7ab95d052644..eb1929b0cbb6 100644
+--- a/drivers/rtc/rtc-goldfish.c
++++ b/drivers/rtc/rtc-goldfish.c
+@@ -10,6 +10,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/rtc.h>
++#include <linux/goldfish.h>
+ 
+ #define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
+ 					/*   and update TIMER_TIME_HIGH  */
+@@ -41,8 +42,8 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	rtc_alarm_low = readl(base + TIMER_ALARM_LOW);
+-	rtc_alarm_high = readl(base + TIMER_ALARM_HIGH);
++	rtc_alarm_low = gf_ioread32(base + TIMER_ALARM_LOW);
++	rtc_alarm_high = gf_ioread32(base + TIMER_ALARM_HIGH);
+ 	rtc_alarm = (rtc_alarm_high << 32) | rtc_alarm_low;
+ 
+ 	do_div(rtc_alarm, NSEC_PER_SEC);
+@@ -50,7 +51,7 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 
+ 	rtc_time64_to_tm(rtc_alarm, &alrm->time);
+ 
+-	if (readl(base + TIMER_ALARM_STATUS))
++	if (gf_ioread32(base + TIMER_ALARM_STATUS))
+ 		alrm->enabled = 1;
+ 	else
+ 		alrm->enabled = 0;
+@@ -71,18 +72,18 @@ static int goldfish_rtc_set_alarm(struct device *dev,
+ 
+ 	if (alrm->enabled) {
+ 		rtc_alarm64 = rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
+-		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
+-		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
++		gf_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	} else {
+ 		/*
+ 		 * if this function was called with enabled=0
+ 		 * then it could mean that the application is
+ 		 * trying to cancel an ongoing alarm
+ 		 */
+-		rtc_status_reg = readl(base + TIMER_ALARM_STATUS);
++		rtc_status_reg = gf_ioread32(base + TIMER_ALARM_STATUS);
+ 		if (rtc_status_reg)
+-			writel(1, base + TIMER_CLEAR_ALARM);
++			gf_iowrite32(1, base + TIMER_CLEAR_ALARM);
+ 	}
+ 
+ 	return 0;
+@@ -98,9 +99,9 @@ static int goldfish_rtc_alarm_irq_enable(struct device *dev,
+ 	base = rtcdrv->base;
+ 
+ 	if (enabled)
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	else
+-		writel(0, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
+ 
+ 	return 0;
+ }
+@@ -110,7 +111,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq, void *dev_id)
+ 	struct goldfish_rtc *rtcdrv = dev_id;
+ 	void __iomem *base = rtcdrv->base;
+ 
+-	writel(1, base + TIMER_CLEAR_INTERRUPT);
++	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
+ 
+ 	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
+ 
+@@ -128,8 +129,8 @@ static int goldfish_rtc_read_time(struct device *dev, struct rtc_time *tm)
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	time_low = readl(base + TIMER_TIME_LOW);
+-	time_high = readl(base + TIMER_TIME_HIGH);
++	time_low = gf_ioread32(base + TIMER_TIME_LOW);
++	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
+ 	time = (time_high << 32) | time_low;
+ 
+ 	do_div(time, NSEC_PER_SEC);
+@@ -149,8 +150,8 @@ static int goldfish_rtc_set_time(struct device *dev, struct rtc_time *tm)
+ 	base = rtcdrv->base;
+ 
+ 	now64 = rtc_tm_to_time64(tm) * NSEC_PER_SEC;
+-	writel((now64 >> 32), base + TIMER_TIME_HIGH);
+-	writel(now64, base + TIMER_TIME_LOW);
++	gf_iowrite32((now64 >> 32), base + TIMER_TIME_HIGH);
++	gf_iowrite32(now64, base + TIMER_TIME_LOW);
+ 
+ 	return 0;
+ }
 -- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+2.35.1
 
-https://www.codethink.co.uk/privacy.html
