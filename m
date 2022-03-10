@@ -2,145 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9F1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245486AbiCJSfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:35:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
+        id S245502AbiCJShw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:37:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234815AbiCJSfx (ORCPT
+        with ESMTP id S234691AbiCJShu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:35:53 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7288A19D621;
-        Thu, 10 Mar 2022 10:34:51 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id m2so5691241pll.0;
-        Thu, 10 Mar 2022 10:34:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fZTabEAQ65sqak7IeRk/QmG52+JEgAGMHd10hUU/HKM=;
-        b=gzVNO3biIrix2FoQLOK5xkz0oczUF6xvtNh+4XdiTSSDWoKkuQsV1bJNPyZRc6W24N
-         Mi9PuQdiXg5oRw3IAHQY9Zzc5twR4Q630OzwPCn5ALyrPeXEXinkmQqMMbN6cx03/cGY
-         feitvHICwO+FnxITf3KSxNRZByyyIWOHVxMCd6KYvzDzJz82270Lla2MpEyxhSWVuror
-         cSxs+2WkYe7AwsQGg5aWYBOygC+i5T9HLApC+u+Q3ICFCtzeVNhhI410Jzk/Kw3c5YfO
-         5dKmy312HoLu2ffHY0jqIu5KiRdRvv2j9443I4O5GNLS+5qvT76RHe/oyl9ze8l0l3EH
-         9N8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fZTabEAQ65sqak7IeRk/QmG52+JEgAGMHd10hUU/HKM=;
-        b=ZXqpsM/GaSIY7GctWU5vV9w7PR0VUaIYX61kaLjRoab85J07Az9NHXJZQd2Y11wnRk
-         Y9lzLeJ3N+NQ9q8OEWhOVbqK+3L/k3tDovMTCEpiwPjRhCvTIxYnENVTYx3sTTjV+2z0
-         RehtJuTE6L9DhEV4+LSCA6wLdubYSToX2nH9D2ebnDjQnFeJO4q7we5QoBoZIyYvDfGp
-         e+UNgtyiMYT1PbxgvCvQTEgQpkCwloMw1YypQN1gDedz7YbRrbappOI6s2YuPeQdyOTm
-         IMPor/W+TnUiihjHcpj2kxxWgCauQ9NWGsbxwx3YMrijDpb9v2w7S84a2vXgmYUq1tKz
-         sIpQ==
-X-Gm-Message-State: AOAM531IY/V+lLBeGpsATqGT48iQXbwpKuKYBbVpqtjVHBff9VShwMF/
-        /NLtfmxYuS0ZTBoOkQvdAZ4=
-X-Google-Smtp-Source: ABdhPJxeRwPmh4o/BYU0MiPTeqwVhPQIxIKwxcuBlPTRcRFErAYkviEyFX1vEiiQJRY1f1MAibMxuw==
-X-Received: by 2002:a17:902:bc47:b0:151:ac43:eae0 with SMTP id t7-20020a170902bc4700b00151ac43eae0mr6579800plz.117.1646937290952;
-        Thu, 10 Mar 2022 10:34:50 -0800 (PST)
-Received: from localhost.localdomain ([103.149.162.114])
-        by smtp.gmail.com with ESMTPSA id k23-20020aa790d7000000b004f6c8b7c13bsm7255155pfk.132.2022.03.10.10.34.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 10:34:50 -0800 (PST)
-From:   Dongli Si <kvmx86@gmail.com>
-X-Google-Original-From: Dongli Si <sidongli1997@gmail.com>
-To:     peterz@infradead.org, joerg.roedel@amd.com
-Cc:     liam.merwick@oracle.com, kim.phillips@amd.com, mingo@kernel.org,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] perf/x86/amd: Don't touch the Host-only bit inside the guest hypervisor
-Date:   Fri, 11 Mar 2022 02:34:04 +0800
-Message-Id: <20220310183404.1291725-1-sidongli1997@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 10 Mar 2022 13:37:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2DB19D630;
+        Thu, 10 Mar 2022 10:36:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4890E61E79;
+        Thu, 10 Mar 2022 18:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE8FC340E8;
+        Thu, 10 Mar 2022 18:36:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646937408;
+        bh=RdgCysgl6dR7J0j7duKi30HlTSNbetlrjcptAA8yIP4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ORaAk5KDQ7MKF/ON/55HLWHpH4hL8dCDmsb+0tiseGNVUI7173pEQRS2YRjDFuP2d
+         g8voDYpZnRnm6Hlf9R7Ql/GPkOSM56Jfkhq/MXjURxh9/Ikr4UNUstBWB8objSCEGv
+         YDdg4YOl/OwUFVwmSjIM8h4lxYXLDbnXd/05buJtiyPxJ6fnhqL6afwtEAxWnfbDWK
+         XfqNfUFABIZ8dfrnkccAs1AfHA5Ooo/nwVEcdv5fPuelqf3m2qThPB7ZTDk5tBiCF3
+         lXwmN1oxcs+ruTpO0WT/iQgjJWF/goswaST0dk4R3X/7Rh5BwzJrB3X+NkMXBQRZZg
+         v0pnRLNb5v6+A==
+Date:   Thu, 10 Mar 2022 18:36:47 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
+        martin.petersen@oracle.com,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCHv4 6/8] crypto: add rocksoft 64b crc guard tag framework
+Message-ID: <YipFP8B8MxMxTVBR@gmail.com>
+References: <20220303201312.3255347-1-kbusch@kernel.org>
+ <20220303201312.3255347-7-kbusch@kernel.org>
+ <your-ad-here.call-01646770901-ext-3299@work.hours>
+ <20220308202747.GA3502158@dhcp-10-100-145-180.wdc.com>
+ <YigzoKRJ1EHFRZY9@sol.localdomain>
+ <20220309193126.GA3950874@dhcp-10-100-145-180.wdc.com>
+ <YikEs7RNgPXTQolv@gmail.com>
+ <20220310153959.GB329710@dhcp-10-100-145-180.wdc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220310153959.GB329710@dhcp-10-100-145-180.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongli Si <sidongli1997@gmail.com>
+On Thu, Mar 10, 2022 at 07:39:59AM -0800, Keith Busch wrote:
+> On Wed, Mar 09, 2022 at 07:49:07PM +0000, Eric Biggers wrote:
+> > The issue is that every other "shash" algorithm besides crct10dif, including
+> > crc32 and crc32c, follow the convention of treating the digest as bytes.  Doing
+> > otherwise is unusual for the crypto API.  So I have a slight preference for
+> > treating it as bytes.  Perhaps see what Herbert Xu (maintainer of the crypto
+> > API, Cc'ed) recommends?
+> 
+> I'm okay either way, they're both simple enough. Here is an update atop
+> this series to match the other shash conventions if this is preferred
+> over my previous fix:
+> 
+> ---
+> diff --git a/block/t10-pi.c b/block/t10-pi.c
+> index 914d8cddd43a..f9eb45571bc7 100644
+> --- a/block/t10-pi.c
+> +++ b/block/t10-pi.c
+> @@ -282,7 +282,7 @@ EXPORT_SYMBOL(t10_pi_type3_ip);
+>  
+>  static __be64 ext_pi_crc64(void *data, unsigned int len)
+>  {
+> -	return cpu_to_be64(crc64_rocksoft(data, len));
+> +	return cpu_to_be64(le64_to_cpu(crc64_rocksoft(data, len)));
+>  }
+>  
+>  static blk_status_t ext_pi_crc64_generate(struct blk_integrity_iter *iter,
+> diff --git a/crypto/testmgr.h b/crypto/testmgr.h
+> index f1a22794c404..f9e5f601c657 100644
+> --- a/crypto/testmgr.h
+> +++ b/crypto/testmgr.h
+> @@ -3686,11 +3686,11 @@ static const struct hash_testvec crc64_rocksoft_tv_template[] = {
+>  	{
+>  		.plaintext	= zeroes,
+>  		.psize		= 4096,
+> -		.digest		= (u8 *)(u64[]){ 0x6482d367eb22b64eull },
+> +		.digest		= "\x4e\xb6\x22\xeb\x67\xd3\x82\x64",
+>  	}, {
+>  		.plaintext	= ones,
+>  		.psize		= 4096,
+> -		.digest		= (u8 *)(u64[]){ 0xc0ddba7302eca3acull },
+> +		.digest		= "\xac\xa3\xec\x02\x73\xba\xdd\xc0",
+>  	}
+>  };
+>  
+> diff --git a/include/linux/crc64.h b/include/linux/crc64.h
+> index e044c60d1e61..5319f9a9fc19 100644
+> --- a/include/linux/crc64.h
+> +++ b/include/linux/crc64.h
+> @@ -12,7 +12,7 @@
+>  u64 __pure crc64_be(u64 crc, const void *p, size_t len);
+>  u64 __pure crc64_rocksoft_generic(u64 crc, const void *p, size_t len);
+>  
+> -u64 crc64_rocksoft(const unsigned char *buffer, size_t len);
+> -u64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len);
+> +__le64 crc64_rocksoft(const unsigned char *buffer, size_t len);
+> +__le64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len);
+>  
+>  #endif /* _LINUX_CRC64_H */
+> diff --git a/lib/crc64-rocksoft.c b/lib/crc64-rocksoft.c
+> index fc9ae0da5df7..215acb79a15d 100644
+> --- a/lib/crc64-rocksoft.c
+> +++ b/lib/crc64-rocksoft.c
+> @@ -54,16 +54,16 @@ static struct notifier_block crc64_rocksoft_nb = {
+>  	.notifier_call = crc64_rocksoft_notify,
+>  };
+>  
+> -u64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len)
+> +__le64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len)
+>  {
+>  	struct {
+>  		struct shash_desc shash;
+> -		u64 crc;
+> +		__le64 crc;
+>  	} desc;
+>  	int err;
+>  
+>  	if (static_branch_unlikely(&crc64_rocksoft_fallback))
+> -		return crc64_rocksoft_generic(crc, buffer, len);
+> +		return cpu_to_le64(crc64_rocksoft_generic(crc, buffer, len));
+>  
+>  	rcu_read_lock();
+>  	desc.shash.tfm = rcu_dereference(crc64_rocksoft_tfm);
+> @@ -77,7 +77,7 @@ u64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len)
+>  }
+>  EXPORT_SYMBOL_GPL(crc64_rocksoft_update);
+>  
+> -u64 crc64_rocksoft(const unsigned char *buffer, size_t len)
+> +__le64 crc64_rocksoft(const unsigned char *buffer, size_t len)
+>  {
+>  	return crc64_rocksoft_update(0, buffer, len);
+>  }
+> --
 
-With nested virtualization, when the guest hypervisor runs a nested guest
-and if uses "perf record" in an AMD Milan guest hypervisor, the guest
-hypervisor dmesg will reports the following warning message:
+I think the lib functions should still use native endianness, like what crc32
+does.
 
-[] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000510076)
-at rIP: 0xffffffff81003a50 (x86_pmu_enable_all+0x60/0x100)
-[] Call Trace:
-[]  <IRQ>
-[]  ? x86_pmu_enable+0x146/0x300
-[]  __perf_install_in_context+0x150/0x170
-
-The AMD64_EVENTSEL_HOSTONLY bit is defined and used on the host, while
-the guest hypervisor performance monitor unit should avoid such use.
-
-Fixes: 1018faa6cf23 ("perf/x86/kvm: Fix Host-Only/Guest-Only counting with SVM disabled")
-Signed-off-by: Dongli Si <sidongli1997@gmail.com>
----
-v2: Add run_as_host function and improve description
-v1: https://lore.kernel.org/all/20220227132640.3-1-sidongli1997@gmail.com/
-
- arch/x86/events/amd/core.c        |  4 +++-
- arch/x86/include/asm/hypervisor.h | 10 ++++++++++
- 2 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 9687a8aef01c..14cd079243a4 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -8,6 +8,7 @@
- #include <linux/jiffies.h>
- #include <asm/apicdef.h>
- #include <asm/nmi.h>
-+#include <asm/hypervisor.h>
- 
- #include "../perf_event.h"
- 
-@@ -1027,7 +1028,8 @@ void amd_pmu_enable_virt(void)
- {
- 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
- 
--	cpuc->perf_ctr_virt_mask = 0;
-+	if (run_as_host())
-+		cpuc->perf_ctr_virt_mask = 0;
- 
- 	/* Reload all events */
- 	amd_pmu_disable_all();
-diff --git a/arch/x86/include/asm/hypervisor.h b/arch/x86/include/asm/hypervisor.h
-index e41cbf2ec41d..fcc66c23cc72 100644
---- a/arch/x86/include/asm/hypervisor.h
-+++ b/arch/x86/include/asm/hypervisor.h
-@@ -73,11 +73,21 @@ static inline bool hypervisor_is_type(enum x86_hypervisor_type type)
- {
- 	return x86_hyper_type == type;
- }
-+
-+static inline bool run_as_host(void)
-+{
-+	return hypervisor_is_type(X86_HYPER_NATIVE);
-+}
- #else
- static inline void init_hypervisor_platform(void) { }
- static inline bool hypervisor_is_type(enum x86_hypervisor_type type)
- {
- 	return type == X86_HYPER_NATIVE;
- }
-+
-+static inline bool run_as_host(void)
-+{
-+	return true;
-+}
- #endif /* CONFIG_HYPERVISOR_GUEST */
- #endif /* _ASM_X86_HYPERVISOR_H */
--- 
-2.32.0
-
+- Eric
