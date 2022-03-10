@@ -2,186 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3682EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96747C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbiCJKsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        id S241394AbiCJKs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiCJKsR (ORCPT
+        with ESMTP id S241381AbiCJKsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:48:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310EC13EF97
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:47:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C03A761290
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:47:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32B4C340E8;
-        Thu, 10 Mar 2022 10:47:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646909235;
-        bh=a0Vxbrlv5BuM1or6jUZYuLjIrjKZAq3XR1VU6DcCe98=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J1bEi0pUpnl0C0Z0HKi+BDYu7m6wjj05cx/4yHsNn8gfCm+zdT6ZJWdn3NnLntOhw
-         m8lnAdDI/lVS6wp2y20sVWM/2NbBjxm1ea5kXfk0WF6xWxkZRJ6TdFb3SE9rNx6ENl
-         klggP9UOT8vBM9WSCXpxnU1p8/2X4qU+C7vZWD0uy+n1iJ2pKLEvoIAf1xZEYUjHr5
-         uf6Cq4s1Q7urzA0H81FKUZHPmhKBkU2BvJcFbRT26lxfGUuNu3OMHOk2nCEiatmG0E
-         x3igoFu+Y7KqcS8VKoahvxYMROFzQglSc5QsXvFNf0eobQFUwspKTz+4tivo35dS+P
-         5A1POCQ/wVGog==
-Received: by pali.im (Postfix)
-        id 426967FC; Thu, 10 Mar 2022 11:47:12 +0100 (CET)
-Date:   Thu, 10 Mar 2022 11:47:12 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Gregory CLEMENT <gregory.clement@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] arm64: dts: marvell: armada-37xx: Remap IO space to
- bus address 0x0
-Message-ID: <20220310104712.z4l27ou7otimesyz@pali>
-References: <20220218212526.16021-1-pali@kernel.org>
- <20220304163027.29357-1-pali@kernel.org>
- <87k0d2i0mr.fsf@BL-laptop>
- <20220310100943.m33wsynnvexw7dts@pali>
- <87h786hzs1.fsf@BL-laptop>
+        Thu, 10 Mar 2022 05:48:54 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33E8637A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:47:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646909273; x=1678445273;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=MzMAdsv55pFk0fS6LjtMyulpOtE7bHXFh95B1tLmkgA=;
+  b=lSh/K97oNhx8bDGK9eAzNKAux1UhY9NK30ds3sEEG80h2ARZO7FyNwR/
+   WdIXOJ1pER8NHeBRZVnimARLqkjeTpmtICPbjC74mtIV7vu+Nes3FnHoi
+   bMRT7ZXN1VlTQfIexoExJSTnzuVIK8ypydDyedl8l68P8GQ9tKaDG2aFS
+   fndoPFA4rYKdtH6xKMVlu3F1cRbGX4HiykB3KcQ7vVAba87te5ySaQio7
+   fvCUpbu2wfZ9z/EC01Fz4c9764F2CKkUL4laqOIZyZnU2OmZWMP2QvAf0
+   LYXTX1ZwNxG1uZ/QnzypFbgmdjtFmbhf4l9MH8MMO28JNWP+4g8SmUyUL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="254048756"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="254048756"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 02:47:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="578754323"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 10 Mar 2022 02:47:52 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSGKl-0004of-DE; Thu, 10 Mar 2022 10:47:51 +0000
+Date:   Thu, 10 Mar 2022 18:47:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alessio Balsini <balsini@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
+ 1034/9999] usr/include/linux/fuse.h:888: found __[us]{8,16,32,64} type
+ without #include <linux/types.h>
+Message-ID: <202203101849.Vpu9XtZ0-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87h786hzs1.fsf@BL-laptop>
-User-Agent: NeoMutt/20180716
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 10 March 2022 11:23:26 Gregory CLEMENT wrote:
-> Pali Rohár <pali@kernel.org> writes:
-> 
-> > On Thursday 10 March 2022 11:05:00 Gregory CLEMENT wrote:
-> >> Hello Pali,
-> >> 
-> >> > Legacy and old PCI I/O based cards do not support 32-bit I/O addressing.
-> >> >
-> >> > Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
-> >> > 'ranges' DT property") kernel can set different PCIe address on CPU and
-> >> > different on the bus for the one A37xx address mapping without any firmware
-> >> > support in case the bus address does not conflict with other A37xx mapping.
-> >> >
-> >> > So remap I/O space to the bus address 0x0 to enable support for old legacy
-> >> > I/O port based cards which have hardcoded I/O ports in low address space.
-> >> >
-> >> > Note that DDR on A37xx is mapped to bus address 0x0. And mapping of I/O
-> >> > space can be set to address 0x0 too because MEM space and I/O space are
-> >> > separate and so do not conflict.
-> >> >
-> >> > Remapping IO space on Turris Mox to different address is not possible to
-> >> > due bootloader bug.
-> >> >
-> >> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> >> > Reported-by: Arnd Bergmann <arnd@arndb.de>
-> >> > Fixes: 76f6386b25cc ("arm64: dts: marvell: Add Aardvark PCIe support for Armada 3700")
-> >> > Cc: stable@vger.kernel.org # 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
-> >> > Cc: stable@vger.kernel.org # 514ef1e62d65 ("arm64: dts: marvell: armada-37xx: Extend PCIe MEM space")
-> >> >
-> >> Cc: stable@vger.kernel.org # ???????????? ("arm64: dts: marvell: armada-37xx: Increase PCIe IO size from 64 KiB to 1 MiB")
-> >> 
-> >> This patch has been refused by Arnd so I removed it from the mvebu/fixes
-> >> branch so you should not apply anything on top of it.
-> >
-> > Ok, so what is wrong with a change which increase size of IO space to 1 MB?
-> 
-> https://lore.kernel.org/linux-arm-kernel/CAK8P3a2D8Yv+KpM4NJyP9mosieqbhHh08=mdEy+OA84Vx6FVCQ@mail.gmail.com/
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
+head:   2d490f129561c7cb45482b0aa866e7b973489e8f
+commit: 5e424f85962b0353631642f4da402f2003c218ba [1034/9999] ANDROID: fuse/passthrough: API V2 with __u32 open argument
+config: x86_64-randconfig-a004 (https://download.01.org/0day-ci/archive/20220310/202203101849.Vpu9XtZ0-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/5e424f85962b0353631642f4da402f2003c218ba
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
+        git checkout 5e424f85962b0353631642f4da402f2003c218ba
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-The whole discussion was about remapping IO to 0 and this is addressed
-in this patch. Therefore I thought that it is resolved...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Now I see that Arnd wrote also about size increasing, so some
-misunderstanding from my side.
+All warnings (new ones prefixed by >>):
 
-> >
-> >> Actually I still try to first apply the old patch and then this one but
-> >> it still fail. And it is also failed when I applied this one on a
-> >> v5.17-rc1, so I wondered on which did create this patch.
-> >
-> > Ok, at which branch / commit should I rebase it?
-> 
-> Please create only one single patch on top of v5.17-rc1.
+>> usr/include/linux/fuse.h:888: found __[us]{8,16,32,64} type without #include <linux/types.h>
 
-Done in v3. Hopefully now it is correct.
-
-> Thanks!
-> 
-> Gregory
-> 
-> >
-> >> Grégory
-> >> 
-> >> > ---
-> >> > Changes in v2:
-> >> > * Do not remap IO space on Turris Mox
-> >> > ---
-> >> >  arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 7 ++++++-
-> >> >  arch/arm64/boot/dts/marvell/armada-37xx.dtsi           | 2 +-
-> >> >  2 files changed, 7 insertions(+), 2 deletions(-)
-> >> >
-> >> > diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> >> > index 6581092c2c90..2838e3f65ada 100644
-> >> > --- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> >> > +++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-> >> > @@ -150,17 +150,22 @@
-> >> >  	slot-power-limit = <10000>;
-> >> >  	/*
-> >> >  	 * U-Boot port for Turris Mox has a bug which always expects that "ranges" DT property
-> >> >  	 * contains exactly 2 ranges with 3 (child) address cells, 2 (parent) address cells and
-> >> > -	 * 2 size cells and also expects that the second range starts at 16 MB offset. If these
-> >> > +	 * 2 size cells and also expects that the second range starts at 16 MB offset. Also it
-> >> > +	 * expects that first range uses same address for PCI (child) and CPU (parent) cells (so
-> >> > +	 * no remapping) and that this address is the lowest from all specified ranges. If these
-> >> >  	 * conditions are not met then U-Boot crashes during loading kernel DTB file. PCIe address
-> >> >  	 * space is 128 MB long, so the best split between MEM and IO is to use fixed 16 MB window
-> >> >  	 * for IO and the rest 112 MB (64+32+16) for MEM. Controller supports 32-bit IO mapping.
-> >> >  	 * This bug is not present in U-Boot ports for other Armada 3700 devices and is fixed in
-> >> >  	 * U-Boot version 2021.07. See relevant U-Boot commits (the last one contains fix):
-> >> >  	 * https://source.denx.de/u-boot/u-boot/-/commit/cb2ddb291ee6fcbddd6d8f4ff49089dfe580f5d7
-> >> >  	 * https://source.denx.de/u-boot/u-boot/-/commit/c64ac3b3185aeb3846297ad7391fc6df8ecd73bf
-> >> >  	 * https://source.denx.de/u-boot/u-boot/-/commit/4a82fca8e330157081fc132a591ebd99ba02ee33
-> >> > +	 * Bug related to requirement of same child and parent addresses for first range is fixed
-> >> > +	 * in U-Boot version 2022.04 by following commit:
-> >> > +	 * https://source.denx.de/u-boot/u-boot/-/commit/1fd54253bca7d43d046bba4853fe5fafd034bc17
-> >> >  	 */
-> >> >  	#address-cells = <3>;
-> >> >  	#size-cells = <2>;
-> >> >  	ranges = <0x81000000 0 0xe8000000   0 0xe8000000   0 0x01000000   /* Port 0 IO */
-> >> > diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> >> > index 549c3f7c5b27..a099b7787429 100644
-> >> > --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> >> > +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> >> > @@ -514,9 +514,9 @@
-> >> >  			 * IO at the end and the remaining seven windows
-> >> >  			 * (totaling 127 MiB) for MEM.
-> >> >  			 */
-> >> >  			ranges = <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   /* Port 0 MEM */
-> >> > -				  0x81000000 0 0xeff00000   0 0xeff00000   0 0x00100000>; /* Port 0 IO*/
-> >> > +				  0x81000000 0 0x00000000   0 0xeff00000   0 0x00100000>; /* Port 0 IO */
-> >> >  			interrupt-map-mask = <0 0 0 7>;
-> >> >  			interrupt-map = <0 0 0 1 &pcie_intc 0>,
-> >> >  					<0 0 0 2 &pcie_intc 1>,
-> >> >  					<0 0 0 3 &pcie_intc 2>,
-> >> > -- 
-> >> > 2.20.1
-> >> >
-> >> 
-> >> -- 
-> >> Gregory Clement, Bootlin
-> >> Embedded Linux and Kernel engineering
-> >> http://bootlin.com
-> 
-> -- 
-> Gregory Clement, Bootlin
-> Embedded Linux and Kernel engineering
-> http://bootlin.com
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
