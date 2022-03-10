@@ -2,128 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB03C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 400E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244730AbiCJOyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
+        id S240314AbiCJOyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:54:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346152AbiCJOmi (ORCPT
+        with ESMTP id S1346118AbiCJOmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:42:38 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA74107A97
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:40:28 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id c4so4752882qtx.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:40:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ts+dK3ttiY6R8zZea2yK4md86bxaZKIr+AquYrk3oLk=;
-        b=T4jwBlYZ27/C0gS7bBdNRi5VTaFy92J44Ybzk0KAMHe8N76j3PisechWpbiJ+ucg1U
-         YKnlg9x+UG2ZZ1dLdlUW8DhpFGxJTwkOhTrQEzV8y3cPTMPnKFllQnH1dIzJ6Rc6WEU6
-         +VabZFESxEvq3xiZZpCMMGdMqB2PsRZGzLJVuT4PH7rZCIVHuZx91YGI2dP2KpctJrqR
-         TmtwU30hLrjjDkk53sxc6uSi1Zr9furEM4pVB0ypgU3xIrBI98XltJE3fua6VaLNSA3U
-         PQ9cU4e1bhn9uWp7HGulZ43Pq9QYuaMPEiwP2OJVBjeGfnJKqLE9FjcWXNhWDpFB3oDU
-         EVog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ts+dK3ttiY6R8zZea2yK4md86bxaZKIr+AquYrk3oLk=;
-        b=4S2VPnJp5RBOXYknkIY4n8xNPoQ11phVHO3nHLcfopEz7CIK4n53SCnUCfG3ptEcOv
-         UeVfzhKb/bSWZU/eDmmSxQ5qmnyo1od4fPXgjGTCqGoMJ486mdx4KAyOQ0HNB1OTu/1U
-         fVC4IPDMSqG08lL/NJQPiSMr3WIYZL4PRGTKYEf3gDrWXm+GwuAxhVcRMF08dlQVaLl6
-         +WXj1J45dZDPPf1HIs3pmHnOeQRMBt5+fCreeFU3VrPxAvwsBspmw6wEE4MfP2uHfuMD
-         8Wq1SxynwG1K3vLmT0vWBVdC6Ep0gJK5OvaKjzgtlNpSTmKjVLkp+r8/NeFw7eACT0fk
-         17Tg==
-X-Gm-Message-State: AOAM532tujs6wxX9cmyudRQKcCH13yCqCgwADHzZWeSoWE/v/42o1pgH
-        9ifXaz03il76MVRnreyc5zhNWlkyHi8=
-X-Google-Smtp-Source: ABdhPJxr0dEK7G1srJM7yBK7rFpcwb3YIYiQ87ELaD2MrsmwW6Ms8ZDJ4rwM21+XVzEJfmkUd1nKlw==
-X-Received: by 2002:ac8:7c51:0:b0:2e1:a3b3:a6b7 with SMTP id o17-20020ac87c51000000b002e1a3b3a6b7mr4104620qtv.405.1646923227713;
-        Thu, 10 Mar 2022 06:40:27 -0800 (PST)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id p2-20020a05620a15e200b0067d2c0455bcsm2317044qkm.36.2022.03.10.06.40.26
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 06:40:26 -0800 (PST)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2dbd97f9bfcso59965537b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:40:26 -0800 (PST)
-X-Received: by 2002:a81:594:0:b0:2dc:8978:1d64 with SMTP id
- 142-20020a810594000000b002dc89781d64mr4126054ywf.348.1646923225818; Thu, 10
- Mar 2022 06:40:25 -0800 (PST)
+        Thu, 10 Mar 2022 09:42:37 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4823CE02F7;
+        Thu, 10 Mar 2022 06:38:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yZ/yTUDNAlAVUPMpR6OP/+6VoPuOWZEY8uz25QGnmxE=; b=IY5uHqX84hc6MPM+gkh4wQxXMh
+        SvZPOu2tYS490x1if7OvjfV2Ma/liN+2dF11r+kQjbo3HVcTqvH3rXiqz1wzKdpqkxKewP85eygjz
+        BsVVhKD80zELBQCWI05o6XVROJllhV5jd/33n+JX2D1B8n8u0kon13zKMhmstnttlK2k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSJvj-00A9CZ-7v; Thu, 10 Mar 2022 15:38:15 +0100
+Date:   Thu, 10 Mar 2022 15:38:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] net: phy: Kconfig: micrel_phy: fix dependency issue
+Message-ID: <YioNV4G/OJmeEt0Z@lunn.ch>
+References: <20220310101744.1053425-1-anders.roxell@linaro.org>
 MIME-Version: 1.0
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
- <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com> <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
- <66463e26-8564-9f58-ce41-9a2843891d1a@kernel.org> <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
- <ff2e1007-5883-5178-6415-326d6ae69c34@kernel.org> <8fdab42f-171f-53d7-8e0e-b29161c0e3e2@linaro.org>
-In-Reply-To: <8fdab42f-171f-53d7-8e0e-b29161c0e3e2@linaro.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 10 Mar 2022 09:39:48 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeAL7TsdW4t7=G91n3JLuYehUCnDGH4_rHS=vjm1-Nv9Q@mail.gmail.com>
-Message-ID: <CA+FuTSeAL7TsdW4t7=G91n3JLuYehUCnDGH4_rHS=vjm1-Nv9Q@mail.gmail.com>
-Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310101744.1053425-1-anders.roxell@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 4:37 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
->
-> On 3/8/22 21:01, David Ahern wrote:
-> > On 3/8/22 12:46 PM, Tadeusz Struk wrote:
-> >> That fails in the same way:
-> >>
-> >> skbuff: skb_over_panic: text:ffffffff83e7b48b len:65575 put:65575
-> >> head:ffff888101f8a000 data:ffff888101f8a088 tail:0x100af end:0x6c0
-> >> dev:<NULL>
-> >> ------------[ cut here ]------------
-> >> kernel BUG at net/core/skbuff.c:113!
-> >> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> >> CPU: 0 PID: 1852 Comm: repro Not tainted
-> >> 5.17.0-rc7-00020-gea4424be1688-dirty #19
-> >> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
-> >> RIP: 0010:skb_panic+0x173/0x175
-> >>
-> >> I'm not sure how it supposed to help since it doesn't change the
-> >> alloclen at all.
-> >
-> > alloclen is a function of fraglen and fraglen is a function of datalen.
->
-> Ok, but in this case it doesn't affect the alloclen and it still fails.
+The description says:
 
-This is some kind of non-standard packet that is being constructed. Do
-we understand how it is different?
+> Rework Kconfig for MICREL_PHY to depend on 'PTP_1588_CLOCK_OPTIONAL ||
+> !NETWORK_PHY_TIMESTAMPING'.
 
-The .syz reproducer is generally a bit more readable than the .c
-equivalent. Though not as much as an strace of the binary, if you
-can share that.
+>  config MICREL_PHY
+>  	tristate "Micrel PHYs"
+> +	depends on PTP_1588_CLOCK_OPTIONAL
 
-r0 = socket$inet6_icmp_raw(0xa, 0x3, 0x3a)
-connect$inet6(r0, &(0x7f0000000040)={0xa, 0x0, 0x0, @dev, 0x6}, 0x1c)
-setsockopt$inet6_IPV6_HOPOPTS(r0, 0x29, 0x36,
-&(0x7f0000000100)=ANY=[@ANYBLOB="52b3"], 0x5a0)
-sendmmsg$inet(r0, &(0x7f00000002c0)=[{{0x0, 0x0,
-&(0x7f0000000000)=[{&(0x7f00000000c0)="1d2d", 0xfa5f}], 0x1}}], 0x1,
-0xfe80)
+But you actually added only a subset?
+
+    Andrew
