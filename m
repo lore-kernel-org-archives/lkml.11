@@ -2,174 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E2EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242905AbiCJOOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:14:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
+        id S243007AbiCJOOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:14:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243043AbiCJONj (ORCPT
+        with ESMTP id S243044AbiCJONj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:13:39 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB9158781;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD3A158783;
         Thu, 10 Mar 2022 06:11:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646921494; x=1678457494;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=/0lWU+5EyoSjlOB1k9o55wX3sxsJiR5VJJRuHs8r7qY=;
-  b=kiYvPnW9Gj7SQrP24WbI06ECFPfV2PqyoFFes50+7S86EZlVoYo7g0Jx
-   jYL0+D2UIylthTW7Aw3zTuAs5o660VG2VDDGcDryyAfhXmhIgvJdPAl8A
-   aJojElt2ht3053BNck435zMaBVB5t/QxOWfBb0sZdduj+iEuH0TMcdlRo
-   dVbqlVuSo/9IqGNcc3okXn3h5UMvLItMzfvWTn2Scq/5Nr52PKDo1uC9W
-   P6etffT2Y22yZqN30E3aWg1ihKLdCQ/qKLfi8FDaxZ1vWTc164ge7T8NK
-   qcBa8KAk/DXSfNwUsgYLGdAYpV2XN25Ht9BQivzLaDSplSTk2a1R8hdO+
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242702683"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="242702683"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="554655084"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:10:32 -0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v5 08/13] KVM: Use memfile_pfn_ops to obtain pfn for private pages
-Date:   Thu, 10 Mar 2022 22:09:06 +0800
-Message-Id: <20220310140911.50924-9-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4C50B82670;
+        Thu, 10 Mar 2022 14:11:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05DF8C340E8;
+        Thu, 10 Mar 2022 14:11:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921490;
+        bh=AxC1teQyuVkVP30iRuUx5rWcdT5vrE/3hwpQ9jN7DcA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JMJeJUVQcn7AV7WYLVHASUivg3EkUmIXKF1wXnPI/+YN3YKYr1HiExpRnk2WNv+lQ
+         93BTGkGyY5GfgfbpQi+nPPquR8xp5KQITCkGlFPsREFhHUnB7TVj4fnVnt08wEPxTL
+         tQFvdk5m9DIaYp+JgRCF5PdxcArpTshEdw+gwFHo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.16 31/53] arm64: Add percpu vectors for EL1
+Date:   Thu, 10 Mar 2022 15:09:36 +0100
+Message-Id: <20220310140812.729875371@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
+References: <20220310140811.832630727@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Private pages are not mmap-ed into userspace so can not reply on
-get_user_pages() to obtain the pfn. Instead we add a memfile_pfn_ops
-pointer pfn_ops in each private memslot and use it to obtain the pfn
-for a gfn. To do that, KVM should convert the gfn to the offset into
-the fd and then call get_lock_pfn callback. Once KVM completes its job
-it should call put_unlock_pfn to unlock the pfn. Note the pfn(page) is
-locked between get_lock_pfn/put_unlock_pfn to ensure pfn is valid when
-KVM uses it to establish the mapping in the secondary MMU page table.
+From: James Morse <james.morse@arm.com>
 
-The pfn_ops is initialized via memfile_register_notifier from the memory
-backing store that provided the private_fd.
+commit bd09128d16fac3c34b80bd6a29088ac632e8ce09 upstream.
 
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+The Spectre-BHB workaround adds a firmware call to the vectors. This
+is needed on some CPUs, but not others. To avoid the unaffected CPU in
+a big/little pair from making the firmware call, create per cpu vectors.
+
+The per-cpu vectors only apply when returning from EL0.
+
+Systems using KPTI can use the canonical 'full-fat' vectors directly at
+EL1, the trampoline exit code will switch to this_cpu_vector on exit to
+EL0. Systems not using KPTI should always use this_cpu_vector.
+
+this_cpu_vector will point at a vector in tramp_vecs or
+__bp_harden_el1_vectors, depending on whether KPTI is in use.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/Kconfig     |  1 +
- include/linux/kvm_host.h | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ arch/arm64/include/asm/vectors.h |   29 ++++++++++++++++++++++++++++-
+ arch/arm64/kernel/cpufeature.c   |   11 +++++++++++
+ arch/arm64/kernel/entry.S        |   12 ++++++------
+ arch/arm64/kvm/hyp/vhe/switch.c  |    9 +++++++--
+ 4 files changed, 52 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index e3cbd7706136..ca7b2a6a452a 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -48,6 +48,7 @@ config KVM
- 	select SRCU
- 	select INTERVAL_TREE
- 	select HAVE_KVM_PM_NOTIFIER if PM
-+	select MEMFILE_NOTIFIER
- 	help
- 	  Support hosting fully virtualized guest machines using hardware
- 	  virtualization extensions.  You will need a fairly recent
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index c92c70174248..6e1d770d6bf8 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -44,6 +44,7 @@
+--- a/arch/arm64/include/asm/vectors.h
++++ b/arch/arm64/include/asm/vectors.h
+@@ -5,6 +5,15 @@
+ #ifndef __ASM_VECTORS_H
+ #define __ASM_VECTORS_H
  
- #include <asm/kvm_host.h>
- #include <linux/kvm_dirty_ring.h>
-+#include <linux/memfile_notifier.h>
++#include <linux/bug.h>
++#include <linux/percpu.h>
++
++#include <asm/fixmap.h>
++
++extern char vectors[];
++extern char tramp_vectors[];
++extern char __bp_harden_el1_vectors[];
++
+ /*
+  * Note: the order of this enum corresponds to two arrays in entry.S:
+  * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
+@@ -29,6 +38,24 @@ enum arm64_bp_harden_el1_vectors {
+ 	 * Remap the kernel before branching to the canonical vectors.
+ 	 */
+ 	EL1_VECTOR_KPTI,
+-+};
++};
++
++/* The vectors to use on return from EL0. e.g. to remap the kernel */
++DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
++
++#ifndef CONFIG_UNMAP_KERNEL_AT_EL0
++#define TRAMP_VALIAS	0
++#endif
++
++static inline const char *
++arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
++{
++	if (arm64_kernel_unmapped_at_el0())
++		return (char *)TRAMP_VALIAS + SZ_2K * slot;
++
++	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
++
++	return __bp_harden_el1_vectors + SZ_2K * slot;
++}
  
- #ifndef KVM_MAX_VCPU_IDS
- #define KVM_MAX_VCPU_IDS KVM_MAX_VCPUS
-@@ -565,6 +566,7 @@ struct kvm_memory_slot {
- 	u16 as_id;
- 	struct file *private_file;
- 	loff_t private_offset;
-+	struct memfile_pfn_ops *pfn_ops;
- };
+ #endif /* __ASM_VECTORS_H */
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -73,6 +73,8 @@
+ #include <linux/mm.h>
+ #include <linux/cpu.h>
+ #include <linux/kasan.h>
++#include <linux/percpu.h>
++
+ #include <asm/cpu.h>
+ #include <asm/cpufeature.h>
+ #include <asm/cpu_ops.h>
+@@ -85,6 +87,7 @@
+ #include <asm/smp.h>
+ #include <asm/sysreg.h>
+ #include <asm/traps.h>
++#include <asm/vectors.h>
+ #include <asm/virt.h>
  
- static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
-@@ -915,6 +917,7 @@ static inline void kvm_irqfd_exit(void)
+ /* Kernel representation of AT_HWCAP and AT_HWCAP2 */
+@@ -110,6 +113,8 @@ DECLARE_BITMAP(boot_capabilities, ARM64_
+ bool arm64_use_ng_mappings = false;
+ EXPORT_SYMBOL(arm64_use_ng_mappings);
+ 
++DEFINE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector) = vectors;
++
+ /*
+  * Permit PER_LINUX32 and execve() of 32-bit binaries even if not all CPUs
+  * support it?
+@@ -1590,6 +1595,12 @@ kpti_install_ng_mappings(const struct ar
+ 
+ 	int cpu = smp_processor_id();
+ 
++	if (__this_cpu_read(this_cpu_vector) == vectors) {
++		const char *v = arm64_get_bp_hardening_vector(EL1_VECTOR_KPTI);
++
++		__this_cpu_write(this_cpu_vector, v);
++	}
++
+ 	/*
+ 	 * We don't need to rewrite the page-tables if either we've done
+ 	 * it already or we have KASLR enabled and therefore have not
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -38,7 +38,6 @@
+ 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
+ 	.align 7
+ .Lventry_start\@:
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
+ 	/*
+ 	 * This must be the first instruction of the EL0 vector entries. It is
+@@ -53,7 +52,6 @@
+ 	.endif
+ .Lskip_tramp_vectors_cleanup\@:
+ 	.endif
+-#endif
+ 
+ 	sub	sp, sp, #PT_REGS_SIZE
+ #ifdef CONFIG_VMAP_STACK
+@@ -712,10 +710,10 @@ alternative_else_nop_endif
+ 	.endm
+ 
+ 	.macro tramp_exit, regsize = 64
+-	adr	x30, tramp_vectors
+-#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+-	add	x30, x30, SZ_4K
+-#endif
++	tramp_data_read_var	x30, this_cpu_vector
++	get_this_cpu_offset x29
++	ldr	x30, [x30, x29]
++
+ 	msr	vbar_el1, x30
+ 	ldr	lr, [sp, #S_LR]
+ 	tramp_unmap_kernel	x29
+@@ -775,6 +773,8 @@ __entry_tramp_data_vectors:
+ __entry_tramp_data___sdei_asm_handler:
+ 	.quad	__sdei_asm_handler
+ #endif /* CONFIG_ARM_SDE_INTERFACE */
++__entry_tramp_data_this_cpu_vector:
++	.quad	this_cpu_vector
+ SYM_DATA_END(__entry_tramp_data_start)
+ 	.popsection				// .rodata
+ #endif /* CONFIG_RANDOMIZE_BASE */
+--- a/arch/arm64/kvm/hyp/vhe/switch.c
++++ b/arch/arm64/kvm/hyp/vhe/switch.c
+@@ -10,6 +10,7 @@
+ #include <linux/kvm_host.h>
+ #include <linux/types.h>
+ #include <linux/jump_label.h>
++#include <linux/percpu.h>
+ #include <uapi/linux/psci.h>
+ 
+ #include <kvm/arm_psci.h>
+@@ -25,6 +26,7 @@
+ #include <asm/debug-monitors.h>
+ #include <asm/processor.h>
+ #include <asm/thread_info.h>
++#include <asm/vectors.h>
+ 
+ /* VHE specific context */
+ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
+@@ -68,7 +70,7 @@ NOKPROBE_SYMBOL(__activate_traps);
+ 
+ static void __deactivate_traps(struct kvm_vcpu *vcpu)
  {
- }
- #endif
-+
- int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
- 		  struct module *module);
- void kvm_exit(void);
-@@ -2217,4 +2220,34 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
- /* Max number of entries allowed for each kvm dirty ring */
- #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
+-	extern char vectors[];	/* kernel exception vectors */
++	const char *host_vectors = vectors;
  
-+#ifdef CONFIG_MEMFILE_NOTIFIER
-+static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
-+				       int *order)
-+{
-+	pgoff_t index = gfn - slot->base_gfn +
-+			(slot->private_offset >> PAGE_SHIFT);
+ 	___deactivate_traps(vcpu);
+ 
+@@ -82,7 +84,10 @@ static void __deactivate_traps(struct kv
+ 	asm(ALTERNATIVE("nop", "isb", ARM64_WORKAROUND_SPECULATIVE_AT));
+ 
+ 	write_sysreg(CPACR_EL1_DEFAULT, cpacr_el1);
+-	write_sysreg(vectors, vbar_el1);
 +
-+	return slot->pfn_ops->get_lock_pfn(file_inode(slot->private_file),
-+					   index, order);
-+}
-+
-+static inline void kvm_memfile_put_pfn(struct kvm_memory_slot *slot,
-+				       kvm_pfn_t pfn)
-+{
-+	slot->pfn_ops->put_unlock_pfn(pfn);
-+}
-+
-+#else
-+static inline long kvm_memfile_get_pfn(struct kvm_memory_slot *slot, gfn_t gfn,
-+				       int *order)
-+{
-+	return -1;
-+}
-+
-+static inline void kvm_memfile_put_pfn(struct kvm_memory_slot *slot,
-+				       kvm_pfn_t pfn)
-+{
-+}
-+#endif /* CONFIG_MEMFILE_NOTIFIER */
-+
- #endif
--- 
-2.17.1
++	if (!arm64_kernel_unmapped_at_el0())
++		host_vectors = __this_cpu_read(this_cpu_vector);
++	write_sysreg(host_vectors, vbar_el1);
+ }
+ NOKPROBE_SYMBOL(__deactivate_traps);
+ 
+
 
