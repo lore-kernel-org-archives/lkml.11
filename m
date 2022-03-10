@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241127AbiCJJy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:54:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S241199AbiCJJzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:55:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241096AbiCJJyW (ORCPT
+        with ESMTP id S241200AbiCJJyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:54:22 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74087B458E;
-        Thu, 10 Mar 2022 01:53:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646905991; x=1678441991;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jUmH2oh1/zhKA8uW9ugTgURaA0thp3pCRTkRTiYZ7ys=;
-  b=lL+fJ8teJ7BUrdoG9Aw9IsmieeNGxEVdY185qf/RztuBogAE57buuZ3w
-   PMxl80mY8172gHIEvy1vwPTses9qYxGLH3CztGNzjrfx1ySyVhvtsg8nD
-   BbnJffqr2zT9jpz0Z+u3FqyfU1V4/t9IFP+mqo8Yefrr5aoP+vkbTIsUZ
-   lTN4BT/mfg3SBf0YqmuwD+AOlsExbszuy2zdb+tPUXF0emmE3xonYAAo/
-   RnuN67rs6k2mUawG3YmpfLB1Z4UAxCqFhPd1F1ov/AqNu4hvLhyvgDh7e
-   gntiaAw3k9/n4vylPRgRzsV56XJ9/UH3yOxiEhTKABqtrdD6Dh22eH3xP
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,170,1643698800"; 
-   d="scan'208";a="151541448"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 02:53:10 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Mar 2022 02:53:09 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 02:53:06 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH v9 13/13] ARM: multi_v7_defconfig: add atmel video pipeline modules
-Date:   Thu, 10 Mar 2022 11:52:02 +0200
-Message-ID: <20220310095202.2701399-14-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220310095202.2701399-1-eugen.hristev@microchip.com>
-References: <20220310095202.2701399-1-eugen.hristev@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Thu, 10 Mar 2022 04:54:51 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 076F8CB91A;
+        Thu, 10 Mar 2022 01:53:42 -0800 (PST)
+Received: from smtpclient.apple (p5b3d2183.dip0.t-ipconnect.de [91.61.33.131])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 95E34CECD9;
+        Thu, 10 Mar 2022 10:53:41 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH] Bluetooth: btusb: Add missing Chicony device for Realtek
+ RTL8723BE
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220308145731.23166-1-tiwai@suse.de>
+Date:   Thu, 10 Mar 2022 10:53:41 +0100
+Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <96FE1499-AD74-48EC-9B05-FE8E1CAFF582@holtmann.org>
+References: <20220308145731.23166-1-tiwai@suse.de>
+To:     Takashi Iwai <tiwai@suse.de>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add drivers for the atmel video capture pipeline: atmel isc, xisc and
-microchip csi2dc.
+Hi Takashi,
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
----
- arch/arm/configs/multi_v7_defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+> Chicony Electronics BT device with 04f2:b49f seems to be a missing
+> entry for Realtek RTL8723BE.
+> 
+> T:  Bus=02 Lev=01 Prnt=01 Port=03 Cnt=03 Dev#=  4 Spd=12   MxCh= 0
+> D:  Ver= 2.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=04f2 ProdID=b49f Rev= 2.00
+> S:  Manufacturer=Realtek
+> S:  Product=Bluetooth Radio
+> S:  SerialNumber=00e04c000001
+> C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+> I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> 
+> BugLink: https://bugzilla.opensuse.org/show_bug.cgi?id=1196779
+> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+> ---
+> drivers/bluetooth/btusb.c | 1 +
+> 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index 8863fa969ede..b768abad8df0 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -639,7 +639,10 @@ CONFIG_VIDEO_S5P_MIPI_CSIS=m
- CONFIG_VIDEO_EXYNOS_FIMC_LITE=m
- CONFIG_VIDEO_EXYNOS4_FIMC_IS=m
- CONFIG_VIDEO_RCAR_VIN=m
-+CONFIG_VIDEO_ATMEL_ISC=m
-+CONFIG_VIDEO_ATMEL_XISC=m
- CONFIG_VIDEO_ATMEL_ISI=m
-+CONFIG_VIDEO_MICROCHIP_CSI2DC=m
- CONFIG_V4L_MEM2MEM_DRIVERS=y
- CONFIG_VIDEO_SAMSUNG_S5P_JPEG=m
- CONFIG_VIDEO_SAMSUNG_S5P_MFC=m
--- 
-2.25.1
+patch has been applied to bluetooth-next tree.
+
+Regards
+
+Marcel
 
