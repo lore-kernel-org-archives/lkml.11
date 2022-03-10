@@ -2,90 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD25C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240717AbiCJQKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:10:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        id S240855AbiCJQLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:11:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240760AbiCJQK2 (ORCPT
+        with ESMTP id S240760AbiCJQLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:10:28 -0500
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9039818F21C;
-        Thu, 10 Mar 2022 08:09:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ga7LhQbUj0BJm9/YIp6vd9e5mI8wLFqKkHI6WlgR2iM=; b=jYcZ3D5y4UT3qqdPO2H11nxNoU
-        gEgE6zKIL9/IrIFL6S9iqnEP4o0ovBh/Aqhj3XrIpsb5lrZ3IbSPMPy+ixz0rOILP7DLE6BC3JCci
-        Lr5a0Nvmufb4+Ju8dV4ab7OQ/13t7g1AiQjUsR2HF0yaqby//ielf25EkUEyEF1Qr0GM=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59680 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1nSLLr-0002a4-08; Thu, 10 Mar 2022 11:09:20 -0500
-Date:   Thu, 10 Mar 2022 11:09:18 -0500
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <20220310110918.41a681474f5a0e11abdedc39@hugovil.com>
-In-Reply-To: <20220309162301.61679-11-alexandre.belloni@bootlin.com>
-References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
-        <20220309162301.61679-11-alexandre.belloni@bootlin.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Thu, 10 Mar 2022 11:11:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA5918E43C;
+        Thu, 10 Mar 2022 08:10:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9E11B82644;
+        Thu, 10 Mar 2022 16:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8712C340E8;
+        Thu, 10 Mar 2022 16:09:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646928598;
+        bh=lgG2OUw7ssQ9BqwAhNW1q08hlDaAZoIOoBddSpD4ors=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=RzXiOBEhG6OMxgTRkISWSeM1WiCWm1rhruZbQOtHrclXMXOxj6vY/iuFY95j4BPfO
+         E4UHzivmao0gGhfi6OgWClhi0ChU3/ZNBlLm8KRk5CzDuV1+FUvWOsW4Mobkl+HK5u
+         xUXQwVPRlQmNssx0Po81do06LbFrsptAFLly21nrXmIKM7MSXHce8EEVQnrRiFxVEV
+         8W4pctKhiJMvT5WjiKHRiLpiqcA8eNveZ1APYnb7rzG9nmHZN4BPFtQUVfY1xjfJGn
+         BhGf+KARDyF//ZczyLpWHi6i5ScIxb5beimDTdfzUSU3xFqFFiUhJ8QGzwYtRhGoOx
+         oVyajF9xpGVbg==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 11/29] rtc: pcf2127: set RTC_FEATURE_ALARM_RES_2S
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Subject: Re: [PATCH] brcmfmac: check the return value of devm_kzalloc() in
+ brcmf_of_probe()
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220225132138.27722-1-baijiaju1990@gmail.com>
+References: <20220225132138.27722-1-baijiaju1990@gmail.com>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        davem@davemloft.net, kuba@kernel.org, shawn.guo@linaro.org,
+        gustavoars@kernel.org, len.baker@gmx.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164692859274.6056.13961655347011053680.kvalo@kernel.org>
+Date:   Thu, 10 Mar 2022 16:09:54 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  9 Mar 2022 17:22:42 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
 
-> The PCF2127 doesn't support UIE because setting an alarm to fire every
-> second confuses the chip and the fastest we can go is an alarm every 2
-> seconds.
-
-Hi Alexandre,
-can you describe what "confuses the chip" means?
-
-In my experimental PCF2131 driver, I activated UIE and it seems to be working fine at 1s intervals, but since it is similar to PCF2127, maybe there is still a problem and I just didn't see it.
-
-Hugo.
-
-
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> ---
->  drivers/rtc/rtc-pcf2127.c | 1 +
->  1 file changed, 1 insertion(+)
+> The function devm_kzalloc() in brcmf_of_probe() can fail, so its return
+> value should be checked.
 > 
-> diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-> index f8469b134411..63b275b014bd 100644
-> --- a/drivers/rtc/rtc-pcf2127.c
-> +++ b/drivers/rtc/rtc-pcf2127.c
-> @@ -656,6 +656,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
->  	pcf2127->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
->  	pcf2127->rtc->range_max = RTC_TIMESTAMP_END_2099;
->  	pcf2127->rtc->set_start_time = true; /* Sets actual start to 1970 */
-> +	set_bit(RTC_FEATURE_ALARM_RES_2S, pcf2127->rtc->features);
->  	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf2127->rtc->features);
->  	clear_bit(RTC_FEATURE_ALARM, pcf2127->rtc->features);
->  
-> -- 
-> 2.35.1
-> 
+> Fixes: 29e354ebeeec ("brcmfmac: Transform compatible string for FW loading")
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 
+You are not calling of_node_put() in the error path. And I don't think
+this even applies.
+
+Patch set to Changes Requested.
 
 -- 
-Hugo Villeneuve <hugo@hugovil.com>
+https://patchwork.kernel.org/project/linux-wireless/patch/20220225132138.27722-1-baijiaju1990@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
