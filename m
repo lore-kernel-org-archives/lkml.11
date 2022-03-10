@@ -2,166 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B152C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E033C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345503AbiCJOl5 (ORCPT
+        id S1345575AbiCJOmB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
+        Thu, 10 Mar 2022 09:42:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245590AbiCJOal (ORCPT
+        with ESMTP id S245709AbiCJOau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8856D182D98;
-        Thu, 10 Mar 2022 06:26:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2720F61DE2;
-        Thu, 10 Mar 2022 14:26:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D464EC36AE2;
-        Thu, 10 Mar 2022 14:26:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922389;
-        bh=dqDpI/5xQ7Av+jQXodxQtvhlZ6BRecM6BgdEoxb4u4Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdwtNeOOjgo8MuggDvsHSZ/EU6eI8jSoV6TeXVQiCHgbfWxxGQD2etbWUoZXY2IFw
-         JCs8B5l7thV12JW33uXFqKAauCrOGZJzY1aVvhx42Lw3OSAt7z1LTuPUO46U+cpvY2
-         WNe7CmUgHinrhMFHq9W6jbuX37iGT9zgHm2/b7To=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.10 21/58] arm64: cpufeature: add HWCAP for FEAT_AFP
-Date:   Thu, 10 Mar 2022 15:18:41 +0100
-Message-Id: <20220310140813.479479299@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-References: <20220310140812.869208747@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 10 Mar 2022 09:30:50 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A032186424;
+        Thu, 10 Mar 2022 06:26:44 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id w12so9704546lfr.9;
+        Thu, 10 Mar 2022 06:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=aOR4hwC/LyUI0jjOxT3n02PFkMoRNv160vr8ERq5R5M=;
+        b=TLmdcYdLOXvPkXN9lzSvK+qd50RETYsuhCjwfouchXQvEMmBtGFGKFXlQFT4XjefXR
+         IQpovEbCoHIfttXXAA94M4q+vbatxV4BvpyFSYobDNDTViPh9MJjXheBb8evLNaGNm1N
+         Qt7uCkdRljkUOSX6YC2pU8n8/BAYdqs7DYr+zsNr9lpo3xRnPLrgyog6EaFrsar6ZIQH
+         n5kCTBiudP3pCaM9NEIejnj+QRgKJ+A0lu1kRzusD+MnB/Mgagj3RBbpz+XxMO4ZIv+M
+         m5Zgv+01Urk72PAF+/yLNKdKG/tzpq8FKZzguQVsG6ppY0IDGKafSCGU7k5wsZLvNrUm
+         SYQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=aOR4hwC/LyUI0jjOxT3n02PFkMoRNv160vr8ERq5R5M=;
+        b=jK6euDb5RPMd94Ctr8s1DfQHnUfxfXDM5PiqQSZjnDwuRAvJpOmAYEeqglc8lQDzZ4
+         I5yAQxe324xn4X8AlmNib/2FzbDVRIVGjn863tBXM4TxUMEppV+CNn43244t+9zmhT2X
+         zQD2zcN92pXx3QwLHld/Bj1P95zqfaebxJqBrofxKTRFXJD6uO5m+FSpy8YgD5Bj960v
+         phMN4nfGJsoGxKIfHwXHeFA4MU3VnXQBEKiHz3iQi8CpoOLhV7fq3ozaOl8ldvcmiO9c
+         dv7U65L8S2BeCg8uU4O2vlXaTj5QkwkYm/Fgd91MZOhWhpsqpU7JbCA9A4+stH0cMiIC
+         HtCw==
+X-Gm-Message-State: AOAM532xfK5afSvdwDgyNbZagrIhe/uBNFEFGcpgstXpByvAwaqChlQq
+        0U7hbSF/LKR3ZN1S/C0MsYA=
+X-Google-Smtp-Source: ABdhPJxdb48xfM1I6A57NBB+0VE33vTP/hLoecV0tRu2EiQR4i3oGYbQDIazvv4DmJhtp+HspEJ/lQ==
+X-Received: by 2002:a05:6512:3ba6:b0:448:23de:ca79 with SMTP id g38-20020a0565123ba600b0044823deca79mr3227383lfv.400.1646922400073;
+        Thu, 10 Mar 2022 06:26:40 -0800 (PST)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id r22-20020a2e9956000000b00247f5d1c457sm1090247ljj.126.2022.03.10.06.26.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:26:39 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH iproute2-next 0/3] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
+In-Reply-To: <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
+References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+ <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
+Date:   Thu, 10 Mar 2022 15:26:36 +0100
+Message-ID: <86y21hc28z.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+On tor, mar 10, 2022 at 16:18, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 10/03/2022 15:36, Hans Schultz wrote:
+>> This patch set extends the locked port feature for devices
+>> that are behind a locked port, but do not have the ability to
+>> authorize themselves as a supplicant using IEEE 802.1X.
+>> Such devices can be printers, meters or anything related to
+>> fixed installations. Instead of 802.1X authorization, devices
+>> can get access based on their MAC addresses being whitelisted.
+>> 
+>> For an authorization daemon to detect that a device is trying
+>> to get access through a locked port, the bridge will add the
+>> MAC address of the device to the FDB with a locked flag to it.
+>> Thus the authorization daemon can catch the FDB add event and
+>> check if the MAC address is in the whitelist and if so replace
+>> the FDB entry without the locked flag enabled, and thus open
+>> the port for the device.
+>> 
+>> This feature is known as MAC-Auth or MAC Authentication Bypass
+>> (MAB) in Cisco terminology, where the full MAB concept involves
+>> additional Cisco infrastructure for authorization. There is no
+>> real authentication process, as the MAC address of the device
+>> is the only input the authorization daemon, in the general
+>> case, has to base the decision if to unlock the port or not.
+>> 
+>> With this patch set, an implementation of the offloaded case is
+>> supplied for the mv88e6xxx driver. When a packet ingresses on
+>> a locked port, an ATU miss violation event will occur. When
+>> handling such ATU miss violation interrupts, the MAC address of
+>> the device is added to the FDB with a zero destination port
+>> vector (DPV) and the MAC address is communicated through the
+>> switchdev layer to the bridge, so that a FDB entry with the
+>> locked flag enabled can be added.
+>> 
+>> Hans Schultz (3):
+>>    net: bridge: add fdb flag to extent locked port feature
+>>    net: switchdev: add support for offloading of fdb locked flag
+>>    net: dsa: mv88e6xxx: mac-auth/MAB implementation
+>> 
+>>   drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+>>   drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+>>   drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+>>   drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+>>   drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+>>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+>>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+>>   drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+>>   drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+>>   include/net/switchdev.h                       |  3 +-
+>>   include/uapi/linux/neighbour.h                |  1 +
+>>   net/bridge/br.c                               |  3 +-
+>>   net/bridge/br_fdb.c                           | 13 +++-
+>>   net/bridge/br_input.c                         | 11 ++-
+>>   net/bridge/br_private.h                       |  5 +-
+>>   15 files changed, 167 insertions(+), 14 deletions(-)
+>>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+>>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+>> 
+>
+> This doesn't look like an iproute2 patch-set. I think you've messed the target
+> in the subject.
 
-commit 5c13f042e73200b50573ace63e1a6b94e2917616 upstream.
-
-Add a new HWCAP to detect the Alternate Floating-point Behaviour
-feature (FEAT_AFP), introduced in Armv8.7.
-
-Also expose this to userspace in the ID_AA64MMFR1_EL1 feature register.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211210165432.8106-2-joey.gouly@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/arm64/cpu-feature-registers.rst |    9 +++++++++
- Documentation/arm64/elf_hwcaps.rst            |    4 ++++
- arch/arm64/include/asm/hwcap.h                |    1 +
- arch/arm64/include/asm/sysreg.h               |    1 +
- arch/arm64/include/uapi/asm/hwcap.h           |    1 +
- arch/arm64/kernel/cpufeature.c                |    2 ++
- arch/arm64/kernel/cpuinfo.c                   |    1 +
- 7 files changed, 19 insertions(+)
-
---- a/Documentation/arm64/cpu-feature-registers.rst
-+++ b/Documentation/arm64/cpu-feature-registers.rst
-@@ -275,6 +275,15 @@ infrastructure:
-      | SVEVer                       | [3-0]   |    y    |
-      +------------------------------+---------+---------+
- 
-+  8) ID_AA64MMFR1_EL1 - Memory model feature register 1
-+
-+     +------------------------------+---------+---------+
-+     | Name                         |  bits   | visible |
-+     +------------------------------+---------+---------+
-+     | AFP                          | [47-44] |    y    |
-+     +------------------------------+---------+---------+
-+
-+
- Appendix I: Example
- -------------------
- 
---- a/Documentation/arm64/elf_hwcaps.rst
-+++ b/Documentation/arm64/elf_hwcaps.rst
-@@ -249,6 +249,10 @@ HWCAP2_ECV
- 
-     Functionality implied by ID_AA64MMFR0_EL1.ECV == 0b0001.
- 
-+HWCAP2_AFP
-+
-+    Functionality implied by ID_AA64MFR1_EL1.AFP == 0b0001.
-+
- 4. Unused AT_HWCAP bits
- -----------------------
- 
---- a/arch/arm64/include/asm/hwcap.h
-+++ b/arch/arm64/include/asm/hwcap.h
-@@ -106,6 +106,7 @@
- #define KERNEL_HWCAP_BTI		__khwcap2_feature(BTI)
- #define KERNEL_HWCAP_MTE		__khwcap2_feature(MTE)
- #define KERNEL_HWCAP_ECV		__khwcap2_feature(ECV)
-+#define KERNEL_HWCAP_AFP		__khwcap2_feature(AFP)
- 
- /*
-  * This yields a mask that user programs can use to figure out what
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -801,6 +801,7 @@
- #endif
- 
- /* id_aa64mmfr1 */
-+#define ID_AA64MMFR1_AFP_SHIFT		44
- #define ID_AA64MMFR1_ETS_SHIFT		36
- #define ID_AA64MMFR1_TWED_SHIFT		32
- #define ID_AA64MMFR1_XNX_SHIFT		28
---- a/arch/arm64/include/uapi/asm/hwcap.h
-+++ b/arch/arm64/include/uapi/asm/hwcap.h
-@@ -76,5 +76,6 @@
- #define HWCAP2_BTI		(1 << 17)
- #define HWCAP2_MTE		(1 << 18)
- #define HWCAP2_ECV		(1 << 19)
-+#define HWCAP2_AFP		(1 << 20)
- 
- #endif /* _UAPI__ASM_HWCAP_H */
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -309,6 +309,7 @@ static const struct arm64_ftr_bits ftr_i
- };
- 
- static const struct arm64_ftr_bits ftr_id_aa64mmfr1[] = {
-+	ARM64_FTR_BITS(FTR_VISIBLE, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_AFP_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_ETS_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_TWED_SHIFT, 4, 0),
- 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_STRICT, FTR_LOWER_SAFE, ID_AA64MMFR1_XNX_SHIFT, 4, 0),
-@@ -2262,6 +2263,7 @@ static const struct arm64_cpu_capabiliti
- 	HWCAP_CAP(SYS_ID_AA64PFR1_EL1, ID_AA64PFR1_MTE_SHIFT, FTR_UNSIGNED, ID_AA64PFR1_MTE, CAP_HWCAP, KERNEL_HWCAP_MTE),
- #endif /* CONFIG_ARM64_MTE */
- 	HWCAP_CAP(SYS_ID_AA64MMFR0_EL1, ID_AA64MMFR0_ECV_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_ECV),
-+	HWCAP_CAP(SYS_ID_AA64MMFR1_EL1, ID_AA64MMFR1_AFP_SHIFT, FTR_UNSIGNED, 1, CAP_HWCAP, KERNEL_HWCAP_AFP),
- 	{},
- };
- 
---- a/arch/arm64/kernel/cpuinfo.c
-+++ b/arch/arm64/kernel/cpuinfo.c
-@@ -95,6 +95,7 @@ static const char *const hwcap_str[] = {
- 	[KERNEL_HWCAP_BTI]		= "bti",
- 	[KERNEL_HWCAP_MTE]		= "mte",
- 	[KERNEL_HWCAP_ECV]		= "ecv",
-+	[KERNEL_HWCAP_AFP]		= "afp",
- };
- 
- #ifdef CONFIG_COMPAT
-
-
+Sorry, complete bummer!
+I have resent it with the correct header.
