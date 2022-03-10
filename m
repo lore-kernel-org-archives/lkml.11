@@ -2,59 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA374C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241942AbiCJQUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
+        id S241856AbiCJQUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:20:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242333AbiCJQUP (ORCPT
+        with ESMTP id S242290AbiCJQUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:20:15 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E170190B7A;
-        Thu, 10 Mar 2022 08:18:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rK+8Sm7AEx/XwTnwqxVVc4RKTofQynom/qH1kIz4tgY=; b=1b+5SWyzHKApOh+3r4QwSJJRXa
-        70eP1vH0och8Pdpa//QhAien+9xt0eXqcYpQPhPjg+Dw2HDge6qZdXgSbLcqpxPLc1qrvrmK/xEi/
-        n8PLDjixXbaBl2K/R2MGhA0VhHKd/+2MAgSTEZEYzbC5d8X8VymZs0CyHIFhHi8vNEm1ssBs0klqs
-        B2++zM8SlJI7uxuwn56kFOkzaybYWB9MnSZ4WPMk5lm+SP2fZTIpwRwwRCbSG3xJUhZmGS7UvLIqy
-        3B2kAqb447wJ8sbmz1z2vl40AYlRvFpeFDVLBRN8j4fp+xSI8hEmuE5EtetjdqopsredUXcChCR5s
-        qMD213+g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSLUl-00DU5D-5r; Thu, 10 Mar 2022 16:18:31 +0000
-Date:   Thu, 10 Mar 2022 08:18:31 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Christoph Hellwig <hch@infradead.org>, cgel.zte@gmail.com,
-        axboe@kernel.dk, viro@zeniv.linux.org.uk,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: Re: [PATCH] block/psi: remove PSI annotations from submit_bio
-Message-ID: <Yiok1xi0Hqmh1fbi@infradead.org>
-References: <20220309094323.2082884-1-yang.yang29@zte.com.cn>
- <Yij9eygSYy5MSIA0@cmpxchg.org>
- <Yime3HdbEqFgRVtO@infradead.org>
- <YiokaQLWeulWpiCx@cmpxchg.org>
+        Thu, 10 Mar 2022 11:20:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C861198EE5;
+        Thu, 10 Mar 2022 08:18:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94AB161B6D;
+        Thu, 10 Mar 2022 16:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A778C340E8;
+        Thu, 10 Mar 2022 16:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646929126;
+        bh=bjSaDa0E76WAPivOfFMo4r17rOKeNRNOgTwGr4b32Kc=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=rDoWNfdCr/00ZOOhpkl2IXkOd6R2nCJ0PN6Ba+w48ARHIkyX0EdnoGCofqIYfC2Am
+         UIPPwqG/1dyeouRMPoo45srelkTZHPEVP9LWCISxPP8K/kmHdCCNlvxbCTN5LGHAqW
+         0QKE0TtTzyKtDkiY3hMN7WZu7lTwmjA79SlwLhwHvTOU5sSEo0GVOBP2r4zKLUEclw
+         E30en0mgo6R1XJxTBngpwBFn3K6xaDOSuv+V+/o0z7JODRGJCbJnTjPm/kz3COF/i5
+         2Zc1+8WzvMq36WuhA7NqqsLcW7WLUYR+BRPeIKd3JPxJjOpOxBiLoPEVm9AFMhIm/Q
+         t6w0AzGhimkng==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiokaQLWeulWpiCx@cmpxchg.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] rtlwifi: rtl8192ce: remove duplicated function
+ '_rtl92ce_phy_set_rf_sleep'
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220306090846.28523-1-jiconglu58@gmail.com>
+References: <20220306090846.28523-1-jiconglu58@gmail.com>
+To:     Lu Jicong <jiconglu58@gmail.com>
+Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lu Jicong <jiconglu58@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164692912207.6056.2372494264158291029.kvalo@kernel.org>
+Date:   Thu, 10 Mar 2022 16:18:44 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 11:16:41AM -0500, Johannes Weiner wrote:
-> The first version did that, but it was sprawling and not well-received:
-> 
-> https://lkml.org/lkml/2019/7/22/1261
+Lu Jicong <jiconglu58@gmail.com> wrote:
 
-Well, Dave's comments are spot on.  Except that we replaced it with
-something even more horrible and not something sensible as he suggested.
+> This function exists in phy_common.c as '_rtl92c_phy_set_rf_sleep'.
+> Switch to the one in common file.
+> 
+> Signed-off-by: Lu Jicong <jiconglu58@gmail.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+
+Patch applied to wireless-next.git, thanks.
+
+cb459950edcf rtlwifi: rtl8192ce: remove duplicated function '_rtl92ce_phy_set_rf_sleep'
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220306090846.28523-1-jiconglu58@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
