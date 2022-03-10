@@ -2,202 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF80C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244421AbiCJRRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        id S244481AbiCJRSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244412AbiCJRRU (ORCPT
+        with ESMTP id S244450AbiCJRRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:17:20 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABD0186220
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:16:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932578; x=1678468578;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fVZsvmb82GS0Iv0yg4l8ewIuqEqo2Ggefjg74tzsImc=;
-  b=U9SAuJP1vC6FJPZU1AiZAnKFkmIFYP8sCLT9OJaxYptsTkyYxX3QEbFQ
-   IqFWK9ralLFGeoLheH/jADxf2M9YnvcCyWsS1LhQ6Mt0756JJrLk/tr/w
-   3hlBUbjvQi2qmzF9/lVejPTqtmEtr1au2vlCMphw742jg0ObMXih2fpSF
-   slXzbKeKnuA498yV9eZVFEnqGVxVuMD4jVfjfnXORXaqkEPYtn7O00Ma8
-   mtvqWfeC1xb9fQdcOukGlc1LUwDHDsYkWMXeRFs1thEm3mhx+yyOg1L8m
-   fLufMTS12xtqbAVJjFaxsXKa2doJLxs48MW3T1eQ5sjYIh2WNpkBLx30G
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318534812"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="318534812"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:15:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="510980863"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 10 Mar 2022 09:15:32 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSMNw-0005CH-1G; Thu, 10 Mar 2022 17:15:32 +0000
-Date:   Fri, 11 Mar 2022 01:15:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Connor O'Brien <connoro@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-4.14-stable
- 241/9999] kernel/bpf/cgroup.c:195:6: warning: variable 'old_flags' set but
- not used
-Message-ID: <202203110118.cEBHu9dR-lkp@intel.com>
+        Thu, 10 Mar 2022 12:17:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5210186405
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:16:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646932612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+vBaDCvIEZvSxB2vvfgeDxXoY9yQPk8bK+m5bKAq3ls=;
+        b=ib0HLHpEIr8cANmJ8y1cESwE64ihgE4xuZe+rpNfl0+t8dqCDErASICpCwoKSljGmwjcmi
+        TZpFvRVKaxZokvZnYB8q6POqrQbZ3JFCftbiCnHcgBmbsQF28a+Fyi2qEqHu7DmG7lsuUb
+        piDQdb8vqLz8iMlh4JJ3xAS6/MZ6aj4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-118-6p7-5q2ONC6WsqYnoWuYKg-1; Thu, 10 Mar 2022 12:16:51 -0500
+X-MC-Unique: 6p7-5q2ONC6WsqYnoWuYKg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 387E41091DA0;
+        Thu, 10 Mar 2022 17:16:50 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.39.192.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 981DC101E692;
+        Thu, 10 Mar 2022 17:16:42 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Petr Oros <poros@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] ice: Fix race condition during interface enslave
+Date:   Thu, 10 Mar 2022 18:16:41 +0100
+Message-Id: <20220310171641.3863659-1-ivecera@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.14-stable
-head:   cb5d0103b1f8fc3aa997a696472fd774c67a1b1f
-commit: 9e61c87b1f47b4dc3d48de83d85e9f17c320f91e [241/9999] UPSTREAM: bpf: multi program support for cgroup+bpf
-config: i386-randconfig-a012 (https://download.01.org/0day-ci/archive/20220311/202203110118.cEBHu9dR-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/9e61c87b1f47b4dc3d48de83d85e9f17c320f91e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.14-stable
-        git checkout 9e61c87b1f47b4dc3d48de83d85e9f17c320f91e
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+Commit 5dbbbd01cbba83 ("ice: Avoid RTNL lock when re-creating
+auxiliary device") changes a process of re-creation of aux device
+so ice_plug_aux_dev() is called from ice_service_task() context.
+This unfortunately opens a race window that can result in dead-lock
+when interface has left LAG and immediately enters LAG again.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reproducer:
+```
+#!/bin/sh
 
-All warnings (new ones prefixed by >>):
+ip link add lag0 type bond mode 1 miimon 100
+ip link set lag0
 
-   kernel/bpf/cgroup.c: In function '__cgroup_bpf_attach':
->> kernel/bpf/cgroup.c:195:6: warning: variable 'old_flags' set but not used [-Wunused-but-set-variable]
-     u32 old_flags;
-         ^~~~~~~~~
+for n in {1..10}; do
+        echo Cycle: $n
+        ip link set ens7f0 master lag0
+        sleep 1
+        ip link set ens7f0 nomaster
+done
+```
 
+This results in:
+[20976.208697] Workqueue: ice ice_service_task [ice]
+[20976.213422] Call Trace:
+[20976.215871]  __schedule+0x2d1/0x830
+[20976.219364]  schedule+0x35/0xa0
+[20976.222510]  schedule_preempt_disabled+0xa/0x10
+[20976.227043]  __mutex_lock.isra.7+0x310/0x420
+[20976.235071]  enum_all_gids_of_dev_cb+0x1c/0x100 [ib_core]
+[20976.251215]  ib_enum_roce_netdev+0xa4/0xe0 [ib_core]
+[20976.256192]  ib_cache_setup_one+0x33/0xa0 [ib_core]
+[20976.261079]  ib_register_device+0x40d/0x580 [ib_core]
+[20976.266139]  irdma_ib_register_device+0x129/0x250 [irdma]
+[20976.281409]  irdma_probe+0x2c1/0x360 [irdma]
+[20976.285691]  auxiliary_bus_probe+0x45/0x70
+[20976.289790]  really_probe+0x1f2/0x480
+[20976.298509]  driver_probe_device+0x49/0xc0
+[20976.302609]  bus_for_each_drv+0x79/0xc0
+[20976.306448]  __device_attach+0xdc/0x160
+[20976.310286]  bus_probe_device+0x9d/0xb0
+[20976.314128]  device_add+0x43c/0x890
+[20976.321287]  __auxiliary_device_add+0x43/0x60
+[20976.325644]  ice_plug_aux_dev+0xb2/0x100 [ice]
+[20976.330109]  ice_service_task+0xd0c/0xed0 [ice]
+[20976.342591]  process_one_work+0x1a7/0x360
+[20976.350536]  worker_thread+0x30/0x390
+[20976.358128]  kthread+0x10a/0x120
+[20976.365547]  ret_from_fork+0x1f/0x40
+...
+[20976.438030] task:ip              state:D stack:    0 pid:213658 ppid:213627 flags:0x00004084
+[20976.446469] Call Trace:
+[20976.448921]  __schedule+0x2d1/0x830
+[20976.452414]  schedule+0x35/0xa0
+[20976.455559]  schedule_preempt_disabled+0xa/0x10
+[20976.460090]  __mutex_lock.isra.7+0x310/0x420
+[20976.464364]  device_del+0x36/0x3c0
+[20976.467772]  ice_unplug_aux_dev+0x1a/0x40 [ice]
+[20976.472313]  ice_lag_event_handler+0x2a2/0x520 [ice]
+[20976.477288]  notifier_call_chain+0x47/0x70
+[20976.481386]  __netdev_upper_dev_link+0x18b/0x280
+[20976.489845]  bond_enslave+0xe05/0x1790 [bonding]
+[20976.494475]  do_setlink+0x336/0xf50
+[20976.502517]  __rtnl_newlink+0x529/0x8b0
+[20976.543441]  rtnl_newlink+0x43/0x60
+[20976.546934]  rtnetlink_rcv_msg+0x2b1/0x360
+[20976.559238]  netlink_rcv_skb+0x4c/0x120
+[20976.563079]  netlink_unicast+0x196/0x230
+[20976.567005]  netlink_sendmsg+0x204/0x3d0
+[20976.570930]  sock_sendmsg+0x4c/0x50
+[20976.574423]  ____sys_sendmsg+0x1eb/0x250
+[20976.586807]  ___sys_sendmsg+0x7c/0xc0
+[20976.606353]  __sys_sendmsg+0x57/0xa0
+[20976.609930]  do_syscall_64+0x5b/0x1a0
+[20976.613598]  entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-vim +/old_flags +195 kernel/bpf/cgroup.c
+1. Command 'ip link ... set nomaster' causes that ice_plug_aux_dev()
+   is called from ice_service_task() context, aux device is created
+   and associated device->lock is taken.
+2. Command 'ip link ... set master...' calls ice's notifier under
+   RTNL lock and that notifier calls ice_unplug_aux_dev(). That
+   function tries to take aux device->lock but this is already taken
+   by ice_plug_aux_dev() in step 1
+3. Later ice_plug_aux_dev() tries to take RTNL lock but this is already
+   taken in step 2
+4. Dead-lock
 
-   177	
-   178	/**
-   179	 * __cgroup_bpf_attach() - Attach the program to a cgroup, and
-   180	 *                         propagate the change to descendants
-   181	 * @cgrp: The cgroup which descendants to traverse
-   182	 * @prog: A program to attach
-   183	 * @type: Type of attach operation
-   184	 *
-   185	 * Must be called with cgroup_mutex held.
-   186	 */
-   187	int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
-   188				enum bpf_attach_type type, u32 flags)
-   189	{
-   190		struct list_head *progs = &cgrp->bpf.progs[type];
-   191		struct bpf_prog *old_prog = NULL;
-   192		struct cgroup_subsys_state *css;
-   193		struct bpf_prog_list *pl;
-   194		bool pl_was_allocated;
- > 195		u32 old_flags;
-   196		int err;
-   197	
-   198		if ((flags & BPF_F_ALLOW_OVERRIDE) && (flags & BPF_F_ALLOW_MULTI))
-   199			/* invalid combination */
-   200			return -EINVAL;
-   201	
-   202		if (!hierarchy_allows_attach(cgrp, type, flags))
-   203			return -EPERM;
-   204	
-   205		if (!list_empty(progs) && cgrp->bpf.flags[type] != flags)
-   206			/* Disallow attaching non-overridable on top
-   207			 * of existing overridable in this cgroup.
-   208			 * Disallow attaching multi-prog if overridable or none
-   209			 */
-   210			return -EPERM;
-   211	
-   212		if (prog_list_length(progs) >= BPF_CGROUP_MAX_PROGS)
-   213			return -E2BIG;
-   214	
-   215		if (flags & BPF_F_ALLOW_MULTI) {
-   216			list_for_each_entry(pl, progs, node)
-   217				if (pl->prog == prog)
-   218					/* disallow attaching the same prog twice */
-   219					return -EINVAL;
-   220	
-   221			pl = kmalloc(sizeof(*pl), GFP_KERNEL);
-   222			if (!pl)
-   223				return -ENOMEM;
-   224			pl_was_allocated = true;
-   225			pl->prog = prog;
-   226			list_add_tail(&pl->node, progs);
-   227		} else {
-   228			if (list_empty(progs)) {
-   229				pl = kmalloc(sizeof(*pl), GFP_KERNEL);
-   230				if (!pl)
-   231					return -ENOMEM;
-   232				pl_was_allocated = true;
-   233				list_add_tail(&pl->node, progs);
-   234			} else {
-   235				pl = list_first_entry(progs, typeof(*pl), node);
-   236				old_prog = pl->prog;
-   237				pl_was_allocated = false;
-   238			}
-   239			pl->prog = prog;
-   240		}
-   241	
-   242		old_flags = cgrp->bpf.flags[type];
-   243		cgrp->bpf.flags[type] = flags;
-   244	
-   245		/* allocate and recompute effective prog arrays */
-   246		css_for_each_descendant_pre(css, &cgrp->self) {
-   247			struct cgroup *desc = container_of(css, struct cgroup, self);
-   248	
-   249			err = compute_effective_progs(desc, type, &desc->bpf.inactive);
-   250			if (err)
-   251				goto cleanup;
-   252		}
-   253	
-   254		/* all allocations were successful. Activate all prog arrays */
-   255		css_for_each_descendant_pre(css, &cgrp->self) {
-   256			struct cgroup *desc = container_of(css, struct cgroup, self);
-   257	
-   258			activate_effective_progs(desc, type, desc->bpf.inactive);
-   259			desc->bpf.inactive = NULL;
-   260		}
-   261	
-   262		static_branch_inc(&cgroup_bpf_enabled_key);
-   263		if (old_prog) {
-   264			bpf_prog_put(old_prog);
-   265			static_branch_dec(&cgroup_bpf_enabled_key);
-   266		}
-   267		return 0;
-   268	
-   269	cleanup:
-   270		/* oom while computing effective. Free all computed effective arrays
-   271		 * since they were not activated
-   272		 */
-   273		css_for_each_descendant_pre(css, &cgrp->self) {
-   274			struct cgroup *desc = container_of(css, struct cgroup, self);
-   275	
-   276			bpf_prog_array_free(desc->bpf.inactive);
-   277			desc->bpf.inactive = NULL;
-   278		}
-   279	
-   280		/* and cleanup the prog list */
-   281		pl->prog = old_prog;
-   282		if (pl_was_allocated) {
-   283			list_del(&pl->node);
-   284			kfree(pl);
-   285		}
-   286		return err;
-   287	}
-   288	
+The patch fixes this issue by following changes:
+- Bit ICE_FLAG_PLUG_AUX_DEV is kept to be set during ice_plug_aux_dev()
+  call in ice_service_task()
+- The bit is checked in ice_clear_rdma_cap() and only if it is not set
+  then ice_unplug_aux_dev() is called. If it is set (in other words
+  plugging of aux device was requested and ice_plug_aux_dev() is
+  potentially running) then the function only clears the bit
+- Once ice_plug_aux_dev() call (in ice_service_task) is finished
+  the bit ICE_FLAG_PLUG_AUX_DEV is cleared but it is also checked
+  whether it was already cleared by ice_clear_rdma_cap(). If so then
+  aux device is unplugged.
 
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Co-developed-by: Petr Oros <poros@redhat.com>
+Signed-off-by: Petr Oros <poros@redhat.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/ethernet/intel/ice/ice.h      | 11 ++++++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c | 12 +++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 3121f9b04f59..bea1d1e39fa2 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -898,7 +898,16 @@ static inline void ice_set_rdma_cap(struct ice_pf *pf)
+  */
+ static inline void ice_clear_rdma_cap(struct ice_pf *pf)
+ {
+-	ice_unplug_aux_dev(pf);
++	/* We can directly unplug aux device here only if the flag bit
++	 * ICE_FLAG_PLUG_AUX_DEV is not set because ice_unplug_aux_dev()
++	 * could race with ice_plug_aux_dev() called from
++	 * ice_service_task(). In this case we only clear that bit now and
++	 * aux device will be unplugged later once ice_plug_aux_device()
++	 * called from ice_service_task() finishes (see ice_service_task()).
++	 */
++	if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++		ice_unplug_aux_dev(pf);
++
+ 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
+ 	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 83e3e8aae6cf..493942e910be 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2255,9 +2255,19 @@ static void ice_service_task(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
++		/* Plug aux device per request */
+ 		ice_plug_aux_dev(pf);
+ 
++		/* Mark plugging as done but check whether unplug was
++		 * requested during ice_plug_aux_dev() call
++		 * (e.g. from ice_clear_rdma_cap()) and if so then
++		 * plug aux device.
++		 */
++		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++			ice_unplug_aux_dev(pf);
++	}
++
+ 	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
+ 		struct iidc_event *event;
+ 
+-- 
+2.34.1
+
