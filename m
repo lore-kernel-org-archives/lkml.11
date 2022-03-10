@@ -2,163 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 162B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbiCJQsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:48:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
+        id S244317AbiCJQtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244757AbiCJQsU (ORCPT
+        with ESMTP id S244335AbiCJQtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:48:20 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E11161104
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:47:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646930839; x=1678466839;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+lt5lFj32tlNLLvrEG/HXlx0i8mjc9DRePULl3+S6JQ=;
-  b=EsXCKGkIahVo8igPNFKvKQCl++kMDEPAHe5c0SNHRSxV21S2uffAyogt
-   h0UkVu9KgOk81vcvGO4jPfmB8Blps7120Y0Pj7dwUAIIHLFg4humq+GXO
-   f5IYJnLbgyKmwBaYjIr2Csxi+mXn526pN9Nti9Ua/aoRIs7FlnMBooSBg
-   QeoOJRUgpa4h6SqQFiGeB4RtYUrMAVsBkwO2l8bl7ZkmX2j/1aOmfnTlD
-   bImK0sJs+2UV9eJrWAXLsMlH9S4nPtotaCVPtULPHGGdoSt7KmLi4IzFZ
-   8pj1kMN2Ec/YkW+oWoIeZ9U965p6xgYXvvMbZLCZUGtgbVnjQ8gfMVS4+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254130894"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="254130894"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 08:45:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="781516956"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Mar 2022 08:45:30 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSLus-0005AA-5k; Thu, 10 Mar 2022 16:45:30 +0000
-Date:   Fri, 11 Mar 2022 00:44:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
- expression
-Message-ID: <202203110052.4qnkNzyc-lkp@intel.com>
+        Thu, 10 Mar 2022 11:49:16 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E154E0A0F;
+        Thu, 10 Mar 2022 08:48:02 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 705A792009C; Thu, 10 Mar 2022 17:48:01 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 6995C92009B;
+        Thu, 10 Mar 2022 16:48:01 +0000 (GMT)
+Date:   Thu, 10 Mar 2022 16:48:01 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Christoph Hellwig <hch@lst.de>
+cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Huang Pei <huangpei@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>
+Subject: Re: [BUG] new MIPS compile error on v5.15.27
+In-Reply-To: <20220310162818.GA4436@lst.de>
+Message-ID: <alpine.DEB.2.21.2203101640560.47558@angie.orcam.me.uk>
+References: <D148EFBD-55E0-449A-AD2A-12C80ABD4FC4@goldelico.com> <20220310162818.GA4436@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1db333d9a51f3459fba1bcaa564d95befe79f0b3
-commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
-date:   7 months ago
-config: arc-randconfig-s032-20220310 (https://download.01.org/0day-ci/archive/20220311/202203110052.4qnkNzyc-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e188f3330a13df904d77003846eafd3edf99009d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/ fs/ kernel/ net/ipv4/
+On Thu, 10 Mar 2022, Christoph Hellwig wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Please fix <asm/asm.h>.   The most trivial fix might be to only defined
+> END() under __ASSEMBLY__, although in the long run it probably wants a
+> better name as well.
 
+ FWIW the END macro has its roots in IRIX if not MIPSCO.  It's been around 
+for some 30 years if not more.  MIPS/ULTRIX may have had it too, as it's 
+originally all ECOFF stuff, i.e. `.end', `.ent', `.frame', etc. assembly 
+pseudo-ops for symbol/debug information.
 
-sparse warnings: (new ones prefixed by >>)
-   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
-   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
-   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
-   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
-   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
-   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
-   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
-   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
-   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
---
-   fs/file.c:350:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file **old_fds @@     got struct file [noderef] __rcu **fd @@
-   fs/file.c:350:17: sparse:     expected struct file **old_fds
-   fs/file.c:350:17: sparse:     got struct file [noderef] __rcu **fd
-   fs/file.c:351:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file **new_fds @@     got struct file [noderef] __rcu **fd @@
-   fs/file.c:351:17: sparse:     expected struct file **new_fds
-   fs/file.c:351:17: sparse:     got struct file [noderef] __rcu **fd
-   fs/file.c:366:17: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   fs/file.c:366:17: sparse:    struct file [noderef] __rcu *
-   fs/file.c:366:17: sparse:    struct file *
->> fs/file.c:401:54: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu *[assigned] _val_ @@
-   fs/file.c:441:28: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct fdtable [noderef] __rcu *fdt @@     got struct fdtable * @@
-   fs/file.c:608:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
-   fs/file.c:762:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
-   fs/file.c:813:30: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
-   fs/file.c:1038:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *tofree @@     got struct file [noderef] __rcu * @@
---
-   net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct tcp_congestion_ops const [noderef] __rcu *_val_ @@     got struct tcp_congestion_ops *[assigned] ca @@
-   net/ipv4/tcp_cong.c:238:24: sparse:     expected struct tcp_congestion_ops const [noderef] __rcu *_val_
-   net/ipv4/tcp_cong.c:238:24: sparse:     got struct tcp_congestion_ops *[assigned] ca
->> net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct tcp_congestion_ops const *prev @@     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_ @@
-   net/ipv4/tcp_cong.c:238:22: sparse:     expected struct tcp_congestion_ops const *prev
-   net/ipv4/tcp_cong.c:238:22: sparse:     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_
-
-vim +279 arch/arc/kernel/smp.c
-
-41195d236e8445 Vineet Gupta    2013-01-18  261  
-ddf84433f411b6 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
-41195d236e8445 Vineet Gupta    2013-01-18  263  {
-f2a4aa5646687f Vineet Gupta    2013-11-26  264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  265  	unsigned long old, new;
-41195d236e8445 Vineet Gupta    2013-01-18  266  	unsigned long flags;
-41195d236e8445 Vineet Gupta    2013-01-18  267  
-f2a4aa5646687f Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
-f2a4aa5646687f Vineet Gupta    2013-11-26  269  
-41195d236e8445 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  271  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  272  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  274  	 * and read back old value
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  275  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  276  	do {
-6aa7de059173a9 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
-d8e8c7dda11f5d Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
-41195d236e8445 Vineet Gupta    2013-01-18  280  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  281  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
-82a423053eb3cf Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  288  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
-ddf84433f411b6 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
-41195d236e8445 Vineet Gupta    2013-01-18  291  
-41195d236e8445 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  293  }
-41195d236e8445 Vineet Gupta    2013-01-18  294  
-
-:::::: The code at line 279 was first introduced by commit
-:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
-
-:::::: TO: Vineet Gupta <vgupta@synopsys.com>
-:::::: CC: Vineet Gupta <vgupta@synopsys.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+  Maciej
