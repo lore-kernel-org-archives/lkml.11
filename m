@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF02C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA00C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235402AbiCJRWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52920 "EHLO
+        id S244611AbiCJRWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:22:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244533AbiCJRWA (ORCPT
+        with ESMTP id S244545AbiCJRWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 12:22:00 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1703E198EE2
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3926190B4D
         for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646932859; x=1678468859;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=99E8DhfEk0Ekd5my6kcIYaxIlJz7qBZKJBWjSrZUA94=;
-  b=JrQnDs41f+HMC/Lsn4Za79LjdaruY+yRMB30BDetXiF5HdJR9+TJEyPI
-   CccwGK01xp16uQvYRs9jZDj/LR38TEZdjs7Feh0h8uzHETGPOkUf29+gP
-   UNcPjq7Qex2ccn2zGsSTZoRK/iCToTqe1Hsyt2ROdWq9bCrVmZPd3QX/H
-   fAdhOz5qyKgJzPMX4O482dCGsY15lYjgl1QRhOEYj0R3N+wDX9T3XWfbv
-   7vlWnaCn9Tm+IuPHTrXQFDProoZ+8RuK9tX0nTAKROmnKfSBhqOFWOb9C
-   1fw3CZoPSZoCXfnqBYPH9tjMc5U0EXWBf3fKvajLRWh77cKQyni+wcVcG
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254141965"
+  bh=rq/FeN2nuKAZ1KCoQdgO+h7HjUaX0XwjPfHzXcRVt6g=;
+  b=eHi7yCOAkeC6Aqn9ddAlpF24sL4Ii3JLL8x5oTavk2PnpfvzC4d+fWhp
+   J5jChDMgHfJG2dtzMqgOGxoazZe4/IsZIR9TfDRPYzbYO8StWlCYHE9eX
+   InZMu8KpHHxdeDme+15wWjo2YoywSLFfkVusBFHJfJOC6eJh1oe9ikM6F
+   TMpo3xAohstN3j9NjIGsgutf1mc6VxpWZHm24m2oY0s+bX900HApohbHk
+   2YvzM7gITqU05zEdUsD5Izr5zABFIBM3k9JWZyQexJEGfrYb+871/hvMG
+   jNAYG0GwhT0wG892EltFXtWR0gy9Iuhv02+hjE/smL3zOBU+3NbXL1bB+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235261361"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="254141965"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:58 -0800
+   d="scan'208";a="235261361"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:41 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="538541792"
+   d="scan'208";a="642639204"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:57 -0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:41 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 15/45] x86/pkeys: Introduce pks_write_pkrs()
-Date:   Thu, 10 Mar 2022 09:19:49 -0800
-Message-Id: <20220310172019.850939-16-ira.weiny@intel.com>
+Subject: [PATCH V9 07/45] x86/pkeys: Add PKS CPU feature bit
+Date:   Thu, 10 Mar 2022 09:19:41 -0800
+Message-Id: <20220310172019.850939-8-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,115 +59,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Writing to MSR's is inefficient.  Even though the underlying PKS
-register, MSR_IA32_PKRS, is not serializing; writing to the MSR should
-be avoided if possible.  Especially when updates are made in critical
-paths such as the scheduler or the entry code.
+Memory Protection Keys (pkeys) provides a mechanism for enforcing
+page-based protections, but without requiring modification of the page
+tables when an application changes protection domains.
 
-Introduce pks_write_pkrs().  pks_write_pkrs() avoids writing
-MSR_IA32_PKRS if the pkrs value has not changed for the current CPU.
-Most of the callers are in a non-preemptable code path.  Therefore,
-avoid calling preempt_{disable,enable}() to protect the per-cpu cache
-and instead rely on outer calls for this protection.  Do the same with
-checks to X86_FEATURE_PKS.
+The supervisor support for memory protection keys is referred to as
+PKS (Protection Keys Supervisor).
 
-On startup, while unlikely, the PKS_INIT_VALUE may be 0.  This would
-prevent pks_write_pkrs() from updating the MSR because of the initial
-value of the per-cpu cache.  Therefore, keep the MSR write in
-pks_setup() to ensure the MSR is initialized at least one time.
+Add the defines for the CPU support bit and the boilerplate disable
+infrastructure predicated on the new ARCH_ENABLE_SUPERVISOR_PKEYS
+Kconfig option.
 
-Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	From Dave Hansen
-		Update commit message with a bit more detail about why
-			this optimization is needed
-		Update the code comments as well.
+	Dave Hansen
+		New commit message
 
 Changes for V8
-	From Thomas
-		Remove get/put_cpu_ptr() and make this a 'lower level
-		call.  This makes it preemption unsafe but it is called
-		mostly where preemption is already disabled.  Add this
-		as a predicate of the call and those calls which need to
-		can disable preemption.
-		Add lockdep assert for preemption
-	Ensure MSR gets written even if the PKS_INIT_VALUE is 0.
-	Completely re-write the commit message.
-	s/write_pkrs/pks_write_pkrs/
-	Split this off into a singular patch
-
-Changes for V7
-	Create a dynamic pkrs_initial_value in early init code.
-	Clean up comments
-	Add comment to macro guard
+	Split this out into it's own patch
 ---
- arch/x86/mm/pkeys.c | 41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ arch/x86/include/asm/cpufeatures.h       | 1 +
+ arch/x86/include/asm/disabled-features.h | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index f904376570f4..10521f1a292e 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -213,15 +213,56 @@ u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 65d147974f8d..cb529b824a96 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -370,6 +370,7 @@
+ #define X86_FEATURE_MOVDIR64B		(16*32+28) /* MOVDIR64B instruction */
+ #define X86_FEATURE_ENQCMD		(16*32+29) /* ENQCMD and ENQCMDS instructions */
+ #define X86_FEATURE_SGX_LC		(16*32+30) /* Software Guard Extensions Launch Control */
++#define X86_FEATURE_PKS			(16*32+31) /* Protection Keys for Supervisor pages */
  
- #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
+ /* AMD-defined CPU features, CPUID level 0x80000007 (EBX), word 17 */
+ #define X86_FEATURE_OVERFLOW_RECOV	(17*32+ 0) /* MCA overflow recovery support */
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index 8f28fafa98b3..66fdad8f3941 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -44,6 +44,12 @@
+ # define DISABLE_OSPKE		(1<<(X86_FEATURE_OSPKE & 31))
+ #endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
  
-+static DEFINE_PER_CPU(u32, pkrs_cache);
++#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++# define DISABLE_PKS		0
++#else
++# define DISABLE_PKS		(1<<(X86_FEATURE_PKS & 31))
++#endif
 +
-+/*
-+ * pks_write_pkrs() - Write the pkrs of the current CPU
-+ * @new_pkrs: New value to write to the current CPU register
-+ *
-+ * Optimizes the MSR writes by maintaining a per cpu cache.
-+ *
-+ * Context: must be called with preemption disabled
-+ * Context: must only be called if PKS is enabled
-+ *
-+ * It should also be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
-+ * serializing but still maintains ordering properties similar to WRPKRU.
-+ * The current SDM section on PKRS needs updating but should be the same as
-+ * that of WRPKRU.  Quote from the WRPKRU text:
-+ *
-+ *     WRPKRU will never execute transiently. Memory accesses
-+ *     affected by PKRU register will not execute (even transiently)
-+ *     until all prior executions of WRPKRU have completed execution
-+ *     and updated the PKRU register.
-+ */
-+static inline void pks_write_pkrs(u32 new_pkrs)
-+{
-+	u32 pkrs = __this_cpu_read(pkrs_cache);
-+
-+	lockdep_assert_preemption_disabled();
-+
-+	if (pkrs != new_pkrs) {
-+		__this_cpu_write(pkrs_cache, new_pkrs);
-+		wrmsrl(MSR_IA32_PKRS, new_pkrs);
-+	}
-+}
-+
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-+ *
-+ * Context: must be called with preemption disabled
-  */
- void pks_setup(void)
- {
- 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
- 		return;
- 
-+	/*
-+	 * If the PKS_INIT_VALUE is 0 then pks_write_pkrs() will fail to
-+	 * initialize the MSR.  Do a single write here to ensure the MSR is
-+	 * written at least one time.
-+	 */
- 	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
-+	pks_write_pkrs(PKS_INIT_VALUE);
- 	cr4_set_bits(X86_CR4_PKS);
- }
- 
+ #ifdef CONFIG_X86_5LEVEL
+ # define DISABLE_LA57	0
+ #else
+@@ -85,7 +91,7 @@
+ #define DISABLED_MASK14	0
+ #define DISABLED_MASK15	0
+ #define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
+-			 DISABLE_ENQCMD)
++			 DISABLE_ENQCMD|DISABLE_PKS)
+ #define DISABLED_MASK17	0
+ #define DISABLED_MASK18	0
+ #define DISABLED_MASK19	0
 -- 
 2.35.1
 
