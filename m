@@ -2,187 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E37BBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3430EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244084AbiCJSel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:34:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
+        id S245469AbiCJSfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230273AbiCJSej (ORCPT
+        with ESMTP id S230273AbiCJSfk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:34:39 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57817199E3F;
-        Thu, 10 Mar 2022 10:33:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646937218; x=1678473218;
-  h=to:cc:subject:references:date:mime-version:
-   content-transfer-encoding:from:message-id:in-reply-to;
-  bh=8Lw2BWPVb1z8nKpn6dQJVwnTHIrdBGKEtC3fuN8BH0o=;
-  b=PX9pRdBhi71S37XR3hWTBPSyGNWEQk7pyti99z+KbCdp26EcWlgjqtW+
-   Wx7mnOYAX5Oe3qwBCk+hHqdWMmnxJYNwc410jl3exsetIQCcPg1Y+Aid6
-   1yP519Mt579qRxlHH+7Mw1AjkutXv/2vxbhhR8CMYPnF4flTqrP23QozZ
-   Fd1rAn4zhvmJua6grWNVqrdCyOvkI/RPZ2HPN8Y+qbDxOgNt0IjEdhCWS
-   Aep1cONQtwifsynEPAVvwuitmTlULCAjPLVl8M2HahU9EaXcfpy8lT51Z
-   avLSCcHDLI/3F7nFrVoAxOf0dC1MPWbn+RI4bSyJeYbxXCw7l0R6I6P5P
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="341761846"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="341761846"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 10:33:32 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="514101756"
-Received: from hhuan26-mobl1.amr.corp.intel.com (HELO hhuan26-mobl1.mshome.net) ([10.255.37.63])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA; 10 Mar 2022 10:33:29 -0800
-Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
-To:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "Jarkko Sakkinen" <jarkko@kernel.org>
-Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-References: <cover.1644274683.git.reinette.chatre@intel.com> <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com> <YhLhoMFPyOFZ2fsX@iki.fi> <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com> <YimWaAqEnXHbLdjh@iki.fi>
-Date:   Thu, 10 Mar 2022 12:33:20 -0600
+        Thu, 10 Mar 2022 13:35:40 -0500
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001E419BE7D;
+        Thu, 10 Mar 2022 10:34:38 -0800 (PST)
+Received: by mail-yb1-f175.google.com with SMTP id l2so12627885ybe.8;
+        Thu, 10 Mar 2022 10:34:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CKn4UlhzcUis8Bod+pO2Kn++YD/HSd7Iu7VmYfBTVZM=;
+        b=xgQMxkw5Ep7ub7g8g3Ru4hcxT9Q7fXpAsGnqZY3bdPl4cFKAzf6+BKzg8B5vgCIDa4
+         q5pX57WVf77GiEOAQ573sTtSWeLwFH9TfAk30GOiM2QZBUX2yFF6qFOZnyMKlgRsx4Bu
+         8AkUtfGmNKsThBrVza/1p/4a/fEFMTghb3z1rdn8lSBQYGGUU0xZWWUY50he/2Qzy/kr
+         OpR5jfRcjzWX+eOE69xSHAX+eYSzbX6mrsXnUSREEYgMseMHHsjji7dQUHT4mSnDzrTK
+         8Y8F+0WA6cEUHtxWYmTH3WlsLBxK+sudnFtlQGwArktBuADceX97g8SFdiTwKi9sS0Jy
+         XzbQ==
+X-Gm-Message-State: AOAM532AaXKb9mIXkqfaPFzDOmpeJVszYRkUvJymUbS0urpkwG5sHp+b
+        XC6gmtjeVBU5N25QncRlRuhxgW+iJzVC/NijCmKi3Bxp
+X-Google-Smtp-Source: ABdhPJwHLUi+wpcAaHInVE7qN7vZrvuzV2+E/wEOsJ/PA6SH67oZUEn+KQ0Li+yPzZfnqptU8X6gQzO93F1w18bomXw=
+X-Received: by 2002:a25:fe10:0:b0:625:262f:e792 with SMTP id
+ k16-20020a25fe10000000b00625262fe792mr4844677ybe.365.1646937278267; Thu, 10
+ Mar 2022 10:34:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   "Haitao Huang" <haitao.huang@linux.intel.com>
-Organization: Intel Corp
-Message-ID: <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net>
-In-Reply-To: <YimWaAqEnXHbLdjh@iki.fi>
-User-Agent: Opera Mail/1.0 (Win32)
+References: <20220309223431.26560-1-chang.seok.bae@intel.com> <20220309223431.26560-3-chang.seok.bae@intel.com>
+In-Reply-To: <20220309223431.26560-3-chang.seok.bae@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 10 Mar 2022 19:34:27 +0100
+Message-ID: <CAJZ5v0g2ZU8PY8QkGD1Nb6VH37pm=ho8ZYa3h3UBRWDoH+xqnQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] intel_idle: Add a new flag to initialize the AMX state
+To:     "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko
-
-I have some trouble understanding the sequences below.
-
-On Thu, 10 Mar 2022 00:10:48 -0600, Jarkko Sakkinen <jarkko@kernel.org>  
-wrote:
-
-> On Wed, Feb 23, 2022 at 07:21:50PM +0000, Dhanraj, Vijay wrote:
->> Hi All,
->>
->> Regarding the recent update of splitting the page permissions change
->> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
->> one? That is, revert to how it was done in the v1 version?
->>
->> Why? Currently in Gramine (a library OS for unmodified applications,
->> https://gramineproject.io/) with the new proposed change, one needs to
->> store the page permission for each page or range of pages. And for every
->> request of `mmap` or `mprotect`, Gramine would have to do a lookup of  
->> the
->> page permissions for the request range and then call the respective  
->> IOCTL
->> either RESTRICT or RELAX. This seems a little overwhelming.
->>
->> Request: Instead, can we do `MODPE`,  call `RESTRICT` IOCTL, and then do
->> an `EACCEPT` irrespective of RELAX or RESTRICT page permission request?
->> With this approach, we can avoid storing  page permissions and simplify
->> the implementation.
->>
->> I understand RESTRICT IOCTL would do a `MODPR` and trigger `ETRACK`  
->> flows
->> to do TLB shootdowns which might not be needed for RELAX IOCTL but I am
->> not sure what will be the performance impact. Is there any data point to
->> see the performance impact?
->>
->> Thanks,
->> -Vijay
+On Wed, Mar 9, 2022 at 11:42 PM Chang S. Bae <chang.seok.bae@intel.com> wrote:
 >
-> This should get better in the next versuin. "relax" is gone. And for
-> dynamic EAUG'd pages only VMA and EPCM permissions matter, i.e.
-> internal vm_max_prot_bits is set to RWX.
+> The non-initialized AMX state can be the cause of C-state demotion from C6
+> to C1E. This low-power idle state may improve power savings and thus result
+> in a higher available turbo frequency budget.
 >
-> I patched the existing series eno
+> This behavior is implementation-specific. Initialize the state for the C6
+> entrance of Sapphire Rapids as needed.
 >
-> For Enarx I'm using the following patterns.
+> Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+> Tested-by : Zhang Rui <rui.zhang@intel.com>
+> Cc: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+> Changes from v1:
+> * Simplify the code with a new flag (Rui).
+> * Rebase on Artem's patches for SPR intel_idle.
+> * Massage the changelog.
 >
-> Shim mmap() handler:
-> 1. Ask host for mmap() syscall.
-> 2. Construct secinfo matching the protection bits.
-> 3. For each page in the address range: EACCEPTCOPY with a
->    zero page.
-
-For EACCEPTCOPY to work, I believe PTE.RW is required for the target page.  
-So this only works for mmap(..., RW) or mmap(...,RWX).
-
-So that gives you pages with RW/RWX.
-
-To change permissions of any of those pages from RW/RWX to R/RX , you need  
-call ENCLAVE_RESTRICT_PERMISSIONS ioctl with R or with PROT_NONE. you  
-can't just do EMODPE.
-
-so for RW->R, you either:
-
-1)EMODPR(EPCM.NONE)
-2)EACCEPT(EPCM.NONE)
-3)EMODPE(R) -- not sure this would work as spec says EMODPE requires "Read  
-access permitted by enclave"
-
-or:
-
-1)EMODPR(EPCM.PROT_R)
-2)EACCEPT(EPCM.PROT_R)
-
-
-> Shim mprotect() handler:
-> 1. Ask host for mprotect() syscall.
-> 2. For each page in the address range: EACCEPT with PROT_NONE
->    secinfo and EMODPE with the secinfo having the prot bits.
-
-EACCEPT requires PTE.R. And EAUG'd pages will always initialized with  
-EPCM.RW,
-so EACCEPT(EPCM.PROT_NONE) will fail with SGX_PAGE_ATTRIBUTES_MISMATCH.
-
-
-> Backend mprotect() handler:
-> 1. Invoke ENCLAVE_RESTRICT_PERMISSIONS ioctl for the address
->    range with PROT_NONE.
-> 2. Invoke real mprotect() syscall.
+> Dependency on the new C-state table for SPR:
+> https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=9edf3c0ffef0ec1bed8300315852b5c6a0997130
+> ---
+>  drivers/idle/intel_idle.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
 >
-Note #1 can only be done after EACCEPT. MODPR is not allowed for pending  
-pages.
-
-> Not super-complicated.
+> diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+> index 1c7c25909e54..6ecbeffdf785 100644
+> --- a/drivers/idle/intel_idle.c
+> +++ b/drivers/idle/intel_idle.c
+> @@ -54,6 +54,7 @@
+>  #include <asm/intel-family.h>
+>  #include <asm/mwait.h>
+>  #include <asm/msr.h>
+> +#include <asm/fpu/api.h>
 >
-> That is the safest way to changes permissions i.e. use EMODPR only to  
-> reset
-> the permissions, and EMODPE as EMODP. Then the page is always either
-> inaccessible completely or with the correct permissions.
+>  #define INTEL_IDLE_VERSION "0.5.1"
 >
-> Any other ways to use EMODPR are a bit questionable. That's why I tend to
-> think that it would be better to kernel provide only limited version of  
-> it
-> to reset the permissions. Most of the other use will be most likely
-> mis-use. IMHO there is only one legit pattern to use it, i.e. "least
-> racy" pattern.
+> @@ -99,6 +100,11 @@ static unsigned int mwait_substates __initdata;
+>   */
+>  #define CPUIDLE_FLAG_ALWAYS_ENABLE     BIT(15)
 >
+> +/*
+> + * Initialize large xstate for the C6-state entrance.
+> + */
+> +#define CPUIDLE_FLAG_INIT_XSTATE       BIT(16)
+> +
+>  /*
+>   * MWAIT takes an 8-bit "hint" in EAX "suggesting"
+>   * the C-state (top nibble) and sub-state (bottom nibble)
+> @@ -136,6 +142,9 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
+>         if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
+>                 local_irq_enable();
+>
+> +       if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
+> +               fpu_idle_fpregs();
+> +
+>         mwait_idle_with_hints(eax, ecx);
+>
+>         return index;
+> @@ -156,8 +165,12 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
+>  static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
+>                                        struct cpuidle_driver *drv, int index)
+>  {
+> -       unsigned long eax = flg2MWAIT(drv->states[index].flags);
+>         unsigned long ecx = 1; /* break on interrupt flag */
+> +       struct cpuidle_state *state = &drv->states[index];
+> +       unsigned long eax = flg2MWAIT(state->flags);
+> +
+> +       if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
+> +               fpu_idle_fpregs();
+>
+>         mwait_idle_with_hints(eax, ecx);
+>
+> @@ -792,7 +805,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
+>         {
+>                 .name = "C6",
+>                 .desc = "MWAIT 0x20",
+> -               .flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+> +               .flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | \
 
-I don't see it as "racy" if you copy some data into RW page and reduce it  
-to R.
- From kernel point of view the only diff is EMODPR(NONE) vs EMODPR(R).
+Why is the backslash at the end of the line needed?
 
-It's more efficient to do just EMODPR(R) than EMODPR(NONE)+ EMODPE(R).
-
-
-Thanks
-Haitao
+> +                                          CPUIDLE_FLAG_INIT_XSTATE,
+>                 .exit_latency = 290,
+>                 .target_residency = 800,
+>                 .enter = &intel_idle,
+> --
