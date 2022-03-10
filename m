@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 457EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245469AbiCJPHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:07:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        id S1343769AbiCJPIk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:08:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245475AbiCJPFz (ORCPT
+        with ESMTP id S1345496AbiCJPIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:05:55 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F92C19BE6B;
-        Thu, 10 Mar 2022 06:56:07 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 470DE16A3;
-        Thu, 10 Mar 2022 06:55:43 -0800 (PST)
-Received: from e108754-lin.cambridge.arm.com (unknown [10.1.195.34])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6AB533F7B4;
-        Thu, 10 Mar 2022 06:55:41 -0800 (PST)
-From:   Ionela Voinescu <ionela.voinescu@arm.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Giovanni Gherdovich <ggherdovich@suse.cz>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Sean Kelley <skelley@nvidia.com>
-Cc:     Pierre Gondois <pierre.gondois@arm.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH v4 1/3] x86, ACPI: rename init_freq_invariance_cppc to arch_init_invariance_cppc
-Date:   Thu, 10 Mar 2022 14:54:49 +0000
-Message-Id: <20220310145451.15596-2-ionela.voinescu@arm.com>
-X-Mailer: git-send-email 2.29.2.dirty
-In-Reply-To: <20220310145451.15596-1-ionela.voinescu@arm.com>
-References: <20220310145451.15596-1-ionela.voinescu@arm.com>
+        Thu, 10 Mar 2022 10:08:19 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4433E1081B3;
+        Thu, 10 Mar 2022 06:58:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646924300; x=1678460300;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=7G2fSsO6atF49CySwf2ewvaCvBVI0nCqa72M1BYrlqo=;
+  b=gg8QpQ1ynq14p8MCWg9BNd+0wWSwL4DRuGQJ0SfUf0xjOSx5Bi6UXaU6
+   Rnmculj+fyevhYRRE9Oz1L7DV1xhF6W4qwuMBHlP8AkcpogLtpOkVE/8G
+   7mK9owN4+Rz/yj+8zaDliZ0HB/Zvu8I+ZZhmeESiCtOumXhyh8Uf4/4V5
+   v8ggxsVev2rX9AeLQ2DuWOPu2FiunDz/XWf37KDvdRb3U0agDomQvhafd
+   U3DeznStdtejBGkcDj0EkHMUqAvI4bqUbCtqqquOcrnr9qRVh/rIrkIrH
+   5Ol93SpseCrPEqtYBUmup7GcWwXq7qC0gGn0BDLPOnLL/+dxj+JZ7QKp5
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237436853"
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="237436853"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:57:55 -0800
+X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
+   d="scan'208";a="538483108"
+Received: from cpatricx-mobl.amr.corp.intel.com (HELO [10.212.255.151]) ([10.212.255.151])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:57:54 -0800
+Message-ID: <8587f16c-d171-ba47-aaa1-dcec77e86d2c@linux.intel.com>
+Date:   Thu, 10 Mar 2022 06:57:54 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v1 4/6] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+Content-Language: en-US
+To:     Aubrey Li <aubrey.li@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220222231735.268919-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <369eb270-92c5-1788-127e-bb31f2a51680@linux.intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <369eb270-92c5-1788-127e-bb31f2a51680@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-init_freq_invariance_cppc() was called in acpi_cppc_processor_probe(),
-after CPU performance information and controls were populated from the
-per-cpu _CPC objects.
 
-But these _CPC objects provide information that helps with both CPU
-(u-arch) and frequency invariance. Therefore, change the function name
-to a more generic one, while adding the arch_ prefix, as this function
-is expected to be defined differently by different architectures.
 
-Signed-off-by: Ionela Voinescu <ionela.voinescu@arm.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Tested-by: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Giovanni Gherdovich <ggherdovich@suse.cz>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
----
- arch/x86/include/asm/topology.h | 2 +-
- drivers/acpi/cppc_acpi.c        | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+On 3/10/22 6:55 AM, Aubrey Li wrote:
+> There seems to be a mismatch with
+> https://github.com/intel/qemu-tdx/blob/tdx/target/i386/kvm/tdx.c#L1262
+> 
+> It looks like qemu expects a tdx_get_quote_header before the raw TDREPORT data?
 
-diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
-index 127b693273e3..9619385bf749 100644
---- a/arch/x86/include/asm/topology.h
-+++ b/arch/x86/include/asm/topology.h
-@@ -228,7 +228,7 @@ static inline void init_freq_invariance(bool secondary, bool cppc_ready)
- 
- #ifdef CONFIG_ACPI_CPPC_LIB
- void init_freq_invariance_cppc(void);
--#define init_freq_invariance_cppc init_freq_invariance_cppc
-+#define arch_init_invariance_cppc init_freq_invariance_cppc
- 
- bool amd_set_max_freq_ratio(u64 *ratio);
- #else
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 866560cbb082..bfd142ab4e07 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -633,8 +633,8 @@ static bool is_cppc_supported(int revision, int num_ent)
-  *  )
-  */
- 
--#ifndef init_freq_invariance_cppc
--static inline void init_freq_invariance_cppc(void) { }
-+#ifndef arch_init_invariance_cppc
-+static inline void arch_init_invariance_cppc(void) { }
- #endif
- 
- /**
-@@ -816,7 +816,7 @@ int acpi_cppc_processor_probe(struct acpi_processor *pr)
- 		goto out_free;
- 	}
- 
--	init_freq_invariance_cppc();
-+	arch_init_invariance_cppc();
- 
- 	kfree(output.pointer);
- 	return 0;
+Yes, this is a recent change. I have modified the attestation test app
+to accommodate it. It will be submitted in next version.
+
 -- 
-2.25.1
-
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
