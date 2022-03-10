@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE87BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245294AbiCJSBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:01:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38876 "EHLO
+        id S245318AbiCJSCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:02:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245267AbiCJSBH (ORCPT
+        with ESMTP id S233831AbiCJSB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:01:07 -0500
+        Thu, 10 Mar 2022 13:01:59 -0500
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9124D1965F6;
-        Thu, 10 Mar 2022 10:00:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4C0197B6C;
+        Thu, 10 Mar 2022 10:00:57 -0800 (PST)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 600551C0B7F; Thu, 10 Mar 2022 19:00:05 +0100 (CET)
-Date:   Thu, 10 Mar 2022 19:00:04 +0100
+        id 7D3531C0B9B; Thu, 10 Mar 2022 19:00:56 +0100 (CET)
+Date:   Thu, 10 Mar 2022 19:00:55 +0100
 From:   Pavel Machek <pavel@denx.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -26,59 +26,54 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/33] 4.19.234-rc2 review
-Message-ID: <20220310180004.GB15877@duo.ucw.cz>
-References: <20220310140807.749164737@linuxfoundation.org>
+Subject: Re: [PATCH 4.9 00/38] 4.9.306-rc2 review
+Message-ID: <20220310180055.GC15877@duo.ucw.cz>
+References: <20220310140808.136149678@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="l76fUT7nc3MelDdI"
+        protocol="application/pgp-signature"; boundary="da4uJneut+ArUgXk"
 Content-Disposition: inline
-In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
+In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---l76fUT7nc3MelDdI
+--da4uJneut+ArUgXk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> This is the start of the stable review cycle for the 4.19.234 release.
-> There are 33 patches in this series, all will be posted as a response
+> This is the start of the stable review cycle for the 4.9.306 release.
+> There are 38 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 
-                                                                           =
-             =20
-CIP testing did not find any problems here:                                =
-             =20
-                                                                           =
-             =20
+CIP testing did not find any problems here:
+
 https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y       =20
-                                                                           =
-             =20
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>                              =
-             =20
+4.9.y        =20
+
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
 Best regards,
-									Pavel
+                                                                Pavel
+
 --=20
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---l76fUT7nc3MelDdI
+--da4uJneut+ArUgXk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYio8pAAKCRAw5/Bqldv6
-8gB/AJsH5ZkFQlHLC+wS6P5fWhFg7Eg6UACfVT1edukdkKi8S+aGy2sn9TRJNy8=
-=zlqB
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYio81wAKCRAw5/Bqldv6
+8jYiAKCDuTCgiIL9dP0pi+pnUKcbiXrHsACghIHx4/jUmnxTH70N03yujWjC/Sg=
+=sKF7
 -----END PGP SIGNATURE-----
 
---l76fUT7nc3MelDdI--
+--da4uJneut+ArUgXk--
