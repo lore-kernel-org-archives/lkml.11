@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76A2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 087E1C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240347AbiCJOpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
+        id S237393AbiCJOok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244427AbiCJOdY (ORCPT
+        with ESMTP id S1344048AbiCJObj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:33:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB576DF4B9;
-        Thu, 10 Mar 2022 06:31:00 -0800 (PST)
+        Thu, 10 Mar 2022 09:31:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C76EC5E1;
+        Thu, 10 Mar 2022 06:29:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BA1261D23;
-        Thu, 10 Mar 2022 14:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 653F5C36AEB;
-        Thu, 10 Mar 2022 14:30:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E3061C0A;
+        Thu, 10 Mar 2022 14:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB22C340E8;
+        Thu, 10 Mar 2022 14:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922659;
-        bh=Fx9vrl9Digl1jmM6i7NHjvlnbGVHe2w4pnEADaxx72U=;
+        s=korg; t=1646922573;
+        bh=KCX8P+H2W0agVF1iCpkDtDeNldgE0W8QeXXKrS24w74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OTnbZcZEBqmOtuNu07SNdwnFtjmJSrsLnESfGkeVnQeDtSzedI22onKaiBYyqT7h1
-         rtvZRnJ5k496LnIyPb03UPy7JhaH/w2IQF+gNO2SuXkYOfHXfGD115/WDH16vv5QPi
-         qksEyG0yHytpdDfv57ZcIqv+6wiPMsUmV2lsssKI=
+        b=XiiJY71jaV9yhaYb5DWMR5jsEP1FsPUCpHxnz4Atlp+i3y/gRI9ucFAxcleWdmv6t
+         jsDxQatjFxguAmdcka/u6/J8XatB8xwI4yId5P+12hT8UMM78ZBtrS11qg3iGPXMX5
+         j0d4oLlN6wRxGy2AzP6nETphVBegmI981Gwn/98s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.15 47/58] xen/xenbus: dont let xenbus_grant_ring() remove grants in error case
-Date:   Thu, 10 Mar 2022 15:19:36 +0100
-Message-Id: <20220310140814.322038434@linuxfoundation.org>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.15 22/58] arm64: entry.S: Add ventry overflow sanity checks
+Date:   Thu, 10 Mar 2022 15:19:11 +0100
+Message-Id: <20220310140813.622418677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
 References: <20220310140812.983088611@linuxfoundation.org>
@@ -50,79 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: James Morse <james.morse@arm.com>
 
-Commit 3777ea7bac3113005b7180e6b9dadf16d19a5827 upstream.
+commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
 
-Letting xenbus_grant_ring() tear down grants in the error case is
-problematic, as the other side could already have used these grants.
-Calling gnttab_end_foreign_access_ref() without checking success is
-resulting in an unclear situation for any caller of xenbus_grant_ring()
-as in the error case the memory pages of the ring page might be
-partially mapped. Freeing them would risk unwanted foreign access to
-them, while not freeing them would leak memory.
+Subsequent patches add even more code to the ventry slots.
+Ensure kernels that overflow a ventry slot don't get built.
 
-In order to remove the need to undo any gnttab_grant_foreign_access()
-calls, use gnttab_alloc_grant_references() to make sure no further
-error can occur in the loop granting access to the ring pages.
-
-It should be noted that this way of handling removes leaking of
-grant entries in the error case, too.
-
-This is CVE-2022-23040 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/xenbus/xenbus_client.c |   24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+ arch/arm64/kernel/entry.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/xen/xenbus/xenbus_client.c
-+++ b/drivers/xen/xenbus/xenbus_client.c
-@@ -379,7 +379,14 @@ int xenbus_grant_ring(struct xenbus_devi
- 		      unsigned int nr_pages, grant_ref_t *grefs)
- {
- 	int err;
--	int i, j;
-+	unsigned int i;
-+	grant_ref_t gref_head;
-+
-+	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
-+	if (err) {
-+		xenbus_dev_fatal(dev, err, "granting access to ring page");
-+		return err;
-+	}
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -37,6 +37,7 @@
  
- 	for (i = 0; i < nr_pages; i++) {
- 		unsigned long gfn;
-@@ -389,23 +396,14 @@ int xenbus_grant_ring(struct xenbus_devi
- 		else
- 			gfn = virt_to_gfn(vaddr);
+ 	.macro kernel_ventry, el:req, ht:req, regsize:req, label:req
+ 	.align 7
++.Lventry_start\@:
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
+ alternative_if ARM64_UNMAP_KERNEL_AT_EL0
+@@ -95,6 +96,7 @@ alternative_else_nop_endif
+ 	mrs	x0, tpidrro_el0
+ #endif
+ 	b	el\el\ht\()_\regsize\()_\label
++.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
+ 	.endm
  
--		err = gnttab_grant_foreign_access(dev->otherend_id, gfn, 0);
--		if (err < 0) {
--			xenbus_dev_fatal(dev, err,
--					 "granting access to ring page");
--			goto fail;
--		}
--		grefs[i] = err;
-+		grefs[i] = gnttab_claim_grant_reference(&gref_head);
-+		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
-+						gfn, 0);
+ 	.macro tramp_alias, dst, sym
+@@ -662,6 +664,7 @@ alternative_else_nop_endif
+ 	add	x30, x30, #(1b - tramp_vectors)
+ 	isb
+ 	ret
++.org 1b + 128	// Did we overflow the ventry slot?
+ 	.endm
  
- 		vaddr = vaddr + XEN_PAGE_SIZE;
- 	}
- 
- 	return 0;
--
--fail:
--	for (j = 0; j < i; j++)
--		gnttab_end_foreign_access_ref(grefs[j], 0);
--	return err;
- }
- EXPORT_SYMBOL_GPL(xenbus_grant_ring);
- 
+ 	.macro tramp_exit, regsize = 64
 
 
