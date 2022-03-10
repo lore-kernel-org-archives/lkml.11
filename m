@@ -2,104 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2418C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D804CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Mar 2022 12:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232196AbiCIMsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 07:48:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
+        id S232828AbiCIMsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 07:48:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232829AbiCIMr4 (ORCPT
+        with ESMTP id S231654AbiCIMsn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 07:47:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE80A177746
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 04:46:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646830017;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oIOQIxDPG94ZGWbVYq8GHTXPCYDThRtLt2a1oXRhNkM=;
-        b=D5xUlyYrmYGXf6TwNQoWW7R72XOtFSFFhNjQsGIaRzZsVvfq0T2iCAkwsA/mHkXHFmU7Nb
-        qdFrBSl6AZF+SEMuwptUbJG8OJkNOAvksnIOHvgfdK6hEdtuO4czOS2fmOdAvI3gtIy+uQ
-        koAvpmyAmcJbaDKhGokymo7EYoeOa6s=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-tkXmgvMBNZqbmY_xdORR8A-1; Wed, 09 Mar 2022 07:46:55 -0500
-X-MC-Unique: tkXmgvMBNZqbmY_xdORR8A-1
-Received: by mail-wm1-f71.google.com with SMTP id k41-20020a05600c1ca900b00389a2b983efso753835wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 04:46:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oIOQIxDPG94ZGWbVYq8GHTXPCYDThRtLt2a1oXRhNkM=;
-        b=133CY9++cxvotgBxQK7hNWyeCVAsrhigb0zn/Ffud3k980Ra6Re8dQaE6FyXsfFvWO
-         scyS4Aoi0PQgOmDS91VrOXc/a5C/ZQuABtgOe/Vmp08Q45G+IuVatyp/A9FGbz1nvDf1
-         3OcYFn4TCqhEPV1NZN9yyR2FXtyJvE3L0vej6D3NOqE6iYiAOzv6Mt5KT+gVZr5l+kHQ
-         eftiocz5pM1+XUIQO/KyH4YXMiMbto4Y1ZzMaE0xK7T0sBvQmw4eT1Dj1eGg55yKFRRV
-         toKphvzAy9SqwlMxNUgSsd6H3eq7Q3JUoN81W0+JizKcO9GrhIYl8nzR4LWguB40PE/f
-         O6Pg==
-X-Gm-Message-State: AOAM532NdcknDF8DXZ/BgtbzzdIP9zebzJuxMkqunATfMCuHHci7toAz
-        kVfVQYq9vXy8cjv+pD9ZRdwjmXjZgcQ4zFW0BycBiraopd6xt+X/nfha6ep+zptYIYbPfcGVDWp
-        YKEg1Jxl+Y9u/HjPm6br2wDeo
-X-Received: by 2002:a5d:5986:0:b0:1f1:f971:f02 with SMTP id n6-20020a5d5986000000b001f1f9710f02mr10080745wri.578.1646830013678;
-        Wed, 09 Mar 2022 04:46:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYK8FPaxzfg7PUDh96l/6CFuHhsdjJQ1VHODD7GNxUOFUkDD6tWylERnxyi/EG6sZs8v7gEQ==
-X-Received: by 2002:a5d:5986:0:b0:1f1:f971:f02 with SMTP id n6-20020a5d5986000000b001f1f9710f02mr10080724wri.578.1646830013470;
-        Wed, 09 Mar 2022 04:46:53 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id j7-20020a5d5647000000b0020372c969d9sm1673557wrw.29.2022.03.09.04.46.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 04:46:53 -0800 (PST)
-Message-ID: <f6186885-5bcf-01a8-56f5-b87ad0b53e3e@redhat.com>
-Date:   Wed, 9 Mar 2022 13:46:51 +0100
+        Wed, 9 Mar 2022 07:48:43 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F5D1D30C;
+        Wed,  9 Mar 2022 04:47:41 -0800 (PST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KDBlD57pFzfYkY;
+        Wed,  9 Mar 2022 20:46:16 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Mar 2022 20:47:39 +0800
+Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
+ (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
+ 2022 20:47:38 +0800
+From:   Wenchao Hao <haowenchao@huawei.com>
+To:     Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Wu Bo <wubo40@huawei.com>, Zhiqiang Liu <liuzhiqiang26@huawei.com>,
+        <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
+Subject: [PATCH v3 1/3] scsi: iscsi: Add helper functions to manage iscsi_cls_conn
+Date:   Wed, 9 Mar 2022 20:57:57 -0500
+Message-ID: <20220310015759.3296841-2-haowenchao@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220310015759.3296841-1-haowenchao@huawei.com>
+References: <20220310015759.3296841-1-haowenchao@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 01/10] drm/fourcc: Add drm_format_info_bpp() helper
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1646683502.git.geert@linux-m68k.org>
- <eab1fe866c0ffd4ac097e66ff48725dd39893105.1646683502.git.geert@linux-m68k.org>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <eab1fe866c0ffd4ac097e66ff48725dd39893105.1646683502.git.geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert,
+iscsi_alloc_conn(): alloc and initialize iscsi_cls_conn
+iscsi_add_conn(): expose iscsi_cls_conn to userspace's via sysfs.
+iscsi_remove_conn(): remove iscsi_cls_conn from sysfs
 
-On 3/7/22 21:52, Geert Uytterhoeven wrote:
-> Add a helper to retrieve the actual number of bits per pixel for a
-> plane, taking into account the number of characters and pixels per
-> block for tiled formats.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
+Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
+Signed-off-by: Wu Bo <wubo40@huawei.com>
+---
+ drivers/scsi/scsi_transport_iscsi.c | 97 +++++++++++++++++++++++++++++
+ include/scsi/scsi_transport_iscsi.h |  4 ++
+ 2 files changed, 101 insertions(+)
 
-Patch looks good to me.
-
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 554b6f784223..65117ed5626e 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2340,6 +2340,103 @@ void iscsi_free_session(struct iscsi_cls_session *session)
+ }
+ EXPORT_SYMBOL_GPL(iscsi_free_session);
+ 
++/**
++ * iscsi_alloc_conn - alloc iscsi class connection
++ * @session: iscsi cls session
++ * @dd_size: private driver data size
++ * @cid: connection id
++ */
++struct iscsi_cls_conn *
++iscsi_alloc_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
++{
++	struct iscsi_transport *transport = session->transport;
++	struct iscsi_cls_conn *conn;
++
++	conn = kzalloc(sizeof(*conn) + dd_size, GFP_KERNEL);
++	if (!conn)
++		return NULL;
++	if (dd_size)
++		conn->dd_data = &conn[1];
++
++	mutex_init(&conn->ep_mutex);
++	INIT_LIST_HEAD(&conn->conn_list);
++	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
++	conn->transport = transport;
++	conn->cid = cid;
++	conn->state = ISCSI_CONN_DOWN;
++
++	/* this is released in the dev's release function */
++	if (!get_device(&session->dev))
++		goto free_conn;
++
++	dev_set_name(&conn->dev, "connection%d:%u", session->sid, cid);
++	device_initialize(&conn->dev);
++	conn->dev.parent = &session->dev;
++	conn->dev.release = iscsi_conn_release;
++
++	return conn;
++
++free_conn:
++	kfree(conn);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(iscsi_alloc_conn);
++
++/**
++ * iscsi_add_conn - add iscsi class connection
++ * @conn: iscsi cls connection
++ *
++ * this would expose iscsi_cls_conn to sysfs, so make sure the related
++ * resources when access sysfs attributes are initialized before calling this.
++ */
++int iscsi_add_conn(struct iscsi_cls_conn *conn)
++{
++	int err;
++	unsigned long flags;
++	struct iscsi_cls_session *session = iscsi_dev_to_session(conn->dev.parent);
++
++	err = device_add(&conn->dev);
++	if (err) {
++		iscsi_cls_session_printk(KERN_ERR, session,
++					 "could not register connection's dev\n");
++		return err;
++	}
++	err = transport_register_device(&conn->dev);
++	if (err) {
++		iscsi_cls_session_printk(KERN_ERR, session,
++					 "could not register transport's dev\n");
++		device_del(&conn->dev);
++		return err;
++	}
++
++	spin_lock_irqsave(&connlock, flags);
++	list_add(&conn->conn_list, &connlist);
++	spin_unlock_irqrestore(&connlock, flags);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iscsi_add_conn);
++
++/**
++ * iscsi_remove_conn - remove iscsi class connection from sysfs
++ * @conn: iscsi cls connection
++ *
++ * this would remove iscsi_cls_conn from sysfs, and wait for previous
++ * read/write of iscsi_cls_conn's attributes in sysfs finishing
++ */
++void iscsi_remove_conn(struct iscsi_cls_conn *conn)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&connlock, flags);
++	list_del(&conn->conn_list);
++	spin_unlock_irqrestore(&connlock, flags);
++
++	transport_unregister_device(&conn->dev);
++	device_del(&conn->dev);
++}
++EXPORT_SYMBOL_GPL(iscsi_remove_conn);
++
+ /**
+  * iscsi_create_conn - create iscsi class connection
+  * @session: iscsi cls session
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index c5d7810fd792..ae686addde0c 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -441,6 +441,10 @@ extern struct iscsi_cls_session *iscsi_create_session(struct Scsi_Host *shost,
+ 						unsigned int target_id);
+ extern void iscsi_remove_session(struct iscsi_cls_session *session);
+ extern void iscsi_free_session(struct iscsi_cls_session *session);
++extern struct iscsi_cls_conn *iscsi_alloc_conn(struct iscsi_cls_session *sess,
++						int dd_size, uint32_t cid);
++extern int iscsi_add_conn(struct iscsi_cls_conn *conn);
++extern void iscsi_remove_conn(struct iscsi_cls_conn *conn);
+ extern struct iscsi_cls_conn *iscsi_create_conn(struct iscsi_cls_session *sess,
+ 						int dd_size, uint32_t cid);
+ extern void iscsi_put_conn(struct iscsi_cls_conn *conn);
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.32.0
 
