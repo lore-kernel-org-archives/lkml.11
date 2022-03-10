@@ -2,88 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3194AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C1FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241107AbiCJQOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57042 "EHLO
+        id S241175AbiCJQPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:15:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241009AbiCJQO1 (ORCPT
+        with ESMTP id S241115AbiCJQPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:14:27 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB29DE1B59
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:13:26 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so5654606pju.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:13:26 -0800 (PST)
+        Thu, 10 Mar 2022 11:15:07 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE2D1903EC
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:14:05 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id o6so8441057ljp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lEOkrVgcJZdOpXrqIK9Xwy4NV75c7mrQ1k1DVuFpKnM=;
-        b=b7OhXiqUJ2oyKnp9Y21BDXMjY0kk/egOkrjh5HRAzYzuD2yJ9Y5GLXzDNdCVe+41w0
-         M+6Ml58nU8iWesUVOP+1aUQb1brA4wcb9XHv0P2ta0jLXsGzuj1YJFQ7H4c2/MZm3dmB
-         9YHuxVneWRgHyU1S6GRn4t1fFwfBHHzsUyPdk=
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fjY0FTO8qXUt2RMKc1hm3MNTHQeOrTba2M9H2IVVHik=;
+        b=Oy3ccJoMPxQacrScaiK5fjgNyTCksoNYehSN8a7xTkU4LrdocSYlSjj+qQec4GbJq2
+         2gnjo5J3ep0KULECDMqgiiGz6BW8yy7Ae53z+AKZI0VW27wxBvObFjXYvCXJOTgwb6Y0
+         7oMPy7D47EOU/K1KqgD0wZWyVLkW8n+9UP96pczOnIDyVx0zBcc6SQMYR9ii1kd3vtoi
+         wkHgltU8G0C50AmhYNn07Oqt/wF7rbWbZ+kYnwQHSSmQtZdfL5EuwgQi5y7F0pOGlP9K
+         yQZNTU4E/K7ejs2geW0sxErlcVDtXi6JYTKQiPWX51r9boP86/hCq92CaRMVOlgoDYIY
+         mfPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lEOkrVgcJZdOpXrqIK9Xwy4NV75c7mrQ1k1DVuFpKnM=;
-        b=LQysWEu1Xnh7OITPtBoyprmQI7nvaJHdbMmnd0cfKsUZCvu5il0u1nl09K7oOvLq8k
-         Nm5R/iBOkHYFcnNnBHAZDa0Y6OXSQHa0DVxPlwgHIQk+fCl7bniE6nZ641SszH1oBe06
-         LQB8P4HLa1alO/fnudmkzCbD+N8unEmeAx/DR9wYEgCXP7azGG35E1CWOQx2DzyyMNZ/
-         TK+i3VSjEqQHuHUhJQTpbZrHacdIPr85465sxg+AU0o6W6DO1udq6PLUBzi+02fCrEPb
-         jzhLZUbGYxeCH/VQH4cBl0I5WqVDwiZTKHycK0CVDwau+SrIDxsstgm9Ogbq/6Oi60mi
-         xayQ==
-X-Gm-Message-State: AOAM530eNENLjtNL9p6Pk2gvrH2oysbFB+GeqOgPFisfZagTiV88YQyM
-        si69Nh9JUlcSQHUHZuq1aoSCt4x39Qt2BQ==
-X-Google-Smtp-Source: ABdhPJwjsAQ5MxTwKYyhdw/zQa2nvOjkcVfkmmw8kVfLcawTtqNN7W73CZF8Sm++De1tWvYYY/fvPg==
-X-Received: by 2002:a17:90a:168f:b0:1b9:453a:fe79 with SMTP id o15-20020a17090a168f00b001b9453afe79mr17140950pja.107.1646928806494;
-        Thu, 10 Mar 2022 08:13:26 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id x6-20020a17090aa38600b001bce781ce03sm6348367pjp.18.2022.03.10.08.13.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 08:13:26 -0800 (PST)
-Date:   Thu, 10 Mar 2022 08:13:25 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Domenico Andreoli <domenico.andreoli@linux.com>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] binfmt_misc: add two-steps registration (opt-in)
-Message-ID: <202203100811.F2B43DD@keescook>
-References: <Yh4fdijvNXE7K88c@localhost>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fjY0FTO8qXUt2RMKc1hm3MNTHQeOrTba2M9H2IVVHik=;
+        b=dC4sMkuo6g67yJkKq4Y3J9clMDLvnoAXe9aVKhxmXS2eMKmzGiNswEX9vyD20LXVm0
+         z5aVF6I8WIpFh2AOx0KLNb66PSqI0R5eFcsCWXXWLaC//TzMcmQnLoyCvoX/pAKrq5z7
+         G+d0xfzb+LUn/oLZLr4zLyBlp/Vumvxc4M2cd0HdLRgTDFCKRq2qH6k/rbiu+MJL9Ys9
+         88JvUlj7sTbgDaDZcaF5tyyX6SsrtH9BsdQM+9+9SxdCKM6QtWH3g/yc5qtzcpnMsY2H
+         e2f6oG6lAy3cEdquLOZ0lMs/Xs7JgbzhAdhNaUlhvAL28lINGi+KE0FQA2mqOv6jhOnd
+         HAqg==
+X-Gm-Message-State: AOAM531hlkrhXeGacAu5iPE4pTwk1hd+aiRM2pMCP0S5psH1Dmlb9hII
+        2p2wCGLL0y1fd/IJnsi9XDiGaA==
+X-Google-Smtp-Source: ABdhPJxN53SGZK0v5U0SWyuDAcWgAXOXIqu2WNeZ9jnUL2HHsw4HNbhNJsR1vUlQ4A0+6xVh+GoizA==
+X-Received: by 2002:a2e:93cf:0:b0:247:e451:7175 with SMTP id p15-20020a2e93cf000000b00247e4517175mr3506629ljh.441.1646928843584;
+        Thu, 10 Mar 2022 08:14:03 -0800 (PST)
+Received: from [192.168.51.243] ([78.128.78.220])
+        by smtp.gmail.com with ESMTPSA id m22-20020a2e7116000000b0024805a43db1sm870556ljc.63.2022.03.10.08.14.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 08:14:03 -0800 (PST)
+Message-ID: <dc47275b-27f8-5de0-ae6e-e82013a03d1f@blackwall.org>
+Date:   Thu, 10 Mar 2022 18:14:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh4fdijvNXE7K88c@localhost>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked
+ port feature
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
+ <0eeaf59f-e7eb-7439-3c0a-17e7ac6741f0@blackwall.org>
+ <86v8wles1g.fsf@gmail.com>
+ <e3f57a64-4823-7cf3-0345-3777c44c2fe4@blackwall.org>
+ <8635jp23ez.fsf@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <8635jp23ez.fsf@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 02:28:22PM +0100, Domenico Andreoli wrote:
-> From: Domenico Andreoli <domenico.andreoli@linux.com>
+On 10/03/2022 18:11, Hans Schultz wrote:
+> On tor, mar 10, 2022 at 17:57, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>> On 10/03/2022 17:38, Hans Schultz wrote:
+>>> On tor, mar 10, 2022 at 16:42, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>> On 10/03/2022 16:23, Hans Schultz wrote:
+>>>>> Add an intermediate state for clients behind a locked port to allow for
+>>>>> possible opening of the port for said clients. This feature corresponds
+>>>>> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+>>>>> latter defined by Cisco.
+>>>>>
+>>>>> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+>>>>> ---
+>>>>>     include/uapi/linux/neighbour.h |  1 +
+>>>>>     net/bridge/br_fdb.c            |  6 ++++++
+>>>>>     net/bridge/br_input.c          | 11 ++++++++++-
+>>>>>     net/bridge/br_private.h        |  3 ++-
+>>>>>     4 files changed, 19 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+>>>>> index db05fb55055e..83115a592d58 100644
+>>>>> --- a/include/uapi/linux/neighbour.h
+>>>>> +++ b/include/uapi/linux/neighbour.h
+>>>>> @@ -208,6 +208,7 @@ enum {
+>>>>>     	NFEA_UNSPEC,
+>>>>>     	NFEA_ACTIVITY_NOTIFY,
+>>>>>     	NFEA_DONT_REFRESH,
+>>>>> +	NFEA_LOCKED,
+>>>>>     	__NFEA_MAX
+>>>>>     };
+>>>>
+>>>> Hmm, can you use NDA_FLAGS_EXT instead ?
+>>>> That should simplify things and reduce the nl size.
+>>>>
+>>>
+>>> I am using NDA_FDB_EXT_ATTRS. NFEA_LOCKED is just the
+>>> flag as the other flags section is full wrt the normal flags, but maybe it
+>>> doesn't fit in that section?
+>>>
+>>
+>> Actually wait a second, this is completely wrong use of NDA_FDB_EXT_ATTRS.
+>> That is a nested attribute, so the code below is wrong. More below..
+>>
+>>> I will just note that iproute2 support for parsing nested attributes
+>>> does not work, thus the BR_FDB_NOTIFY section (lines 150-165) are
+>>> obsolete with respect to iproute2 as it is now. I cannot rule out that
+>>> someone has some other tool that can handle this BR_FDB_NOTIFY, but I
+>>> could not make iproute2 as it stands handle nested attributes. And of
+>>> course there is no handling of NDA_FDB_EXT_ATTRS in iproute2 now.
+>>>>>>     #define NFEA_MAX (__NFEA_MAX - 1)
+>>>>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>>>>> index 6ccda68bd473..396dcf3084cf 100644
+>>>>> --- a/net/bridge/br_fdb.c
+>>>>> +++ b/net/bridge/br_fdb.c
+>>>>> @@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>>>     	struct nda_cacheinfo ci;
+>>>>>     	struct nlmsghdr *nlh;
+>>>>>     	struct ndmsg *ndm;
+>>>>> +	u8 ext_flags = 0;
+>>>>>     
+>>>>>     	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+>>>>>     	if (nlh == NULL)
+>>>>> @@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>>>     		ndm->ndm_flags |= NTF_EXT_LEARNED;
+>>>>>     	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+>>>>>     		ndm->ndm_flags |= NTF_STICKY;
+>>>>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
+>>>>> +		ext_flags |= 1 << NFEA_LOCKED;
+>>>>>     
+>>>>>     	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+>>>>>     		goto nla_put_failure;
+>>>>>     	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+>>>>>     		goto nla_put_failure;
+>>>>> +	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
+>>>>> +		goto nla_put_failure;
+>>>>> +
+>>
+>> This is wrong. NDA_FDB_EXT_ATTRS is a nested attribute, you can't use it as a u8.
+>> You need to have this structure:
+>>    [ NDA_FDB_EXT_ATTRS ]
+>>     ` [ NFEA_LOCKED ]
+>>
+>> But that's why I asked if you could use the NDA_FLAGS_EXT attribute. You can see
+>> the logic from the neigh code.
 > 
-> Experimenting with new interpreter configurations can lead to annoying
-> failures, when the system is left unable to load ELF binaries power
-> cycling is the only way to get it back operational.
+> Ahh yes, NDA_FLAGS_EXT was not there in the 5.15.x kernel I have
+> originally being making the patches in.
 > 
-> This patch tries to mitigate such conditions by adding an opt-in
-> two-steps registration.
+> I hope that the handling of nested attributes has been fixed in
+> iproute2. ;-)
 > 
-> A new optional field is added to the configuration string, it's an
-> expiration interval for the newly added interpreter. If the user is
-> not able to confirm in time, possibly because the system is broken,
-> the new interpreter is automatically disabled.
 
-Hi!
+It hasn't been broken, I'm guessing you're having issues with the nested bit being set.
+Check NLA_F_NESTED and NLA_TYPE_MASK.
 
-As this both changes the userspace API and adds timers, I'd like the
-change to be really well justified. Can you explain the conditions you
-get into that can't be escaped by just disabling the bad binfmt_misc
-entry?
+>>
+>> Also note that you need to account for the new attribute's size in fdb_nlmsg_size().
+>>
+>>
+>>>>>     	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+>>>>>     	ci.ndm_confirmed = 0;
+>>>>>     	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+>>>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>>>>> index e0c13fcc50ed..897908484b18 100644
+>>>>> --- a/net/bridge/br_input.c
+>>>>> +++ b/net/bridge/br_input.c
+>>>>> @@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>     	struct net_bridge_mcast *brmctx;
+>>>>>     	struct net_bridge_vlan *vlan;
+>>>>>     	struct net_bridge *br;
+>>>>> +	unsigned long flags = 0;
+>>>>
+>>>> Please move this below...
+>>>>
+>>>>>     	u16 vid = 0;
+>>>>>     	u8 state;
+>>>>>     
+>>>>> @@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>     			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+>>>>>     
+>>>>>     		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+>>>>> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+>>>>> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
+>>>>> +			if (!fdb_src) {
+>>>>
+>>>> ... here where it's only used.
+>>>>
+>>>
+>>> Forgot that one. Shall do!
+>>>
+>>>>> +				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
+>>>>> +				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
+>>>>> +			}
+>>>>>     			goto drop;
+>>>>> +		} else {
+>>>>> +			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
+>>>>> +				goto drop;
+>>>>> +		}
+>>>>>     	}
+>>>>>     
+>>>>>     	nbp_switchdev_frame_mark(p, skb);
+>>>>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>>>>> index 48bc61ebc211..f5a0b68c4857 100644
+>>>>> --- a/net/bridge/br_private.h
+>>>>> +++ b/net/bridge/br_private.h
+>>>>> @@ -248,7 +248,8 @@ enum {
+>>>>>     	BR_FDB_ADDED_BY_EXT_LEARN,
+>>>>>     	BR_FDB_OFFLOADED,
+>>>>>     	BR_FDB_NOTIFY,
+>>>>> -	BR_FDB_NOTIFY_INACTIVE
+>>>>> +	BR_FDB_NOTIFY_INACTIVE,
+>>>>> +	BR_FDB_ENTRY_LOCKED,
+>>>>>     };
+>>>>>     
+>>>>>     struct net_bridge_fdb_key {
 
--Kees
-
--- 
-Kees Cook
