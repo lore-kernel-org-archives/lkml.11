@@ -2,153 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ADDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6211C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243608AbiCJOYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:24:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        id S243627AbiCJOYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:24:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245203AbiCJOUw (ORCPT
+        with ESMTP id S243725AbiCJOSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:20:52 -0500
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9116A10D6;
-        Thu, 10 Mar 2022 06:19:51 -0800 (PST)
-Received: by mail-oo1-f54.google.com with SMTP id l24-20020a4a8558000000b00320d5a1f938so6859142ooh.8;
-        Thu, 10 Mar 2022 06:19:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3W/Ki5qpGDEFWKMk7J7E8+Sx1qx4QiEdndntXWsLJJo=;
-        b=Ip0WAWLy+dn1sMctdsuJo5pDUkIl9qdZgYX38nAjIUWhur9Y1uGlNtmBSUlY9dbUGM
-         yb10n122GLmhFpCXq+hWNPe0TCtX8TNcmhkyD2F5lzBWTwtoaLWdSpH76nsnMY2paHvF
-         pHbPmpHhlT2QiqEbO4+eX2/5/N27A/hAZyj/C35dRxvxw2rP9Bq2PV3i3lP42WVN72uc
-         YJlYaBi3U8bgBvI0KeTNwh479d+bUOgz08EJarCfwLd3Wutn3L4hbVlFcTKQT0c9QQ74
-         rK7sREFgO8BeRrEzgt+hJ50VdX1VK7z/OpptoYBX9SI9bJ+9iooikTrb8hRMt+AS7w/h
-         TT9Q==
-X-Gm-Message-State: AOAM531xlm+JxmJc0dPjggMGm0X/hMYtlMzpEwF2qHfYn1kLj2P+rKRe
-        7nRkd/+11zJfOqp3QlEc5eIQngxFJg==
-X-Google-Smtp-Source: ABdhPJzLQb+1MVtYdE1o45AtniXUkVnyGAHMsHASWKW9w52BpjEdb/3jkpPrqvjFst6yafyQZQu4tw==
-X-Received: by 2002:a05:6870:796:b0:da:3d6a:101d with SMTP id en22-20020a056870079600b000da3d6a101dmr2781905oab.20.1646921990718;
-        Thu, 10 Mar 2022 06:19:50 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 68-20020a9d0a4a000000b005ad3287033csm2451415otg.44.2022.03.10.06.19.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:19:50 -0800 (PST)
-Received: (nullmailer pid 1611493 invoked by uid 1000);
-        Thu, 10 Mar 2022 14:19:49 -0000
-Date:   Thu, 10 Mar 2022 08:19:49 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Laszlo Ersek <lersek@redhat.com>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: arm: Convert QEMU fw-cfg to DT schema
-Message-ID: <YioJBWPxuE+T9g9g@robh.at.kernel.org>
-References: <20220310013552.549590-1-robh@kernel.org>
- <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
+        Thu, 10 Mar 2022 09:18:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0341164D28;
+        Thu, 10 Mar 2022 06:14:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71AAE61B36;
+        Thu, 10 Mar 2022 14:14:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F746C340E8;
+        Thu, 10 Mar 2022 14:14:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921655;
+        bh=B8Kqgr1X+xDFQnu3Mxsih+Dcynf9OwVEriW613XzwTI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TGPao9fSUwUorJ3+XYRpU+iNpnRSJGM2Ck1+k41TrWce+Dt/NNO8wvv7taHYiEwWw
+         RWD3FPQsReosXVR5hYRgO+PG3KamFDKLBTwexaSH3ICAszxI4eNKB8TYxe8kCk2QdU
+         fk+bmoGhjiJFRxWOgIFkQ39TNkzpSPx4Szu76Ub0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.9 12/38] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+Date:   Thu, 10 Mar 2022 15:13:25 +0100
+Message-Id: <20220310140808.495542009@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
+References: <20220310140808.136149678@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9651bc36-3da0-4e2b-1d29-bb4b3ce1389d@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:05:04AM +0100, Laszlo Ersek wrote:
-> On 03/10/22 02:35, Rob Herring wrote:
-> > Convert the QEMU fw-cfg binding to DT schema format. As this binding is
-> > also used on Risc-V now, drop any architecture references and move to a
-> > common location. The fw-cfg interface has also gained some DMA support
-> > which is coherent, so add the missing 'dma-coherent'.
-> > 
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../devicetree/bindings/arm/fw-cfg.txt        | 38 -------------
-> >  .../bindings/firmware/qemu,fw-cfg-mmio.yaml   | 54 +++++++++++++++++++
-> >  2 files changed, 54 insertions(+), 38 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/arm/fw-cfg.txt
-> >  create mode 100644 Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/fw-cfg.txt b/Documentation/devicetree/bindings/arm/fw-cfg.txt
-> > deleted file mode 100644
-> > index fd54e1db2156..000000000000
-> > --- a/Documentation/devicetree/bindings/arm/fw-cfg.txt
-> > +++ /dev/null
-> > @@ -1,38 +0,0 @@
-> > -* QEMU Firmware Configuration bindings for ARM
-> > -
-> > -QEMU's arm-softmmu and aarch64-softmmu emulation / virtualization targets
-> > -provide the following Firmware Configuration interface on the "virt" machine
-> > -type:
-> > -
-> > -- A write-only, 16-bit wide selector (or control) register,
-> > -- a read-write, 64-bit wide data register.
-> > -
-> > -QEMU exposes the control and data register to ARM guests as memory mapped
-> > -registers; their location is communicated to the guest's UEFI firmware in the
-> > -DTB that QEMU places at the bottom of the guest's DRAM.
-> > -
-> > -The authoritative guest-side hardware interface documentation to the fw_cfg
-> > -device can be found in "docs/specs/fw_cfg.txt" in the QEMU source tree.
-> > -
-> > -
-> > -Required properties:
-> > -
-> > -- compatible: "qemu,fw-cfg-mmio".
-> > -
-> > -- reg: the MMIO region used by the device.
-> > -  * Bytes 0x0 to 0x7 cover the data register.
-> > -  * Bytes 0x8 to 0x9 cover the selector register.
-> > -  * Further registers may be appended to the region in case of future interface
-> > -    revisions / feature bits.
-> > -
-> > -Example:
-> > -
-> > -/ {
-> > -	#size-cells = <0x2>;
-> > -	#address-cells = <0x2>;
-> > -
-> > -	fw-cfg@9020000 {
-> > -		compatible = "qemu,fw-cfg-mmio";
-> > -		reg = <0x0 0x9020000 0x0 0xa>;
-> > -	};
-> > -};
-> > diff --git a/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> > new file mode 100644
-> > index 000000000000..3aac9448e7f1
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
-> > @@ -0,0 +1,54 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/firmware/qemu,fw-cfg-mmio.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: QEMU Firmware Configuration bindings
-> > +
-> > +maintainers:
-> > +  - Laszlo Ersek <lersek@redhat.com>
-> 
-> Ugh :) I guess this is based on my authorship of historical commit
-> 53275a61bc7a ("devicetree: document ARM bindings for QEMU's Firmware
-> Config interface", 2015-01-13), and prehaps my R-b on commit
-> 92aed5d6ba90 ("devicetree: update documentation for fw_cfg ARM
-> bindings", 2016-02-09).
-> 
-> However -- I totally can't maintain this file. (I mean I've probably not
-> done anything related to it in the past seven years, so I guess it's
-> time to admit that fact!)
-> 
-> Rob, would you please consider taking it over?
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-Yeah, no problem.
+commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
 
-> With my name+email replaced with yours:
-> 
-> Acked-by: Laszlo Ersek <lersek@redhat.com>
-> 
-> Thank you!
-> Laszlo
+With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
+to Spectre v2 BHB-based attacks.
+
+When both are enabled, print a warning message and report it in the
+'spectre_v2' sysfs vulnerabilities file.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 4.19]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+[bwh: Backported to 4.9: adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
+ include/linux/bpf.h        |   11 +++++++++++
+ kernel/sysctl.c            |    8 ++++++++
+ 3 files changed, 48 insertions(+), 6 deletions(-)
+
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -30,6 +30,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/intel-family.h>
+ #include <asm/e820.h>
++#include <linux/bpf.h>
+ 
+ #include "cpu.h"
+ 
+@@ -606,6 +607,16 @@ static inline const char *spectre_v2_mod
+ static inline const char *spectre_v2_module_string(void) { return ""; }
+ #endif
+ 
++#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
++
++#ifdef CONFIG_BPF_SYSCALL
++void unpriv_ebpf_notify(int new_state)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++}
++#endif
++
+ static inline bool match_option(const char *arg, int arglen, const char *opt)
+ {
+ 	int len = strlen(opt);
+@@ -949,6 +960,9 @@ static void __init spectre_v2_select_mit
+ 		break;
+ 	}
+ 
++	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+@@ -1686,6 +1700,20 @@ static char *ibpb_state(void)
+ 	return "";
+ }
+ 
++static ssize_t spectre_v2_show_state(char *buf)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
++	return sprintf(buf, "%s%s%s%s%s%s\n",
++		       spectre_v2_strings[spectre_v2_enabled],
++		       ibpb_state(),
++		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
++		       stibp_state(),
++		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
++		       spectre_v2_module_string());
++}
++
+ static ssize_t srbds_show_state(char *buf)
+ {
+ 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
+@@ -1708,12 +1736,7 @@ static ssize_t cpu_show_common(struct de
+ 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
+ 
+ 	case X86_BUG_SPECTRE_V2:
+-		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
+-			       ibpb_state(),
+-			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
+-			       stibp_state(),
+-			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
+-			       spectre_v2_module_string());
++		return spectre_v2_show_state(buf);
+ 
+ 	case X86_BUG_SPEC_STORE_BYPASS:
+ 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -295,6 +295,11 @@ static inline void bpf_long_memcpy(void
+ 
+ /* verify correctness of eBPF program */
+ int bpf_check(struct bpf_prog **fp, union bpf_attr *attr);
++
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return !sysctl_unprivileged_bpf_disabled;
++}
+ #else
+ static inline void bpf_register_prog_type(struct bpf_prog_type_list *tl)
+ {
+@@ -322,6 +327,12 @@ static inline struct bpf_prog *bpf_prog_
+ {
+ 	return ERR_PTR(-EOPNOTSUPP);
+ }
++
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return false;
++}
++
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
+ /* verifier prototypes for helper functions called from eBPF programs */
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -222,6 +222,11 @@ static int sysrq_sysctl_handler(struct c
+ #endif
+ 
+ #ifdef CONFIG_BPF_SYSCALL
++
++void __weak unpriv_ebpf_notify(int new_state)
++{
++}
++
+ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+                              void *buffer, size_t *lenp, loff_t *ppos)
+ {
+@@ -239,6 +244,9 @@ static int bpf_unpriv_handler(struct ctl
+ 			return -EPERM;
+ 		*(int *)table->data = unpriv_enable;
+ 	}
++
++	unpriv_ebpf_notify(unpriv_enable);
++
+ 	return ret;
+ }
+ #endif
+
+
