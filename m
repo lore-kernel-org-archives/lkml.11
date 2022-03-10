@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B877C4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF44C4707F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244115AbiCJOcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
+        id S244166AbiCJOdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243827AbiCJO1d (ORCPT
+        with ESMTP id S243799AbiCJO10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:27:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4769F6F3;
-        Thu, 10 Mar 2022 06:22:49 -0800 (PST)
+        Thu, 10 Mar 2022 09:27:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488EFCFBB2;
+        Thu, 10 Mar 2022 06:22:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81CA4B825A7;
-        Thu, 10 Mar 2022 14:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC016C340E8;
-        Thu, 10 Mar 2022 14:22:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A523261CFB;
+        Thu, 10 Mar 2022 14:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1C38C340EB;
+        Thu, 10 Mar 2022 14:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922167;
-        bh=wBLb1JgeLGCmIlJRSZ+nBqsfFArPm7x3PghLmULm8JI=;
+        s=korg; t=1646922156;
+        bh=oVZchNMBYQehnyKeJxmujUSCkykKcKMWao8G0T/Rvsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GI9A7ayUvlWIdqVEFrJ6o8S6J/CGbrgoCjle6Wl8UQhEBijYaeK/Z0420lW4EIpTH
-         edQMw11tkOBVWD2qggLcwR1yAsSexzi1GT7USwzbZnXWY+g5PceXq67FzzFOfKB/4B
-         aiJbjZ0mCqtDNdMCjJChsnPcxqT16TTVBoRG4lio=
+        b=th9bkOcHKgeFdtuXSHa4K4ZifZiBJK2vB+hDGiuNGbUitP2zhaqxlE6TthmK82eWX
+         iUo5igi44zQOhkUTiAAU3rS0Q6rxgnT0++dqqh5sDQ6LM3Ks1BNruGlvTpjsNzE2Qe
+         iVs5LZxJWJyD2Tsw8QBXcClq0O6qZJX33fXS2iyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.19 08/33] x86/speculation: Update link to AMD speculation whitepaper
-Date:   Thu, 10 Mar 2022 15:18:35 +0100
-Message-Id: <20220310140807.993669624@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.19 24/33] xen/grant-table: add gnttab_try_end_foreign_access()
+Date:   Thu, 10 Mar 2022 15:18:51 +0100
+Message-Id: <20220310140808.454684169@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -48,41 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit e9b6013a7ce31535b04b02ba99babefe8a8599fa upstream.
+Commit 6b1775f26a2da2b05a6dc8ec2b5d14e9a4701a1a upstream.
 
-Update the link to the "Software Techniques for Managing Speculation
-on AMD Processors" whitepaper.
+Add a new grant table function gnttab_try_end_foreign_access(), which
+will remove and free a grant if it is not in use.
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Its main use case is to either free a grant if it is no longer in use,
+or to take some other action if it is still in use. This other action
+can be an error exit, or (e.g. in the case of blkfront persistent grant
+feature) some special handling.
+
+This is CVE-2022-23036, CVE-2022-23038 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/spectre.rst |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/xen/grant-table.c |   14 ++++++++++++--
+ include/xen/grant_table.h |   12 ++++++++++++
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -60,8 +60,8 @@ privileged data touched during the specu
- Spectre variant 1 attacks take advantage of speculative execution of
- conditional branches, while Spectre variant 2 attacks use speculative
- execution of indirect branches to leak privileged memory.
--See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[7] <spec_ref7>`
--:ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
-+See :ref:`[1] <spec_ref1>` :ref:`[5] <spec_ref5>` :ref:`[6] <spec_ref6>`
-+:ref:`[7] <spec_ref7>` :ref:`[10] <spec_ref10>` :ref:`[11] <spec_ref11>`.
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -436,11 +436,21 @@ static void gnttab_add_deferred(grant_re
+ 	       what, ref, page ? page_to_pfn(page) : -1);
+ }
  
- Spectre variant 1 (Bounds Check Bypass)
- ---------------------------------------
-@@ -746,7 +746,7 @@ AMD white papers:
++int gnttab_try_end_foreign_access(grant_ref_t ref)
++{
++	int ret = _gnttab_end_foreign_access_ref(ref, 0);
++
++	if (ret)
++		put_free_entry(ref);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gnttab_try_end_foreign_access);
++
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page)
+ {
+-	if (gnttab_end_foreign_access_ref(ref, readonly)) {
+-		put_free_entry(ref);
++	if (gnttab_try_end_foreign_access(ref)) {
+ 		if (page != 0)
+ 			put_page(virt_to_page(page));
+ 	} else
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -97,10 +97,22 @@ int gnttab_end_foreign_access_ref(grant_
+  * access has been ended, free the given page too.  Access will be ended
+  * immediately iff the grant entry is not in use, otherwise it will happen
+  * some time later.  page may be 0, in which case no freeing will occur.
++ * Note that the granted page might still be accessed (read or write) by the
++ * other side after gnttab_end_foreign_access() returns, so even if page was
++ * specified as 0 it is not allowed to just reuse the page for other
++ * purposes immediately.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
  
- .. _spec_ref6:
++/*
++ * End access through the given grant reference, iff the grant entry is
++ * no longer in use.  In case of success ending foreign access, the
++ * grant reference is deallocated.
++ * Return 1 if the grant entry was freed, 0 if it is still in use.
++ */
++int gnttab_try_end_foreign_access(grant_ref_t ref);
++
+ int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn);
  
--[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/90343-B_SoftwareTechniquesforManagingSpeculation_WP_7-18Update_FNL.pdf>`_.
-+[6] `Software techniques for managing speculation on AMD processors <https://developer.amd.com/wp-content/resources/Managing-Speculation-on-AMD-Processors.pdf>`_.
- 
- ARM white papers:
- 
+ unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
 
 
