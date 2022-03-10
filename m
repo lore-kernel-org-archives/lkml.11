@@ -2,101 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2164C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 07:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 07:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239393AbiCJHX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 02:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        id S240060AbiCJHYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 02:24:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbiCJHX4 (ORCPT
+        with ESMTP id S240033AbiCJHX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 02:23:56 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1AB4F9D0;
-        Wed,  9 Mar 2022 23:22:55 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id l20so7814932lfg.12;
-        Wed, 09 Mar 2022 23:22:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uRNunbfVJZj3V0khFzxC/exb9GUQby76Xdm8mxOwtM0=;
-        b=DPAc3c3nnRtlOHHtjP2fyr/s7e94DFESjfTzk9QZ6Q7yiwbI/nqyNz4TB+C2UKsDiq
-         /73o4A3M9ECUpbR1iBVfXIGYxdgiZF/ZYjHMnhi/YTiMElZ9canqG5ZkxZSsUYQb1MqF
-         rQjEHFnhdrHbfyuee3+Bmx67MhVMUAMJTwEWGyzKRr4tjzqrJBIG3G/0+V9CCEkZQOrJ
-         qmfAVhgBb43mGrPsiigZsBDUc7xxaWbKR3lrVWMst3LNeUHtwaHUMAyN1rrNA7ajwBwq
-         dBCWmQgupSWWsnaPOyrlmIXiO6w1GFtNUR+OBwmObY5jOgPf7MDTaO9UIfaR5sIO8guJ
-         I0pQ==
+        Thu, 10 Mar 2022 02:23:59 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3419B5A0BF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 23:22:59 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 055063F499
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:22:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646896978;
+        bh=vvJ1s6MAam4XpCarGjHQuEzwyDsZZuI/+V4fbf0u5IY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=n1e+nhxU7guf7+QG4BBWFaXb7KqAZtjnpdhBLtjL11Z3mFiXBRUPwmC1ES+3Gl6Hw
+         KmIkoitFlHHpjcGTmdZ+wz+rNNgm+yEzcNVfWs2dpXKb6AA8Oi2m1ffjgFUonC9BHP
+         7kQYidcKpX38TM1t7a+SLRETu1vrHuF62J0erpt0pPsvBJz6+jY9jxuTrYaIrZbgZS
+         uggEBsuRltu9emG93wbdmbFuuCohWkEwVl+RRn+lOgOfi1+L5itmdvDYss4UCABOUn
+         YY2QEIY5efs7YKIl3oZGPwIoqoz9TSyUhHOhflXrmbspC0u6R0BZ4tgK3IdByBq68e
+         bjWr6BwQS3TyA==
+Received: by mail-ej1-f71.google.com with SMTP id hq34-20020a1709073f2200b006d677c94909so2632588ejc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 23:22:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uRNunbfVJZj3V0khFzxC/exb9GUQby76Xdm8mxOwtM0=;
-        b=nuLzegrWJjU6c1aR1xaFBasDHbZBPd96qfj9nFejuXafOq80fEEGhxsGHt1DnlaKlG
-         Hv2T0uF61lsFhW3MG4mVNo0NbHYgyn74w68JZG93PnYgEhY8Vgk3guqO/9z6QNi0utGP
-         5qoC0++JFEfBUGF6QQtqyuTgJq5RijpRi92nBFRQDyGN/U84rCWzLvb9g7HZya73kTUk
-         StiN1+GOxLQAV7fZRIhlpehtt3Uh+AUU/zfgML2+XXBvOv+l8JgWms2KpZ5g5EE+iya7
-         1dP82TGsJE5r+tiAcXbonfbFTtI7ybVIMhelE6bkTatkNXI/oBCoWPYEtC9IbQkbHpa1
-         xeRQ==
-X-Gm-Message-State: AOAM5321MsoHCSDpLnHD8tslMRx9j3KbnzUnt49SEAistcQ5fnrCHSEz
-        2fOSHxVZn4g9rRkT2OvN1ec=
-X-Google-Smtp-Source: ABdhPJx1HRJ6odDkpoCnKTs3Zu46b1u9QFUfxqdZZRDSKc8J875snzWrgbaWzfBjTjwbZjrEq+KrkA==
-X-Received: by 2002:a05:6512:10c8:b0:448:3fdc:6407 with SMTP id k8-20020a05651210c800b004483fdc6407mr2112352lfg.360.1646896974120;
-        Wed, 09 Mar 2022 23:22:54 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id y23-20020a2e95d7000000b00247e4e386aasm894075ljh.121.2022.03.09.23.22.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 23:22:53 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
-Date:   Thu, 10 Mar 2022 08:22:39 +0100
-Message-Id: <20220310072239.4489-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=vvJ1s6MAam4XpCarGjHQuEzwyDsZZuI/+V4fbf0u5IY=;
+        b=3ghoqTSidJYUCRuauElzqS+t9xzgpjYhF27PYyrzXDsjCu3yYx2gxmwaNYSGic4cBg
+         WlsHiSbTqwXtaNc8L45tEQYYQEA16gu9QrWSXePi/t2B1QPI5YwlUeMMHU66zyAdMP/d
+         Lx2ICU++lkIbECDWoFQ8JOp+Krao8ynvmiMGJgo1mbVlxkzdDy2tVy0FsSLWfUl6MKLr
+         UsKg2hhIpqHes6YsLFAvZgxCF0LUZ8OJx5qt58jBZgnkPTdejcH8ID/SprFaLJxnFMLT
+         PJwBiSvngmf1pKUACPlT3vHZtbFra9M2lYVaLTBUdDIbqfcsA4txJ+rto5Qvpbm+VKLu
+         Jevg==
+X-Gm-Message-State: AOAM533QLxy/BoUQ5gNWX61RBPUwe052nAWYWh27MmvzEzYh53J1y1vr
+        E4Zw5tC/IL/nTobqantJgDKjW34KqrmWbbWwBZoeiugAtBrn/TNRJkpIvJbiYl8AZIwm24iqlDN
+        noI71poV+RJsZWq38zbZg1+gBuiu+jSVoHHVGzIZ3sg==
+X-Received: by 2002:a05:6402:150f:b0:416:175d:3f5d with SMTP id f15-20020a056402150f00b00416175d3f5dmr2999946edw.184.1646896977394;
+        Wed, 09 Mar 2022 23:22:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyEH8VFBsYcKtizhDQ0TramGL1ojYlnymp0dVdUmk7PREVnAiIV2i+N3PUIjHR3Kn6HpURR4w==
+X-Received: by 2002:a05:6402:150f:b0:416:175d:3f5d with SMTP id f15-20020a056402150f00b00416175d3f5dmr2999935edw.184.1646896977179;
+        Wed, 09 Mar 2022 23:22:57 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id g22-20020a170906395600b006cec40b9cf0sm1484883eje.92.2022.03.09.23.22.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 23:22:56 -0800 (PST)
+Message-ID: <d6886c55-6f4a-916f-20fd-9f6465a8a0cd@canonical.com>
+Date:   Thu, 10 Mar 2022 08:22:55 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] dt-bindings: i2c: at91: Add SAMA7G5 compatible
+ strings list
+Content-Language: en-US
+To:     Sergiu Moga <sergiu.moga@microchip.com>, robh+dt@kernel.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
+References: <20220309120714.51393-1-sergiu.moga@microchip.com>
+ <20220309120714.51393-4-sergiu.moga@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220309120714.51393-4-sergiu.moga@microchip.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On 09/03/2022 13:07, Sergiu Moga wrote:
+> Add compatible strings list for SAMA7G5.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> ---
+>  .../bindings/i2c/atmel,at91sam-i2c.yaml       | 38 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 14 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml b/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
+> index d4aadbbd1a11..661a679b98cf 100644
+> --- a/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/atmel,at91sam-i2c.yaml
+> @@ -16,10 +16,15 @@ allOf:
+>        properties:
+>          compatible:
+>            contains:
+> -            enum:
+> -              - atmel,sama5d4-i2c
+> -              - atmel,sama5d2-i2c
+> -              - microchip,sam9x60-i2c
+> +            oneOf:
+> +              - items:
+> +                  - enum:
+> +                      - atmel,sama5d4-i2c
+> +                      - atmel,sama5d2-i2c
+> +                      - microchip,sam9x60-i2c
+> +              - items:
+> +                  - const: microchip,sama7g5-i2c
+> +                  - const: microchip,sam9x60-i2c
 
-Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
-documentation change regarding "depends" usage. Adjust Kconfig entry to
-match current guidelines. Make this symbol available for relevant
-architectures only.
+This looks not needed, because it contains microchip,sam9x60-i2c which
+is mentioned earlier.
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
-Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e952ec5c7a7c..99313e16c2be 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on COMMON_CLK
-+	depends on MIPS || ARM || ARM64 || COMPILE_TEST
-+	default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
--- 
-2.34.1
+>      then:
+>        properties:
+>          i2c-sda-hold-time-ns:
+> @@ -29,16 +34,21 @@ allOf:
+>  
 
+Best regards,
+Krzysztof
