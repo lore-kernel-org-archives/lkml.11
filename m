@@ -2,134 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16395C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC4FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244385AbiCJRQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
+        id S244397AbiCJRRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:17:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbiCJRQB (ORCPT
+        with ESMTP id S244244AbiCJRRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:16:01 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530A6184602
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:15:00 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id v4so5875051pjh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:15:00 -0800 (PST)
+        Thu, 10 Mar 2022 12:17:05 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F3186213
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:16:03 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id w7so7247376ioj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:16:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TPBQdtbwOmlVYwAm75BFwhcIX+dQ//6h0EnbuKsG+sU=;
-        b=Ur6lep8Ry6UQr79uHPM2mS0Y8zxWlv9paJGLd5Pz5xCuu3h3wbaj0DUdtxwLG01M3+
-         p5kGGkTH9GfXo11W9gNqUrUcTRtZmYbKGFrvyjaDIxCwgS0sGg4ZwS2QDd9xkcA+cK3k
-         2rXFZZHPmQy/rZ2fc3C/1A/v+f7kwVm67+8236LNjp1S79ig5HAdAfSsyZ/ZqO4URUUZ
-         2kg2/FZitlv+ObTsRkfpECA7d9/habQnCKgubwJIuHNNuHT8jxXNgrl53qzpSN3fncBu
-         4LBkRRdr7uYEs0wsz/X4C1H2NY9RrlEVixp5tmE0IVNImhcU7iqzxp6jhDRrlsDjSSbJ
-         vc8Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=im9f7by7aGXOO+TZZQNnb2KIlOuQvzBKwx8HD64EYiA=;
+        b=Eib/uCZyn0+INuEMXw5mnfIb0ym7lVaTFBob1AYHWH1yDsWLS+oO37W6XBwro4GEaM
+         G+mgaQ/wxOrrJuamrtWFxVZKUr5iIXfalnEMOILIOmwW1zxkHp2VZARoRmVVxZUbJ/1f
+         OXk3aG+sDTRLBtd5FXPmgr8EntaLdX1n++g9bLWjrYtuMggosleaJw8YZsFQOKR8ZDcz
+         5kXoDBTb/U7lPpNNP7CAZfO+Fr5NSFHwzd5kKVJ4y6MCjAsrdtJTzuEc2rF252DfPWJK
+         7oYlKN56iyw1mGBFXC8whWtcluDpanz2W3zq3SuUYcoq0+5UJxw8FSgrHSfvwgAEX52Z
+         hYdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TPBQdtbwOmlVYwAm75BFwhcIX+dQ//6h0EnbuKsG+sU=;
-        b=G7Fm3Ts/1gnGsl/e7zNlnIirkeBSqlG8+9JFqJCKbg9LUclWr6dQDfAiMaD9tVqbyS
-         0B+pXqKcJjQnNE56v+aSSVxBQCRY+tywmJVVt7/0W3QSn7qtKJ8r5i8bFTUF8zlYvGMo
-         FyZik/BB4sx7kCWFh8wxbKXjG0D4X6xxFW0RYKWjTMKyT12bi3vbT0/q8n9piWD70csQ
-         mwbX/2aVoGjzc9nNrYv2eE1l0GCLBZ9Qth2avoIdiSTafeOC6SYVYW12eyIoOUadoDVJ
-         5iuff/crSGGtDdZaMENzZRT3GvppEJM0tiOya7nh5y0IzWnQ4XWXkXGzEZuXb6+daqJr
-         ybXw==
-X-Gm-Message-State: AOAM531HbiKGcPSEK0Ra8XnLnw0kl6XnVL/IawxfQcIxb35IcOd4UkVr
-        t2Z4pt+nUml1oKSgjMhJoNOldA==
-X-Google-Smtp-Source: ABdhPJybOygWPx/LvPXMP9Xv/cIRttLOmJATcGvThhrinrYKNGRgYMqwH0Y07fNfO7GsJowtYBJIPA==
-X-Received: by 2002:a17:902:d888:b0:151:6fe8:6e68 with SMTP id b8-20020a170902d88800b001516fe86e68mr5897412plz.158.1646932499643;
-        Thu, 10 Mar 2022 09:14:59 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id e18-20020a63d952000000b00372a1295210sm5907148pgj.51.2022.03.10.09.14.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 09:14:58 -0800 (PST)
-Date:   Thu, 10 Mar 2022 17:14:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Zhenzhong Duan <zhenzhong.duan@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org
-Subject: Re: [PATCH] KVM: x86: Remove redundant vm_entry_controls_clearbit()
- call
-Message-ID: <YioyDu+9VoGmTWlD@google.com>
-References: <20220310111354.504565-1-zhenzhong.duan@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=im9f7by7aGXOO+TZZQNnb2KIlOuQvzBKwx8HD64EYiA=;
+        b=Uq4xpdUurzG6GatYpupLdQGl7l0GCwxL94nMBM30ci9rrGJMgkP3L5mWYylQVWS7jH
+         j3GkUKQMznIhIkMDkuH3HN1bbNknVXfHbsRQj2m8YfXJEQgxbF9fbRTuhwvKLSWrDpX6
+         TrVJ5Y7WXql05h56lVqVh5upXEmQNcOKRDfNVdyCVnKmee4ZmpIY+TfYiccp6Eb5bKEb
+         mlTgt6/c2QAfMm9UufzLL0Imrde4PI0FaRkhayX9iqD7jGE1XNFqjFvoNrsHSTIkSstP
+         FacKCHbKVas9ei0xidYB8VKy5q67aw3d5/+dpamMArnSgvGLsnyUXBD++UwuECQb9KzQ
+         KFxA==
+X-Gm-Message-State: AOAM53215oYuICb6Z/8A1z+hko3JbTI50NhoNpoETnay4/Umk5VkB5m+
+        TT/QF1qTQ/uWAwscGy6FqTdR24X9eqx0dIhWrTfGkQ==
+X-Google-Smtp-Source: ABdhPJyVN/Dg8yK30V4HA9/fOQMTChhT+M2KPf05rK/HCxdRlxCMHJNoc+M5jEXqmzruXZSNcn4HWvqUI1h2JEQEPd0=
+X-Received: by 2002:a05:6638:f95:b0:314:58f9:5896 with SMTP id
+ h21-20020a0566380f9500b0031458f95896mr4926817jal.228.1646932562537; Thu, 10
+ Mar 2022 09:16:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310111354.504565-1-zhenzhong.duan@intel.com>
+References: <20211005161833.1522737-1-lee.jones@linaro.org>
+ <Yicwb+Ceiu8JjVIS@google.com> <202203100851.C00D9AB73@keescook>
+In-Reply-To: <202203100851.C00D9AB73@keescook>
+From:   Adam Langley <agl@google.com>
+Date:   Thu, 10 Mar 2022 09:15:45 -0800
+Message-ID: <CAL9PXLwnBE3jMucyTJ6Yo3nM7MiYWFZokrwXvAGer=0cjsuuiw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] sign-file: Do not attempt to use the ENGINE_* API
+ if it's not available
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Biggers <ebiggers@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022, Zhenzhong Duan wrote:
-> When emulating exit from long mode, EFER_LMA is cleared which lead to
-> efer writing emulation, which will unset VM_ENTRY_IA32E_MODE control
-> bit as requested by SDM. So no need to unset VM_ENTRY_IA32E_MODE again
-> in exit_lmode() explicitly.
-> 
-> In fact benefited from shadow controls mechanism, this change doesn't
-> eliminate vmread or vmwrite.
-> 
-> Opportunistically remove unnecessory assignment to uret MSR data field
-> as vmx_setup_uret_msrs() will do the same thing.
-
-This needs to be a separate patch, it's much more subtle than "xyz will do the
-same thing".  update_transition_efer() doesn't unconditionally set uret->data,
-which on the surface makes this look suspect, but it's safe because uret->data
-is consumed if and only if uret->load_into_hardware is true, and it's (a) set to
-false if uret->data isn't updated and (b) uret->data is guaranteed to be updated
-before it's set to true.
-
-> In case EFER isn't supported by hardware, long mode isn't supported,
-> so this will no break.
+On Thu, Mar 10, 2022 at 8:52 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> 
-> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index b730d799c26e..b04588dc7faa 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -2878,14 +2878,11 @@ int vmx_set_efer(struct kvm_vcpu *vcpu, u64 efer)
->  		return 0;
->  
->  	vcpu->arch.efer = efer;
-> -	if (efer & EFER_LMA) {
-> +	if (efer & EFER_LMA)
->  		vm_entry_controls_setbit(to_vmx(vcpu), VM_ENTRY_IA32E_MODE);
-> -		msr->data = efer;
-> -	} else {
-> +	else
->  		vm_entry_controls_clearbit(to_vmx(vcpu), VM_ENTRY_IA32E_MODE);
->  
-> -		msr->data = efer & ~EFER_LME;
-> -	}
+> On Tue, Mar 08, 2022 at 10:31:11AM +0000, Lee Jones wrote:
+> > OpenSSL's ENGINE API is deprecated in OpenSSL v3.0.
+> >
+> > Use OPENSSL_NO_ENGINE to ensure the ENGINE API is only used if it is
+> > present.  This will safeguard against compile errors when using SSL
+> > implementations which lack support for this deprecated API.
+>
+> On Fedora rawhide, I'm still seeing a bunch of warnings:
+>
+> scripts/sign-file.c: In function 'display_openssl_errors':
+> scripts/sign-file.c:89:9: warning: 'ERR_get_error_line' is deprecated: Since OpenSSL 3.0 [-Wdeprecat
+> ed-declarations]
 
-While you're doing opportunistic cleanups, drop the local "msr" and use "vmx"
-directly instead of redoing to_vmx(), i.e. this
+The `display_openssl_errors` function should probably just call
+ERR_print_errors_fp:
+https://www.openssl.org/docs/man1.0.2/man3/ERR_print_errors_fp.html
 
-int vmx_set_efer(struct kvm_vcpu *vcpu, u64 efer)
-{
-	struct vcpu_vmx *vmx = to_vmx(vcpu);
+The `drain_openssl_errors` function should probably just call
+ERR_clear_error:
+https://www.openssl.org/docs/man3.0/man3/ERR_clear_error.html
 
-	/* Nothing to do if hardware doesn't support EFER. */
-	if (!vmx_find_uret_msr(vmx, MSR_EFER))
-		return 0;
 
-	vcpu->arch.efer = efer;
-	if (efer & EFER_LMA)
-		vm_entry_controls_setbit(vmx, VM_ENTRY_IA32E_MODE);
-	else
-		vm_entry_controls_clearbit(vmx, VM_ENTRY_IA32E_MODE);
+Cheers
 
-	vmx_setup_uret_msrs(vmx);
-	return 0;
-}
+AGL
