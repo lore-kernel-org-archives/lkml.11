@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A325C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235469AbiCJOPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:15:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S243093AbiCJOPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:15:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243055AbiCJOOl (ORCPT
+        with ESMTP id S243073AbiCJOO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:14:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD36E134DDE;
-        Thu, 10 Mar 2022 06:11:55 -0800 (PST)
+        Thu, 10 Mar 2022 09:14:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5421EF94F5;
+        Thu, 10 Mar 2022 06:12:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 238B261B7F;
-        Thu, 10 Mar 2022 14:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E1DC340EB;
-        Thu, 10 Mar 2022 14:11:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 024EAB82670;
+        Thu, 10 Mar 2022 14:12:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D200C340E8;
+        Thu, 10 Mar 2022 14:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921512;
-        bh=wLzMZKUAd00ul9wnwuXQV8j9vL7I56O35PBDju2xYII=;
+        s=korg; t=1646921519;
+        bh=X16joH9fZDCYNrDYqgmCgmFINl4xn8rfr8maBQfJ+UE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bMA49JTgTPHOwc3zTztidjtJh6Zobytn5FPbsYT50+3nW23/nd53rGvL0djbzZLsC
-         wBNroI3Zsk0L39sIj+TG/LuIWhqNq5sZOvkW9VPqJalz5L7v1IK9NEmfhha3T86qhF
-         D0HdvjCSM+dQOdPgNL5EdbfThgqcBY+LP53dHC0A=
+        b=nF9743N8t3xZhKf9AFnrQH8bYVJ0Ahn+eiliWP+nK76M+BgwPf1YNAw19d7SFUwkJ
+         lvhUz+fM/YoEQKvH+z4bztX9nu29kAnYuGhkckXUmCdW6kNlrf+nmYMRPC/yw4J2GI
+         kXL3HEGrg9bzy153jd/ikhhHDV61KfpZVnwt/IoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.16 10/53] ARM: early traps initialisation
-Date:   Thu, 10 Mar 2022 15:09:15 +0100
-Message-Id: <20220310140812.130936457@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 38/53] ARM: fix co-processor register typo
+Date:   Thu, 10 Mar 2022 15:09:43 +0100
+Message-Id: <20220310140812.928309923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
 References: <20220310140811.832630727@linuxfoundation.org>
@@ -48,71 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 04e91b7324760a377a725e218b5ee783826d30f5 upstream.
+commit 33970b031dc4653cc9dc80f2886976706c4c8ef1 upstream.
 
-Provide a couple of helpers to copy the vectors and stubs, and also
-to flush the copied vectors and stubs.
+In the recent Spectre BHB patches, there was a typo that is only
+exposed in certain configurations: mcr p15,0,XX,c7,r5,4 should have
+been mcr p15,0,XX,c7,c5,4
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/traps.c |   27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ arch/arm/include/asm/assembler.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -787,10 +787,22 @@ static inline void __init kuser_init(voi
- }
+--- a/arch/arm/include/asm/assembler.h
++++ b/arch/arm/include/asm/assembler.h
+@@ -113,7 +113,7 @@
+ 	.endm
+ 
+ 	.macro	isb, args
+-	mcr	p15, 0, r0, c7, r5, 4
++	mcr	p15, 0, r0, c7, c5, 4
+ 	.endm
  #endif
  
-+#ifndef CONFIG_CPU_V7M
-+static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
-+{
-+	memcpy(vma, lma_start, lma_end - lma_start);
-+}
-+
-+static void flush_vectors(void *vma, size_t offset, size_t size)
-+{
-+	unsigned long start = (unsigned long)vma + offset;
-+	unsigned long end = start + size;
-+
-+	flush_icache_range(start, end);
-+}
-+
- void __init early_trap_init(void *vectors_base)
- {
--#ifndef CONFIG_CPU_V7M
--	unsigned long vectors = (unsigned long)vectors_base;
- 	extern char __stubs_start[], __stubs_end[];
- 	extern char __vectors_start[], __vectors_end[];
- 	unsigned i;
-@@ -811,17 +823,20 @@ void __init early_trap_init(void *vector
- 	 * into the vector page, mapped at 0xffff0000, and ensure these
- 	 * are visible to the instruction stream.
- 	 */
--	memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);
--	memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
-+	copy_from_lma(vectors_base, __vectors_start, __vectors_end);
-+	copy_from_lma(vectors_base + 0x1000, __stubs_start, __stubs_end);
- 
- 	kuser_init(vectors_base);
- 
--	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
-+	flush_vectors(vectors_base, 0, PAGE_SIZE * 2);
-+}
- #else /* ifndef CONFIG_CPU_V7M */
-+void __init early_trap_init(void *vectors_base)
-+{
- 	/*
- 	 * on V7-M there is no need to copy the vector table to a dedicated
- 	 * memory area. The address is configurable and so a table in the kernel
- 	 * image can be used.
- 	 */
--#endif
- }
-+#endif
 
 
