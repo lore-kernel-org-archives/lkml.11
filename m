@@ -2,137 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7FEC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 07:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 07:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239634AbiCJHOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 02:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
+        id S239766AbiCJHPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 02:15:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233550AbiCJHOj (ORCPT
+        with ESMTP id S232234AbiCJHPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 02:14:39 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C873C7E7D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 23:13:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646896418; x=1678432418;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5ernpgFyeVBaec0j6i1p29XPpb2BWKA2H3QhtbjZW8c=;
-  b=fIxwBQqkMO59E+5N6y0V5hEgT3gw8N7XjnGrWrQvxW2vq7J4YC+4tMnf
-   vbPdRiQuCs+bppu+atvoQ2QtpULBV5MBv45ZYbj/N1Qcgv1aR12ARIC+o
-   PH45ipEWjWri0v/WiER/OPLTcyZxnU7jLz8jQqv4Tl79c0wXmz9mi7eXH
-   rH0m/vF/DqENUgRz+CyCAj2PMIxQr9rio4wcbJWZMmLKTuD2JAO1tIAzl
-   EMj6UY0P66pOJMMYYvmBk9UcjNjVsoH1ECtuoGsTIgWNtzYiXadZxaekc
-   u7N9Qn16m9C/edNsfe1C7KGTbRkufsOrJpiiKMOqPc6Vzb0HYMcbKv+i6
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="318403018"
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="318403018"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 23:13:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
-   d="scan'208";a="712252760"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2022 23:13:36 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSCzP-0004WM-LZ; Thu, 10 Mar 2022 07:13:35 +0000
-Date:   Thu, 10 Mar 2022 15:12:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dai Ngo <dai.ngo@oracle.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [cel:nfsd-courteous-server 39/39] fs/nfsd/nfs4state.c:2460:60:
- warning: format specifies type 'long' but the argument has type 'u64' (aka
- 'unsigned long long')
-Message-ID: <202203101509.pWJbkMAO-lkp@intel.com>
+        Thu, 10 Mar 2022 02:15:54 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB78ACEA1F
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 23:14:53 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 136A63F32D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:14:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646896490;
+        bh=3lq+YZlfctpY1z6cHd0Yn3IlZgGEVfZmuX5LYYiOwRA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=UVVSfnbsGfW/D0mambzX7tsNEW4Sc21CqvOn8JTdvUg/p7mvQPULL77VBjU0oOweH
+         lxRmq+zp5LYlay66JYQp3GLZJsVO8kpkc9XUZmVEFBgIFjtSL50JoW0oWmg+Z4VSHR
+         pPviFgxnv6dgB85/Hooup7IsBynm206X17XJ6AmHFgfk5c1XM1QBVoSYDgqI4lSaCO
+         eQTIf3V7uKsj6rvhHxHpCzzguU0g8FMSNP5krdAzpIpzvrtafg3ILBVl7shBc4uYbu
+         bTwjsgPOFfUHkTpBQkY17hkP81wp+ZTu/z5w5/Mhe5KwGCmLmtLnGTIkOecpzwhk3q
+         gu5OKi4CKp0FA==
+Received: by mail-ej1-f71.google.com with SMTP id le4-20020a170907170400b006dab546bc40so2600015ejc.15
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 23:14:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3lq+YZlfctpY1z6cHd0Yn3IlZgGEVfZmuX5LYYiOwRA=;
+        b=sA9vMMmOu96IFTELTIfyhGGpLP2G9NExmd0SEoI1AhSLsd9LR+YP7uDtB7AHzhDlXf
+         6RDWROxkOmW+qFKr61c3xPEvdBro4D6a2LjBB9fI7TS/2cZtiv0QR44uS4e7+uQBoWjC
+         qgbz8NzI0W4E2c2jDjJrRuKhpcTkrhFFMbcw6jVIou70yxvcBSqcRYcTg9/YmZec7t5L
+         Mdyv0ELJdOsMRADDfV2knzMQoglMVJwe45Rjd7GrGOUBAxwPXI23hFODTOQhgK9DD4Bo
+         /RU8r3EBfFiNckpS67b5uPLC+iLsONFmOWXTDyImf3fccrFCyUjfaN4FhpKZAIvlpSH2
+         wDTQ==
+X-Gm-Message-State: AOAM532Y/pu+2faW13JcEjQj7hwKPlRWWOGdeEZcntAY7jCxUoSPBmyt
+        SfDmI2hQDN36GoXVy0nk4s5wFHRcbthVm4mqgcwsU/Plb0R6pPL9ILZp1YqdVosjJROUvGEJt34
+        kAwffmsJxH7SdBFe33dHYLbpZuWVSNi1Qcw+WXX03zA==
+X-Received: by 2002:a17:907:6d1d:b0:6cf:3fa:4d80 with SMTP id sa29-20020a1709076d1d00b006cf03fa4d80mr2904077ejc.544.1646896489025;
+        Wed, 09 Mar 2022 23:14:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwnwsw6g5oiyOOkT6oGQB0u27Xh3SNk1CQGJAFJtCdISidk+n7aFZeumpAEYylkhSZcU/i4kQ==
+X-Received: by 2002:a17:907:6d1d:b0:6cf:3fa:4d80 with SMTP id sa29-20020a1709076d1d00b006cf03fa4d80mr2904065ejc.544.1646896488861;
+        Wed, 09 Mar 2022 23:14:48 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906261800b006da94c9ccc9sm1479713ejc.129.2022.03.09.23.14.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 23:14:48 -0800 (PST)
+Message-ID: <12c31919-c393-8c54-7618-ea767c82470b@canonical.com>
+Date:   Thu, 10 Mar 2022 08:14:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/3] dt-bindings: thermal: Add artpec8 compatible string
+ for exynos-thermal
+Content-Language: en-US
+To:     hypmean.kim@samsung.com, "bzolnier@gmail.com" <bzolnier@gmail.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "amitk@kernel.org" <amitk@kernel.org>,
+        "rui.zhang@intel.com" <rui.zhang@intel.com>
+Cc:     "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <CGME20220310013129epcas3p1110cbdfbd3d72ade45b8d98433ca0aac@epcms2p8>
+ <20220310015655epcms2p843397a4c9e6707f1e862b2d00751d8f6@epcms2p8>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310015655epcms2p843397a4c9e6707f1e862b2d00751d8f6@epcms2p8>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux nfsd-courteous-server
-head:   25cf03b50a8a38217a4e1a9b178af4d9afa2b9ea
-commit: 25cf03b50a8a38217a4e1a9b178af4d9afa2b9ea [39/39] NFSD: Show state of courtesy clients in client info
-config: arm-colibri_pxa270_defconfig (https://download.01.org/0day-ci/archive/20220310/202203101509.pWJbkMAO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=25cf03b50a8a38217a4e1a9b178af4d9afa2b9ea
-        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-        git fetch --no-tags cel nfsd-courteous-server
-        git checkout 25cf03b50a8a38217a4e1a9b178af4d9afa2b9ea
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash fs/nfsd/
+On 10/03/2022 02:56, Sang Min Kim wrote:
+>  
+> Extend the exynos-thermal dt bindings document to include compatible
+> string supporting artpec8 SoC.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Your formatting is wrong, but at least this is not HTML...
 
-All warnings (new ones prefixed by >>):
-
->> fs/nfsd/nfs4state.c:2460:60: warning: format specifies type 'long' but the argument has type 'u64' (aka 'unsigned long long') [-Wformat]
-           seq_printf(m, "time since last renew: %02ld:%02d:%02d\n", hrs, mins, secs);
-                                                 ~~~~~               ^~~
-                                                 %02llu
-   1 warning generated.
+s/compatible string supporting artpec8/compatible for Artpec-8 SoC/
 
 
-vim +2460 fs/nfsd/nfs4state.c
-
-  2437	
-  2438	static int client_info_show(struct seq_file *m, void *v)
-  2439	{
-  2440		struct inode *inode = m->private;
-  2441		struct nfs4_client *clp;
-  2442		u64 clid, hrs;
-  2443		u32 mins, secs;
-  2444	
-  2445		clp = get_nfsdfs_clp(inode);
-  2446		if (!clp)
-  2447			return -ENXIO;
-  2448		memcpy(&clid, &clp->cl_clientid, sizeof(clid));
-  2449		seq_printf(m, "clientid: 0x%llx\n", clid);
-  2450		seq_printf(m, "address: \"%pISpc\"\n", (struct sockaddr *)&clp->cl_addr);
-  2451		if (test_bit(NFSD4_CLIENT_CONFIRMED, &clp->cl_flags))
-  2452			seq_puts(m, "status: confirmed\n");
-  2453		else
-  2454			seq_puts(m, "status: unconfirmed\n");
-  2455		seq_printf(m, "courtesy client: %s\n",
-  2456			test_bit(NFSD4_CLIENT_COURTESY, &clp->cl_flags) ? "yes" : "no");
-  2457		hrs = div_u64_rem(ktime_get_boottime_seconds() - clp->cl_time,
-  2458					3600, &secs);
-  2459		mins = div_u64_rem((u64)secs, 60, &secs);
-> 2460		seq_printf(m, "time since last renew: %02ld:%02d:%02d\n", hrs, mins, secs);
-  2461		seq_printf(m, "name: ");
-  2462		seq_quote_mem(m, clp->cl_name.data, clp->cl_name.len);
-  2463		seq_printf(m, "\nminor version: %d\n", clp->cl_minorversion);
-  2464		if (clp->cl_nii_domain.data) {
-  2465			seq_printf(m, "Implementation domain: ");
-  2466			seq_quote_mem(m, clp->cl_nii_domain.data,
-  2467						clp->cl_nii_domain.len);
-  2468			seq_printf(m, "\nImplementation name: ");
-  2469			seq_quote_mem(m, clp->cl_nii_name.data, clp->cl_nii_name.len);
-  2470			seq_printf(m, "\nImplementation time: [%lld, %ld]\n",
-  2471				clp->cl_nii_time.tv_sec, clp->cl_nii_time.tv_nsec);
-  2472		}
-  2473		seq_printf(m, "callback state: %s\n", cb_state2str(clp->cl_cb_state));
-  2474		seq_printf(m, "callback address: %pISpc\n", &clp->cl_cb_conn.cb_addr);
-  2475		drop_client(clp);
-  2476	
-  2477		return 0;
-  2478	}
-  2479	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards,
+Krzysztof
