@@ -2,156 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04ECAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2084C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239595AbiCJQBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:01:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        id S240150AbiCJQBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:01:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239726AbiCJQAy (ORCPT
+        with ESMTP id S240692AbiCJQBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:00:54 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9727617227A;
-        Thu, 10 Mar 2022 07:59:49 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22AEcscg009316;
-        Thu, 10 Mar 2022 15:59:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=+1eh5cJUcucfhcJxDJpi2q49l/euNQ3nDrSALIB4zHM=;
- b=CpdzXYWHjzxTHVVTlQY6lGeB4iG64IxM38G/cyV3k4vxhdT9ZNGcGST0SgKgL33BWLaC
- hHnLS6mNhQie6TwQXpql43N28n/lYWg/LnWU2Xh7f/xglHSrxh9Vydz5Ho1A0MOmWxoK
- 5s9L+PcDQcCMXzTGLfHR4+MXoavHIsaC720Kwjau2po8kJtnze4AwXl+8p190p33wf8b
- XcC0B7ToPWVaEfXKwoaI+MgWegOdRnDMPxm3oZ3zcwVA5SyCrqaTb37zYGwkc1IxIySX
- kXOePrMW/NQQSrqFrE6r1trWMfIYwbBpvalkOihyD31Q1RLqFdlGwIKdOEQB9OLAaz/f YQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eq7yr8atk-1
+        Thu, 10 Mar 2022 11:01:31 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D277F186417;
+        Thu, 10 Mar 2022 08:00:22 -0800 (PST)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AARWDr023835;
+        Thu, 10 Mar 2022 16:59:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=vKPTWN7CzmrHazpB+G2p0y7Va4U2SZ7wiP4CcFo27L4=;
+ b=mbLWETh9lhabuPovfTdTMzMya4arO2yMz1UXhe9GgnCEIWVwahrrAd6XpjR2upEjbrtO
+ IA9he0LvVvqQeB+rE3E3Uyjny8PUlHGSeEu8sxPcnBqSuHTG50r6b8xxNqw3cwyvrJFb
+ xcqGDkXXBvvtF2uZC9gFNOU7O6eoDAKgE0DENaNAHK3Lg0sQ8onyfXu32sikp3p56Gt5
+ aYo27q4ipsZDOWfkJHbkRn83HHaJpsqO/8iKF+kbPFkTssiADh6JF3PwHayjPwlXMML/
+ P+t/mK85RMlNYtYb3d78vlel950EFltAg0Qq2OHIE9WRERHJeFpVtqjWHuFbIdD9ZFyv 8Q== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ekymmt5sg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:45 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22AF9QMl002020;
-        Thu, 10 Mar 2022 15:59:45 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eq7yr8at3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:44 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22AFvmo1016009;
-        Thu, 10 Mar 2022 15:59:43 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 3epyswa34t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 15:59:43 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22AFxeR730212404
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Mar 2022 15:59:40 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D340A4C040;
-        Thu, 10 Mar 2022 15:59:40 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 647534C04A;
-        Thu, 10 Mar 2022 15:59:40 +0000 (GMT)
-Received: from localhost (unknown [9.43.36.239])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 10 Mar 2022 15:59:40 +0000 (GMT)
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     linux-ext4@vger.kernel.org
-Cc:     Jan Kara <jack@suse.cz>, "Theodore Ts'o" <tytso@mit.edu>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ritesh Harjani <riteshh@linux.ibm.com>
-Subject: [PATCHv2 08/10] ext4: Add commit_tid info in jbd debug log
-Date:   Thu, 10 Mar 2022 21:29:02 +0530
-Message-Id: <c3f7f8dbd99e0ab39dd862046dde071341b850e7.1646922487.git.riteshh@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1646922487.git.riteshh@linux.ibm.com>
-References: <cover.1646922487.git.riteshh@linux.ibm.com>
+        Thu, 10 Mar 2022 16:59:31 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C558210002A;
+        Thu, 10 Mar 2022 16:59:29 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B135A2309E5;
+        Thu, 10 Mar 2022 16:59:29 +0100 (CET)
+Received: from [10.211.5.119] (10.75.127.51) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Mar
+ 2022 16:59:28 +0100
+Message-ID: <b465353f-9291-f159-ba0b-4cd9577fc676@foss.st.com>
+Date:   Thu, 10 Mar 2022 16:59:28 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: XRW-Jhx-VBywdgXqir_a9yf9GcU84f7N
-X-Proofpoint-ORIG-GUID: gR3cip3bx5eUzsx_4G6QeBUso2emwUFp
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/3] dt-bindings: mmc: mmci: add a property to disable DMA
+ LLI
+Content-Language: en-US
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+CC:     Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Marek Vasut <marex@denx.de>, <kernel@dh-electronics.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Grzegorz Szymaszek <gszymaszek@short.pl>
+References: <20220304135134.47827-1-yann.gautier@foss.st.com>
+ <20220304135134.47827-2-yann.gautier@foss.st.com>
+ <CAPDyKFq_TsBLjW2WxC-Fvu6qDs9MJ1=QPo9gOLRykJ5p2pJbGw@mail.gmail.com>
+From:   Yann Gautier <yann.gautier@foss.st.com>
+In-Reply-To: <CAPDyKFq_TsBLjW2WxC-Fvu6qDs9MJ1=QPo9gOLRykJ5p2pJbGw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-10_06,2022-03-09_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- clxscore=1015 adultscore=0 suspectscore=0 spamscore=0 impostorscore=0
- mlxscore=0 mlxlogscore=808 phishscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203100084
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds commit_tid argument in ext4_fc_update_stats()
-so that we can add this information too in jbd_debug logs.
-This is also required in a later patch to pass the commit_tid info in
-ext4_fc_commit_start/stop() trace events.
+On 3/8/22 11:57, Ulf Hansson wrote:
+> Hi Yann,
+> 
+> On Fri, 4 Mar 2022 at 14:52, Yann Gautier <yann.gautier@foss.st.com> wrote:
+>>
+>> On STMicroelectronics variant of PL18x, the DMA Linked Lists are supported
+>> starting from revision v2 of the peripheral. But it has limitations,
+>> as all the buffers should be aligned on block size (except the last one).
+>> But this cannot be guaranteed with SDIO. We should then have a property
+>> to disable the support of LLI.
+> 
+> Indeed, the buffer handling with SDIO is somewhat special, which also
+> has been discussed several times on LKML before. In principle, we need
+> the SDIO func drivers to respect buffer limitations that should be
+> specified by the mmc host drivers. Quite similar to what we already
+> have for block devices, like ->max_seg_size, ->max_seg, etc, that is
+> set per mmc host.
+> 
+> I realize that implementing something like the above requires bigger
+> changes, which is why mmc host drivers instead validates the sglists
+> and the elements. In some cases that means returning an error code and
+> in others it could mean falling back to a non-DMA based I/O mode.
+> 
+> For the stm32_sdmmc variant, it looks like the sglist validation is
+> being managed in sdmmc_idma_validate_data() already. Can it be
+> extended to cover this case too, rather than using a DT property?
+> 
+> Kind regards
+> Uffe
 
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
----
- fs/ext4/fast_commit.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+Hi Ulf,
 
-diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
-index 849fd4dcb825..88ed99e670c5 100644
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1164,11 +1164,12 @@ static int ext4_fc_perform_commit(journal_t *journal)
- }
- 
- static void ext4_fc_update_stats(struct super_block *sb, int status,
--				 u64 commit_time, int nblks)
-+				 u64 commit_time, int nblks, tid_t commit_tid)
- {
- 	struct ext4_fc_stats *stats = &EXT4_SB(sb)->s_fc_stats;
- 
--	jbd_debug(1, "Fast commit ended with status = %d", status);
-+	jbd_debug(1, "Fast commit ended with status = %d for tid %u",
-+			status, commit_tid);
- 	if (status == EXT4_FC_STATUS_OK) {
- 		stats->fc_num_commits++;
- 		stats->fc_numblks += nblks;
-@@ -1218,14 +1219,16 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 		if (atomic_read(&sbi->s_fc_subtid) <= subtid &&
- 			commit_tid > journal->j_commit_sequence)
- 			goto restart_fc;
--		ext4_fc_update_stats(sb, EXT4_FC_STATUS_SKIPPED, 0, 0);
-+		ext4_fc_update_stats(sb, EXT4_FC_STATUS_SKIPPED, 0, 0,
-+				commit_tid);
- 		return 0;
- 	} else if (ret) {
- 		/*
- 		 * Commit couldn't start. Just update stats and perform a
- 		 * full commit.
- 		 */
--		ext4_fc_update_stats(sb, EXT4_FC_STATUS_FAILED, 0, 0);
-+		ext4_fc_update_stats(sb, EXT4_FC_STATUS_FAILED, 0, 0,
-+				commit_tid);
- 		return jbd2_complete_transaction(journal, commit_tid);
- 	}
- 
-@@ -1257,12 +1260,12 @@ int ext4_fc_commit(journal_t *journal, tid_t commit_tid)
- 	 * don't react too strongly to vast changes in the commit time
- 	 */
- 	commit_time = ktime_to_ns(ktime_sub(ktime_get(), start_time));
--	ext4_fc_update_stats(sb, status, commit_time, nblks);
-+	ext4_fc_update_stats(sb, status, commit_time, nblks, commit_tid);
- 	return ret;
- 
- fallback:
- 	ret = jbd2_fc_end_commit_fallback(journal);
--	ext4_fc_update_stats(sb, status, 0, 0);
-+	ext4_fc_update_stats(sb, status, 0, 0, commit_tid);
- 	return ret;
- }
- 
--- 
-2.31.1
+OK, I'll check what can be done for this. Patches 1 and 2 can be 
+dropped, they will be reworked.
+But patch 3 of this series could be taken, as not linked to LLI 
+management. Should I push it again alone, or could you review it directly?
+
+Best regards,
+Yann
+
+> 
+>>
+>> Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
+>> ---
+>>   Documentation/devicetree/bindings/mmc/arm,pl18x.yaml | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/mmc/arm,pl18x.yaml b/Documentation/devicetree/bindings/mmc/arm,pl18x.yaml
+>> index 1e69a5a42439..309a2c0426e5 100644
+>> --- a/Documentation/devicetree/bindings/mmc/arm,pl18x.yaml
+>> +++ b/Documentation/devicetree/bindings/mmc/arm,pl18x.yaml
+>> @@ -145,6 +145,11 @@ properties:
+>>         driver to sample the receive data (for example with a voltage switch
+>>         transceiver).
+>>
+>> +  st,disable-dma-lli:
+>> +    $ref: /schemas/types.yaml#/definitions/flag
+>> +    description: ST Micro-specific property, disable DMA linked lists.
+>> +      It is used for SDIO.
+>> +
+>>     st,cmd-gpios:
+>>       maxItems: 1
+>>       description:
+>> --
+>> 2.25.1
+>>
 
