@@ -2,92 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0357C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D3CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241732AbiCJLwZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
+        id S241808AbiCJL66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:58:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiCJLwU (ORCPT
+        with ESMTP id S230387AbiCJL64 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:52:20 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2B1145E09
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:51:19 -0800 (PST)
-Received: from mail-oo1-f44.google.com ([209.85.161.44]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MJFpj-1nhtKo3jJL-00Kfxr for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022
- 12:51:18 +0100
-Received: by mail-oo1-f44.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso6412571ooi.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:51:17 -0800 (PST)
-X-Gm-Message-State: AOAM5311bbalYi8EQTfg3pHnM69O/Zu1RTk8AQ/nhMqAn3HoUxb2wCq5
-        CxdFZy7OLiPl1fMcMuq0xbT7dIDmg0i+EOimwWM=
-X-Google-Smtp-Source: ABdhPJzhQ6HDCnGf4ELAi1hiAjTwlUZ4Udhx9o9AnZcGtXufmdvbLQuFqx7ujzZsPngG/QrJx7H4reMnDSkEVDlBDXE=
-X-Received: by 2002:a05:6870:73c7:b0:d9:be64:a11f with SMTP id
- a7-20020a05687073c700b000d9be64a11fmr8161169oan.3.1646913076640; Thu, 10 Mar
- 2022 03:51:16 -0800 (PST)
+        Thu, 10 Mar 2022 06:58:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C54244771
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:57:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646913473;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TZYKuCaufEHQEij7wfPKMNByDrNFZ28XleuZYsmHjGY=;
+        b=NDY1w0Uswzzw3tqztgi59vbCMNffVIAH6Z5NUj8fs7jbCKw8lMeEqDcM7Au5cEwsnxeCL6
+        gohQqeH2tv78z+Z0wf8WJmOjNEdKzfLXdeDoEzVapT1RhM27t2sCfCQ7INVrAxw9U22AGb
+        WPdJtBLdxY/ns3N8gz8bo63stDEp854=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-IV1SI8S_ML6VkiwIlYqGMA-1; Thu, 10 Mar 2022 06:57:52 -0500
+X-MC-Unique: IV1SI8S_ML6VkiwIlYqGMA-1
+Received: by mail-wm1-f69.google.com with SMTP id 20-20020a05600c231400b00389886f6b23so2192630wmo.6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:57:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=TZYKuCaufEHQEij7wfPKMNByDrNFZ28XleuZYsmHjGY=;
+        b=1vA+JvLbgHOOQylUu8AY62Nt+7Z6M9scYS6Tn2kuCezURd2ec2MWufJs2cDidpsZ6y
+         7kX9Yzji0SV3STEOBuQnXBfSeNWf+LoFIFRkvDWX2tye4dFx9fApNMIo8/5M6YNwT4Qf
+         rEdrakeF8yGzlRkWxc6V4pVHbPjxJbrm5L/edGWdK32Yo2aJt735t4k12Iu02xnDBgZ7
+         mQ3Npe2i7pgULVTk9DXm/3VwvvmHfSUUdn5Y/qvvMhog/tARB2+RmCahuBo0rBt6AFzf
+         vDnwfR652ee1CjDf5MyP4dIZTso2fhcbaIrMtT3Qr/ynTqr9wnmnQHmUf45aqOvRWIsM
+         KqKg==
+X-Gm-Message-State: AOAM530gwx3VdbrQ5Vn4kRms8k4tEJvjMnYt0V5uZLmHGCD59tRpXk2t
+        o5zXmGOybLu9OZwavR/n7/YERn1dJlaYzLhOFAV6rSFrbbsHI/nVsb/XQ3FSC5zBL9ZXvSvtXN/
+        QwapswH2eRX53K5zEBKxPqPMB
+X-Received: by 2002:a5d:55c7:0:b0:1f0:48cf:9568 with SMTP id i7-20020a5d55c7000000b001f048cf9568mr3369498wrw.379.1646913470862;
+        Thu, 10 Mar 2022 03:57:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz++U/wpOl6a/LR9/pa8J/lU8vzFbnm6yXOHWBiLvHSzFRpfwBSs9aGyz2BZYkaAeFm9lCKaA==
+X-Received: by 2002:a5d:55c7:0:b0:1f0:48cf:9568 with SMTP id i7-20020a5d55c7000000b001f048cf9568mr3369473wrw.379.1646913470442;
+        Thu, 10 Mar 2022 03:57:50 -0800 (PST)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id z3-20020a1cf403000000b0037d1f4a2201sm4365294wma.21.2022.03.10.03.57.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 03:57:49 -0800 (PST)
+Message-ID: <f2b40094-0117-e9f0-7dd8-375bed12fd6e@redhat.com>
+Date:   Thu, 10 Mar 2022 12:57:48 +0100
 MIME-Version: 1.0
-References: <20220218212526.16021-1-pali@kernel.org> <20220310103923.24847-1-pali@kernel.org>
-In-Reply-To: <20220310103923.24847-1-pali@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 10 Mar 2022 12:51:00 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1jz1gJe-Xd08bWBByqpoPrVNDmfi5uK+t8XZTCBRCGxQ@mail.gmail.com>
-Message-ID: <CAK8P3a1jz1gJe-Xd08bWBByqpoPrVNDmfi5uK+t8XZTCBRCGxQ@mail.gmail.com>
-Subject: Re: [PATCH v3] arm64: dts: marvell: armada-37xx: Remap IO space to
- bus address 0x0
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:u5M8QtIjcYrszJPfR4DWsaqaH+mQQgqa45ekm6s37nCIj1q/ltV
- FzT4M9mYoZIE/9+CZTluuNbI6b5gfSucIZTtcmPsAU9ebt6gz6ZT10PSz4NFtBfhrf1TIGJ
- DY4IbgiO2p0jSoJN6hhSrf+lZcpNe2RsKiHxXb76r8cDRCvrqrDiMJVv8zlqNW1WwGOsH75
- GszVctJ4x0OJMdAYKPtUg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:TvTndfbROmM=:SKc6Cu1V7jHolkPddGAlOG
- lrI7mXDRK9WQYbbWVMd2AYHjAJy+oBVTMCGwPsWFIABKr31jUjq/o4vLT7Kd7K12fz1Elhsh/
- GHfKl810LWOtVvcAzouJNru9zafOyLBh9qaQgYE6QKS9PQVz8vUXJ1sif5WuVRY37Ye7fVY9a
- vZsuuZfv3ery53ixXEww2YVH8BpJDJdlKfrU74PS5c/bjWH3kvQ2YhBh6fxqGQcRf1gkBXPYM
- nkgtbt0SJzFSzp6oApZ2Xja4QglmZYLEJjf0Y+fuYCYcAwS1ZAxh06VVb9vXX40v2YgD+imyK
- FDtg6lR37JdX7VR6Gnny5mXBQtd6NhBm7kkA5E8dv21pbokMURrYjpM/XWbW1DrsQA2sCEUNz
- QOcZJI3a6TnJ/ma2GXmvB5N7TuKfB8THhkGITYBZfZo8N1exnWkWwvJNwoiQ0YgRHoE6BaFeK
- 147F1ydAuKGfYcxYD5bMkCoGWYFsQSiJn5KEv1ZpyFbL3Yy7c1ZB3PruzRCzOX+7h1MM1t5ix
- BvdDQKH0ticwRC6UVTQSnpyRGCobYf0EnhS4Jjo+Lwrq4H3jenIw6KOqJkAoLYDg3YW6kW73H
- NHdIydUKw6dtMW001OCSjqFHJ8KZTRQz2NBjO0PS8vcJB+7Q9bKtBQHF+OjZoO6uFZtEJuOW0
- mtkld1CVZ/fO+Gdffx/IVvXW83l03A5yFa6oy3tGEbVWLi4059q2iMmn6j9cn3ucVL3w=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 00/15] mm: COW fixes part 2: reliable GUP pins of
+ anonymous pages
+Content-Language: en-US
+To:     Oded Gabbay <oded.gabbay@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        Khalid Aziz <khalid.aziz@oracle.com>
+References: <20220308141437.144919-1-david@redhat.com>
+ <CAHk-=wiA0KMVbLacK-Gi5_ZsZhXVi++6ePTtPrJkgf0az7r2ww@mail.gmail.com>
+ <d615d51d-8643-190e-9cc2-844a28a349cf@redhat.com>
+ <CAFCwf10NyRmcsDVH+j5B=FDfjquqmDUjYb=Hzn2OUCxOAFE+-w@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <CAFCwf10NyRmcsDVH+j5B=FDfjquqmDUjYb=Hzn2OUCxOAFE+-w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 11:39 AM Pali Rohár <pali@kernel.org> wrote:
->
-> Legacy and old PCI I/O based cards do not support 32-bit I/O addressing.
->
-> Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
-> 'ranges' DT property") kernel can set different PCIe address on CPU and
-> different on the bus for the one A37xx address mapping without any firmware
-> support in case the bus address does not conflict with other A37xx mapping.
->
-> So remap I/O space to the bus address 0x0 to enable support for old legacy
-> I/O port based cards which have hardcoded I/O ports in low address space.
->
-> Note that DDR on A37xx is mapped to bus address 0x0. And mapping of I/O
-> space can be set to address 0x0 too because MEM space and I/O space are
-> separate and so do not conflict.
->
-> Remapping IO space on Turris Mox to different address is not possible to
-> due bootloader bug.
->
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> Reported-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 76f6386b25cc ("arm64: dts: marvell: Add Aardvark PCIe support for Armada 3700")
-> Cc: stable@vger.kernel.org # 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
-> Cc: stable@vger.kernel.org # 514ef1e62d65 ("arm64: dts: marvell: armada-37xx: Extend PCIe MEM space")
+On 10.03.22 12:13, Oded Gabbay wrote:
+> On Wed, Mar 9, 2022 at 10:00 AM David Hildenbrand <david@redhat.com> wrote:
+>>
+>> On 08.03.22 22:22, Linus Torvalds wrote:
+>>> On Tue, Mar 8, 2022 at 6:14 AM David Hildenbrand <david@redhat.com> wrote:
+>>>>
+>>>> This series fixes memory corruptions when a GUP pin (FOLL_PIN) was taken
+>>>> on an anonymous page and COW logic fails to detect exclusivity of the page
+>>>> to then replacing the anonymous page by a copy in the page table [...]
+>>>
+>>> From a cursory scan of the patches, this looks sane.
+>>
+>> Thanks for skimming over the patches that quickly!
+>>
+>>>
+>>> I'm not sure what the next step should be, but I really would like the
+>>> people who do a lot of pinning stuff to give it a good shake-down.
+>>> Including both looking at the patches, but very much actually running
+>>> it on whatever test-cases etc you people have.
+>>>
+>>> Please?
+> 
+> I can take this patch-set and test it in our data-center with all the
+> DL workloads we are running
+> on Gaudi.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Perfect!
+
+> 
+> David,
+> Any chance you can prepare me a branch with your patch-set based on 5.17-rc7 ?
+> I prefer to take a stable kernel and not 5.18-rc1 as this is going to
+> run on hundreds of machines.
+
+https://github.com/davidhildenbrand/linux/tree/cow_fixes_part_2_v1
+
+contains the state of this series, based on v5.17-rc7 and part 1.
+
+I'll be leaving that branch unmodified when working on newer versions of
+the patch set.
+
+-- 
+Thanks,
+
+David / dhildenb
+
