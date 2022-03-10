@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A58D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237192AbiCJRYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
+        id S245090AbiCJRY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245099AbiCJRXH (ORCPT
+        with ESMTP id S244992AbiCJRW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:23:07 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A65199D44
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:58 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:59 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F388D199D6B
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932918; x=1678468918;
+  t=1646932906; x=1678468906;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fO8qnSqN2HcxbaiLonyOKnvoJCiJMAh2Vw5V5V62u6c=;
-  b=K0epuU9ukSmTltgkeVcj3ZGopTTzLk3rD4TtYA2qUal/Uh339TOqoaLR
-   8C0qXDe7E7Uv0yrYwaiOQl8MUnkH5nM1QW6IHHr2Om85iBsDMVTlCpcRD
-   Rc8+IwbMHMS4Ipy6WBTk9YiXoO9AGu5n5DPx8blW3TxSdpRF0oDccVE9p
-   b6uqoWHfrHGRkNHqI9HPx1h4Z5cKd8Ty004VCjbRLK7I7Es+VsBIfY10q
-   PYfmDlhN960GkFQc2y7osAt4+F5q7WPvmdpZLfJbtPQH/1irn//pVvcYO
-   ryHTnB5qeqH2qHaVyNcpTSg6HmxlmPbtRJffetJuYE9q6WrlOtQJw3QKA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318536659"
+  bh=cdfxEqPH1Me1FhJI9PQEby26BJlJ/njRf3tRgKPY5pU=;
+  b=WY/TG9qp0CyME7yeE2xxiC4xoXWKnoRm9Rfz4c8Nd1tYgVnM8RF4ucG1
+   /qtj+NFgKQmjYs5TaQGBkxstAG5Qy3jO2aEwZBS+EgtlmhD8OdB+EQWT5
+   JzrjTF4QUtLan7QuZSbSPpkFmMkVBNM8TPv9w3cNn6kdvzshKyL5biaFd
+   yjIR81vfAYw2iP/Pa1yi7jkuPlX3ntPoJFX/Nh5kKgwD45eAo3PpCx4Cz
+   L4CRou5FMGelZZaF7kKay6k3OJ3Iah7RciFjHfndMCtbxbm0qrRlGBOqL
+   Bb+yopsaSPqltRMQXCZZ+6huwmUx6gcZUIXX+pzYxWQSffqPCM735to5O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316033175"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="318536659"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:58 -0800
+   d="scan'208";a="316033175"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:45 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="578874854"
+   d="scan'208";a="611816200"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:57 -0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:45 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 42/45] kmap: Make kmap work for devmap protected pages
-Date:   Thu, 10 Mar 2022 09:20:16 -0800
-Message-Id: <20220310172019.850939-43-ira.weiny@intel.com>
+Subject: [PATCH V9 36/45] memremap_pages: Introduce a PGMAP_PROTECTION flag
+Date:   Thu, 10 Mar 2022 09:20:10 -0800
+Message-Id: <20220310172019.850939-37-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,99 +59,125 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Today, kmap_{local_page,atomic}() handle granting access to HIGHMEM
-pages without the caller needing to know if the page is HIGHMEM, or not.
-Use that existing infrastructure to grant access to PGMAP (PKS)
-protected pages.
+The persistent memory (PMEM) driver uses the memremap_pages facility to
+provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
+capacity maybe orders of magnitude higher capacity than System RAM it
+presents a large vulnerability surface to stray writes.  Unlike stray
+writes to System RAM, which may result in a crash or other undesirable
+behavior, stray writes to PMEM additionally are more likely to result in
+permanent data loss. Reboot is not a remediation for PMEM corruption
+like it is for System RAM.
 
-kmap_{local_page,atomic}() are both thread local mappings so they work
-well with the thread specific protections available within PKS.
+Given that PMEM access from the kernel is limited to a constrained set
+of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
+page), it is amenable to supervisor pkey protection.
 
-On the other hand, the kmap() call is not changed.  kmap() allows for a
-mapping to be shared with other threads, while PKS protections operate
-on a thread local basis.  For this reason, and the desire to move away
-from mappings like this, kmap() is left unsupported.
+Some systems which have configured DEVMAP_ACCESS_PROTECTION may not have
+PMEM installed.  Or the PMEM may not be mapped into the direct map.  In
+addition, some callers of memremap_pages() will not want the mapped
+pages protected.
 
-This behavior is safe because neither of the 2 current DAX-capable
-filesystems (ext4 and xfs) perform such global mappings.  And known
-device drivers that would handle devmap pages are not using kmap().  Any
-future filesystems that gain DAX support, or device drivers wanting to
-support devmap protected pages will need to use kmap_local_page().
+Define a new PGMAP flag to distinguish page maps which are protected.
+Use this flag to enable runtime protection support.  A static key is
+used to optimize the runtime support.
 
-Note: HIGHMEM support is mutually exclusive with PGMAP protection.  The
-rationale is mainly to reduce complexity, but also because direct-map
-exposure is already mitigated by default on HIGHMEM systems because
-by definition HIGHMEM systems do not have large capacities of memory
-in the direct map.
+Specifying this flag on a system which can't support protections will
+fail.  Callers are expected to check if protections are supported via
+pgmap_protection_available().  It was considered to have callers specify
+the flag and check if the dev_pagemap object returned was protected or
+not.  But this was considered less efficient than a direct check
+beforehand.
 
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	From Dan Williams
-		Update commit message
-			Clarify why kmap is not 'compatible' with PKS
-			Explain the HIGHMEM system exclusion more
-	Remove pgmap_protection_flag_invalid() from kmap
-	s/pks_mk*/pks_set*/
+	Clean up commit message
 
 Changes for V8
-	Reword commit message
+	Split this out into it's own patch
 ---
- include/linux/highmem-internal.h | 4 ++++
- mm/Kconfig                       | 1 +
- 2 files changed, 5 insertions(+)
+ include/linux/memremap.h |  1 +
+ mm/memremap.c            | 40 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
-index 0a0b2b09b1b8..71605cf6044b 100644
---- a/include/linux/highmem-internal.h
-+++ b/include/linux/highmem-internal.h
-@@ -174,6 +174,7 @@ static inline void kunmap(struct page *page)
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index 1fafcc38acba..84402f73712c 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -80,6 +80,7 @@ struct dev_pagemap_ops {
+ };
  
- static inline void *kmap_local_page(struct page *page)
+ #define PGMAP_ALTMAP_VALID	(1 << 0)
++#define PGMAP_PROTECTION	(1 << 1)
+ 
+ /**
+  * struct dev_pagemap - metadata for ZONE_DEVICE mappings
+diff --git a/mm/memremap.c b/mm/memremap.c
+index 6aa5f0c2d11f..38d321cc59c2 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -63,6 +63,37 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
+ }
+ #endif /* CONFIG_DEV_PAGEMAP_OPS */
+ 
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++
++/*
++ * Note; all devices which have asked for protections share the same key.  The
++ * key may, or may not, have been provided by the core.  If not, protection
++ * will be disabled.  The key acquisition is attempted when the first ZONE
++ * DEVICE requests it and freed when all zones have been unmapped.
++ *
++ * Also this must be EXPORT_SYMBOL rather than EXPORT_SYMBOL_GPL because it is
++ * intended to be used in the kmap API.
++ */
++DEFINE_STATIC_KEY_FALSE(dev_pgmap_protection_static_key);
++EXPORT_SYMBOL(dev_pgmap_protection_static_key);
++
++static void devmap_protection_enable(void)
++{
++	static_branch_inc(&dev_pgmap_protection_static_key);
++}
++
++static void devmap_protection_disable(void)
++{
++	static_branch_dec(&dev_pgmap_protection_static_key);
++}
++
++#else /* !CONFIG_DEVMAP_ACCESS_PROTECTION */
++
++static void devmap_protection_enable(void) { }
++static void devmap_protection_disable(void) { }
++
++#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
++
+ static void pgmap_array_delete(struct range *range)
  {
-+	pgmap_set_readwrite(page);
- 	return page_address(page);
- }
+ 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
+@@ -162,6 +193,9 @@ void memunmap_pages(struct dev_pagemap *pgmap)
  
-@@ -197,6 +198,7 @@ static inline void __kunmap_local(void *addr)
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
- #endif
-+	pgmap_set_noaccess(kmap_to_page(addr));
+ 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
+ 	devmap_managed_enable_put(pgmap);
++
++	if (pgmap->flags & PGMAP_PROTECTION)
++		devmap_protection_disable();
  }
+ EXPORT_SYMBOL_GPL(memunmap_pages);
  
- static inline void *kmap_atomic(struct page *page)
-@@ -206,6 +208,7 @@ static inline void *kmap_atomic(struct page *page)
- 	else
- 		preempt_disable();
- 	pagefault_disable();
-+	pgmap_set_readwrite(page);
- 	return page_address(page);
- }
+@@ -308,6 +342,12 @@ void *memremap_pages(struct dev_pagemap *pgmap, int nid)
+ 	if (WARN_ONCE(!nr_range, "nr_range must be specified\n"))
+ 		return ERR_PTR(-EINVAL);
  
-@@ -224,6 +227,7 @@ static inline void __kunmap_atomic(void *addr)
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
- #endif
-+	pgmap_set_noaccess(kmap_to_page(addr));
- 	pagefault_enable();
- 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
- 		migrate_enable();
-diff --git a/mm/Kconfig b/mm/Kconfig
-index ba8a557dcf81..4e33ff11b7a9 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -779,6 +779,7 @@ config ZONE_DEVICE
- config DEVMAP_ACCESS_PROTECTION
- 	bool "Access protection for memremap_pages()"
- 	depends on NVDIMM_PFN
-+	depends on !HIGHMEM
- 	depends on ARCH_HAS_SUPERVISOR_PKEYS
- 	select ARCH_ENABLE_PKS_CONSUMER
- 	default n
++	if (pgmap->flags & PGMAP_PROTECTION) {
++		if (!pgmap_protection_available())
++			return ERR_PTR(-EINVAL);
++		devmap_protection_enable();
++	}
++
+ 	switch (pgmap->type) {
+ 	case MEMORY_DEVICE_PRIVATE:
+ 		if (!IS_ENABLED(CONFIG_DEVICE_PRIVATE)) {
 -- 
 2.35.1
 
