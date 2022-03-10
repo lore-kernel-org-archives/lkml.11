@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C10C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F58C4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241017AbiCJJyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:54:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        id S241091AbiCJJyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241035AbiCJJyE (ORCPT
+        with ESMTP id S241034AbiCJJyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 04:54:04 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1667149CA4;
-        Thu, 10 Mar 2022 01:52:52 -0800 (PST)
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FE14BB97;
+        Thu, 10 Mar 2022 01:52:54 -0800 (PST)
 Received: from zn.tnic (p200300ea97193878fa50b3d92789953a.dip0.t-ipconnect.de [IPv6:2003:ea:9719:3878:fa50:b3d9:2789:953a])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EE0BF1EC01B7;
-        Thu, 10 Mar 2022 10:52:50 +0100 (CET)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6B5D91EC0657;
+        Thu, 10 Mar 2022 10:52:53 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1646905971;
+        t=1646905973;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:
-         content-transfer-encoding:content-transfer-encoding:in-reply-to:
-         references; bh=54g/KLNxFZUCNgDdfbbvQe9FV9KHLwA0GlD8+QFm/ew=;
-        b=seF945U41RIEfNSDGl8769zQRFeRffsGu/9/qujHfZ/05wE1KjfQ53sliy++nvBbrp3C+C
-        p8dl5D04xClU7O/biMarlMwNQaAQWvfqK5KQ+w+YervOYHJOP4BkvdOncvz1XTUASy1ZP1
-        2IaGn7NphOW5yJvPlOCPN1YVT1Den8o=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sOz3IsU1XG3CZ3H5QYkSj2D2RKEPjahq9MTYiDMHFSY=;
+        b=ozSHGnFb1ZeCWOZ+DcXBU0wyUkTKWLr1uErV+2jdLN8IdQN6W71XU68blZaDedEXdmqF8h
+        GxkuElTPlQNhNz9lI3lgwug5IyFi+hZ7qF6jy9fjNoeRD6D0m7xrSzZbHmOR0xBYJVfVyQ
+        dEC/rTJuSY/dBr9npmhE/+3fPgY8c/I=
 From:   Borislav Petkov <bp@alien8.de>
 To:     linux-edac <linux-edac@vger.kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/5] EDAC: Remove edac_align_ptr()
-Date:   Thu, 10 Mar 2022 10:52:49 +0100
-Message-Id: <20220310095254.1510-1-bp@alien8.de>
+Subject: [PATCH 4/5] EDAC/device: Sanitize edac_device_alloc_ctl_info() definition
+Date:   Thu, 10 Mar 2022 10:52:53 +0100
+Message-Id: <20220310095254.1510-5-bp@alien8.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220310095254.1510-1-bp@alien8.de>
+References: <20220310095254.1510-1-bp@alien8.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -44,46 +47,88 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Borislav Petkov <bp@suse.de>
 
-Hi,
+Shorten argument names, correct formatting, sort local vars in reverse
+x-mas tree order.
 
-this edac_align_ptr() thing was part of the original EDAC upstreaming
-effort in 2006:
+No functional changes.
 
-  da9bb1d27b21 ("[PATCH] EDAC: core EDAC support code")
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ drivers/edac/edac_device.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-Comment above the usage says:
-
-"Everything is kmalloc'ed as one big chunk - more efficient."
-
-but I don't think that "efficiency" is measurable anymore. Then, 15+
-years ago probably.
-
-So get rid of it in favor of simple kzalloc() allocations for the couple
-of structures needed at each call site.
-
-It boots fine here with amd64_edac but I'd greatly appreciate testing
-with other EDAC drivers.
-
-Thx!
-
-Borislav Petkov (5):
-  EDAC/mc: Get rid of silly one-shot struct allocation in
-    edac_mc_alloc()
-  EDAC/pci: Get rid of the silly one-shot memory allocation in
-    edac_pci_alloc_ctl_info()
-  EDAC/device: Get rid of the silly one-shot memory allocation in
-    edac_device_alloc_ctl_info()
-  EDAC/device: Sanitize edac_device_alloc_ctl_info() definition
-  EDAC/mc: Get rid of edac_align_ptr()
-
- drivers/edac/edac_device.c       | 135 +++++++++++++------------------
- drivers/edac/edac_device.h       |  14 ++++
- drivers/edac/edac_device_sysfs.c |   5 +-
- drivers/edac/edac_mc.c           |  96 +++-------------------
- drivers/edac/edac_module.h       |   2 -
- drivers/edac/edac_pci.c          |  25 +++---
- 6 files changed, 95 insertions(+), 182 deletions(-)
-
+diff --git a/drivers/edac/edac_device.c b/drivers/edac/edac_device.c
+index 3c91156bbd27..b737349184e3 100644
+--- a/drivers/edac/edac_device.c
++++ b/drivers/edac/edac_device.c
+@@ -47,18 +47,19 @@ static void edac_device_dump_device(struct edac_device_ctl_info *edac_dev)
+ }
+ #endif				/* CONFIG_EDAC_DEBUG */
+ 
+-struct edac_device_ctl_info *edac_device_alloc_ctl_info(
+-	unsigned sz_private,
+-	char *edac_device_name, unsigned nr_instances,
+-	char *edac_block_name, unsigned nr_blocks,
+-	unsigned offset_value,		/* zero, 1, or other based offset */
+-	struct edac_dev_sysfs_block_attribute *attrib_spec, unsigned nr_attrib,
+-	int device_index)
++/*
++ * @off_val: zero, 1, or other based offset
++ */
++struct edac_device_ctl_info *
++edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instances,
++			   char *blk_name, unsigned nr_blocks, unsigned off_val,
++			   struct edac_dev_sysfs_block_attribute *attrib_spec,
++			   unsigned nr_attrib, int device_index)
+ {
+-	struct edac_device_ctl_info *dev_ctl;
+-	struct edac_device_instance *dev_inst, *inst;
+-	struct edac_device_block *dev_blk, *blk_p, *blk;
+ 	struct edac_dev_sysfs_block_attribute *dev_attrib, *attrib_p, *attrib;
++	struct edac_device_block *dev_blk, *blk_p, *blk;
++	struct edac_device_instance *dev_inst, *inst;
++	struct edac_device_ctl_info *dev_ctl;
+ 	unsigned instance, block, attr;
+ 	void *pvt;
+ 	int err;
+@@ -95,8 +96,8 @@ struct edac_device_ctl_info *edac_device_alloc_ctl_info(
+ 		dev_ctl->attribs = dev_attrib;
+ 	}
+ 
+-	if (sz_private) {
+-		pvt = kzalloc(sz_private, GFP_KERNEL);
++	if (pvt_sz) {
++		pvt = kzalloc(pvt_sz, GFP_KERNEL);
+ 		if (!pvt)
+ 			goto free;
+ 
+@@ -111,7 +112,7 @@ struct edac_device_ctl_info *edac_device_alloc_ctl_info(
+ 	dev_ctl->log_ue = 1;
+ 
+ 	/* Name of this edac device */
+-	snprintf(dev_ctl->name, sizeof(dev_ctl->name),"%s", edac_device_name);
++	snprintf(dev_ctl->name, sizeof(dev_ctl->name),"%s", dev_name);
+ 
+ 	/* Initialize every Instance */
+ 	for (instance = 0; instance < nr_instances; instance++) {
+@@ -122,15 +123,14 @@ struct edac_device_ctl_info *edac_device_alloc_ctl_info(
+ 		inst->blocks = blk_p;
+ 
+ 		/* name of this instance */
+-		snprintf(inst->name, sizeof(inst->name),
+-			 "%s%u", edac_device_name, instance);
++		snprintf(inst->name, sizeof(inst->name), "%s%u", dev_name, instance);
+ 
+ 		/* Initialize every block in each instance */
+ 		for (block = 0; block < nr_blocks; block++) {
+ 			blk = &blk_p[block];
+ 			blk->instance = inst;
+ 			snprintf(blk->name, sizeof(blk->name),
+-				 "%s%d", edac_block_name, block+offset_value);
++				 "%s%d", blk_name, block + off_val);
+ 
+ 			edac_dbg(4, "instance=%d inst_p=%p block=#%d block_p=%p name='%s'\n",
+ 				 instance, inst, block, blk, blk->name);
 -- 
 2.29.2
 
