@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 205A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7529C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244439AbiCJRSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:18:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S244117AbiCJRUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:20:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239175AbiCJRSN (ORCPT
+        with ESMTP id S235295AbiCJRUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:18:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D80187BA5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:17:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4BF2B82705
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA2EC340E8;
-        Thu, 10 Mar 2022 17:17:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646932629;
-        bh=2czeYZEhYrw+eEsPeWClwqc/1LpOrFNLlEfPbHjGD/8=;
-        h=Subject:From:To:Cc:Date:From;
-        b=Fn9iwM4mptqfym/gS03mQe6/YlHfI28Xu6K9Uqc6I47tseIM6F8mztbUfLBRv7kUc
-         SDeea/byD+MHrmOCKTBK81kUBdxUVYbcxQ4NDTkEYAjNG/LaAfZtiHa0zFSuHOnUY+
-         cSJGXLdEcXAEsXhqJDM5sBtl4qFM7zElXuRZaZhSnqI6vaZCzU0gfITkxMzxXdaYsv
-         yVL+C5/NkoCq1Xv8ujUwsT7suJcRD9k6q8uoaU2ckddpf6BxP1vWDQrPrMdaeuiKSN
-         FtUUhd5OX9aXFn9XPFLvyGhihn2zx7gvixCabXM/9Hs5l2KtTMTHrtgTZjSeJNkK2X
-         yaHSWnD1LqecA==
-Message-ID: <77deca8cbfd226981b3f1eab203967381e9b5bd9.camel@kernel.org>
-Subject: [PATCH] tracing: Fix strncpy warning in trace_events_synth.c
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 10 Mar 2022 11:17:07 -0600
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Thu, 10 Mar 2022 12:20:49 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D33F518DABD
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:19:47 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-220-GAll5PICOlaorzjpFG4RBw-1; Thu, 10 Mar 2022 17:19:42 +0000
+X-MC-Unique: GAll5PICOlaorzjpFG4RBw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 10 Mar 2022 17:19:40 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 10 Mar 2022 17:19:40 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Dave Hansen' <dave.hansen@intel.com>,
+        'Bharata B Rao' <bharata@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "ananth.narayan@amd.com" <ananth.narayan@amd.com>
+Subject: RE: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+Thread-Topic: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+Thread-Index: AQHYNHBEWuVw0etF4EmWwhK6DFJ++Ky4rWmQgAAmSACAAAWIEA==
+Date:   Thu, 10 Mar 2022 17:19:40 +0000
+Message-ID: <f6212ddf70bc408a80d7eb690c46bccc@AcuMS.aculab.com>
+References: <20220310111545.10852-1-bharata@amd.com>
+ <699fb763ac054833bc8c29c9814c63b2@AcuMS.aculab.com>
+ <286efdb9-7dbf-82f3-b172-29c575a3791b@intel.com>
+In-Reply-To: <286efdb9-7dbf-82f3-b172-29c575a3791b@intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-0-day reported the strncpy error below:
-
-../kernel/trace/trace_events_synth.c: In function 'last_cmd_set':
-../kernel/trace/trace_events_synth.c:65:9: warning: 'strncpy' specified bound depends on the length o\
-f the source argument [-Wstringop-truncation]
-   65 |         strncpy(last_cmd, str, strlen(str) + 1);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../kernel/trace/trace_events_synth.c:65:32: note: length computed here
-   65 |         strncpy(last_cmd, str, strlen(str) + 1);
-      |                                ^~~~~~~~~~~
-
-There's no reason to use strncpy here, in fact there's no reason to do
-anything but a simple kstrdup() (note we don't even need to check for
-failure since last_cmod is expected to be either the last cmd string
-or NULL, and the containing function is a void return).
-
-Fixes: 27c888da9867 ("tracing: Remove size restriction on synthetic event cmd error logging")
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Tom Zanussi <zanussi@kernel.org>
----
- kernel/trace/trace_events_synth.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/kernel/trace/trace_events_synth.c b/kernel/trace/trace_events_synth.c
-index fdd79e07e2fc..5e8c07aef071 100644
---- a/kernel/trace/trace_events_synth.c
-+++ b/kernel/trace/trace_events_synth.c
-@@ -58,11 +58,8 @@ static void last_cmd_set(const char *str)
- 		return;
- 
- 	kfree(last_cmd);
--	last_cmd = kzalloc(strlen(str) + 1, GFP_KERNEL);
--	if (!last_cmd)
--		return;
- 
--	strncpy(last_cmd, str, strlen(str) + 1);
-+	last_cmd = kstrdup(str, GFP_KERNEL);
- }
- 
- static void synth_err(u8 err_type, u16 err_pos)
--- 
-2.17.1
-
+RnJvbTogRGF2ZSBIYW5zZW4gPGRhdmUuaGFuc2VuQGludGVsLmNvbT4NCj4gU2VudDogMTAgTWFy
+Y2ggMjAyMiAxNjo0Ng0KPiANCj4gT24gMy8xMC8yMiAwNjozMiwgRGF2aWQgTGFpZ2h0IHdyb3Rl
+Og0KPiA+PiBVQUkgYWxsb3dzIHNvZnR3YXJlIHRvIHN0b3JlIGEgdGFnIGluIHRoZSB1cHBlciA3
+IGJpdHMgb2YgYSBsb2dpY2FsDQo+ID4+IGFkZHJlc3MgWzYzOjU3XS4gV2hlbiBlbmFibGVkLCB0
+aGUgcHJvY2Vzc29yIHdpbGwgc3VwcHJlc3MgdGhlDQo+ID4+IHRyYWRpdGlvbmFsIGNhbm9uaWNh
+bCBhZGRyZXNzIGNoZWNrcyBvbiB0aGUgYWRkcmVzc2VzLiBNb3JlIGluZm9ybWF0aW9uDQo+ID4+
+IGFib3V0IFVBSSBjYW4gYmUgZm91bmQgaW4gc2VjdGlvbiA1LjEwIG9mICdBTUQ2NCBBcmNoaXRl
+Y3R1cmUNCj4gPj4gUHJvZ3JhbW1lcidzIE1hbnVhbCwgVm9sIDI6IFN5c3RlbSBQcm9ncmFtbWlu
+Zycgd2hpY2ggaXMgYXZhaWxhYmxlIGZyb20NCj4gPj4NCj4gPj4gaHR0cHM6Ly9idWd6aWxsYS5r
+ZXJuZWwub3JnL2F0dGFjaG1lbnQuY2dpP2lkPTMwMDU0OQ0KPiA+IElzIHRoYXQgcmVhbGx5IGFs
+bG93aW5nIGJpdCA2MyB0byBiZSB1c2VkPw0KPiA+IFRoYXQgaXMgbm9ybWFsbHkgdGhlIHVzZXIt
+a2VybmVsIGJpdC4NCj4gPiBJIGNhbid0IGhlbHAgZmVlbGluZyB0aGF0IHdpbGwganVzdCBiYWRs
+eSBicmVhayB0aGluZ3MuDQo+IA0KPiBZZWFoLCB0aGlzIGRvZXMgc2VlbSB3b3JyaXNvbWUuICBU
+aGUgTEFNIGFwcHJvYWNoWzFdIHJldGFpbnMNCj4gY2Fub25pY2FsaXR5IGNoZWNraW5nIGZvciBi
+aXQgNjMuDQoNCkFjdHVhbGx5IGl0IGlzIHJhdGhlciB3b3JzZSB0aGFuICd3b3JyaXNvbWUnLg0K
+QWxsb3dpbmcgdGhlIHVzZXIgYWxsIGFkZHJlc3MgdXB0byB0aGUgYmFzZSBvZiB0aGUgdmFsaWQN
+Cmtlcm5lbCBhZGRyZXNzZXMgKHByb2JhYmx5IHRhZ3MgdG8gM2UsIGJ1dCBub3QgM2YpDQptZWFu
+cyB0aGF0IHlvdSBjYW4ndCB1c2UgYSBmYXN0IGFkZHJlc3MgY2hlY2sgaW4gYWNjZXNzX29rKCku
+DQpZb3UgYXJlIGZvcmNlZCB0byB1c2UgdGhlIHN0cmljdCB0ZXN0IHRoYXQgMzJiaXQga2VybmVs
+cyB1c2UuDQoNCk90aGVyd2lzZSBmb3IgNjRiaXQgYWNjZXNzX29rKCkgbmVlZCBvbmx5IHRlc3Qg
+YWRkcmVzcyA8IDANCmFuZCByZWx5IG9uIGtlcm5lbCBjb2RlIHJlYWRpbmcgc29tZXRoaW5nIGJl
+bG93IHRoZSAoYmlnKQ0Kb2Zmc2V0IHRvIHZhbGlkIGtlcm5lbCBhZGRyZXNzZXMuDQpObyByZWFs
+IG5lZWQgdG8gaW5jbHVkZSB0aGUgbGVuZ3RoIGF0IGFsbC4NCg0KSWYgdGhlIGhhcmR3YXJlIGlz
+IGp1c3QgaWdub3JpbmcgdGhlIGhpZ2ggYWRkcmVzcyBiaXRzDQp0aGVuIHRoZSBzaG91bGQgYmUg
+bm8gbmVlZCB0byBtYXNrIHRoZW0gaW4ga2VybmVsLg0KVGhlIHJlcXVpcmVkIGtlcm5lbCBhY2Nl
+c3NlcyB0byB1c2VyIG1lbW9yeSBzaG91bGQgJ2p1c3Qgd29yaycuDQoNCk9mIGNvdXJzZSwgdGhl
+IGJpdCB0byBlbmFibGUgdGhpcyAod2hlcmV2ZXIgaXQgaXMpIG5lZWRzDQp0byBiZSByZXN0b3Jl
+ZCBvbiBldmVyeSBwcm9jZXNzIHN3aXRjaC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRk
+cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
+SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
