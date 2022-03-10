@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F33C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D952C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243681AbiCJO1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
+        id S243740AbiCJO1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243712AbiCJOZC (ORCPT
+        with ESMTP id S243598AbiCJOZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:25:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537B015F373;
-        Thu, 10 Mar 2022 06:21:38 -0800 (PST)
+        Thu, 10 Mar 2022 09:25:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A38160FD8;
+        Thu, 10 Mar 2022 06:21:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 931D6B82678;
-        Thu, 10 Mar 2022 14:21:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D72F1C340EB;
-        Thu, 10 Mar 2022 14:21:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF2DE61CFF;
+        Thu, 10 Mar 2022 14:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB30BC340F3;
+        Thu, 10 Mar 2022 14:21:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922082;
-        bh=WMBsDGoFwKsBC3UgmdydLX9aTvQjG9Z/G7T0quQ9LAM=;
+        s=korg; t=1646922088;
+        bh=QYvbKUkSTXQCvEqdV0YhKZqOQ4aZn3ZVypCIaknyD24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zb7Ot0ZLD3/IpdTGiL2I+T+bKCl54QkryaeFAiyaihphbFHL8BsHpmCe+amaPMRlx
-         RBMCQSmEJFZKiuR9xeIxdH3KtgsHnPU4KEXBF+lpAx72u3pwGSbQ5DleqgtQxEv4pG
-         vz8LAFF/ZckAtWtQgmKVKm33XycdbABeWz765yAo=
+        b=FKuaHOwxyk2LQ+I2r8alJow9ivvhu8LMbkyqfdPB/jtHMzzWcTx0kJFQ0yvShPdyP
+         Kfda6y5lHB8Tz84fslacn9eWB4XmvjTkn8FYaBCPFUKXypArocUPJrnFFuqNwUiPDR
+         +9NEANwLAxCQPhO+6xvnjz0rM/tSjFDVOxBIziFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.14 30/31] xen/gnttab: fix gnttab_end_foreign_access() without page specified
-Date:   Thu, 10 Mar 2022 15:18:43 +0100
-Message-Id: <20220310140808.419605112@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Patrick Colp <patrick.colp@oracle.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 4.14 04/31] x86/speculation: Add eIBRS + Retpoline options
+Date:   Thu, 10 Mar 2022 15:18:17 +0100
+Message-Id: <20220310140807.658264053@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
 References: <20220310140807.524313448@linuxfoundation.org>
@@ -50,122 +52,272 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-Commit 42baefac638f06314298087394b982ead9ec444b upstream.
+commit 1e19da8522c81bf46b335f84137165741e0d82b7 upstream.
 
-gnttab_end_foreign_access() is used to free a grant reference and
-optionally to free the associated page. In case the grant is still in
-use by the other side processing is being deferred. This leads to a
-problem in case no page to be freed is specified by the caller: the
-caller doesn't know that the page is still mapped by the other side
-and thus should not be used for other purposes.
+Thanks to the chaps at VUsec it is now clear that eIBRS is not
+sufficient, therefore allow enabling of retpolines along with eIBRS.
 
-The correct way to handle this situation is to take an additional
-reference to the granted page in case handling is being deferred and
-to drop that reference when the grant reference could be freed
-finally.
+Add spectre_v2=eibrs, spectre_v2=eibrs,lfence and
+spectre_v2=eibrs,retpoline options to explicitly pick your preferred
+means of mitigation.
 
-This requires that there are no users of gnttab_end_foreign_access()
-left directly repurposing the granted page after the call, as this
-might result in clobbered data or information leaks via the not yet
-freed grant reference.
+Since there's new mitigations there's also user visible changes in
+/sys/devices/system/cpu/vulnerabilities/spectre_v2 to reflect these
+new mitigations.
 
-This is part of CVE-2022-23041 / XSA-396.
+  [ bp: Massage commit message, trim error messages,
+    do more precise eIBRS mode checking. ]
 
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Patrick Colp <patrick.colp@oracle.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 4.14 (no Hygon)]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/grant-table.c |   30 +++++++++++++++++++++++-------
- include/xen/grant_table.h |    7 ++++++-
- 2 files changed, 29 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |    4 -
+ arch/x86/kernel/cpu/bugs.c           |  131 +++++++++++++++++++++++++----------
+ 2 files changed, 98 insertions(+), 37 deletions(-)
 
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -114,6 +114,10 @@ struct gnttab_ops {
- 	 * return the frame.
- 	 */
- 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
-+	/*
-+	 * Read the frame number related to a given grant reference.
-+	 */
-+	unsigned long (*read_frame)(grant_ref_t ref);
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -225,7 +225,9 @@ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_NONE,
+ 	SPECTRE_V2_RETPOLINE,
+ 	SPECTRE_V2_LFENCE,
+-	SPECTRE_V2_IBRS_ENHANCED,
++	SPECTRE_V2_EIBRS,
++	SPECTRE_V2_EIBRS_RETPOLINE,
++	SPECTRE_V2_EIBRS_LFENCE,
  };
  
- struct unmap_refs_callback_data {
-@@ -278,6 +282,11 @@ int gnttab_end_foreign_access_ref(grant_
- }
- EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
+ /* The indirect branch speculation control variants */
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -622,6 +622,9 @@ enum spectre_v2_mitigation_cmd {
+ 	SPECTRE_V2_CMD_RETPOLINE,
+ 	SPECTRE_V2_CMD_RETPOLINE_GENERIC,
+ 	SPECTRE_V2_CMD_RETPOLINE_LFENCE,
++	SPECTRE_V2_CMD_EIBRS,
++	SPECTRE_V2_CMD_EIBRS_RETPOLINE,
++	SPECTRE_V2_CMD_EIBRS_LFENCE,
+ };
  
-+static unsigned long gnttab_read_frame_v1(grant_ref_t ref)
+ enum spectre_v2_user_cmd {
+@@ -694,6 +697,13 @@ spectre_v2_parse_user_cmdline(enum spect
+ 	return SPECTRE_V2_USER_CMD_AUTO;
+ }
+ 
++static inline bool spectre_v2_in_eibrs_mode(enum spectre_v2_mitigation mode)
 +{
-+	return gnttab_shared.v1[ref].frame;
++	return (mode == SPECTRE_V2_EIBRS ||
++		mode == SPECTRE_V2_EIBRS_RETPOLINE ||
++		mode == SPECTRE_V2_EIBRS_LFENCE);
 +}
 +
- struct deferred_entry {
- 	struct list_head list;
- 	grant_ref_t ref;
-@@ -307,12 +316,9 @@ static void gnttab_handle_deferred(unsig
- 		spin_unlock_irqrestore(&gnttab_list_lock, flags);
- 		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
- 			put_free_entry(entry->ref);
--			if (entry->page) {
--				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
--					 entry->ref, page_to_pfn(entry->page));
--				put_page(entry->page);
--			} else
--				pr_info("freeing g.e. %#x\n", entry->ref);
-+			pr_debug("freeing g.e. %#x (pfn %#lx)\n",
-+				 entry->ref, page_to_pfn(entry->page));
-+			put_page(entry->page);
- 			kfree(entry);
- 			entry = NULL;
- 		} else {
-@@ -337,9 +343,18 @@ static void gnttab_handle_deferred(unsig
- static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
- 				struct page *page)
+ static void __init
+ spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
  {
--	struct deferred_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-+	struct deferred_entry *entry;
-+	gfp_t gfp = (in_atomic() || irqs_disabled()) ? GFP_ATOMIC : GFP_KERNEL;
- 	const char *what = KERN_WARNING "leaking";
+@@ -761,7 +771,7 @@ spectre_v2_user_select_mitigation(enum s
+ 	 */
+ 	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
+ 	    !smt_possible ||
+-	    spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
++	    spectre_v2_in_eibrs_mode(spectre_v2_enabled))
+ 		return;
  
-+	entry = kmalloc(sizeof(*entry), gfp);
-+	if (!page) {
-+		unsigned long gfn = gnttab_interface->read_frame(ref);
-+
-+		page = pfn_to_page(gfn_to_pfn(gfn));
-+		get_page(page);
-+	}
-+
- 	if (entry) {
- 		unsigned long flags;
- 
-@@ -1011,6 +1026,7 @@ static const struct gnttab_ops gnttab_v1
- 	.update_entry			= gnttab_update_entry_v1,
- 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
- 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
-+	.read_frame			= gnttab_read_frame_v1,
+ 	/*
+@@ -783,7 +793,9 @@ static const char * const spectre_v2_str
+ 	[SPECTRE_V2_NONE]			= "Vulnerable",
+ 	[SPECTRE_V2_RETPOLINE]			= "Mitigation: Retpolines",
+ 	[SPECTRE_V2_LFENCE]			= "Mitigation: LFENCE",
+-	[SPECTRE_V2_IBRS_ENHANCED]		= "Mitigation: Enhanced IBRS",
++	[SPECTRE_V2_EIBRS]			= "Mitigation: Enhanced IBRS",
++	[SPECTRE_V2_EIBRS_LFENCE]		= "Mitigation: Enhanced IBRS + LFENCE",
++	[SPECTRE_V2_EIBRS_RETPOLINE]		= "Mitigation: Enhanced IBRS + Retpolines",
  };
  
- static void gnttab_request_version(void)
---- a/include/xen/grant_table.h
-+++ b/include/xen/grant_table.h
-@@ -100,7 +100,12 @@ int gnttab_end_foreign_access_ref(grant_
-  * Note that the granted page might still be accessed (read or write) by the
-  * other side after gnttab_end_foreign_access() returns, so even if page was
-  * specified as 0 it is not allowed to just reuse the page for other
-- * purposes immediately.
-+ * purposes immediately. gnttab_end_foreign_access() will take an additional
-+ * reference to the granted page in this case, which is dropped only after
-+ * the grant is no longer in use.
-+ * This requires that multi page allocations for areas subject to
-+ * gnttab_end_foreign_access() are done via alloc_pages_exact() (and freeing
-+ * via free_pages_exact()) in order to avoid high order pages.
-  */
- void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
- 			       unsigned long page);
+ static const struct {
+@@ -797,6 +809,9 @@ static const struct {
+ 	{ "retpoline,amd",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
+ 	{ "retpoline,lfence",	SPECTRE_V2_CMD_RETPOLINE_LFENCE,  false },
+ 	{ "retpoline,generic",	SPECTRE_V2_CMD_RETPOLINE_GENERIC, false },
++	{ "eibrs",		SPECTRE_V2_CMD_EIBRS,		  false },
++	{ "eibrs,lfence",	SPECTRE_V2_CMD_EIBRS_LFENCE,	  false },
++	{ "eibrs,retpoline",	SPECTRE_V2_CMD_EIBRS_RETPOLINE,	  false },
+ 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
+ };
+ 
+@@ -834,15 +849,29 @@ static enum spectre_v2_mitigation_cmd __
+ 
+ 	if ((cmd == SPECTRE_V2_CMD_RETPOLINE ||
+ 	     cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
+-	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC) &&
++	     cmd == SPECTRE_V2_CMD_RETPOLINE_GENERIC ||
++	     cmd == SPECTRE_V2_CMD_EIBRS_LFENCE ||
++	     cmd == SPECTRE_V2_CMD_EIBRS_RETPOLINE) &&
+ 	    !IS_ENABLED(CONFIG_RETPOLINE)) {
+-		pr_err("%s selected but not compiled in. Switching to AUTO select\n", mitigation_options[i].option);
++		pr_err("%s selected but not compiled in. Switching to AUTO select\n",
++		       mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
++
++	if ((cmd == SPECTRE_V2_CMD_EIBRS ||
++	     cmd == SPECTRE_V2_CMD_EIBRS_LFENCE ||
++	     cmd == SPECTRE_V2_CMD_EIBRS_RETPOLINE) &&
++	    !boot_cpu_has(X86_FEATURE_IBRS_ENHANCED)) {
++		pr_err("%s selected but CPU doesn't have eIBRS. Switching to AUTO select\n",
++		       mitigation_options[i].option);
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
+-	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE) &&
++	if ((cmd == SPECTRE_V2_CMD_RETPOLINE_LFENCE ||
++	     cmd == SPECTRE_V2_CMD_EIBRS_LFENCE) &&
+ 	    !boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+-		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n", mitigation_options[i].option);
++		pr_err("%s selected, but CPU doesn't have a serializing LFENCE. Switching to AUTO select\n",
++		       mitigation_options[i].option);
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
+@@ -851,6 +880,24 @@ static enum spectre_v2_mitigation_cmd __
+ 	return cmd;
+ }
+ 
++static enum spectre_v2_mitigation __init spectre_v2_select_retpoline(void)
++{
++	if (!IS_ENABLED(CONFIG_RETPOLINE)) {
++		pr_err("Kernel not compiled with retpoline; no mitigation available!");
++		return SPECTRE_V2_NONE;
++	}
++
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
++		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
++			pr_err("LFENCE not serializing, switching to generic retpoline\n");
++			return SPECTRE_V2_RETPOLINE;
++		}
++		return SPECTRE_V2_LFENCE;
++	}
++
++	return SPECTRE_V2_RETPOLINE;
++}
++
+ static void __init spectre_v2_select_mitigation(void)
+ {
+ 	enum spectre_v2_mitigation_cmd cmd = spectre_v2_parse_cmdline();
+@@ -871,48 +918,60 @@ static void __init spectre_v2_select_mit
+ 	case SPECTRE_V2_CMD_FORCE:
+ 	case SPECTRE_V2_CMD_AUTO:
+ 		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED)) {
+-			mode = SPECTRE_V2_IBRS_ENHANCED;
+-			/* Force it so VMEXIT will restore correctly */
+-			x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+-			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+-			goto specv2_set_mode;
++			mode = SPECTRE_V2_EIBRS;
++			break;
+ 		}
+-		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_auto;
++
++		mode = spectre_v2_select_retpoline();
+ 		break;
++
+ 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
+-		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_lfence;
++		mode = SPECTRE_V2_LFENCE;
+ 		break;
++
+ 	case SPECTRE_V2_CMD_RETPOLINE_GENERIC:
+-		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_generic;
++		mode = SPECTRE_V2_RETPOLINE;
+ 		break;
++
+ 	case SPECTRE_V2_CMD_RETPOLINE:
+-		if (IS_ENABLED(CONFIG_RETPOLINE))
+-			goto retpoline_auto;
++		mode = spectre_v2_select_retpoline();
++		break;
++
++	case SPECTRE_V2_CMD_EIBRS:
++		mode = SPECTRE_V2_EIBRS;
++		break;
++
++	case SPECTRE_V2_CMD_EIBRS_LFENCE:
++		mode = SPECTRE_V2_EIBRS_LFENCE;
++		break;
++
++	case SPECTRE_V2_CMD_EIBRS_RETPOLINE:
++		mode = SPECTRE_V2_EIBRS_RETPOLINE;
+ 		break;
+ 	}
+-	pr_err("Spectre mitigation: kernel not compiled with retpoline; no mitigation available!");
+-	return;
+ 
+-retpoline_auto:
+-	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+-	retpoline_lfence:
+-		if (!boot_cpu_has(X86_FEATURE_LFENCE_RDTSC)) {
+-			pr_err("Spectre mitigation: LFENCE not serializing, switching to generic retpoline\n");
+-			goto retpoline_generic;
+-		}
+-		mode = SPECTRE_V2_LFENCE;
++	if (spectre_v2_in_eibrs_mode(mode)) {
++		/* Force it so VMEXIT will restore correctly */
++		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
++		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++	}
++
++	switch (mode) {
++	case SPECTRE_V2_NONE:
++	case SPECTRE_V2_EIBRS:
++		break;
++
++	case SPECTRE_V2_LFENCE:
++	case SPECTRE_V2_EIBRS_LFENCE:
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
++		/* fallthrough */
++
++	case SPECTRE_V2_RETPOLINE:
++	case SPECTRE_V2_EIBRS_RETPOLINE:
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
+-	} else {
+-	retpoline_generic:
+-		mode = SPECTRE_V2_RETPOLINE;
+-		setup_force_cpu_cap(X86_FEATURE_RETPOLINE);
++		break;
+ 	}
+ 
+-specv2_set_mode:
+ 	spectre_v2_enabled = mode;
+ 	pr_info("%s\n", spectre_v2_strings[mode]);
+ 
+@@ -938,7 +997,7 @@ specv2_set_mode:
+ 	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
+ 	 * enable IBRS around firmware calls.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_IBRS) && mode != SPECTRE_V2_IBRS_ENHANCED) {
++	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_eibrs_mode(mode)) {
+ 		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
+ 		pr_info("Enabling Restricted Speculation for firmware calls\n");
+ 	}
+@@ -1596,7 +1655,7 @@ static ssize_t tsx_async_abort_show_stat
+ 
+ static char *stibp_state(void)
+ {
+-	if (spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
++	if (spectre_v2_in_eibrs_mode(spectre_v2_enabled))
+ 		return "";
+ 
+ 	switch (spectre_v2_user_stibp) {
 
 
