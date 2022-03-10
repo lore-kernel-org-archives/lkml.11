@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A977C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241494AbiCJKyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50176 "EHLO
+        id S241538AbiCJKyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:54:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241448AbiCJKxq (ORCPT
+        with ESMTP id S241479AbiCJKyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:53:46 -0500
+        Thu, 10 Mar 2022 05:54:02 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB1D6C90E;
-        Thu, 10 Mar 2022 02:52:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91DC6D97C;
+        Thu, 10 Mar 2022 02:52:53 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id D1F101F454CA
+        with ESMTPSA id 514991F454C6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646909564;
-        bh=iaPl/wBMV7VEkkcx27N58lqaWdw70k/KuIUFajX1kAc=;
+        s=mail; t=1646909572;
+        bh=OIHzCHMj5k3sWfXIEjFNU/tLKLnLH7CCNdUZCAzV+8U=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=RILJR2YqXjGkvpAHxHrr3jwAbnum4SVrq42QjIyfd/U6mzmjVmXEwJGA3GDPB3DO4
-         Jfb1HW8xJ6A3wl7fHbqrEm7YD2TsgEnlZGBjSNeyfjaHLlf29Yu4AYdPtPL73kEBPH
-         +AFNY5/CqC0Ye48VGs4aa8KRAfYFVqmahs8rP9TQSzuJ9TXA8MCMqjMKGQ1Mx/K9lU
-         bh+pbHvJIBw1NQQ6aZSkEd74YAket+2FFoq2/OYhuXB3zT/unQkyXk+MI261elMb9T
-         1angw0DoqnGORe/su+wRIb94Pt30V/6rjLwS7lueq2PJKZ/t7nKfw4jkU1h5F5SuN+
-         w4EuDulUnha8g==
-Message-ID: <ab0dd83f-7630-4c2a-2d7e-14b4d7399736@collabora.com>
-Date:   Thu, 10 Mar 2022 11:52:41 +0100
+        b=noDVc6PlWR8NHZ+flnpVaExec2uRYYw+ohrKV9EspZ+HOev+L2pQYMDxNfd23VwQU
+         zl3qV07k/Fif3WnLoFCx5GhsIKA/kAucN0A6tT1ezc9pc3qU1Deit3Pvqyi53vC3ZG
+         Aiq5pBow465nZBl9dEVtKUikTRpo+/ko2LbXP5t6MPWYI/QAVhOBOmIJpDMtMNpUz1
+         VVJ3XiJyKWJpJRHVRuZfYB2dq5E19nWV6RQF742dei02CZCa/a/tXK7RIyvIgelxJx
+         PQTNWFF9KmvrR+MJ3+gxUfQueBKbCnDP3FTi83QUERxEqoah3OgUMMi6yUHi0Swqnm
+         02oLql+r9oM1w==
+Message-ID: <72b85cf8-cff2-0bd6-e0fb-d007a0a81d0c@collabora.com>
+Date:   Thu, 10 Mar 2022 11:52:48 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v14 12/22] drm/mediatek: add display merge start/stop API
- for cmdq support
+Subject: Re: [PATCH v14 14/22] drm/mediatek: add display merge async reset
+ control
 Content-Language: en-US
 To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -54,10 +54,10 @@ Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         singo.chang@mediatek.com, srv_heupstream@mediatek.com,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220310035515.16881-1-nancy.lin@mediatek.com>
- <20220310035515.16881-13-nancy.lin@mediatek.com>
+ <20220310035515.16881-15-nancy.lin@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220310035515.16881-13-nancy.lin@mediatek.com>
+In-Reply-To: <20220310035515.16881-15-nancy.lin@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -65,18 +65,16 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 10/03/22 04:55, Nancy.Lin ha scritto:
-> Add merge start/stop API for cmdq support. The ovl_adaptor merges
-> are configured with each drm plane update. Need to enable/disable
-> merge with cmdq making sure all the settings taken effect in the
-> same vblank.
+> Add merge async reset control in mtk_merge_stop. Async hw doesn't do self
+> reset on each sof signal(start of frame), so need to reset the async to
+> clear the hw status for the next merge start.
 > 
 > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Reviewed-by: CK Hu <ck.hu@mediatek.com>
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 > ---
->   drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 ++
->   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 20 +++++++++++++++++---
->   2 files changed, 19 insertions(+), 3 deletions(-)
+>   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 > 
