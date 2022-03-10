@@ -2,81 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E49C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD78CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245271AbiCJR7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:59:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S245281AbiCJSAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:00:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245230AbiCJR7d (ORCPT
+        with ESMTP id S238595AbiCJSAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:59:33 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9004158E9A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:58:31 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id mm23-20020a17090b359700b001bfceefd8c6so2669915pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:58:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R06mJA/QDlJgqpuXPq9itgdAo42/FLsZYE2RPvXJtdQ=;
-        b=SHHWECtEk9DczbmvbT3CmkjgP8Nud3QNNzkuHeHs5dvvzr7YSz9vlyjjUGofkYuN74
-         8bqFJB8n7jiGAtz/lruBQg6wjM4puDCMk3qs5+g3a7ANq8dcWdjSIYC1nsBTp64XV083
-         XObhkitInFG0DdRBJ/krih+Tn2WMx8wJwxTYvuC38maZIbTyW3VxLkMEyEjcaLaqS1JB
-         SueZugQZStpwxJ4BA5/ziQc+wwtqCi/fwtf+pfrwmP0ZJcJFRreGYD5ttWcegMldzBBm
-         dgG7eU9IVZ+AOgIp4h3sxZfvdhHVtleLOjf36HEsA2JmXSrTUEpS2QKbMC81+fLtijQE
-         3Ajg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R06mJA/QDlJgqpuXPq9itgdAo42/FLsZYE2RPvXJtdQ=;
-        b=nAnPcHfYOVjqGvke8wFT/bQClnL59uAR995fjxtP2lE0MZ39rZXmm1GMMvUiyZ0DUO
-         6fvHmdrcYH7dGmTjXCmM3wI8wKVAtYeMQEOHTUqFN0llJmC5HKR6u+qsuCTfsEWLEaiY
-         /MPFHzAAVnGe0rionY8D/5m/AWC8arb/kDcIhgNfPdnMyinnDp6yUP6ISSgaremM+NMv
-         vvgr62mOme1j5BGs/+IKwohHnPTcbvH+sEPRrwsUuiwfdWE3926uQ6IZ+WfR0QG6I9UZ
-         L5hYAKsu/HcHwIpm9yzLaSFGTMBt+O0FnyIMQPonjyL3Q0QIu1fh1rGAQRSpFGbV8SxM
-         yCHA==
-X-Gm-Message-State: AOAM530ZliMhXfhQF7JSzBa5yKGt952Kuh8eMs8rTBIqUKox57D7jlmh
-        g1HyCgt0rUHKcU92jMTncQs1tg==
-X-Google-Smtp-Source: ABdhPJyfnbvCpB67Z+YNGTCGld4EtfzKxLFs4Q6KYD6j93YpCVj0QQd3X1iAxcRTJ2aA/PlfqeIJBA==
-X-Received: by 2002:a17:90a:73ce:b0:1bf:702c:f384 with SMTP id n14-20020a17090a73ce00b001bf702cf384mr17712918pjk.177.1646935111154;
-        Thu, 10 Mar 2022 09:58:31 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id q12-20020a17090aa00c00b001bc6f1baaaesm10460015pjp.39.2022.03.10.09.58.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 09:58:30 -0800 (PST)
-Date:   Thu, 10 Mar 2022 17:58:26 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH 00/13] KVM: x86: Add a cap to disable NX hugepages on a VM
-Message-ID: <Yio8QtuMd6COcnEw@google.com>
-References: <20220310164532.1821490-1-bgardon@google.com>
+        Thu, 10 Mar 2022 13:00:31 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA4F1965C4;
+        Thu, 10 Mar 2022 09:59:28 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id BE6CD1C0B7F; Thu, 10 Mar 2022 18:59:26 +0100 (CET)
+Date:   Thu, 10 Mar 2022 18:59:26 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/58] 5.10.105-rc2 review
+Message-ID: <20220310175926.GA15877@duo.ucw.cz>
+References: <20220310140812.869208747@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
 Content-Disposition: inline
-In-Reply-To: <20220310164532.1821490-1-bgardon@google.com>
+In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022, Ben Gardon wrote:
->   selftests: KVM: Wrap memslot IDs in a struct for readability
->   selftests: KVM: Add memslot parameter to VM vaddr allocation
->   selftests: KVM: Add memslot parameter to elf_load
 
-I really, really, don't want to go down this path of proliferating memslot crud
-throughout the virtual memory allocators.  I would much rather we solve this by
-teaching the VM creation helpers to (optionally) use hugepages.  The amount of
-churn required just so that one test can back code with hugepages is absurd, and
-there's bound to be tests in the future that want to force hugepages as well.
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi!
+
+> This is the start of the stable review cycle for the 5.10.105 release.
+> There are 58 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+
+                                                                           =
+             =20
+CIP testing did not find any problems here:                                =
+             =20
+                                                                           =
+             =20
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+5.10.y       =20
+                                                                           =
+             =20
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>                              =
+             =20
+
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYio8fgAKCRAw5/Bqldv6
+8ropAJsHFiHHXHM3Y0xOYejqq+dNIzgObACfVPqXE0sYbMS33OphFVvcNk6dLw8=
+=eS4u
+-----END PGP SIGNATURE-----
+
+--Q68bSM7Ycu6FN28Q--
