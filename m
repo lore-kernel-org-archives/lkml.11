@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D1FC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9E2C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238431AbiCJOed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:34:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
+        id S245238AbiCJOei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:34:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244458AbiCJO25 (ORCPT
+        with ESMTP id S244475AbiCJO25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:28:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58327D2079;
-        Thu, 10 Mar 2022 06:24:01 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7346BD21C6;
+        Thu, 10 Mar 2022 06:24:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4080B825A7;
-        Thu, 10 Mar 2022 14:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1BB3C340E8;
-        Thu, 10 Mar 2022 14:23:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D27EB81E9E;
+        Thu, 10 Mar 2022 14:24:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3E5EC340F3;
+        Thu, 10 Mar 2022 14:23:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922220;
-        bh=LzEuzEp1gkK+XkCfZ9yJFcbKa4Vp7YQdCRdeK3/79vc=;
+        s=korg; t=1646922239;
+        bh=ek27sDL8nRpw3Td5eid2CXK/8pNndPVGVVLB+34CqUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VTRfuazlrjw9j2nbtDAjik/I5fF75VbYC9U0KyjhUI+3cprSY6i3Z+rSFMuLjBWVI
-         R7nt32BNfQ5oAxZf+wv+F3AfbYv4SGUodOOQgen0F4Ys0WKWcU26jZbLrbvdgOd3Tk
-         Q4Bv9hbH6FGjSlAeRaxCAIy7rlCp1BXgnKRp4VyU=
+        b=Nj7ohTmin9Uh+t1V8vCOd3KCln93YzPj9AOKGxw1eYNLLm+uqlCqLel/rur7CWgDu
+         pbzdoeuyjDYvhHBOygGYRaeSTivr5Rbz3Kdo4L6+st73JBSYkgVZ3QzaQJWnu6K0Rn
+         fkNMlGS/QUSO4/0eDIO0dSV3vuGHY1oO2PbJA1wY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 01/58] x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
-Date:   Thu, 10 Mar 2022 15:18:21 +0100
-Message-Id: <20220310140812.913098399@linuxfoundation.org>
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 5.10 04/58] Documentation/hw-vuln: Update spectre doc
+Date:   Thu, 10 Mar 2022 15:18:24 +0100
+Message-Id: <20220310140812.998038010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,36 +53,104 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit f8a66d608a3e471e1202778c2a36cbdc96bae73b upstream.
+commit 5ad3eb1132453b9795ce5fd4572b1c18b292cca9 upstream.
 
-Currently Linux prevents usage of retpoline,amd on !AMD hardware, this
-is unfriendly and gets in the way of testing. Remove this restriction.
+Update the doc with the new fun.
+
+  [ bp: Massage commit message. ]
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.487348118@infradead.org
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 5.10]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    7 -------
- 1 file changed, 7 deletions(-)
+ Documentation/admin-guide/hw-vuln/spectre.rst   |   42 ++++++++++++++++--------
+ Documentation/admin-guide/kernel-parameters.txt |    8 +++-
+ 2 files changed, 35 insertions(+), 15 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -845,13 +845,6 @@ static enum spectre_v2_mitigation_cmd __
- 		return SPECTRE_V2_CMD_AUTO;
- 	}
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -131,6 +131,19 @@ steer its indirect branch speculations t
+ speculative execution's side effects left in level 1 cache to infer the
+ victim's data.
  
--	if (cmd == SPECTRE_V2_CMD_RETPOLINE_AMD &&
--	    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON &&
--	    boot_cpu_data.x86_vendor != X86_VENDOR_AMD) {
--		pr_err("retpoline,amd selected but CPU is not AMD. Switching to AUTO select\n");
--		return SPECTRE_V2_CMD_AUTO;
--	}
--
- 	spec_v2_print_cond(mitigation_options[i].option,
- 			   mitigation_options[i].secure);
- 	return cmd;
++Yet another variant 2 attack vector is for the attacker to poison the
++Branch History Buffer (BHB) to speculatively steer an indirect branch
++to a specific Branch Target Buffer (BTB) entry, even if the entry isn't
++associated with the source address of the indirect branch. Specifically,
++the BHB might be shared across privilege levels even in the presence of
++Enhanced IBRS.
++
++Currently the only known real-world BHB attack vector is via
++unprivileged eBPF. Therefore, it's highly recommended to not enable
++unprivileged eBPF, especially when eIBRS is used (without retpolines).
++For a full mitigation against BHB attacks, it's recommended to use
++retpolines (or eIBRS combined with retpolines).
++
+ Attack scenarios
+ ----------------
+ 
+@@ -364,13 +377,15 @@ The possible values in this file are:
+ 
+   - Kernel status:
+ 
+-  ====================================  =================================
+-  'Not affected'                        The processor is not vulnerable
+-  'Vulnerable'                          Vulnerable, no mitigation
+-  'Mitigation: Full generic retpoline'  Software-focused mitigation
+-  'Mitigation: Full AMD retpoline'      AMD-specific software mitigation
+-  'Mitigation: Enhanced IBRS'           Hardware-focused mitigation
+-  ====================================  =================================
++  ========================================  =================================
++  'Not affected'                            The processor is not vulnerable
++  'Mitigation: None'                        Vulnerable, no mitigation
++  'Mitigation: Retpolines'                  Use Retpoline thunks
++  'Mitigation: LFENCE'                      Use LFENCE instructions
++  'Mitigation: Enhanced IBRS'               Hardware-focused mitigation
++  'Mitigation: Enhanced IBRS + Retpolines'  Hardware-focused + Retpolines
++  'Mitigation: Enhanced IBRS + LFENCE'      Hardware-focused + LFENCE
++  ========================================  =================================
+ 
+   - Firmware status: Show if Indirect Branch Restricted Speculation (IBRS) is
+     used to protect against Spectre variant 2 attacks when calling firmware (x86 only).
+@@ -584,12 +599,13 @@ kernel command line.
+ 
+ 		Specific mitigations can also be selected manually:
+ 
+-		retpoline
+-					replace indirect branches
+-		retpoline,generic
+-					google's original retpoline
+-		retpoline,amd
+-					AMD-specific minimal thunk
++                retpoline               auto pick between generic,lfence
++                retpoline,generic       Retpolines
++                retpoline,lfence        LFENCE; indirect branch
++                retpoline,amd           alias for retpoline,lfence
++                eibrs                   enhanced IBRS
++                eibrs,retpoline         enhanced IBRS + Retpolines
++                eibrs,lfence            enhanced IBRS + LFENCE
+ 
+ 		Not specifying this option is equivalent to
+ 		spectre_v2=auto.
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4957,8 +4957,12 @@
+ 			Specific mitigations can also be selected manually:
+ 
+ 			retpoline	  - replace indirect branches
+-			retpoline,generic - google's original retpoline
+-			retpoline,amd     - AMD-specific minimal thunk
++			retpoline,generic - Retpolines
++			retpoline,lfence  - LFENCE; indirect branch
++			retpoline,amd     - alias for retpoline,lfence
++			eibrs		  - enhanced IBRS
++			eibrs,retpoline   - enhanced IBRS + Retpolines
++			eibrs,lfence      - enhanced IBRS + LFENCE
+ 
+ 			Not specifying this option is equivalent to
+ 			spectre_v2=auto.
 
 
