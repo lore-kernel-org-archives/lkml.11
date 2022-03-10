@@ -2,162 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2074DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243017AbiCJOO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:14:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        id S232254AbiCJOPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:15:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243067AbiCJOOF (ORCPT
+        with ESMTP id S243037AbiCJOOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:14:05 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D41C9154704;
-        Thu, 10 Mar 2022 06:11:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646921504; x=1678457504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=dlixjqkIQMYPAGk8N2BV+CT0PbmeRswbnhn9umPYrd0=;
-  b=hf0NsgxOOE3+V8fImk9HNH6oRLTvXKAwPiB3LcSB1kPw97l1cWdsYeOR
-   5v7Q2vxcjh2LFDahb+CaIAdmG/kE6a+s2K1LG4VC0C6RP8YPVta9725Aw
-   LEECMnQTcK/3H0aj5g3fxUaC8GszMiM6dyfa54p6tIr8pmSSuTMa8XkWP
-   UWGAtyO3RM4ThbxSwOcBsdDhd2AtzR4Km8FUX5bq/vU2pZfhxoPx7m7wP
-   cfFyLNPKteIalmkjnEZT6IZqtZY1fpb8EPfE8BUz4mvLhQNF/m51gbVz7
-   Cc+ipkFfP4n3Yc+Lu/+2vusseDxxVeDAdeL+CfHhvpmK/RbFTS+EgIywJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255203360"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="255203360"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:11:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="554655235"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:11:04 -0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v5 12/13] KVM: Expose KVM_MEM_PRIVATE
-Date:   Thu, 10 Mar 2022 22:09:10 +0800
-Message-Id: <20220310140911.50924-13-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+        Thu, 10 Mar 2022 09:14:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7799B1587B8;
+        Thu, 10 Mar 2022 06:11:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB17E61B7A;
+        Thu, 10 Mar 2022 14:11:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3BC1C340E8;
+        Thu, 10 Mar 2022 14:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921495;
+        bh=O7bwEJKYJXRVJIDfJwdzLbTR7ZgsTiITRhcn192SuLw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=um3kwZCSE54ejEjsQSQb22hryMmiGO/MWb7ekPR0aTid43zqNwZidaGMVo4E3OajT
+         vrUu5HAhfHz4nwrS4szu1nNZ4geeJ2VRw9Zg4GEQvKI2pF30SsCmICpdDns2bnsAwy
+         30AVoELWqDDyWGGs6Bh7sl3r9VplBifkAqbD8nQs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.16 32/53] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+Date:   Thu, 10 Mar 2022 15:09:37 +0100
+Message-Id: <20220310140812.757862740@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
+References: <20220310140811.832630727@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
-on it by implementing kvm_arch_private_memory_supported().
+From: James Morse <james.morse@arm.com>
 
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
+
+Speculation attacks against some high-performance processors can
+make use of branch history to influence future speculation as part of
+a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
+previously reported 'Not affected' are now moderately mitigated by CSV2.
+
+Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
+to also show the state of the BHB mitigation.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kvm_host.h |  1 +
- virt/kvm/kvm_main.c      | 24 +++++++++++++++++++-----
- 2 files changed, 20 insertions(+), 5 deletions(-)
+ arch/arm64/include/asm/spectre.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 186b9b981a65..0150e952a131 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1432,6 +1432,7 @@ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
- int kvm_arch_post_init_vm(struct kvm *kvm);
- void kvm_arch_pre_destroy_vm(struct kvm *kvm);
- int kvm_arch_create_vm_debugfs(struct kvm *kvm);
-+bool kvm_arch_private_memory_supported(struct kvm *kvm);
+--- a/arch/arm64/include/asm/spectre.h
++++ b/arch/arm64/include/asm/spectre.h
+@@ -93,5 +93,7 @@ void spectre_v4_enable_task_mitigation(s
  
- #ifndef __KVM_HAVE_ARCH_VM_ALLOC
- /*
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 52319f49d58a..df5311755a40 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1485,10 +1485,19 @@ static void kvm_replace_memslot(struct kvm *kvm,
+ enum mitigation_state arm64_get_meltdown_state(void);
+ 
++enum mitigation_state arm64_get_spectre_bhb_state(void);
++
+ #endif	/* __ASSEMBLY__ */
+ #endif	/* __ASM_SPECTRE_H */
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -96,14 +96,39 @@ static bool spectre_v2_mitigations_off(v
+ 	return ret;
+ }
+ 
++static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
++{
++	switch (bhb_state) {
++	case SPECTRE_UNAFFECTED:
++		return "";
++	default:
++	case SPECTRE_VULNERABLE:
++		return ", but not BHB";
++	case SPECTRE_MITIGATED:
++		return ", BHB";
++	}
++}
++
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
+ 			    char *buf)
+ {
++	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
++	const char *bhb_str = get_bhb_affected_string(bhb_state);
++	const char *v2_str = "Branch predictor hardening";
++
+ 	switch (spectre_v2_state) {
+ 	case SPECTRE_UNAFFECTED:
+-		return sprintf(buf, "Not affected\n");
++		if (bhb_state == SPECTRE_UNAFFECTED)
++			return sprintf(buf, "Not affected\n");
++
++		/*
++		 * Platforms affected by Spectre-BHB can't report
++		 * "Not affected" for Spectre-v2.
++		 */
++		v2_str = "CSV2";
++		fallthrough;
+ 	case SPECTRE_MITIGATED:
+-		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
++		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
+ 	case SPECTRE_VULNERABLE:
+ 		fallthrough;
+ 	default:
+@@ -771,6 +796,13 @@ int arch_prctl_spec_ctrl_get(struct task
  	}
  }
  
--static int check_memory_region_flags(const struct kvm_userspace_memory_region *mem)
-+bool __weak kvm_arch_private_memory_supported(struct kvm *kvm)
++static enum mitigation_state spectre_bhb_state;
++
++enum mitigation_state arm64_get_spectre_bhb_state(void)
 +{
-+	return false;
++	return spectre_bhb_state;
 +}
 +
-+static int check_memory_region_flags(struct kvm *kvm,
-+				const struct kvm_userspace_memory_region *mem)
- {
- 	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
- 
-+	if (kvm_arch_private_memory_supported(kvm))
-+		valid_flags |= KVM_MEM_PRIVATE;
-+
- #ifdef __KVM_HAVE_READONLY_MEM
- 	valid_flags |= KVM_MEM_READONLY;
- #endif
-@@ -1900,7 +1909,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 	int as_id, id;
- 	int r;
- 
--	r = check_memory_region_flags(mem);
-+	r = check_memory_region_flags(kvm, mem);
- 	if (r)
- 		return r;
- 
-@@ -1913,10 +1922,12 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 		return -EINVAL;
- 	if (mem->guest_phys_addr & (PAGE_SIZE - 1))
- 		return -EINVAL;
--	/* We can read the guest memory with __xxx_user() later on. */
- 	if ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
--	    (mem->userspace_addr != untagged_addr(mem->userspace_addr)) ||
--	     !access_ok((void __user *)(unsigned long)mem->userspace_addr,
-+	    (mem->userspace_addr != untagged_addr(mem->userspace_addr)))
-+		return -EINVAL;
-+	/* We can read the guest memory with __xxx_user() later on. */
-+	if (!(mem->flags & KVM_MEM_PRIVATE) &&
-+	    !access_ok((void __user *)(unsigned long)mem->userspace_addr,
- 			mem->memory_size))
- 		return -EINVAL;
- 	if (as_id >= KVM_ADDRESS_SPACE_NUM || id >= KVM_MEM_SLOTS_NUM)
-@@ -1957,6 +1968,9 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 		if ((kvm->nr_memslot_pages + npages) < kvm->nr_memslot_pages)
- 			return -EINVAL;
- 	} else { /* Modify an existing slot. */
-+		/* Private memslots are immutable, they can only be deleted. */
-+		if (mem->flags & KVM_MEM_PRIVATE)
-+			return -EINVAL;
- 		if ((mem->userspace_addr != old->userspace_addr) ||
- 		    (npages != old->npages) ||
- 		    ((mem->flags ^ old->flags) & KVM_MEM_READONLY))
--- 
-2.17.1
+ /* Patched to NOP when enabled */
+ void noinstr spectre_bhb_patch_loop_mitigation_enable(struct alt_instr *alt,
+ 						     __le32 *origptr,
+
 
