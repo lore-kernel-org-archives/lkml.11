@@ -2,101 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5732C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EFBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242555AbiCJNuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:50:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
+        id S242573AbiCJNvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:51:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242553AbiCJNus (ORCPT
+        with ESMTP id S242564AbiCJNvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:50:48 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDB114F98C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:49:47 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id l2so10972784ybe.8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:49:47 -0800 (PST)
+        Thu, 10 Mar 2022 08:51:37 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C834114FBD8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:50:36 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id l19-20020a252513000000b00629235aacb2so4430763ybl.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:50:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YrHkxxw7wa90Lz7KvljazCkAUUcPibWKOq87Yk0/n0Y=;
-        b=XGmoL/c7V6Yac4ZEaR34Gjm6a6GdVsGuTpFSzLBHc7yEcOzghG/dIhCfJ+IGa6DGll
-         um2nX+BPpcofKOEbHuoL0ARr8fftC54cYzbFusMr6qktOlTX3nwet/pOE/oOrbEgTbIm
-         srktgS+dbasgTIFOXTRuTk/81fHPS2YRD5Neg1yH/Cl5HvDHv3i0A72w/W3xYjyBQMzc
-         EsCvzG6S6GbCocy2VVx00HQUHM2UZlwJ+TSmxKTBTpCMToZr7jfpd1ggOOExyE3B8Yrg
-         WIa0Nno/JDdKOiGkQZstYOF7gMjwyDZY62fKy6S1uh2KkxNO/Jr9NuUMbgUc+oyiHHoM
-         aWWg==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=RyC7JYTZVE920vCW2abRPxzJi7BHTSbmvzYhXrT0HUc=;
+        b=K0g7rEqLV7glGY9VoczOQ7tamfCv9ocaLTqQ9pA6K1hKCvyVnz/biCZJdiR8gt8Vun
+         W9gInBQtu7UZnXtuylJdRbY+++aJMY2bp4SA15h24liWnXcsSXBhYgXQ/EK7yzbsbgzK
+         vjTYTdWUU+RGXRSlUNsjo4pxS0VYbiD2d81ufwuLfnWFQtND58Cl11GtfJ6MyjIBD8qB
+         SWfdxVO4TF5rVUC7AzC+HVIVZEmjtP8PPTbq4GKJl+tuw/bF3h6UkZD0rRub+C8KalIa
+         AuT3pDyB1YA7tFMzR+r571RmxPEJedF9DncfdlvTqAVxZG2OWHumJB0W8bHPr7OX00JW
+         oE9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YrHkxxw7wa90Lz7KvljazCkAUUcPibWKOq87Yk0/n0Y=;
-        b=kC82jHiKZdeltID1v/JDuc/kWIO3w5o5mcOMRiIyo1MXDP3hOjM15BgM6AOJqL7cbq
-         Zd+YNcj6xV7bKRf/liqJrP87QRao/tV3jhcTte+zIZ+9ckaofnZnNfnPbOUm3o8u+Jmd
-         6PHVRIgCeWVXCM43SHsEtAZmYjuvbICdbF056IAwBgjYos+0qwSI/WPMaHGd/qznyA6q
-         PABUowX8J8qGsoW7WkhYAMBgaymn2B6VPb5LV9iGsOFdjmeKk9ubRI8OSg8L/i+8luOH
-         NY2iZ8p5POZEJHlzoOUKLy+Tmh1HjKxvEQJgNfI0McxXySJRy1wUdfU7FZ4dIiGTktyv
-         GLag==
-X-Gm-Message-State: AOAM533naME6XbBU8LoEqdN3UMTWU1wV3/15a7xuNv/IgJyWXbnkcrRv
-        FPTxVvmGd7NNk6zPmn6kW5qmzEXFDHbHsJSTidmp7g==
-X-Google-Smtp-Source: ABdhPJxEyh0BnHyunA1YVnIuCNPWGZHleKd1WO6N3gi7S+63k2cJ+dICHYCAS3kauxgrvZDRc7AkiSHCwy8gPXQMxcI=
-X-Received: by 2002:a25:8390:0:b0:629:2839:9269 with SMTP id
- t16-20020a258390000000b0062928399269mr3888598ybk.246.1646920186546; Thu, 10
- Mar 2022 05:49:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220302082718.32268-1-songmuchun@bytedance.com>
- <20220302082718.32268-3-songmuchun@bytedance.com> <CAPcyv4j7rn8OzWKydcCJNXdrhXm6h6Vq5n7uLzP5BSMJ_qSZgg@mail.gmail.com>
-In-Reply-To: <CAPcyv4j7rn8OzWKydcCJNXdrhXm6h6Vq5n7uLzP5BSMJ_qSZgg@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Thu, 10 Mar 2022 21:48:01 +0800
-Message-ID: <CAMZfGtUNRAb3qnx5-ZV1uPEx1aLNbkzjJw5JrUzX8tMbR9AGNg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/6] dax: fix cache flush on PMD-mapped pages
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Hugh Dickins <hughd@google.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Ross Zwisler <zwisler@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=RyC7JYTZVE920vCW2abRPxzJi7BHTSbmvzYhXrT0HUc=;
+        b=WzdwullKGJCoM3SW89rHcLZD2dEckUNUjCdfPqMDZXk+x5W/qyAgKTU9i6fBscrJ5K
+         469WRZU+qCSymeUchaa9mYle7ZWh4iMkc/DmCis/CFdNIXbTIiSB9+MmvUcSqij4Vlkc
+         yv1HpOcwj+EHOaOMKNtHZ3ji7PbDB6mN3tW2zcFs801YDG6sVfBRxmcEkIGk/FwrLeJn
+         IQrjxmqb1dJPW6XxbsF5gzoBaFbctcjChTzliOXDdaXmHUPSvhfm3q44qt6Ui6CbjoAr
+         bTMZtEmOVPZyfY9g8mDNkyUYnm+u35LuvN/93w251eTDMbDPZH4a8lCXIaiTo5xR2Fki
+         Ja4w==
+X-Gm-Message-State: AOAM530+q+TLw3Cgm1f/sq4bkD0EIW+rmye2TfQIJSjta+vhKPqCiVbz
+        iNWIP2qYWB2acFcmub9CCx6lhDfEqwc=
+X-Google-Smtp-Source: ABdhPJwbFxS4WB8cd5FG5SW40KLsWQMyZN4ed5ofd7m8SZn2puewTqpYphgovRQMb3BP/CNUeBr3IvzMptw=
+X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
+ (user=jiyong job=sendgmr) by 2002:a25:d606:0:b0:629:187c:e514 with SMTP id
+ n6-20020a25d606000000b00629187ce514mr3895138ybg.158.1646920236015; Thu, 10
+ Mar 2022 05:50:36 -0800 (PST)
+Date:   Thu, 10 Mar 2022 22:50:11 +0900
+Message-Id: <20220310135012.175219-1-jiyong@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH v3] vsock: each transport cycles only on its own sockets
+From:   Jiyong Park <jiyong@google.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 8:06 AM Dan Williams <dan.j.williams@intel.com> wrote:
->
-> On Wed, Mar 2, 2022 at 12:29 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-> > However, it does not cover the full pages in a THP except a head page.
-> > Replace it with flush_cache_range() to fix this issue.
->
-> This needs to clarify that this is just a documentation issue with the
-> respect to properly documenting the expected usage of cache flushing
-> before modifying the pmd. However, in practice this is not a problem
-> due to the fact that DAX is not available on architectures with
-> virtually indexed caches per:
+When iterating over sockets using vsock_for_each_connected_socket, make
+sure that a transport filters out sockets that don't belong to the
+transport.
 
-Right. I'll add this into the commit log.
+There actually was an issue caused by this; in a nested VM
+configuration, destroying the nested VM (which often involves the
+closing of /dev/vhost-vsock if there was h2g connections to the nested
+VM) kills not only the h2g connections, but also all existing g2h
+connections to the (outmost) host which are totally unrelated.
 
->
-> d92576f1167c dax: does not work correctly with virtual aliasing caches
->
-> Otherwise, you can add:
->
-> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Tested: Executed the following steps on Cuttlefish (Android running on a
+VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+connection inside the VM, (2) open and then close /dev/vhost-vsock by
+`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+session is not reset.
 
-Thanks.
+[1] https://android.googlesource.com/device/google/cuttlefish/
+
+Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+Signed-off-by: Jiyong Park <jiyong@google.com>
+---
+Changes in v3:
+  - Fixed the build error in vmci_transport.c
+Changes in v2:
+  - Squashed into a single patch
+
+ drivers/vhost/vsock.c            | 3 ++-
+ include/net/af_vsock.h           | 3 ++-
+ net/vmw_vsock/af_vsock.c         | 9 +++++++--
+ net/vmw_vsock/virtio_transport.c | 7 +++++--
+ net/vmw_vsock/vmci_transport.c   | 5 ++++-
+ 5 files changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 37f0b4274113..e6c9d41db1de 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 
+ 	/* Iterating over all connections for all CIDs to find orphans is
+ 	 * inefficient.  Room for improvement here. */
+-	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
++	vsock_for_each_connected_socket(&vhost_transport.transport,
++					vhost_vsock_reset_orphans);
+ 
+ 	/* Don't check the owner, because we are in the release path, so we
+ 	 * need to stop the vsock device in any case.
+diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+index ab207677e0a8..f742e50207fb 100644
+--- a/include/net/af_vsock.h
++++ b/include/net/af_vsock.h
+@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
+ struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
+ 					 struct sockaddr_vm *dst);
+ void vsock_remove_sock(struct vsock_sock *vsk);
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk));
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
+ bool vsock_find_cid(unsigned int cid);
+ 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 38baeb189d4e..f04abf662ec6 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
+ }
+ EXPORT_SYMBOL_GPL(vsock_remove_sock);
+ 
+-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
++void vsock_for_each_connected_socket(struct vsock_transport *transport,
++				     void (*fn)(struct sock *sk))
+ {
+ 	int i;
+ 
+@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+ 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
+ 		struct vsock_sock *vsk;
+ 		list_for_each_entry(vsk, &vsock_connected_table[i],
+-				    connected_table)
++				    connected_table) {
++			if (vsk->transport != transport)
++				continue;
++
+ 			fn(sk_vsock(vsk));
++		}
+ 	}
+ 
+ 	spin_unlock_bh(&vsock_table_lock);
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index fb3302fff627..5afc194a58bb 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -24,6 +24,7 @@
+ static struct workqueue_struct *virtio_vsock_workqueue;
+ static struct virtio_vsock __rcu *the_virtio_vsock;
+ static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
++static struct virtio_transport virtio_transport; /* forward declaration */
+ 
+ struct virtio_vsock {
+ 	struct virtio_device *vdev;
+@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
+ 	switch (le32_to_cpu(event->id)) {
+ 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
+ 		virtio_vsock_update_guest_cid(vsock);
+-		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++		vsock_for_each_connected_socket(&virtio_transport.transport,
++						virtio_vsock_reset_sock);
+ 		break;
+ 	}
+ }
+@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+ 	synchronize_rcu();
+ 
+ 	/* Reset all connected sockets when the device disappear */
+-	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
++	vsock_for_each_connected_socket(&virtio_transport.transport,
++					virtio_vsock_reset_sock);
+ 
+ 	/* Stop all work handlers to make sure no one is accessing the device,
+ 	 * so we can safely call virtio_reset_device().
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 7aef34e32bdf..b17dc9745188 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -75,6 +75,8 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
+ 
+ static int PROTOCOL_OVERRIDE = -1;
+ 
++static struct vsock_transport vmci_transport; /* forward declaration */
++
+ /* Helper function to convert from a VMCI error code to a VSock error code. */
+ 
+ static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
+@@ -882,7 +884,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
+ 					 const struct vmci_event_data *e_data,
+ 					 void *client_data)
+ {
+-	vsock_for_each_connected_socket(vmci_transport_handle_detach);
++	vsock_for_each_connected_socket(&vmci_transport,
++					vmci_transport_handle_detach);
+ }
+ 
+ static void vmci_transport_recv_pkt_work(struct work_struct *work)
+
+base-commit: 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
+-- 
+2.35.1.723.g4982287a31-goog
+
