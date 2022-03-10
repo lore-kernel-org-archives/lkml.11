@@ -2,111 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4433C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94143C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245426AbiCJO4c convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:56:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        id S237133AbiCJO4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347939AbiCJOvf (ORCPT
+        with ESMTP id S1347070AbiCJOu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:51:35 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C819C35;
-        Thu, 10 Mar 2022 06:50:32 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nSK7V-0004bE-W9; Thu, 10 Mar 2022 15:50:26 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Sandy Huang <hjc@rock-chips.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, knaerzche@gmail.com
-Subject: Re: [PATCH] drm/rockchip: remove redundant assignment to pointer connector
-Date:   Thu, 10 Mar 2022 15:50:25 +0100
-Message-ID: <4453075.DPozGzHrQt@diego>
-In-Reply-To: <CAKwvOdkXNGRJkZDd7Cg8jhL9Ex7R+VPYqEEc+VpwDyi9NJKXQQ@mail.gmail.com>
-References: <20220307181704.149076-1-colin.i.king@gmail.com> <CAKwvOdkXNGRJkZDd7Cg8jhL9Ex7R+VPYqEEc+VpwDyi9NJKXQQ@mail.gmail.com>
+        Thu, 10 Mar 2022 09:50:29 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B9318DAB7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:45:32 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id b8so5421794pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:45:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RPULJMtRKjA9XHVfCiU0lkTP5Po3/tVc3d3ybzr9pAI=;
+        b=byClIQkE7K9xa0RUPSQIo8oicPjQHvO18luT1iFudeZHAwG/hmzPYRusS3SBg/y8Yz
+         4xha71rAYfjUyIW8SiJMR5OVAf4y75iDDx2BAHwi/2H0qMNBNfdYV1e1Sr1YDxwV1gxO
+         e8aG5gKO45NmxNHTT9LGtYN22t9cPih2/dZJ66v69DdqrU8nrkmS+QFG8wVcplvrfnCP
+         P5y8vEyEpFx1YEt/RT/wRxb1YPV63wRAHyXLmVqOSnZnXAzu+tlT+0SXrUHBfH6wlDhG
+         1RCZma7jOYDiqOAQz4L2xGjDP9YEDiIcyEG3YD2Xo0haSnLqkkmY5G7vPVowX4yvrdjS
+         /ElA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RPULJMtRKjA9XHVfCiU0lkTP5Po3/tVc3d3ybzr9pAI=;
+        b=n+yY/WoL3CTxjUv/qZ6+HJ4JJBU2KRGC5c/3WPLBel8A/7zTGVAPHZysMgmMf3ElAg
+         mS0Wg7tNf4LD8tTYyNcw4aAg4rvBtRDI2cvA9LQKOJC5I03FDkS6Y0IDfPNHG2WchIxz
+         LNyS7J5lf7ZwlIdY0GkU+ahHDbFKGSIrlyY4jOTpfMinZS5CseczkxOY8x5kuwGCu2mh
+         5bpbTxwak3SgM0NyOhC0lbsn4uWiAChoBs/fBl/usAP/jpqj4xrejiXhNml/UXS6unW/
+         XpRvF2b7Tpqn4dzibYWG18hK/GzcbPp3aAGY50+NLN4HBiKxnwyGefzc2rgS0BQ2IeA7
+         dpMg==
+X-Gm-Message-State: AOAM530lnB90fS5z3b0N1MYXhZ/QOY1xhq0EF9DDOhHWm6YlroCtKDuW
+        ukbN6FzaSAT1r/CLYTN1faA=
+X-Google-Smtp-Source: ABdhPJwZUmXQFM3Uvcfr5KMlb0Cc/uEttYBjsXg12377+TEKKxHNKSo5/XbJw4PSJO/SdlQluC6YNw==
+X-Received: by 2002:a17:902:e5cc:b0:151:f626:9153 with SMTP id u12-20020a170902e5cc00b00151f6269153mr5502607plf.41.1646923531533;
+        Thu, 10 Mar 2022 06:45:31 -0800 (PST)
+Received: from odroid ([114.29.23.97])
+        by smtp.gmail.com with ESMTPSA id 1-20020a17090a1a0100b001bf3ba1508fsm6275329pjk.33.2022.03.10.06.45.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 06:45:31 -0800 (PST)
+Date:   Thu, 10 Mar 2022 14:45:24 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     sxwjean@me.com
+Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
+        longman@redhat.com, guro@fb.com, willy@infradead.org,
+        roman.gushchin@linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
+Subject: Re: [PATCH v2 2/2] mm: slub: Delete useless parameter of
+ alloc_slab_page()
+Message-ID: <20220310144524.GA1166889@odroid>
+References: <20220310140701.87908-1-sxwjean@me.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310140701.87908-1-sxwjean@me.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-looks like I wasn't in the original recipient list, so only got Nick's
-answer.
-
-Am Mittwoch, 9. März 2022, 00:10:31 CET schrieb Nick Desaulniers:
-> On Mon, Mar 7, 2022 at 10:17 AM Colin Ian King <colin.i.king@gmail.com> wrote:
-> >
-> > The pointer connector is being assigned a value that is never read,
-> > it is being re-assigned in the following statement. The assignment
-> > is redundant and can be removed.
-> >
-> > Cleans up clang scan build warning:
-> > drivers/gpu/drm/rockchip/rockchip_rgb.c:153:2: warning: Value stored
-> > to 'connector' is never read [deadcode.DeadStores]
+> From: Xiongwei Song <sxwjean@gmail.com>
+>
+> The parameter @s is useless for alloc_slab_page(). It was added in 2014
+> by commit 5dfb41750992 ("sl[au]b: charge slabs to kmemcg explicitly"). The
+> need for it was removed in 2020 by commit 1f3147b49d75 ("mm: slub: call
+> account_slab_page() after slab page initialization"). Let's delete it.
+>
+> [willy@infradead.org: Added detailed history of @s]
+> Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+> Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Acked-by: David Rientjes <rientjes@google.com>
+> Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
+> ---
+> mm/slub.c | 8 ++++----
+> 1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 261474092e43..5d273ee04c43 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -1788,8 +1788,8 @@ static void *setup_object(struct kmem_cache *s, struct slab *slab,
+>  /*
+>  * Slab allocation and freeing
+>  */
+> -static inline struct slab *alloc_slab_page(struct kmem_cache *s,
+> -		gfp_t flags, int node, struct kmem_cache_order_objects oo)
+> +static inline struct slab *alloc_slab_page(gfp_t flags, int node,
+> +		struct kmem_cache_order_objects oo)
+>  {
+>  	struct folio *folio;
+> 	struct slab *slab;
+> @@ -1941,7 +1941,7 @@ static struct slab *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+> 	if ((alloc_gfp & __GFP_DIRECT_RECLAIM) && oo_order(oo) > oo_order(s->min))
+> 		alloc_gfp = (alloc_gfp | __GFP_NOMEMALLOC) & ~(__GFP_RECLAIM|__GFP_NOFAIL);
 > 
-> + Author & reviewer of:
-> Fixes: 2e87bf389e13 ("drm/rockchip: add DRM_BRIDGE_ATTACH_NO_CONNECTOR
-> flag to drm_bridge_attach")
-> 
-> >
-> > Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> > ---
-> >  drivers/gpu/drm/rockchip/rockchip_rgb.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/rockchip/rockchip_rgb.c b/drivers/gpu/drm/rockchip/rockchip_rgb.c
-> > index 2494b079489d..92a727931a49 100644
-> > --- a/drivers/gpu/drm/rockchip/rockchip_rgb.c
-> > +++ b/drivers/gpu/drm/rockchip/rockchip_rgb.c
-> > @@ -150,7 +150,6 @@ struct rockchip_rgb *rockchip_rgb_init(struct device *dev,
-> >         if (ret)
-> >                 goto err_free_encoder;
-> >
-> > -       connector = &rgb->connector;
-> >         connector = drm_bridge_connector_init(rgb->drm_dev, encoder);
+>-	slab = alloc_slab_page(s, alloc_gfp, node, oo);
+>+	slab = alloc_slab_page(alloc_gfp, node, oo);
+> 	if (unlikely(!slab)) {
+> 		oo = s->min;
+> 		alloc_gfp = flags;
+>@@ -1949,7 +1949,7 @@ static struct slab *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+> 		 * Allocation may have failed due to fragmentation.
+> 		 * Try a lower order alloc if possible
+> 		 */
+>-		slab = alloc_slab_page(s, alloc_gfp, node, oo);
+>+		slab = alloc_slab_page(alloc_gfp, node, oo);
+> 		if (unlikely(!slab))
+> 			goto out;
+> 		stat(s, ORDER_FALLBACK);
 
-I don't think this will work as expected.
+Looks good, nice changelog!
 
-Yes, the whole thing looks a bit broken right now, but the connector
-field in the rockchip_rgb struct still exists and rockchip_rgb_fini also
-still uses it when calling drm_connector_cleanup.
-
-Same issue seems to exist in in rockchip_lvds.c with drm_connector_cleanup
-it seems.
-
-I guess drm_bridge_connector_destroy() is responsible for the cleanup so
-the drm_connector_cleanup call both in rockchip_rgb and rockchip_lvds
-as well as the local connector elements can go away as well?
-
-
-Heiko
-
-
-> >         if (IS_ERR(connector)) {
-> >                 DRM_DEV_ERROR(drm_dev->dev,
-> > --
-> > 2.35.1
-> >
-> >
-> 
-> 
-> 
-
-
-
-
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
