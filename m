@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C73E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 366DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243721AbiCJOZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
+        id S240471AbiCJOZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244620AbiCJOTo (ORCPT
+        with ESMTP id S241727AbiCJOVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:19:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754E517775B;
-        Thu, 10 Mar 2022 06:16:38 -0800 (PST)
+        Thu, 10 Mar 2022 09:21:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A775FBC;
+        Thu, 10 Mar 2022 06:20:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2474B825A7;
-        Thu, 10 Mar 2022 14:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E3C3C340E8;
-        Thu, 10 Mar 2022 14:15:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6CFA61D02;
+        Thu, 10 Mar 2022 14:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6873C340E8;
+        Thu, 10 Mar 2022 14:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921727;
-        bh=xEM7bM1MS3ZnvwOhutZQEBGhLFXWiu3krUw3+5mpfAA=;
+        s=korg; t=1646922009;
+        bh=mSc6PRGfJhS8fiw4SnlPOu1Av93ntIA6/0VNlY/8NbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJ9W5+bn0p7yck8GMsz0pgg1KWz1zylVgFPVP3nQDw1XZMvRpJyB+wdRHcidjlRcE
-         BRzSQCkKblQ1GYrwlXJHuuJkuDKrbB3loZqZhYm34Nx5bqtAtgV4HyH6oWwQK6Wh3d
-         n8sGWz9QJTqTMA0txgf8eUW0Ffp1YceujFIo3UdM=
+        b=XjmULAcfMaCYfMSfgHprCBrOm7MHyvKxDDHGNvLXAFUNZlJfQpp/VfwsPY+5NSXSU
+         By5g9GW91sZtTkCB72gHEWvJgCswMsRW3WQysrnx9O+wb4tpN1XtKGmU99JgtL4q3m
+         yslPCOCJIj3H0SUaIUxdojLtfUv3gjZNtUXV44ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 4.9 34/38] xen/scsifront: dont use gnttab_query_foreign_access() for mapped status
-Date:   Thu, 10 Mar 2022 15:13:47 +0100
-Message-Id: <20220310140809.129519975@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Anthony Steinhauser <asteinhauser@google.com>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 4.14 01/31] x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
+Date:   Thu, 10 Mar 2022 15:18:14 +0100
+Message-Id: <20220310140807.570546096@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
-References: <20220310140808.136149678@linuxfoundation.org>
+In-Reply-To: <20220310140807.524313448@linuxfoundation.org>
+References: <20220310140807.524313448@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,43 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Borislav Petkov <bp@suse.de>
 
-Commit 33172ab50a53578a95691310f49567c9266968b0 upstream.
+commit a5ce9f2bb665d1d2b31f139a02dbaa2dfbb62fa6 upstream.
 
-It isn't enough to check whether a grant is still being in use by
-calling gnttab_query_foreign_access(), as a mapping could be realized
-by the other side just after having called that function.
+Merge the test whether the CPU supports STIBP into the test which
+determines whether STIBP is required. Thus try to simplify what is
+already an insane logic.
 
-In case the call was done in preparation of revoking a grant it is
-better to do so via gnttab_try_end_foreign_access() and check the
-success of that operation instead.
+Remove a superfluous newline in a comment, while at it.
 
-This is CVE-2022-23038 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Anthony Steinhauser <asteinhauser@google.com>
+Link: https://lkml.kernel.org/r/20200615065806.GB14668@zn.tnic
+[fllinden@amazon.com: fixed contextual conflict (comment) for 4.14]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/xen-scsifront.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
---- a/drivers/scsi/xen-scsifront.c
-+++ b/drivers/scsi/xen-scsifront.c
-@@ -210,12 +210,11 @@ static void scsifront_gnttab_done(struct
- 		return;
- 
- 	for (i = 0; i < s->nr_grants; i++) {
--		if (unlikely(gnttab_query_foreign_access(s->gref[i]) != 0)) {
-+		if (unlikely(!gnttab_try_end_foreign_access(s->gref[i]))) {
- 			shost_printk(KERN_ALERT, info->host, KBUILD_MODNAME
- 				     "grant still in use by backend\n");
- 			BUG();
- 		}
--		gnttab_end_foreign_access(s->gref[i], 0, 0UL);
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -756,10 +756,12 @@ spectre_v2_user_select_mitigation(enum s
  	}
  
- 	kfree(s->sg);
+ 	/*
+-	 * If enhanced IBRS is enabled or SMT impossible, STIBP is not
++	 * If no STIBP, enhanced IBRS is enabled or SMT impossible, STIBP is not
+ 	 * required.
+ 	 */
+-	if (!smt_possible || spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
++	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
++	    !smt_possible ||
++	    spectre_v2_enabled == SPECTRE_V2_IBRS_ENHANCED)
+ 		return;
+ 
+ 	/*
+@@ -771,12 +773,6 @@ spectre_v2_user_select_mitigation(enum s
+ 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
+ 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
+ 
+-	/*
+-	 * If STIBP is not available, clear the STIBP mode.
+-	 */
+-	if (!boot_cpu_has(X86_FEATURE_STIBP))
+-		mode = SPECTRE_V2_USER_NONE;
+-
+ 	spectre_v2_user_stibp = mode;
+ 
+ set_mode:
+@@ -1255,7 +1251,6 @@ static int ib_prctl_set(struct task_stru
+ 		if (spectre_v2_user_ibpb == SPECTRE_V2_USER_NONE &&
+ 		    spectre_v2_user_stibp == SPECTRE_V2_USER_NONE)
+ 			return 0;
+-
+ 		/*
+ 		 * With strict mode for both IBPB and STIBP, the instruction
+ 		 * code paths avoid checking this task flag and instead,
 
 
