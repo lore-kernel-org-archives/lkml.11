@@ -2,113 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7668C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244982AbiCJOzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        id S245268AbiCJOzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:55:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346342AbiCJOnr (ORCPT
+        with ESMTP id S1344083AbiCJOk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:43:47 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1D413C9C3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:42:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646923342; x=1678459342;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OJKaj+dkol1FacgiHUcMifV8v9tMiNuuIHX0fa00Bf0=;
-  b=cZYxKy9zOUtL4DMKQVD40nTVZPagwdvFwMkC82MsqvwiV81YMSEO/Hpj
-   PcZwoOxdR6+JWOniW9KMXA56Au/OXjhomEVHujyhrLvF8oJgBcrsoGrZu
-   h7opOcVEaBUNoT5pg4GhPDFL5x9z30n3VvWKVbXM+NdPuuUB7IR3ZvcIT
-   iUyPqaYXtvnFzUcdQF9O0s5Tq4NGy+pJtIuaoa1oeap50rQsWyfP3PjCu
-   WTzGTnFBLhPS2e7nD6CYGXx0Qvw0iGaglhEpTFI4/DTmDY/0qX7BLYQ0f
-   YEzQYcbn2Hp1zrOrznSJ8WNTLMMhqrSj9qBtoRoYLAwCbsdbVR3Oub0Jy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255455234"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="255455234"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:42:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="633006274"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Mar 2022 06:42:21 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSJzg-00051c-7O; Thu, 10 Mar 2022 14:42:20 +0000
-Date:   Thu, 10 Mar 2022 22:42:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Quentin Perret <qperret@google.com>
-Subject: arch/arm64/kvm/va_layout.c:292:6: warning: no previous prototype for
- function 'kvm_compute_final_ctr_el0'
-Message-ID: <202203102230.x3TDH4ku-lkp@intel.com>
+        Thu, 10 Mar 2022 09:40:27 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9544177769;
+        Thu, 10 Mar 2022 06:34:21 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id B8ABA1F385;
+        Thu, 10 Mar 2022 14:25:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646922308; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=9oyl8q6a0pE4tkTdghKtSetTuXxb7oTZ8Q26t0KopSU=;
+        b=CDqCUdW98NX4xao4cH0hW5eFGo7JmrTtReY1xcHgZaiSMsdzTEPP8xwqA3Vd02gpeV/Rkh
+        4TizuOZp5GNhYeTCPsycYAysbRq+PkOXfC20v9qpuyAjPc4G+AG/EKFhLgg3aaNkvnW4L2
+        9g1UkY/FTwurSxa5QImUxJROUNVX7bg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646922308;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=9oyl8q6a0pE4tkTdghKtSetTuXxb7oTZ8Q26t0KopSU=;
+        b=XRDUjwGgjhFeHPJDbwJd0gd/7jiiTyfY9lrRXdS9pc8DUm+LM83ePWZWol/LYPVCogZJny
+        q7MjF6Bi+uuNVfCw==
+Received: from vasant-suse.fritz.box (unknown [10.163.24.178])
+        by relay2.suse.de (Postfix) with ESMTP id DCCD1A3B8A;
+        Thu, 10 Mar 2022 14:25:07 +0000 (UTC)
+From:   Vasant Karasulli <vkarasulli@suse.de>
+To:     Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ddiss@suse.de
+Cc:     Vasant Karasulli <vkarasulli@suse.de>
+Subject: [PATCH v2 0/2] exfat: allow access to paths with trailing dots
+Date:   Thu, 10 Mar 2022 15:24:53 +0100
+Message-Id: <20220310142455.23127-1-vkarasulli@suse.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1db333d9a51f3459fba1bcaa564d95befe79f0b3
-commit: 755db23420a1ce4b740186543432983e9bbe713e KVM: arm64: Generate final CTR_EL0 value when running in Protected mode
-date:   12 months ago
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220310/202203102230.x3TDH4ku-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=755db23420a1ce4b740186543432983e9bbe713e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 755db23420a1ce4b740186543432983e9bbe713e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/ arch/arm64/kvm/ drivers/gpu/drm/tegra/ drivers/usb/host/ kernel/debug/kdb/
+This patchset is the version 2 of the patch that introduces
+a new exfat mount option 'keep_last_dots' that does the following:
+1. Allows users to resolve paths carrying trailing period '.' characters.
+2. Disallows users to create files carrying trailing period '.' characters.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Version 1 of the patch:
+ https://lore.kernel.org/linux-fsdevel/20210818111123.19818-1-ddiss@suse.de/
 
-All warnings (new ones prefixed by >>):
+ Feedback will be appreciated.
 
-   arch/arm64/kvm/va_layout.c:188:6: warning: no previous prototype for function 'kvm_patch_vector_branch' [-Wmissing-prototypes]
-   void kvm_patch_vector_branch(struct alt_instr *alt,
-        ^
-   arch/arm64/kvm/va_layout.c:188:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kvm_patch_vector_branch(struct alt_instr *alt,
-   ^
-   static 
-   arch/arm64/kvm/va_layout.c:286:6: warning: no previous prototype for function 'kvm_get_kimage_voffset' [-Wmissing-prototypes]
-   void kvm_get_kimage_voffset(struct alt_instr *alt,
-        ^
-   arch/arm64/kvm/va_layout.c:286:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kvm_get_kimage_voffset(struct alt_instr *alt,
-   ^
-   static 
->> arch/arm64/kvm/va_layout.c:292:6: warning: no previous prototype for function 'kvm_compute_final_ctr_el0' [-Wmissing-prototypes]
-   void kvm_compute_final_ctr_el0(struct alt_instr *alt,
-        ^
-   arch/arm64/kvm/va_layout.c:292:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kvm_compute_final_ctr_el0(struct alt_instr *alt,
-   ^
-   static 
-   3 warnings generated.
+ Thanks,
+ Vasant
+
+Vasant Karasulli (2):
+  The "keep_last_dots" mount option will, in a subsequent commit,
+    control whether or not trailing periods '.' are stripped from path
+    components during file lookup or file creation.
+  exfat currently unconditionally strips trailing periods '.' when
+    performing path lookup, but allows them in the filenames during file
+    creation. This is done intentionally, loosely following Windows
+    behaviour and specifications which state:
+
+ fs/exfat/exfat_fs.h |  3 ++-
+ fs/exfat/namei.c    | 50 ++++++++++++++++++++++++++++++++-------------
+ fs/exfat/super.c    |  7 +++++++
+ 3 files changed, 45 insertions(+), 15 deletions(-)
 
 
-vim +/kvm_compute_final_ctr_el0 +292 arch/arm64/kvm/va_layout.c
+base-commit: ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2
+prerequisite-patch-id: aa89fed0f25e0593bd930cb1925a61318970af3b
+prerequisite-patch-id: b82d57cf11a808fd91ebce196ad90742f266ae39
+prerequisite-patch-id: 8fb922007d8da42e7d8915ad4192c3a881384720
+prerequisite-patch-id: 80a740f0cc838892abca091667fa5b407611ea39
+prerequisite-patch-id: 70a6044affdfcfba97c7651fb2150fa42cf01805
+prerequisite-patch-id: a017bdbdcc66df4dd3a66ba03a37714b8e68d253
+prerequisite-patch-id: 52771ab4aa8cbdafed3594d7d9a0c75b8a53f6e4
+prerequisite-patch-id: fe388ead9e78b2e67bfb1ddfd5cd60a496c12d1c
+prerequisite-patch-id: fb7ef4d34a652d20b3c6edefaf72ca6298d1e8f4
+prerequisite-patch-id: 4194bee4bb9ee6eaeb6ee1ddd82cb84cdcab8d38
+prerequisite-patch-id: e178f0c524a65e855ffb7861f1b9a9b2d56a2428
+prerequisite-patch-id: e35925ec691c2fa8c167c19844cb40ef090845aa
+prerequisite-patch-id: 6f54f7183bb0c519f9f76d8645da5a881ca71458
+prerequisite-patch-id: b2d2dc9c206fbfc0c80f1be3d9ab031ba2dfd279
+prerequisite-patch-id: 47a6c9093808e07f6ff561d011566a4ee4e7465a
+prerequisite-patch-id: 70b5f29b3208d4e0b8bd27900618aeaba901d19a
+prerequisite-patch-id: 56b6ad48cc9999893d34e7378ad1bbad293ca52b
+prerequisite-patch-id: 3318f5c0bb1dac4c932e892329c52c1a118633b4
+prerequisite-patch-id: e6aa617911d8647d1b7764c6916e3a01ffed1371
+prerequisite-patch-id: 60f8292acf6a200ce4b8f0080a4e7e6429f0f78f
+prerequisite-patch-id: e2f2b35b6e7c1aaa6a9b22e563c0f753df5fbe88
+prerequisite-patch-id: 70880c12ac3be19b196165cf4a06baf3b6074072
+prerequisite-patch-id: 55d302be95eccc06e20360e5b392f72e7249ea76
+prerequisite-patch-id: 0fc645d44f0354b6217c3a713d1ac144de7c786f
+prerequisite-patch-id: ebf526d3226975950e8997ed5f83f9b11d631aa5
+prerequisite-patch-id: ddb73fe6ea6d1e72b379f480b47ec60162352eb7
+prerequisite-patch-id: 091d1b77db64fcd1832dbe1db820fd4685f5651b
+prerequisite-patch-id: 30006d3af6ae601664ddee4c468520dc800b27bf
+prerequisite-patch-id: fcfb1b6ee7b1c7ab5cdd02d71113551c710a21ca
+prerequisite-patch-id: 8f225e2d574ffabb6ed842e92543fd0aab52fa19
+prerequisite-patch-id: cf3c7778997c4ca97ab08b195cfe861c565f504c
+prerequisite-patch-id: 0757c9df4b98726a778f260c4c8ac12f764a2a66
+prerequisite-patch-id: 60d1cbbfad4650cce75ffea3253629e8bd9a512c
+prerequisite-patch-id: 6657313f73334d9d56215ce286cb0d96674a9c9d
+prerequisite-patch-id: 352c99d07523c55e000b9df37a938da22bfedb9f
+prerequisite-patch-id: 27176966d0b2d1b98804f3de159a39fcbff0dc9a
+prerequisite-patch-id: 6d0311021d93c54e5a306af2d40f43b482a7ee66
+prerequisite-patch-id: b5d02eeea8fd63acf76bf7ad5235c20e68858d16
+prerequisite-patch-id: f169a13a30c2b09839055a91dd8853c476e8c3f7
+prerequisite-patch-id: 14df2ff4090dc2b7518be5a48feec7711628e0d4
+prerequisite-patch-id: f4d3503460646e4accd4c54f44f9593816fc62a0
+prerequisite-patch-id: 9205bc688a48d7ab778b6bd8454890e1fb7cc039
+prerequisite-patch-id: 48513af66ec62d400de1d559f7e75327610b5686
+prerequisite-patch-id: 2169938ae51c00399f010f88027bf70b05a1d90f
+prerequisite-patch-id: 2b9450e957e69b30414bbf0e1cc3caebd334f654
+prerequisite-patch-id: 0c7d6e599af288ca298bbc59a08246715982a7ab
+prerequisite-patch-id: a2c1416d88c502ef5b7d621325e2f6712e56a3f4
+prerequisite-patch-id: bb6d17d263aa6dab21e87887c98b535595e25c1f
+prerequisite-patch-id: f7fa011b9e279104d8c8e2bf09fb5d3ab3f34b67
+prerequisite-patch-id: 8358ac66a9d65695fb2bc02637cfddf4695ddeaa
+prerequisite-patch-id: 665d9352bf8e6ffc4b7c0ff25659468b5262d4e7
+prerequisite-patch-id: 307e544949317538681dc124fdf2b33df538d897
+prerequisite-patch-id: 31616804feb9f7b6d5e010d5306b0304005d5efe
+prerequisite-patch-id: f8065fb1765262737c2222ad80d2f3d60454e955
+prerequisite-patch-id: d99c3d909e24f1ca3269c1e08034f7936f3a5622
+prerequisite-patch-id: 0e1efe816412e68314ec226f80b2ded7d2fb33a0
+prerequisite-patch-id: 1cf9b69fe0847e9961756cbd69858aecbdab9d1e
+--
+2.32.0
 
-   291	
- > 292	void kvm_compute_final_ctr_el0(struct alt_instr *alt,
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
