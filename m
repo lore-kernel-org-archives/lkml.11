@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D5EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238411AbiCJK3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:29:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        id S238838AbiCJKbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbiCJK26 (ORCPT
+        with ESMTP id S233183AbiCJKbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:28:58 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5AB139106
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:27:57 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id 195so5960871iou.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:27:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6/TvTwTRE5ZLnuOuX6FmvE7twzPbdAnz0gt379FQSjM=;
-        b=ZG7BKAH0cDR9Ezst+s2IovF6T9rCTxg1K2QOd7Y/2G+6aKtgE+wU3rDnk26DUQJVp+
-         NlRnipPaxVJj74a1wOcxmGerVkypJtH/RxTcouma0ZFoD0nFDLuMkHyE/W4e9acshD2q
-         5loYWVXWygw+qwAdMm5j5sBMgQUAVw3RHsLW8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6/TvTwTRE5ZLnuOuX6FmvE7twzPbdAnz0gt379FQSjM=;
-        b=iu5HDlVr2QIzT4s3MREf5U+IFOgZFy/eLWikHP3yISBs1hR06NBZdPgJCKgeS/Oj6y
-         5qaJZsCYT1Xjv/YkF8oirioKb7RYQyGMnglHgDpeBXL/JWmCO3+5BeOnChC2jmf9CbXs
-         qb6W2lag+dKjWJeUnmbA5dXpaXp+t9o5o1OcoPgUmbTcwAy2nv7ConnHKVFJm9ngJ+xC
-         sgHndU7XUVp0GtFYZM4L6yOypnZrjQk+x1VKqhzcdr+Gi6nMA/X53z8ZKiL6Mr+s1H/k
-         t7w1YQMOjhWhDJuq/XV+WSJ5UIpgh4syde+D+JDpHCoSOOEEkHTBG5vmq4OxOHEeSAuk
-         7wFA==
-X-Gm-Message-State: AOAM5318CxgYH4sYnxk9bMp49/koFdZTqypHPNO3XvRXdO1vs//yR/5u
-        gxQSlGHGCo+iGYsZaUA9JU8p8kLhIOSQ1uffbgym2A==
-X-Google-Smtp-Source: ABdhPJzdE1Ar/Z1/NhsDqf43Wfdc5EFZaml3NQ53CEZWS74q/uC2laNDDFLN7yij2ZB0BGN9GQP/B5b/7wX00uSrkvs=
-X-Received: by 2002:a05:6638:3049:b0:317:9a63:ec26 with SMTP id
- u9-20020a056638304900b003179a63ec26mr3378628jak.273.1646908077073; Thu, 10
- Mar 2022 02:27:57 -0800 (PST)
+        Thu, 10 Mar 2022 05:31:08 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FAD139109
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:30:05 -0800 (PST)
+Received: from mail-wr1-f53.google.com ([209.85.221.53]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MNc1T-1nmFeR0u1z-00P7kn for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022
+ 11:30:04 +0100
+Received: by mail-wr1-f53.google.com with SMTP id t11so7192640wrm.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 02:30:04 -0800 (PST)
+X-Gm-Message-State: AOAM533h2NQhDlMa1mamJYbp9NTR07JsUlZmTVP2lG5u8CeGM90u2T93
+        MbjDOfCiuhTnE2CU6ST2Lyp7HY7CbgYKJExn+Mw=
+X-Google-Smtp-Source: ABdhPJzsF5MzvG2xycGj6tQMwNy8qNwsmOgxiOyipSIlNToREeL3z7dcYGqcbdOJelWseKLIGlic23KJUIY+0F5Tok8=
+X-Received: by 2002:a5d:6810:0:b0:203:7cbb:20be with SMTP id
+ w16-20020a5d6810000000b002037cbb20bemr2991507wru.219.1646908203883; Thu, 10
+ Mar 2022 02:30:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20220302171816.1170782-1-kvigor@gmail.com> <20220302171816.1170782-2-kvigor@gmail.com>
-In-Reply-To: <20220302171816.1170782-2-kvigor@gmail.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Thu, 10 Mar 2022 11:27:45 +0100
-Message-ID: <CAJfpegvpKKO-dFg7P8fERq5-BcQSC7uh2cYzz-Ufo7wHvnvv9g@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/1] FUSE: Add FUSE_TRUST_MAX_RA flag enabling
- readahead settings >128KB.
-To:     Kevin Vigor <kvigor@gmail.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220310065045.24772-1-yuehaibing@huawei.com> <20220310095852.GA1699@willie-the-truck>
+ <CAK8P3a2=iRLqM36wwxtQRrCwrZ2-tkBZPZCqqba-4kmk9GxcCw@mail.gmail.com> <20220310102125.GA1883@willie-the-truck>
+In-Reply-To: <20220310102125.GA1883@willie-the-truck>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 10 Mar 2022 11:29:47 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0K973ggjPStn+qe1w_NqwV_C4up+k2mcG8uV5fV0+cnA@mail.gmail.com>
+Message-ID: <CAK8P3a0K973ggjPStn+qe1w_NqwV_C4up+k2mcG8uV5fV0+cnA@mail.gmail.com>
+Subject: Re: [PATCH v2 -next] perf/marvell: cn10k Fix build error without CONFIG_OF
+To:     Will Deacon <will@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, YueHaibing <yuehaibing@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Bharat Bhushan <bbhushan2@marvell.com>, bbudiredla@marvell.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Zk6gt/DZYAp6IvpKsENrp7pkOYBGwTfi+h0ViOXQJ+29a7vDSZW
+ z60PWJuWuWzTPeWPrWfrCEzzznAwSaEDZlH/fPXijC0FEuM8Ecf4A3pG6ikHU7BiweouHWd
+ 0+njNU+OApYwUZy71NgC648CPATsI59ThGPwui7h2pRm1RZSWjz0wfj2AakxkpZaed5MgBw
+ sEJUFGMjLdrZLmmGtjbGw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8QhIep5onN8=:UE805ZQLkxPhLXehJJ430p
+ grkusd08Wiw77WNjIxjRQvBF83AVVgFQ1RHS5QY3AuqZClVNrrDOOd37xt+N10bJSc2Caa+o+
+ lgYuM/OSZjoiX2TjxNfT301hZ5Ivy22H2w+ubEKORVyz1WhKLo9Bbb3x5SdHHrigFZucyMh1c
+ krNN5lG10kh1jJA0I1RBP4wnbiE94yReI6FXh8E1W3OaU7AMeXocgGYqp+SkGoBKZUvbwh0vu
+ 592OJCJpQI8WupQH4XZIwOyYVcN+Ey+zTZIqaHPS6XKGLPeXq4PtW+HnVfQGYHDcPEvWPyOHl
+ HimI3SILFzgud0bBy+g9RkWa6/nBSgvhqqao/REcHtTWUdu6UP5IdWQAiKVfzD0L5a1IAujP5
+ eXjAsZRCOsnbmaCcy0w90Q3yS6LBk0OUvxD4ptOer0EohhkHSBIpH+sWiXxLEM/sx1osQ73IM
+ RCTv1Al+OOWHwc7O+lrGMB+5ZTnLUfcXCxyK3seGAh4Rh3ouaJMONoyh18KfraE4ypJQIKhTL
+ xBQABYIecqmQqAehYclasFsJ6jecqQFgvEShWUtH3tl2gOD/uwvL1Vtsy+2F1TJEHq/nVJJiO
+ p4mQ+GLIoOu4UOAJ6llQuBnTEByihJOEncl6EuttdmRJYUkMk2783bC3wGx1qKTghy07lqkxP
+ DkYjyPwLA0n8vj0G3/yR0CNId0l1h3GpCDR0dlqw5uL10h0RJ2bov5ApKFca3g20su1ls31vs
+ krrWDLW6GA80wtzUj92KMePS3Lbs04D5g+DyIsPZpYim2LYrCfgiE84YcmfPtV0Wg7lFzsUeu
+ GeplBGLD90YxtFq+6GBWV93ZofZGsv5f7XEkct5HUPFZWdkhnE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2 Mar 2022 at 18:18, Kevin Vigor <kvigor@gmail.com> wrote:
+On Thu, Mar 10, 2022 at 11:21 AM Will Deacon <will@kernel.org> wrote:
+> On Thu, Mar 10, 2022 at 11:04:21AM +0100, Arnd Bergmann wrote:
+> > On Thu, Mar 10, 2022 at 10:58 AM Will Deacon <will@kernel.org> wrote:
 >
-> The existing process_init_reply() in fs/fuse/inode.c sets the ra_pages
-> value to the minimum of the max_readahead value provided by the user
-> and the pre-existing ra_pages value, which is initialized to
-> VM_READAHEAD_PAGES. This makes it impossible to increase the readahead
-> value to larger values.
+> I think the problem is when the #ifdefs are removed but the use of
+> of_match_ptr() remains, leading to reports from the robot:
 >
-> Add a new flag which causes us to blindly accept the user-provided
-> value. Note that the existing read_ahead_kb sysfs entry for normal
-> block devices does the same (simply accepts user-provided values
-> directly with no checks).
+> https://lore.kernel.org/r/202201041700.01KZEzhb-lkp@intel.com
+>
+> Should we therefore remove of_match_ptr() altogether? It seems like it's
+> leading people in the wrong direction here.
 
-read_ahead_kb only allows root to open for write.  Allowing non-root
-arbitrary read ahead window size is not a good idea, IMO.
+There may be valid uses for it, e.g. if the array referenced by it is
+in a separate, and conditionally compiled file, or if the #ifdef block
+covers more than just the table.
 
-Thanks,
-Miklos
+Removing 1563 instances of it also takes a lot of work. Almost
+all of them are probably useless, and quite a lot of them are
+actively wrong, because they refer to arrays without an #ifdef.
+
+Maybe coccinelle can help here.
+
+        Arnd
