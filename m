@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A4CFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC32C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243662AbiCJOXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:23:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        id S243723AbiCJOXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:23:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244298AbiCJOTI (ORCPT
+        with ESMTP id S244316AbiCJOTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:19:08 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1314171EC1;
-        Thu, 10 Mar 2022 06:15:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378BD17227C;
+        Thu, 10 Mar 2022 06:16:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECB12B825F3;
-        Thu, 10 Mar 2022 14:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C606C36AE9;
-        Thu, 10 Mar 2022 14:15:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC0D9B8267E;
+        Thu, 10 Mar 2022 14:15:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2136C340EB;
+        Thu, 10 Mar 2022 14:15:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921721;
-        bh=dBM59trElM9mKdvh5X3TAf3lhidiLDUO/YzmBUoNg2U=;
+        s=korg; t=1646921757;
+        bh=CDnXzzZJMtnbimerPsJ8oEfsOtNph0fXQEXJDIJdPnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Slh6n6Hb9bPYmCPeeui/wA1WVpnzrb1KxFFoXihgKXTIRT5yLrPWkQoV2JXE6BI2b
-         zcF0GHTA6Pe4SwRCIugxCmyitT2raUkN9kOUDTlTs3n3KpkRiKuLICkffynVwSvjk7
-         TG51NPL6B1DXCl3pf+mHMdqLuNz4xhXdrXRvRw8Y=
+        b=xz3kzhiB8PowkcR8WUdgCl/bQNGBkdmfw1n6y7xL6JX2c9T4VnapyGM7DHqXwGei2
+         SRQcYU7NgbBKRnkK48NVJ80XVEWSx68mUR5Zsyz7IDV9ft7vz06gkRtRNcUN2ebMXa
+         HvDffPGGawwVRZxlZHXdDV3+mdsndbFCI/gfNNdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 24/38] ARM: fix build error when BPF_SYSCALL is disabled
-Date:   Thu, 10 Mar 2022 15:13:37 +0100
-Message-Id: <20220310140808.843512853@linuxfoundation.org>
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.9 30/38] xen/xenbus: dont let xenbus_grant_ring() remove grants in error case
+Date:   Thu, 10 Mar 2022 15:13:43 +0100
+Message-Id: <20220310140809.016459163@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
 References: <20220310140808.136149678@linuxfoundation.org>
@@ -50,31 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+From: Juergen Gross <jgross@suse.com>
 
-commit 330f4c53d3c2d8b11d86ec03a964b86dc81452f5 upstream.
+Commit 3777ea7bac3113005b7180e6b9dadf16d19a5827 upstream.
 
-It was missing a semicolon.
+Letting xenbus_grant_ring() tear down grants in the error case is
+problematic, as the other side could already have used these grants.
+Calling gnttab_end_foreign_access_ref() without checking success is
+resulting in an unclear situation for any caller of xenbus_grant_ring()
+as in the error case the memory pages of the ring page might be
+partially mapped. Freeing them would risk unwanted foreign access to
+them, while not freeing them would leak memory.
 
-Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Fixes: 25875aa71dfe ("ARM: include unprivileged BPF status in Spectre V2 reporting").
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+In order to remove the need to undo any gnttab_grant_foreign_access()
+calls, use gnttab_alloc_grant_references() to make sure no further
+error can occur in the loop granting access to the ring pages.
+
+It should be noted that this way of handling removes leaking of
+grant entries in the error case, too.
+
+This is CVE-2022-23040 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/xen/xenbus/xenbus_client.c |   24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(v
- #ifdef CONFIG_BPF_SYSCALL
- 	return !sysctl_unprivileged_bpf_disabled;
- #else
--	return false
-+	return false;
- #endif
+--- a/drivers/xen/xenbus/xenbus_client.c
++++ b/drivers/xen/xenbus/xenbus_client.c
+@@ -387,7 +387,14 @@ int xenbus_grant_ring(struct xenbus_devi
+ 		      unsigned int nr_pages, grant_ref_t *grefs)
+ {
+ 	int err;
+-	int i, j;
++	unsigned int i;
++	grant_ref_t gref_head;
++
++	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
++	if (err) {
++		xenbus_dev_fatal(dev, err, "granting access to ring page");
++		return err;
++	}
+ 
+ 	for (i = 0; i < nr_pages; i++) {
+ 		unsigned long gfn;
+@@ -397,23 +404,14 @@ int xenbus_grant_ring(struct xenbus_devi
+ 		else
+ 			gfn = virt_to_gfn(vaddr);
+ 
+-		err = gnttab_grant_foreign_access(dev->otherend_id, gfn, 0);
+-		if (err < 0) {
+-			xenbus_dev_fatal(dev, err,
+-					 "granting access to ring page");
+-			goto fail;
+-		}
+-		grefs[i] = err;
++		grefs[i] = gnttab_claim_grant_reference(&gref_head);
++		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
++						gfn, 0);
+ 
+ 		vaddr = vaddr + XEN_PAGE_SIZE;
+ 	}
+ 
+ 	return 0;
+-
+-fail:
+-	for (j = 0; j < i; j++)
+-		gnttab_end_foreign_access_ref(grefs[j], 0);
+-	return err;
  }
+ EXPORT_SYMBOL_GPL(xenbus_grant_ring);
  
 
 
