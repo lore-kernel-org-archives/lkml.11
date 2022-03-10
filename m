@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A701AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C982C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240093AbiCJRA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
+        id S242956AbiCJRBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:01:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231375AbiCJRAy (ORCPT
+        with ESMTP id S239378AbiCJRBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:00:54 -0500
+        Thu, 10 Mar 2022 12:01:31 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AE33F47F6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:59:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CBF391052B5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:00:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646931592;
+        s=mimecast20190719; t=1646931628;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Qt3CDQJKVzIsT9TVSQg9SdqCzF9dYBE8SsUrYs4k4eA=;
-        b=Gx3xvWw8ieAcmO26PI0DXfm8YamNc5DwAbOcxXIy6+APkTzq7mlbWHTn0nOOhdvoN3Q98Q
-        aH1IjrykBmYspoYByy3ta5M/QSafDoy5Lsuhl19i1zmmUfzBcVTdK9ErHMlLS23CgH62AI
-        u8hLEIkLQUBwzFJVRc5C5Sjna6vPa2w=
+        bh=gB57+YJ6YRkHA5rn3XMB0b7INMSeUreN8Q0XW45JxlQ=;
+        b=EsmjpLvXnqtn6g13HKQTDYmRaOiOA73STjoj3PEpIZGdtD/milM/TnUshmyQTawNy7GCLf
+        SnOAf3DZ7lhqU4Zz4JpWA93u9ksd1VUJm1tGwGxQka0c5Dt4Do+Uz4CXaptgUcQbUk4Yg0
+        IkX/rSKBYMCPpPTUNsmyaXDBfUyJHNE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-u9DRl8NgPXa7BTYf6RKqKw-1; Thu, 10 Mar 2022 11:59:51 -0500
-X-MC-Unique: u9DRl8NgPXa7BTYf6RKqKw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-549-jF7EAev0PwOP_S1xQduOpQ-1; Thu, 10 Mar 2022 12:00:25 -0500
+X-MC-Unique: jF7EAev0PwOP_S1xQduOpQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7DADF800D55;
-        Thu, 10 Mar 2022 16:59:49 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E1BC1091DA1;
+        Thu, 10 Mar 2022 17:00:24 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AEF82865A2;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AEFA5106F968;
         Thu, 10 Mar 2022 16:59:20 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id DD89F416D5CB; Thu, 10 Mar 2022 13:35:51 -0300 (-03)
-Date:   Thu, 10 Mar 2022 13:35:51 -0300
+        id D77CA416CE5D; Thu, 10 Mar 2022 13:30:14 -0300 (-03)
+Date:   Thu, 10 Mar 2022 13:30:14 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     Frederic Weisbecker <frederic@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
@@ -51,83 +51,121 @@ Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
         Oscar Shiang <oscar0225@livemail.tw>
-Subject: Re: [patch v11 10/13] KVM: x86: process isolation work from VM-entry
- code path
-Message-ID: <Yioo59Rd52rUZ/+F@fuller.cnet>
+Subject: Re: [patch v11 07/13] task isolation: sync vmstats conditional on
+ changes
+Message-ID: <YionlrkrON9cp7SK@fuller.cnet>
 References: <20220204173537.429902988@fedora.localdomain>
- <20220204173554.897857855@fedora.localdomain>
- <20220207154707.GC526451@lothringen>
+ <20220204173554.763888172@fedora.localdomain>
+ <20220207151915.GA526112@lothringen>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220207154707.GC526451@lothringen>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <20220207151915.GA526112@lothringen>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 04:47:07PM +0100, Frederic Weisbecker wrote:
-> On Fri, Feb 04, 2022 at 02:35:47PM -0300, Marcelo Tosatti wrote:
-> > VM-entry code path is an entry point similar to userspace return
-> > when task isolation is concerned.
+On Mon, Feb 07, 2022 at 04:19:15PM +0100, Frederic Weisbecker wrote:
+> On Fri, Feb 04, 2022 at 02:35:44PM -0300, Marcelo Tosatti wrote:
+> > Rather than syncing VM-stats on every return to userspace
+> > (or VM-entry), keep track of changes through a per-CPU bool.
 > > 
-> > Call isolation_exit_to_user_mode before VM-enter.
+> > This improves performance when enabling task isolated
+> > for vcpu VMs.
 > > 
 > > Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 > > 
 > > ---
-> > v11
+> > v11:
 > > - Add TIF_TASK_ISOL bit to thread info flags and use it
 > >   to decide whether to perform task isolation work on
-> >   return to userspace                                   (Frederic W. Weisbecker)
+> >   return to userspace     
 > > 
-> >  include/linux/entry-kvm.h |    4 +++-
-> >  kernel/entry/kvm.c        |   18 ++++++++++++++----
-> >  2 files changed, 17 insertions(+), 5 deletions(-)
+> >  include/linux/vmstat.h |   13 ++++++++++++-
+> >  mm/vmstat.c            |   29 ++++++++++++++++++++++++++++-
+> >  2 files changed, 40 insertions(+), 2 deletions(-)
 > > 
-> > Index: linux-2.6/kernel/entry/kvm.c
+> > Index: linux-2.6/include/linux/vmstat.h
 > > ===================================================================
-> > --- linux-2.6.orig/kernel/entry/kvm.c
-> > +++ linux-2.6/kernel/entry/kvm.c
-> > @@ -2,6 +2,7 @@
+> > --- linux-2.6.orig/include/linux/vmstat.h
+> > +++ linux-2.6/include/linux/vmstat.h
+> > @@ -22,7 +22,18 @@ int sysctl_vm_numa_stat_handler(struct c
+> >  #endif
 > >  
-> >  #include <linux/entry-kvm.h>
-> >  #include <linux/kvm_host.h>
-> > +#include <linux/task_isolation.h>
-> >  
-> >  static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-> >  {
-> > @@ -22,6 +23,9 @@ static int xfer_to_guest_mode_work(struc
-> >  		if (ti_work & _TIF_NOTIFY_RESUME)
-> >  			tracehook_notify_resume(NULL);
-> >  
-> > +		if (ti_work & _TIF_TASK_ISOL)
-> > +			task_isol_exit_to_user_mode();
+> >  #if defined(CONFIG_SMP) && defined(CONFIG_TASK_ISOLATION)
+> > -void sync_vmstat(void);
+> > +DECLARE_PER_CPU_ALIGNED(bool, vmstat_dirty);
 > > +
-> >  		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-> >  		if (ret)
-> >  			return ret;
-> > 
-> > 
+> > +extern struct static_key vmstat_sync_enabled;
+> > +
+> > +void __sync_vmstat(void);
+> > +static inline void sync_vmstat(void)
+> > +{
+> > +	if (static_key_false(&vmstat_sync_enabled))
+> > +		__sync_vmstat();
+> > +}
+> > +
+> > +void init_sync_vmstat(void);
+> >  #else
+> >  static inline void sync_vmstat(void)
+> >  {
+> > Index: linux-2.6/mm/vmstat.c
+> > ===================================================================
+> > --- linux-2.6.orig/mm/vmstat.c
+> > +++ linux-2.6/mm/vmstat.c
+> > @@ -334,6 +334,31 @@ void set_pgdat_percpu_threshold(pg_data_
+> >  	}
+> >  }
+> >  
+> > +#ifdef CONFIG_TASK_ISOLATION
+> > +struct static_key vmstat_sync_enabled;
+> > +DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
+> > +
+> > +static inline void mark_vmstat_dirty(void)
+> > +{
+> > +	if (!static_key_false(&vmstat_sync_enabled))
+> > +		return;
+> > +
+> > +	raw_cpu_write(vmstat_dirty, true);
 > 
-> Do you need this?
+> Why not __this_cpu_write() ? Shouldn't we make sure we are not
+> preemptible and not mark the wrong CPU?
 
-Yes, dropped it somehow, thanks.
+#ifdef CONFIG_HAVE_CMPXCHG_LOCAL
+/*
+ * If we have cmpxchg_local support then we do not need to incur the overhead
+ * that comes with local_irq_save/restore if we use this_cpu_cmpxchg.
+ *
+ * mod_state() modifies the zone counter state through atomic per cpu
+ * operations.
+ *
+ * Overstep mode specifies how overstep should handled:
+ *     0       No overstepping
+ *     1       Overstepping half of threshold
+ *     -1      Overstepping minus half of threshold
+*/
+static inline void mod_zone_state(struct zone *zone,
+       enum zone_stat_item item, long delta, int overstep_mode)
+{
+        struct per_cpu_zonestat __percpu *pcp = zone->per_cpu_zonestats;
+        s8 __percpu *p = pcp->vm_stat_diff + item;
+        long o, n, t, z;
 
-> 
-> diff --git a/include/linux/entry-kvm.h b/include/linux/entry-kvm.h
-> index 07c878d6e323..3588d6071caf 100644
-> --- a/include/linux/entry-kvm.h
-> +++ b/include/linux/entry-kvm.h
-> @@ -18,7 +18,7 @@
->  
->  #define XFER_TO_GUEST_MODE_WORK						\
->  	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |	\
-> -	 _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)
-> +	 _TIF_NOTIFY_RESUME | _TIF_TASK_ISOL | ARCH_XFER_TO_GUEST_MODE_WORK)
->  
->  struct kvm_vcpu;
->  
-> 
-> 
+        do {
+                z = 0;  /* overflow to zone counters */
+
+Perhaps one can
+
+                        n = -os;
+                }
+        } while (this_cpu_cmpxchg(*p, o, n) != o);
+							<-- migrate
+        if (z)
+                zone_page_state_add(z, zone, item);
+        mark_vmstat_dirty();
+
+
+But we assume the task which is using task isolation is pinned to a single CPU,
+so that should not happen.
 
