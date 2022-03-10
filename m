@@ -2,103 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC77FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87609C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240726AbiCJJUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:20:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S236769AbiCJJUj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:20:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240734AbiCJJUI (ORCPT
+        with ESMTP id S234002AbiCJJUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:20:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBE139120;
-        Thu, 10 Mar 2022 01:19:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 10 Mar 2022 04:20:37 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90FE1390FC
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:19:36 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FBD161CCE;
-        Thu, 10 Mar 2022 09:19:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64449C340EC;
-        Thu, 10 Mar 2022 09:19:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646903946;
-        bh=8laWKTKRqkLZfPp0uyL8zM+IJ5gTOchzQTYuc81Ai5I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sILtbVd3hC/Thm8NlANFN49g3vOqhaWMZUaIde6eCUD/yF39dK/kK4xq03fGhuoEQ
-         5P6UyLBHbuFkpbyBds7jjYD89ywKaBYX6LXy0+4GrjhyyNGCBejZkYmceym5j1rBfk
-         fbga/3SPiLdubBDQbsSrguX6oPvDS6Me2ju99Ejw=
-Date:   Wed, 9 Mar 2022 21:01:48 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 00/37] 5.16.14-rc1 review
-Message-ID: <YikHrEtQ5dFz9paK@kroah.com>
-References: <20220309155859.086952723@linuxfoundation.org>
- <37efd441-7fe4-1aa4-a41b-19d30b652c5c@roeck-us.net>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6F6D83F202
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646903975;
+        bh=wolYD6gWpPa4mgxaXy7jJAPNgL7qzDoq13axnLPnNdY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=bEoswCjw12MM10HwRiNVlPmIcUOZlPQkmeinKVCPbjhQDsDJO1t2AenY2SC9U5zcZ
+         Zm4EFczL43X2m3Kw1K24MmPrdwVo3g5mcZbX1zRwFl5bSB1nUnrepXeys0zfbEGkPu
+         UIRO79D/4Xv4idqaPWMg1Gh4TGjThB2TYWuR8JsbmqZ/MhL1ZvLt5IhWHyBEZvCWv4
+         Gab2TIAVxb5pUOgaDhLHlpVDvwfZ3XxJx6Uj63ubQ3cdL8IUfAxYxVb22zTGXycvRa
+         gxLH+sa5aAAKiTDSODj5nRoqyWsgiD7Rju+6r96hBb1AZ0uNaO/3U8sktfScbahBrT
+         nNtJ1D9IvMvqQ==
+Received: by mail-ed1-f70.google.com with SMTP id l8-20020a056402028800b0041636072ef0so2745638edv.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:19:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wolYD6gWpPa4mgxaXy7jJAPNgL7qzDoq13axnLPnNdY=;
+        b=g+c+NDqTuUhgx3StIgZ30LjJDU8pOL4/Hh50Rlj31KOus1344d92mk1bhmauuFwlOY
+         LMr7LmY4snHF8z/5ZeOBsqZvz+A4eLtSBcVgjOEJvAYSEq/Y2SV8Q/W7Dn+4HPLxGltP
+         rLnzUoegkEw3cIgYWyZsAaHH2an7TV86J4Ffod9NDfSYusICLd6TogVtWPv3ydv3ZVwF
+         NJQ+vAg5TGAZ28iRn9pHsStHUvKggKyScO038suera27LrNftemIx2mSjPvxgfsIIs5I
+         IOgWG5gyVyHRNatMN/zwdRTi/lqy05QWw0UwQuDGTvTSkf5I8kLkxFHx9pX3oH5R91dI
+         kEUA==
+X-Gm-Message-State: AOAM5331njM6flWYqfJzy2FMQZD51JWSlADDmF7D2lVGKOAnnnRLkxjE
+        vEuYuCPTUWuCcF9Kc6gCfbDTRUeE271dnYj5Rqjm2aYoC7n0qXUYwf+O43bE5NZJbCncTs8X2+S
+        8lNLANDc4c70R1xWv92sxeIwaa+99hD7PYGlcM9D0Dg==
+X-Received: by 2002:a05:6402:1e89:b0:416:a641:9fe with SMTP id f9-20020a0564021e8900b00416a64109femr3324147edf.312.1646903974976;
+        Thu, 10 Mar 2022 01:19:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxEpz4RRjBaSivyyvtfkaXEPL3a3Xc4qFVuAT0sgvUR1JBq5DBBq0dWHJsog6DnKViiuQZrZg==
+X-Received: by 2002:a05:6402:1e89:b0:416:a641:9fe with SMTP id f9-20020a0564021e8900b00416a64109femr3324129edf.312.1646903974756;
+        Thu, 10 Mar 2022 01:19:34 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id y6-20020a056402358600b004166413d27bsm1772019edc.97.2022.03.10.01.19.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 01:19:34 -0800 (PST)
+Message-ID: <e9f73649-8361-c844-8ed5-9e1132f991b8@canonical.com>
+Date:   Thu, 10 Mar 2022 10:19:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <37efd441-7fe4-1aa4-a41b-19d30b652c5c@roeck-us.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: arm: Convert QEMU fw-cfg to DT schema
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Laszlo Ersek <lersek@redhat.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220310013552.549590-1-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310013552.549590-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 11:05:15AM -0800, Guenter Roeck wrote:
-> On 3/9/22 08:00, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.16.14 release.
-> > There are 37 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> > 
-> > Responses should be made by Fri, 11 Mar 2022 15:58:48 +0000.
-> > Anything received after that time might be too late.
-> > 
+On 10/03/2022 02:35, Rob Herring wrote:
+> Convert the QEMU fw-cfg binding to DT schema format. As this binding is
+> also used on Risc-V now, drop any architecture references and move to a
+> common location. The fw-cfg interface has also gained some DMA support
+> which is coherent, so add the missing 'dma-coherent'.
 > 
-> Almost all arm builds, all branches from 4.9.y to 5.16.y:
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/arm/fw-cfg.txt        | 38 -------------
+>  .../bindings/firmware/qemu,fw-cfg-mmio.yaml   | 54 +++++++++++++++++++
+>  2 files changed, 54 insertions(+), 38 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/fw-cfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml
 > 
-> Error log:
-> arch/arm/common/secure_cntvoff.S: Assembler messages:
-> arch/arm/common/secure_cntvoff.S:24: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
-> arch/arm/common/secure_cntvoff.S:27: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
-> arch/arm/common/secure_cntvoff.S:29: Error: co-processor register expected -- `mcr p15,0,r0,c7,r5,4'
-> 
-> bisect log:
-> 
-> # bad: [3416254dac79ea26e08dffde371ab1fd3130223c] Linux 5.16.14-rc1
-> # good: [6273c309621c9dd61c9c3f6d63f5d56ee2d89c73] Linux 5.16.13
-> git bisect start 'HEAD' 'v5.16.13'
-> # bad: [4403d69931dbc17659845d2d710602bbe35b4398] KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
-> git bisect bad 4403d69931dbc17659845d2d710602bbe35b4398
-> # good: [6f0cf3a1eb8b46a5d652a395ba25a59c32a86692] ARM: report Spectre v2 status through sysfs
-> git bisect good 6f0cf3a1eb8b46a5d652a395ba25a59c32a86692
-> # bad: [87e96a363eb4a62b65bb974a46d518a87153cd1c] arm64: add ID_AA64ISAR2_EL1 sys register
-> git bisect bad 87e96a363eb4a62b65bb974a46d518a87153cd1c
-> # good: [654f0a73f042662a36155a0cafa30db846ccb5a9] ARM: use LOADADDR() to get load address of sections
-> git bisect good 654f0a73f042662a36155a0cafa30db846ccb5a9
-> # bad: [91bdae56c40ee6de675fba6ac283311c92c437ce] ARM: include unprivileged BPF status in Spectre V2 reporting
-> git bisect bad 91bdae56c40ee6de675fba6ac283311c92c437ce
-> # bad: [95ff4cb3b696a581d6166f0d754771bf9af5e27b] ARM: Spectre-BHB workaround
-> git bisect bad 95ff4cb3b696a581d6166f0d754771bf9af5e27b
-> # first bad commit: [95ff4cb3b696a581d6166f0d754771bf9af5e27b] ARM: Spectre-BHB workaround
-> 
-> Guenter
 
-Wow these are all broken, have I mentioned I hate working on patches in
-embargos?
 
-I'll look at these in the morning, it's odd that Linus's tree isn't
-showing these same issue, but I might have messed up the arm backports
-somehow.  I did test them on using the multi_v7_defconfig configuration
-and they built for me locally with gcc.  I'll try to see what is
-different here...
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-thanks,
 
-greg k-h
+Best regards,
+Krzysztof
