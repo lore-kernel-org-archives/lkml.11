@@ -2,145 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6080FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241522AbiCJLPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        id S241526AbiCJLRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiCJLPR (ORCPT
+        with ESMTP id S232901AbiCJLRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:15:17 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775E83B03C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:14:17 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id v130so10100883ybe.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3pJ+I2YdNs/yLkLBmuj/ECVh0Vo8H7W59XBvWovNF/w=;
-        b=DTm9QGRf4V8etnToR2oxMCKXzh6s4jheFkE16EHIlg1Wj7kIx9Z3rejll7vRqy1YwH
-         OBWSgwDFHbs1ECPVu5WczTtpj/WKDikPD4S2PR2VYSM+ftyjq//IF/9K+3o3s+l8MryJ
-         NyRU5apXPEzjmPFX0yKW7aQnn+frc+gT5aHnTw7iE2hIJ5lg3x0nL7MwydKWhoBNLNlx
-         s8ZB9k+TiVagYqoWq6lV4OJbDf0SKdtZeXNQZjCv9y+hJr778Keh24+J/QfrcGoQLUxN
-         a1Ba7/m+dN7Ssy22Q236LVmXi/+3NuqNuNMTzACb7QcyaZnSo7f/jna7gfhaG0YnH7CX
-         aTaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3pJ+I2YdNs/yLkLBmuj/ECVh0Vo8H7W59XBvWovNF/w=;
-        b=iWX3i2faaynnDDxAJeISo3pczALj5WF0ejhfyhKdpomRSyDg54gbOpD58D6S1ANYQs
-         V14/HuQNbfW3no57KVOiNTZ0S1sshav/x+bov8lVdqIIgxxMd5jtxFe1MmBrNZ3SNqnm
-         6iIkVttZ3YSoNbIGmAwLCSG8FxDP8rZmkb7UdLBivwXb17DEvlmaBJwXHqzhJkIQTAth
-         jtziLS4mDcN3jEY0aCc4uQ/hhf3Nh7xGrYMhrLFjc1z/QLlg8GNshlYQd7v7VLFXtend
-         njvVCZ8T0YAVv8Yo0SzX4wNlOv9tYjaHmN9czBtU252kctcZwd7km0IYX0l0o8N5nlBn
-         0YHQ==
-X-Gm-Message-State: AOAM533T1C5bsg3g3UjiZDSe+30tDha2D6ZnCLegpGUiqwxl/ndjx52F
-        T2GU+U6YqspIAA9G1idXy7UGcGw9ydvbdIq0/FA=
-X-Google-Smtp-Source: ABdhPJzHxi5ApO77ILPXu9em9cQSGEgjoC9X8lo0uePx/MJNVIuNglcL9pX84nCqI/+OVJPXub1ClmfVLPlt+kzz27U=
-X-Received: by 2002:a25:cfc1:0:b0:629:15c3:e17 with SMTP id
- f184-20020a25cfc1000000b0062915c30e17mr3402014ybg.534.1646910856534; Thu, 10
- Mar 2022 03:14:16 -0800 (PST)
+        Thu, 10 Mar 2022 06:17:13 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE88CBE1EB
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:16:12 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TRJKDKOf1oDpbkRm+PAefJiwUAV28dLzpgMP9zNIQHwmGCIHKzpeVqllql25G3AWv8OIt9sEvsUwhzY50Fx+uajThPz9GuQQxRRW5W2P+R6ovh1AN8xBomW0h1PSUr6MA2pCtQuIThT4WTQ8G34GmxTfJLrgHYvAgMO1gcUrD+hQPuHvXTMXFsk6jzBe15lPcPkF+0B07m6zTp57GafhtAA++sWeOD0MPxaxTQH0e8BeN63aN1XZ4QOZ9bmGBKgAbtBhlrEnEULUhucrfy6ul8obomCDS9UYgaDfArRT5H+YIJvMOLq4jbGpYkaIY75MYbiTZL+xmNEzB7yN6Fgqdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mP8VIHMHET5trlL7sV3ghL9tgHiFgaGrGGDQzFeJ0Ag=;
+ b=g3jTGBR1GJS1fOJFEhncM3UopXHSy3qnG1Np5LIyQfz8+6vY9ktYIC51UKA2ipkdCKOZwCFhDp7gS8I6WY2AuS4o9ZHph57ZgNZuh7tqDYLWdXZRuZjb0vdhfEjwLR9I2RHJmMnMZKOtPDaA2ebCD/Oa2I9OQeTc7A5DHvLY6g9oLQtL6kORpxbPJtxQH7+Bg4u3085APmzKmp6TWTOinC3W5g3BFXiP1TAVtlNsUbJoa8G2OnmxHFPgD7DpD033y0zg6vpoJsHSOG1m36jqDHZAw/qAMDG6Uge8lWKWsWuRZQnxEuTPbBY4f89qwnhsxlXDtJyEQgVbVkjJwHui1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mP8VIHMHET5trlL7sV3ghL9tgHiFgaGrGGDQzFeJ0Ag=;
+ b=MHE0ncczUfInDzfUsGA5neMZCVzRQKik6HT652cvEiln6mJH77kUC0WH5c8y6MZqZyAwGdkZvUah43YYoD+F8BXaykzClISxlZ/k6AihoakixlMLn5njgm2ixnZsHHLiENBb0xjhgIic5/LDBio7j1Va+kKMIrGJxR9MhBVbrPo=
+Received: from MW4PR03CA0192.namprd03.prod.outlook.com (2603:10b6:303:b8::17)
+ by MN2PR12MB4015.namprd12.prod.outlook.com (2603:10b6:208:16e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Thu, 10 Mar
+ 2022 11:16:10 +0000
+Received: from CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b8:cafe::7d) by MW4PR03CA0192.outlook.office365.com
+ (2603:10b6:303:b8::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
+ Transport; Thu, 10 Mar 2022 11:16:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT052.mail.protection.outlook.com (10.13.174.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5061.22 via Frontend Transport; Thu, 10 Mar 2022 11:16:09 +0000
+Received: from BLR-5CG1133937.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 10 Mar
+ 2022 05:16:04 -0600
+From:   Bharata B Rao <bharata@amd.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <x86@kernel.org>,
+        <kirill.shutemov@linux.intel.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <catalin.marinas@arm.com>, <will@kernel.org>, <shuah@kernel.org>,
+        <oleg@redhat.com>, <ananth.narayan@amd.com>,
+        "Bharata B Rao" <bharata@amd.com>
+Subject: [RFC PATCH v0 0/6] x86/AMD: Userspace address tagging
+Date:   Thu, 10 Mar 2022 16:45:39 +0530
+Message-ID: <20220310111545.10852-1-bharata@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220308141437.144919-1-david@redhat.com> <CAHk-=wiA0KMVbLacK-Gi5_ZsZhXVi++6ePTtPrJkgf0az7r2ww@mail.gmail.com>
- <d615d51d-8643-190e-9cc2-844a28a349cf@redhat.com>
-In-Reply-To: <d615d51d-8643-190e-9cc2-844a28a349cf@redhat.com>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Thu, 10 Mar 2022 13:13:49 +0200
-Message-ID: <CAFCwf10NyRmcsDVH+j5B=FDfjquqmDUjYb=Hzn2OUCxOAFE+-w@mail.gmail.com>
-Subject: Re: [PATCH v1 00/15] mm: COW fixes part 2: reliable GUP pins of
- anonymous pages
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        Khalid Aziz <khalid.aziz@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2f37e030-b3ac-44e1-52d9-08da0287612f
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4015:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4015E2408F906ECBB2FAC9FFB00B9@MN2PR12MB4015.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hMtWsUYqDXRiSTottIk26CVZVgP/M2Xyz0h/+CRdtYlXJV5pY1IpxtaI1t4/KbXbMhWjs+htlaYrOOLjFU6ORgwUuuM+MMWlSe8VqGp+CCl/1YAXtHRNtdrhRSe43K8aFgF3RtcKMPWfJ9ldsBQ8X7wkPXIdJf5mSsso8TAT4OMLDruuBYvRDJ4NSHURGrjVLG+T+u/D0Glq0HBkgQWhN9nJMBEk4Z78Xnuh+OyhX6yFb+TRTXFmwjHtpVV6Af7AJ0yzkQ2b3koBtBGp716a7+93wTXLJ0QDL+GPkW7TcCxIxVlUbU3oUq3z1eWodppwjZdYmJLY7wlMW8cmKKZNQIZKYOFOIDOqV/eIho46QZYTolN3OScaOJAE2cWh5uyEGFZQuZdgKuPwhcYxgzNsheiOiCNNCCgrdzPyQgv2epDIC0aT3so858QOCLBcveU3GoYl3SQpb/mX/dab7IRx/jSpLCoQU55OxWYbjeoTe6LHAnIZUyb5CUNTdQ9d7dnZI6eYcF9JBbi9xL87X/bJKb8ib/X5FPrvAo9rvKNCM2E48qGz0afZlI+TK6m/IH4L8U5UGXPcFd7F2ZOgWneAggILeBaisJzQlSD6EhCT1urs9JZp9UgkmBowctt3Ppggxc7fApEoJLMdx8Eh7LvNFJZHfMNttR2JNnQITypkRDuNYXm4eDRr1eG/hUD/IliuI2DnT93EWXdzXwqosOraguFIgGcxpcIJk8s1DjUoACepN31F3o991FhX0SkTMR8GCveQ9o0rEkJfgKb879dy4SlvsIh+4Z4pLJtqINN/0SbAKUghyOGBIk5q+dchsI3db4cMvEny9VEVqIC7b3Nfsg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(70206006)(8676002)(70586007)(186003)(26005)(336012)(81166007)(4326008)(316002)(36756003)(82310400004)(8936002)(6916009)(54906003)(7416002)(36860700001)(356005)(40460700003)(86362001)(966005)(83380400001)(508600001)(47076005)(6666004)(7696005)(2616005)(16526019)(1076003)(426003)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:16:09.8647
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f37e030-b3ac-44e1-52d9-08da0287612f
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4015
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 10:00 AM David Hildenbrand <david@redhat.com> wrote:
->
-> On 08.03.22 22:22, Linus Torvalds wrote:
-> > On Tue, Mar 8, 2022 at 6:14 AM David Hildenbrand <david@redhat.com> wrote:
-> >>
-> >> This series fixes memory corruptions when a GUP pin (FOLL_PIN) was taken
-> >> on an anonymous page and COW logic fails to detect exclusivity of the page
-> >> to then replacing the anonymous page by a copy in the page table [...]
-> >
-> > From a cursory scan of the patches, this looks sane.
->
-> Thanks for skimming over the patches that quickly!
->
-> >
-> > I'm not sure what the next step should be, but I really would like the
-> > people who do a lot of pinning stuff to give it a good shake-down.
-> > Including both looking at the patches, but very much actually running
-> > it on whatever test-cases etc you people have.
-> >
-> > Please?
+Hi,
 
-I can take this patch-set and test it in our data-center with all the
-DL workloads we are running
-on Gaudi.
+This patchset makes use of Upper Address Ignore (UAI) feature available
+on upcoming AMD processors to provide user address tagging support for x86/AMD.
 
-David,
-Any chance you can prepare me a branch with your patch-set based on 5.17-rc7 ?
-I prefer to take a stable kernel and not 5.18-rc1 as this is going to
-run on hundreds of machines.
+UAI allows software to store a tag in the upper 7 bits of a logical
+address [63:57]. When enabled, the processor will suppress the
+traditional canonical address checks on the addresses. More information
+about UAI can be found in section 5.10 of 'AMD64 Architecture
+Programmer's Manual, Vol 2: System Programming' which is available from
 
-Thanks,
-Oded
+https://bugzilla.kernel.org/attachment.cgi?id=300549
 
->
-> My proposal would be to pull it into -next early after we have
-> v5.18-rc1. I expect some minor clashes with folio changes that should go
-> in in the next merge window, so I'll have to rebase+resend either way,
-> and I'm planning on thoroughly testing at least on s390x as well.
->
-> We'd then have plenty of time to further review+test while in -next
-> until the v5.19 merge window opens up.
->
-> By that time I should also have my selftests cleaned up and ready, and
-> part 3 ready to improve the situation for FOLL_GET|FOLL_WRITE until we
-> have the full FOLL_GET->FOLL_PIN conversion from John (I'll most
-> probably sent out an early RFC of part 3 soonish). So we *might* be able
-> to have everything fixed in v5.19.
->
-> Last but not least, tools/cgroup/memcg_slabinfo.py as mentioned in patch
-> #10 still needs care due to the PG_slab reuse, but I consider that a
-> secondary concern (yet, it should be fixed and help from the Authors
-> would be appreciated ;) ).
->
-> --
-> Thanks,
->
-> David / dhildenb
->
+Currently ARM64 provides a way for processes to opt-in for
+relaxed tagged ABI via prctl() options PR_SET/GET_TAGGED_ADDR_CTRL.
+The prctl() API was found to be a bit restrictive for x86 use and
+Kirill had posted an extension to it as part of Intel LAM patchset.
+(https://lore.kernel.org/linux-mm/20210205151631.43511-1-kirill.shutemov@linux.intel.com/)
+
+This patchset builds on that prctl() extension and adds support
+for AMD UAI. AMD implementation is kept separate as equivalent
+Intel LAM implementation is likely to be different due to different
+bit positions and tag width.
+
+This is an early implementation which has been only lightly tested.
+I have used the tags_test.c from selftests/vm/tags/ to test this.
+For ARM64 changes, I have only ensured that the changes compile.
+
+Regards,
+Bharata.
+
+Bharata B Rao (5):
+  x86/cpufeatures: Add Upper Address Ignore(UAI) as CPU feature
+  x86: Enable Upper Address Ignore(UAI) feature
+  x86: Provide an implementation of untagged_addr()
+  x86: Untag user pointers in access_ok()
+  x86: Add prctl() options to control tagged user addresses ABI
+
+Kirill A. Shutemov (1):
+  mm, arm64: Update PR_SET/GET_TAGGED_ADDR_CTRL interface
+
+ arch/arm64/include/asm/processor.h            |  12 +-
+ arch/arm64/kernel/process.c                   |  45 +++++-
+ arch/arm64/kernel/ptrace.c                    |   4 +-
+ arch/x86/Kconfig                              |   9 ++
+ arch/x86/include/asm/cpufeatures.h            |   2 +-
+ arch/x86/include/asm/msr-index.h              |   2 +
+ arch/x86/include/asm/page_32.h                |   3 +
+ arch/x86/include/asm/page_64.h                |  26 ++++
+ arch/x86/include/asm/processor.h              |  12 ++
+ arch/x86/include/asm/thread_info.h            |   2 +
+ arch/x86/include/asm/uaccess.h                |  29 +++-
+ arch/x86/kernel/cpu/scattered.c               |   1 +
+ arch/x86/kernel/process.c                     | 134 ++++++++++++++++++
+ arch/x86/kernel/setup.c                       |   8 ++
+ kernel/sys.c                                  |  14 +-
+ .../testing/selftests/arm64/tags/tags_test.c  |  31 ----
+ .../selftests/{arm64 => vm}/tags/.gitignore   |   0
+ .../selftests/{arm64 => vm}/tags/Makefile     |   0
+ .../{arm64 => vm}/tags/run_tags_test.sh       |   0
+ tools/testing/selftests/vm/tags/tags_test.c   |  59 ++++++++
+ 20 files changed, 335 insertions(+), 58 deletions(-)
+ delete mode 100644 tools/testing/selftests/arm64/tags/tags_test.c
+ rename tools/testing/selftests/{arm64 => vm}/tags/.gitignore (100%)
+ rename tools/testing/selftests/{arm64 => vm}/tags/Makefile (100%)
+ rename tools/testing/selftests/{arm64 => vm}/tags/run_tags_test.sh (100%)
+ create mode 100644 tools/testing/selftests/vm/tags/tags_test.c
+
+-- 
+2.25.1
+
