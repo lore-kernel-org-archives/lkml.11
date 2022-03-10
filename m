@@ -2,145 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A43C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 399AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241095AbiCJKRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:17:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S241131AbiCJKRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:17:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241108AbiCJKRd (ORCPT
+        with ESMTP id S241108AbiCJKRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:17:33 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C03413DE07;
-        Thu, 10 Mar 2022 02:16:31 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C3BE1650;
-        Thu, 10 Mar 2022 02:16:31 -0800 (PST)
-Received: from [10.57.41.41] (unknown [10.57.41.41])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 583BA3FA27;
-        Thu, 10 Mar 2022 02:16:28 -0800 (PST)
-Message-ID: <b88268b2-97c3-4f61-44e9-fa6105d91be9@arm.com>
-Date:   Thu, 10 Mar 2022 10:16:25 +0000
+        Thu, 10 Mar 2022 05:17:52 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEFB13D934;
+        Thu, 10 Mar 2022 02:16:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QxtDdpYcf2JOJsi93GYP3dL8Ehp+16/1AcbmlLBV8SI=; b=DfaF72qUfGgARtmwcXdEeQaVt6
+        +UkPOlx2TBKBhG5WEVjjZ5Nshc+6uAKuTHeqpCbhZjZVAngNTGN8APsy0tsHTocIhXGjaaCK+o4uj
+        Ya7FMADf+iaWzf8fy9Qv93yuv+NWuxDKH44KMppwWWKQ18yW8ZNG8/9y1cNcTnSL1mPKzMDEJS9su
+        HFy9JLFEIffeGJtgfcIDX/ANlFCZocLXeCXbrc5IE99qinD6DHKl4EswHu3DGQB0hJDOEQ3YKv1rp
+        y+LSoMjDOkJKM5ntw6YEFwElx0Ewwi1fgDERMNJ39+9Jnp7BzX0Q4IwVTcpeqIWiLK/Tt+iVuSbpX
+        YK09Y1Qg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSFq2-00H50N-2H; Thu, 10 Mar 2022 10:16:06 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7791C30027B;
+        Thu, 10 Mar 2022 11:16:03 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5AD152B52E224; Thu, 10 Mar 2022 11:16:03 +0100 (CET)
+Date:   Thu, 10 Mar 2022 11:16:03 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "andrew.cooper3@citrix.com" <andrew.cooper3@citrix.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
+Message-ID: <YinP49gEl2zUVekz@hirez.programming.kicks-ass.net>
+References: <20220308153011.021123062@infradead.org>
+ <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
+ <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net>
+ <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
+ <CAKwvOdk0ROSOSDKHcyH0kP+5MFH5QnasD6kbAu8gG8CCXO7OmQ@mail.gmail.com>
+ <Yim/QJhNBCDfuxsc@hirez.programming.kicks-ass.net>
+ <184d593713ca4e289ddbd7590819eddc@AcuMS.aculab.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V2 7/8] perf/tools: Extend branch type classification
-Content-Language: en-US
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        peterz@infradead.org, acme@kernel.org
-Cc:     suzuki.poulose@arm.com, Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220309033642.144769-1-anshuman.khandual@arm.com>
- <20220309033642.144769-8-anshuman.khandual@arm.com>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220309033642.144769-8-anshuman.khandual@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <184d593713ca4e289ddbd7590819eddc@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 09/03/2022 03:36, Anshuman Khandual wrote:
-> This updates the perf tool with generic branch type classification with new
-> ABI extender place holder i.e PERF_BR_EXTEND_ABI, the new 4 bit branch type
-> field i.e perf_branch_entry.new_type, new generic page fault related branch
-> types and some arch specific branch types as added earlier in the kernel.
+On Thu, Mar 10, 2022 at 09:22:59AM +0000, David Laight wrote:
+> From: Peter Zijlstra
+> > Sent: 10 March 2022 09:05
+> > 
+> > On Wed, Mar 09, 2022 at 04:30:28PM -0800, Nick Desaulniers wrote:
+> > 
+> > > I observed the following error when building with
+> > > CONFIG_LTO_CLANG_FULL=y enabled:
+> > >
+> > > ld.lld: error: ld-temp.o <inline asm>:7:2: symbol 'ibt_selftest_ip' is
+> > > already defined
+> > >         ibt_selftest_ip:
+> > >         ^
+> > >
+> > > Seems to come from
+> > > commit a802350ba65a ("x86/ibt: Add IBT feature, MSR and #CP handling")
+> > >
+> > > Commenting out the label in the inline asm, I then observed:
+> > > vmlinux.o: warning: objtool: identify_cpu()+0x6d0: sibling call from
+> > > callable instruction with modified stack frame
+> > > vmlinux.o: warning: objtool: identify_cpu()+0x6e0: stack state
+> > > mismatch: cfa1=4+64 cfa2=4+8
+> > > These seemed to disappear when I kept CONFIG_LTO_CLANG_FULL=y but then
+> > > disabled CONFIG_X86_KERNEL_IBT. (perhaps due to the way I hacked out
+> > > the ibt_selftest_ip label).
+> > 
+> > Urgh.. I'm thikning this is a clang bug :/
+> > 
+> > The code in question is:
+> > 
+> > 
+> > void ibt_selftest_ip(void); /* code label defined in asm below */
+> > 
+> > DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
+> > {
+> > 	/* ... */
+> > 
+> > 	if (unlikely(regs->ip == (unsigned long)ibt_selftest_ip)) {
+> > 		regs->ax = 0;
+> > 		return;
+> > 	}
+> > 
+> > 	/* ... */
+> > }
+> > 
+> > bool ibt_selftest(void)
+> > {
+> > 	unsigned long ret;
+> > 
+> > 	asm ("	lea ibt_selftest_ip(%%rip), %%rax\n\t"
+> > 	     ANNOTATE_RETPOLINE_SAFE
+> > 	     "	jmp *%%rax\n\t"
+> > 	     "ibt_selftest_ip:\n\t"
+> > 	     UNWIND_HINT_FUNC
+> > 	     ANNOTATE_NOENDBR
+> > 	     "	nop\n\t"
+> > 
+> > 	     : "=a" (ret) : : "memory");
+> > 
+> > 	return !ret;
+> > }
+> > 
+> > There is only a single definition of that symbol, the one in the asm.
+> > The other is a declaration, which is used in the exception handler to
+> > compare against regs->ip.
 > 
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-> Cc: Jiri Olsa <jolsa@redhat.com>
-> Cc: Namhyung Kim <namhyung@kernel.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-perf-users@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
->  tools/include/uapi/linux/perf_event.h | 16 +++++++++++++++-
->  tools/perf/util/branch.c              |  3 ++-
->  2 files changed, 17 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-> index 26d8f0b5ac0d..d29280adc3c4 100644
-> --- a/tools/include/uapi/linux/perf_event.h
-> +++ b/tools/include/uapi/linux/perf_event.h
-> @@ -255,9 +255,22 @@ enum {
->  	PERF_BR_IRQ		= 12,	/* irq */
->  	PERF_BR_SERROR		= 13,	/* system error */
->  	PERF_BR_NO_TX		= 14,	/* not in transaction */
-> +	PERF_BR_EXTEND_ABI	= 15,	/* extend ABI */
->  	PERF_BR_MAX,
->  };
->  
-> +enum {
-> +	PERF_BR_NEW_FAULT_ALGN		= 0,    /* Alignment fault */
-> +	PERF_BR_NEW_FAULT_DATA		= 1,    /* Data fault */
-> +	PERF_BR_NEW_FAULT_INST		= 2,    /* Inst fault */
-> +	PERF_BR_NEW_ARCH_1		= 3,    /* Architecture specific */
-> +	PERF_BR_NEW_ARCH_2		= 4,    /* Architecture specific */
-> +	PERF_BR_NEW_ARCH_3		= 5,    /* Architecture specific */
-> +	PERF_BR_NEW_ARCH_4		= 6,    /* Architecture specific */
-> +	PERF_BR_NEW_ARCH_5		= 7,    /* Architecture specific */
-> +	PERF_BR_NEW_MAX,
-> +};
-> +
->  #define PERF_SAMPLE_BRANCH_PLM_ALL \
->  	(PERF_SAMPLE_BRANCH_USER|\
->  	 PERF_SAMPLE_BRANCH_KERNEL|\
-> @@ -1372,7 +1385,8 @@ struct perf_branch_entry {
->  		abort:1,    /* transaction abort */
->  		cycles:16,  /* cycle count to last branch */
->  		type:4,     /* branch type */
-> -		reserved:40;
-> +		new_type:4, /* additional branch type */
-> +		reserved:36;
->  };
->  
->  union perf_sample_weight {
-> diff --git a/tools/perf/util/branch.c b/tools/perf/util/branch.c
-> index abc673347bee..4bd52de0527c 100644
-> --- a/tools/perf/util/branch.c
-> +++ b/tools/perf/util/branch.c
-> @@ -53,7 +53,8 @@ const char *branch_type_name(int type)
->  		"ERET",
->  		"IRQ",
->  		"SERROR",
-> -		"NO_TX"
-> +		"NO_TX",
-> +		"EXTEND_ABI"
+> LTO has probably inlined it twice.
+
+Indeed, adding noinline to ibt_selftest() makes it work.
 
 
-Shouldn't we hide this implementation detail from users? They just want to know
-the branch type, they don't want to see the extend_abi stuff.
-
-It should be possible to fix all the perf internals so that it's transparent and
-any code using or printing the branch type has some accessor that works out what
-the final type is rather than having to re-implement that logic everywhere.
-
-So I don't think adding the string "EXTEND_ABI" would be needed because it would
-never be shown.
-
-If we just want to discuss the new extend ABI kernel side changes then I think this
-patch can be dropped and we can do the full perf tool side implementation
-in a more complete way later.
-
-James
-
->  	};
->  
->  	if (type >= 0 && type < PERF_BR_MAX)
+---
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index d8bbc705efe5..0c737cc31ee5 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -781,7 +781,8 @@ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data
+ 	return NOTIFY_STOP;
+ }
+ 
+-static void __init int3_selftest(void)
++/* Must be noinline to ensure uniqueness of int3_selftest_ip. */
++static noinline void __init int3_selftest(void)
+ {
+ 	static __initdata struct notifier_block int3_exception_nb = {
+ 		.notifier_call	= int3_exception_notify,
+@@ -794,9 +795,8 @@ static void __init int3_selftest(void)
+ 	/*
+ 	 * Basically: int3_magic(&val); but really complicated :-)
+ 	 *
+-	 * Stick the address of the INT3 instruction into int3_selftest_ip,
+-	 * then trigger the INT3, padded with NOPs to match a CALL instruction
+-	 * length.
++	 * INT3 padded with NOP to CALL_INSN_SIZE. The int3_exception_nb
++	 * notifier above will emulate CALL for us.
+ 	 */
+ 	asm volatile ("int3_selftest_ip:\n\t"
+ 		      ANNOTATE_NOENDBR
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 837cc3c7d4f4..fb89a2f1011f 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -214,7 +214,7 @@ DEFINE_IDTENTRY(exc_overflow)
+ 
+ static __ro_after_init bool ibt_fatal = true;
+ 
+-void ibt_selftest_ip(void); /* code label defined in asm below */
++extern void ibt_selftest_ip(void); /* code label defined in asm below */
+ 
+ enum cp_error_code {
+ 	CP_EC        = (1 << 15) - 1,
+@@ -238,7 +238,7 @@ DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
+ 	if (WARN_ON_ONCE(user_mode(regs) || (error_code & CP_EC) != CP_ENDBR))
+ 		return;
+ 
+-	if (unlikely(regs->ip == (unsigned long)ibt_selftest_ip)) {
++	if (unlikely(regs->ip == (unsigned long)&ibt_selftest_ip)) {
+ 		regs->ax = 0;
+ 		return;
+ 	}
+@@ -252,7 +252,8 @@ DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
+ 	BUG();
+ }
+ 
+-bool ibt_selftest(void)
++/* Must be noinline to ensure uniqueness of ibt_selftest_ip. */
++noinline bool ibt_selftest(void)
+ {
+ 	unsigned long ret;
+ 
