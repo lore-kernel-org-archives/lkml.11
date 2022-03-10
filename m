@@ -2,84 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 12:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64653C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 12:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiCJMDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 07:03:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
+        id S241873AbiCJMDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 07:03:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235616AbiCJMC6 (ORCPT
+        with ESMTP id S241871AbiCJMDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 07:02:58 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCA614560F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 04:01:57 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d07ae0b1c0so55285667b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 04:01:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H/7T7n7J54EKw3oUolg3f7j6poaaunPmy+9YPRhmhjE=;
-        b=N8jFLNEGCBDr4ygzQs0uXr+lqtgYWBoJ+Kyrn83FSoFn2rGE2i+P5TOUgEzehCo9eF
-         M3nQgvshhah+08FYtCUCwwrNIh2mEY6WOXasryB2K//MYyjoCTYjRLjZtLtPHTE8+diM
-         EURtg3Zodu0m9Gv7vwMgoLej4hMUeWjxUpRPzDg1L9cdk4YxGf1NCmmJlZnLRyQvG+NH
-         Y/Fy5v1+RCNg7gwXKr5v7Ge5ZtEYA13njjs3YUZmCqFePxgq/BmltpdgrC72bsKcYHug
-         EIL44/sCx2hHpqovIukwhYOgBVaSfXmvVzzpDusxkHf/NgXhCezsHBP4wNmf/UA8bz2T
-         fD4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H/7T7n7J54EKw3oUolg3f7j6poaaunPmy+9YPRhmhjE=;
-        b=mAXAgEAH1BssOx1ebAMEFv5SQXCLmBv7zjQqe1K1uiWWPbV9sCRY3PzfzHwADqiOxR
-         1RRCiNn+C+ms91+T8CYMh2wckLLn64JKXT9ruhMFvSaqBglvsYRavlDAmeJTeDTXtJjc
-         y/tZ+e7FM+c7TaoXvjTqF1QBQd2w06TNwlRV9CTKKL+YYG3OEMhHHcgLKctVytH8zhJG
-         Tgpo9aFoNPta6G5pSYpE9QGJ17/9EIyjM1UWdpwFJuwZ2YwDjZ7qvCFO76szyp6E7qr4
-         x1fHW7je/NXnNctbREFPongdz8JcLe1OYVhNuLe7JSV8P8Jc9jaHydRWr8vWwsLRykGm
-         A9pg==
-X-Gm-Message-State: AOAM533u8PPlBmLdPT/QVOlpgUtvWgaBLFuZwbg/BEHmPei11a9+QyJi
-        2KE3gPe7cjM7L3gMgQk9qMO2JIa1LgSG1tf1LTj3lw==
-X-Google-Smtp-Source: ABdhPJwTI9Oi3f0kPhKsaVmF4VrANleM5nwDNL0QRoHvu350nGwPWqvFW1tSHFL8xHZbqbJGSo1RP5FBZP0a27Szfz8=
-X-Received: by 2002:a81:4f96:0:b0:2dc:2e67:6b73 with SMTP id
- d144-20020a814f96000000b002dc2e676b73mr3489458ywb.352.1646913715396; Thu, 10
- Mar 2022 04:01:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20220310081854.2487280-1-jiyong@google.com> <20220310085931.cpgc2cv4yg7sd4vu@sgarzare-redhat>
- <CALeUXe6heGD9J+5fkLs9TJ7Mn0UT=BSdGNK_wZ4gkor_Ax_SqA@mail.gmail.com> <20220310110036.fgy323c4hvk3mziq@sgarzare-redhat>
-In-Reply-To: <20220310110036.fgy323c4hvk3mziq@sgarzare-redhat>
-From:   Jiyong Park <jiyong@google.com>
-Date:   Thu, 10 Mar 2022 21:01:18 +0900
-Message-ID: <CALeUXe5bVk5P9s-4YFVtUtrvWBYRMmtMrx+BOv4AMHVn1Kvv=A@mail.gmail.com>
-Subject: Re: [PATCH] vhost/vsock: reset only the h2g connections upon release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, adelva@google.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 10 Mar 2022 07:03:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B8E1470EC;
+        Thu, 10 Mar 2022 04:02:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88DD4B825BB;
+        Thu, 10 Mar 2022 12:02:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D272C36AE2;
+        Thu, 10 Mar 2022 12:02:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646913737;
+        bh=nDdN/+i8IF30p0Ww1m8xmvlInXFe2y5YNebNbqYFPx4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=D4uDRI0alavsRGRvcc9ewvhBAigBQKPIoIYFquBi570fYnD0p4mShl8n70hsfSnAr
+         1ULySZYXWUyfYvNffmkKG61WAhhxxKaJE4KPb0zri1CsaHvzAIG8mpGuNda1BohZx4
+         VRtkhnfaezUsu7uMZiTOZNLBJk3Fb1OGn6DTGsYtSAvG3L3vS7fZWPkQ2IYhBYqQKa
+         aOJUN+xzvHSySj4kYVNtPpQONnqji/uuGnkYRGMVWFiV5KSalJIor/CnBoA1TbPynz
+         O775MBOmkYTsdQXmGNv2krBGoeHw08KYhZRy9rlyV5qDBafDajjMg2kj07iTiyNsqG
+         eZh5uwmtuQyuw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 290A6E6D3DE;
+        Thu, 10 Mar 2022 12:02:17 +0000 (UTC)
+Subject: Re: [GIT PULL] gpio: fixes for v5.17
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220310092427.102296-1-brgl@bgdev.pl>
+References: <20220310092427.102296-1-brgl@bgdev.pl>
+X-PR-Tracked-List-Id: <linux-gpio.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220310092427.102296-1-brgl@bgdev.pl>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.17
+X-PR-Tracked-Commit-Id: 55d01c98a88b346e217eaa931b32e7baea905c9a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: cef06913a0af21e161a6179a17d3f5fa7132ba46
+Message-Id: <164691373715.28854.17505442046357559646.pr-tracker-bot@kernel.org>
+Date:   Thu, 10 Mar 2022 12:02:17 +0000
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> I see your point, and it makes sense to keep KMI on stable branches, but
-> mainline I would like to have the proposed approach since all transports
-> use it to cycle on their sockets.
->
-> So we could do a series with 2 patches:
-> - Patch 1 fixes the problem in all transports by checking the transport
->    in the callback (here we insert the fixes tag so we backport it to the
->    stable branches)
-> - Patch 2 moves the check in vsock_for_each_connected_socket() removing
->    it from callbacks so it is less prone to errors and we merge it only
->    mainline
->
-> What do you think?
->
-> Thanks,
-> Stefano
->
+The pull request you sent on Thu, 10 Mar 2022 10:24:27 +0100:
 
-That sounds like a plan. Will submit a new series soon.
+> git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.17
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/cef06913a0af21e161a6179a17d3f5fa7132ba46
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
