@@ -2,117 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89215C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E04AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233901AbiCJOXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:23:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        id S243347AbiCJOXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244018AbiCJOSj (ORCPT
+        with ESMTP id S244420AbiCJOTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:18:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D4985839E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:15:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646921670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Go8Xs3nn4xJMSXzgfTAf+aN/PVriO9262aZwriGw3dc=;
-        b=SbP21VwOkJLVBvsDRZUpMuwStWnJf7WXE06qN/50+Fl5ValL9/DcXE7q6juFkm/NubcBku
-        wnlk202DLALBcIbhbl3iCCL+w/i/B+/1RcwoCqZFjmAPiHxOGM9IXjplB4axYOgDE72CRN
-        STtmQwxgkUrtYTeBg8joukrksO9Ee28=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-115-jxb75OsfMOKFPquduDDrWA-1; Thu, 10 Mar 2022 09:14:27 -0500
-X-MC-Unique: jxb75OsfMOKFPquduDDrWA-1
-Received: by mail-wm1-f71.google.com with SMTP id h206-20020a1c21d7000000b003552c13626cso4129900wmh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:14:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Go8Xs3nn4xJMSXzgfTAf+aN/PVriO9262aZwriGw3dc=;
-        b=JpbjxcPJd3J1rwyDs+Ug0TImojWqqm0GBh9bEss7eZqDSv4ypCzRCc35scReFeKjPO
-         9F+LrqiPV0Ykp6JzWO8ZTfASDEx6p7p1jhMVMiSf0J8GndjnA5bxapPpVV5ddMmtxF4C
-         zyOxVI1/hoxq2PcJeno9fxEIVANK4psazF/An9yM/JKjwfRMhYTuB6hfJ1uU6fyjBU5v
-         jQgSv6bZ/94kMtl0yBPRT06IoFrZs8BpBArptexsB2RWECA/emf2F5T7McoGr1MXOB0O
-         U+mRGPe1UcMFMd5mQD0/UtOYae7/IeUi+i5ZpMpd592g7L/ilp78Nkok0fANgpNxrdhz
-         0Kvg==
-X-Gm-Message-State: AOAM531mJzEILaRZRLG3ZdkpUbyN/BF1tHjrL6Th/dbNDlA2tx3MCAeL
-        yTrlZCtIr5UYOBlyYHRx9x83oXoYoWi9XGDtkTz7jbYI3gorxAqT78rwUbClz8aLlt7Y2EvQWjn
-        brPVLLhU+AEqcMbt8d16+05dq
-X-Received: by 2002:a7b:c759:0:b0:389:82c6:ac44 with SMTP id w25-20020a7bc759000000b0038982c6ac44mr11566476wmk.168.1646921664255;
-        Thu, 10 Mar 2022 06:14:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyJrE6GOOprlJAb2464K/jVRkVAPfidu7mYv+i734cs8hDz4HbESzpyS0sW35U1EuqGVJzrQw==
-X-Received: by 2002:a7b:c759:0:b0:389:82c6:ac44 with SMTP id w25-20020a7bc759000000b0038982c6ac44mr11566447wmk.168.1646921663950;
-        Thu, 10 Mar 2022 06:14:23 -0800 (PST)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id e18-20020adfdbd2000000b001e4bbbe5b92sm4687989wrj.76.2022.03.10.06.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:14:23 -0800 (PST)
-Date:   Thu, 10 Mar 2022 15:14:20 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jiyong Park <jiyong@google.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, adelva@google.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] vsock: each transport cycles only on its own sockets
-Message-ID: <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
-References: <20220310135012.175219-1-jiyong@google.com>
+        Thu, 10 Mar 2022 09:19:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3A6BE1F9;
+        Thu, 10 Mar 2022 06:16:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA757B82678;
+        Thu, 10 Mar 2022 14:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D73FC340EB;
+        Thu, 10 Mar 2022 14:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921733;
+        bh=dq19W6oxUYyrbAuGknlft7AXPns9xdQ4oMNvwdExZjM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HbJiD64lEXkV8NkRIbgIPh4C0vzGTM1iIypzsqgpkC04S+s948Q52vOcQbEtOEFm5
+         RrxGjblFtsP9/YuwynB/h6u6yLCuZKrP4inenon33gM+J6iCVqDvUK2xZROjUNTcbH
+         NAXvHv9eV2bql9YjRKb0s0bT09DO7ELH2R/8eFwQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 4.9 36/38] xen: remove gnttab_query_foreign_access()
+Date:   Thu, 10 Mar 2022 15:13:49 +0100
+Message-Id: <20220310140809.185890974@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
+References: <20220310140808.136149678@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220310135012.175219-1-jiyong@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:50:11PM +0900, Jiyong Park wrote:
->When iterating over sockets using vsock_for_each_connected_socket, make
->sure that a transport filters out sockets that don't belong to the
->transport.
->
->There actually was an issue caused by this; in a nested VM
->configuration, destroying the nested VM (which often involves the
->closing of /dev/vhost-vsock if there was h2g connections to the nested
->VM) kills not only the h2g connections, but also all existing g2h
->connections to the (outmost) host which are totally unrelated.
->
->Tested: Executed the following steps on Cuttlefish (Android running on a
->VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
->connection inside the VM, (2) open and then close /dev/vhost-vsock by
->`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
->session is not reset.
->
->[1] https://android.googlesource.com/device/google/cuttlefish/
->
->Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
->Signed-off-by: Jiyong Park <jiyong@google.com>
->---
->Changes in v3:
->  - Fixed the build error in vmci_transport.c
->Changes in v2:
->  - Squashed into a single patch
->
-> drivers/vhost/vsock.c            | 3 ++-
-> include/net/af_vsock.h           | 3 ++-
-> net/vmw_vsock/af_vsock.c         | 9 +++++++--
-> net/vmw_vsock/virtio_transport.c | 7 +++++--
-> net/vmw_vsock/vmci_transport.c   | 5 ++++-
-> 5 files changed, 20 insertions(+), 7 deletions(-)
+From: Juergen Gross <jgross@suse.com>
 
-It seems okay now, I ran my test suite and everything seems to be fine:
+Commit 1dbd11ca75fe664d3e54607547771d021f531f59 upstream.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Remove gnttab_query_foreign_access(), as it is unused and unsafe to
+use.
 
-Thanks,
-Stefano
+All previous use cases assumed a grant would not be in use after
+gnttab_query_foreign_access() returned 0. This information is useless
+in best case, as it only refers to a situation in the past, which could
+have changed already.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/grant-table.c |   19 -------------------
+ include/xen/grant_table.h |    2 --
+ 2 files changed, 21 deletions(-)
+
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -113,13 +113,6 @@ struct gnttab_ops {
+ 	 * return the frame.
+ 	 */
+ 	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
+-	/*
+-	 * Query the status of a grant entry. Ref parameter is reference of
+-	 * queried grant entry, return value is the status of queried entry.
+-	 * Detailed status(writing/reading) can be gotten from the return value
+-	 * by bit operations.
+-	 */
+-	int (*query_foreign_access)(grant_ref_t ref);
+ };
+ 
+ struct unmap_refs_callback_data {
+@@ -254,17 +247,6 @@ int gnttab_grant_foreign_access(domid_t
+ }
+ EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access);
+ 
+-static int gnttab_query_foreign_access_v1(grant_ref_t ref)
+-{
+-	return gnttab_shared.v1[ref].flags & (GTF_reading|GTF_writing);
+-}
+-
+-int gnttab_query_foreign_access(grant_ref_t ref)
+-{
+-	return gnttab_interface->query_foreign_access(ref);
+-}
+-EXPORT_SYMBOL_GPL(gnttab_query_foreign_access);
+-
+ static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref, int readonly)
+ {
+ 	u16 flags, nflags;
+@@ -1028,7 +1010,6 @@ static const struct gnttab_ops gnttab_v1
+ 	.update_entry			= gnttab_update_entry_v1,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
+-	.query_foreign_access		= gnttab_query_foreign_access_v1,
+ };
+ 
+ static void gnttab_request_version(void)
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -118,8 +118,6 @@ int gnttab_grant_foreign_transfer(domid_
+ unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
+ unsigned long gnttab_end_foreign_transfer(grant_ref_t ref);
+ 
+-int gnttab_query_foreign_access(grant_ref_t ref);
+-
+ /*
+  * operations on reserved batches of grant references
+  */
+
 
