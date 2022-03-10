@@ -2,133 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD63C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7543C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 00:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238970AbiCJAUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 19:20:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        id S238977AbiCJAXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 19:23:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235041AbiCJAT7 (ORCPT
+        with ESMTP id S229704AbiCJAXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 19:19:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D591BF4F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:18:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37EE060C44
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:18:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E4C1C340E8;
-        Thu, 10 Mar 2022 00:18:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646871538;
-        bh=GVv4mxk8ewyfsCZHIqin2zrYrFLWh4W9/mCezQgG92A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Oz24NHQU2jKUym5bzo7Ln16IBL7cFLQWQleV2JSNkC73vGPTDtXfGZ10C9WC98Afh
-         adRpLhGZT2GyixgH6DxkqpBNleHOKmlADxgK0xXhU2c2knOlIjhW7MNOAoXmYL9iz7
-         E6Ea7kxuB35ctEiqOb9qjpndSq0DGCEBFYPcUrfkjOmlARbfR4QiUjfD+ScAiw9uL1
-         9DfmmLw978Q0AH1Nv3fhEd9jWOdPDZzzMv847orxxTCzoZfv0NYoyjSZb+4HDE/aUT
-         K9M/Kx/34K6Gl5tPi070CayBP70UiyfGGCJ92PGF0lNMsEm6t9YgicdUnyQvHzow52
-         KJcCD2p48RPyQ==
-Date:   Wed, 9 Mar 2022 17:18:51 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Wed, 9 Mar 2022 19:23:33 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E6363F4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 16:22:32 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V6m-sN5_1646871744;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V6m-sN5_1646871744)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Mar 2022 08:22:30 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     codrin.ciubotariu@microchip.com
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [lpieralisi-pci:pci/rcar 2/2]
- drivers/pci/controller/pcie-rcar-host.c:139:3: error: instruction requires:
- data-barriers
-Message-ID: <YilD68QeKpgJG1W2@dev-arch.thelio-3990X>
-References: <202203091741.IetDk7a7-lkp@intel.com>
- <20220309230950.GA89632@bhelgaas>
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] ASoC: atmel: mchp-pdmc: Remove unnecessary print function dev_err()
+Date:   Thu, 10 Mar 2022 08:22:21 +0800
+Message-Id: <20220310002221.125448-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309230950.GA89632@bhelgaas>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+The print function dev_err() is redundant because
+platform_get_irq() already prints an error.
 
-On Wed, Mar 09, 2022 at 05:09:50PM -0600, Bjorn Helgaas wrote:
-> On Wed, Mar 09, 2022 at 05:04:28PM +0800, kernel test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git pci/rcar
-> > head:   9775965dbae50a04f12879179d6d6fb58f240d6b
-> > commit: 9775965dbae50a04f12879179d6d6fb58f240d6b [2/2] PCI: rcar: Use PCI_SET_ERROR_RESPONSE after read which triggered an exception
-> > config: arm-randconfig-c002-20220307 (https://download.01.org/0day-ci/archive/20220309/202203091741.IetDk7a7-lkp@intel.com/config)
-> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install arm cross compiling tool for clang build
-> >         # apt-get install binutils-arm-linux-gnueabi
-> >         # https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git/commit/?id=9775965dbae50a04f12879179d6d6fb58f240d6b
-> >         git remote add lpieralisi-pci https://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/pci.git
-> >         git fetch --no-tags lpieralisi-pci pci/rcar
-> >         git checkout 9775965dbae50a04f12879179d6d6fb58f240d6b
-> >         # save the config file to linux build tree
-> >         mkdir build_dir
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All errors (new ones prefixed by >>):
-> > 
-> > >> drivers/pci/controller/pcie-rcar-host.c:139:3: error: instruction requires: data-barriers
-> >                    __rcar_pci_rw_reg_workaround("str")
-> >                    ^
-> >    drivers/pci/controller/pcie-rcar-host.c:120:4: note: expanded from macro '__rcar_pci_rw_reg_workaround'
-> >                    "2:     isb\n"                                          \
-> >                     ^
-> >    <inline asm>:2:4: note: instantiated into assembly here
-> >    2:      isb
-> >            ^
-> >    drivers/pci/controller/pcie-rcar-host.c:153:3: error: instruction requires: data-barriers
-> >                    __rcar_pci_rw_reg_workaround("ldr")
-> >                    ^
-> >    drivers/pci/controller/pcie-rcar-host.c:120:4: note: expanded from macro '__rcar_pci_rw_reg_workaround'
-> >                    "2:     isb\n"                                          \
-> >                     ^
-> >    <inline asm>:2:4: note: instantiated into assembly here
-> >    2:      isb
-> >            ^
-> >    2 errors generated.
-> 
-> I don't know how to fix this.  We currently have these on Lorenzo's
-> pci/rcar branch:
-> 
->   9775965dbae5 ("PCI: rcar: Use PCI_SET_ERROR_RESPONSE after read which triggered an exception")
->   de6b5097f58b ("PCI: rcar: Finish transition to L1 state in rcar_pcie_config_access()")
-> 
-> To avoid this error, for now I have cherry-picked de6b5097f58b to a
-> local pci/host/rcar branch and dropped 9775965dbae5.
+Eliminate the follow coccicheck warning:
+./sound/soc/atmel/mchp-pdmc.c:991:2-9: line 991 is redundant because
+platform_get_irq() already prints an error.
 
-FWIW, this is not clang specific, the same configuration blows up with
-GCC 11.2.0 as well:
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ sound/soc/atmel/mchp-pdmc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-$ make -skj"$(nproc)" \
-       ARCH=arm \
-       CROSS_COMPILE=arm-linux-gnueabi- \
-       olddefconfig drivers/pci/controller/pcie-rcar-host.o
-/tmp/ccz8ybtm.s: Assembler messages:
-/tmp/ccz8ybtm.s:742: Error: selected processor does not support `isb' in ARM mode
-/tmp/ccz8ybtm.s:812: Error: selected processor does not support `isb' in ARM mode
-make[4]: *** [scripts/Makefile.build:288: drivers/pci/controller/pcie-rcar-host.o] Error 1
+diff --git a/sound/soc/atmel/mchp-pdmc.c b/sound/soc/atmel/mchp-pdmc.c
+index c44636f6207d..2b48bd3434c7 100644
+--- a/sound/soc/atmel/mchp-pdmc.c
++++ b/sound/soc/atmel/mchp-pdmc.c
+@@ -988,7 +988,6 @@ static int mchp_pdmc_probe(struct platform_device *pdev)
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0) {
+-		dev_err(dev, "failed to get irq: %d\n", irq);
+ 		return irq;
+ 	}
+ 
+-- 
+2.20.1.7.g153144c
 
-$ rg CONFIG_CPU_32 .config
-289:CONFIG_CPU_32v4=y
-
-It does not look like isb can be used with this configuration, at least
-if I understand arch/arm/include/asm/barrier.h correctly.
-
-Cheers,
-Nathan
