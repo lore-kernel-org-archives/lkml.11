@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0829AC4708E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4D2C3A59E
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244577AbiCJOdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S244664AbiCJOdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244254AbiCJO2l (ORCPT
+        with ESMTP id S244263AbiCJO2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:28:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31B3C7E9B;
-        Thu, 10 Mar 2022 06:23:36 -0800 (PST)
+        Thu, 10 Mar 2022 09:28:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A72EC9A3C;
+        Thu, 10 Mar 2022 06:23:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB0EB8267B;
-        Thu, 10 Mar 2022 14:23:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FEE4C340EB;
-        Thu, 10 Mar 2022 14:23:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C460D61B32;
+        Thu, 10 Mar 2022 14:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3433C340E8;
+        Thu, 10 Mar 2022 14:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922213;
-        bh=LVgMR7x7f/QGb4kjXXLf2lRP8FRdGB7xZ81j3KSgT2E=;
+        s=korg; t=1646922217;
+        bh=wmtgRhtOtOfhtqTIfPVuj8wmISaeFTH6KT57QUzLdX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Go6NS+Da4Vk8UFSWbX7gM4XJoFmj/VRScYoo+GO04il4sJMpHEZfevMmlNpXnkwPt
-         Fw1UnIXKHpSYiWC6Es9z8TD3wO8aqEfCMkhCkbvLniQvwhFMfsBI7fm3s0HtZXUUxE
-         GSfkn+6XmEz2AZE4MiCD4+bnqwHpbt9aR1S5GfbA=
+        b=D8gCwEij/hwRymiscWBF3GkyhtNnfME9sIiuO+unkVQ5MeIYTln0DKYLi8ki72Wv/
+         ccvlu9Yb3wxjUCuy2sWombgs2OnlZYuDRChKQw1ddksWESHAhbATOHBAr5kefEKRh6
+         6JMMCC+g0KocR3g3OSGhHVX4r+si4zjuTTsZ/qfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 4.19 15/33] ARM: use LOADADDR() to get load address of sections
-Date:   Thu, 10 Mar 2022 15:18:42 +0100
-Message-Id: <20220310140808.195623663@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 4.19 06/33] x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+Date:   Thu, 10 Mar 2022 15:18:33 +0100
+Message-Id: <20220310140807.936441952@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -48,60 +50,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit 8d9d651ff2270a632e9dc497b142db31e8911315 upstream.
+commit 44a3918c8245ab10c6c9719dd12e7a8d291980d8 upstream.
 
-Use the linker's LOADADDR() macro to get the load address of the
-sections, and provide a macro to set the start and end symbols.
+With unprivileged eBPF enabled, eIBRS (without retpoline) is vulnerable
+to Spectre v2 BHB-based attacks.
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+When both are enabled, print a warning message and report it in the
+'spectre_v2' sysfs vulnerabilities file.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+[fllinden@amazon.com: backported to 4.19]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/vmlinux.lds.h |   19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   35 +++++++++++++++++++++++++++++------
+ include/linux/bpf.h        |   11 +++++++++++
+ kernel/sysctl.c            |    8 ++++++++
+ 3 files changed, 48 insertions(+), 6 deletions(-)
 
---- a/arch/arm/kernel/vmlinux.lds.h
-+++ b/arch/arm/kernel/vmlinux.lds.h
-@@ -25,6 +25,11 @@
- #define ARM_MMU_DISCARD(x)	x
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -31,6 +31,7 @@
+ #include <asm/intel-family.h>
+ #include <asm/e820/api.h>
+ #include <asm/hypervisor.h>
++#include <linux/bpf.h>
+ 
+ #include "cpu.h"
+ 
+@@ -607,6 +608,16 @@ static inline const char *spectre_v2_mod
+ static inline const char *spectre_v2_module_string(void) { return ""; }
  #endif
  
-+/* Set start/end symbol names to the LMA for the section */
-+#define ARM_LMA(sym, section)						\
-+	sym##_start = LOADADDR(section);				\
-+	sym##_end = LOADADDR(section) + SIZEOF(section)
++#define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
 +
- #define PROC_INFO							\
- 		. = ALIGN(4);						\
- 		__proc_info_begin = .;					\
-@@ -100,19 +105,19 @@
-  * only thing that matters is their relative offsets
-  */
- #define ARM_VECTORS							\
--	__vectors_start = .;						\
-+	__vectors_lma = .;						\
- 	.vectors 0xffff0000 : AT(__vectors_start) {			\
- 		*(.vectors)						\
- 	}								\
--	. = __vectors_start + SIZEOF(.vectors);				\
--	__vectors_end = .;						\
-+	ARM_LMA(__vectors, .vectors);					\
-+	. = __vectors_lma + SIZEOF(.vectors);				\
- 									\
--	__stubs_start = .;						\
--	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
-+	__stubs_lma = .;						\
-+	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
- 		*(.stubs)						\
- 	}								\
--	. = __stubs_start + SIZEOF(.stubs);				\
--	__stubs_end = .;						\
-+	ARM_LMA(__stubs, .stubs);					\
-+	. = __stubs_lma + SIZEOF(.stubs);				\
- 									\
- 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
++#ifdef CONFIG_BPF_SYSCALL
++void unpriv_ebpf_notify(int new_state)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++}
++#endif
++
+ static inline bool match_option(const char *arg, int arglen, const char *opt)
+ {
+ 	int len = strlen(opt);
+@@ -950,6 +961,9 @@ static void __init spectre_v2_select_mit
+ 		break;
+ 	}
  
++	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+@@ -1685,6 +1699,20 @@ static char *ibpb_state(void)
+ 	return "";
+ }
+ 
++static ssize_t spectre_v2_show_state(char *buf)
++{
++	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
++		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++
++	return sprintf(buf, "%s%s%s%s%s%s\n",
++		       spectre_v2_strings[spectre_v2_enabled],
++		       ibpb_state(),
++		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
++		       stibp_state(),
++		       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
++		       spectre_v2_module_string());
++}
++
+ static ssize_t srbds_show_state(char *buf)
+ {
+ 	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
+@@ -1710,12 +1738,7 @@ static ssize_t cpu_show_common(struct de
+ 		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
+ 
+ 	case X86_BUG_SPECTRE_V2:
+-		return sprintf(buf, "%s%s%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
+-			       ibpb_state(),
+-			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
+-			       stibp_state(),
+-			       boot_cpu_has(X86_FEATURE_RSB_CTXSW) ? ", RSB filling" : "",
+-			       spectre_v2_module_string());
++		return spectre_v2_show_state(buf);
+ 
+ 	case X86_BUG_SPEC_STORE_BYPASS:
+ 		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -533,6 +533,11 @@ static inline int bpf_map_attr_numa_node
+ struct bpf_prog *bpf_prog_get_type_path(const char *name, enum bpf_prog_type type);
+ int array_map_alloc_check(union bpf_attr *attr);
+ 
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return !sysctl_unprivileged_bpf_disabled;
++}
++
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ {
+@@ -644,6 +649,12 @@ static inline struct bpf_prog *bpf_prog_
+ {
+ 	return ERR_PTR(-EOPNOTSUPP);
+ }
++
++static inline bool unprivileged_ebpf_enabled(void)
++{
++	return false;
++}
++
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
+ static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -251,6 +251,11 @@ static int sysrq_sysctl_handler(struct c
+ #endif
+ 
+ #ifdef CONFIG_BPF_SYSCALL
++
++void __weak unpriv_ebpf_notify(int new_state)
++{
++}
++
+ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+                              void *buffer, size_t *lenp, loff_t *ppos)
+ {
+@@ -268,6 +273,9 @@ static int bpf_unpriv_handler(struct ctl
+ 			return -EPERM;
+ 		*(int *)table->data = unpriv_enable;
+ 	}
++
++	unpriv_ebpf_notify(unpriv_enable);
++
+ 	return ret;
+ }
+ #endif
 
 
