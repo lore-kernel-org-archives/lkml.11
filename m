@@ -2,151 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF49EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242566AbiCJRhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:37:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S245175AbiCJRh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237195AbiCJRhl (ORCPT
+        with ESMTP id S245250AbiCJRhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:37:41 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9007190B4F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:36:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646933799; x=1678469799;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DmdKyDRTAnvU4sOod75m/tiHVhv+0WGnvl2gkq+N75E=;
-  b=UqnR5SZ+nLR1WPt9K9T7oCw0FEFZ+Me/ZaHQMDM9ARkAgvMVDaJykhMa
-   ujtSD+kyegYwMtOOZMopJoZkxcKseZNZsuXXjdcVyrL0FaHIVdUVCfE7u
-   evwaAFrJv//x+9/8eLcEip8Q+RcSsN5LhdtIKpK+6Gt+YNc28X6F6iJYh
-   tNF4LKg4LAF+yCvSrvgJSuDEAdcXzmgwPAgL6iZwAS8XmrbWTEaKqpopY
-   pbxzz7dv8ICQQG2XBiPP2Ah/qWhA95wuTA3VAKaWjwCHoCtmA6C1C0NCz
-   E7KOu+ncTWIo1jGgGk8tngFo+tTxupJWvl7yCb14T6pyYCTHTi/JSgWFn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235922642"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="235922642"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:36:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="815951551"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Mar 2022 09:36:33 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSMiG-0005DV-RY; Thu, 10 Mar 2022 17:36:32 +0000
-Date:   Fri, 11 Mar 2022 01:35:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qing Wang <wangqing@vivo.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Wang Qing <wangqing@vivo.com>
-Subject: Re: [PATCH] sched: topology: make cache topology separate from cpu
- topology
-Message-ID: <202203110141.qsdgjdyC-lkp@intel.com>
-References: <1646917125-20038-1-git-send-email-wangqing@vivo.com>
+        Thu, 10 Mar 2022 12:37:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05203191418;
+        Thu, 10 Mar 2022 09:36:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 937F361DFD;
+        Thu, 10 Mar 2022 17:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69144C340E8;
+        Thu, 10 Mar 2022 17:36:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646933811;
+        bh=h0waVYpyuTnkxGPqGqawZDdOqQAy45V3TgKXqVDiUgs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gGgZ9ufXsEo9xVy70iZNBJODuGslQ1+tolhXfEhoXVWR6AqvkeyQcsvQeD/AOt2V4
+         7GfFsQc0SBybJ2TgT/QjnghtIz9FaqXAZcua97AnhAxTWfZzZebelbBOCiHU8DeQjK
+         z7dWBNBei5WZ6MNIHnI4x152MF+LBn3KBWls7cuIwjczDJhFfIMbhz0DNortW5fqIg
+         LeDnJ08FqIqa+M74JiEfpJtCeE/z+XV3CAn8npZPVXcBkF0imyPcw9sOYTllUQT1aD
+         Dl+ym1SUXxpRfOkBQmv4qsjEswk1zps8/YN7keBqTbZeozmOrjrOsFeG9Au5LbJ8Wf
+         nu50xEtAaOVvg==
+Date:   Thu, 10 Mar 2022 10:36:43 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>, llvm@lists.linux.dev,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2] kbuild: Make $(LLVM) more flexible
+Message-ID: <Yio3K4bgdyFEBy7J@dev-arch.thelio-3990X>
+References: <20220304170813.1689186-1-nathan@kernel.org>
+ <CAKwvOd=Q-7vPaRPj1wQagFsY3txcAKzrqU_D2UAX3h4ym91uUA@mail.gmail.com>
+ <Yid6eS7YV4Oxj+hx@dev-arch.thelio-3990X>
+ <CAK7LNAThknb0=-XhfB6zspke-sNHMEmTbGy8WVeg20ntT72wqA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1646917125-20038-1-git-send-email-wangqing@vivo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAK7LNAThknb0=-XhfB6zspke-sNHMEmTbGy8WVeg20ntT72wqA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
+On Wed, Mar 09, 2022 at 06:33:40PM +0900, Masahiro Yamada wrote:
+> On Wed, Mar 9, 2022 at 12:47 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > On Mon, Mar 07, 2022 at 11:08:29AM -0800, Nick Desaulniers wrote:
+> > > On Fri, Mar 4, 2022 at 9:14 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > >
+> > > > diff --git a/Documentation/kbuild/llvm.rst b/Documentation/kbuild/llvm.rst
+> > > > index d32616891dcf..68b74416ec48 100644
+> > > > --- a/Documentation/kbuild/llvm.rst
+> > > > +++ b/Documentation/kbuild/llvm.rst
+> > > > @@ -49,17 +49,36 @@ example: ::
+> > > >  LLVM Utilities
+> > > >  --------------
+> > > >
+> > > > -LLVM has substitutes for GNU binutils utilities. Kbuild supports ``LLVM=1``
+> > > > -to enable them. ::
+> > > > -
+> > > > -       make LLVM=1
+> > > > -
+> > > > -They can be enabled individually. The full list of the parameters: ::
+> > > > +LLVM has substitutes for GNU binutils utilities. They can be enabled individually.
+> > > > +The full list of supported make variables: ::
+> > > >
+> > > >         make CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip \
+> > > >           OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf \
+> > > >           HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld
+> > > >
+> > > > +To simplify the above command, Kbuild supports the ``LLVM`` variable: ::
+> > > > +
+> > > > +       make LLVM=1
+> > > > +
+> > > > +If your LLVM tools are not available in your PATH, you can supply their
+> > > > +location using the LLVM variable with a trailing slash: ::
+> > > > +
+> > > > +       make LLVM=/path/to/llvm/
+> > > > +
+> > > > +which will use ``/path/to/llvm/clang``, ``/path/to/llvm/ld.lld``, etc.
+> > >
+> > > I don't think we should do this; `PATH=/path/to/llvm/ make LLVM=1`
+> > > works and (my interpretation of what) Masahiro said "if anyone asks
+> > > for this, here's how we could do that."  I don't think I've seen an
+> > > explicit ask for that. I'd rather LLVM= have 2 behaviors than 3, but I
+> > > won't hold this patch up over that.  Either way:
+> >
+> > Right, there has not been an explicit ask for the prefix support yet,
+> > although I know I personally would use it, but I think that it is worth
+> > doing now instead of later for a few reasons:
+> >
+> > 1. It makes path goofs easier to spot. If you do
+> >
+> >      $ PATH=/path/to/llvm:$PATH make LLVM=1 ...
+> >
+> >    with a path to LLVM that does not exist (maybe you are bisecting an
+> >    issue and using a temporary build of LLVM and you forgot the path it
+> >    was in), you fall back to the LLVM tools that are in other places in
+> >    your PATH, which is not what the developer intended. I know that I
+> >    have messed up bisects that way. If you did
+> >
+> >      $ make LLVM=/path/to/llvm/
+> >
+> >    with a path that does not exist, there will be an error much earlier:
+> >
+> >      $ make LLVM=/this/path/does/not/exist/ defconfig
+> >      /bin/sh: line 1: /this/path/does/not/exist/clang: No such file or directory
+> >
+> > 2. It does not take that much more code or documentation to support. It
+> >    is the same amount of code as the suffix and the documentation is
+> >    roughly the same amount of lines as well.
+> >
+> > 3. If we wait to implement the path-based use of $(LLVM), we have three
+> >    "sequence" points: the initial support of $(LLVM), the suffix
+> >    support, and the prefix support. As we are constantly working with
+> >    various trees, it would make it harder to know what to use when. If
+> >    we just do it in the same patch, we know 5.18+ can use both of these
+> >    methods.
+> >
+> > However, at the end of the day, we are a team and if you feel like we
+> > should only have suffix support, I am more than happy to push a v3 that
+> > does just that and we can revist prefix support in the future. Just let
+> > me know!
+> 
+> 
+> I do not have a strong opinion about this.
+> (I just mentioned the LLVM=/path/to/llvm/ form because I guessed
+> somebody would request this sooner or later.)
+> 
+> 
+> If you want me to pick up this version, I will apply it with fixing up
+> a nit pointed out by Kees   (": ::" -> "::")
+> 
+> If you want to send v3, that is fine with me as well.
+> 
+> Please let me know your thoughts.
 
-Thank you for the patch! Perhaps something to improve:
+Given Nick's response, please pick up this revision with Kees' nit.
+Thank you!
 
-[auto build test WARNING on arm64/for-next/core]
-[also build test WARNING on driver-core/driver-core-testing tip/sched/core linus/master v5.17-rc7 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Cheers,
+Nathan
 
-url:    https://github.com/0day-ci/linux/commits/Qing-Wang/sched-topology-make-cache-topology-separate-from-cpu-topology/20220310-210139
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220311/202203110141.qsdgjdyC-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/035814a878b0c4cb313ebd35464e2149d8592d89
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Qing-Wang/sched-topology-make-cache-topology-separate-from-cpu-topology/20220310-210139
-        git checkout 035814a878b0c4cb313ebd35464e2149d8592d89
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/sched/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/sched/topology.c: In function 'set_sd_llc':
-   kernel/sched/topology.c:663:38: error: 'MAX_CPU_CACHE_LEVEL' undeclared (first use in this function)
-     663 |  for (cache_level = 0; cache_level < MAX_CPU_CACHE_LEVEL; cache_level++) {
-         |                                      ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/topology.c:663:38: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/sched/topology.c:664:8: error: 'cache_topology' undeclared (first use in this function); did you mean 'cpu_topology'?
-     664 |   if (!cache_topology[cpu][cache_level])
-         |        ^~~~~~~~~~~~~~
-         |        cpu_topology
->> kernel/sched/topology.c:653:28: warning: parameter 'cpu' set but not used [-Wunused-but-set-parameter]
-     653 | static void set_sd_llc(int cpu, struct sched_domain *sd, int *first_cpu, int *cpu_num)
-         |                        ~~~~^~~
-
-
-vim +/cpu +653 kernel/sched/topology.c
-
-   652	
- > 653	static void set_sd_llc(int cpu, struct sched_domain *sd, int *first_cpu, int *cpu_num)
-   654	{
-   655		int cache_level, cpu_id;
-   656		int first, last;
-   657		int id = cpumask_first(sched_domain_span(sd));
-   658		int size = cpumask_weight(sched_domain_span(sd));
-   659	
-   660		*first_cpu = id;
-   661		*cpu_num = size;
-   662	
- > 663		for (cache_level = 0; cache_level < MAX_CPU_CACHE_LEVEL; cache_level++) {
-   664			if (!cache_topology[cpu][cache_level])
-   665				break;
-   666	
-   667			first = -1;
-   668			last = id;
-   669			for (cpu_id = 0; cpu_id < NR_CPUS; cpu_id++) {
-   670				if (cache_topology[cpu][cache_level] == cache_topology[cpu_id][cache_level]) {
-   671					if (cpu_id >= id && cpu_id < id + size) {
-   672						first = (first == -1)?cpu_id:first;
-   673						last = cpu_id;
-   674					} else
-   675						return;
-   676				}
-   677			}
-   678			*first_cpu = first;
-   679			*cpu_num = last - first + 1;
-   680		}
-   681	}
-   682	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> > > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> > >
+> > > > +
+> > > > +If your LLVM tools have a version suffix and you want to test with that
+> > > > +explicit version rather than the unsuffixed executables like ``LLVM=1``, you
+> > > > +can pass the suffix using the ``LLVM`` variable: ::
+> > > > +
+> > > > +       make LLVM=-14
+> > > > +
+> > > > +which will use ``clang-14``, ``ld.lld-14``, etc.
+> > > > +
+> > > > +``LLVM=0`` is not the same as omitting ``LLVM`` altogether, it will behave like
+> > > > +``LLVM=1``.
+> > >
+> > > Hmm... I can see someone's build wrappers setting LLVM=1, then them
+> > > being surprised that appending LLVM=0 doesn't disable LLVM=1 as they
+> > > might expect.  But Masahiro says let's fix this later which is fine.
+> >
+> > Sure, I guess that is a reasonable case to support. I'll see if I can
+> > come up with something that makes sense after this change lands.
+> >
+> > Cheers,
+> > Nathan
+> 
+> 
+> 
+> -- 
+> Best Regards
+> Masahiro Yamada
