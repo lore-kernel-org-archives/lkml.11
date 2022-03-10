@@ -2,47 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A03C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242698AbiCJORo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        id S239010AbiCJOVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:21:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243104AbiCJORT (ORCPT
+        with ESMTP id S243519AbiCJOR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:17:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D3F156940;
-        Thu, 10 Mar 2022 06:13:25 -0800 (PST)
+        Thu, 10 Mar 2022 09:17:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD07160FE4;
+        Thu, 10 Mar 2022 06:14:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E24EB825F3;
-        Thu, 10 Mar 2022 14:13:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41F9C340E8;
-        Thu, 10 Mar 2022 14:13:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90A41B82615;
+        Thu, 10 Mar 2022 14:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FD1C340E8;
+        Thu, 10 Mar 2022 14:14:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921593;
-        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
+        s=korg; t=1646921646;
+        bh=6g3HeBO2zRKzOSmJFIYDEBU/mGaghVue+fBkH7lFoHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=upms8jnFI1n/74chLa+OhSi+qcYpnb7hnGDv6fLa9hJqKuJGXrukXT0Q7SRDBEwZ4
-         gTR1Ivtfg5SfNd2njiCXXUV112sOzWOIkoFbG5b0m/NH5YZlKHLZl7CAZzT4cl8iqq
-         H6B8vAUYw+yGRtofzxwPVQcVULp+WfpVNKqfYJ4o=
+        b=rrvD82SB8HO69FZn2ZMyEXwSO+phRLpKkPu0X5W76rSSaIbobb28b/gKYvYOTH3EQ
+         TnWqNC3cwFdO/cRruzPpYAi2UR9f8cgi85D05dC94cSlRqxdzWh5EnNraBjVJS/okx
+         OFJbr3FMXrdn3wN2FvP4AyswNfFRIA6/afQrdGpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH 5.16 50/53] xen/pvcalls: use alloc/free_pages_exact()
-Date:   Thu, 10 Mar 2022 15:09:55 +0100
-Message-Id: <20220310140813.271374697@linuxfoundation.org>
+        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@oracle.com>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wang YanQing <udknight@gmail.com>, dhaval.giani@oracle.com,
+        srinivas.eeda@oracle.com, Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.9 01/38] x86/speculation: Add RETPOLINE_AMD support to the inline asm CALL_NOSPEC variant
+Date:   Thu, 10 Mar 2022 15:13:14 +0100
+Message-Id: <20220310140808.180700666@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
-References: <20220310140811.832630727@linuxfoundation.org>
+In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
+References: <20220310140808.136149678@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,48 +58,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Zhenzhong Duan <zhenzhong.duan@oracle.com>
 
-Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
+commit 0cbb76d6285794f30953bfa3ab831714b59dd700 upstream.
 
-Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
-and free_pages_exact(). This is in preparation of a change of
-gnttab_end_foreign_access() which will prohibit use of high-order
-pages.
+..so that they match their asm counterpart.
 
-This is part of CVE-2022-23041 / XSA-396.
+Add the missing ANNOTATE_NOSPEC_ALTERNATIVE in CALL_NOSPEC, while at it.
 
-Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Zhenzhong Duan <zhenzhong.duan@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Wang YanQing <udknight@gmail.com>
+Cc: dhaval.giani@oracle.com
+Cc: srinivas.eeda@oracle.com
+Link: http://lkml.kernel.org/r/c3975665-173e-4d70-8dee-06c926ac26ee@default
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/pvcalls-front.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/drivers/xen/pvcalls-front.c
-+++ b/drivers/xen/pvcalls-front.c
-@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
- 	if (!map->active.ring)
- 		return;
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -172,11 +172,15 @@
+  */
+ # define CALL_NOSPEC						\
+ 	ANNOTATE_NOSPEC_ALTERNATIVE				\
+-	ALTERNATIVE(						\
++	ALTERNATIVE_2(						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+ 	"call __x86_indirect_thunk_%V[thunk_target]\n",		\
+-	X86_FEATURE_RETPOLINE)
++	X86_FEATURE_RETPOLINE,					\
++	"lfence;\n"						\
++	ANNOTATE_RETPOLINE_SAFE					\
++	"call *%[thunk_target]\n",				\
++	X86_FEATURE_RETPOLINE_AMD)
+ # define THUNK_TARGET(addr) [thunk_target] "r" (addr)
  
--	free_pages((unsigned long)map->active.data.in,
--			map->active.ring->ring_order);
-+	free_pages_exact(map->active.data.in,
-+			 PAGE_SIZE << map->active.ring->ring_order);
- 	free_page((unsigned long)map->active.ring);
- }
+ #elif defined(CONFIG_X86_32) && defined(CONFIG_RETPOLINE)
+@@ -186,7 +190,8 @@
+  * here, anyway.
+  */
+ # define CALL_NOSPEC						\
+-	ALTERNATIVE(						\
++	ANNOTATE_NOSPEC_ALTERNATIVE				\
++	ALTERNATIVE_2(						\
+ 	ANNOTATE_RETPOLINE_SAFE					\
+ 	"call *%[thunk_target]\n",				\
+ 	"       jmp    904f;\n"					\
+@@ -201,7 +206,11 @@
+ 	"       ret;\n"						\
+ 	"       .align 16\n"					\
+ 	"904:	call   901b;\n",				\
+-	X86_FEATURE_RETPOLINE)
++	X86_FEATURE_RETPOLINE,					\
++	"lfence;\n"						\
++	ANNOTATE_RETPOLINE_SAFE					\
++	"call *%[thunk_target]\n",				\
++	X86_FEATURE_RETPOLINE_AMD)
  
-@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
- 		goto out;
- 
- 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
--	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
--					PVCALLS_RING_ORDER);
-+	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
-+				  GFP_KERNEL | __GFP_ZERO);
- 	if (!bytes)
- 		goto out;
- 
+ # define THUNK_TARGET(addr) [thunk_target] "rm" (addr)
+ #else /* No retpoline for C / inline asm */
 
 
