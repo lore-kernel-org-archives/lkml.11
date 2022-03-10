@@ -2,102 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B95C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3930AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240655AbiCJJHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:07:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
+        id S240677AbiCJJIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:08:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240630AbiCJJHp (ORCPT
+        with ESMTP id S240621AbiCJJHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:07:45 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43C7138591
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:06:43 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id m12so6047478edc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:06:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d6cIzH9Xv2kAkc5CGXg0dY9Os86ok8VlKX0nfdrGmxk=;
-        b=jpKZmPtf6ts6t37Un7YGRrU2DFJ6hgABzNVvc5F/xqhFGBYn9GtXPHLTuQm7KQXp3h
-         JVLx+o0Ii0Za6aEjUl6ek2ELUNyImfY0j1QNv95kYqfCunwKCfb/WigoihneECSzc/Hq
-         I+rjbreLPdBwTQdCm4VOy51pD5zuUb75iTlq/M4TTab7SJxclAPF5bQJSBTr1oi5YPfP
-         BeuHvw8NEaksj2ikNUsg3AiQpw9FRWPKvfTRP9xetRtZ8pdnAC4kt/OslkAYXUqoclrV
-         9St8KE95+2mCXuRADQFO7cFyZbNfY7BbLafpDzjxujdGy5VLrI1lGuyhjdLASHiFvjvv
-         tDbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d6cIzH9Xv2kAkc5CGXg0dY9Os86ok8VlKX0nfdrGmxk=;
-        b=vI5frQV3/c8D5qHSilEvYAbU0DBqXYsx3GfSW//crPvsujH2Cua1XQ+o1CHjcGVaZr
-         j+ScBCpqXljZcjB4mGJmcNc9ikR7reILB8kjgBwSB33+KulPgP96gBY8mQTRJTJkuzp7
-         VptNxzw6Wd5Wzup8CCQ2cimbcomOGl2Z7bWUbPk3k5dMBuvKPrj8eyfVJBWXUJM56xRb
-         O1vB+T/lyYKryv+Wke+4mnuViyMRhTq/fdyPxXm60zfNH4weJewZ5PZl5ALyNAlA4Znh
-         RiWWdEm/HdAu6KPaSx85WtuCQ1OX8KxkeecbQ/mZShipLzoXD9onm7YYCPc6ZN92E8BN
-         KnDg==
-X-Gm-Message-State: AOAM530Y37k9WJrVxV+jQwLxm7ejV6R/e24b3WLiC0LEj/GZA8v+TDZV
-        oETzZxkY0gwcR9byc5pqUVnQOhTisghiDEIp0Pg1DTqYaMo=
-X-Google-Smtp-Source: ABdhPJx7aWsbpdFfLgAkL53l1vKBP7Cca1RRlZ4Npp4WBGJ4Q+Lzy+ZFciMD2QfDYIxUv6TqceyCzIUYlLc+vLpWD8s=
-X-Received: by 2002:a05:6402:2550:b0:416:997f:1239 with SMTP id
- l16-20020a056402255000b00416997f1239mr3312677edb.141.1646903202481; Thu, 10
- Mar 2022 01:06:42 -0800 (PST)
+        Thu, 10 Mar 2022 04:07:46 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D09138588;
+        Thu, 10 Mar 2022 01:06:44 -0800 (PST)
+Received: from quad ([82.142.8.122]) by mrelayeu.kundenserver.de (mreue109
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1M9npT-1nXRKb378X-005nBf; Thu, 10
+ Mar 2022 10:00:52 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <john.stultz@linaro.org>,
+        Laurent Vivier <laurent@vivier.eu>, stable@vger.kernel.org
+Subject: [PATCH v15 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
+Date:   Thu, 10 Mar 2022 10:00:45 +0100
+Message-Id: <20220310090048.1933020-3-laurent@vivier.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310090048.1933020-1-laurent@vivier.eu>
+References: <20220310090048.1933020-1-laurent@vivier.eu>
 MIME-Version: 1.0
-References: <20220310011617.29660-1-kris@embeddedTS.com> <20220310011617.29660-3-kris@embeddedTS.com>
-In-Reply-To: <20220310011617.29660-3-kris@embeddedTS.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 10 Mar 2022 10:06:22 +0100
-Message-ID: <CAMRc=McZng+m6Q9kCtwcVNB=No681mtChKR9ZAgANkfHx2fm7Q@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] gpio: ts4900: Use SPDX header
-To:     Kris Bahnsen <kris@embeddedts.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Featherston <mark@embeddedts.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:z6VvWaMgbVWgHGjT5VEVpvMDtRYjzT4gaVfuJs+Sr1bSIuiz2j0
+ tW3g8E/iSgn9b2ivVYHbbsXO6b/Bz7x+w91vgPBTmjRb+25hoxnRK78xGN80BD3wi83Kuj+
+ 60/c9jw86yLddUGQXsIcUPJcJbQxHYTUr1HOps4Mw6yFMV/NLMCJTr3/Qt0VxmYV3KJD8nu
+ xz9aBxCNCbMoC/MNt9SoA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bAk46WjY1/c=:8nu3NroU6bDNMJuRnyjolE
+ 7ewStpnvXrFIOAG9eOmlswTuEsO7Vu7HidhvSk9nqcOoDlk6E2WNx50ZUzCY+NBi2E1trBQV+
+ FYk1uQet6HusLh4/wtBNchxdHjgQitLOpfm12pxgD2T3Hg5Nw/ZiHxHwtG1D+tP4tHCJZlLId
+ RMyThOvSlG2fqTMUAMOeEPt5rQXBoYy8HAwWTuWNXD0ZJjTwgj3//ORL89vu8l7OeHLWE5Vew
+ WE+1LS5uE3wjBUA6DFirnNvJCYJU7AUAufVMwG61+k4pPiW13+QuYfGdg5mj3AtFPkVwbu2J+
+ VOzXp5Ugi+IVOPi9LnKa+7GnC9GiSGTehx3RfH2Uk0WVCqIBWS6fLaHKR2WNEdNRJDscbzfPX
+ T4uEA+zLgCvc42NfoS8SeVfhLIsU3DYCYAE2kMeWcZHoMkWuE31JuObnmxCIePcrTMd1wxbnr
+ PiTipDSBNfs8Mb7PoX8GuYsdhw4MRUZnAjIzqRhYnewFcWiFq+5cjfiSp+rjlP3w6OcJRXa0I
+ D46G9J8hXxNYlWzHOj9kGokCH5RppHiSPVZNtw9LiXp/meZc25bj64W92iNvVcISaBf9PlqVd
+ DcRt7yOVDE4hTbNBp+2nLUFYThD1ORTD381WPmApulPtbyKwpuArMrewkAhztz0q3Zg8ReBmE
+ JhWWnmlNgsor/6aTF2VSxLgqcZYmfADHMIHzXKyokZj5TNzQWuWfeg9gLbYtvaIwS0Rg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 2:16 AM Kris Bahnsen <kris@embeddedts.com> wrote:
->
-> Remove boilerplate, use the SPDX license identifier.
->
-> Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-> ---
->  drivers/gpio/gpio-ts4900.c | 10 +---------
->  1 file changed, 1 insertion(+), 9 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
-> index d918d2df4de2..69854fd2382a 100644
-> --- a/drivers/gpio/gpio-ts4900.c
-> +++ b/drivers/gpio/gpio-ts4900.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Digital I/O driver for Technologic Systems I2C FPGA Core
->   *
->   * Copyright (C) 2015, 2018 Technologic Systems
->   * Copyright (C) 2016 Savoir-Faire Linux
-> - *
-> - * This program is free software; you can redistribute it and/or
-> - * modify it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
-> - * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> - * kind, whether expressed or implied; without even the implied warranty
-> - * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License version 2 for more details.
->   */
->
->  #include <linux/gpio/driver.h>
-> --
-> 2.11.0
->
+Revert
+commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
 
-Applied, thanks!
+and define gf_ioread32()/gf_iowrite32() to be able to use accessors
+defined by the architecture.
 
-Bart
+Cc: stable@vger.kernel.org # v5.11+
+Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ drivers/tty/goldfish.c   | 20 ++++++++++----------
+ include/linux/goldfish.h | 15 +++++++++++----
+ 2 files changed, 21 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
+index 5ed19a9857ad..10c13b93ed52 100644
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -61,13 +61,13 @@ static void do_rw_io(struct goldfish_tty *qtty,
+ 	spin_lock_irqsave(&qtty->lock, irq_flags);
+ 	gf_write_ptr((void *)address, base + GOLDFISH_TTY_REG_DATA_PTR,
+ 		     base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
+-	__raw_writel(count, base + GOLDFISH_TTY_REG_DATA_LEN);
++	gf_iowrite32(count, base + GOLDFISH_TTY_REG_DATA_LEN);
+ 
+ 	if (is_write)
+-		__raw_writel(GOLDFISH_TTY_CMD_WRITE_BUFFER,
++		gf_iowrite32(GOLDFISH_TTY_CMD_WRITE_BUFFER,
+ 		       base + GOLDFISH_TTY_REG_CMD);
+ 	else
+-		__raw_writel(GOLDFISH_TTY_CMD_READ_BUFFER,
++		gf_iowrite32(GOLDFISH_TTY_CMD_READ_BUFFER,
+ 		       base + GOLDFISH_TTY_REG_CMD);
+ 
+ 	spin_unlock_irqrestore(&qtty->lock, irq_flags);
+@@ -142,7 +142,7 @@ static irqreturn_t goldfish_tty_interrupt(int irq, void *dev_id)
+ 	unsigned char *buf;
+ 	u32 count;
+ 
+-	count = __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
++	count = gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
+ 	if (count == 0)
+ 		return IRQ_NONE;
+ 
+@@ -159,7 +159,7 @@ static int goldfish_tty_activate(struct tty_port *port, struct tty_struct *tty)
+ {
+ 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
+ 									port);
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
+ 	return 0;
+ }
+ 
+@@ -167,7 +167,7 @@ static void goldfish_tty_shutdown(struct tty_port *port)
+ {
+ 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
+ 									port);
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
+ }
+ 
+ static int goldfish_tty_open(struct tty_struct *tty, struct file *filp)
+@@ -202,7 +202,7 @@ static unsigned int goldfish_tty_chars_in_buffer(struct tty_struct *tty)
+ {
+ 	struct goldfish_tty *qtty = &goldfish_ttys[tty->index];
+ 	void __iomem *base = qtty->base;
+-	return __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
++	return gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
+ }
+ 
+ static void goldfish_tty_console_write(struct console *co, const char *b,
+@@ -355,7 +355,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
+ 	 * on Ranchu emulator (qemu2) returns 1 here and
+ 	 * driver will use physical addresses.
+ 	 */
+-	qtty->version = __raw_readl(base + GOLDFISH_TTY_REG_VERSION);
++	qtty->version = gf_ioread32(base + GOLDFISH_TTY_REG_VERSION);
+ 
+ 	/*
+ 	 * Goldfish TTY device on Ranchu emulator (qemu2)
+@@ -374,7 +374,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
++	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
+ 
+ 	ret = request_irq(irq, goldfish_tty_interrupt, IRQF_SHARED,
+ 			  "goldfish_tty", qtty);
+@@ -436,7 +436,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
+ #ifdef CONFIG_GOLDFISH_TTY_EARLY_CONSOLE
+ static void gf_early_console_putchar(struct uart_port *port, int ch)
+ {
+-	__raw_writel(ch, port->membase);
++	gf_iowrite32(ch, port->membase);
+ }
+ 
+ static void gf_early_write(struct console *con, const char *s, unsigned int n)
+diff --git a/include/linux/goldfish.h b/include/linux/goldfish.h
+index 12be1601fd84..bcc17f95b906 100644
+--- a/include/linux/goldfish.h
++++ b/include/linux/goldfish.h
+@@ -8,14 +8,21 @@
+ 
+ /* Helpers for Goldfish virtual platform */
+ 
++#ifndef gf_ioread32
++#define gf_ioread32 ioread32
++#endif
++#ifndef gf_iowrite32
++#define gf_iowrite32 iowrite32
++#endif
++
+ static inline void gf_write_ptr(const void *ptr, void __iomem *portl,
+ 				void __iomem *porth)
+ {
+ 	const unsigned long addr = (unsigned long)ptr;
+ 
+-	__raw_writel(lower_32_bits(addr), portl);
++	gf_iowrite32(lower_32_bits(addr), portl);
+ #ifdef CONFIG_64BIT
+-	__raw_writel(upper_32_bits(addr), porth);
++	gf_iowrite32(upper_32_bits(addr), porth);
+ #endif
+ }
+ 
+@@ -23,9 +30,9 @@ static inline void gf_write_dma_addr(const dma_addr_t addr,
+ 				     void __iomem *portl,
+ 				     void __iomem *porth)
+ {
+-	__raw_writel(lower_32_bits(addr), portl);
++	gf_iowrite32(lower_32_bits(addr), portl);
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+-	__raw_writel(upper_32_bits(addr), porth);
++	gf_iowrite32(upper_32_bits(addr), porth);
+ #endif
+ }
+ 
+-- 
+2.35.1
+
