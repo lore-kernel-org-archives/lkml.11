@@ -2,129 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF712C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240656AbiCJQJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:09:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
+        id S240749AbiCJQKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiCJQJW (ORCPT
+        with ESMTP id S240672AbiCJQKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:09:22 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A138413859A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:08:20 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646928498;
+        Thu, 10 Mar 2022 11:10:15 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B18618DAB4;
+        Thu, 10 Mar 2022 08:09:14 -0800 (PST)
+Received: from zn.tnic (p200300ea971938780dcf83143dcfc403.dip0.t-ipconnect.de [IPv6:2003:ea:9719:3878:dcf:8314:3dcf:c403])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id AAF941EC0295;
+        Thu, 10 Mar 2022 17:09:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646928548;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hr+m6fRu/g1wdrMoiOwPUFJNQ6DkCbll2sk1K5dMoDc=;
-        b=0uoKfsCfbpL9j+kiWHu/ot32XJZkds2YHbxwl2MhqJ4RKM+028bnTqGQvv0+Fz91W5BooI
-        BSKE4NdBYLQBjpKR9ADXVpJLUaiOvdoZWkEv883wHl3DJz5uR0aamIdT84y0F+pPacpjXE
-        kMhqtnqGxiVQWGNVNekfP4D/kAODq2wHi1Gk8yiwsW8aEpV8HCP9fueHwKSPtC16Pc6iuM
-        sOzXrL2gSBLkdf50GDF57nJ80rwHHUq9HALZVRNatZ8eptaeuGT9WLJMneMkf1JUGrbA8R
-        R66SIEuGf8fBfH//5FnSNsoXqeY4oHO4cjhDq2nhm/ZVba+tzGvBJPVwb59y1w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646928498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hr+m6fRu/g1wdrMoiOwPUFJNQ6DkCbll2sk1K5dMoDc=;
-        b=yAg9m2XaiUqFUGiHKUnkWIBFeqDWjmZu6dlfcIy5zuiB3HBLB1ahfrxmwNuhLeon893fwL
-        2xwk660N5UQbQTAw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
- proper kthread support
-In-Reply-To: <YioMcSe0P0Z7ksiW@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-12-john.ogness@linutronix.de>
- <YhYKP/UuSKENGwfj@alley> <87tuc7xma0.fsf@jogness.linutronix.de>
- <YioMcSe0P0Z7ksiW@alley>
-Date:   Thu, 10 Mar 2022 17:14:18 +0106
-Message-ID: <87wnh14wp9.fsf@jogness.linutronix.de>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yx08IRwrdan+Mo3WyLuiUJbzxkiwNi4eKWLpFxN4RSU=;
+        b=CcSDpu8hbeYpCKhe3NkIY/bbWNHEpXJ49JcfamVD6NCRsPvchLtjJeSRTJ9tWL25eBqtHZ
+        X2pByUwFsL1bFdQaVr4hGXzcnLj5arAzNDDnTXRJ39HU4RLGBAcoA/EIvHmDSkoMLJ4cEW
+        NfE8ib++jzBXrIgUCm5MSnZxLU3BHnA=
+Date:   Thu, 10 Mar 2022 17:09:19 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
+        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
+Subject: Re: [PATCH v4 10/24] EDAC/amd64: Define function to get Interleave
+ Address Bit
+Message-ID: <Yioir2htNGGz/QG7@zn.tnic>
+References: <20220127204115.384161-1-yazen.ghannam@amd.com>
+ <20220127204115.384161-11-yazen.ghannam@amd.com>
+ <YgpGyceWKsIVYuGv@zn.tnic>
+ <YikmMHYpdehehD9F@yaz-ubuntu>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YikmMHYpdehehD9F@yaz-ubuntu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-10, Petr Mladek <pmladek@suse.com> wrote:
->    console_unlock()
->    {
-> 	  [...]
-> 	  if (may_schedule)
-> 	      retry = console_trylock_sched();
-> 	  else
-> 	      retry = console_trylock();
->    }
+On Wed, Mar 09, 2022 at 10:12:00PM +0000, Yazen Ghannam wrote:
+> Similar goal as in other places. When the function seems sufficiently long
+> (subjective I know), break it up into helper functions.
+> 
+> I've been trying to decide based on logical steps. Do you have any general
+> recommendations or rule-of-thumb?
 
-I believe the main confusion comes from the function name I chose and
-the poor function description. Using your above code idea and changing
-to a more fitting name, I would suggest:
+Documentation/process/coding-style.rst, 6) Functions has some good ideas
+about it. To me, a function should do one thing and one thing only but
+yes, the decision is subjective.
 
-    console_unlock()
-    {
- 	  [...]
- 	  if (may_schedule)
- 	      retry = console_lock_reacquire();
- 	  else
- 	      retry = console_trylock();
-    }
+-- 
+Regards/Gruss,
+    Boris.
 
-This console_lock_reacquire() acquires the console lock the same way
-that console_lock() does it. The only reason we don't just use
-console_lock() is because we want to perform a try on @console_sem. But
-if we are successful, in the end, we have re-taken the console lock
-exactly as console_lock() did before: @console_sem locked, kthreads
-blocked by mutex.
-
-You say this creates deadlock potential, but I do not see how that could
-be. We are in the same context and locking the same way we did before.
-
-But my primary concern is not the naming or workarounds or confusing
-APIs. So we should not let ourselves be diverted by that aspect.
-
-My primary concern is the technical difference when a schedulable
-context reacquires via atomic counter (which fails if any kthread is
-active) vs. reacquiring via mutex (which never fails).
-
-The reason for the reacquire is because (during direct printing) we see
-that a new record appeared and we need to make sure it gets printed
-(because other direct printers may have aborted, expecting us to print
-it).
-
-This scenario is only interesting if kthread printers exist because
-otherwise @console_sem is enough to handle the direct printing.
-
-So the questions are:
-
-1. Is it OK to assume the new record will be printed if any kthread is
-active? If yes, then it is enough to use the atomic counter.
-
-2. Or, since we are responsible for direct printing, do we want to be
-certain that the record is printed by printing it ourselves? If yes,
-then we must block all the kthreads and perform the printing directly to
-all the consoles. This requires the mutex approach.
-
-IMHO #1 will relies heavily on kthreads waking up and printing (even
-though the printk caller requested direct printing), whereas #2 will
-cause direct printers to more actively print (possibly printing more
-than was requested).
-
-I prefer to go the route of #2 because it is more conservative. IMHO,
-when direct printing becomes active, we really should make a strong
-effort to direct print.
-
-Having now stated the issues (hopefully clearly), I will not fight for
-#2. If you say it is enough to rely on the kthreads in this scenario,
-then I will implement the atomic counter solution for my v2.
-
-John
+https://people.kernel.org/tglx/notes-about-netiquette
