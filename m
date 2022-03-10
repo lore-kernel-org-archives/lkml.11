@@ -2,202 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D90C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E365DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 16:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241995AbiCJQXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
+        id S243729AbiCJQXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:23:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243984AbiCJQWw (ORCPT
+        with ESMTP id S244036AbiCJQWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:22:52 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4BC191410
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:20:26 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id g17so10355369lfh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 08:20:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=k6OgL/z6xyQraQABSVfYgeydoW+8ffdkM6ASQFGYnFc=;
-        b=6tWwYjJO7t29tf8hEjIH77l5ZvdGSdEOvjTLNGyXPWrBD1C0k76cIvbNNJzdJ47uWx
-         rmoiAeGmtcWQUFGLe5G3z3D8GAztAkgpGvvRpgHxsAJ5lMmr4aY+m0ABiMMpUYYa+d/+
-         w09XuoAaO0Vq4HiEqajEa1VHwEuHKPfdac1z13JphojTaZz5deh9+AjeJnLloWopPini
-         QNL+ZK294p36Id1WJCXRfxLegWst6D90i/vyvUGDpV8ryklkLkeiuRcJlHSL8VFVtuWR
-         JA5FaRL0z33xNgPvj7z/TQ2hSFXwSR2h6iXs7rVrzvlio+9nPdCkL2F8LbMwhckgnn/3
-         1hsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=k6OgL/z6xyQraQABSVfYgeydoW+8ffdkM6ASQFGYnFc=;
-        b=Hpxg4iGuu6x53mlkglK7UpjYQtgYhEFUeW8smsAvHWnQWPtOeXrzO5i9vSWo5x61Qw
-         a+KjbPvRab26NfOoB+GN+g0Euyo9zHzIqgpMowR5r9NYhhvmPHjJ9hl/dQuPOMqFum7u
-         Pn0ov1nwqDDcg7Kl4O91ip3lOm6Bb/NSDuSWWJ42jBIynA3O9/32obayIkMCmGHZOwyz
-         HK4GeztfSX3jCTdFrkT3T3xpDMFxa59UUYqQelYECgRmDsk7mnXimtOXAT0MUHklQDML
-         VPnNZMg31T9IbHkXIjDW42YUO2CtABEfloAWjvqyAmwDkUhd39RG0TOAESvlpCMAep7X
-         5zWg==
-X-Gm-Message-State: AOAM531D7pG3C1qDZPyHHgXcL5cZPWqpcLBOBnVc9b36qvIKzr5yONq+
-        OciRtIxuVzlPcLjvM4USEz6QxQ==
-X-Google-Smtp-Source: ABdhPJyrOU18INkvX9oTxj8d3WqnRuWU0PdDWOStGmpIR9Wc4Xy83lyyX897VBpMNDVNNQyi8SJR6Q==
-X-Received: by 2002:a05:6512:3f17:b0:43d:8e7f:29f8 with SMTP id y23-20020a0565123f1700b0043d8e7f29f8mr3335181lfa.609.1646929223990;
-        Thu, 10 Mar 2022 08:20:23 -0800 (PST)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id w15-20020a05651204cf00b004433bb6ec6bsm1045857lfq.282.2022.03.10.08.20.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 08:20:23 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 07/10] net: dsa: Pass MST state changes to
- driver
-In-Reply-To: <87h785n67k.fsf@waldekranz.com>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-8-tobias@waldekranz.com>
- <20220303222055.7a5pr4la3wmuuekc@skbuf> <87mthymblh.fsf@waldekranz.com>
- <20220310103509.g35syl776kyh5j2n@skbuf> <87h785n67k.fsf@waldekranz.com>
-Date:   Thu, 10 Mar 2022 17:20:22 +0100
-Message-ID: <87ee39n5ix.fsf@waldekranz.com>
+        Thu, 10 Mar 2022 11:22:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93720194144;
+        Thu, 10 Mar 2022 08:20:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF38AB826BD;
+        Thu, 10 Mar 2022 16:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C11C340E8;
+        Thu, 10 Mar 2022 16:20:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646929225;
+        bh=a93gAwwuRaMdx+LeMidQ2gboZH9pO+gKAeYJd4lUHr0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ff/rsOwFUZtQTB7RsovNGrr7AQWgG02Qq5n2Egz6N2tbuwMJk9ULhCrU5khFNqRIq
+         hTG4l7v7zYfbfiRNT/YJV8PWVThg1Di+zVuIZC6afMGF7StzE7kaff1NYzxOKkKbj7
+         1fYqaOwbdplom0TpvYonjfTDaVPTHeVRHpKm3cSJJtajDJBsNI2GJC0QOzOB7sg9nw
+         Trn5BSq7jIYM9/LhFcP0iEt0sW4aaL2xw7QWmWGfKcNK5qbeoByDTwrKBoS/R3GJ5Q
+         JddMSo94Qttd1a9PaHQsegKWh6RUS63igbGkyw0+FUutM6CngPwuClnriPcza53FzK
+         YzWNnuDRe2+Qg==
+Date:   Thu, 10 Mar 2022 09:20:18 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     clang-built-linux <clang-built-linux@googlegroups.com>,
+        llvm@lists.linux.dev,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [next] ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT
+ expected, but got NOCROSSREFS
+Message-ID: <YiolQp58KrkNkj5R@dev-arch.thelio-3990X>
+References: <CA+G9fYsz7+Ooc8L-Dpfjp6mMDdw43=SjqiE0ryABy3t6qEzRoQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYsz7+Ooc8L-Dpfjp6mMDdw43=SjqiE0ryABy3t6qEzRoQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 17:05, Tobias Waldekranz <tobias@waldekranz.com> wrote:
-> On Thu, Mar 10, 2022 at 12:35, Vladimir Oltean <olteanv@gmail.com> wrote:
->> On Thu, Mar 10, 2022 at 09:54:34AM +0100, Tobias Waldekranz wrote:
->>> >> +	if (!dsa_port_can_configure_learning(dp) || dp->learning) {
->>> >> +		switch (state->state) {
->>> >> +		case BR_STATE_DISABLED:
->>> >> +		case BR_STATE_BLOCKING:
->>> >> +		case BR_STATE_LISTENING:
->>> >> +			/* Ideally we would only fast age entries
->>> >> +			 * belonging to VLANs controlled by this
->>> >> +			 * MST.
->>> >> +			 */
->>> >> +			dsa_port_fast_age(dp);
->>> >
->>> > Does mv88e6xxx support this? If it does, you might just as well
->>> > introduce another variant of ds->ops->port_fast_age() for an msti.
->>> 
->>> You can limit ATU operations to a particular FID. So the way I see it we
->>> could either have:
->>> 
->>> int (*port_vlan_fast_age)(struct dsa_switch *ds, int port, u16 vid)
->>> 
->>> + Maybe more generic. You could imagine there being a way to trigger
->>>   this operation from userspace for example.
->>> - We would have to keep the VLAN<->MSTI mapping in the DSA layer in
->>>   order to be able to do the fan-out in dsa_port_set_mst_state.
->>> 
->>> or:
->>> 
->>> int (*port_msti_fast_age)(struct dsa_switch *ds, int port, u16 msti)
->>> 
->>> + Let's the mapping be an internal affair in the driver.
->>> - Perhaps, less generically useful.
->>> 
->>> Which one do you prefer? Or is there a hidden third option? :)
->>
->> Yes, I was thinking of "port_msti_fast_age". I don't see a cheap way of
->> keeping VLAN to MSTI associations in the DSA layer. Only if we could
->> retrieve this mapping from the bridge layer - maybe with something
->> analogous to br_vlan_get_info(), but br_mst_get_info(), and this gets
->> passed a VLAN_N_VID sized bitmap, which the bridge populates with ones
->> and zeroes.
->
-> That can easily be done. Given that, should we go for port_vlan_fast_age
-> instead? port_msti_fast_age feels like an awkward interface, since I
-> don't think there is any hardware out there that can actually perform
-> that operation without internally fanning it out over all affected VIDs
-> (or FIDs in the case of mv88e6xxx).
->
->> The reason why I asked for this is because I'm not sure of the
->> implications of flushing the entire FDB of the port for a single MSTP
->> state change. It would trigger temporary useless flooding in other MSTIs
->> at the very least. There isn't any backwards compatibility concern to
->> speak of, so we can at least try from the beginning to limit the
->> flushing to the required VLANs.
->
-> Aside from the performance implications of flows being temporarily
-> flooded I don't think there are any.
->
-> I suppose if you've disabled flooding of unknown unicast on that port,
-> you would loose the flow until you see some return traffic (or when one
-> side gives up and ARPs). While somewhat esoteric, it would be nice to
-> handle this case if the hardware supports it.
->
->> What I didn't think about, and will be a problem, is
->> dsa_port_notify_bridge_fdb_flush() - we don't know the vid to flush.
->> The easy way out here would be to export dsa_port_notify_bridge_fdb_flush(),
->> add a "vid" argument to it, and let drivers call it. Thoughts?
->
-> To me, this seems to be another argument in favor of
-> port_vlan_fast_age. That way you would know the VIDs being flushed at
-> the DSA layer, and driver writers needn't concern themselves with having
-> to remember to generate the proper notifications back to the bridge.
->
->> Alternatively, if you think that cross-flushing FDBs of multiple MSTIs
->> isn't a real problem, I suppose we could keep the "port_fast_age" method.
->
-> What about falling back to it if the driver doesn't support per-VLAN
-> flushing? Flushing all entries will work in most cases, at the cost of
-> some temporary flooding. Seems more useful than refusing the offload
-> completely.
+On Thu, Mar 10, 2022 at 05:07:36PM +0530, Naresh Kamboju wrote:
+> Linux next-20220310 arm clang builds failed due to following errors/warnings.
+> 
+> metadata:
+>     git_describe: next-20220310
+>     git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>     git_sha: 71941773e143369a73c9c4a3b62fbb60736a1182
+>     git_short_log: 71941773e143 (\Add linux-next specific files for 20220310\)
+>     target_arch: arm
+>     toolchain: clang-14
+>     Kconfig: https://builds.tuxbuild.com/26BmBgHzW9MFZ3R0kIwL0Ce2r09/config
+> 
+> make --silent --keep-going --jobs=8
+> O=/home/tuxbuild/.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=1
+> ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- 'HOSTCC=sccache clang'
+> 'CC=sccache clang'
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> clang: warning: argument unused during compilation: '-march=armv7-a'
+> [-Wunused-command-line-argument]
+> ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got
+> NOCROSSREFS
+> >>>  __vectors_lma = .; OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) { .vectors { *(.vectors) } .vectors.bhb.loop8 { *(.vectors.bhb.loop8) } .vectors.bhb.bpiall { *(.vectors.bhb.bpiall) } } __vectors_start = LOADADDR(.vectors); __vectors_end = LOADADDR(.vectors) + SIZEOF(.vectors); __vectors_bhb_loop8_start = LOADADDR(.vectors.bhb.loop8); __vectors_bhb_loop8_end = LOADADDR(.vectors.bhb.loop8) + SIZEOF(.vectors.bhb.loop8); __vectors_bhb_bpiall_start = LOADADDR(.vectors.bhb.bpiall); __vectors_bhb_bpiall_end = LOADADDR(.vectors.bhb.bpiall) + SIZEOF(.vectors.bhb.bpiall); . = __vectors_lma + SIZEOF(.vectors) + SIZEOF(.vectors.bhb.loop8) + SIZEOF(.vectors.bhb.bpiall); __stubs_lma = .; .stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) { *(.stubs) } __stubs_start = LOADADDR(.stubs); __stubs_end = LOADADDR(.stubs) + SIZEOF(.stubs); . = __stubs_lma + SIZEOF(.stubs); PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
+> >>>                                          ^
+> make[1]: *** [/builds/linux/Makefile:1225: vmlinux] Error 1
 
-Actually now that I think about it, maybe it is more reasonable to risk
-having stale entries in the VLANs where the topology changed, rather
-than nuking flows in unrelated VLANs.
+Hi Naresh,
 
->>> > And since it is new code, you could require that drivers _do_ support
->>> > configuring learning before they could support MSTP. After all, we don't
->>> > want to keep legacy mechanisms in place forever.
->>> 
->>> By "configuring learning", do you mean this new fast-age-per-vid/msti,
->>> or being able to enable/disable learning per port? If it's the latter,
->>> I'm not sure I understand how those two are related.
->>
->> The code from dsa_port_set_state() which you've copied:
->>
->> 	if (!dsa_port_can_configure_learning(dp) ||
->> 	    (do_fast_age && dp->learning)) {
->>
->> has this explanation:
->>
->> 1. DSA keeps standalone ports in the FORWARDING state.
->> 2. DSA also disables address learning on standalone ports, where this is
->>    possible (dsa_port_can_configure_learning(dp) == true).
->> 3. When a port joins a bridge, it leaves its FORWARDING state from
->>    standalone mode and inherits the bridge port's BLOCKING state
->> 4. dsa_port_set_state() treats a port transition from FORWARDING to
->>    BLOCKING as a transition requiring an FDB flush
->> 5. due to (2), the FDB flush at stage (4) is in fact not needed, because
->>    the FDB of that port should already be empty. Flushing the FDB may be
->>    a costly operation for some drivers, so it is avoided if possible.
->>
->> So this is why the "dsa_port_can_configure_learning()" check is there -
->> for compatibility with drivers that can't configure learning => they
->> keep learning enabled also in standalone mode => they need an FDB flush
->> when a standalone port joins a bridge.
->>
->> What I'm saying is: for drivers that offload MSTP, let's force them to
->> get the basics right first (have configurable learning), rather than go
->> forward forever with a backwards compatibility mode.
->
-> Makes sense, I'll just move it up to the initial capability check.
+Thank you for the report! This is already fixed in mainline with
+commit 36168e387fa7 ("ARM: Do not use NOCROSSREFS directive with
+ld.lld"). This should be in next-20220311.
+
+Cheers,
+Nathan
