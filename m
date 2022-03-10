@@ -2,99 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64187C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240388AbiCJIeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:34:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        id S240394AbiCJIfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:35:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240384AbiCJIei (ORCPT
+        with ESMTP id S240359AbiCJIfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:34:38 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDA062A0F;
-        Thu, 10 Mar 2022 00:33:38 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A74FB1F442;
-        Thu, 10 Mar 2022 08:33:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646901216; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3XKssLMVaaKPGr1fYyg9OX0U/rmkH9hiuCc6zH77j7Q=;
-        b=qojACQbACPKHg2O88Oh8MesyQEqAzw2krjz++XlOmWBvRAdlLq71H+D6n42CSkFFy71Lu6
-        TKSYmeJELupVwXybOOVVyMl6HNN/OvirvKDl5t9ZFstRSxR1aVQtw9zu9HEwPKN7jsH0am
-        NjqzGuhTZsBzL5pKn2XPVGIyzOl4IBE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646901216;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3XKssLMVaaKPGr1fYyg9OX0U/rmkH9hiuCc6zH77j7Q=;
-        b=/vDGK3s1A+NR9R9SPCaWsAPotrf+zvh7Blknz3wmt/QtfHAvD0wNfEedhH5hL25CG3CWtc
-        eKqwRkVjWoMlODAg==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5780FA3B83;
-        Thu, 10 Mar 2022 08:33:36 +0000 (UTC)
-Date:   Thu, 10 Mar 2022 09:33:36 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Mark Brown <broonie@kernel.org>
-cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
- args to unwind()
-In-Reply-To: <YiiT2lFuxc3ob+Zq@sirena.org.uk>
-Message-ID: <alpine.LSU.2.21.2203100923470.16704@pobox.suse.cz>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f> <20220117145608.6781-1-madvenka@linux.microsoft.com> <20220117145608.6781-7-madvenka@linux.microsoft.com> <YgutJKqYe8ss8LLd@FVFF77S0Q05N> <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
- <YiY6hecX0pVWowQ7@sirena.org.uk> <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com> <YiiT2lFuxc3ob+Zq@sirena.org.uk>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Thu, 10 Mar 2022 03:35:07 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0942C5BE58;
+        Thu, 10 Mar 2022 00:34:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646901246; x=1678437246;
+  h=from:to:cc:subject:date:message-id;
+  bh=nz5FzexQmq7xmux0Vn9kIxPKVazZKup2wF1i2KERivk=;
+  b=ihjvRKREeBn6xQYTMuahJyIqhLfwHMjYERNMrgfGYhxK8hDrmGBbe0AP
+   u33nN2O15BN9LT60fHyIjlTY8MqLF5FW9EO5QoigdCPCD7XekmW0mVEJr
+   69kOFd4M1V3OSsShTgatqrlnRfm3Rw9UWabRNT4ejY+PBKBEkfnTicF0f
+   pUBnd1aSfIcAwtW9WGCtRQUJkx92nKqrsKhDZSyBqsiLzEreeed/tj/d+
+   9vRifD5KSlS2kE06FZJgSPSdoDXqO68h5c7b76kTfrZal2UHFMmPN2L4G
+   1PpbXan/a5fctush6l4oLj86VW4vqH3fydP2OWmP5A+Fb1S7ydzjytjGq
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="235800117"
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="235800117"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 00:34:06 -0800
+X-IronPort-AV: E=Sophos;i="5.90,169,1643702400"; 
+   d="scan'208";a="513891422"
+Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 00:34:04 -0800
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/3] Introduce Notify VM exit
+Date:   Thu, 10 Mar 2022 16:39:58 +0800
+Message-Id: <20220310084001.10235-1-chenyi.qiang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022, Mark Brown wrote:
+Virtual machines can exploit Intel ISA characterstics to cause
+functional denial of service to the VMM. This series introduces a new
+feature named Notify VM exit, which can help mitigate such kind of
+attack.
 
-> On Tue, Mar 08, 2022 at 04:00:35PM -0600, Madhavan T. Venkataraman wrote:
-> 
-> > It is just that patch 11 that defines "select
-> > HAVE_RELIABLE_STACKTRACE" did not receive any comments from you
-> > (unless I missed a comment that came from you. That is entirely
-> > possible. If I missed it, my bad). Since you suggested that change, I
-> > just wanted to make sure that that patch looks OK to you.
-> 
-> I think that's more a question for the livepatch people to be honest -
-> it's not entirely a technical one, there's a bunch of confidence level
-> stuff going on.  For example there was some suggestion that people might
-> insist on having objtool support, though there's also substantial
-> pushback on making objtool a requirement for anything from other
-> quarters.  I was hoping that posting that patch would provoke some
-> discussion about what exactly is needed but that's not happened thus
-> far.
+Patch 1: An extension of KVM_SET_VCPU_EVENTS ioctl to inject a
+synthesized shutdown event from user space.
 
-I think everyone will be happy with HAVE_RELIABLE_STACKTRACE on arm64 as 
-long as there is a guarantee that stack traces are really reliable. My 
-understanding is that there is still some work to be done on arm64 arch 
-side (but I may have misunderstood what Mark R. said elsewhere). And yes, 
-then there is a question of objtool. It is one option but not the only 
-one. There have been proposals of implementing guarantees on a compiler 
-side and leaving objtool for x86_64 only (albeit objtool may bring more 
-features to the table... ORC, arch features checking).
+Patch 2: The main patch to enable Notify VM exit.
 
-Madhavan also mentioned that he enhanced objtool and he planned to submit 
-it eventually 
-(https://lore.kernel.org/all/1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com/T/#u), 
-so maybe arm64 maintainers could decide on a future direction based on 
-that?
+Patch 3: Add document about the new KVM capability and KVM exit reason.
 
-Regards
-Miroslav
+---
+Change logs:
+v3 -> v4
+- Change this feature to per-VM scope. (Jim)
+- Once VM_CONTEXT_INVALID set in exit_qualification, exit to user space
+  notify this fatal case, especially the notify VM exit happens in L2.
+  (Jim)
+- extend KVM_SET_VCPU_EVENTS to allow user space to inject a shutdown
+  event. (Jim)
+- A minor code changes.
+- Add document for the new KVM capability.
+- v3: https://lore.kernel.org/lkml/20220223062412.22334-1-chenyi.qiang@intel.com/
+
+v2 -> v3
+- add a vcpu state notify_window_exits to record the number of
+  occurence as well as a pr_warn output. (Sean)
+- Add the handling in nested VM to prevent L1 bypassing the restriction
+  through launching a L2. (Sean)
+- Only kill L2 when L2 VM is context invalid, synthesize a
+  EXIT_REASON_TRIPLE_FAULT to L1 (Sean)
+- To ease the current implementation, make module parameter
+  notify_window read-only. (Sean)
+- Disable notify window exit by default.
+- v2: https://lore.kernel.org/lkml/20210525051204.1480610-1-tao3.xu@intel.com/
+
+v1 -> v2
+- Default set notify window to 0, less than 0 to disable.
+- Add more description in commit message.
+---
+
+Chenyi Qiang (2):
+  KVM: X86: Extend KVM_SET_VCPU_EVENTS to inject a SHUTDOWN event
+  KVM: Add document for KVM_CAP_X86_NOTIFY_VMEXIT and KVM_EXIT_NOTIFY
+
+Tao Xu (1):
+  KVM: VMX: Enable Notify VM exit
+
+ Documentation/virt/kvm/api.rst     | 42 ++++++++++++++++++++++++++++
+ arch/x86/include/asm/kvm_host.h    |  5 ++++
+ arch/x86/include/asm/vmx.h         |  7 +++++
+ arch/x86/include/asm/vmxfeatures.h |  1 +
+ arch/x86/include/uapi/asm/kvm.h    |  1 +
+ arch/x86/include/uapi/asm/vmx.h    |  4 ++-
+ arch/x86/kvm/vmx/capabilities.h    |  6 ++++
+ arch/x86/kvm/vmx/nested.c          | 17 +++++++++++-
+ arch/x86/kvm/vmx/vmx.c             | 44 ++++++++++++++++++++++++++++--
+ arch/x86/kvm/x86.c                 | 25 +++++++++++++++--
+ arch/x86/kvm/x86.h                 |  5 ++++
+ include/uapi/linux/kvm.h           |  7 +++++
+ 12 files changed, 156 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
 
