@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B92BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF02C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244576AbiCJRWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        id S235402AbiCJRWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:22:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244563AbiCJRVz (ORCPT
+        with ESMTP id S244533AbiCJRWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:21:55 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEB6199D4E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:51 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:00 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1703E198EE2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:20:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932851; x=1678468851;
+  t=1646932859; x=1678468859;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DbZsZ6xt0aToaFxqzZYCHwWp4Qz97QZqzybMffDtHFs=;
-  b=AsS64bMNQzgTVIsj+oAkRdeYm5jd1xCF/YllyLppXBsn1y67PlDE6pz+
-   DqYeXRqxDTq8RjQaAg8xpOtAdzGUYdVLp6YGzTW6TXUUQUjK8l2ZtHarj
-   xDTvScwlsnrsk6VdtfxiRSl88t0lKUoVb155KB6RhJQoBVoroEtbn5sN3
-   0R5ZBQNeU8/H+Thdflg+sBGjKrFZywZ+GTQO8Ij6UPf7VRzElSWDLnFtO
-   Ckn2DejPD06OX/JfGdriH3YQCEQbebA4cUMVAHKQfZ+WmhVT+imCC6plE
-   giNh2PP2vpkd0tCbTyJw374UHsaQ9en8jOIcyH1CFvANH6WPI9EVPQDQ+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235261290"
+  bh=99E8DhfEk0Ekd5my6kcIYaxIlJz7qBZKJBWjSrZUA94=;
+  b=JrQnDs41f+HMC/Lsn4Za79LjdaruY+yRMB30BDetXiF5HdJR9+TJEyPI
+   CccwGK01xp16uQvYRs9jZDj/LR38TEZdjs7Feh0h8uzHETGPOkUf29+gP
+   UNcPjq7Qex2ccn2zGsSTZoRK/iCToTqe1Hsyt2ROdWq9bCrVmZPd3QX/H
+   fAdhOz5qyKgJzPMX4O482dCGsY15lYjgl1QRhOEYj0R3N+wDX9T3XWfbv
+   7vlWnaCn9Tm+IuPHTrXQFDProoZ+8RuK9tX0nTAKROmnKfSBhqOFWOb9C
+   1fw3CZoPSZoCXfnqBYPH9tjMc5U0EXWBf3fKvajLRWh77cKQyni+wcVcG
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254141965"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="235261290"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:28 -0800
+   d="scan'208";a="254141965"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:58 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="633064260"
+   d="scan'208";a="538541792"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:28 -0800
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:57 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 01/45] entry: Create an internal irqentry_exit_cond_resched() call
-Date:   Thu, 10 Mar 2022 09:19:35 -0800
-Message-Id: <20220310172019.850939-2-ira.weiny@intel.com>
+Subject: [PATCH V9 15/45] x86/pkeys: Introduce pks_write_pkrs()
+Date:   Thu, 10 Mar 2022 09:19:49 -0800
+Message-Id: <20220310172019.850939-16-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,185 +59,115 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-The static call to irqentry_exit_cond_resched() was not properly being
-overridden when called from xen_pv_evtchn_do_upcall().
+Writing to MSR's is inefficient.  Even though the underlying PKS
+register, MSR_IA32_PKRS, is not serializing; writing to the MSR should
+be avoided if possible.  Especially when updates are made in critical
+paths such as the scheduler or the entry code.
 
-Define __irqentry_exit_cond_resched() as the static call and place the
-override logic in irqentry_exit_cond_resched().
+Introduce pks_write_pkrs().  pks_write_pkrs() avoids writing
+MSR_IA32_PKRS if the pkrs value has not changed for the current CPU.
+Most of the callers are in a non-preemptable code path.  Therefore,
+avoid calling preempt_{disable,enable}() to protect the per-cpu cache
+and instead rely on outer calls for this protection.  Do the same with
+checks to X86_FEATURE_PKS.
 
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+On startup, while unlikely, the PKS_INIT_VALUE may be 0.  This would
+prevent pks_write_pkrs() from updating the MSR because of the initial
+value of the per-cpu cache.  Therefore, keep the MSR write in
+pks_setup() to ensure the MSR is initialized at least one time.
+
+Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Update the commit message a bit
+	From Dave Hansen
+		Update commit message with a bit more detail about why
+			this optimization is needed
+		Update the code comments as well.
 
-Because this was found via code inspection and it does not actually fix
-any seen bug I've not added a fixes tag.
+Changes for V8
+	From Thomas
+		Remove get/put_cpu_ptr() and make this a 'lower level
+		call.  This makes it preemption unsafe but it is called
+		mostly where preemption is already disabled.  Add this
+		as a predicate of the call and those calls which need to
+		can disable preemption.
+		Add lockdep assert for preemption
+	Ensure MSR gets written even if the PKS_INIT_VALUE is 0.
+	Completely re-write the commit message.
+	s/write_pkrs/pks_write_pkrs/
+	Split this off into a singular patch
 
-But for reference:
-Fixes: 40607ee97e4e ("preempt/dynamic: Provide irqentry_exit_cond_resched() static call")
+Changes for V7
+	Create a dynamic pkrs_initial_value in early init code.
+	Clean up comments
+	Add comment to macro guard
 ---
- include/linux/entry-common.h |  5 ++++-
- kernel/entry/common.c        | 23 +++++++++++++--------
- kernel/sched/core.c          | 40 ++++++++++++++++++------------------
- 3 files changed, 38 insertions(+), 30 deletions(-)
+ arch/x86/mm/pkeys.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 2e2b8d6140ed..ddaffc983e62 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -455,10 +455,13 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
-  * Conditional reschedule with additional sanity checks.
-  */
- void irqentry_exit_cond_resched(void);
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index f904376570f4..10521f1a292e 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -213,15 +213,56 @@ u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
+ 
+ #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
+ 
++static DEFINE_PER_CPU(u32, pkrs_cache);
 +
-+void __irqentry_exit_cond_resched(void);
- #ifdef CONFIG_PREEMPT_DYNAMIC
--DECLARE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
-+DECLARE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
- #endif
- 
-+
- /**
-  * irqentry_exit - Handle return from exception that used irqentry_enter()
-  * @regs:	Pointer to pt_regs (exception entry regs)
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index bad713684c2e..490442a48332 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -380,7 +380,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	return ret;
- }
- 
--void irqentry_exit_cond_resched(void)
-+void __irqentry_exit_cond_resched(void)
- {
- 	if (!preempt_count()) {
- 		/* Sanity check RCU and thread stack */
-@@ -392,9 +392,20 @@ void irqentry_exit_cond_resched(void)
- 	}
- }
- #ifdef CONFIG_PREEMPT_DYNAMIC
--DEFINE_STATIC_CALL(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
-+DEFINE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
- #endif
- 
-+void irqentry_exit_cond_resched(void)
++/*
++ * pks_write_pkrs() - Write the pkrs of the current CPU
++ * @new_pkrs: New value to write to the current CPU register
++ *
++ * Optimizes the MSR writes by maintaining a per cpu cache.
++ *
++ * Context: must be called with preemption disabled
++ * Context: must only be called if PKS is enabled
++ *
++ * It should also be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
++ * serializing but still maintains ordering properties similar to WRPKRU.
++ * The current SDM section on PKRS needs updating but should be the same as
++ * that of WRPKRU.  Quote from the WRPKRU text:
++ *
++ *     WRPKRU will never execute transiently. Memory accesses
++ *     affected by PKRU register will not execute (even transiently)
++ *     until all prior executions of WRPKRU have completed execution
++ *     and updated the PKRU register.
++ */
++static inline void pks_write_pkrs(u32 new_pkrs)
 +{
-+	if (IS_ENABLED(CONFIG_PREEMPTION)) {
-+#ifdef CONFIG_PREEMPT_DYNAMIC
-+		static_call(__irqentry_exit_cond_resched)();
-+#else
-+		__irqentry_exit_cond_resched();
-+#endif
++	u32 pkrs = __this_cpu_read(pkrs_cache);
++
++	lockdep_assert_preemption_disabled();
++
++	if (pkrs != new_pkrs) {
++		__this_cpu_write(pkrs_cache, new_pkrs);
++		wrmsrl(MSR_IA32_PKRS, new_pkrs);
 +	}
 +}
 +
- noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- {
- 	lockdep_assert_irqs_disabled();
-@@ -420,13 +431,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- 		}
- 
- 		instrumentation_begin();
--		if (IS_ENABLED(CONFIG_PREEMPTION)) {
--#ifdef CONFIG_PREEMPT_DYNAMIC
--			static_call(irqentry_exit_cond_resched)();
--#else
--			irqentry_exit_cond_resched();
--#endif
--		}
-+		irqentry_exit_cond_resched();
- 		/* Covers both tracing and lockdep */
- 		trace_hardirqs_on();
- 		instrumentation_end();
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9745613d531c..f56db4bd9730 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6571,29 +6571,29 @@ EXPORT_STATIC_CALL_TRAMP(preempt_schedule_notrace);
-  * SC:might_resched
-  * SC:preempt_schedule
-  * SC:preempt_schedule_notrace
-- * SC:irqentry_exit_cond_resched
-+ * SC:__irqentry_exit_cond_resched
-  *
-  *
-  * NONE:
-- *   cond_resched               <- __cond_resched
-- *   might_resched              <- RET0
-- *   preempt_schedule           <- NOP
-- *   preempt_schedule_notrace   <- NOP
-- *   irqentry_exit_cond_resched <- NOP
-+ *   cond_resched                 <- __cond_resched
-+ *   might_resched                <- RET0
-+ *   preempt_schedule             <- NOP
-+ *   preempt_schedule_notrace     <- NOP
-+ *   __irqentry_exit_cond_resched <- NOP
-  *
-  * VOLUNTARY:
-- *   cond_resched               <- __cond_resched
-- *   might_resched              <- __cond_resched
-- *   preempt_schedule           <- NOP
-- *   preempt_schedule_notrace   <- NOP
-- *   irqentry_exit_cond_resched <- NOP
-+ *   cond_resched                 <- __cond_resched
-+ *   might_resched                <- __cond_resched
-+ *   preempt_schedule             <- NOP
-+ *   preempt_schedule_notrace     <- NOP
-+ *   __irqentry_exit_cond_resched <- NOP
-  *
-  * FULL:
-- *   cond_resched               <- RET0
-- *   might_resched              <- RET0
-- *   preempt_schedule           <- preempt_schedule
-- *   preempt_schedule_notrace   <- preempt_schedule_notrace
-- *   irqentry_exit_cond_resched <- irqentry_exit_cond_resched
-+ *   cond_resched                 <- RET0
-+ *   might_resched                <- RET0
-+ *   preempt_schedule             <- preempt_schedule
-+ *   preempt_schedule_notrace     <- preempt_schedule_notrace
-+ *   __irqentry_exit_cond_resched <- __irqentry_exit_cond_resched
+ /*
+  * PKS is independent of PKU and either or both may be supported on a CPU.
++ *
++ * Context: must be called with preemption disabled
   */
+ void pks_setup(void)
+ {
+ 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
+ 		return;
  
- enum {
-@@ -6629,7 +6629,7 @@ void sched_dynamic_update(int mode)
- 	static_call_update(might_resched, __cond_resched);
- 	static_call_update(preempt_schedule, __preempt_schedule_func);
- 	static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
--	static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
-+	static_call_update(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
++	/*
++	 * If the PKS_INIT_VALUE is 0 then pks_write_pkrs() will fail to
++	 * initialize the MSR.  Do a single write here to ensure the MSR is
++	 * written at least one time.
++	 */
+ 	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
++	pks_write_pkrs(PKS_INIT_VALUE);
+ 	cr4_set_bits(X86_CR4_PKS);
+ }
  
- 	switch (mode) {
- 	case preempt_dynamic_none:
-@@ -6637,7 +6637,7 @@ void sched_dynamic_update(int mode)
- 		static_call_update(might_resched, (void *)&__static_call_return0);
- 		static_call_update(preempt_schedule, NULL);
- 		static_call_update(preempt_schedule_notrace, NULL);
--		static_call_update(irqentry_exit_cond_resched, NULL);
-+		static_call_update(__irqentry_exit_cond_resched, NULL);
- 		pr_info("Dynamic Preempt: none\n");
- 		break;
- 
-@@ -6646,7 +6646,7 @@ void sched_dynamic_update(int mode)
- 		static_call_update(might_resched, __cond_resched);
- 		static_call_update(preempt_schedule, NULL);
- 		static_call_update(preempt_schedule_notrace, NULL);
--		static_call_update(irqentry_exit_cond_resched, NULL);
-+		static_call_update(__irqentry_exit_cond_resched, NULL);
- 		pr_info("Dynamic Preempt: voluntary\n");
- 		break;
- 
-@@ -6655,7 +6655,7 @@ void sched_dynamic_update(int mode)
- 		static_call_update(might_resched, (void *)&__static_call_return0);
- 		static_call_update(preempt_schedule, __preempt_schedule_func);
- 		static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
--		static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
-+		static_call_update(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
- 		pr_info("Dynamic Preempt: full\n");
- 		break;
- 	}
 -- 
 2.35.1
 
