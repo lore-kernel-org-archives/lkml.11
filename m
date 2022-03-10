@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8B0C388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4433C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345191AbiCJOln (ORCPT
+        id S1345466AbiCJOly (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        Thu, 10 Mar 2022 09:41:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245303AbiCJOaW (ORCPT
+        with ESMTP id S245565AbiCJOaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53FEC24BB;
-        Thu, 10 Mar 2022 06:25:54 -0800 (PST)
+        Thu, 10 Mar 2022 09:30:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE4E182BE7;
+        Thu, 10 Mar 2022 06:26:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F288661DAA;
-        Thu, 10 Mar 2022 14:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06301C340E8;
-        Thu, 10 Mar 2022 14:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BE4FB825A7;
+        Thu, 10 Mar 2022 14:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56EEC340F3;
+        Thu, 10 Mar 2022 14:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922352;
-        bh=t5N0HYAinQmf9TSOz79Zbd1nDog2nkPaJh5KtODZ0MI=;
+        s=korg; t=1646922386;
+        bh=l8kb+JyFkCFG12lhe+TB8NG8sV6PXySdPd9O6zdBpGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jzje3w+eazQobkE1COkBWHj38HsRNgLrpk1OUBexV2DU/UL8G3D5+drwteAQjp3Go
-         MS/SCObqugDKLnlLrqOWFFi6xVpZzY3AcnzE3Xjy7L4kBm0sxsa3But+XXwzc/l5rC
-         wiv/F2blg1iAWL5OBMrRNsTIMK/WSe/7av5PknZU=
+        b=QWRUs7ELghAbsWeoFRR+sROWTW8IQAB5nRt4QD1is6bBNTbyU6GlIzdxj9CCDZLPm
+         Ts5S+zuU9kAJRjp9yEkqg5DCFg+48FBdb+XgLx9jfoSagnyLQxKIcD4hpX6oqI9DKE
+         EB5E5eNSnmexYD1W/ycsdPyjOr9mGD8x3V2cnahg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Juergen Gross <jgross@suse.com>,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>
-Subject: [PATCH 5.10 49/58] xen/blkfront: dont use gnttab_query_foreign_access() for mapped status
-Date:   Thu, 10 Mar 2022 15:19:09 +0100
-Message-Id: <20220310140814.264466581@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.10 20/58] arm64: add ID_AA64ISAR2_EL1 sys register
+Date:   Thu, 10 Mar 2022 15:18:40 +0100
+Message-Id: <20220310140813.450792361@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -51,191 +54,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-Commit abf1fd5919d6238ee3bc5eb4a9b6c3947caa6638 upstream.
+commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
 
-It isn't enough to check whether a grant is still being in use by
-calling gnttab_query_foreign_access(), as a mapping could be realized
-by the other side just after having called that function.
+This is a new ID register, introduced in 8.7.
 
-In case the call was done in preparation of revoking a grant it is
-better to do so via gnttab_end_foreign_access_ref() and check the
-success of that operation instead.
-
-For the ring allocation use alloc_pages_exact() in order to avoid
-high order pages in case of a multi-page ring.
-
-If a grant wasn't unmapped by the backend without persistent grants
-being used, set the device state to "error".
-
-This is CVE-2022-23036 / part of XSA-396.
-
-Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Roger Pau Monné <roger.pau@citrix.com>
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Reiji Watanabe <reijiw@google.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/xen-blkfront.c |   63 +++++++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 26 deletions(-)
+ arch/arm64/include/asm/cpu.h    |    1 +
+ arch/arm64/include/asm/sysreg.h |   15 +++++++++++++++
+ arch/arm64/kernel/cpufeature.c  |    9 +++++++++
+ arch/arm64/kernel/cpuinfo.c     |    1 +
+ arch/arm64/kvm/sys_regs.c       |    2 +-
+ 5 files changed, 27 insertions(+), 1 deletion(-)
 
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -1352,7 +1352,8 @@ free_shadow:
- 			rinfo->ring_ref[i] = GRANT_INVALID_REF;
- 		}
- 	}
--	free_pages((unsigned long)rinfo->ring.sring, get_order(info->nr_ring_pages * XEN_PAGE_SIZE));
-+	free_pages_exact(rinfo->ring.sring,
-+			 info->nr_ring_pages * XEN_PAGE_SIZE);
- 	rinfo->ring.sring = NULL;
+--- a/arch/arm64/include/asm/cpu.h
++++ b/arch/arm64/include/asm/cpu.h
+@@ -25,6 +25,7 @@ struct cpuinfo_arm64 {
+ 	u64		reg_id_aa64dfr1;
+ 	u64		reg_id_aa64isar0;
+ 	u64		reg_id_aa64isar1;
++	u64		reg_id_aa64isar2;
+ 	u64		reg_id_aa64mmfr0;
+ 	u64		reg_id_aa64mmfr1;
+ 	u64		reg_id_aa64mmfr2;
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -175,6 +175,7 @@
  
- 	if (rinfo->irq)
-@@ -1436,9 +1437,15 @@ static int blkif_get_final_status(enum b
- 	return BLKIF_RSP_OKAY;
- }
+ #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
+ #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
++#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
  
--static bool blkif_completion(unsigned long *id,
--			     struct blkfront_ring_info *rinfo,
--			     struct blkif_response *bret)
-+/*
-+ * Return values:
-+ *  1 response processed.
-+ *  0 missing further responses.
-+ * -1 error while processing.
-+ */
-+static int blkif_completion(unsigned long *id,
-+			    struct blkfront_ring_info *rinfo,
-+			    struct blkif_response *bret)
- {
- 	int i = 0;
- 	struct scatterlist *sg;
-@@ -1461,7 +1468,7 @@ static bool blkif_completion(unsigned lo
+ #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
+ #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
+@@ -687,6 +688,20 @@
+ #define ID_AA64ISAR1_GPI_NI			0x0
+ #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
  
- 		/* Wait the second response if not yet here. */
- 		if (s2->status < REQ_DONE)
--			return false;
-+			return 0;
- 
- 		bret->status = blkif_get_final_status(s->status,
- 						      s2->status);
-@@ -1512,42 +1519,43 @@ static bool blkif_completion(unsigned lo
- 	}
- 	/* Add the persistent grant into the list of free grants */
- 	for (i = 0; i < num_grant; i++) {
--		if (gnttab_query_foreign_access(s->grants_used[i]->gref)) {
-+		if (!gnttab_try_end_foreign_access(s->grants_used[i]->gref)) {
- 			/*
- 			 * If the grant is still mapped by the backend (the
- 			 * backend has chosen to make this grant persistent)
- 			 * we add it at the head of the list, so it will be
- 			 * reused first.
- 			 */
--			if (!info->feature_persistent)
--				pr_alert_ratelimited("backed has not unmapped grant: %u\n",
--						     s->grants_used[i]->gref);
-+			if (!info->feature_persistent) {
-+				pr_alert("backed has not unmapped grant: %u\n",
-+					 s->grants_used[i]->gref);
-+				return -1;
-+			}
- 			list_add(&s->grants_used[i]->node, &rinfo->grants);
- 			rinfo->persistent_gnts_c++;
- 		} else {
- 			/*
--			 * If the grant is not mapped by the backend we end the
--			 * foreign access and add it to the tail of the list,
--			 * so it will not be picked again unless we run out of
--			 * persistent grants.
-+			 * If the grant is not mapped by the backend we add it
-+			 * to the tail of the list, so it will not be picked
-+			 * again unless we run out of persistent grants.
- 			 */
--			gnttab_end_foreign_access(s->grants_used[i]->gref, 0, 0UL);
- 			s->grants_used[i]->gref = GRANT_INVALID_REF;
- 			list_add_tail(&s->grants_used[i]->node, &rinfo->grants);
- 		}
- 	}
- 	if (s->req.operation == BLKIF_OP_INDIRECT) {
- 		for (i = 0; i < INDIRECT_GREFS(num_grant); i++) {
--			if (gnttab_query_foreign_access(s->indirect_grants[i]->gref)) {
--				if (!info->feature_persistent)
--					pr_alert_ratelimited("backed has not unmapped grant: %u\n",
--							     s->indirect_grants[i]->gref);
-+			if (!gnttab_try_end_foreign_access(s->indirect_grants[i]->gref)) {
-+				if (!info->feature_persistent) {
-+					pr_alert("backed has not unmapped grant: %u\n",
-+						 s->indirect_grants[i]->gref);
-+					return -1;
-+				}
- 				list_add(&s->indirect_grants[i]->node, &rinfo->grants);
- 				rinfo->persistent_gnts_c++;
- 			} else {
- 				struct page *indirect_page;
- 
--				gnttab_end_foreign_access(s->indirect_grants[i]->gref, 0, 0UL);
- 				/*
- 				 * Add the used indirect page back to the list of
- 				 * available pages for indirect grefs.
-@@ -1562,7 +1570,7 @@ static bool blkif_completion(unsigned lo
- 		}
- 	}
- 
--	return true;
-+	return 1;
- }
- 
- static irqreturn_t blkif_interrupt(int irq, void *dev_id)
-@@ -1628,12 +1636,17 @@ static irqreturn_t blkif_interrupt(int i
- 		}
- 
- 		if (bret.operation != BLKIF_OP_DISCARD) {
-+			int ret;
++/* id_aa64isar2 */
++#define ID_AA64ISAR2_RPRES_SHIFT	4
++#define ID_AA64ISAR2_WFXT_SHIFT		0
 +
- 			/*
- 			 * We may need to wait for an extra response if the
- 			 * I/O request is split in 2
- 			 */
--			if (!blkif_completion(&id, rinfo, &bret))
-+			ret = blkif_completion(&id, rinfo, &bret);
-+			if (!ret)
- 				continue;
-+			if (unlikely(ret < 0))
-+				goto err;
- 		}
++#define ID_AA64ISAR2_RPRES_8BIT		0x0
++#define ID_AA64ISAR2_RPRES_12BIT	0x1
++/*
++ * Value 0x1 has been removed from the architecture, and is
++ * reserved, but has not yet been removed from the ARM ARM
++ * as of ARM DDI 0487G.b.
++ */
++#define ID_AA64ISAR2_WFXT_NI		0x0
++#define ID_AA64ISAR2_WFXT_SUPPORTED	0x2
++
+ /* id_aa64pfr0 */
+ #define ID_AA64PFR0_CSV3_SHIFT		60
+ #define ID_AA64PFR0_CSV2_SHIFT		56
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -205,6 +205,10 @@ static const struct arm64_ftr_bits ftr_i
+ 	ARM64_FTR_END,
+ };
  
- 		if (add_id_to_freelist(rinfo, id)) {
-@@ -1740,8 +1753,7 @@ static int setup_blkring(struct xenbus_d
- 	for (i = 0; i < info->nr_ring_pages; i++)
- 		rinfo->ring_ref[i] = GRANT_INVALID_REF;
++static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
++	ARM64_FTR_END,
++};
++
+ static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_HIDDEN, FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
+@@ -596,6 +600,7 @@ static const struct __ftr_reg_entry {
+ 	/* Op1 = 0, CRn = 0, CRm = 6 */
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_id_aa64isar1),
++	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
  
--	sring = (struct blkif_sring *)__get_free_pages(GFP_NOIO | __GFP_HIGH,
--						       get_order(ring_size));
-+	sring = alloc_pages_exact(ring_size, GFP_NOIO);
- 	if (!sring) {
- 		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
- 		return -ENOMEM;
-@@ -1751,7 +1763,7 @@ static int setup_blkring(struct xenbus_d
+ 	/* Op1 = 0, CRn = 0, CRm = 7 */
+ 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
+@@ -830,6 +835,7 @@ void __init init_cpu_features(struct cpu
+ 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
++	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
+@@ -1058,6 +1064,8 @@ void update_cpu_features(int cpu,
+ 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
+ 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
+ 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
++	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
++				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
  
- 	err = xenbus_grant_ring(dev, rinfo->ring.sring, info->nr_ring_pages, gref);
- 	if (err < 0) {
--		free_pages((unsigned long)sring, get_order(ring_size));
-+		free_pages_exact(sring, ring_size);
- 		rinfo->ring.sring = NULL;
- 		goto fail;
- 	}
-@@ -2729,11 +2741,10 @@ static void purge_persistent_grants(stru
- 		list_for_each_entry_safe(gnt_list_entry, tmp, &rinfo->grants,
- 					 node) {
- 			if (gnt_list_entry->gref == GRANT_INVALID_REF ||
--			    gnttab_query_foreign_access(gnt_list_entry->gref))
-+			    !gnttab_try_end_foreign_access(gnt_list_entry->gref))
- 				continue;
+ 	/*
+ 	 * Differing PARange support is fine as long as all peripherals and
+@@ -1157,6 +1165,7 @@ static u64 __read_sysreg_by_encoding(u32
+ 	read_sysreg_case(SYS_ID_AA64MMFR2_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ISAR1_EL1);
++	read_sysreg_case(SYS_ID_AA64ISAR2_EL1);
  
- 			list_del(&gnt_list_entry->node);
--			gnttab_end_foreign_access(gnt_list_entry->gref, 0, 0UL);
- 			rinfo->persistent_gnts_c--;
- 			gnt_list_entry->gref = GRANT_INVALID_REF;
- 			list_add_tail(&gnt_list_entry->node, &rinfo->grants);
+ 	read_sysreg_case(SYS_CNTFRQ_EL0);
+ 	read_sysreg_case(SYS_CTR_EL0);
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -365,6 +365,7 @@ static void __cpuinfo_store_cpu(struct c
+ 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
+ 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
+ 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
++	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
+ 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
+ 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
+ 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -1517,7 +1517,7 @@ static const struct sys_reg_desc sys_reg
+ 	/* CRm=6 */
+ 	ID_SANITISED(ID_AA64ISAR0_EL1),
+ 	ID_SANITISED(ID_AA64ISAR1_EL1),
+-	ID_UNALLOCATED(6,2),
++	ID_SANITISED(ID_AA64ISAR2_EL1),
+ 	ID_UNALLOCATED(6,3),
+ 	ID_UNALLOCATED(6,4),
+ 	ID_UNALLOCATED(6,5),
 
 
