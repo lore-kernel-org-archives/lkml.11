@@ -2,104 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA31C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A41AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 22:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344341AbiCJWOK (ORCPT
+        id S1344318AbiCJWOu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 17:14:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
+        Thu, 10 Mar 2022 17:14:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344318AbiCJWOD (ORCPT
+        with ESMTP id S240292AbiCJWOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 17:14:03 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A125473A8;
-        Thu, 10 Mar 2022 14:13:01 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id e6so5284022lfc.1;
-        Thu, 10 Mar 2022 14:13:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0uUeeOtLtRATSMAA/PJZKMUOZ4L8d6PHmO/9x9ZaCqM=;
-        b=A/tJcbHZDtbPu5MSQEhzXGbsQE3bFVecKhfSfEi64x/nG5hIv5mZsuB2sJqoL/AllB
-         FtxqbHdqs2k1ziFxaeZjyitPE3LB3I3xn20kLn9fhGoLUFmtXP8ecet3TpjIH2WZeBCY
-         g0viv9hmQOAhJUHpxRYiAfhiWM/+tEUET2XTDEwgZyROKR3t4rKiQKkoCAIp8LzFhC3r
-         Ti7T2ksE5DrN85G9FO+R/N6XfSsYRWUOgX4ccmhgtUcNFJpPLVLy1uFgZ1jmAAddqFNZ
-         +xRadblglm6u2dflIBZ1UZ6riJDv40DKgXxzMO2Hi1M5AHpGsvx8ZMoeUggYrWIdHhsu
-         NLgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0uUeeOtLtRATSMAA/PJZKMUOZ4L8d6PHmO/9x9ZaCqM=;
-        b=BVq5LCOxIUlYTfGsFo746F3gpHSBr+fayl+IGEISvKPm8nBcObsTcS4hNXyX5gxrUf
-         q2LE2JDzfdIvQgPOPNOjYye0we0B0rORU+H4EaMwQcu/VEhLJZl56UX6UFe/fPVqkebp
-         84Uina2OWvEXnAiThscBpspwGiXCNGwinw1mWLXGT0lDRznhKXLNsG57RDNMpq/dllwq
-         zgyAm9SOYmooCh/Od04M1AtH3Ux3eAoVr2BRNndoH7fY5M4mAU0lRn2dpWHPsPk4YNbQ
-         s5pPW1hxdF7xvGOTOxiodtpISihJWn9eZSE7qGk0wdbFISIDkNr2MeKBNCs/REb0aPWg
-         JWrg==
-X-Gm-Message-State: AOAM533sldvNqsrrRxvTjieKy/2JICAMuGQBQ0gLECIPCMPjmZeukDOS
-        Fjwoau1GKPNSzpneZn3GpC8=
-X-Google-Smtp-Source: ABdhPJzlybEdm7oayZhC/wo2V53osIIlIRn9ru/Ui1pQEa0n5SmFccHaGYdJk/9SwvIXkFpFp+FLRg==
-X-Received: by 2002:a05:6512:3d05:b0:448:39b8:d5ef with SMTP id d5-20020a0565123d0500b0044839b8d5efmr4166323lfv.595.1646950379573;
-        Thu, 10 Mar 2022 14:12:59 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id a16-20020a056512375000b004482040d7cdsm1206421lfs.267.2022.03.10.14.12.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 14:12:59 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH V2] tty: serial: bcm63xx: use more precise Kconfig symbol
-Date:   Thu, 10 Mar 2022 23:12:46 +0100
-Message-Id: <20220310221246.10009-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 10 Mar 2022 17:14:49 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4747262127;
+        Thu, 10 Mar 2022 14:13:43 -0800 (PST)
+Received: from zn.tnic (p200300ea97193878e79a34f2fb5add4f.dip0.t-ipconnect.de [IPv6:2003:ea:9719:3878:e79a:34f2:fb5a:dd4f])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 75D331EC0432;
+        Thu, 10 Mar 2022 23:13:37 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1646950417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=4jApLr5h3MOaJR8HuPKksowRenJ+ECkFPNCumJIL5gg=;
+        b=fPcC7LKb6FEKoOPPuIoeYnIjVFnCCwhS1hvVH+uji3gXrXfxOxhPleLn+o/VOXs5Nsgqno
+        gFGwF1XE2u0OTG/Mi1kZS6wD8sGPPtdKB5i5QptvgPfh/eQiEc9CfyzjtA31zZUgWgYQNy
+        Qz/ZbBd0RgnhZlFYuWT65edUYAEjJYs=
+Date:   Thu, 10 Mar 2022 23:13:37 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Carlos Bilbao <carlos.bilbao@amd.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+        x86@kernel.org, yazen.ghannam@amd.com,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bilbao@vt.edu
+Subject: Re: [PATCH] x86/mce: Cover grading of AMD machine error checks
+Message-ID: <Yip4EV69+lElCuPM@zn.tnic>
+References: <20220309174107.6113-1-carlos.bilbao@amd.com>
+ <Yijz7dA1U0AMcYPZ@zn.tnic>
+ <4a345de2-6a2c-fe26-c55c-34ce6ea431d4@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4a345de2-6a2c-fe26-c55c-34ce6ea431d4@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On Thu, Mar 10, 2022 at 12:24:08PM -0600, Carlos Bilbao wrote:
+> We will cover grading of MCEs like deferred memory scrub errors, attempts 
+> to access poisonous data, etc. I could list all new covered cases in the 
+> commit message if you think that'd be positive.
 
-Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
-documentation change regarding "depends" usage. Adjust Kconfig entry to
-match current guidelines. Make this symbol available for relevant
-architectures only.
+So no actual use case - you want to grade error severity for all types
+of MCEs.
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
-Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Use precise "depends" (exact platforms)
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Hope that helps clarify,
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e952ec5c7a7c..46f3c7ca13e0 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on COMMON_CLK
-+	depends on ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-+	default y
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
+Yes, it does a bit.
+
+It sounds to me like you want to do at least two patches:
+
+1. Extend the severity grading function with the new types of errors
+
+2. Add string descriptions of the error types mce_severity_amd() looks
+at, so that mce_panic() issues them.
+
+I.e., you want to decode the fatal MCEs which panic the machine.
+
+In general, what would help is if you think about what you're trying to
+achieve and write it down first. How to achieve that we can figure out
+later.
+
+What happens now is you send me a patch and I'm trying to decipher from
+the code why you're doing what you're doing. Which is kinda backwards if
+you think about it...
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
