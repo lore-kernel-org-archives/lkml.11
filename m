@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A83FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244315AbiCJOfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:35:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        id S234654AbiCJOfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:35:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244746AbiCJO31 (ORCPT
+        with ESMTP id S244709AbiCJO3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:29:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBB0D64E2;
-        Thu, 10 Mar 2022 06:24:34 -0800 (PST)
+        Thu, 10 Mar 2022 09:29:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3F0DB86B;
+        Thu, 10 Mar 2022 06:24:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FFFD61CF0;
-        Thu, 10 Mar 2022 14:24:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F730C340E8;
-        Thu, 10 Mar 2022 14:24:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADF3761D38;
+        Thu, 10 Mar 2022 14:24:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2DE7C340E8;
+        Thu, 10 Mar 2022 14:24:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922273;
-        bh=A6oXWWdywzHZKFb4f9k7sQK6E39VRSRYq5LVYyv73hs=;
+        s=korg; t=1646922268;
+        bh=eNC2LoRSShxShPBQOu9Ekx31Np/dRyimoxlehhvsvm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yf0DiOWE32F6xRI62c/kBy0sho02GL+VjYWvF8Fy3wKgXymHrLvNRl5+uO9tETjqV
-         f+JouvKR3v1Uc1L+s9qpTCCQGQAX4sKwQNLwJWisKfr4yeuTBnnTP0D9PsDoJDecOs
-         rQq6fgAsL8HpdCfOmAHvl/UqDJGPPLl71jofcRmg=
+        b=KbmaiZH6UITUMjQOaYaOnblJpZD9Ur+w86WTviJMSGcflIMm9TS3St24DCm5MuCbs
+         itBMdHN4cCWtHmB72A5QcJfXAfeINgbruuk93VQ0Lc4y5WsoM0UJfzbMJGP85IzClD
+         SaC5Ji+r0TEc/S1SuuilI8OMSojqU/7+jGo+hx8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 26/58] arm64: entry: Free up another register on kptis tramp_exit path
-Date:   Thu, 10 Mar 2022 15:18:46 +0100
-Message-Id: <20220310140813.622219780@linuxfoundation.org>
+Subject: [PATCH 5.10 24/58] arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+Date:   Thu, 10 Mar 2022 15:18:44 +0100
+Message-Id: <20220310140813.565133100@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -52,71 +52,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 03aff3a77a58b5b52a77e00537a42090ad57b80b upstream.
+commit 1b33d4860deaecf1d8eec3061b7e7ed7ab0bae8d upstream.
 
-Kpti stashes x30 in far_el1 while it uses x30 for all its work.
+The spectre-v4 sequence includes an SMC from the assembly entry code.
+spectre_v4_patch_fw_mitigation_conduit is the patching callback that
+generates an HVC or SMC depending on the SMCCC conduit type.
 
-Making the vectors a per-cpu data structure will require a second
-register.
-
-Allow tramp_exit two registers before it unmaps the kernel, by
-leaving x30 on the stack, and stashing x29 in far_el1.
+As this isn't specific to spectre-v4, rename it
+smccc_patch_fw_mitigation_conduit so it can be re-used.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ arch/arm64/kernel/entry.S       |    2 +-
+ arch/arm64/kernel/proton-pack.c |    6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -357,14 +357,16 @@ alternative_else_nop_endif
- 	ldp	x24, x25, [sp, #16 * 12]
- 	ldp	x26, x27, [sp, #16 * 13]
- 	ldp	x28, x29, [sp, #16 * 14]
--	ldr	lr, [sp, #S_LR]
--	add	sp, sp, #S_FRAME_SIZE		// restore sp
+@@ -143,7 +143,7 @@ alternative_cb_end
+ 	tbnz	\tmp2, #TIF_SSBD, .L__asm_ssbd_skip\@
+ 	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_2
+ 	mov	w1, #\state
+-alternative_cb	spectre_v4_patch_fw_mitigation_conduit
++alternative_cb	smccc_patch_fw_mitigation_conduit
+ 	nop					// Patched to SMC/HVC #0
+ alternative_cb_end
+ .L__asm_ssbd_skip\@:
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -571,9 +571,9 @@ void __init spectre_v4_patch_fw_mitigati
+  * Patch a NOP in the Spectre-v4 mitigation code with an SMC/HVC instruction
+  * to call into firmware to adjust the mitigation state.
+  */
+-void __init spectre_v4_patch_fw_mitigation_conduit(struct alt_instr *alt,
+-						   __le32 *origptr,
+-						   __le32 *updptr, int nr_inst)
++void __init smccc_patch_fw_mitigation_conduit(struct alt_instr *alt,
++					       __le32 *origptr,
++					       __le32 *updptr, int nr_inst)
+ {
+ 	u32 insn;
  
- 	.if	\el == 0
--alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
-+alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
-+	ldr	lr, [sp, #S_LR]
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
-+	eret
-+alternative_else_nop_endif
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	bne	4f
--	msr	far_el1, x30
-+	msr	far_el1, x29
- 	tramp_alias	x30, tramp_exit_native
- 	br	x30
- 4:
-@@ -372,6 +374,9 @@ alternative_insn eret, nop, ARM64_UNMAP_
- 	br	x30
- #endif
- 	.else
-+	ldr	lr, [sp, #S_LR]
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
-+
- 	/* Ensure any device/NC reads complete */
- 	alternative_insn nop, "dmb sy", ARM64_WORKAROUND_1508412
- 
-@@ -844,10 +849,12 @@ alternative_else_nop_endif
- 	.macro tramp_exit, regsize = 64
- 	adr	x30, tramp_vectors
- 	msr	vbar_el1, x30
--	tramp_unmap_kernel	x30
-+	ldr	lr, [sp, #S_LR]
-+	tramp_unmap_kernel	x29
- 	.if	\regsize == 64
--	mrs	x30, far_el1
-+	mrs	x29, far_el1
- 	.endif
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
- 	eret
- 	sb
- 	.endm
 
 
