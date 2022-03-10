@@ -2,92 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F97C47085
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8E7C35295
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346217AbiCJOmr (ORCPT
+        id S1345974AbiCJOm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:42:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        Thu, 10 Mar 2022 09:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343922AbiCJOb3 (ORCPT
+        with ESMTP id S1343906AbiCJOb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:29 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0744AD5DCC
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:28:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UoLoMSr1L4PiQxwJzNXgnjqeiV5XbOR73wyZICR4kL0=; b=Lr6akouqn7YW5NjwJwQCt55gBL
-        N+eHZT6DyUTmjU4aB51d1uEGSHkNUg9PzFLOI4KCujoYfFQzLMvBz8sQPSosVZ8VhYRB2/D2uT6iy
-        Fuht3Bb+ZAfmzGY9OYhTKoPRPn36QAmgwW+AF7vW7sQ5lSaW2aGbKxkOXBrnR7YWcFJvejamAMKcX
-        0jlcPDsDI1T0yUkEtzsdJtdHckBXXD/2MgWIEiTxI0fJEDIADbqMhMRMSGhO4Q/LzBqN3lgBFClWK
-        Pf0YVSTcexMJGfP/U5CQ7isfsCM/e9VRnTbpn5dDj1ftuxvOLgxjo27gQebFtmM4ve1QJ7lcR9ZuG
-        NiAhAIMA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSJlo-000biS-0H; Thu, 10 Mar 2022 14:28:00 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 089FC3000E6;
-        Thu, 10 Mar 2022 15:27:58 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D03752B52E237; Thu, 10 Mar 2022 15:27:58 +0100 (CET)
-Date:   Thu, 10 Mar 2022 15:27:58 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Josh Poimboeuf' <jpoimboe@redhat.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "andrew.cooper3@citrix.com" <andrew.cooper3@citrix.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <YioK7llYzEUrAw/r@hirez.programming.kicks-ass.net>
-References: <20220308153011.021123062@infradead.org>
- <20220308200614.gyhp657bdq3rxapl@treble>
- <20220309065718.e4k2el2mlqn23yh2@treble>
- <bdb04de758ea4f89a8731ee6b98794fa@AcuMS.aculab.com>
+        Thu, 10 Mar 2022 09:31:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF98CE936;
+        Thu, 10 Mar 2022 06:28:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 685BA61B23;
+        Thu, 10 Mar 2022 14:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B798C340E8;
+        Thu, 10 Mar 2022 14:27:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646922480;
+        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=INJMy7JnA5ZKqUCJYiy8fZyx3jGXm58jQXBR7JCPtN9lLyIk6yZXdj4ZeDsBRab+B
+         ZEQZgwQO1YMukXNJbpeNgzjnZ3h+H245w9oRyd6seb2UWebVTskPkwvjJzgpgiNbWC
+         +yEM9oMzfUplIc9C6vVdhS0AaLnofBllXxYAb72U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.4 30/33] xen/pvcalls: use alloc/free_pages_exact()
+Date:   Thu, 10 Mar 2022 15:19:31 +0100
+Message-Id: <20220310140809.625835313@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
+References: <20220310140808.741682643@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bdb04de758ea4f89a8731ee6b98794fa@AcuMS.aculab.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 01:37:50PM +0000, David Laight wrote:
-> I'm wondering what actually happens to loadable modules?
+From: Juergen Gross <jgross@suse.com>
 
-They work just fine..
+Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
 
-> Especially those built 'out of tree',
-> potentially with a different compiler,
-> and maybe containing binary 'blobs'.
+Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
+and free_pages_exact(). This is in preparation of a change of
+gnttab_end_foreign_access() which will prohibit use of high-order
+pages.
 
--EDONTCARE, you're on your own and get to keep whatever pieces.
-In fact, the more pieces I can get you, the better I feel about it.
+This is part of CVE-2022-23041 / XSA-396.
 
-> The requirement to run programs on old distributions means
-> that things get compiled with quite old versions of gcc.
-> For instance RHEL7 is gcc 4.8.5.
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/pvcalls-front.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Min GCC is 5.1. If you want Kernel IBT you get to use GCC-9 (or 8 with
-backports) but I'd recommend using GCC-10 or later since before that the
-IBT code-gen is pretty stupid.
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
+ 	if (!map->active.ring)
+ 		return;
+ 
+-	free_pages((unsigned long)map->active.data.in,
+-			map->active.ring->ring_order);
++	free_pages_exact(map->active.data.in,
++			 PAGE_SIZE << map->active.ring->ring_order);
+ 	free_page((unsigned long)map->active.ring);
+ }
+ 
+@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
+ 		goto out;
+ 
+ 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
+-	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+-					PVCALLS_RING_ORDER);
++	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
++				  GFP_KERNEL | __GFP_ZERO);
+ 	if (!bytes)
+ 		goto out;
+ 
 
-If you build modules using another compiler than the main kernel, you
-again get to keep the pieces.
+
