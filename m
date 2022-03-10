@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83DCC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DF6C35274
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345043AbiCJOlc (ORCPT
+        id S1344990AbiCJOl1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        Thu, 10 Mar 2022 09:41:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245233AbiCJOaQ (ORCPT
+        with ESMTP id S245041AbiCJO3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:30:16 -0500
+        Thu, 10 Mar 2022 09:29:50 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EC91704D0;
-        Thu, 10 Mar 2022 06:25:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886915C9F2;
+        Thu, 10 Mar 2022 06:25:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0638B82676;
-        Thu, 10 Mar 2022 14:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4080FC340F5;
-        Thu, 10 Mar 2022 14:25:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43845B825A7;
+        Thu, 10 Mar 2022 14:25:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E60DC340E8;
+        Thu, 10 Mar 2022 14:25:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922311;
-        bh=RqzeAQhcKiZiQ5wOPHZeqLujTq7UN4gy/nboCZyWHbg=;
+        s=korg; t=1646922320;
+        bh=CKv9siGuusoENM2DBRrXprlaYHpaPdR7ANqVe2dSUZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hB2xNvgDCpTrumpjhINTKNtDYM0hJVXoKHUJc+ukIVVUrGH39yche5RNf4lfDteAJ
-         T1JBo944bcTT4SW5uylgyEVCzFMJrKU4j/MeWuSXqNUx8WhKBYqUxDbeVg7AD962Og
-         52kZBwnx8/URmJeoOLrT8q2U7g35WlvIJmESQTTg=
+        b=0Xi4CsSbief1BCa+XEBg2inAg3Z3XPrqKGCVFl9yVUj2DC2r+RKb17TzIlkK8IZ6x
+         FmwQ/MIxLlvoQItSxcg6gucBliIpL9qvOUlsTvOutNJ6WNEcJNLHE1emAguJn+Yeow
+         m7UrM9biVgU1R+gpAg6okRWLYLLBlzdS3QPwoFSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 37/58] arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
-Date:   Thu, 10 Mar 2022 15:18:57 +0100
-Message-Id: <20220310140813.928124989@linuxfoundation.org>
+Subject: [PATCH 5.10 40/58] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+Date:   Thu, 10 Mar 2022 15:19:00 +0100
+Message-Id: <20220310140814.012332345@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -51,87 +53,113 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit dee435be76f4117410bbd90573a881fd33488f37 upstream.
+commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
 
-Speculation attacks against some high-performance processors can
-make use of branch history to influence future speculation as part of
-a spectre-v2 attack. This is not mitigated by CSV2, meaning CPUs that
-previously reported 'Not affected' are now moderately mitigated by CSV2.
+KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
+implemented, and to preserve that state during migration through its
+firmware register interface.
 
-Update the value in /sys/devices/system/cpu/vulnerabilities/spectre_v2
-to also show the state of the BHB mitigation.
+Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/spectre.h |    2 ++
- arch/arm64/kernel/proton-pack.c  |   36 ++++++++++++++++++++++++++++++++++--
- 2 files changed, 36 insertions(+), 2 deletions(-)
+ arch/arm64/include/uapi/asm/kvm.h |    5 +++++
+ arch/arm64/kvm/hypercalls.c       |   12 ++++++++++++
+ arch/arm64/kvm/psci.c             |   18 +++++++++++++++++-
+ 3 files changed, 34 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/include/asm/spectre.h
-+++ b/arch/arm64/include/asm/spectre.h
-@@ -29,4 +29,6 @@ bool has_spectre_v4(const struct arm64_c
- void spectre_v4_enable_mitigation(const struct arm64_cpu_capabilities *__unused);
- void spectre_v4_enable_task_mitigation(struct task_struct *tsk);
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -273,6 +273,11 @@ struct kvm_vcpu_events {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED     	(1U << 4)
  
-+enum mitigation_state arm64_get_spectre_bhb_state(void);
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
 +
- #endif	/* __ASM_SPECTRE_H */
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -94,14 +94,39 @@ static bool spectre_v2_mitigations_off(v
- 	return ret;
- }
+ /* SVE registers */
+ #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
  
-+static const char *get_bhb_affected_string(enum mitigation_state bhb_state)
-+{
-+	switch (bhb_state) {
-+	case SPECTRE_UNAFFECTED:
-+		return "";
-+	default:
-+	case SPECTRE_VULNERABLE:
-+		return ", but not BHB";
-+	case SPECTRE_MITIGATED:
-+		return ", BHB";
-+	}
-+}
-+
- ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
+--- a/arch/arm64/kvm/hypercalls.c
++++ b/arch/arm64/kvm/hypercalls.c
+@@ -58,6 +58,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu
+ 				break;
+ 			}
+ 			break;
++		case ARM_SMCCC_ARCH_WORKAROUND_3:
++			switch (arm64_get_spectre_bhb_state()) {
++			case SPECTRE_VULNERABLE:
++				break;
++			case SPECTRE_MITIGATED:
++				val = SMCCC_RET_SUCCESS;
++				break;
++			case SPECTRE_UNAFFECTED:
++				val = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
++				break;
++			}
++			break;
+ 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
+ 			val = SMCCC_RET_SUCCESS;
+ 			break;
+--- a/arch/arm64/kvm/psci.c
++++ b/arch/arm64/kvm/psci.c
+@@ -397,7 +397,7 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
+ 
+ int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
  {
-+	enum mitigation_state bhb_state = arm64_get_spectre_bhb_state();
-+	const char *bhb_str = get_bhb_affected_string(bhb_state);
-+	const char *v2_str = "Branch predictor hardening";
-+
- 	switch (spectre_v2_state) {
- 	case SPECTRE_UNAFFECTED:
--		return sprintf(buf, "Not affected\n");
-+		if (bhb_state == SPECTRE_UNAFFECTED)
-+			return sprintf(buf, "Not affected\n");
-+
-+		/*
-+		 * Platforms affected by Spectre-BHB can't report
-+		 * "Not affected" for Spectre-v2.
-+		 */
-+		v2_str = "CSV2";
-+		fallthrough;
- 	case SPECTRE_MITIGATED:
--		return sprintf(buf, "Mitigation: Branch predictor hardening\n");
-+		return sprintf(buf, "Mitigation: %s%s\n", v2_str, bhb_str);
- 	case SPECTRE_VULNERABLE:
- 		fallthrough;
- 	default:
-@@ -787,3 +812,10 @@ int arch_prctl_spec_ctrl_get(struct task
- 		return -ENODEV;
- 	}
+-	return 3;		/* PSCI version and two workaround registers */
++	return 4;		/* PSCI version and three workaround registers */
  }
+ 
+ int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+@@ -411,6 +411,9 @@ int kvm_arm_copy_fw_reg_indices(struct k
+ 	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
+ 		return -EFAULT;
+ 
++	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
++		return -EFAULT;
 +
-+static enum mitigation_state spectre_bhb_state;
-+
-+enum mitigation_state arm64_get_spectre_bhb_state(void)
-+{
-+	return spectre_bhb_state;
-+}
+ 	return 0;
+ }
+ 
+@@ -450,6 +453,17 @@ static int get_kernel_wa_level(u64 regid
+ 		case SPECTRE_VULNERABLE:
+ 			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+ 		}
++		break;
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
++		switch (arm64_get_spectre_bhb_state()) {
++		case SPECTRE_VULNERABLE:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
++		case SPECTRE_MITIGATED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
++		case SPECTRE_UNAFFECTED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
++		}
++		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -466,6 +480,7 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *
+ 		break;
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+ 		break;
+ 	default:
+@@ -511,6 +526,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *
+ 	}
+ 
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+ 			return -EINVAL;
+ 
 
 
