@@ -2,95 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4371FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 03:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 03:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239360AbiCJDzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Mar 2022 22:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
+        id S239372AbiCJD4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Mar 2022 22:56:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbiCJDz2 (ORCPT
+        with ESMTP id S239361AbiCJD4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Mar 2022 22:55:28 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D059FE3C7E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Mar 2022 19:54:28 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id t5so4041113pfg.4
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Mar 2022 19:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lU5YJqnIdV6EY+Secthv0iH88/tqXC8YBp4+e6GV1+A=;
-        b=vWwRMK+EIdboVO5wlmn0/o8zduvLLav44n1w6rT88q/HHODVeCiCbS+vYYbHGA6UV4
-         lsUNLp70L/1OLzQ47T9bzH+030qyZSx/MTTOE2xZetveZ6il1kDT29fEUBXfRltQ5Eu8
-         hkkeBjJSg7iHJQ+N29qLjpIytfcxW3WAzHYEDpeJ6nrZymuJHrRgOPgpJSX0+QOuHvJm
-         C4qvxbQoMS+p5LKHuVroK6YQqwERfAD36xIRKCK8+SWDj3416FPLgejd5Dp+6xYnE9CC
-         VUFsXuGvwnhvkZXGQ0wL81sF7D/YaKSVq7dbXetnhyDB0ihysr99z/98GaqyiEjgr2an
-         i4MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lU5YJqnIdV6EY+Secthv0iH88/tqXC8YBp4+e6GV1+A=;
-        b=dUVtc34RhKndtcTMzEaEEgE06R0Hwd+zU1oJLihapTLkrhzHZIPAOLfybor6r78Z0a
-         QxnXdTfRpY1c1GqX452++RqPcoFQsLY2rY/eSnJaq0OdC54yosByf5t1fpDgotU+b8U7
-         6WcfsJSXw+ywGYJtlFxpzUZjq3YCnMprpxlJ88mov/3fDeuOD0rXETERGfS3vvH7yH+g
-         rwKZsukO9hwVrr4Q6CctnVuBftBStovs/Scry06LakXu9RfEdVnLlVNmDBXJfdi9akF2
-         /XFLvP3bEIJdepKugPPZrfnJJ5ZKLIiIYBx+vlL7rXsG4RifSNp4x+MGzrskIxwioOT/
-         vybA==
-X-Gm-Message-State: AOAM530ZwIMoSrjsMdFBfsnhPnRXQJmJtivB2iyGgFTzFXsD2tMXcMZj
-        9xD4YUMcHph/AB9ZL1UAQSulG3YLd1e9j8XAzOJxlw==
-X-Google-Smtp-Source: ABdhPJwvemzucTPrgpseFphjjG8pwdptwyDczVK5E/gt4x73Np20Dd90o+US1aq+uxMNTq2O9E9h8MAmCdWWN6fMKqY=
-X-Received: by 2002:a05:6a02:283:b0:342:703e:1434 with SMTP id
- bk3-20020a056a02028300b00342703e1434mr2456148pgb.74.1646884468421; Wed, 09
- Mar 2022 19:54:28 -0800 (PST)
+        Wed, 9 Mar 2022 22:56:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3748412BF64;
+        Wed,  9 Mar 2022 19:55:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C311961743;
+        Thu, 10 Mar 2022 03:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84A1FC340E8;
+        Thu, 10 Mar 2022 03:55:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646884517;
+        bh=engZAFmljiWxkf2QOD63DeS0UkAeFcOu1WQRuCKqZSk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qkRL/RM9O++DRkjuRBHVgyX2Q1wbvAd4AKcSNV7coSzpz6j5Be9csVOQBeFj8p4Xv
+         8MPaTJ1GiQuflIOQQQ5kxjZtxu3JQpAv6E/D5rq1AL5gqBvG/zQthhoAF+Jwsk6R+6
+         epn9Gjwa3QKVIAG/qGKF5YpPCeMnCNhLUdnpVwVRB2ptxqn1Y663gnzmyYNVJK+/my
+         4fQFL3E0dep0tHaBnNDlX8AtY+VLwqsuSVa19O9vETVZVm1QB5LW4tm6wWoy299wux
+         RZf6j/wdVuoJG/GvpTAem49TUX7nIIfdmEz1IhfiCzbNu0at8wsNeBK0/PbpBkoRyj
+         4o+4isdyhw2Aw==
+Date:   Wed, 9 Mar 2022 22:03:47 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 0/8] scsi: aacraid: Replace one-element arrays with
+ flexible-array members
+Message-ID: <20220310040347.GA2295236@embeddedor>
+References: <cover.1645513670.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-References: <164610292916.2682974.12924748003366352335.stgit@dwillia2-desk3.amr.corp.intel.com>
- <164610294604.2682974.11169622387063183603.stgit@dwillia2-desk3.amr.corp.intel.com>
- <20220309182217.00006bf5@Huawei.com>
-In-Reply-To: <20220309182217.00006bf5@Huawei.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 9 Mar 2022 19:54:17 -0800
-Message-ID: <CAPcyv4jJyRZG70+P-Y8_W_MbSW42wZ=SN8DbJvUL4Q6Y7kDkvQ@mail.gmail.com>
-Subject: Re: [PATCH 03/11] cxl/core: Remove cxl_device_lock()
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Rafael J Wysocki <rafael.j.wysocki@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-cxl@vger.kernel.org, Linux NVDIMM <nvdimm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1645513670.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 10:22 AM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
->
-> On Mon, 28 Feb 2022 18:49:06 -0800
-> Dan Williams <dan.j.williams@intel.com> wrote:
->
-> > In preparation for moving lockdep_mutex nested lock acquisition into the
-> > core, remove the cxl_device_lock() wrapper, but preserve
-> > cxl_lock_class() that will be used to inform the core of the subsystem's
-> > lock ordering rules.
-> >
-> > Cc: Alison Schofield <alison.schofield@intel.com>
-> > Cc: Vishal Verma <vishal.l.verma@intel.com>
-> > Cc: Ira Weiny <ira.weiny@intel.com>
-> > Cc: Ben Widawsky <ben.widawsky@intel.com>
-> > Signed-off-by: Dan Williams <dan.j.williams@intel.com>
->
-> Makes sense, but perhaps the description should call out that after
-> this patch it's not just a wrapper remove, but rather the lock
-> checking is totally gone for now?
+Hi all,
 
-Sure, that's worth a note.
+Friendly ping: who can review or comment on this series, please?
 
->
-> Otherwise this looks fine to me. FWIW
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Thanks
+--
+Gustavo
+
+On Tue, Feb 22, 2022 at 01:28:12AM -0600, Gustavo A. R. Silva wrote:
+> This series aims to replace one-element arrays with flexible-array
+> members in multiple structures in drivers/scsi/aacraid/aacraid.h.
+> 
+> There is a regular need in the kernel to provide a way to declare having
+> a dynamically sized set of trailing elements in a structure. Kernel code
+> should always use “flexible array members”[1] for these cases. The older
+> style of one-element or zero-length arrays should no longer be used[2].
+> 
+> This helps with the ongoing efforts to globally enable -Warray-bounds
+> and get us closer to being able to tighten the FORTIFY_SOURCE routines
+> on memcpy().
+> 
+> These issues were found with the help of Coccinelle and audited and fixed,
+> manually.
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Link: https://github.com/KSPP/linux/issues/79
+> 
+> Gustavo A. R. Silva (8):
+>   scsi: aacraid: Replace one-element array with flexible-array member
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct sgmap
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct user_sgmap
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct sgmap64
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct user_sgmap64
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct sgmapraw
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct user_sgmapraw
+>   scsi: aacraid: Replace one-element array with flexible-array member in
+>     struct aac_aifcmd
+> 
+>  drivers/scsi/aacraid/aachba.c   | 76 +++++++++++----------------------
+>  drivers/scsi/aacraid/aacraid.h  | 16 +++----
+>  drivers/scsi/aacraid/commctrl.c |  5 +--
+>  drivers/scsi/aacraid/comminit.c |  3 +-
+>  4 files changed, 37 insertions(+), 63 deletions(-)
+> 
+> -- 
+> 2.27.0
+> 
