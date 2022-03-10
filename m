@@ -2,101 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E54CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241588AbiCJLab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:30:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
+        id S241604AbiCJLc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232832AbiCJLaY (ORCPT
+        with ESMTP id S240349AbiCJLcz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:30:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A5713D56C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:29:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A01F61602
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902C0C340E8;
-        Thu, 10 Mar 2022 11:29:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646911762;
-        bh=uKKQrIIKFBwSgsheqX3HqJPqfhTRezkt/iDCDYvlKjw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PAcTTaf/++SYkJuCwSUTxJMpZrgKyZrjOaqYjC1VoO98l0THMkZSMbZu7LKF3496a
-         e1HwiQ07mfaL7e3jcAIbdp00GgKWPbU6uy5CMHl7pqvxfX2WVsz4R+eLnkBvtpnzCQ
-         s0LP+clmvzK72uKL07fwm8pF/O1HU/lVRO4rsYGTVdQRkzGioNhRsrgECcVS+pe9bi
-         mi33nmsiN/e3wf+0aEsQM1dJGhkBuA3+vr+aUT/TpNY6uLWGidNg8FbmvakJ4qb5nb
-         PbjkB8tnAL08YlKmgIawgsFQJG3OHg8yroIX3KC8PsqkGN0v0PwSyt5/kS1FwVl7/P
-         bLoBpimh95KWg==
-Date:   Thu, 10 Mar 2022 11:29:16 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     Steve Lee <steve.lee.analog@gmail.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "ckeepax@opensource.cirrus.com" <ckeepax@opensource.cirrus.com>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "rf@opensource.wolfsonmicro.com" <rf@opensource.wolfsonmicro.com>,
-        "shumingf@realtek.com" <shumingf@realtek.com>,
-        "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "dmurphy@ti.com" <dmurphy@ti.com>,
-        "jack.yu@realtek.com" <jack.yu@realtek.com>,
-        "steves.lee@maximintegrated.com" <steves.lee@maximintegrated.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH] ASoC: max98390: Add reset gpio control
-Message-ID: <YinhDPrSvrYV5vKp@sirena.org.uk>
-References: <20220310081548.31846-1-steve.lee.analog@gmail.com>
- <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
+        Thu, 10 Mar 2022 06:32:55 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71C20141E2E;
+        Thu, 10 Mar 2022 03:31:53 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1F0F81691;
+        Thu, 10 Mar 2022 03:31:53 -0800 (PST)
+Received: from [10.57.43.53] (unknown [10.57.43.53])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 700AC3F7D7;
+        Thu, 10 Mar 2022 03:31:47 -0800 (PST)
+Message-ID: <3021738c-06e4-6760-5a70-5b3dc57f1e96@arm.com>
+Date:   Thu, 10 Mar 2022 11:31:41 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="MNhXQ4XGIMsIAMHL"
-Content-Disposition: inline
-In-Reply-To: <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
-X-Cookie: Package sold by weight, not volume.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [EXT] RE: [PATCH] media: amphion: fix some error related with
+ undefined reference to __divdi3
+Content-Language: en-GB
+To:     Ming Qian <ming.qian@nxp.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+Cc:     "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Aisheng Dong <aisheng.dong@nxp.com>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220309050221.971-1-ming.qian@nxp.com>
+ <ab877a4470324d20b558538b52f69391@AcuMS.aculab.com>
+ <AM6PR04MB63417FD1C3EE77BBE1649B47E70B9@AM6PR04MB6341.eurprd04.prod.outlook.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <AM6PR04MB63417FD1C3EE77BBE1649B47E70B9@AM6PR04MB6341.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022-03-10 08:36, Ming Qian wrote:
+>> -----Original Message-----
+>> From: David Laight [mailto:David.Laight@ACULAB.COM]
+>> Sent: Wednesday, March 9, 2022 9:27 PM
+>> To: Ming Qian <ming.qian@nxp.com>; mchehab@kernel.org;
+>> shawnguo@kernel.org; robh+dt@kernel.org; s.hauer@pengutronix.de
+>> Cc: hverkuil-cisco@xs4all.nl; kernel@pengutronix.de; festevam@gmail.com;
+>> dl-linux-imx <linux-imx@nxp.com>; Aisheng Dong <aisheng.dong@nxp.com>;
+>> linux-media@vger.kernel.org; linux-kernel@vger.kernel.org;
+>> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+>> Subject: [EXT] RE: [PATCH] media: amphion: fix some error related with
+>> undefined reference to __divdi3
+>>
+>> Caution: EXT Email
+>>
+>> From: Ming Qian
+>>> Sent: 09 March 2022 05:02
+>> ...
+>>> 3. use 'val >> 1' instead of ' val / 2'
+>>
+>> The compiler should do that anyway.
+>>
+>> Especially for unsigned values.
+>> And it has the wrong (different) rounding for negative values.
+>>
+>>          David
+>>
+> 
+> Hi David,
+>      Yes, you are right, if the value is negative, the behavior is wrong.
+>      But here, the value type is u32, so I think it's OK.
 
---MNhXQ4XGIMsIAMHL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Well, it depends on the semantic intent, really. If you're packing a 
+bitfield which encodes bits 31:1 of some value then a shift is the most 
+appropriate operation. However if you're literally calculating half of a 
+value for, say, a 50% threshold level, or the number of 16-bit words 
+represented by a byte length, then semantically it's a division, so it 
+should use the divide operator rather than obfuscating it behind a 
+shift. Constant division is something that even the most basic 
+optimising compiler should handle with ease.
 
-On Thu, Mar 10, 2022 at 08:48:09AM +0000, Sa, Nuno wrote:
+One more thing that's not the fault of this patch, but stood out in the 
+context:
 
-> > +	max98390->reset_gpio = of_get_named_gpio(i2c-
-> > >dev.of_node,
-> > +						"maxim,reset-gpios", 0);
+@@ -1566,7 +1568,7 @@ static bool vpu_malone_check_ready(struct 
+vpu_shared_addr *shared, u32 instance)
+  	u32 wptr = desc->wptr;
+  	u32 used = (wptr + size - rptr) % size;
 
-> Why not using devm_gpiod_get_optional()? We could request the pin
-> already in the asserted state and make the code slightly better...
+-	if (!size || used < size / 2)
++	if (!size || used < (size >> 1))
+  		return true;
 
-Yes, and it'd support other firmware interfaces too.  We also need an
-update to the binding document covering the new property.
+  	return false;
 
-Might also be worth putting the device into reset when unloading the
-driver, though that's not essential.
+That's not safe: if "size" is 0 then the undefined behaviour has already 
+happened before the "!size" check is reached. If "size" really can be 0, 
+then it needs to be checked *before* it is used as a divisor to 
+calculate "used".
 
---MNhXQ4XGIMsIAMHL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIp4QsACgkQJNaLcl1U
-h9D6+Af5AXegHDTeiZ2MbFDMHQu/VHpOn1eZieGYkMAzHrNIZ2MzpuTWfomE5iHl
-7G5MqciVxPQpF37CSt52SiQhpFbIsaTgJ1d7gM9PMWhLWCElhKVJu1XUWZOEH92E
-v+GRHLgkF6JNgpQpUgLejjH1uo/LeVJX9o2UKir4pPAJKhB40VuYhi80k7AqVXPC
-9WF8f7tiIowmOozzmTwkjmJuWHgGbZ83mCyz15OtOpitXDTrxgoABc+XxXnJEAEJ
-nUBMjbl7kknWM8+hGNjoVLG7q0MiSB5SNM3K6RWfAgUHQKG2UmGcA07sz+4GSJpI
-A7wBQjTNTErXCjUsqVIetHCW6iKBgw==
-=GZqX
------END PGP SIGNATURE-----
-
---MNhXQ4XGIMsIAMHL--
+Robin.
