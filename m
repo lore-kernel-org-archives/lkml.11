@@ -2,320 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AE7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6480C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245546AbiCJPGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        id S1344159AbiCJPG6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:06:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243371AbiCJPFw (ORCPT
+        with ESMTP id S245550AbiCJPF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:05:52 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6716D19BE5B;
-        Thu, 10 Mar 2022 06:56:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646924164; x=1678460164;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=0TS23dhrQeIBAD23EIlffHbWzGGAv54mP/TJa52IM+E=;
-  b=NrpwuanDy3me6fV3ImP44WkG9xzYtqwJrgUW8WRT0TkPgOQq+6DelaVF
-   3jT4cWGThsWfK7oQPl4KM6AvJln+gw2Xqea6mgxTBuvu32RwaSdUJ+a7F
-   ZN7waDyoqIm3Gr7tumAHr69ykz4fvBmJW/w3TK+uDkuCJaCFRep8+h3GQ
-   0x2AVyEYCIeXHzfwSVzz2mOn08lvQ52noG4S+n6v8u78ChNuoe2dpY5x6
-   lOCdW9At8gUSUO57aLn4kw8kxHIZ3JLg0vkhXhdoZvf8cVtHMHv8Fcmoj
-   C1L+lXzqCb/tWt5OYttYcGjJu1qF3ZJBvAqlchNygy0M3vrQcow1pzL1B
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237436351"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="237436351"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:55:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="644467377"
-Received: from aubrey-app.sh.intel.com (HELO [10.239.53.25]) ([10.239.53.25])
-  by orsmga004.jf.intel.com with ESMTP; 10 Mar 2022 06:55:33 -0800
-Subject: Re: [PATCH v1 4/6] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thu, 10 Mar 2022 10:05:57 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 542E319ABE4;
+        Thu, 10 Mar 2022 06:56:09 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3024816F2;
+        Thu, 10 Mar 2022 06:55:46 -0800 (PST)
+Received: from e108754-lin.cambridge.arm.com (unknown [10.1.195.34])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 543823F7B4;
+        Thu, 10 Mar 2022 06:55:44 -0800 (PST)
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220222231735.268919-5-sathyanarayanan.kuppuswamy@linux.intel.com>
-From:   Aubrey Li <aubrey.li@linux.intel.com>
-Message-ID: <369eb270-92c5-1788-127e-bb31f2a51680@linux.intel.com>
-Date:   Thu, 10 Mar 2022 22:55:31 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Ingo Molnar <mingo@redhat.com>,
+        Giovanni Gherdovich <ggherdovich@suse.cz>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sean Kelley <skelley@nvidia.com>
+Cc:     Pierre Gondois <pierre.gondois@arm.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Yicong Yang <yangyicong@hisilicon.com>
+Subject: [PATCH v4 2/3] arch_topology: obtain cpu capacity using information from CPPC
+Date:   Thu, 10 Mar 2022 14:54:50 +0000
+Message-Id: <20220310145451.15596-3-ionela.voinescu@arm.com>
+X-Mailer: git-send-email 2.29.2.dirty
+In-Reply-To: <20220310145451.15596-1-ionela.voinescu@arm.com>
+References: <20220310145451.15596-1-ionela.voinescu@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20220222231735.268919-5-sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/23 上午7:17, Kuppuswamy Sathyanarayanan wrote:
-> TDX guest supports encrypted disk as root or secondary drives.
-> Decryption keys required to access such drives are usually maintained
-> by 3rd party key servers. Attestation is required by 3rd party key
-> servers to get the key for an encrypted disk volume, or possibly other
-> encrypted services. Attestation is used to prove to the key server that
-> the TD guest is running in a valid TD and the kernel and virtual BIOS
-> and other environment are secure.
-> 
-> During the boot process various components before the kernel accumulate
-> hashes in the TDX module, which can then combined into a report. This
-> would typically include a hash of the bios, bios configuration, boot
-> loader, command line, kernel, initrd.  After checking the hashes the
-> key server will securely release the keys.
-> 
-> The actual details of the attestation protocol depend on the particular
-> key server configuration, but some parts are common and need to
-> communicate with the TDX module.
-> 
-> This communication is implemented in the attestation driver.
-> 
-> The supported steps are:
-> 
->   1. TD guest generates the TDREPORT that contains version information
->      about the Intel TDX module, measurement of the TD, along with a
->      TD-specified nonce.
->   2. TD guest shares the TDREPORT with TD host via GetQuote hypercall
->      which is used by the host to generate a quote via quoting
->      enclave (QE).
->   3. Quote generation completion notification is sent to TD OS via
->      callback interrupt vector configured by TD using
->      SetupEventNotifyInterrupt hypercall.
->   4. After receiving the generated TDQUOTE, a remote verifier can be
->      used to verify the quote and confirm the trustworthiness of the
->      TD.
-> 
-> Attestation agent uses IOCTLs implemented by the attestation driver to
-> complete the various steps of the attestation process.
-> 
-> Also note that, explicit access permissions are not enforced in this
-> driver because the quote and measurements are not a secret. However
-> the access permissions of the device node can be used to set any
-> desired access policy. The udev default is usually root access
-> only.
-> 
-> TDX_CMD_GEN_QUOTE IOCTL can be used to create an computation on the
-> host, but TDX assumes that the host is able to deal with malicious
-> guest flooding it anyways.
-> 
-> The interaction with the TDX module is like a RPM protocol here. There
-> are several operations (get tdreport, get quote) that need to input a
-> blob, and then output another blob. It was considered to use a sysfs
-> interface for this, but it doesn't fit well into the standard sysfs
-> model for configuring values. It would be possible to do read/write on
-> files, but it would need multiple file descriptors, which would be
-> somewhat messy. ioctls seems to be the best fitting and simplest model
-> here. There is one ioctl per operation, that takes the input blob and
-> returns the output blob, and as well as auxiliary ioctls to return the
-> blob lengths. The ioctls are documented in the header file. 
-> 
-> [Chenyi Qiang: Proposed struct tdx_gen_quote for passing user buffer]
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Acked-by: Hans de Goede <hdegoede@redhat.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
->  drivers/platform/x86/intel/Kconfig            |   1 +
->  drivers/platform/x86/intel/Makefile           |   1 +
->  drivers/platform/x86/intel/tdx/Kconfig        |  13 +
->  drivers/platform/x86/intel/tdx/Makefile       |   3 +
->  .../platform/x86/intel/tdx/intel_tdx_attest.c | 241 ++++++++++++++++++
->  include/uapi/misc/tdx.h                       |  37 +++
->  6 files changed, 296 insertions(+)
->  create mode 100644 drivers/platform/x86/intel/tdx/Kconfig
->  create mode 100644 drivers/platform/x86/intel/tdx/Makefile
->  create mode 100644 drivers/platform/x86/intel/tdx/intel_tdx_attest.c
->  create mode 100644 include/uapi/misc/tdx.h
-> 
-> diff --git a/drivers/platform/x86/intel/Kconfig b/drivers/platform/x86/intel/Kconfig
-> index 8e65086bb6c8..a2ed17d67052 100644
-> --- a/drivers/platform/x86/intel/Kconfig
-> +++ b/drivers/platform/x86/intel/Kconfig
-> @@ -12,6 +12,7 @@ source "drivers/platform/x86/intel/pmt/Kconfig"
->  source "drivers/platform/x86/intel/speed_select_if/Kconfig"
->  source "drivers/platform/x86/intel/telemetry/Kconfig"
->  source "drivers/platform/x86/intel/wmi/Kconfig"
-> +source "drivers/platform/x86/intel/tdx/Kconfig"
->  
->  config INTEL_HID_EVENT
->  	tristate "Intel HID Event"
-> diff --git a/drivers/platform/x86/intel/Makefile b/drivers/platform/x86/intel/Makefile
-> index 35f2066578b2..27a6c6c5a83f 100644
-> --- a/drivers/platform/x86/intel/Makefile
-> +++ b/drivers/platform/x86/intel/Makefile
-> @@ -11,6 +11,7 @@ obj-$(CONFIG_INTEL_SKL_INT3472)		+= int3472/
->  obj-$(CONFIG_INTEL_PMC_CORE)		+= pmc/
->  obj-$(CONFIG_INTEL_PMT_CLASS)		+= pmt/
->  obj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += speed_select_if/
-> +obj-$(CONFIG_INTEL_TDX_GUEST)		+= tdx/
->  obj-$(CONFIG_INTEL_TELEMETRY)		+= telemetry/
->  obj-$(CONFIG_INTEL_WMI)			+= wmi/
->  
-> diff --git a/drivers/platform/x86/intel/tdx/Kconfig b/drivers/platform/x86/intel/tdx/Kconfig
-> new file mode 100644
-> index 000000000000..853e3a34c889
-> --- /dev/null
-> +++ b/drivers/platform/x86/intel/tdx/Kconfig
-> @@ -0,0 +1,13 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +#
-> +# X86 TDX Platform Specific Drivers
-> +#
-> +
-> +config INTEL_TDX_ATTESTATION
-> +	tristate "Intel TDX attestation driver"
-> +	depends on INTEL_TDX_GUEST
-> +	help
-> +	  The TDX attestation driver provides IOCTL interfaces to the user to
-> +	  request TDREPORT from the TDX module or request quote from the VMM
-> +	  or to get quote buffer size. It is mainly used to get secure disk
-> +	  decryption keys from the key server.
-> diff --git a/drivers/platform/x86/intel/tdx/Makefile b/drivers/platform/x86/intel/tdx/Makefile
-> new file mode 100644
-> index 000000000000..124d6b7b20a0
-> --- /dev/null
-> +++ b/drivers/platform/x86/intel/tdx/Makefile
-> @@ -0,0 +1,3 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +
-> +obj-$(CONFIG_INTEL_TDX_ATTESTATION)	+= intel_tdx_attest.o
-> diff --git a/drivers/platform/x86/intel/tdx/intel_tdx_attest.c b/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
-> new file mode 100644
-> index 000000000000..1db6c4f22692
-> --- /dev/null
-> +++ b/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
-> @@ -0,0 +1,241 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * intel_tdx_attest.c - TDX guest attestation interface driver.
-> + *
-> + * Implements user interface to trigger attestation process and
-> + * read the TD Quote result.
-> + *
-> + * Copyright (C) 2021-2022 Intel Corporation
-> + *
-> + * Author:
-> + *     Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> + */
-> +
-> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
-> +
-> +#include <linux/module.h>
-> +#include <linux/miscdevice.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/fs.h>
-> +#include <linux/mm.h>
-> +#include <linux/slab.h>
-> +#include <linux/set_memory.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/jiffies.h>
-> +#include <linux/io.h>
-> +#include <asm/apic.h>
-> +#include <asm/tdx.h>
-> +#include <asm/irq_vectors.h>
-> +#include <uapi/misc/tdx.h>
-> +
-> +/* Used in Quote memory allocation */
-> +#define QUOTE_SIZE			(2 * PAGE_SIZE)
-> +/* Used in Get Quote request memory allocation */
-> +#define GET_QUOTE_MAX_SIZE		(4 * PAGE_SIZE)
-> +/* Get Quote timeout in msec */
-> +#define GET_QUOTE_TIMEOUT		(5000)
-> +
-> +/* Mutex to synchronize attestation requests */
-> +static DEFINE_MUTEX(attestation_lock);
-> +/* Completion object to track attestation status */
-> +static DECLARE_COMPLETION(attestation_done);
-> +/* Buffer used to copy report data in attestation handler */
-> +static u8 report_data[TDX_REPORT_DATA_LEN] __aligned(64);
-> +/* Data pointer used to get TD Quote data in attestation handler */
-> +static void *tdquote_data;
-> +/* Data pointer used to get TDREPORT data in attestation handler */
-> +static void *tdreport_data;
-> +/* DMA handle used to allocate and free tdquote DMA buffer */
-> +dma_addr_t tdquote_dma_handle;
-> +
-> +struct tdx_gen_quote {
-> +	void *buf __user;
-> +	size_t len;
-> +};
-> +
-> +static void attestation_callback_handler(void)
-> +{
-> +	complete(&attestation_done);
-> +}
-> +
-> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
-> +			     unsigned long arg)
-> +{
-> +	void __user *argp = (void __user *)arg;
-> +	struct tdx_gen_quote tdquote_req;
-> +	long ret = 0;
-> +
-> +	mutex_lock(&attestation_lock);
-> +
-> +	switch (cmd) {
-> +	case TDX_CMD_GET_TDREPORT:
-> +		if (copy_from_user(report_data, argp, TDX_REPORT_DATA_LEN)) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
-> +
-> +		/* Generate TDREPORT_STRUCT */
-> +		if (tdx_mcall_tdreport(tdreport_data, report_data)) {
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +
-> +		if (copy_to_user(argp, tdreport_data, TDX_TDREPORT_LEN))
-> +			ret = -EFAULT;
-> +		break;
-> +	case TDX_CMD_GEN_QUOTE:
-> +		reinit_completion(&attestation_done);
-> +
-> +		/* Copy TDREPORT data from user buffer */
-> +		if (copy_from_user(&tdquote_req, argp, sizeof(struct tdx_gen_quote))) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
-> +
-> +		if (tdquote_req.len <= 0 || tdquote_req.len > GET_QUOTE_MAX_SIZE) {
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +
-> +		if (copy_from_user(tdquote_data, tdquote_req.buf, tdquote_req.len)) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
+Define topology_init_cpu_capacity_cppc() to use highest performance
+values from _CPC objects to obtain and set maximum capacity information
+for each CPU. acpi_cppc_processor_probe() is a good point at which to
+trigger the initialization of CPU (u-arch) capacity values, as at this
+point the highest performance values can be obtained from each CPU's
+_CPC objects. Architectures can therefore use this functionality
+through arch_init_invariance_cppc().
 
-There seems to be a mismatch with
-https://github.com/intel/qemu-tdx/blob/tdx/target/i386/kvm/tdx.c#L1262
+The performance scale used by CPPC is a unified scale for all CPUs in
+the system. Therefore, by obtaining the raw highest performance values
+from the _CPC objects, and normalizing them on the [0, 1024] capacity
+scale, used by the task scheduler, we obtain the CPU capacity of each
+CPU.
 
-It looks like qemu expects a tdx_get_quote_header before the raw TDREPORT data?
+While an ACPI Notify(0x85) could alert about a change in the highest
+performance value, which should in turn retrigger the CPU capacity
+computations, this notification is not currently handled by the ACPI
+processor driver. When supported, a call to arch_init_invariance_cppc()
+would perform the update.
 
-Thanks,
--Aubrey
+Signed-off-by: Ionela Voinescu <ionela.voinescu@arm.com>
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+Tested-by: Valentin Schneider <valentin.schneider@arm.com>
+Tested-by: Yicong Yang <yangyicong@hisilicon.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+---
+ drivers/base/arch_topology.c  | 45 ++++++++++++++++++++++++++++++++---
+ include/linux/arch_topology.h |  4 ++++
+ 2 files changed, 46 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+index 976154140f0b..1d6636ebaac5 100644
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -339,6 +339,46 @@ bool __init topology_parse_cpu_capacity(struct device_node *cpu_node, int cpu)
+ 	return !ret;
+ }
+ 
++#ifdef CONFIG_ACPI_CPPC_LIB
++#include <acpi/cppc_acpi.h>
++
++void topology_init_cpu_capacity_cppc(void)
++{
++	struct cppc_perf_caps perf_caps;
++	int cpu;
++
++	if (likely(acpi_disabled || !acpi_cpc_valid()))
++		return;
++
++	raw_capacity = kcalloc(num_possible_cpus(), sizeof(*raw_capacity),
++			       GFP_KERNEL);
++	if (!raw_capacity)
++		return;
++
++	for_each_possible_cpu(cpu) {
++		if (!cppc_get_perf_caps(cpu, &perf_caps) &&
++		    (perf_caps.highest_perf >= perf_caps.nominal_perf) &&
++		    (perf_caps.highest_perf >= perf_caps.lowest_perf)) {
++			raw_capacity[cpu] = perf_caps.highest_perf;
++			pr_debug("cpu_capacity: CPU%d cpu_capacity=%u (raw).\n",
++				 cpu, raw_capacity[cpu]);
++			continue;
++		}
++
++		pr_err("cpu_capacity: CPU%d missing/invalid highest performance.\n", cpu);
++		pr_err("cpu_capacity: partial information: fallback to 1024 for all CPUs\n");
++		goto exit;
++	}
++
++	topology_normalize_cpu_scale();
++	schedule_work(&update_topology_flags_work);
++	pr_debug("cpu_capacity: cpu_capacity initialization done\n");
++
++exit:
++	free_raw_capacity();
++}
++#endif
++
+ #ifdef CONFIG_CPU_FREQ
+ static cpumask_var_t cpus_to_visit;
+ static void parsing_done_workfn(struct work_struct *work);
+@@ -387,9 +427,8 @@ static int __init register_cpufreq_notifier(void)
+ 	int ret;
+ 
+ 	/*
+-	 * on ACPI-based systems we need to use the default cpu capacity
+-	 * until we have the necessary code to parse the cpu capacity, so
+-	 * skip registering cpufreq notifier.
++	 * On ACPI-based systems skip registering cpufreq notifier as cpufreq
++	 * information is not needed for cpu capacity initialization.
+ 	 */
+ 	if (!acpi_disabled || !raw_capacity)
+ 		return -EINVAL;
+diff --git a/include/linux/arch_topology.h b/include/linux/arch_topology.h
+index cce6136b300a..58cbe18d825c 100644
+--- a/include/linux/arch_topology.h
++++ b/include/linux/arch_topology.h
+@@ -11,6 +11,10 @@
+ void topology_normalize_cpu_scale(void);
+ int topology_update_cpu_topology(void);
+ 
++#ifdef CONFIG_ACPI_CPPC_LIB
++void topology_init_cpu_capacity_cppc(void);
++#endif
++
+ struct device_node;
+ bool topology_parse_cpu_capacity(struct device_node *cpu_node, int cpu);
+ 
+-- 
+2.25.1
+
