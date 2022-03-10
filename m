@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C51C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243158AbiCJOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:15:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        id S243208AbiCJOPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:15:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243156AbiCJOPD (ORCPT
+        with ESMTP id S242898AbiCJOO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:15:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA77B154D3F;
-        Thu, 10 Mar 2022 06:12:12 -0800 (PST)
+        Thu, 10 Mar 2022 09:14:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80780151689;
+        Thu, 10 Mar 2022 06:11:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D348B82676;
-        Thu, 10 Mar 2022 14:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE99C340E8;
-        Thu, 10 Mar 2022 14:12:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73CE061B7D;
+        Thu, 10 Mar 2022 14:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C29C36AE7;
+        Thu, 10 Mar 2022 14:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921530;
-        bh=rwW4tcI0CEy+l2tKmxy/vTKismrz0Bmt/3O2aj3M+UI=;
+        s=korg; t=1646921515;
+        bh=dBM59trElM9mKdvh5X3TAf3lhidiLDUO/YzmBUoNg2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1cptTy6/amk61Xz0ajLMvI7y+44DiWKsvSZKCawYFR6NIrypTx/2RlxqgttKocyUo
-         p1LOBuJvQj8WcXdcwgvgJoZwFb1xpguCkqCE0r4TXLMrm8rrqEnbm/caFkEv3zUZbe
-         sDbklTP1mfir0DVHqBfI5V5TUq1cXVVCXGYwicVA=
+        b=L5cUe1IN/488wZzLqxlDskjCTfDJWCoDehUqDQNLgc52MtMHLw/FoLmxOrEZzK8O1
+         B2ZCoIenFanPVzLbL3Da9OY8Ym66ginbmp9MWn6d34Spm1UsBtwiugFu894VOj0aPm
+         n8vGFm5c2PoAdIkuHsdE5RhrBahZqiYrno8P9cVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Nathan Chancellor <nathan@kernel.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 41/53] ARM: fix build warning in proc-v7-bugs.c
-Date:   Thu, 10 Mar 2022 15:09:46 +0100
-Message-Id: <20220310140813.014584602@linuxfoundation.org>
+Subject: [PATCH 5.16 37/53] ARM: fix build error when BPF_SYSCALL is disabled
+Date:   Thu, 10 Mar 2022 15:09:42 +0100
+Message-Id: <20220310140812.900519290@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
 References: <20220310140811.832630727@linuxfoundation.org>
@@ -49,36 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
 
-commit b1a384d2cbccb1eb3f84765020d25e2c1929706e upstream.
+commit 330f4c53d3c2d8b11d86ec03a964b86dc81452f5 upstream.
 
-The kernel test robot discovered that building without
-HARDEN_BRANCH_PREDICTOR issues a warning due to a missing
-argument to pr_info().
+It was missing a semicolon.
 
-Add the missing argument.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 9dd78194a372 ("ARM: report Spectre v2 status through sysfs")
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Fixes: 25875aa71dfe ("ARM: include unprivileged BPF status in Spectre V2 reporting").
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mm/proc-v7-bugs.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/kernel/spectre.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -108,7 +108,8 @@ static unsigned int spectre_v2_install_w
+--- a/arch/arm/kernel/spectre.c
++++ b/arch/arm/kernel/spectre.c
+@@ -10,7 +10,7 @@ static bool _unprivileged_ebpf_enabled(v
+ #ifdef CONFIG_BPF_SYSCALL
+ 	return !sysctl_unprivileged_bpf_disabled;
  #else
- static unsigned int spectre_v2_install_workaround(unsigned int method)
- {
--	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
-+	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
-+		smp_processor_id());
- 
- 	return SPECTRE_VULNERABLE;
+-	return false
++	return false;
+ #endif
  }
+ 
 
 
