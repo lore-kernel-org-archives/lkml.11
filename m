@@ -2,109 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32EE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C12C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243214AbiCJOPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
+        id S243090AbiCJOP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243104AbiCJOOl (ORCPT
+        with ESMTP id S243160AbiCJOPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:14:41 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316851390F8;
-        Thu, 10 Mar 2022 06:11:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646921516; x=1678457516;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=XcUkjLL+YpWw11P834waxgWm/NgeT+vT/ACdu5U5CAo=;
-  b=F/sUjSpCuWk97h0sO46fD8jRuA5FWxvDd7aR3R7NaO1nE+jWvZXr0D6X
-   7wV4dJPL83+hSaW5X+NXupMONaBK+cElKsWFL+e8KgMo050tAAXng81hQ
-   lF8vP+Q/dzgF4dcZBWpHsqRa8oGrIPlmFkBhAM+2KckfcgAMk7+7kE5I0
-   Oizkr9EPNs4pC1KYrd8PnQNMf6493I9na6tX9HBAV1LjccSeiGQ6luqTj
-   ha3tiaEZDTNZK2PaAFfwJaX9xTmZeEBA5np1QiG01hLK02CewHfNNmUOW
-   7vDoveF13QNAwosp2COiEYa9HBK2oj0CUjxpSmqVBGccZjPPJ5y4ieCqP
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="235206263"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="235206263"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:11:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="554655270"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:11:12 -0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v5 13/13] memfd_create.2: Describe MFD_INACCESSIBLE flag
-Date:   Thu, 10 Mar 2022 22:09:11 +0800
-Message-Id: <20220310140911.50924-14-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+        Thu, 10 Mar 2022 09:15:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011921451C0;
+        Thu, 10 Mar 2022 06:12:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80C74B8267A;
+        Thu, 10 Mar 2022 14:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8E8C340E8;
+        Thu, 10 Mar 2022 14:12:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921536;
+        bh=Y2hkDaoiUakx9dbZkCsQCqalWUgehzW7+dpm8ddAJCw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w8S7Bm9WECRpNu4Gp0Qth6JXIebnRp0upmndyp0Ug1ya/axS2pACugJ836FrQeCV7
+         XLA7zpSliGwqLtrDJFuUO5fwiCJLn8ZFKMf0XG0xo+G8VMq2xuAQOO5/gn4V3RP77w
+         pEuckt9IRQdTwQbRrVc23bPz8EUEu51VOlhKJ30Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.16 43/53] xen/grant-table: add gnttab_try_end_foreign_access()
+Date:   Thu, 10 Mar 2022 15:09:48 +0100
+Message-Id: <20220310140813.073604210@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
+References: <20220310140811.832630727@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- man2/memfd_create.2 | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+From: Juergen Gross <jgross@suse.com>
 
-diff --git a/man2/memfd_create.2 b/man2/memfd_create.2
-index 89e9c4136..2698222ae 100644
---- a/man2/memfd_create.2
-+++ b/man2/memfd_create.2
-@@ -101,6 +101,19 @@ meaning that no other seals can be set on the file.
- .\" FIXME Why is the MFD_ALLOW_SEALING behavior not simply the default?
- .\" Is it worth adding some text explaining this?
- .TP
-+.BR MFD_INACCESSIBLE
-+Disallow userspace access through ordinary MMU accesses via
-+.BR read (2),
-+.BR write (2)
-+and
-+.BR mmap (2).
-+The file size cannot be changed once initialized.
-+This flag cannot coexist with
-+.B MFD_ALLOW_SEALING
-+and when this flag is set, the initial set of seals will be
-+.B F_SEAL_SEAL,
-+meaning that no other seals can be set on the file.
-+.TP
- .BR MFD_HUGETLB " (since Linux 4.14)"
- .\" commit 749df87bd7bee5a79cef073f5d032ddb2b211de8
- The anonymous file will be created in the hugetlbfs filesystem using
--- 
-2.17.1
+Commit 6b1775f26a2da2b05a6dc8ec2b5d14e9a4701a1a upstream.
+
+Add a new grant table function gnttab_try_end_foreign_access(), which
+will remove and free a grant if it is not in use.
+
+Its main use case is to either free a grant if it is no longer in use,
+or to take some other action if it is still in use. This other action
+can be an error exit, or (e.g. in the case of blkfront persistent grant
+feature) some special handling.
+
+This is CVE-2022-23036, CVE-2022-23038 / part of XSA-396.
+
+Reported-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/grant-table.c |   14 ++++++++++++--
+ include/xen/grant_table.h |   12 ++++++++++++
+ 2 files changed, 24 insertions(+), 2 deletions(-)
+
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -435,11 +435,21 @@ static void gnttab_add_deferred(grant_re
+ 	       what, ref, page ? page_to_pfn(page) : -1);
+ }
+ 
++int gnttab_try_end_foreign_access(grant_ref_t ref)
++{
++	int ret = _gnttab_end_foreign_access_ref(ref, 0);
++
++	if (ret)
++		put_free_entry(ref);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gnttab_try_end_foreign_access);
++
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page)
+ {
+-	if (gnttab_end_foreign_access_ref(ref, readonly)) {
+-		put_free_entry(ref);
++	if (gnttab_try_end_foreign_access(ref)) {
+ 		if (page != 0)
+ 			put_page(virt_to_page(page));
+ 	} else
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -104,10 +104,22 @@ int gnttab_end_foreign_access_ref(grant_
+  * access has been ended, free the given page too.  Access will be ended
+  * immediately iff the grant entry is not in use, otherwise it will happen
+  * some time later.  page may be 0, in which case no freeing will occur.
++ * Note that the granted page might still be accessed (read or write) by the
++ * other side after gnttab_end_foreign_access() returns, so even if page was
++ * specified as 0 it is not allowed to just reuse the page for other
++ * purposes immediately.
+  */
+ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
+ 			       unsigned long page);
+ 
++/*
++ * End access through the given grant reference, iff the grant entry is
++ * no longer in use.  In case of success ending foreign access, the
++ * grant reference is deallocated.
++ * Return 1 if the grant entry was freed, 0 if it is still in use.
++ */
++int gnttab_try_end_foreign_access(grant_ref_t ref);
++
+ int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn);
+ 
+ unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
+
 
