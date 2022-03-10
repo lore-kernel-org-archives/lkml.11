@@ -2,100 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02829C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B110C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 20:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245521AbiCJUuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 15:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
+        id S245577AbiCJUuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 15:50:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243957AbiCJUuF (ORCPT
+        with ESMTP id S241255AbiCJUuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 15:50:05 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AD5186452
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:49:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A325F186477
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 12:49:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646945343; x=1678481343;
+  t=1646945344; x=1678481344;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XBV/vhSpOQFq3ItxNWH3aLVfSt1M13WXm1fnUUqRboI=;
-  b=bCsFg8cMjIoxUDOBKfKaUlZuG8faa1JpG2/qO1PSRI6CJscLdsvcUl0R
-   noAEYz3J8FTSLC+CTJpGiErUY7RPypBl9tJNoqOkPjsMQFjGXhMpWmPMW
-   J/z9NK4WOLeTHQ4spQ4KYW/2nyncXgj9rNSmYLl6cm/4/+sh0puG2vI9i
-   +/GScGItfNuJYrqmow2gf3ObkVF723IyQNl8uf9ZnmzrDUYjcDZ9Us/UK
-   NypCkDj6lKirl3WqnqYhHTAKwlYxQz33ce4hTNBSsWMyKSESlZVKAr2J1
-   bUcrFrJnJoFNmRgVTK3hcxLvGxH0GtUQzcmOEK5KJCbLTUytGsYHT3tmD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254205623"
+  bh=KRMDn0WMJL9ra8G8+QzHxQoTSxBFdSyU1WmgdWNLOTU=;
+  b=GVeluKW6NFuevXtSzNFFN0JO3yGvDoeTMCO5fnCTDIC99hof5JEoh0kH
+   SVRdVu5c9nBFBD4CQOZEWvvATq0DJfaZyapCYoswjnUY0UcKGbeTTvMMX
+   dhBjRuAwvP0bm8fcSaFtTiPcV0yRDrftAXMYaYpNjpc0romKTTazQRPuZ
+   yFMkb0GwnTZVM8aYnH0q1xlpOERDrv1ue1jqQr+Tq8ZQv/80GiXHGn7iw
+   fUzcolot+cMAZoc40OIPaHxaB1r329I8dvtnVLW3bz0mwYS0VlnF8bnnx
+   3aZ+pffViD+qO7ivmquV1agD0OCmYVDLm74pe+M6yisY8jZS2vj5G9xBV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254205625"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="254205623"
+   d="scan'208";a="254205625"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 12:49:03 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="554843291"
+   d="scan'208";a="554843297"
 Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 12:49:02 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 12:49:03 -0800
 From:   Tony Luck <tony.luck@intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     Fenghua Yu <fenghua.yu@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org, patches@lists.linux.dev,
         Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 0/2] Make life miserable for split lockers
-Date:   Thu, 10 Mar 2022 12:48:52 -0800
-Message-Id: <20220310204854.31752-1-tony.luck@intel.com>
+Subject: [PATCH v2 2/2] x86/split-lock: Remove unused TIF_SLD bit
+Date:   Thu, 10 Mar 2022 12:48:54 -0800
+Message-Id: <20220310204854.31752-3-tony.luck@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220217012721.9694-1-tony.luck@intel.com>
+In-Reply-To: <20220310204854.31752-1-tony.luck@intel.com>
 References: <20220217012721.9694-1-tony.luck@intel.com>
+ <20220310204854.31752-1-tony.luck@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-See part 0001 commit message for what & why.
+Changes to the "warn" mode of split lock handling mean that
+TIF_SLD is never set.
 
-Changes since v1(RFC) based on feedback from Thomas:
+Remove the bit, and the functions that use it.
 
-1) No longer implemented as new sub-option of split_lock_detect boot
-   option.  Just update the existing (default) "warn" mode.
-2) Use the (more appropriate) "schedule_delayed_work_on() instead of
-   schedule_delayed_work() to re-enable split lock detection.
-3) Add msleep for extra misery before disabling split lock detection
-   on a core.
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+---
+ arch/x86/include/asm/cpu.h         |  2 --
+ arch/x86/include/asm/thread_info.h |  4 +---
+ arch/x86/kernel/cpu/intel.c        | 12 ------------
+ arch/x86/kernel/process.c          |  3 ---
+ 4 files changed, 1 insertion(+), 20 deletions(-)
 
-Next two aren't from Thomas.
-4) Drop the TIF_SLD bit and associated code. No longer needed. This
-   part is done as clean up in patch 0002.
-5) Add a bit in task structure to make sure each split-locking task
-   only tries to print a warn message to the console once. Need this
-   to preserve existing behavior that was previously controlled by the
-   TIF_SLD bit.
-
-Testing notes. I checked this out by running 2,000 processes that
-each looped executing 10,000 split locks. System remains very
-responsive while this test is running (compared with unusable
-without these patches). When each process gets the semaphore
-and two jiffies of time to execute split locks it manages to
-complete ~430 before the delayed work thread re-enables detection.
-
-The semaphore gives nice round-robin access to the 2,000 tasks.
-So each ends up blocking for 24ish seconds while the other 1,999
-task take their turn.
-
-Tony Luck (2):
-  x86/split_lock: Make life miserable for split lockers
-  x86/split-lock: Remove unused TIF_SLD bit
-
- arch/x86/include/asm/cpu.h         |  2 -
- arch/x86/include/asm/thread_info.h |  4 +-
- arch/x86/kernel/cpu/intel.c        | 77 +++++++++++++++++++++---------
- arch/x86/kernel/process.c          |  3 --
- include/linux/sched.h              |  3 ++
- kernel/fork.c                      |  5 ++
- 6 files changed, 64 insertions(+), 30 deletions(-)
-
+diff --git a/arch/x86/include/asm/cpu.h b/arch/x86/include/asm/cpu.h
+index 33d41e350c79..e346f5c103b7 100644
+--- a/arch/x86/include/asm/cpu.h
++++ b/arch/x86/include/asm/cpu.h
+@@ -42,14 +42,12 @@ unsigned int x86_model(unsigned int sig);
+ unsigned int x86_stepping(unsigned int sig);
+ #ifdef CONFIG_CPU_SUP_INTEL
+ extern void __init sld_setup(struct cpuinfo_x86 *c);
+-extern void switch_to_sld(unsigned long tifn);
+ extern bool handle_user_split_lock(struct pt_regs *regs, long error_code);
+ extern bool handle_guest_split_lock(unsigned long ip);
+ extern void handle_bus_lock(struct pt_regs *regs);
+ u8 get_this_hybrid_cpu_type(void);
+ #else
+ static inline void __init sld_setup(struct cpuinfo_x86 *c) {}
+-static inline void switch_to_sld(unsigned long tifn) {}
+ static inline bool handle_user_split_lock(struct pt_regs *regs, long error_code)
+ {
+ 	return false;
+diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
+index ebec69c35e95..f0cb881c1d69 100644
+--- a/arch/x86/include/asm/thread_info.h
++++ b/arch/x86/include/asm/thread_info.h
+@@ -92,7 +92,6 @@ struct thread_info {
+ #define TIF_NOCPUID		15	/* CPUID is not accessible in userland */
+ #define TIF_NOTSC		16	/* TSC is not accessible in userland */
+ #define TIF_NOTIFY_SIGNAL	17	/* signal notifications exist */
+-#define TIF_SLD			18	/* Restore split lock detection on context switch */
+ #define TIF_MEMDIE		20	/* is terminating due to OOM killer */
+ #define TIF_POLLING_NRFLAG	21	/* idle is polling for TIF_NEED_RESCHED */
+ #define TIF_IO_BITMAP		22	/* uses I/O bitmap */
+@@ -116,7 +115,6 @@ struct thread_info {
+ #define _TIF_NOCPUID		(1 << TIF_NOCPUID)
+ #define _TIF_NOTSC		(1 << TIF_NOTSC)
+ #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
+-#define _TIF_SLD		(1 << TIF_SLD)
+ #define _TIF_POLLING_NRFLAG	(1 << TIF_POLLING_NRFLAG)
+ #define _TIF_IO_BITMAP		(1 << TIF_IO_BITMAP)
+ #define _TIF_SPEC_FORCE_UPDATE	(1 << TIF_SPEC_FORCE_UPDATE)
+@@ -128,7 +126,7 @@ struct thread_info {
+ /* flags to check in __switch_to() */
+ #define _TIF_WORK_CTXSW_BASE					\
+ 	(_TIF_NOCPUID | _TIF_NOTSC | _TIF_BLOCKSTEP |		\
+-	 _TIF_SSBD | _TIF_SPEC_FORCE_UPDATE | _TIF_SLD)
++	 _TIF_SSBD | _TIF_SPEC_FORCE_UPDATE)
+ 
+ /*
+  * Avoid calls to __switch_to_xtra() on UP as STIBP is not evaluated.
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 2536784511e3..7cba84616c20 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -1241,18 +1241,6 @@ void handle_bus_lock(struct pt_regs *regs)
+ 	}
+ }
+ 
+-/*
+- * This function is called only when switching between tasks with
+- * different split-lock detection modes. It sets the MSR for the
+- * mode of the new task. This is right most of the time, but since
+- * the MSR is shared by hyperthreads on a physical core there can
+- * be glitches when the two threads need different modes.
+- */
+-void switch_to_sld(unsigned long tifn)
+-{
+-	sld_update_msr(!(tifn & _TIF_SLD));
+-}
+-
+ /*
+  * Bits in the IA32_CORE_CAPABILITIES are not architectural, so they should
+  * only be trusted if it is confirmed that a CPU model implements a
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 81d8ef036637..47db777da92a 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -686,9 +686,6 @@ void __switch_to_xtra(struct task_struct *prev_p, struct task_struct *next_p)
+ 		/* Enforce MSR update to ensure consistent state */
+ 		__speculation_ctrl_update(~tifn, tifn);
+ 	}
+-
+-	if ((tifp ^ tifn) & _TIF_SLD)
+-		switch_to_sld(tifn);
+ }
+ 
+ /*
 -- 
 2.35.1
 
