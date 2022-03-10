@@ -2,130 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DECBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242419AbiCJNeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:34:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        id S233529AbiCJNhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:37:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237910AbiCJNeX (ORCPT
+        with ESMTP id S238386AbiCJNhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:34:23 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FA4148657
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:33:23 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CFAB53F1A3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646919201;
-        bh=pf7ItnfaW7ig7cvFz3o50P7qA0KQs4HS2dTOLYB9BVI=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=o8efPZql+rP+zbs70OTRjhErME2z6DNP9NugHfxTGflcNah9dG5x+ydJs6omeftKG
-         6fVrlIX5+v5RCXha5DWZZKKx0Mspa6FzoEkZDh9bviWvwQX3x1T/INNtygWkLxhf6H
-         5vzZtX0ZrifjMLkcGy/C0AqRqz4r8n+/Fnzs4dHP07Ml5N9BFrWGmScylWZMBizZP5
-         kQzc0v/fe43L0rdOQCGUsbJEio8xFRWz/WE6jblSXj25y5y12utICH+BO1Y3oB1YkO
-         o1SslPsTmP7zqzYoTod1Lqpr459Km/e6d3opUtiLcLPIwrsjPdpT3TPbLZ5Gob6S91
-         bAGroNkVjU8Pw==
-Received: by mail-ed1-f71.google.com with SMTP id l8-20020a056402028800b0041636072ef0so3077615edv.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:33:21 -0800 (PST)
+        Thu, 10 Mar 2022 08:37:36 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE9514E96E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:36:36 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id v1-20020a17090a088100b001bf25f97c6eso6611317pjc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:36:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RcI1OUfcDqqYEbFBrtQzgD2/BopOVHxvwvLjQ5j7Gz4=;
+        b=j4BpGdL/G3c6X9v+GkAuzLfVmSS5YCs63Tw2Y0DY3Dg4Fq2TH3/cCg19eoOrI4GYMS
+         PEUTXqSkESYNQVVuiRMaWKE1pLntDv+9XMVpUZVW4LIq5KOMd+J7S782fGwed/Tpfl7t
+         QVtRHsra/bBnloQ7bc91a2OdnpeeNR9cGeiQm+WeAPO+p0c/9hIqx3cwkmDUFYa9vIsU
+         YtL9GrUqkDtwNtHJUbF47df1WWwgXhFHkgaj5huyfmWUL5gs6vIxkLjosI7Z4iOAWJ6x
+         jLRGAzt3jwYr0+m0wUkyNZt78X1k1B2iU8JWKTUbUcuZa+4S0hnPFlz8e0/G+okkDAkM
+         cF9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=pf7ItnfaW7ig7cvFz3o50P7qA0KQs4HS2dTOLYB9BVI=;
-        b=WqS3dlvwJX2GWVa9qHYuU+1QvTP2hnfaP1xtSlQ1VVOQJ7IpTCz7WMGeaL5Zf1F7R7
-         QOZBuNZGbwMJ+cMBE47k5y2/Rz000NS042iJm1D96+BzRqw6lkKbceTX3ZsIk3R7Fxg8
-         qbWE1RG+O3ZyQJPhaYHJHeN+IBpSRqHz1dol28VBPAqiUZBn9Wn22aOT8zkgrTdbn62x
-         9O74ejx8QqsvCLJT6NCsUU1gfDAp+ip4TzAbXU8WR1iuUsqPxWIRTNlze7SV3+Y/3zfH
-         Ai3vbDQLmOSZOiMGR7QdzZxLSQnoXg5IVR4g3L4LoOnWWO4QVBU9Sji3qPMujha9IkQD
-         Qrfg==
-X-Gm-Message-State: AOAM53300GUPnp+Mc7KJcaVzcgJNzPy4cGxpiJfIW0i3TgGuY0Fwc/RA
-        MzdkZ5cr/+2i1nHeB7vaoQM25SJI8Bp5h0SgydrwriH+/mStL7O3RVBnCQRPEqMxzf6BPfVcBox
-        WQz6N2tAXz909W+yNMWDw8VSiVG901fnG/aW3NoWF1g==
-X-Received: by 2002:a17:906:74c3:b0:6da:be6d:d64b with SMTP id z3-20020a17090674c300b006dabe6dd64bmr4324839ejl.695.1646919201542;
-        Thu, 10 Mar 2022 05:33:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzCCnILWS6O8NF0QccmUIZKB7piFBemuWv5RosCsexSn5KFanUN3loK37T97Thy/V43ongQTg==
-X-Received: by 2002:a17:906:74c3:b0:6da:be6d:d64b with SMTP id z3-20020a17090674c300b006dabe6dd64bmr4324818ejl.695.1646919201311;
-        Thu, 10 Mar 2022 05:33:21 -0800 (PST)
-Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm1821076ejb.220.2022.03.10.05.33.20
+        bh=RcI1OUfcDqqYEbFBrtQzgD2/BopOVHxvwvLjQ5j7Gz4=;
+        b=Tt95QSgDlYLDIHJ6TxxvjezfyHFUZA61HxNjDgFUzL5gTN7R0S1lRJkMjaYM4rCf4p
+         s2//Byk7ooRZVqcVXnwzIDkTRFvm14DaoaP5tlZDwXxLiuwJ1Jt8TQkCDc+9nXYW8PMe
+         uv4Nw6WMZ7lzJd14JsWpSA/tiYYTB+NR+wtpJ9NutjMRgpdc/Kz3zM5OhJe8MfggzAxk
+         9AvxjyyFwjj5C8Twed6UjxoVV7JX7O/ZYQlgizEXNVuwK0ztpzsW+4u8ck6fSz0617zb
+         XOQGaW6WDlS+MtWnM7LFwSnHR1L3ipi9WGQo8P70Sp4C8egjKJPFzEb0scNOUAsDehg8
+         rCPg==
+X-Gm-Message-State: AOAM532vlkIfoy0aqkV6vpQx7KlM9hSdAVmO4eKLK+gM23ufEAG05fCg
+        20SBwxqtYj0+vWDVio4o57c0jJFYAJOzd9EJ
+X-Google-Smtp-Source: ABdhPJyvBWEPfF8m9OnRWSSpjf0tQExCWDRH8S4xPRLG6HbVLbXtEwDaTV4Kn2O3JOGvRTdekWY/nA==
+X-Received: by 2002:a17:902:e88e:b0:151:ffdf:5692 with SMTP id w14-20020a170902e88e00b00151ffdf5692mr4915692plg.17.1646919395842;
+        Thu, 10 Mar 2022 05:36:35 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056a00231200b004f72b290994sm7115059pfh.180.2022.03.10.05.36.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 05:33:20 -0800 (PST)
-Message-ID: <75695818-3d74-b809-bd40-ffbf4724df47@canonical.com>
-Date:   Thu, 10 Mar 2022 14:33:19 +0100
+        Thu, 10 Mar 2022 05:36:34 -0800 (PST)
+Message-ID: <47d2c632-b2c2-9736-01a6-bf1659be5299@kernel.dk>
+Date:   Thu, 10 Mar 2022 06:36:33 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root
- Port
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/2] io_uring: Add support for napi_busy_poll
 Content-Language: en-US
-To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     lorenzo.pieralisi@arm.com, bhelgaas@google.com, michals@xilinx.com,
-        robh@kernel.org
-References: <20220309120025.6721-1-bharat.kumar.gogada@xilinx.com>
- <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220309120025.6721-2-bharat.kumar.gogada@xilinx.com>
+To:     Olivier Langlois <olivier@trillion01.com>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Hao Xu <haoxu@linux.alibaba.com>,
+        io-uring <io-uring@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <cover.1646777484.git.olivier@trillion01.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <cover.1646777484.git.olivier@trillion01.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/2022 13:00, Bharat Kumar Gogada wrote:
-> Xilinx Versal Premium series has CPM5 block which supports Root Port
-> functioning at Gen5 speed.
+On 3/8/22 3:17 PM, Olivier Langlois wrote:
+> The sqpoll thread can be used for performing the napi busy poll in a
+> similar way that it does io polling for file systems supporting direct
+> access bypassing the page cache.
 > 
-> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
+> The other way that io_uring can be used for napi busy poll is by
+> calling io_uring_enter() to get events.
 > 
-> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-> ---
->  .../bindings/pci/xilinx-versal-cpm.yaml       | 47 ++++++++++++++++---
->  1 file changed, 40 insertions(+), 7 deletions(-)
+> If the user specify a timeout value, it is distributed between polling
+> and sleeping by using the systemwide setting
+> /proc/sys/net/core/busy_poll.
 > 
-> diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> index 32f4641085bc..97c7229d7f91 100644
-> --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> @@ -14,17 +14,21 @@ allOf:
->  
->  properties:
->    compatible:
-> -    const: xlnx,versal-cpm-host-1.00
-> +    contains:
-> +      enum:
-> +        - xlnx,versal-cpm-host-1.00
-> +        - xlnx,versal-cpm5-host-1.00
->  
->    reg:
-> -    items:
-> -      - description: Configuration space region and bridge registers.
-> -      - description: CPM system level control and status registers.
-> +    description: |
-> +      Should contain cpm_slcr, cfg registers location and length.
-> +      For xlnx,versal-cpm5-host-1.00, it should also contain cpm_csr.
-> +    minItems: 2
-> +    maxItems: 3
->  
->    reg-names:
-> -    items:
-> -      - const: cfg
-> -      - const: cpm_slcr
-> +    minItems: 2
-> +    maxItems: 3
->  
+> The changes have been tested with this program:
+> https://github.com/lano1106/io_uring_udp_ping
+> 
+> and the result is:
+> Without sqpoll:
+> NAPI busy loop disabled:
+> rtt min/avg/max/mdev = 40.631/42.050/58.667/1.547 us
+> NAPI busy loop enabled:
+> rtt min/avg/max/mdev = 30.619/31.753/61.433/1.456 us
+> 
+> With sqpoll:
+> NAPI busy loop disabled:
+> rtt min/avg/max/mdev = 42.087/44.438/59.508/1.533 us
+> NAPI busy loop enabled:
+> rtt min/avg/max/mdev = 35.779/37.347/52.201/0.924 us
 
-One more thought - it seems three items are required on cpm5, so you
-miss later proper allOf-if: which enforces this.
+Applied, thanks.
 
-Best regards,
-Krzysztof
+-- 
+Jens Axboe
+
