@@ -2,190 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F90C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242768AbiCJOyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
+        id S232838AbiCJOyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:54:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346147AbiCJOmi (ORCPT
+        with ESMTP id S1346126AbiCJOmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:42:38 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3512110EC71;
-        Thu, 10 Mar 2022 06:40:42 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 42B881F4592C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646923240;
-        bh=twmvPMBXpCtjQaOxFlhSQ0t2WCEZ9mk4gP1Gmfjc8cY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bu6K6V2iDa++LupO2x7yaRGExEZNhxm11yrUSf02TZ9Kxyrz7sb9akpciPqa7AZ1H
-         /lGsHPgeVloLRWcIFAb3182BKNwYEyU5OktHpyzzRENe8KOYfeY+0eljBkpJui6AAU
-         Z535DZMSTrDqmXmw6DoVWIxVeZFvkXtJyfRbazGi5XS7KHwGzOFlwDHRzZt9i43rAZ
-         KEWauRFPe8gk8QJRmjPCAX5xO+/rvRSjZkCVNuinwhy4Egew/utvEcPNJy9uuhfRLa
-         HTp9gAPz2rhoqAhCnKwpX0wDXclIsmca4LRGlheB1nVPfbPB9R4UieXX2Y/9opXp3h
-         MlLZxpKubHQFg==
-Message-ID: <4974d21c-953c-30c1-8dbf-5826dbb20d8e@collabora.com>
-Date:   Thu, 10 Mar 2022 15:40:37 +0100
+        Thu, 10 Mar 2022 09:42:37 -0500
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AA31B9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:38:56 -0800 (PST)
+X-QQ-mid: bizesmtp78t1646923117t1yfmc7d
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 10 Mar 2022 22:38:32 +0800 (CST)
+X-QQ-SSF: 01400000002000C0I000000A0000000
+X-QQ-FEAT: TskX/GkkryDRy/00gIknMd3S4WQpsQw9/GgNGOXVV7pfpVYMCclbmtw0PYgdK
+        b2JafgLLvYQJSesKATXv48bnN7UpBTzC3eHRRhEFumvXM9tdfndR5C1plnl1f3WODzSsvvr
+        Nrgctx0cCoUDALhGlRTI86OhTcaSB1XlFfH/weyyyXu6lgBJ6LeyQpzsE0QvCefEZQ6p7bZ
+        rtqtS3q0DvvR9j41SO+vma8JEuh1WuIAmTVEUzCUYZGmEM8LHETynBbfRbaXXNAS4qUVXFZ
+        6AmBGLmiWSANrzNg2C/qAET/o4DlDq2NLysPUUQlf1IKPcQwAb6Q3MA9ZGOQwa3Ra+/ElhY
+        QAJJf+YCJOK7GC1c1OkYeBsGExQyR3j4/JTwmpIDYZYV3vrjG9ND8nU3JYjiQ==
+X-QQ-GoodBg: 1
+From:   Lianjie Zhang <zhanglianjie@uniontech.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lianjie Zhang <zhanglianjie@uniontech.com>
+Subject: [PATCH v3] cpufreq: unify the show() and store() styles of attr and use __ATTR_XX macro
+Date:   Thu, 10 Mar 2022 22:38:30 +0800
+Message-Id: <20220310143830.4677-1-zhanglianjie@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] remoteproc: mediatek: fix side effect of mt8195 sram
- power on
-Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220309114713.8156-1-tinghan.shen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220309114713.8156-1-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 09/03/22 12:47, Tinghan Shen ha scritto:
-> The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
-> 
-> L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
-> 
-> L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
-> These bits have to be powered on to allow EMI access for SCP.
-> 
-> Bits[7:4] also affect audio DSP because audio DSP and SCP are
-> placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
-> blocked too.
-> 
-> L1TCM_SRAM_PDN bits[31:8] are not used.
-> 
-> This fix removes modification of bits[7:4] when power on/off mt8195 SCP
-> L1TCM. It's because the modification introduces a short period of time
-> blocking audio DSP to access EMI. This was not a problem until we have
-> to load both SCP module and audio DSP module. audio DSP needs to access
-> EMI because it has source/data on DRAM. Audio DSP will have unexpected
-> behavior when it accesses EMI and the SCP driver blocks the EMI path at
-> the same time.
-> 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->   drivers/remoteproc/mtk_common.h |  4 +++
->   drivers/remoteproc/mtk_scp.c    | 57 +++++++++++++++++++++++++++++----
->   2 files changed, 55 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
-> index 5ff3867c72f3..27e7172c926d 100644
-> --- a/drivers/remoteproc/mtk_common.h
-> +++ b/drivers/remoteproc/mtk_common.h
-> @@ -51,6 +51,10 @@
->   #define MT8192_CORE0_WDT_IRQ		0x10030
->   #define MT8192_CORE0_WDT_CFG		0x10034
->   
-> +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		0xF0
+Usually /sys directory under the file, the corresponding Attribute
+contains .show and .store, and their naming style is filename_show() and
+filename_store(). But all naming style in 'cpufreq' is show_filename()
+and store_filename(), resulting in __ATTR_RW() and __ATTR_RO() macros
+cannot be used to simplify code, So need to change naming style.
+Use helper macro __ATTR_XX  to make code more clear.
 
-This is GENMASK(7, 4)..
+Signed-off-by: Lianjie Zhang <zhanglianjie@uniontech.com>
 
-> +#define MT8195_L1TCM_SRAM_PDN_RESERVED_BITS \
-> +	MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS
-> +
+diff --git a/drivers/cpufreq/cpufreq_conservative.c b/drivers/cpufreq/cpufreq_conservative.c
+index 08515f7e515f..b6bd0ff35323 100644
+--- a/drivers/cpufreq/cpufreq_conservative.c
++++ b/drivers/cpufreq/cpufreq_conservative.c
+@@ -146,7 +146,7 @@ static unsigned int cs_dbs_update(struct cpufreq_policy *policy)
 
-Why are you defining the same thing twice?
-Please drop this.
+ /************************** sysfs interface ************************/
 
->   #define SCP_FW_VER_LEN			32
->   #define SCP_SHARE_BUFFER_SIZE		288
->   
-> diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-> index dcddb33e9997..4d75af856fd1 100644
-> --- a/drivers/remoteproc/mtk_scp.c
-> +++ b/drivers/remoteproc/mtk_scp.c
-> @@ -365,22 +365,32 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
->   	return 0;
->   }
->   
-> -static void mt8192_power_on_sram(void __iomem *addr)
-> +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
->   {
->   	int i;
->   
->   	for (i = 31; i >= 0; i--)
-> -		writel(GENMASK(i, 0), addr);
-> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
->   	writel(0, addr);
->   }
->   
-> -static void mt8192_power_off_sram(void __iomem *addr)
-> +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
->   {
->   	int i;
->   
->   	writel(0, addr);
->   	for (i = 0; i < 32; i++)
-> -		writel(GENMASK(i, 0), addr);
-> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
-> +}
-> +
-> +static void mt8192_power_on_sram(void __iomem *addr)
-> +{
-> +	scp_sram_power_on(addr, 0);
-> +}
-> +
-> +static void mt8192_power_off_sram(void __iomem *addr)
-> +{
-> +	scp_sram_power_off(addr, 0);
->   }
->   
->   static int mt8192_scp_before_load(struct mtk_scp *scp)
-> @@ -403,6 +413,27 @@ static int mt8192_scp_before_load(struct mtk_scp *scp)
->   	return 0;
->   }
->   
-> +static int mt8195_scp_before_load(struct mtk_scp *scp)
-> +{
-> +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
-> +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
-> +
-> +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
-> +
-> +	/* enable SRAM clock */
-> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_0);
+-static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
++static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
+ 					  const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -161,7 +161,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
+ 	return count;
+ }
 
-At this point, you can simply use scp_sram_power_{on, off} instead of defining
-a new function for just one call... I get that your intent here is to enhance
-human readability, but I don't think that this is really happening with that and,
-if it is, it's just about a little ignorable difference.
+-static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
++static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
+ 				  const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -177,7 +177,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
+ 	return count;
+ }
 
-Please use scp_sram_power_on() and scp_sram_power_off() directly.
+-static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
++static ssize_t down_threshold_store(struct gov_attr_set *attr_set,
+ 				    const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -195,7 +195,7 @@ static ssize_t store_down_threshold(struct gov_attr_set *attr_set,
+ 	return count;
+ }
 
-	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-	... etc :)
+-static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
++static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
+ 				      const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -220,7 +220,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
+ 	return count;
+ }
 
-> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_1);
-> +	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_2);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
-> +			  MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
-> +	mt8192_power_on_sram(scp->reg_base + MT8192_CPU0_SRAM_PD);
-> +
-> +	/* enable MPU for all memory regions */
-> +	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
-> +
-> +	return 0;
-> +}
-> +
+-static ssize_t store_freq_step(struct gov_attr_set *attr_set, const char *buf,
++static ssize_t freq_step_store(struct gov_attr_set *attr_set, const char *buf,
+ 			       size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+diff --git a/drivers/cpufreq/cpufreq_governor.c b/drivers/cpufreq/cpufreq_governor.c
+index 63f7c219062b..0d42cf8b88d8 100644
+--- a/drivers/cpufreq/cpufreq_governor.c
++++ b/drivers/cpufreq/cpufreq_governor.c
+@@ -27,7 +27,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
 
-Please remember to add me to the Cc's for the next version, so that I will be
-able to timely give you my R-b tag for this one.
+ /* Common sysfs tunables */
+ /*
+- * store_sampling_rate - update sampling rate effective immediately if needed.
++ * sampling_rate_store - update sampling rate effective immediately if needed.
+  *
+  * If new rate is smaller than the old, simply updating
+  * dbs.sampling_rate might not be appropriate. For example, if the
+@@ -41,7 +41,7 @@ static DEFINE_MUTEX(gov_dbs_data_mutex);
+  * This must be called with dbs_data->mutex held, otherwise traversing
+  * policy_dbs_list isn't safe.
+  */
+-ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
++ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
+ 			    size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -80,7 +80,7 @@ ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
 
-Regards,
-Angelo
+ 	return count;
+ }
+-EXPORT_SYMBOL_GPL(store_sampling_rate);
++EXPORT_SYMBOL_GPL(sampling_rate_store);
+
+ /**
+  * gov_update_cpu_data - Update CPU load data.
+diff --git a/drivers/cpufreq/cpufreq_governor.h b/drivers/cpufreq/cpufreq_governor.h
+index bab8e6140377..a5a0bc3cc23e 100644
+--- a/drivers/cpufreq/cpufreq_governor.h
++++ b/drivers/cpufreq/cpufreq_governor.h
+@@ -51,7 +51,7 @@ static inline struct dbs_data *to_dbs_data(struct gov_attr_set *attr_set)
+ }
+
+ #define gov_show_one(_gov, file_name)					\
+-static ssize_t show_##file_name						\
++static ssize_t file_name##_show						\
+ (struct gov_attr_set *attr_set, char *buf)				\
+ {									\
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);		\
+@@ -60,7 +60,7 @@ static ssize_t show_##file_name						\
+ }
+
+ #define gov_show_one_common(file_name)					\
+-static ssize_t show_##file_name						\
++static ssize_t file_name##_show						\
+ (struct gov_attr_set *attr_set, char *buf)				\
+ {									\
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);		\
+@@ -68,12 +68,10 @@ static ssize_t show_##file_name						\
+ }
+
+ #define gov_attr_ro(_name)						\
+-static struct governor_attr _name =					\
+-__ATTR(_name, 0444, show_##_name, NULL)
++static struct governor_attr _name = __ATTR_RO(_name)
+
+ #define gov_attr_rw(_name)						\
+-static struct governor_attr _name =					\
+-__ATTR(_name, 0644, show_##_name, store_##_name)
++static struct governor_attr _name = __ATTR_RW(_name)
+
+ /* Common to all CPUs of a policy */
+ struct policy_dbs_info {
+@@ -176,7 +174,7 @@ void od_register_powersave_bias_handler(unsigned int (*f)
+ 		(struct cpufreq_policy *, unsigned int, unsigned int),
+ 		unsigned int powersave_bias);
+ void od_unregister_powersave_bias_handler(void);
+-ssize_t store_sampling_rate(struct gov_attr_set *attr_set, const char *buf,
++ssize_t sampling_rate_store(struct gov_attr_set *attr_set, const char *buf,
+ 			    size_t count);
+ void gov_update_cpu_data(struct dbs_data *dbs_data);
+ #endif /* _CPUFREQ_GOVERNOR_H */
+diff --git a/drivers/cpufreq/cpufreq_ondemand.c b/drivers/cpufreq/cpufreq_ondemand.c
+index 6a41ea4729b8..e8fbf970ff07 100644
+--- a/drivers/cpufreq/cpufreq_ondemand.c
++++ b/drivers/cpufreq/cpufreq_ondemand.c
+@@ -202,7 +202,7 @@ static unsigned int od_dbs_update(struct cpufreq_policy *policy)
+ /************************** sysfs interface ************************/
+ static struct dbs_governor od_dbs_gov;
+
+-static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
++static ssize_t io_is_busy_store(struct gov_attr_set *attr_set, const char *buf,
+ 				size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -220,7 +220,7 @@ static ssize_t store_io_is_busy(struct gov_attr_set *attr_set, const char *buf,
+ 	return count;
+ }
+
+-static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
++static ssize_t up_threshold_store(struct gov_attr_set *attr_set,
+ 				  const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -237,7 +237,7 @@ static ssize_t store_up_threshold(struct gov_attr_set *attr_set,
+ 	return count;
+ }
+
+-static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
++static ssize_t sampling_down_factor_store(struct gov_attr_set *attr_set,
+ 					  const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -265,7 +265,7 @@ static ssize_t store_sampling_down_factor(struct gov_attr_set *attr_set,
+ 	return count;
+ }
+
+-static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
++static ssize_t ignore_nice_load_store(struct gov_attr_set *attr_set,
+ 				      const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+@@ -290,7 +290,7 @@ static ssize_t store_ignore_nice_load(struct gov_attr_set *attr_set,
+ 	return count;
+ }
+
+-static ssize_t store_powersave_bias(struct gov_attr_set *attr_set,
++static ssize_t powersave_bias_store(struct gov_attr_set *attr_set,
+ 				    const char *buf, size_t count)
+ {
+ 	struct dbs_data *dbs_data = to_dbs_data(attr_set);
+--
+2.20.1
+
 
 
