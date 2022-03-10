@@ -2,197 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C700C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE43CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235775AbiCJLSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:18:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        id S241563AbiCJLSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:18:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241563AbiCJLRr (ORCPT
+        with ESMTP id S241607AbiCJLRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:17:47 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F10DBE1EB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:16:43 -0800 (PST)
+        Thu, 10 Mar 2022 06:17:55 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F82141FD9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 03:16:51 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H0nCF/A7I5jQ8QB2lWFo/0ujvV4WkIQcMKSVkbwtiUIaWAKBq85WGqWsFu6M2LyR84ii3WkYqjOQZc+I3OxdrzCN9X+MHcXHL+bzAcUqMoCaTAgha8BxMHa/c5iT8kWKR28dFhg/yM26ZW2/1PLwkoYmnsFcJfMqGfLX78Gx3DSNJZuyW2FcvOUzu/ZCa2ZuX9VF0rdzPSBS2U77I5sQfpYcfwNGBkB+FIMIjg969zC3gl32IItkJhs+38p7urRZyvEo6ddZQfKy/DH/H2wy49DIEM6vWQ+73oy7asdwGUge8yWftpcSgXFAZO00VUzdTnamPiTPqCpj1jKmDQ+K1w==
+ b=OIzIXDUNjk/G6MO9WKl8wWgHWzPrHjsNrbDejSa+foTacJ3XtmUhVof20dkoc498rXwW2r6GihEIkfjEGbpxSVDN3oMPw8p9ZnGdHgStPBw++353VSHDuwrPxLNHOt3lT8wpV0iNeT/+Tp9VTOhB3viU7IcRMj/HM0RXuebnt9VBhPiYoUuoAKfXQXNakTWbMSFp/glHw4tE96A+dgxpjoQvr3smvoxeAy3JdY8RdfrOmHiib8vfhkrFb2CJZ1pNr+HiVG6VkQDX2zLEhZtCdifcVibZHday2LLJdJy3Sm0tq4rATcuPxoFPX00EWa2crNtEqz6GdltpBB7YHLU/TQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cFWi1O1bzOqLyHFf0gT/BNjKx4Kjm5hsOsFAWydQRTY=;
- b=gylIzh6QbxyzDBXpNnyx93xDmmMl7hLJYWN6nRsSRjjzCeeszm7E10vLHyCEBm632x3yPIPNZjoFiAP+GrdjRtdsc+yMAZvNpmHJDa2FrR43OQNaYwIiSq0BxZiPLejknbFdAnoXf191OKsTijdLIArmcDTVW8naL31ZeniibqMHv35BgKYRF7KkBk3+6DgVSzelYSuFafeJrU9KXvHB/Qp3tvJAWKMlVDlbpYle85APyBbGPnZ3Z3JO7yiNPitGKDsqhMw7NF7yLKCOW6R8GXMuH4biUk1EbX4ZNWuoFkKd8bCq3xWkTvlg16iBZKBqwANIMW1fTPmBhhKLcwWqGQ==
+ bh=f00uFFaGyBgFwPRnoY6UZzLKwSyCST51XFaIqjzGgSo=;
+ b=ZW/mPW4XO+01ZSK/9qzVXosSXh0uFxIlXWbCz4q+BgPiLUNhYvFvSo6eiTvrJCOpY3MSJukGVxPjrdRaAwYTX9Xob+XH9aqEj2itd+HF0FK/lUqYZxGnLZL/c8IJ3SovnoD9M8hULa3TArxIvy8rNCplE8IU12xKr+fdNiJaMT14xwCOnm+zEBTmod3aPn47aaDc6RG+8/fwJmwAYGDRZmQrQCKsgpEMJVGMn6m0kuUIqUwiHbvoVqYl1EK9eeOWF50c34QTC05w1TbUW881q+/XwamfbLCm2dzts4CWONBFdAN2uCBj3yVSodsSYs/vw9WxQWuCmk/6/t7sPk9z1A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ 12.22.5.238) smtp.rcpttodomain=gerhold.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cFWi1O1bzOqLyHFf0gT/BNjKx4Kjm5hsOsFAWydQRTY=;
- b=ExzsUtUnwbj6c1RhgZrjtL8P3Bi4zFtIAoujK6eie3zcNJxdehhhyt9I61/41uSTDVExTVOo82NdenSGhaCEw+w68sTx82EpIzEA3Z6MAolH8+Ovp2DZfCjvDOjkOOJa2eEayvrhhEVQVxGIJOCQCA7fvceDilDy1WZ5Y84yR+M=
-Received: from CO2PR04CA0160.namprd04.prod.outlook.com (2603:10b6:104:4::14)
- by BL1PR12MB5947.namprd12.prod.outlook.com (2603:10b6:208:39a::9) with
+ bh=f00uFFaGyBgFwPRnoY6UZzLKwSyCST51XFaIqjzGgSo=;
+ b=chZkQrQmYSMybcvGkHBRW+2PaGqqEwaH8oMBAO1kFKrUAK9fK4XxfG6GFsjiyamNEWuuQj++tXYf4UbAZ8fHKwLvDdbjd9yV/uAnQNPG//btT9HIQa5W/ro8Gq9eecxklqYEUJYkar1vvIng/8Rw24gw7DDxTm75mlsEokvXPy+gUet9HN74iuOmX/2ejrfR1uT6HPcasgC9edz3JYqRtU+B012Vgt28GYKprDuMYojqsk378aqn00ahHUYQM8k/bAvZ+XpwiC9/RRRC06QqAfGFoc04CmNzLx5tg6tH79HyZlrHXpg5mV3beJFg/524H5JcyhC6bM2B4PF9IGJ4vA==
+Received: from MW4PR04CA0066.namprd04.prod.outlook.com (2603:10b6:303:6b::11)
+ by DM8PR12MB5496.namprd12.prod.outlook.com (2603:10b6:8:38::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 10 Mar
- 2022 11:16:40 +0000
-Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:104:4:cafe::35) by CO2PR04CA0160.outlook.office365.com
- (2603:10b6:104:4::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.27 via Frontend
- Transport; Thu, 10 Mar 2022 11:16:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5061.22 via Frontend Transport; Thu, 10 Mar 2022 11:16:39 +0000
-Received: from BLR-5CG1133937.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 10 Mar
- 2022 05:16:32 -0600
-From:   Bharata B Rao <bharata@amd.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <linux-mm@kvack.org>, <x86@kernel.org>,
-        <kirill.shutemov@linux.intel.com>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-        <catalin.marinas@arm.com>, <will@kernel.org>, <shuah@kernel.org>,
-        <oleg@redhat.com>, <ananth.narayan@amd.com>,
-        "Bharata B Rao" <bharata@amd.com>
-Subject: [RFC PATCH v0 5/6] x86: Untag user pointers in access_ok()
-Date:   Thu, 10 Mar 2022 16:45:44 +0530
-Message-ID: <20220310111545.10852-6-bharata@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220310111545.10852-1-bharata@amd.com>
-References: <20220310111545.10852-1-bharata@amd.com>
+ 2022 11:16:48 +0000
+Received: from CO1NAM11FT004.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::29) by MW4PR04CA0066.outlook.office365.com
+ (2603:10b6:303:6b::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22 via Frontend
+ Transport; Thu, 10 Mar 2022 11:16:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT004.mail.protection.outlook.com (10.13.175.89) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5038.14 via Frontend Transport; Thu, 10 Mar 2022 11:16:48 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Mar
+ 2022 11:16:46 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 10 Mar
+ 2022 03:16:45 -0800
+Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Thu, 10 Mar
+ 2022 03:16:42 -0800
+From:   Sameer Pujar <spujar@nvidia.com>
+To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <perex@perex.cz>,
+        <tiwai@suse.com>
+CC:     <kuninori.morimoto.gx@renesas.com>, <robert.hancock@calian.com>,
+        <stephan@gerhold.net>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
+Subject: [PATCH] ASoC: simple-card-utils: Don't reset clock of active DAI
+Date:   Thu, 10 Mar 2022 16:46:39 +0530
+Message-ID: <1646910999-2501-1-git-send-email-spujar@nvidia.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1f876cfd-bbff-4382-72cf-08da028772b4
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5947:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB594727E76F5D7D88356CBB1CB00B9@BL1PR12MB5947.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 143e8f9c-1a8c-42c3-37ac-08da028777e5
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5496:EE_
+X-Microsoft-Antispam-PRVS: <DM8PR12MB54969606A3CD7DC0DF84AC9DA70B9@DM8PR12MB5496.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XTiV/uuAyzcyclK7GVgNwlU8GXrY0qAGoOGSQ5f/LBiG8l8PBLRyYMEZK4OgWoshXOsANYvAhvYR2+OfxAm2k6/Ke8up45waJsnriJDxZEsPAe2t6RVywbR7/digxvrPK/9uuDvoT7sAe27dpGyClgiHwqflMRlKhhyuZNSRKvdQ2uC1Jjs3ZTyCPFMSmgOSV4OvF9PSMaP30bX3zboMvAhhAFygRRO4Rigu7d27d9u1x/bOoB27iyVwntVasDimywqyxIpdkjL13ULZsbs5TRQV6Ap2Aas81f/g7jkg4gPOFZcz5uefrgdsLyU2+0z1Lp5dfuWyPriOzLLEr6MDutK8xuW2/EV7Z64RgCdU4+KM2R9C59Y4iKDb8KPiOuBd6+OOFGVAJ1Iq+zcG7ZaUfVM4rdwms/rluGI9RgWA8z4XxQfF7xuXI4VpmUc2hiEbyz1a0wGBDdDEEc6nrU0L8ionyMYife/5R3hBmEiE3Nl8SJ5KmZScnTRs+bXCDefAojT8clVBp7CRkY8dSQCFgVxfQNh3vMxAouY45LDgLb+Oi+GshFZwnZXSFL5M8k/yl0JzZ2tFO972pa+SA3a6jZbqfP48trxMMBY6My3ujt8GGfLYRXLa1sJ7SnCaQCrRIU2g2y7ZdG6lQFqGjUxCai3SX3BgC/9vkUAszq1d9eM8t9ne47XvGHJngVSypKQjilECZLZ8Zl4Gh1WSnIJn3w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(70586007)(2906002)(70206006)(8676002)(4326008)(82310400004)(356005)(81166007)(54906003)(40460700003)(6916009)(8936002)(5660300002)(7416002)(47076005)(7696005)(508600001)(36860700001)(316002)(86362001)(16526019)(186003)(26005)(36756003)(426003)(336012)(83380400001)(1076003)(6666004)(2616005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:16:39.2740
+X-Microsoft-Antispam-Message-Info: CgxajDV6C4JD6Va2E7Mr5E22KQMITSqwLqTLGhF2G6nJ9ZSbyzmNhVObBDOqg9wlShb+GUAeEP8iBi/xnnt82OIHF2Vshkh82V1dffJx4r6zo4IAClqOoCHRFJijY6kKdE2SGrRX1QEyID8mKFqPUcIdYqWO4Zu3C14ypNCCrrtjL/3XjXamd7w8eTmr6NgEegdaB9p2Z1wLr5Yfsr+nR7s/zhRew/uxfZIa9hoPpblOf91Cjy0Go5nj3qKCm0ky9FRthFhwpMFWITnQWfhSptn0KHmGTMGgtQw2yXK86UFXgRtHq2SnrToTv7qD/DW3+jQdKUyZpGthQcK9GQvcyq9NpZz2NhjXB6yUnHbwKXTEN+A2NnSz3T4igY2CwyMcFNfX/133yeNGehwunVsJtcyVWr6KJ/f1zmJFLfXYDGnOoGxcFqbVPVXOk2f9nOTeUxfLSkvrnKpcRANa4riPK/tcS2g0jq7Kx9CrQUfKJpqaxDBi0EbEZKtE8Tff2AoNgfKxrdifgTgLhqgfCFMaUwytNUh/sBxm7a/Z6MySF4YwIq9LGd4ZbPEEoAN8uBsUgqHj5ENLwuM0XH/E1Gji/o2ol5V4LwzeoQxxF1YK8/if9Zp0awfVRqF8pFjEXSSYxNVJjTyfmDHScbilFlrCKDBNSG9asuneaS3ud+O5WKXx6HUmIpB36SvN8m9iILuFLpF1eZq0W+SM95TY9jjnwg==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(508600001)(2906002)(356005)(47076005)(81166007)(5660300002)(82310400004)(26005)(336012)(426003)(186003)(2616005)(8936002)(6666004)(40460700003)(7696005)(83380400001)(86362001)(107886003)(110136005)(8676002)(70586007)(36756003)(316002)(70206006)(4326008)(54906003)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:16:48.0447
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f876cfd-bbff-4382-72cf-08da028772b4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 143e8f9c-1a8c-42c3-37ac-08da028777e5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT004.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5947
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5496
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparatory work to allow passing of tagged user
-pointers (with a top few bits other than zeroes) as syscall
-arguments.
+Playback or capture errors are seen when clock is reset during an active
+stage of DAI. Presently this scenario happens when DAI has both playback
+and capture sessions running and one of these finishes first which will
+be followed by clock rate reset. The remaining active session will be
+affected in such case.
 
-Since user can provide tagged pointer to syscalls they need
-to be untagged before validating them in access_ok().
-Untagging is done only if flag TIF_TAGGED_ADDR is set for
-the thread. This is set via prctl() option which will be
-introduced in a subsequent patch.
+Address this problem by allowing clock rate reset to happen only when
+the DAI is no more active.
 
-get_user() and put_user() don't use access_ok(), but check
-access against TASK_SIZE direcly in assembly. Strip tags,
-before calling into the assembly helper.
-
-[kirill.shutemov@linux.intel.com - get/put_user() changes]
-
-Signed-off-by: Bharata B Rao <bharata@amd.com>
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
 ---
- arch/x86/include/asm/thread_info.h |  2 ++
- arch/x86/include/asm/uaccess.h     | 28 +++++++++++++++++++++-------
- 2 files changed, 23 insertions(+), 7 deletions(-)
+ sound/soc/generic/simple-card-utils.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-index ebec69c35e95..c786103a5325 100644
---- a/arch/x86/include/asm/thread_info.h
-+++ b/arch/x86/include/asm/thread_info.h
-@@ -101,6 +101,7 @@ struct thread_info {
- #define TIF_BLOCKSTEP		25	/* set when we want DEBUGCTLMSR_BTF */
- #define TIF_LAZY_MMU_UPDATES	27	/* task is updating the mmu lazily */
- #define TIF_ADDR32		29	/* 32-bit address space on 64 bits */
-+#define TIF_TAGGED_ADDR		30	/* Allow tagged user addresses */
+diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
+index a4babfb..6a5faaf 100644
+--- a/sound/soc/generic/simple-card-utils.c
++++ b/sound/soc/generic/simple-card-utils.c
+@@ -272,15 +272,19 @@ void asoc_simple_shutdown(struct snd_pcm_substream *substream)
+ 	int i;
  
- #define _TIF_NOTIFY_RESUME	(1 << TIF_NOTIFY_RESUME)
- #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
-@@ -124,6 +125,7 @@ struct thread_info {
- #define _TIF_BLOCKSTEP		(1 << TIF_BLOCKSTEP)
- #define _TIF_LAZY_MMU_UPDATES	(1 << TIF_LAZY_MMU_UPDATES)
- #define _TIF_ADDR32		(1 << TIF_ADDR32)
-+#define _TIF_TAGGED_ADDR	(1 << TIF_TAGGED_ADDR)
- 
- /* flags to check in __switch_to() */
- #define _TIF_WORK_CTXSW_BASE					\
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index ac96f9b2d64b..feb2e21c7e09 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -35,11 +35,15 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
- 	return unlikely(addr > limit);
- }
- 
--#define __range_not_ok(addr, size, limit)				\
--({									\
--	__chk_user_ptr(addr);						\
--	__chk_range_not_ok((unsigned long __force)(addr), size, limit); \
--})
-+static inline bool __range_not_ok(const void __user *addr, unsigned long size,
-+				  unsigned long limit)
-+{
-+	if (test_thread_flag(TIF_TAGGED_ADDR))
-+		addr = untagged_addr(addr);
+ 	for_each_prop_dai_cpu(props, i, dai) {
+-		if (props->mclk_fs && !dai->clk_fixed)
+-			snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(rtd, i),
++		struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, i);
 +
-+	__chk_user_ptr(addr);
-+	return __chk_range_not_ok((unsigned long __force)(addr), size, limit);
-+}
++		if (props->mclk_fs && !dai->clk_fixed && !snd_soc_dai_active(cpu_dai))
++			snd_soc_dai_set_sysclk(cpu_dai,
+ 					       0, 0, SND_SOC_CLOCK_IN);
  
- #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
- static inline bool pagefault_disabled(void);
-@@ -152,7 +156,12 @@ extern int __get_user_bad(void);
-  * Return: zero on success, or -EFAULT on error.
-  * On error, the variable @x is set to zero.
-  */
--#define get_user(x,ptr) ({ might_fault(); do_get_user_call(get_user,x,ptr); })
-+#define get_user(x,ptr)							\
-+({									\
-+	__typeof__(*(ptr)) *ptr_untagged = untagged_ptr(ptr);		\
-+	might_fault();							\
-+	do_get_user_call(get_user,x,ptr_untagged);			\
-+})
+ 		asoc_simple_clk_disable(dai);
+ 	}
+ 	for_each_prop_dai_codec(props, i, dai) {
+-		if (props->mclk_fs && !dai->clk_fixed)
+-			snd_soc_dai_set_sysclk(asoc_rtd_to_codec(rtd, i),
++		struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, i);
++
++		if (props->mclk_fs && !dai->clk_fixed && !snd_soc_dai_active(codec_dai))
++			snd_soc_dai_set_sysclk(codec_dai,
+ 					       0, 0, SND_SOC_CLOCK_IN);
  
- /**
-  * __get_user - Get a simple variable from user space, with less checking.
-@@ -249,7 +258,12 @@ extern void __put_user_nocheck_8(void);
-  *
-  * Return: zero on success, or -EFAULT on error.
-  */
--#define put_user(x, ptr) ({ might_fault(); do_put_user_call(put_user,x,ptr); })
-+#define put_user(x, ptr)						\
-+({									\
-+	__typeof__(*(ptr)) *ptr_untagged = untagged_ptr(ptr);		\
-+	might_fault();							\
-+	do_put_user_call(put_user,x,ptr_untagged);			\
-+})
- 
- /**
-  * __put_user - Write a simple value into user space, with less checking.
+ 		asoc_simple_clk_disable(dai);
 -- 
-2.25.1
+2.7.4
 
