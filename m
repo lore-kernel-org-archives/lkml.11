@@ -2,227 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E22E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AD3C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 19:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243713AbiCJTt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
+        id S243892AbiCJTvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 14:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiCJTt4 (ORCPT
+        with ESMTP id S230352AbiCJTvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:49:56 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310EDE44A4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:48:54 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id 3so11317590lfr.7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 11:48:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1CNOBoxVbf2yOnaM5LMckiDdeuOKkzXjqAU3tP0JnvM=;
-        b=VpGSdMZzA15dmS3baG0WWpQHKlUdgRHpzZZ1fu77CLkC0wsCYsUloZHyoR//d9PyfU
-         25siN+iFX93vVQWvW6TWsQkyQs/ZvCcz2cjSQvejoDr8sF2rv5bvCgQmjSUNoAXhe5hd
-         +yl0I4ibmsob6oEmwJF/iEGMImW4NbFZSAFXuE4JIPAW6PjxU1dNd2lE6Iz0jcTKUPfo
-         h08ss2YaGFOUDPsd61gWSDwr3Mg/66GQi6yhNiHvGSwOx23NKAma+41zrBD+W6Z51qBc
-         rYEImlBHQAto9ZYKuGEW40qXmd0LkvjokivV31c2UNq+AeH3hjc5X77B4Fp8XKk6vMZy
-         UvHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1CNOBoxVbf2yOnaM5LMckiDdeuOKkzXjqAU3tP0JnvM=;
-        b=2ZxSBNYtjlyHfnWNLH/1EVg272J6gNvqKWlSagunsBCqTuJAMErhtZhV6r7iQw9f4d
-         u7reWS/tQqk8YqP6XzHUyV5axDRsq8A99/vyuw7I2APukP6DRxdc1Kq8M/tsv5DdKM2s
-         QTfw8lEtovwoBs6wwGMCWLASn1hFmOlEMiurnhCQ/3yJ9hJwX1/9R5f4JLrcPegSfx6W
-         4mWHGtFw1AHzCevFylM5kH1FRcgON2yV7e105AT3NmBPKbDrpxvDh2j6FJzGtrNj9DZs
-         gpqG7mgH3SteF9mWBkZZ5quGgphWTMbHIs7Pg4myp7iDR7pAUljqjKJHArncz47/myqN
-         FZOA==
-X-Gm-Message-State: AOAM5300urhGM6KbYzbzwVDkzlrOWDgXY6DVdBD8x9SvO5Yj4KUhA7FC
-        croX6N+9eWwsdjzwl9o9c/pH/691LfNQqlBhSLw9BQ==
-X-Google-Smtp-Source: ABdhPJxZJMISMntu6GUJGH+kbfib6YP35AKLxqEncK+Sv6f9ewx9YcMieptPH4kCPHcyy6AfkOrZ1epQyLxD8EqMLEw=
-X-Received: by 2002:a05:6512:31d4:b0:445:e4ef:c0f8 with SMTP id
- j20-20020a05651231d400b00445e4efc0f8mr3915707lfe.626.1646941732231; Thu, 10
- Mar 2022 11:48:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20220309055118.1551013-1-maskray@google.com>
-In-Reply-To: <20220309055118.1551013-1-maskray@google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 10 Mar 2022 11:48:40 -0800
-Message-ID: <CAKwvOdmMS4=QAoBFvhAdXWaLHOwH2252FX9i_yZyiCOpOt=3Dw@mail.gmail.com>
-Subject: Re: [PATCH] powerpc: Replace ppc64 DT_RELACOUNT usage with DT_RELASZ/24
-To:     Fangrui Song <maskray@google.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>,
-        linuxppc-dev@lists.ozlabs.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 10 Mar 2022 14:51:19 -0500
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335F0E44A4;
+        Thu, 10 Mar 2022 11:50:18 -0800 (PST)
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AJWPQa003313;
+        Thu, 10 Mar 2022 19:49:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : subject :
+ date : message-id; s=pps0720;
+ bh=dvZA06DuDyz0tHMZ80OSxiUXw+f4gEVK18KS3lO6TN4=;
+ b=RwFqI/0ipyFrmZZKjN8T9L2nPEWwpHM+M+IZCF/UqwkCp5WrmEevqVw6rmtVG2kBc/kx
+ W+sOZw6T+A/z3A6vcE5ZYdfURLf+iXFvkFTncXHKk3aGNIj/GrO+dYVESOsn36v6N7hN
+ ZdXmq+yCrp1+4qseocdOS+d3x57cQ5fqxlgGdhldZu46OEKCRrSr3pPh3aP0fpM1B0gM
+ qeJ8CRlyaKWrisuZVuj/mO3JAE/5DtlCgNujVOh5BtK2Hw6RpuLWbM+RpsxDUxFUf8iU
+ LUn2z9KNU76TANb5mCwdX9VHJ9lz/NPUTMILzAI0cgMf1DwNkDp9jzutEprOpSYPGd5Q BQ== 
+Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3eqmhc1rrp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Mar 2022 19:49:10 +0000
+Received: from hpe.com (unknown [15.115.65.69])
+        by g4t3426.houston.hpe.com (Postfix) with ESMTP id 56B5962;
+        Thu, 10 Mar 2022 19:49:08 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     verdun@hpe.com, nick.hawkins@hpe.com, robh+dt@kernel.org,
+        daniel.lezcano@linaro.org, tglx@linutronix.de,
+        wim@linux-watchdog.org, linux@roeck-us.net, linux@armlinux.org.uk,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 00/10] ARM: Introduce HPE GXP Architecture
+Date:   Thu, 10 Mar 2022 13:51:23 -0600
+Message-Id: <20220310195123.109359-1-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-GUID: WIMPhINOhMsvxEPGgufKBQf-jm8T9HtP
+X-Proofpoint-ORIG-GUID: WIMPhINOhMsvxEPGgufKBQf-jm8T9HtP
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-10_09,2022-03-09_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ mlxlogscore=942 lowpriorityscore=0 malwarescore=0 suspectscore=0
+ clxscore=1011 priorityscore=1501 mlxscore=0 spamscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203100100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 9:53 PM Fangrui Song <maskray@google.com> wrote:
->
-> DT_RELACOUNT is an ELF dynamic tag inherited from SunOS indicating the
-> number of R_*_RELATIVE relocations. It is optional but {ld.lld,ld.lld}
-> -z combreloc always creates it (if non-zero) to slightly speed up glibc
-> ld.so relocation resolving by avoiding R_*R_PPC64_RELATIVE type
-> comparison. The tag is otherwise nearly unused in the wild and I'd
-> recommend that software avoids using it.
->
-> lld>=14.0.0 (since commit da0e5b885b25cf4ded0fa89b965dc6979ac02ca9)
-> underestimates DT_RELACOUNT for ppc64 when position-independent long
-> branch thunks are used. Correcting it needs non-trivial arch-specific
-> complexity which I'd prefer to avoid. Since our code always compares the
-> relocation type with R_PPC64_RELATIVE, replacing every occurrence of
-> DT_RELACOUNT with DT_RELASZ/sizeof(Elf64_Rela)=DT_RELASZ/24 is a correct
-> alternative.
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-checking that sizeof(Elf64_Rela) == 24, yep: https://godbolt.org/z/bb4aKbo5T
+Changes since v2:
+ *Reduced size of changes, put them into pathset format
 
->
-> DT_RELASZ is in practice bounded by an uint32_t. Dividing x by 24 can be
-> implemented as (uint32_t)(x*0xaaaaaaab) >> 4.
+Changes since v1:
+ *Fix compiler warnings
 
-Yep: https://godbolt.org/z/x9445ePPv
+The GXP is the HPE BMC SoC that is used in the majority
+of HPE Generation 10 servers. Traditionally the asic will
+last multiple generations of server before being replaced.
 
->
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1581
-> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> Signed-off-by: Fangrui Song <maskray@google.com>
-> ---
->  arch/powerpc/boot/crt0.S       | 28 +++++++++++++++++-----------
->  arch/powerpc/kernel/reloc_64.S | 15 +++++++++------
->  2 files changed, 26 insertions(+), 17 deletions(-)
->
-> diff --git a/arch/powerpc/boot/crt0.S b/arch/powerpc/boot/crt0.S
-> index feadee18e271..1c96ebe7ef1a 100644
-> --- a/arch/powerpc/boot/crt0.S
-> +++ b/arch/powerpc/boot/crt0.S
-> @@ -8,7 +8,7 @@
->  #include "ppc_asm.h"
->
->  RELA = 7
-> -RELACOUNT = 0x6ffffff9
-> +RELASZ = 8
->
->         .data
->         /* A procedure descriptor used when booting this as a COFF file.
-> @@ -65,7 +65,7 @@ p_base:       mflr    r10             /* r10 now points to runtime addr of p_base */
->         subf    r11,r11,r12     /* runtime - linktime offset */
->
->         /* The dynamic section contains a series of tagged entries.
-> -        * We need the RELA and RELACOUNT entries. */
-> +        * We need the RELA and RELASZ entries. */
->         li      r9,0
->         li      r0,0
->  9:     lwz     r8,0(r12)       /* get tag */
-> @@ -75,18 +75,21 @@ p_base:     mflr    r10             /* r10 now points to runtime addr of p_base */
->         bne     11f
->         lwz     r9,4(r12)       /* get RELA pointer in r9 */
->         b       12f
-> -11:    addis   r8,r8,(-RELACOUNT)@ha
-> -       cmpwi   r8,RELACOUNT@l
-> +11:    cmpwi   r8,RELASZ
->         bne     12f
-> -       lwz     r0,4(r12)       /* get RELACOUNT value in r0 */
-> +       lwz     r0,4(r12)       /* get RELASZ / 24 in r0 */
-> +       lis     r8,0xaaaa
-> +       ori     r8,r8,0xaaab
-> +       mulhwu  r0,r0,r8
-> +       srwi    r0,r0,4
+Info about SoC:
 
-Both translation units include arch/powerpc/include/asm/ppc_asm.h,
-which happens to define LOAD_REG_IMMEDIATE. Let's reuse that rather
-than open code lis+ori?
+  HPE GXP is the name of the HPE Soc. This SoC is used to implement
+  many BMC features at HPE. It supports ARMv7 architecture based on
+  the Cortex A9 core. It is capable of using an AXI bus to which
+  a memory controller is attached. It has multiple SPI interfaces
+  to connect boot flash and BIOS flash. It uses a 10/100/1000 MAC
+  for network connectivity. It has multiple i2c engines to drive
+  connectivity with a host infrastructure. The initial patches
+  enable the watchdog and timer enabling the host to be able to
+  boot.
 
->  12:    addi    r12,r12,8
->         b       9b
->
->         /* The relocation section contains a list of relocations.
->          * We now do the R_PPC_RELATIVE ones, which point to words
->          * which need to be initialized with addend + offset.
-> -        * The R_PPC_RELATIVE ones come first and there are RELACOUNT
-> -        * of them. */
-> +        * The R_PPC_RELATIVE ones come first and there are at most
-> +         * RELASZ/24 of them. */
->  10:    /* skip relocation if we don't have both */
->         cmpwi   r0,0
->         beq     3f
-> @@ -160,14 +163,17 @@ p_base:   mflr    r10             /* r10 now points to runtime addr of p_base */
->         bne     10f
->         ld      r13,8(r11)       /* get RELA pointer in r13 */
->         b       11f
-> -10:    addis   r12,r12,(-RELACOUNT)@ha
-> -       cmpdi   r12,RELACOUNT@l
-> +10:    cmpdi   r12,RELASZ
->         bne     11f
-> -       ld      r8,8(r11)       /* get RELACOUNT value in r8 */
-> +       ld      r8,8(r11)       /* get RELASZ / 24 in r8 */
-> +       lis     r0,0xaaaa
-> +       ori     r0,r0,0xaaab
-> +       mulhwu  r8,r8,r0
-> +       srwi    r8,r8,4
->  11:    addi    r11,r11,16
->         b       9b
->  12:
-> -       cmpdi   r13,0            /* check we have both RELA and RELACOUNT */
-> +       cmpdi   r13,0            /* check we have both RELA and RELASZ */
->         cmpdi   cr1,r8,0
->         beq     3f
->         beq     cr1,3f
-> diff --git a/arch/powerpc/kernel/reloc_64.S b/arch/powerpc/kernel/reloc_64.S
-> index 02d4719bf43a..362be759609f 100644
-> --- a/arch/powerpc/kernel/reloc_64.S
-> +++ b/arch/powerpc/kernel/reloc_64.S
-> @@ -8,7 +8,7 @@
->  #include <asm/ppc_asm.h>
->
->  RELA = 7
-> -RELACOUNT = 0x6ffffff9
-> +RELASZ = 8
->  R_PPC64_RELATIVE = 22
->
->  /*
-> @@ -27,7 +27,7 @@ _GLOBAL(relocate)
->         add     r10,r10,r12     /* r10 has runtime addr of _stext */
->
->         /*
-> -        * Scan the dynamic section for the RELA and RELACOUNT entries.
-> +        * Scan the dynamic section for the RELA and RELASZ entries.
->          */
->         li      r7,0
->         li      r8,0
-> @@ -38,13 +38,16 @@ _GLOBAL(relocate)
->         bne     2f
->         ld      r7,8(r11)       /* get RELA pointer in r7 */
->         b       3f
-> -2:     addis   r6,r6,(-RELACOUNT)@ha
-> -       cmpdi   r6,RELACOUNT@l
-> +2:     cmpdi   r6,RELASZ
->         bne     3f
-> -       ld      r8,8(r11)       /* get RELACOUNT value in r8 */
-> +       ld      r8,8(r11)       /* get RELA / 24 in r8 */
-> +       lis     r0,0xaaaa
-> +       ori     r0,r0,0xaaab
-> +       mulhwu  r8,r8,r0
-> +       srwi    r8,r8,4
->  3:     addi    r11,r11,16
->         b       1b
-> -4:     cmpdi   r7,0            /* check we have both RELA and RELACOUNT */
-> +4:     cmpdi   r7,0            /* check we have both RELA and RELASZ */
->         cmpdi   cr1,r8,0
->         beq     6f
->         beq     cr1,6f
-> --
-> 2.35.1.616.g0bdcbb4464-goog
->
->
+Nick Hawkins (10):
+  arch: arm: mach-hpe: Introduce the HPE GXP architecture
+  arch: arm: configs: multi_v7_defconfig
+  drivers: wdt: Introduce HPE GXP SoC Watchdog
+  clocksource/drivers: Add HPE GXP timer
+  dt-bindings: timer: Add HPE GXP Timer Binding
+  dt-bindings: watchdog: Add HPE GXP Watchdog timer binding
+  dt-bindings: arm: Add HPE GXP Binding
+  dt-bindings: arm: Add HPE GXP CPU Init
+  arch: arm: boot: dts: Introduce HPE GXP Device tree
+  maintainers: Introduce HPE GXP Architecture
 
+ .../cpu-enable-method/hpe,gxp-cpu-init.yaml   |  31 +++
+ .../devicetree/bindings/arm/gxp.yaml          |  53 +++++
+ .../bindings/timer/hpe,gxp-timer.yaml         |  45 +++++
+ .../bindings/watchdog/hpe,gxp-wdt.yaml        |  37 ++++
+ MAINTAINERS                                   |  14 ++
+ arch/arm/Kconfig                              |   2 +
+ arch/arm/Makefile                             |   1 +
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/hpe-bmc-dl360gen10.dts      |  27 +++
+ arch/arm/boot/dts/hpe-gxp.dtsi                | 148 ++++++++++++++
+ arch/arm/configs/multi_v7_defconfig           |   3 +
+ arch/arm/mach-hpe/Kconfig                     |  20 ++
+ arch/arm/mach-hpe/Makefile                    |   1 +
+ arch/arm/mach-hpe/gxp.c                       |  61 ++++++
+ drivers/clocksource/Kconfig                   |   8 +
+ drivers/clocksource/Makefile                  |   1 +
+ drivers/clocksource/gxp-timer.c               | 159 +++++++++++++++
+ drivers/watchdog/Kconfig                      |   8 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/gxp-wdt.c                    | 191 ++++++++++++++++++
+ 20 files changed, 813 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/cpu-enable-method/hpe,gxp-cpu-init.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/gxp.yaml
+ create mode 100644 Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+ create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+ create mode 100644 arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+ create mode 100644 arch/arm/boot/dts/hpe-gxp.dtsi
+ create mode 100644 arch/arm/mach-hpe/Kconfig
+ create mode 100644 arch/arm/mach-hpe/Makefile
+ create mode 100644 arch/arm/mach-hpe/gxp.c
+ create mode 100644 drivers/clocksource/gxp-timer.c
+ create mode 100644 drivers/watchdog/gxp-wdt.c
 
 -- 
-Thanks,
-~Nick Desaulniers
+2.17.1
+
