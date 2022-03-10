@@ -2,207 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 09:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237835AbiCJJx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 04:53:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33380 "EHLO
+        id S238273AbiCJJxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 04:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240952AbiCJJxV (ORCPT
+        with ESMTP id S240962AbiCJJx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 04:53:21 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D95313AA2C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 01:52:20 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E3B4B1F381;
-        Thu, 10 Mar 2022 09:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646905938; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y5uc9Zb/DUB2n8zIlbDo/Hnwif6HsJ2MbwsbUkiP3UI=;
-        b=dzGJ1MlW+qlz5MVx/BTgnPNHe32Ma4O92yfMiR6lsyCHdtjfa3Lt+ohPEB46Z0tismmk04
-        V93IFsfZA3JGcYjUfAnzjsIKglQ7wex6Pf1NaVAFd0vteSHQAsEJjUc2XuTgc7uGuV/ztv
-        7IaADm6xkmPXHIBk0gJ9R626pjF36n4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646905938;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y5uc9Zb/DUB2n8zIlbDo/Hnwif6HsJ2MbwsbUkiP3UI=;
-        b=jlnVMP88lYv7I0vPGbTOlaLEvki/tPwWGctVYRaniYiAfx0rDKATwLu3N0lqpqKRTWwc3Y
-        ufmdcScnSfg62+AA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5682213FA3;
-        Thu, 10 Mar 2022 09:52:18 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id gaKcE1LKKWJoXgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 10 Mar 2022 09:52:18 +0000
-Message-ID: <a661aa1c-e5d8-1480-6007-db3ced1b1e00@suse.cz>
-Date:   Thu, 10 Mar 2022 10:52:17 +0100
+        Thu, 10 Mar 2022 04:53:28 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0111113C262;
+        Thu, 10 Mar 2022 01:52:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646905943; x=1678441943;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8pGmp/P6DW09QNCZnxhFBr88c90cP0y+5hBJacUv2zo=;
+  b=Upcrjkn32XPm8iMmfxXIDuz81hNCk3k6YsgFudeqPZzT4Lg7vFZmIJe2
+   9iDE1QlLAxDS9ivwfxWlKj2nsd4dV/ZspEIxNuiK9+1a9begPH70Neu8K
+   ZHNeWAOC5KE9UDfWiWpW3ocU97XIchxp1YFspM9maAWb1wnghAmvI2sMB
+   U8qgXLy5DM/W0plxEoqV9Tm0bx99e3KFex+JbGKLq7vUhoc5kokVmowK5
+   acI9Bsx48Sq0ICnPdMSUb9Oq/xWrPhRGeqC8pK+Iw8w7BmRsFLWXxuZLi
+   Zb1ADhikyu/BMiY/4qinArivcN13Xa7Gj+yTHsBHGH7vag1+RSmNLHcbS
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,170,1643698800"; 
+   d="scan'208";a="151541402"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 02:52:22 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 10 Mar 2022 02:52:21 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 02:52:15 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <linux-media@vger.kernel.org>, <jacopo@jmondi.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH v9 01/13] media: atmel: atmel-isc-base: use streaming status when queueing buffers
+Date:   Thu, 10 Mar 2022 11:51:50 +0200
+Message-ID: <20220310095202.2701399-2-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220310095202.2701399-1-eugen.hristev@microchip.com>
+References: <20220310095202.2701399-1-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 5/9] mm/huge_memory: streamline COW logic in
- do_huge_pmd_wp_page()
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>, linux-mm@kvack.org
-References: <20220131162940.210846-1-david@redhat.com>
- <20220131162940.210846-6-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220131162940.210846-6-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/31/22 17:29, David Hildenbrand wrote:
-> We currently have a different COW logic for anon THP than we have for
-> ordinary anon pages in do_wp_page(): the effect is that the issue reported
-> in CVE-2020-29374 is currently still possible for anon THP: an unintended
-> information leak from the parent to the child.
-> 
-> Let's apply the same logic (page_count() == 1), with similar
-> optimizations to remove additional references first as we really want to
-> avoid PTE-mapping the THP and copying individual pages best we can.
-> 
-> If we end up with a page that has page_count() != 1, we'll have to PTE-map
-> the THP and fallback to do_wp_page(), which will always copy the page.
-> 
-> Note that KSM does not apply to THP.
-> 
-> I. Interaction with the swapcache and writeback
-> 
-> While a THP is in the swapcache, the swapcache holds one reference on each
-> subpage of the THP. So with PageSwapCache() set, we expect as many
-> additional references as we have subpages. If we manage to remove the
-> THP from the swapcache, all these references will be gone.
-> 
-> Usually, a THP is not split when entered into the swapcache and stays a
-> compound page. However, try_to_unmap() will PTE-map the THP and use PTE
-> swap entries. There are no PMD swap entries for that purpose, consequently,
-> we always only swapin subpages into PTEs.
-> 
-> Removing a page from the swapcache can fail either when there are remaining
-> swap entries (in which case COW is the right thing to do) or if the page is
-> currently under writeback.
-> 
-> Having a locked, R/O PMD-mapped THP that is in the swapcache seems to be
-> possible only in corner cases, for example, if try_to_unmap() failed
-> after adding the page to the swapcache. However, it's comparatively easy to
-> handle.
-> 
-> As we have to fully unmap a THP before starting writeback, and swapin is
-> always done on the PTE level, we shouldn't find a R/O PMD-mapped THP in the
-> swapcache that is under writeback. This should at least leave writeback
-> out of the picture.
-> 
-> II. Interaction with GUP references
-> 
-> Having a R/O PMD-mapped THP with GUP references (i.e., R/O references)
-> will result in PTE-mapping the THP on a write fault. Similar to ordinary
-> anon pages, do_wp_page() will have to copy sub-pages and result in a
-> disconnect between the GUP references and the pages actually mapped into
-> the page tables. To improve the situation in the future, we'll need
-> additional handling to mark anonymous pages as definitely exclusive to a
-> single process, only allow GUP pins on exclusive anon pages, and
-> disallow sharing of exclusive anon pages with GUP pins e.g., during
-> fork().
-> 
-> III. Interaction with references from LRU pagevecs
-> 
-> There is no need to try draining the (local) LRU pagevecs in case we would
-> stumble over a !PageLRU() page: folio_add_lru() and friends will always
-> flush the affected pagevec after adding a compound page to it
-> immediately -- pagevec_add_and_need_flush() always returns "true" for them.
-> Note that the LRU pagevecs will hold a reference on the compound page for
-> a very short time, between adding the page to the pagevec and draining it
-> immediately afterwards.
-> 
-> IV. Interaction with speculative/temporary references
-> 
-> Similar to ordinary anon pages, other speculative/temporary references on
-> the THP, for example, from the pagecache or page migration code, will
-> disallow exclusive reuse of the page. We'll have to PTE-map the THP.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+During experiments with libcamera, it looks like vb2_is_streaming returns
+true before our start streaming is called.
+Order of operations is streamon -> queue -> start_streaming
+ISC would have started the DMA immediately when a buffer is being added
+to the vbqueue if the queue is streaming.
+It is more safe to start the DMA after the start streaming of the driver is
+called.
+Thus, even if vb2queue is streaming, add the buffer to the dma queue of the
+driver instead of actually starting the DMA process, if the start streaming
+has not been called yet.
+Tho achieve this, we have to use vb2_start_streaming_called instead of
+vb2_is_streaming.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+---
+ drivers/media/platform/atmel/atmel-isc-base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  mm/huge_memory.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index 406a3c28c026..f34ebc5cb827 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -1303,7 +1303,6 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
->  	page = pmd_page(orig_pmd);
->  	VM_BUG_ON_PAGE(!PageHead(page), page);
->  
-> -	/* Lock page for reuse_swap_page() */
->  	if (!trylock_page(page)) {
->  		get_page(page);
->  		spin_unlock(vmf->ptl);
-> @@ -1319,10 +1318,15 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
->  	}
->  
->  	/*
-> -	 * We can only reuse the page if nobody else maps the huge page or it's
-> -	 * part.
-> +	 * See do_wp_page(): we can only map the page writable if there are
-> +	 * no additional references. Note that we always drain the LRU
-> +	 * pagevecs immediately after adding a THP.
->  	 */
-> -	if (reuse_swap_page(page)) {
-> +	if (page_count(page) > 1 + PageSwapCache(page) * thp_nr_pages(page))
-> +		goto unlock_fallback;
-> +	if (PageSwapCache(page))
-> +		try_to_free_swap(page);
-> +	if (page_count(page) == 1) {
->  		pmd_t entry;
->  		entry = pmd_mkyoung(orig_pmd);
->  		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
-> @@ -1333,6 +1337,7 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
->  		return VM_FAULT_WRITE;
->  	}
->  
-> +unlock_fallback:
->  	unlock_page(page);
->  	spin_unlock(vmf->ptl);
->  fallback:
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index db15770d5b88..d2cc6c99984f 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -442,7 +442,7 @@ static void isc_buffer_queue(struct vb2_buffer *vb)
+ 
+ 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
+ 	if (!isc->cur_frm && list_empty(&isc->dma_queue) &&
+-		vb2_is_streaming(vb->vb2_queue)) {
++		vb2_start_streaming_called(vb->vb2_queue)) {
+ 		isc->cur_frm = buf;
+ 		isc_start_dma(isc);
+ 	} else
+-- 
+2.25.1
 
