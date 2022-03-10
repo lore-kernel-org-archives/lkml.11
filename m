@@ -2,100 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DF0C3527C
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF90BC4707F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245324AbiCJOj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        id S245308AbiCJOj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343870AbiCJOb0 (ORCPT
+        with ESMTP id S1343875AbiCJOb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:31:26 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAB2C7EAE;
-        Thu, 10 Mar 2022 06:27:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B501C9A3C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 06:27:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F0B861C0A;
-        Thu, 10 Mar 2022 14:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9FEC340E8;
-        Thu, 10 Mar 2022 14:27:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922463;
-        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PJ5Jv2w+Fp1bsklgCcfrd1qZEwgYUMXqr9UUEVAwuHBtEg7gRJtdUnnwclVvt9aYs
-         yScyBXtlJhJEniKkrZeJ5LpeO6hOdh+EBd8wgeZxTSJg1PhA2fZUgTQUbmv+acVUSW
-         Vc4pgUrL22ogZ2MRxCFj8Z5SrmwN88R0bIyf6c6Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 17/33] ARM: include unprivileged BPF status in Spectre V2 reporting
-Date:   Thu, 10 Mar 2022 15:19:18 +0100
-Message-Id: <20220310140809.250185790@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
-References: <20220310140808.741682643@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF72061CF0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 14:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C99C340EB;
+        Thu, 10 Mar 2022 14:27:43 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 09:27:42 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] riscv: ftrace: no need to acquire text_mutex when
+ executed in stop_machine
+Message-ID: <20220310092742.4fcc7131@gandalf.local.home>
+In-Reply-To: <20220310045454.672097-1-changbin.du@gmail.com>
+References: <20220310045454.672097-1-changbin.du@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+On Thu, 10 Mar 2022 12:54:54 +0800
+Changbin Du <changbin.du@gmail.com> wrote:
 
-commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
+> It's safe to patch text segment in stop_machine. No race is possible here.
+> Besides, there is a false positive for the lock assertion in
+> patch_insn_write() since the lock is not held by cpu migration thread.
+> 
+> So we actually don't need our ftrace_arch_code_modify_prepare/post(). And
+> the lock assertion in patch_insn_write() should be removed to avoid
+> producing lots of false positive warnings.
+> 
+> Signed-off-by: Changbin Du <changbin.du@gmail.com>
 
-The mitigations for Spectre-BHB are only applied when an exception
-is taken, but when unprivileged BPF is enabled, userspace can
-load BPF programs that can be used to exploit the problem.
+Ideally, RISC-V should try to get off of the stop_machine approach, and
+move to the breakpoint modification.
 
-When unprivileged BPF is enabled, report the vulnerable status via
-the spectre_v2 sysfs file.
-
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/kernel/spectre.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -1,9 +1,19 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/bpf.h>
- #include <linux/cpu.h>
- #include <linux/device.h>
- 
- #include <asm/spectre.h>
- 
-+static bool _unprivileged_ebpf_enabled(void)
-+{
-+#ifdef CONFIG_BPF_SYSCALL
-+	return !sysctl_unprivileged_bpf_disabled;
-+#else
-+	return false
-+#endif
-+}
-+
- ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
- 	if (spectre_v2_state != SPECTRE_MITIGATED)
- 		return sprintf(buf, "%s\n", "Vulnerable");
- 
-+	if (_unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
-+
- 	switch (spectre_v2_methods) {
- 	case SPECTRE_V2_METHOD_BPIALL:
- 		method = "Branch predictor hardening";
-
-
+-- Steve
