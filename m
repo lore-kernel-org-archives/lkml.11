@@ -2,166 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A8AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 18:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243733AbiCJSQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:16:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        id S245367AbiCJSSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 13:18:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbiCJSQE (ORCPT
+        with ESMTP id S234784AbiCJSSJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:16:04 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7486613858A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:15:01 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:51786)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nSNJS-00F8a5-Qx; Thu, 10 Mar 2022 11:14:58 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34804 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nSNJQ-004pU3-Go; Thu, 10 Mar 2022 11:14:58 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@polymtl.ca>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>, Jens Axboe <axboe@kernel.dk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <20220310093455.15176-1-pmladek@suse.com>
-Date:   Thu, 10 Mar 2022 12:14:28 -0600
-In-Reply-To: <20220310093455.15176-1-pmladek@suse.com> (Petr Mladek's message
-        of "Thu, 10 Mar 2022 10:34:55 +0100")
-Message-ID: <871qz9brp7.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 10 Mar 2022 13:18:09 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B3113D900
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:17:08 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id fs4-20020a17090af28400b001bf5624c0aaso6021176pjb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 10:17:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8i9PcoBgS4Z5fTHkHhwCw2b7OCjvoaGKsCGSTw+C1tM=;
+        b=FHz7R3ScT4P/6jx0UHpLjssNo+wzcUAnkAq0eNZlWWEK3aYGOxTGOxoQ/SFYQ4gitQ
+         IzTn31mtdV3LRCsbXyZSNMjDZxDVwh14jEA1Mz6aZXSZSmLrPmfX8dxOIT0DkyfXgObJ
+         sadA5/c2IF8P5u2OaXSS9m3nK92vT8MhshqvQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8i9PcoBgS4Z5fTHkHhwCw2b7OCjvoaGKsCGSTw+C1tM=;
+        b=G9yBgob8JeA9LZYZ1iidbcVKHynUkIjoTAdalRCTufioiUUlqeGEIO3yV0+YyYYCho
+         PrwcrqwmgCx9/z4lBNvbtL2JUOvSwkpDaUpdimkHPFY4vfJlZFPJUUDRi46QwMbBpVRB
+         RAihBxk9LUNRjKEATPF+bpVfzVqc3yMUdaSjViufAOPxlRCvmGiX/+FAWgg6Epg4OW7v
+         k9Cvt3euicZQ2ddPx6wrek8nxDZeMX8wb7KDqcP0muAnOdH/NIY6w3uywhSlMBIQFl71
+         xBndgA98UTGvOokZHu61S/6VrZkKyIeEfjM+rcb+OGHnxV6uBkhZ5FOH527hZinJHFQP
+         9tcg==
+X-Gm-Message-State: AOAM53129j9SdYMt9ih8mRDa7jlxYn7ajRe35hjpSi97KekngGEXyvdB
+        TLwSHskvxlcAh11DO8ElWjvqug==
+X-Google-Smtp-Source: ABdhPJzmiruB6ATSxE49WZKgHvZiUJtMXmtRjvqxJVHf8r+8/uOrEQawYL1mjAJMJLNoP66nxh0ubA==
+X-Received: by 2002:a17:902:9a4b:b0:14f:fe0b:5546 with SMTP id x11-20020a1709029a4b00b0014ffe0b5546mr6364220plv.46.1646936227861;
+        Thu, 10 Mar 2022 10:17:07 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id w5-20020a17090a4f4500b001bf3bdf39a8sm6785842pjl.4.2022.03.10.10.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 10:17:07 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     luc.vanoostenryck@gmail.com, nathan@kernel.org, shuah@kernel.org,
+        mark.rutland@arm.com, akpm@linux-foundation.org,
+        tglx@linutronix.de, ndesaulniers@google.com, linux@roeck-us.net,
+        gregkh@linuxfoundation.org, catalin.marinas@arm.com,
+        will@kernel.org, npiggin@gmail.com, arnd@arndb.de,
+        masahiroy@kernel.org, ojeda@kernel.org,
+        Dan Li <ashimida@linux.alibaba.com>, elver@google.com,
+        samitolvanen@google.com
+Cc:     Kees Cook <keescook@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kselftest@vger.kernel.org
+Subject: Re: (subset) [PATCH v3 1/2] AARCH64: Add gcc Shadow Call Stack support
+Date:   Thu, 10 Mar 2022 10:15:37 -0800
+Message-Id: <164693613561.1275052.17242543278628621803.b4-ty@chromium.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220303074323.86282-1-ashimida@linux.alibaba.com>
+References: <20220303073340.86008-1-ashimida@linux.alibaba.com> <20220303074323.86282-1-ashimida@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nSNJQ-004pU3-Go;;;mid=<871qz9brp7.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19tyasZu15blocjvhMTlyqAb97udrw89cE=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] kthread: Make it clear that create_kthread() might be
- terminated by any fatal signal
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Petr Mladek <pmladek@suse.com> writes:
-
-> The comments in kernel/kthread.c create a feeling that only SIGKILL
-> is able to break create_kthread().
-                   ^^^^^^^^^^^^^^^^ __kthread_create_on_node
-
-Signals can't affect create_kthread in any was as it is only called by
-kthreadd.  It is __kthread_create_on_node which gets interrupted by
-fatal signals.
-
->
-> In reality, wait_for_completion_killable() might be killed by any
-> fatal signal that does not have a custom handler:
->
-> 	(!siginmask(signr, SIG_KERNEL_IGNORE_MASK|SIG_KERNEL_STOP_MASK) && \
-> 	 (t)->sighand->action[(signr)-1].sa.sa_handler == SIG_DFL)
->
-> static inline void signal_wake_up(struct task_struct *t, bool resume)
-> {
-> 	signal_wake_up_state(t, resume ? TASK_WAKEKILL : 0);
-> }
->
-> static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
-> {
+On Wed, 2 Mar 2022 23:43:23 -0800, Dan Li wrote:
+> Shadow call stacks will be available in GCC >= 12, this patch makes
+> the corresponding kernel configuration available when compiling
+> the kernel with the gcc.
+> 
+> Note that the implementation in GCC is slightly different from Clang.
+> With SCS enabled, functions will only pop x30 once in the epilogue,
+> like:
+> 
 > [...]
-> 	/*
-> 	 * Found a killable thread.  If the signal will be fatal,
-> 	 * then start taking the whole group down immediately.
-> 	 */
-> 	if (sig_fatal(p, sig) ...) {
-> 		if (!sig_kernel_coredump(sig)) {
-> 		[...]
-> 			do {
-> 				task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
-> 				sigaddset(&t->pending.signal, SIGKILL);
-> 				signal_wake_up(t, 1);
-> 			} while_each_thread(p, t);
-> 			return;
-> 		}
-> 	}
-> }
->
-> Update the comments in kernel/kthread.c to make this more obvious.
->
-> The motivation for this change was debugging why a module initialization
-> failed. The module was being loaded from initrd. It "magically" failed
-> when systemd was switching to the real root. The clean up operations
-> sent SIGTERM to various pending processed that were started from initrd.
 
-Except for the minor nit in the change description.
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
+I'm taking this one now so it'll make the merge window. We can hammer
+out the lkdtm test after that.
 
+Applied to for-next/hardening, thanks!
 
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->  kernel/kthread.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/kernel/kthread.c b/kernel/kthread.c
-> index 38c6dd822da8..6f994c354adb 100644
-> --- a/kernel/kthread.c
-> +++ b/kernel/kthread.c
-> @@ -341,7 +341,7 @@ static int kthread(void *_create)
->  
->  	self = to_kthread(current);
->  
-> -	/* If user was SIGKILLed, I release the structure. */
-> +	/* Release the structure when caller killed by a fatal signal. */
->  	done = xchg(&create->done, NULL);
->  	if (!done) {
->  		kfree(create);
-> @@ -399,7 +399,7 @@ static void create_kthread(struct kthread_create_info *create)
->  	/* We want our own signal handler (we take no signals by default). */
->  	pid = kernel_thread(kthread, create, CLONE_FS | CLONE_FILES | SIGCHLD);
->  	if (pid < 0) {
-> -		/* If user was SIGKILLed, I release the structure. */
-> +		/* Release the structure when caller killed by a fatal signal. */
->  		struct completion *done = xchg(&create->done, NULL);
->  
->  		if (!done) {
-> @@ -441,9 +441,9 @@ struct task_struct *__kthread_create_on_node(int (*threadfn)(void *data),
->  	 */
->  	if (unlikely(wait_for_completion_killable(&done))) {
->  		/*
-> -		 * If I was SIGKILLed before kthreadd (or new kernel thread)
-> -		 * calls complete(), leave the cleanup of this structure to
-> -		 * that thread.
-> +		 * If I was killed by a fatal signal before kthreadd (or new
-> +		 * kernel thread) calls complete(), leave the cleanup of this
-> +		 * structure to that thread.
->  		 */
->  		if (xchg(&create->done, NULL))
->  			return ERR_PTR(-EINTR);
-> @@ -877,7 +877,7 @@ __kthread_create_worker(int cpu, unsigned int flags,
->   *
->   * Returns a pointer to the allocated worker on success, ERR_PTR(-ENOMEM)
->   * when the needed structures could not get allocated, and ERR_PTR(-EINTR)
-> - * when the worker was SIGKILLed.
-> + * when the caller was killed by a fatal signal.
->   */
->  struct kthread_worker *
->  kthread_create_worker(unsigned int flags, const char namefmt[], ...)
-> @@ -926,7 +926,7 @@ EXPORT_SYMBOL(kthread_create_worker);
->   * Return:
->   * The pointer to the allocated worker on success, ERR_PTR(-ENOMEM)
->   * when the needed structures could not get allocated, and ERR_PTR(-EINTR)
-> - * when the worker was SIGKILLed.
-> + * when the caller was killed by a fatal signal.
->   */
->  struct kthread_worker *
->  kthread_create_worker_on_cpu(int cpu, unsigned int flags,
+[1/2] arm64: Add gcc Shadow Call Stack support
+      https://git.kernel.org/kees/c/afcf5441b9ff
+
+-- 
+Kees Cook
+
