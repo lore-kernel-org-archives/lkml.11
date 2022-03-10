@@ -2,240 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237969AbiCJONu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:13:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S242975AbiCJONz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:13:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243020AbiCJONC (ORCPT
+        with ESMTP id S243019AbiCJONC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Mar 2022 09:13:02 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3AF015694C;
-        Thu, 10 Mar 2022 06:11:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646921480; x=1678457480;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=dJciXpEHLFj6Z+EAfDFvGxoZXvWRu/tGM+jdlgCTKlE=;
-  b=Js2cUaBkpKSpZ2f+bQu0e7Lq8W9rIAI3MQoOOEaEh5WQaOMkMXTMoKdJ
-   HRkqWCOWgyt7zDICbp3zC2lArsOpGhv75JsDbR80rFTaY9Pa057PQjVob
-   vYy0CtKv5iJmts/UIK96OKSkEqEqPObvvJ1Xkt6t6ezjnNhxTHCPJA0qC
-   U09Wngd7+C5MTe+bdJwCOngIf77CQrNBRsPUnGgsk8LXtpSmV9PJesf8i
-   q51wtmEurz3TifUvoG6dO8/xTLoj8tlPLF9NqV0BwoyhMjDYJAOXe4vny
-   loSSqhC8NDLAr4t85Ap37dilJ7AfKfu8yQHH4qkChqpFMJCNWQLjomSTc
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="252823625"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="252823625"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="554655136"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 10 Mar 2022 06:10:49 -0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v5 10/13] KVM: Register private memslot to memory backing store
-Date:   Thu, 10 Mar 2022 22:09:08 +0800
-Message-Id: <20220310140911.50924-11-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5FC15695F;
+        Thu, 10 Mar 2022 06:11:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F923B82677;
+        Thu, 10 Mar 2022 14:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FF25C340F3;
+        Thu, 10 Mar 2022 14:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646921474;
+        bh=JzLWArQNyLuhdGniyCyhpTMXsbAGh4DuRGnz7v0EpTA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WWRIVbrMjhaeKkj63vRet/s+lxWL9+E//Xyo/bnDmnN6CtDvRdas8pM06WUFxulwH
+         QiXr7FAoE4EN/VBqVQ+LyiYQNln3l4buNhPWKNXc2QeHXvpl2vgYeBRlKugtqaSD8H
+         SXH5s4ap6xwef44WrhE1jobsfat0SejaYCxUdo4s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 5.16 27/53] arm64: entry: Allow the trampoline text to occupy multiple pages
+Date:   Thu, 10 Mar 2022 15:09:32 +0100
+Message-Id: <20220310140812.616149145@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
+References: <20220310140811.832630727@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add 'notifier' to memslot to make it a memfile_notifier node and then
-register it to memory backing store via memfile_register_notifier() when
-memslot gets created. When memslot is deleted, do the reverse with
-memfile_unregister_notifier(). Note each KVM memslot can be registered
-to different memory backing stores (or the same backing store but at
-different offset) independently.
+From: James Morse <james.morse@arm.com>
 
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+commit a9c406e6462ff14956d690de7bbe5131a5677dc9 upstream.
+
+Adding a second set of vectors to .entry.tramp.text will make it
+larger than a single 4K page.
+
+Allow the trampoline text to occupy up to three pages by adding two
+more fixmap slots. Previous changes to tramp_valias allowed it to reach
+beyond a single page.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kvm_host.h |  1 +
- virt/kvm/kvm_main.c      | 75 ++++++++++++++++++++++++++++++++++++----
- 2 files changed, 70 insertions(+), 6 deletions(-)
+ arch/arm64/include/asm/fixmap.h   |    6 ++++--
+ arch/arm64/include/asm/sections.h |    5 +++++
+ arch/arm64/kernel/entry.S         |    2 +-
+ arch/arm64/kernel/vmlinux.lds.S   |    2 +-
+ arch/arm64/mm/mmu.c               |   12 +++++++++---
+ 5 files changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 6e1d770d6bf8..9b175aeca63f 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -567,6 +567,7 @@ struct kvm_memory_slot {
- 	struct file *private_file;
- 	loff_t private_offset;
- 	struct memfile_pfn_ops *pfn_ops;
-+	struct memfile_notifier notifier;
- };
+--- a/arch/arm64/include/asm/fixmap.h
++++ b/arch/arm64/include/asm/fixmap.h
+@@ -62,9 +62,11 @@ enum fixed_addresses {
+ #endif /* CONFIG_ACPI_APEI_GHES */
  
- static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index d11a2628b548..67349421eae3 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -840,6 +840,37 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-	FIX_ENTRY_TRAMP_TEXT,
++	FIX_ENTRY_TRAMP_TEXT3,
++	FIX_ENTRY_TRAMP_TEXT2,
++	FIX_ENTRY_TRAMP_TEXT1,
+ 	FIX_ENTRY_TRAMP_DATA,
+-#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
++#define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT1))
+ #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+ 	__end_of_permanent_fixed_addresses,
  
- #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+--- a/arch/arm64/include/asm/sections.h
++++ b/arch/arm64/include/asm/sections.h
+@@ -23,4 +23,9 @@ extern char __mmuoff_data_start[], __mmu
+ extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
+ extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
  
-+#ifdef CONFIG_MEMFILE_NOTIFIER
-+static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
++static inline size_t entry_tramp_text_size(void)
 +{
-+	return memfile_register_notifier(file_inode(slot->private_file),
-+					 &slot->notifier,
-+					 &slot->pfn_ops);
++	return __entry_tramp_text_end - __entry_tramp_text_start;
 +}
 +
-+static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
-+{
-+	if (slot->private_file) {
-+		memfile_unregister_notifier(file_inode(slot->private_file),
-+					    &slot->notifier);
-+		fput(slot->private_file);
-+		slot->private_file = NULL;
-+	}
-+}
-+
-+#else /* !CONFIG_MEMFILE_NOTIFIER */
-+
-+static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
-+{
-+}
-+
-+#endif /* CONFIG_MEMFILE_NOTIFIER */
-+
- #ifdef CONFIG_HAVE_KVM_PM_NOTIFIER
- static int kvm_pm_notifier_call(struct notifier_block *bl,
- 				unsigned long state,
-@@ -884,6 +915,9 @@ static void kvm_destroy_dirty_bitmap(struct kvm_memory_slot *memslot)
- /* This does not remove the slot from struct kvm_memslots data structures */
- static void kvm_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
+ #endif /* __ASM_SECTIONS_H */
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -642,7 +642,7 @@ alternative_else_nop_endif
+ 	.endm
+ 
+ 	.macro tramp_data_page	dst
+-	adr	\dst, .entry.tramp.text
++	adr_l	\dst, .entry.tramp.text
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
+ 
+--- a/arch/arm64/kernel/vmlinux.lds.S
++++ b/arch/arm64/kernel/vmlinux.lds.S
+@@ -341,7 +341,7 @@ ASSERT(__hibernate_exit_text_end - (__hi
+ 	<= SZ_4K, "Hibernate exit text too big or misaligned")
+ #endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) == PAGE_SIZE,
++ASSERT((__entry_tramp_text_end - __entry_tramp_text_start) <= 3*PAGE_SIZE,
+ 	"Entry trampoline text too big")
+ #endif
+ #ifdef CONFIG_KVM
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -617,6 +617,8 @@ early_param("rodata", parse_rodata);
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ static int __init map_entry_trampoline(void)
  {
-+	if (slot->flags & KVM_MEM_PRIVATE)
-+		kvm_memfile_unregister(slot);
++	int i;
 +
- 	kvm_destroy_dirty_bitmap(slot);
+ 	pgprot_t prot = rodata_enabled ? PAGE_KERNEL_ROX : PAGE_KERNEL_EXEC;
+ 	phys_addr_t pa_start = __pa_symbol(__entry_tramp_text_start);
  
- 	kvm_arch_free_memslot(kvm, slot);
-@@ -1738,6 +1772,12 @@ static int kvm_set_memslot(struct kvm *kvm,
- 		kvm_invalidate_memslot(kvm, old, invalid_slot);
- 	}
+@@ -625,11 +627,15 @@ static int __init map_entry_trampoline(v
  
-+	if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE) {
-+		r = kvm_memfile_register(new);
-+		if (r)
-+			return r;
-+	}
+ 	/* Map only the text into the trampoline page table */
+ 	memset(tramp_pg_dir, 0, PGD_SIZE);
+-	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS, PAGE_SIZE,
+-			     prot, __pgd_pgtable_alloc, 0);
++	__create_pgd_mapping(tramp_pg_dir, pa_start, TRAMP_VALIAS,
++			     entry_tramp_text_size(), prot,
++			     __pgd_pgtable_alloc, NO_BLOCK_MAPPINGS);
+ 
+ 	/* Map both the text and data into the kernel page table */
+-	__set_fixmap(FIX_ENTRY_TRAMP_TEXT, pa_start, prot);
++	for (i = 0; i < DIV_ROUND_UP(entry_tramp_text_size(), PAGE_SIZE); i++)
++		__set_fixmap(FIX_ENTRY_TRAMP_TEXT1 - i,
++			     pa_start + i * PAGE_SIZE, prot);
 +
- 	r = kvm_prepare_memory_region(kvm, old, new, change);
- 	if (r) {
- 		/*
-@@ -1752,6 +1792,10 @@ static int kvm_set_memslot(struct kvm *kvm,
- 		} else {
- 			mutex_unlock(&kvm->slots_arch_lock);
- 		}
-+
-+		if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE)
-+			kvm_memfile_unregister(new);
-+
- 		return r;
- 	}
+ 	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE)) {
+ 		extern char __entry_tramp_data_start[];
  
-@@ -1817,6 +1861,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 	enum kvm_mr_change change;
- 	unsigned long npages;
- 	gfn_t base_gfn;
-+	struct file *file = NULL;
- 	int as_id, id;
- 	int r;
- 
-@@ -1890,14 +1935,24 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 			return 0;
- 	}
- 
-+	if (mem->flags & KVM_MEM_PRIVATE) {
-+		file = fdget(region_ext->private_fd).file;
-+		if (!file)
-+			return -EINVAL;
-+	}
-+
- 	if ((change == KVM_MR_CREATE || change == KVM_MR_MOVE) &&
--	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages))
--		return -EEXIST;
-+	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages)) {
-+		r = -EEXIST;
-+		goto out;
-+	}
- 
- 	/* Allocate a slot that will persist in the memslot. */
- 	new = kzalloc(sizeof(*new), GFP_KERNEL_ACCOUNT);
--	if (!new)
--		return -ENOMEM;
-+	if (!new) {
-+		r = -ENOMEM;
-+		goto out;
-+	}
- 
- 	new->as_id = as_id;
- 	new->id = id;
-@@ -1905,10 +1960,18 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 	new->npages = npages;
- 	new->flags = mem->flags;
- 	new->userspace_addr = mem->userspace_addr;
-+	new->private_file = file;
-+	new->private_offset = mem->flags & KVM_MEM_PRIVATE ?
-+			      region_ext->private_offset : 0;
- 
- 	r = kvm_set_memslot(kvm, old, new, change);
--	if (r)
--		kfree(new);
-+	if (!r)
-+		return r;
-+
-+	kfree(new);
-+out:
-+	if (file)
-+		fput(file);
- 	return r;
- }
- EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
--- 
-2.17.1
+
 
