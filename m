@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF16C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64187C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240372AbiCJIeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:34:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53720 "EHLO
+        id S240388AbiCJIeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:34:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240370AbiCJIeP (ORCPT
+        with ESMTP id S240384AbiCJIei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:34:15 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CEF5D5F7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:33:13 -0800 (PST)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KDj0T2C8mz9sYG;
-        Thu, 10 Mar 2022 16:29:29 +0800 (CST)
-Received: from [10.174.177.174] (10.174.177.174) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Mar 2022 16:33:11 +0800
-Subject: Re: [PATCH -next] ubifs: rename_whiteout: correct old_dir size
- computing
-To:     <richard@nod.at>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <yukuai3@huawei.com>, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>
-References: <20220215040736.2839939-1-libaokun1@huawei.com>
-From:   "libaokun (A)" <libaokun1@huawei.com>
-Message-ID: <dc55e8b3-7d22-6024-374d-4ed126e18c42@huawei.com>
-Date:   Thu, 10 Mar 2022 16:32:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Thu, 10 Mar 2022 03:34:38 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDA062A0F;
+        Thu, 10 Mar 2022 00:33:38 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A74FB1F442;
+        Thu, 10 Mar 2022 08:33:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646901216; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3XKssLMVaaKPGr1fYyg9OX0U/rmkH9hiuCc6zH77j7Q=;
+        b=qojACQbACPKHg2O88Oh8MesyQEqAzw2krjz++XlOmWBvRAdlLq71H+D6n42CSkFFy71Lu6
+        TKSYmeJELupVwXybOOVVyMl6HNN/OvirvKDl5t9ZFstRSxR1aVQtw9zu9HEwPKN7jsH0am
+        NjqzGuhTZsBzL5pKn2XPVGIyzOl4IBE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646901216;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3XKssLMVaaKPGr1fYyg9OX0U/rmkH9hiuCc6zH77j7Q=;
+        b=/vDGK3s1A+NR9R9SPCaWsAPotrf+zvh7Blknz3wmt/QtfHAvD0wNfEedhH5hL25CG3CWtc
+        eKqwRkVjWoMlODAg==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5780FA3B83;
+        Thu, 10 Mar 2022 08:33:36 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 09:33:36 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Mark Brown <broonie@kernel.org>
+cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Mark Rutland <mark.rutland@arm.com>, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename
+ args to unwind()
+In-Reply-To: <YiiT2lFuxc3ob+Zq@sirena.org.uk>
+Message-ID: <alpine.LSU.2.21.2203100923470.16704@pobox.suse.cz>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f> <20220117145608.6781-1-madvenka@linux.microsoft.com> <20220117145608.6781-7-madvenka@linux.microsoft.com> <YgutJKqYe8ss8LLd@FVFF77S0Q05N> <845e4589-97d9-5371-3a0e-f6e05919f32d@linux.microsoft.com>
+ <YiY6hecX0pVWowQ7@sirena.org.uk> <c494fa10-e973-c137-b637-66bde327611c@linux.microsoft.com> <YiiT2lFuxc3ob+Zq@sirena.org.uk>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20220215040736.2839939-1-libaokun1@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A gentle ping, sorry for the noise.
+On Wed, 9 Mar 2022, Mark Brown wrote:
 
+> On Tue, Mar 08, 2022 at 04:00:35PM -0600, Madhavan T. Venkataraman wrote:
+> 
+> > It is just that patch 11 that defines "select
+> > HAVE_RELIABLE_STACKTRACE" did not receive any comments from you
+> > (unless I missed a comment that came from you. That is entirely
+> > possible. If I missed it, my bad). Since you suggested that change, I
+> > just wanted to make sure that that patch looks OK to you.
+> 
+> I think that's more a question for the livepatch people to be honest -
+> it's not entirely a technical one, there's a bunch of confidence level
+> stuff going on.  For example there was some suggestion that people might
+> insist on having objtool support, though there's also substantial
+> pushback on making objtool a requirement for anything from other
+> quarters.  I was hoping that posting that patch would provoke some
+> discussion about what exactly is needed but that's not happened thus
+> far.
 
-在 2022/2/15 12:07, Baokun Li 写道:
-> When renaming the whiteout file, the old whiteout file is not deleted.
-> Therefore, we add the old dentry size to the old dir like XFS.
-> Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
-> in check_indes.
->
-> Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-> Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
-> Signed-off-by: Baokun Li <libaokun1@huawei.com>
-> ---
->   fs/ubifs/dir.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
-> index ae082a0be2a3..86151889548e 100644
-> --- a/fs/ubifs/dir.c
-> +++ b/fs/ubifs/dir.c
-> @@ -1402,6 +1402,9 @@ static int do_rename(struct inode *old_dir, struct dentry *old_dentry,
->   			iput(whiteout);
->   			goto out_release;
->   		}
-> +
-> +		/* Add the old_dentry size to the old_dir size. */
-> +		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
->   	}
->   
->   	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+I think everyone will be happy with HAVE_RELIABLE_STACKTRACE on arm64 as 
+long as there is a guarantee that stack traces are really reliable. My 
+understanding is that there is still some work to be done on arm64 arch 
+side (but I may have misunderstood what Mark R. said elsewhere). And yes, 
+then there is a question of objtool. It is one option but not the only 
+one. There have been proposals of implementing guarantees on a compiler 
+side and leaving objtool for x86_64 only (albeit objtool may bring more 
+features to the table... ORC, arch features checking).
 
--- 
-With Best Regards,
-Baokun Li
+Madhavan also mentioned that he enhanced objtool and he planned to submit 
+it eventually 
+(https://lore.kernel.org/all/1a0e19db-a7f8-4c8e-0163-398fcd364d54@linux.microsoft.com/T/#u), 
+so maybe arm64 maintainers could decide on a future direction based on 
+that?
+
+Regards
+Miroslav
 
