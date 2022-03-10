@@ -2,124 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7562DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CC4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344709AbiCJOxq (ORCPT
+        id S1344896AbiCJOx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:53:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
+        Thu, 10 Mar 2022 09:53:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244488AbiCJOgh (ORCPT
+        with ESMTP id S1345277AbiCJOlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:36:37 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6AA65E8;
-        Thu, 10 Mar 2022 06:32:12 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id CECB221106;
-        Thu, 10 Mar 2022 14:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1646922323; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W7f2i0Vnp4BHkpXiTO8kTdVtjlZHe4P5kjimj9VfeP0=;
-        b=gC7G+yALoNzqMclQHszbv0WithoX+oBTYDmx1HrKtAw/VTBjxuM7ArOx51W57vzoq4xh1E
-        QdmWmuz/D/VU8+nBQDAg472pak/FjgRaCzBpz5GmbsXNJcyLQWHXJXGIjmvRX63nrxCZV8
-        A+XnE3F++P8+9WZg8zhm2BcIp4bKYQo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1646922323;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W7f2i0Vnp4BHkpXiTO8kTdVtjlZHe4P5kjimj9VfeP0=;
-        b=GC5ScYLuz3282XKAWnz0rNTy3jp7u7fK224Zpo6Cmr+Nvj4r8AHQcWR19Rl+H440hfRYke
-        Xfbh5VLxR4juH1Dg==
-Received: from vasant-suse.fritz.box (unknown [10.163.24.178])
-        by relay2.suse.de (Postfix) with ESMTP id 97D5CA3B81;
-        Thu, 10 Mar 2022 14:25:23 +0000 (UTC)
-From:   Vasant Karasulli <vkarasulli@suse.de>
-To:     Namjae Jeon <linkinjeon@kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ddiss@suse.de
-Cc:     Vasant Karasulli <vkarasulli@suse.de>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH v2 1/2] The "keep_last_dots" mount option will, in a subsequent commit, control whether or not trailing periods '.' are stripped from path components during file lookup or file creation.
-Date:   Thu, 10 Mar 2022 15:24:54 +0100
-Message-Id: <20220310142455.23127-2-vkarasulli@suse.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220310142455.23127-1-vkarasulli@suse.de>
-References: <20220310142455.23127-1-vkarasulli@suse.de>
+        Thu, 10 Mar 2022 09:41:46 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D1218E40E;
+        Thu, 10 Mar 2022 06:36:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=X8rk1wKGgoot4D0abN1n7B47xEHjhOnmzv7J1avYjn0=; b=tcgNy46d72iV0QSf94ZwkSbPZc
+        fiCNYP4pWJM8c/hJV6i7JGSHbwAcifxMJ5QS248qdiiElDvdtzg0y/Q1EP3mDErc9XjqNUBk7Jcy3
+        R594egyRYg1kQrikaVNnld5cbVTlffScORNO6vcm5TKrGaHoFYXiuCjNuGfKq5G9Wk5I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSJtv-00A9C3-9m; Thu, 10 Mar 2022 15:36:23 +0100
+Date:   Thu, 10 Mar 2022 15:36:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        david.laight@aculab.com
+Subject: Re: [PATCH net-next v2] net: lan966x: Improve the CPU TX bitrate.
+Message-ID: <YioM5zVqFtFxYhc+@lunn.ch>
+References: <20220310084005.262551-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310084005.262551-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Suggested-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
-Co-developed-by: David Disseldorp <ddiss@suse.de>
-Signed-off-by: David Disseldorp <ddiss@suse.de>
----
- fs/exfat/exfat_fs.h | 3 ++-
- fs/exfat/super.c    | 7 +++++++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+On Thu, Mar 10, 2022 at 09:40:05AM +0100, Horatiu Vultur wrote:
+> When doing manual injection of the frame, it is required to check if the
+> TX FIFO is ready to accept the next word of the frame. For this we are
+> using 'readx_poll_timeout_atomic', the only problem is that before it
+> actually checks the status, is determining the time when to finish polling
+> the status. Which seems to be an expensive operation.
+> Therefore check the status of the TX FIFO before calling
+> 'readx_poll_timeout_atomic'.
+> Doing this will improve the TX bitrate by ~70%. Because 99% the FIFO is
+> ready by that time. The measurements were done using iperf3.
+> 
+> Before:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.03  sec  55.2 MBytes  46.2 Mbits/sec    0 sender
+> [  5]   0.00-10.04  sec  53.8 MBytes  45.0 Mbits/sec      receiver
+> 
+> After:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.10  sec  95.0 MBytes  78.9 Mbits/sec    0 sender
+> [  5]   0.00-10.11  sec  95.0 MBytes  78.8 Mbits/sec      receiver
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
-index 619e5b4bed10..c6800b880920 100644
---- a/fs/exfat/exfat_fs.h
-+++ b/fs/exfat/exfat_fs.h
-@@ -203,7 +203,8 @@ struct exfat_mount_options {
- 	/* on error: continue, panic, remount-ro */
- 	enum exfat_error_mode errors;
- 	unsigned utf8:1, /* Use of UTF-8 character set */
--		 discard:1; /* Issue discard requests on deletions */
-+		 discard:1, /* Issue discard requests on deletions */
-+		 keep_last_dots:1; /* Keep trailing periods in paths */
- 	int time_offset; /* Offset of timestamps from UTC (in minutes) */
- };
- 
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 8c9fb7dcec16..4c3f80ed17b1 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -174,6 +174,8 @@ static int exfat_show_options(struct seq_file *m, struct dentry *root)
- 		seq_puts(m, ",errors=remount-ro");
- 	if (opts->discard)
- 		seq_puts(m, ",discard");
-+	if (opts->keep_last_dots)
-+		seq_puts(m, ",keep_last_dots");
- 	if (opts->time_offset)
- 		seq_printf(m, ",time_offset=%d", opts->time_offset);
- 	return 0;
-@@ -217,6 +219,7 @@ enum {
- 	Opt_charset,
- 	Opt_errors,
- 	Opt_discard,
-+	Opt_keep_last_dots,
- 	Opt_time_offset,
- 
- 	/* Deprecated options */
-@@ -243,6 +246,7 @@ static const struct fs_parameter_spec exfat_parameters[] = {
- 	fsparam_string("iocharset",		Opt_charset),
- 	fsparam_enum("errors",			Opt_errors, exfat_param_enums),
- 	fsparam_flag("discard",			Opt_discard),
-+	fsparam_flag("keep_last_dots",		Opt_keep_last_dots),
- 	fsparam_s32("time_offset",		Opt_time_offset),
- 	__fsparam(NULL, "utf8",			Opt_utf8, fs_param_deprecated,
- 		  NULL),
-@@ -297,6 +301,9 @@ static int exfat_parse_param(struct fs_context *fc, struct fs_parameter *param)
- 	case Opt_discard:
- 		opts->discard = 1;
- 		break;
-+	case Opt_keep_last_dots:
-+		opts->keep_last_dots = 1;
-+		break;
- 	case Opt_time_offset:
- 		/*
- 		 * Make the limit 24 just in case someone invents something
--- 
-2.32.0
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
