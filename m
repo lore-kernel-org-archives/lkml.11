@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A03C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240908AbiCJORj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        id S242698AbiCJORo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:17:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243310AbiCJORQ (ORCPT
+        with ESMTP id S243104AbiCJORT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:17:16 -0500
+        Thu, 10 Mar 2022 09:17:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02621342CF;
-        Thu, 10 Mar 2022 06:13:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D3F156940;
+        Thu, 10 Mar 2022 06:13:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BBB0B8254A;
-        Thu, 10 Mar 2022 14:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91388C340E8;
-        Thu, 10 Mar 2022 14:13:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E24EB825F3;
+        Thu, 10 Mar 2022 14:13:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41F9C340E8;
+        Thu, 10 Mar 2022 14:13:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646921590;
-        bh=darqcM1qBZlMyBAHW3hm0t+HZa2Xqn7JX3ij1cFFxOk=;
+        s=korg; t=1646921593;
+        bh=MfHU0Kwo0xA5jQW28E3BI2IOIWOZWlLewPFWs+uMccc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5nh5tRycKng1YOAqmo8N2Msz9qD7C+gz9bkUyyjiIfDoZW2yprtG1bEZg2Js2GcN
-         hCpxgAYIL5zPPfUDFlbDH/yY8HIZFbybdin7kOIMk+coT17DEtSybfyQGEu8Vzlw5g
-         wlrIZDN0uQhq8hVAPonQuIqswR/f5oQi8i57nrPI=
+        b=upms8jnFI1n/74chLa+OhSi+qcYpnb7hnGDv6fLa9hJqKuJGXrukXT0Q7SRDBEwZ4
+         gTR1Ivtfg5SfNd2njiCXXUV112sOzWOIkoFbG5b0m/NH5YZlKHLZl7CAZzT4cl8iqq
+         H6B8vAUYw+yGRtofzxwPVQcVULp+WfpVNKqfYJ4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Justin Forbes <jmforbes@linuxtx.org>,
-        Mark Pearson <markpearson@lenovo.com>
-Subject: [PATCH 5.16 53/53] Revert "ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE"
-Date:   Thu, 10 Mar 2022 15:09:58 +0100
-Message-Id: <20220310140813.355738148@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Simon Gaiser <simon@invisiblethingslab.com>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH 5.16 50/53] xen/pvcalls: use alloc/free_pages_exact()
+Date:   Thu, 10 Mar 2022 15:09:55 +0100
+Message-Id: <20220310140813.271374697@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
 References: <20220310140811.832630727@linuxfoundation.org>
@@ -51,73 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Juergen Gross <jgross@suse.com>
 
-This reverts commit 4287509b4d21e34dc49266c6239920811e189e40 which is
-commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc upstream.
+Commit b0576cc9c6b843d99c6982888d59a56209341888 upstream.
 
-It's been reported to cause problems with a number of Fedora and Arch
-Linux users, so drop it for now until that is resolved.
+Instead of __get_free_pages() and free_pages() use alloc_pages_exact()
+and free_pages_exact(). This is in preparation of a change of
+gnttab_end_foreign_access() which will prohibit use of high-order
+pages.
 
-Link: https://lore.kernel.org/r/CAJZ5v0gE52NT=4kN4MkhV3Gx=M5CeMGVHOF0jgTXDb5WwAMs_Q@mail.gmail.com
-Link: https://lore.kernel.org/r/31b9d1cd-6a67-218b-4ada-12f72e6f00dc@redhat.com
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Reported-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Justin Forbes <jmforbes@linuxtx.org>
-Cc: Mark Pearson <markpearson@lenovo.com>
+This is part of CVE-2022-23041 / XSA-396.
+
+Reported-by: Simon Gaiser <simon@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/ec.c    |   10 ----------
- drivers/acpi/sleep.c |   14 ++++++++++----
- 2 files changed, 10 insertions(+), 14 deletions(-)
+ drivers/xen/pvcalls-front.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2052,16 +2052,6 @@ bool acpi_ec_dispatch_gpe(void)
- 		return true;
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -337,8 +337,8 @@ static void free_active_ring(struct sock
+ 	if (!map->active.ring)
+ 		return;
  
- 	/*
--	 * Cancel the SCI wakeup and process all pending events in case there
--	 * are any wakeup ones in there.
--	 *
--	 * Note that if any non-EC GPEs are active at this point, the SCI will
--	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
--	 * should be missed by canceling the wakeup here.
--	 */
--	pm_system_cancel_wakeup();
--
--	/*
- 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
- 	 * to allow the caller to process events properly after that.
- 	 */
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -739,15 +739,21 @@ bool acpi_s2idle_wake(void)
- 			return true;
- 		}
+-	free_pages((unsigned long)map->active.data.in,
+-			map->active.ring->ring_order);
++	free_pages_exact(map->active.data.in,
++			 PAGE_SIZE << map->active.ring->ring_order);
+ 	free_page((unsigned long)map->active.ring);
+ }
  
--		/*
--		 * Check non-EC GPE wakeups and if there are none, cancel the
--		 * SCI-related wakeup and dispatch the EC GPE.
--		 */
-+		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
- 		if (acpi_ec_dispatch_gpe()) {
- 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
- 			return true;
- 		}
+@@ -352,8 +352,8 @@ static int alloc_active_ring(struct sock
+ 		goto out;
  
-+		/*
-+		 * Cancel the SCI wakeup and process all pending events in case
-+		 * there are any wakeup ones in there.
-+		 *
-+		 * Note that if any non-EC GPEs are active at this point, the
-+		 * SCI will retrigger after the rearming below, so no events
-+		 * should be missed by canceling the wakeup here.
-+		 */
-+		pm_system_cancel_wakeup();
- 		acpi_os_wait_events_complete();
+ 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
+-	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+-					PVCALLS_RING_ORDER);
++	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
++				  GFP_KERNEL | __GFP_ZERO);
+ 	if (!bytes)
+ 		goto out;
  
- 		/*
 
 
