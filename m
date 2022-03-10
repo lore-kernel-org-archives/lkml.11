@@ -2,83 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55702C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 21:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343898AbiCJVIv (ORCPT
+        id S1343900AbiCJVJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 16:08:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        Thu, 10 Mar 2022 16:09:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343879AbiCJVIs (ORCPT
+        with ESMTP id S1343879AbiCJVJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 16:08:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2F92240AF
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 13:07:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646946465;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=E2nPX4HLkdeLoXSmv3Q/oY0b2uV3m7DpBJLpMWu4IqM=;
-        b=IxxUBr8WV4HWLMnwyUe/2FM6pJTVnBh74izu4HKRzw7x+m1KNQjlI9DO5x8t0XUbc6VXuR
-        /YUTZvJmkRKpI82EmMqVy3xHdLPJgJZwnDMiiZSIy4DJOd/XqBdUgasrroXuB3IZrWmwhy
-        Z8B4Z3jKXwN6fGOE3945qZnPL7tWYwQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-vezZfxkSMBuoY7ycZY8RnA-1; Thu, 10 Mar 2022 16:07:43 -0500
-X-MC-Unique: vezZfxkSMBuoY7ycZY8RnA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7282E1854E2A;
-        Thu, 10 Mar 2022 21:07:42 +0000 (UTC)
-Received: from llong.com (unknown [10.22.34.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 83392610E7;
-        Thu, 10 Mar 2022 21:07:16 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH] x86/entry_64: Fix incorrect comment referring to error_exit
-Date:   Thu, 10 Mar 2022 16:07:09 -0500
-Message-Id: <20220310210709.1595028-1-longman@redhat.com>
+        Thu, 10 Mar 2022 16:09:10 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365BC4D270;
+        Thu, 10 Mar 2022 13:08:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=FB6xomPY64jUpZu9dmUXFN9bddMNt8Vm5I5LWavAGS0=; b=TRzawf2mWrbNgqP14p+c3NbZie
+        SW9NQ/H5gn+77T5ym3xwXXMorG3xmCG05eMrb9MZMEhbaN9Bqcql4XYxHmXvIyLCyMOSznmAyQGqx
+        pz1RdiKi4MAd8ZC8jFUqMu/4WnyiahzXqbIV4xQ/+iVCycogdSoOIih9tCmGtiKF1em2eq/E4UZrk
+        Llx9OAFcdsva2m6GxTJbZAsmZtob0R5yCtA3o1sZUi0HnPpyTnnrTCdI7w+3XttxQAU0n6zTjAqJv
+        luZxTGnYksr5TP9xL6qPFh1oKU/H8w6AW9vHXiwD3d/0asZ9a1BgxBZ6eEGxxs9JWWCXctpjGxbr6
+        KbdDXQgg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSQ0r-00E2ut-Cy; Thu, 10 Mar 2022 21:07:57 +0000
+Date:   Thu, 10 Mar 2022 13:07:57 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, christophe.leroy@csgroup.eu,
+        hch@infradead.org, cl@linux.com, mbenes@suse.cz,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
+        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name,
+        jason.wessel@windriver.com, pmladek@suse.com
+Subject: Re: [PATCH] kdb: Remove redundant module related references
+Message-ID: <YiporeSIrkFg/YS8@bombadil.infradead.org>
+References: <20220307174741.2889588-1-atomlin@redhat.com>
+ <20220308105203.2981099-1-atomlin@redhat.com>
+ <20220309120640.uumh46n2l37jaddf@maple.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309120640.uumh46n2l37jaddf@maple.lan>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 23d73f2ad4e7 ("x86/entry/64: Remove error_exit()") and
-related commits, the error_exit symbol name is gone and error_return is
-used instead. Fix the incorrect comment in paranoid_exit to correctly
-reference error_return.
+On Wed, Mar 09, 2022 at 12:06:40PM +0000, Daniel Thompson wrote:
+> On Tue, Mar 08, 2022 at 10:52:03AM +0000, Aaron Tomlin wrote:
+> > Hi Luis, Christoph, Daniel,
+> > 
+> > Is this patch ok or would you rather another iteration of the series?
+> > Either way is fine for me. Thanks.
+> 
+> Another iteration makes more sense to me.
 
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- arch/x86/entry/entry_64.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Iteration yes, but separating the patches no into another series no.
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 466df3e50276..7077b076323e 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -939,7 +939,7 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- 	 *
- 	 * NB to anyone to try to optimize this code: this code does
- 	 * not execute at all for exceptions from user mode. Those
--	 * exceptions go through error_exit instead.
-+	 * exceptions go through error_return instead.
- 	 */
- 	RESTORE_CR3	scratch_reg=%rax save_reg=%r14
- 
--- 
-2.27.0
+> The removal of kdb_modules is semantically part of your module clean
+> up patch set and should certainly be included in it.
+> 
+> The removal of the spurious #include's in other kdb files is a
+> good change but it is fully independent of the module rework. AFAICT
+> those fixes are good with or without your changes. This suggests
+> these changes can be separate from the main patch set.
 
+Small fixes get piled in first on the series. But this is not a fix.
+This effort will not be merged separately too. This won't go into the
+next merge window either, because:
+
+1) There is no rush
+2) It is too late as all this needs proper testing and
+   its too late to claim enough testing
+
+So given this is all related to the move I see no reason to treat
+this as a separate series. Your review of the v11 would be nice.
+
+  Luis
