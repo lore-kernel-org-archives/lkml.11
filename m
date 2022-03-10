@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77019C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 10:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241486AbiCJKyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 05:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
+        id S241502AbiCJKyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 05:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241470AbiCJKyF (ORCPT
+        with ESMTP id S241511AbiCJKyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 05:54:05 -0500
+        Thu, 10 Mar 2022 05:54:07 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C5C71EF5;
-        Thu, 10 Mar 2022 02:52:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63217DA80;
+        Thu, 10 Mar 2022 02:53:04 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 8C15C1F454CB
+        with ESMTPSA id 632831F454C5
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646909576;
-        bh=XZu2CPgKfnoR/3OvjjvechU+ohZ+UyXg7yVflCM7u2g=;
+        s=mail; t=1646909583;
+        bh=b5fO4fdPwqMD/A4ZKgLYPaoafwQC/kfyVNYY7yRZujc=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=FAn8r3GcOBRnrfY3T3yAWonrmQaUcN9D4zoyLw/LS8kjC0dUhh1xBwkWW/XhkcEdL
-         iKI/uEQLSEw22gE8lT0MRAV/CEiwiH8sfotY7UrNHS0B54/FLPW78sM9c9FXNIp2k0
-         +aqmnPVWh7alE+0I8PexgjONUSP4FaXqU2Vxn65XfkNAj+aGxJ1Ma082JjpdL7wVBd
-         KJ2lxyEsG18ubw0L+Ge5YfpJ1RR5oJbcR2AOdttniPaOFVISI4YBnW/GnXu5b0ip+0
-         H3e2j82uWchH4RHhO4wJrtYZTcC8tzSn9brF/7M+5qBGzUd5oOJIMwfNUjF1pcMZhZ
-         tEpXA0v9max3Q==
-Message-ID: <85e126f5-b90f-c78f-5ae4-3757b6bc4b7a@collabora.com>
-Date:   Thu, 10 Mar 2022 11:52:52 +0100
+        b=QSZ+LicgTc1UcXGgL1fUBKGpz0s0bYSJBAD+q3prTF1q3EWfSR74S/MNIWtF19g7m
+         bxZFdEwCn5nMbvc9Ib1UFxuQ9VvWc00O4JBIsfGqtc7Zo/mOFw1D2paRguGyn2fE/L
+         FBkh+aAJq74R+zhA0ZD/wP+2GXFfz6m77mHLZLHgiBATvIbIL4TI2r8rxOUoTxP4xs
+         cvsglk2t9e3dcpiIpSWjYV0aPfye0X7yMq1dTbPcV86+gFml3IjQN0S9qCUTU7bAr/
+         CKGEdXftMgrpCz+STXAWEuMEveoxuJC6zKjcbZScNRwOy5vXmhAiaKlD6PnAocuoTD
+         Im1XaYFKb4AHA==
+Message-ID: <8fb8fd0d-3ead-e918-bcbb-9b1dd45df22e@collabora.com>
+Date:   Thu, 10 Mar 2022 11:52:59 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH v14 15/22] drm/mediatek: add ETHDR support for MT8195
+Subject: Re: [PATCH v14 17/22] drm/mediatek: add ovl_adaptor support for
+ MT8195
 Content-Language: en-US
 To:     "Nancy.Lin" <nancy.lin@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -53,10 +54,10 @@ Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         singo.chang@mediatek.com, srv_heupstream@mediatek.com,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220310035515.16881-1-nancy.lin@mediatek.com>
- <20220310035515.16881-16-nancy.lin@mediatek.com>
+ <20220310035515.16881-18-nancy.lin@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220310035515.16881-16-nancy.lin@mediatek.com>
+In-Reply-To: <20220310035515.16881-18-nancy.lin@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -64,12 +65,11 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 10/03/22 04:55, Nancy.Lin ha scritto:
-> ETHDR is a part of ovl_adaptor.
-> ETHDR is designed for HDR video and graphics conversion in the external
-> display path. It handles multiple HDR input types and performs tone
-> mapping, color space/color format conversion, and then combine
-> different layers, output the required HDR or SDR signal to the
-> subsequent display path.
+> Add ovl_adaptor driver for MT8195.
+> Ovl_adaptor is an encapsulated module and designed for simplified
+> DRM control flow. This module is composed of 8 RDMAs, 4 MERGEs and
+> an ETHDR. Two RDMAs merge into one layer, so this module support 4
+> layers.
 > 
 > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
 > Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
@@ -77,12 +77,10 @@ Il 10/03/22 04:55, Nancy.Lin ha scritto:
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 > ---
->   drivers/gpu/drm/mediatek/Makefile      |   1 +
->   drivers/gpu/drm/mediatek/mtk_drm_drv.c |   1 +
->   drivers/gpu/drm/mediatek/mtk_drm_drv.h |   1 +
->   drivers/gpu/drm/mediatek/mtk_ethdr.c   | 376 +++++++++++++++++++++++++
->   drivers/gpu/drm/mediatek/mtk_ethdr.h   |  23 ++
->   5 files changed, 402 insertions(+)
->   create mode 100644 drivers/gpu/drm/mediatek/mtk_ethdr.c
->   create mode 100644 drivers/gpu/drm/mediatek/mtk_ethdr.h
+>   drivers/gpu/drm/mediatek/Makefile             |   1 +
+>   drivers/gpu/drm/mediatek/mtk_disp_drv.h       |  17 +
+>   .../gpu/drm/mediatek/mtk_disp_ovl_adaptor.c   | 443 ++++++++++++++++++
+>   drivers/gpu/drm/mediatek/mtk_drm_drv.h        |   1 +
+>   4 files changed, 462 insertions(+)
+>   create mode 100644 drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
 > 
