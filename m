@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28526C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA39C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237537AbiCJOfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:35:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
+        id S235412AbiCJOfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:35:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244645AbiCJO3W (ORCPT
+        with ESMTP id S244755AbiCJO32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:29:22 -0500
+        Thu, 10 Mar 2022 09:29:28 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B0BD7620;
-        Thu, 10 Mar 2022 06:24:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E25DE2E6;
+        Thu, 10 Mar 2022 06:24:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69E5361D34;
-        Thu, 10 Mar 2022 14:24:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72384C340EB;
-        Thu, 10 Mar 2022 14:24:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2912F61D78;
+        Thu, 10 Mar 2022 14:24:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B150C36AE5;
+        Thu, 10 Mar 2022 14:24:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922261;
-        bh=YYTxn4Nwrg6CuOgCloYwoSlfT43YKOmCi0fRD30gcL8=;
+        s=korg; t=1646922252;
+        bh=jr+6+1MnJQNcfljlgg0AAAnKF+/2D+Wgaosbrook0EU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQKhYMzHDmJWaDcUp6AjKy9NCzAVCjqSxC3CCnGbZrWQoF/wlG+k0GmVz336YX2fo
-         HWQ6+2qa09MnB5gdTl1jg/wzxP8SGEv5f6yjqTMJa7AS4Z66FvE9Ox23VxD7zjAPAG
-         1DGgjukQwruFVwjdCAbRoJmoDos+P5E6xzwXxSvU=
+        b=VUQ4UbV+o+YSisb1l5MBI8zvA5mONzOJgitXbIYLdMytTnA8PSLPAgTb6CAAjO2uh
+         nLJ2yaM+gXK96yEs/ZHD1t+aiv5UeB6F0Z+O615+qzA88Pru/Vyd61H9RnSGneXAI0
+         QErfzsjfVSUEjBvd2KsrH+Rqa0i984Pe+7Hbc03k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.10 14/58] ARM: include unprivileged BPF status in Spectre V2 reporting
-Date:   Thu, 10 Mar 2022 15:18:34 +0100
-Message-Id: <20220310140813.281736162@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.10 08/58] x86/speculation: Warn about Spectre v2 LFENCE mitigation
+Date:   Thu, 10 Mar 2022 15:18:28 +0100
+Message-Id: <20220310140813.112529706@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
 References: <20220310140812.869208747@linuxfoundation.org>
@@ -48,54 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit 25875aa71dfefd1959f07e626c4d285b88b27ac2 upstream.
+commit eafd987d4a82c7bb5aa12f0e3b4f8f3dea93e678 upstream.
 
-The mitigations for Spectre-BHB are only applied when an exception
-is taken, but when unprivileged BPF is enabled, userspace can
-load BPF programs that can be used to exploit the problem.
+With:
 
-When unprivileged BPF is enabled, report the vulnerable status via
-the spectre_v2 sysfs file.
+  f8a66d608a3e ("x86,bugs: Unconditionally allow spectre_v2=retpoline,amd")
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+it became possible to enable the LFENCE "retpoline" on Intel. However,
+Intel doesn't recommend it, as it has some weaknesses compared to
+retpoline.
+
+Now AMD doesn't recommend it either.
+
+It can still be left available as a cmdline option. It's faster than
+retpoline but is weaker in certain scenarios -- particularly SMT, but
+even non-SMT may be vulnerable in some cases.
+
+So just unconditionally warn if the user requests it on the cmdline.
+
+  [ bp: Massage commit message. ]
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/spectre.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/x86/kernel/cpu/bugs.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/arch/arm/kernel/spectre.c
-+++ b/arch/arm/kernel/spectre.c
-@@ -1,9 +1,19 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/bpf.h>
- #include <linux/cpu.h>
- #include <linux/device.h>
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -614,6 +614,7 @@ static inline const char *spectre_v2_mod
+ static inline const char *spectre_v2_module_string(void) { return ""; }
+ #endif
  
- #include <asm/spectre.h>
++#define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
  
-+static bool _unprivileged_ebpf_enabled(void)
-+{
-+#ifdef CONFIG_BPF_SYSCALL
-+	return !sysctl_unprivileged_bpf_disabled;
-+#else
-+	return false
-+#endif
-+}
-+
- ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
+ #ifdef CONFIG_BPF_SYSCALL
+@@ -935,6 +936,7 @@ static void __init spectre_v2_select_mit
+ 		break;
+ 
+ 	case SPECTRE_V2_CMD_RETPOLINE_LFENCE:
++		pr_err(SPECTRE_V2_LFENCE_MSG);
+ 		mode = SPECTRE_V2_LFENCE;
+ 		break;
+ 
+@@ -1717,6 +1719,9 @@ static char *ibpb_state(void)
+ 
+ static ssize_t spectre_v2_show_state(char *buf)
  {
-@@ -31,6 +41,9 @@ ssize_t cpu_show_spectre_v2(struct devic
- 	if (spectre_v2_state != SPECTRE_MITIGATED)
- 		return sprintf(buf, "%s\n", "Vulnerable");
- 
-+	if (_unprivileged_ebpf_enabled())
-+		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++	if (spectre_v2_enabled == SPECTRE_V2_LFENCE)
++		return sprintf(buf, "Vulnerable: LFENCE\n");
 +
- 	switch (spectre_v2_methods) {
- 	case SPECTRE_V2_METHOD_BPIALL:
- 		method = "Branch predictor hardening";
+ 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
+ 		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
+ 
 
 
