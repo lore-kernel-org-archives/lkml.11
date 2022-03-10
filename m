@@ -2,92 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71106C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 13:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242544AbiCJNtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 08:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
+        id S242549AbiCJNuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 08:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242514AbiCJNtG (ORCPT
+        with ESMTP id S231136AbiCJNuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 08:49:06 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3991CA6504;
-        Thu, 10 Mar 2022 05:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=h62QDpiv0sKvaMSzpmkYIhLgXWs1pYU6I0XpXuvuC+g=; b=qWHF2TELafU4ktGyB58Bp5t9ET
-        ZCzNQd9HNEVgHDVn0qsfyyOGwILkEXGUyq+Yd2ZDEcbSRKhDnM75gHogn5YBSDjiwyjDb6lcCJ3Tk
-        CYVF3eDEwIlPxaBXe8cmzqxGXrRgCNs5gxHH/bxELWn7uZYDprNxXEtJZxojQg0Zbpv5EoZCefUgF
-        GiFbwfmmdMRSDvzLvx6aqgoozhS0keNlvyligzRlGNSTjzrkL3tvRN0tfxu2H0BhMiIujagxOBu2o
-        oNvr+KGfzfiVKqcNwUTHO2IrN4tliYuyglZqF4u2p84593kP6FY9icvFIF9tX2zLJ3JF/Be0SayjH
-        QtJ3kLcA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSJ8T-00H7ra-Bi; Thu, 10 Mar 2022 13:47:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0A9B93000E6;
-        Thu, 10 Mar 2022 14:47:18 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DA87326719DE3; Thu, 10 Mar 2022 14:47:18 +0100 (CET)
-Date:   Thu, 10 Mar 2022 14:47:18 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
-References: <20220308153011.021123062@infradead.org>
- <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
- <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net>
- <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
- <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
- <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
+        Thu, 10 Mar 2022 08:50:37 -0500
+Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E67BA14EF72
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 05:49:34 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by vip-app02.163.net (Postfix) with ESMTP id 94707440120
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:49:33 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646920173; bh=ScMuHjAXfamD9Fmid4TX5rIBXmPUVWR9zJbXFToXGJQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JjgfVvPK42GEWmWbNAjIcLQWQSRcQbhoy76MOZZZFI6XZpaP9JyG893N5ONF1Fmqm
+         Hyl0JHWmgEi3WurpPMZNz0WA9u6LEBL3rLvFOtF0KgUatpgtzMbdb8Al95ZlBJpt3O
+         46vj7TWKAtP9lnOeiZPhvUCrfiOw9OD/WSzlSjBo=
+Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
+          by localhost (TOM SMTP Server) with SMTP ID 943561245
+          for <linux-kernel@vger.kernel.org>;
+          Thu, 10 Mar 2022 21:49:33 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646920173; bh=ScMuHjAXfamD9Fmid4TX5rIBXmPUVWR9zJbXFToXGJQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JjgfVvPK42GEWmWbNAjIcLQWQSRcQbhoy76MOZZZFI6XZpaP9JyG893N5ONF1Fmqm
+         Hyl0JHWmgEi3WurpPMZNz0WA9u6LEBL3rLvFOtF0KgUatpgtzMbdb8Al95ZlBJpt3O
+         46vj7TWKAtP9lnOeiZPhvUCrfiOw9OD/WSzlSjBo=
+Received: from localhost.localdomain (unknown [101.93.196.13])
+        by antispamvip.163.net (Postfix) with ESMTPA id C02B615414BB;
+        Thu, 10 Mar 2022 21:49:28 +0800 (CST)
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, sunmingbao@tom.com,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+Subject: [PATCH] tcp: export symbol tcp_set_congestion_control
+Date:   Thu, 10 Mar 2022 21:48:30 +0800
+Message-Id: <20220310134830.130818-1-sunmingbao@tom.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:35:32AM +0100, Peter Zijlstra wrote:
+From: Mingbao Sun <tyler.sun@dell.com>
 
-> > $ test_progs -t fentry
-> > test_fentry_fexit:PASS:fentry_skel_load 0 nsec
-> > test_fentry_fexit:PASS:fexit_skel_load 0 nsec
-> > test_fentry_fexit:PASS:fentry_attach 0 nsec
-> > test_fentry_fexit:FAIL:fexit_attach unexpected error: -1 (errno 19)
-> > #54 fentry_fexit:FAIL
+congestion-control could have a noticeable impaction on the
+performance of TCP-based communications. This is of course true
+to NVMe/TCP in the kernel.
 
-This seems to cure the above. fexit_bpf2bpf is still failing, I'll dig
-into that after lunch.
+Different congestion-controls (e.g., cubic, dctcp) are suitable for
+different scenarios. Proper adoption of congestion control would
+benefit the performance. On the contrary, the performance could be
+destroyed.
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index acb50fb7ed2d..2d86d3c09d64 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -5354,6 +5381,11 @@ int modify_ftrace_direct(unsigned long ip,
- 	mutex_lock(&direct_mutex);
+So to gain excellent performance against different network
+environments, NVMe/TCP tends to support specifying the
+congestion-control.
+
+This means NVMe/TCP (a kernel user) needs to set the congestion-control
+of its TCP sockets.
+
+Since the kernel API 'kernel_setsockopt' was removed, and since the
+function ‘tcp_set_congestion_control’ is just the real underlying guy
+handling this job, so it makes sense to get it exported.
+
+Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
+---
+ net/ipv4/tcp_cong.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+index db5831e6c136..5d77f3e7278e 100644
+--- a/net/ipv4/tcp_cong.c
++++ b/net/ipv4/tcp_cong.c
+@@ -383,6 +383,7 @@ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+ 	rcu_read_unlock();
+ 	return err;
+ }
++EXPORT_SYMBOL_GPL(tcp_set_congestion_control);
  
- 	mutex_lock(&ftrace_lock);
-+
-+	ip = ftrace_location(ip);
-+	if (!ip)
-+		goto out_unlock;
-+
- 	entry = find_direct_entry(&ip, &rec);
- 	if (!entry)
- 		goto out_unlock;
+ /* Slow start is used when congestion window is no greater than the slow start
+  * threshold. We base on RFC2581 and also handle stretch ACKs properly.
+-- 
+2.26.2
+
