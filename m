@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA1D6C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94410C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245289AbiCJOnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:43:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
+        id S1346234AbiCJOmt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344027AbiCJObh (ORCPT
+        with ESMTP id S1343997AbiCJObf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4310BECFA;
-        Thu, 10 Mar 2022 06:29:27 -0800 (PST)
+        Thu, 10 Mar 2022 09:31:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D1CEB159;
+        Thu, 10 Mar 2022 06:29:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41ED5B81E9E;
-        Thu, 10 Mar 2022 14:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85ACEC340EB;
-        Thu, 10 Mar 2022 14:24:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4C2161CFB;
+        Thu, 10 Mar 2022 14:29:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9541C340F5;
+        Thu, 10 Mar 2022 14:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922264;
-        bh=KehoIr6yz70C9INH4cXgl326hlvCsnsKZSidzApz9l8=;
+        s=korg; t=1646922559;
+        bh=qGP3aVQ0vmqBgEfxaAdp9dyjlKpJaCjQ8EDWUAMNCaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tFF2dmvw/ENX1mwHPBQLDyInG/X7UwAhB0dYvNzvZFaNHuIap/+5luek9lVQrBvIs
-         CC95FiDUugcJLWaDt+z1bWV1yIYcogsNz/Co7qJGJvaFPscJi0XAx4mOSxAVFri5/Q
-         eyv+5Y7F8mzBU/4dYPTjvJulvmYirK95+pEapDW8=
+        b=uU1E21pgWFyGRk7Ia1t0wcLtD0Sq/7BNkMWP4wMoaGa9T+eZKS+QmLw+6R344QC4A
+         nphoLXJisMWlPT46Na4PzXcOiXAlriSEjaHvg+zjnSvwR07dmymkqq0b3Twx74TMBe
+         BsTdiq1sV+QP0MglBb5NKng9rJM+s3QzMWfHAt0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 5.10 23/58] arm64: entry.S: Add ventry overflow sanity checks
-Date:   Thu, 10 Mar 2022 15:18:43 +0100
-Message-Id: <20220310140813.536582570@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.15 18/58] arm64: Add Cortex-X2 CPU part definition
+Date:   Thu, 10 Mar 2022 15:19:07 +0100
+Message-Id: <20220310140813.508959964@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-References: <20220310140812.869208747@linuxfoundation.org>
+In-Reply-To: <20220310140812.983088611@linuxfoundation.org>
+References: <20220310140812.983088611@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
-commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
+commit 72bb9dcb6c33cfac80282713c2b4f2b254cd24d1 upstream.
 
-Subsequent patches add even more code to the ventry slots.
-Ensure kernels that overflow a ventry slot don't get built.
+Add the CPU Partnumbers for the new Arm designs.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/1642994138-25887-2-git-send-email-anshuman.khandual@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -62,6 +62,7 @@
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -75,6 +75,7 @@
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
+ #define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
++#define ARM_CPU_PART_CORTEX_X2		0xD48
+ #define ARM_CPU_PART_NEOVERSE_N2	0xD49
  
- 	.macro kernel_ventry, el, label, regsize = 64
- 	.align 7
-+.Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
- alternative_if ARM64_UNMAP_KERNEL_AT_EL0
-@@ -120,6 +121,7 @@ alternative_else_nop_endif
- 	mrs	x0, tpidrro_el0
- #endif
- 	b	el\()\el\()_\label
-+.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_alias, dst, sym
-@@ -832,6 +834,7 @@ alternative_else_nop_endif
- 	add	x30, x30, #(1b - tramp_vectors)
- 	isb
- 	ret
-+.org 1b + 128	// Did we overflow the ventry slot?
- 	.endm
- 
- 	.macro tramp_exit, regsize = 64
+ #define APM_CPU_PART_POTENZA		0x000
+@@ -118,6 +119,7 @@
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
++#define MIDR_CORTEX_X2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2)
+ #define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
 
 
