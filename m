@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 551C5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF63C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244776AbiCJRW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:22:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53420 "EHLO
+        id S245029AbiCJRXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:23:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244692AbiCJRWW (ORCPT
+        with ESMTP id S244637AbiCJRW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:22:22 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F4D199D4D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:17 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:26 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B15C199E2C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932877; x=1678468877;
+  t=1646932880; x=1678468880;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bpNLdvD0glY7GspXdaBYQNJVO+MYEUPR9GUQkRRXSOU=;
-  b=PSApOHzp+PBrweRcBANy51TsHElAoey0l1QBTQUDkdLPx70w5COrM0P5
-   c0yf9crFGkjufg9CcrK0ktnG/a/OJ1WQ10SNBuIIEFZbs8tgBJNzfj5aO
-   f5Sp1umGHAOgLJ41yD/W/GPEQbQ2vEhV7uugQrfEOWcsfrTkkkrwn4zKn
-   JAgVLI8XqFWrSM/nHi26OoAfY2Uv5Mch7zf9O+40xTihmNtbQB9dBOmrn
-   W35KsSk3h8IG5aQjCW2smkSghyREelUuh/GhsaiU1YqPFxYaGNeODaAPC
-   TGzA3Ev8KJZIY4J3gRxMVjzCFM4nhWubjInksfcXk9ClgXlKIA3o46tMu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="242758937"
+  bh=qwhD7MYd+5vjkJjSbQ7ZP+K6ASyttkvB2aN1EyDG9yc=;
+  b=ZKnUboXumX6zRoBcCD/RdACHP9SQbk5t/287AzYMKdl2gnasPG1HS4/D
+   6z3MoieGOzX3TqKVnIgpJZoifz7jRUabopaT5IYVTpcqiEMR9jaby1xdU
+   pUCfvgWWYxOD8ER5FDuAliv7ziVcmFnbcq40ZgKCSHMSYEk5Jr8MzPUF7
+   HMtB+T1SZwj2/uwdLKLrgBKbcnhUuAj7KIDPgDjLYhKSzMRv24RbGFkp1
+   cNxwKUJdrKdTbb6ep+Ravh5uCSaFR8ZR/mdjgVSCh0jdGiHlWzVX1sLJn
+   hxUHg3W+1uvaoyjjPsHneY3Vo+4qXfRxyxzFX3Ib8+loz6yFYDSlfTtBc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318536495"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="242758937"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:50 -0800
+   d="scan'208";a="318536495"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:19 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="633064339"
+   d="scan'208";a="548091166"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:20:49 -0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:18 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 11/45] x86/pkeys: Enable PKS on cpus which support it
-Date:   Thu, 10 Mar 2022 09:19:45 -0800
-Message-Id: <20220310172019.850939-12-ira.weiny@intel.com>
+Subject: [PATCH V9 24/45] entry: Split up irqentry_exit_cond_resched()
+Date:   Thu, 10 Mar 2022 09:19:58 -0800
+Message-Id: <20220310172019.850939-25-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,139 +59,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Protection Keys for Supervisor pages (PKS) enables fast, hardware thread
-specific, manipulation of permission restrictions on supervisor page
-mappings.  It uses a supervisor specific MSR to assign permissions to
-the pkeys.
+Auxiliary pt_regs space needs to be manipulated by the generic
+entry/exit code.
 
-When PKS is configured and the cpu supports PKS, initialize the MSR, and
-enable the hardware.
+Normally irqentry_exit() would take care of handling any auxiliary
+pt_regs on exit.  Unfortunately, the call to
+irqentry_exit_cond_resched() from xen_pv_evtchn_do_upcall() bypasses the
+normal irqentry_exit() call.  Because of this bypass
+irqentry_exit_cond_resched() will be required to handle any auxiliary
+pt_regs exit handling.  However, this prevents irqentry_exit() from
+being able to call irqentry_exit_cond_resched() and while maintaining
+control of the auxiliary pt_regs.
 
-Add asm/pks.h to store new internal functions and structures such as
-pks_setup().
+Separate out the common functionality of irqentry_exit_cond_resched() so
+that functionality can be used by irqentry_exit().  Add a pt_regs
+parameter in anticipation of having irqentry_exit_cond_resched() handle
+the auxiliary pt_regs separately from irqentry_exit().
 
-Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Reword commit message
-	Move this after the patch defining PKS_INIT_VALUE
+	Update commit message
 
 Changes for V8
-	Move setup_pks() into this patch with a default of all access
-		for all pkeys.
-	From Thomas
-		s/setup_pks/pks_setup/
-	Update Change log to better reflect exactly what this patch does.
+	New Patch
 ---
- arch/x86/include/asm/msr-index.h            |  1 +
- arch/x86/include/asm/pks.h                  | 15 +++++++++++++++
- arch/x86/include/uapi/asm/processor-flags.h |  2 ++
- arch/x86/kernel/cpu/common.c                |  2 ++
- arch/x86/mm/pkeys.c                         | 17 +++++++++++++++++
- 5 files changed, 37 insertions(+)
- create mode 100644 arch/x86/include/asm/pks.h
+ arch/x86/entry/common.c      | 2 +-
+ include/linux/entry-common.h | 3 ++-
+ kernel/entry/common.c        | 9 +++++++--
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index a4a39c3e0f19..6b0a6e0300a4 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -787,6 +787,7 @@
+diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
+index 6c2826417b33..f1ba770d035d 100644
+--- a/arch/x86/entry/common.c
++++ b/arch/x86/entry/common.c
+@@ -309,7 +309,7 @@ __visible noinstr void xen_pv_evtchn_do_upcall(struct pt_regs *regs)
  
- #define MSR_IA32_TSC_DEADLINE		0x000006E0
+ 	inhcall = get_and_clear_inhcall();
+ 	if (inhcall && !WARN_ON_ONCE(state.exit_rcu)) {
+-		irqentry_exit_cond_resched();
++		irqentry_exit_cond_resched(regs);
+ 		instrumentation_end();
+ 		restore_inhcall(inhcall);
+ 	} else {
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index ddaffc983e62..14fd329847e7 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -451,10 +451,11 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
  
-+#define MSR_IA32_PKRS			0x000006E1
+ /**
+  * irqentry_exit_cond_resched - Conditionally reschedule on return from interrupt
++ * @regs:	Pointer to pt_regs of interrupted context
+  *
+  * Conditional reschedule with additional sanity checks.
+  */
+-void irqentry_exit_cond_resched(void);
++void irqentry_exit_cond_resched(struct pt_regs *regs);
  
- #define MSR_TSX_FORCE_ABORT		0x0000010F
+ void __irqentry_exit_cond_resched(void);
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 490442a48332..f4210a7fc84d 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -395,7 +395,7 @@ void __irqentry_exit_cond_resched(void)
+ DEFINE_STATIC_CALL(__irqentry_exit_cond_resched, __irqentry_exit_cond_resched);
+ #endif
  
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-new file mode 100644
-index 000000000000..8180fc59790b
---- /dev/null
-+++ b/arch/x86/include/asm/pks.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_PKS_H
-+#define _ASM_X86_PKS_H
-+
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+
-+void pks_setup(void);
-+
-+#else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+static inline void pks_setup(void) { }
-+
-+#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+#endif /* _ASM_X86_PKS_H */
-diff --git a/arch/x86/include/uapi/asm/processor-flags.h b/arch/x86/include/uapi/asm/processor-flags.h
-index bcba3c643e63..191c574b2390 100644
---- a/arch/x86/include/uapi/asm/processor-flags.h
-+++ b/arch/x86/include/uapi/asm/processor-flags.h
-@@ -130,6 +130,8 @@
- #define X86_CR4_SMAP		_BITUL(X86_CR4_SMAP_BIT)
- #define X86_CR4_PKE_BIT		22 /* enable Protection Keys support */
- #define X86_CR4_PKE		_BITUL(X86_CR4_PKE_BIT)
-+#define X86_CR4_PKS_BIT		24 /* enable Protection Keys for Supervisor */
-+#define X86_CR4_PKS		_BITUL(X86_CR4_PKS_BIT)
- 
- /*
-  * x86-64 Task Priority Register, CR8
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 7b8382c11788..83c1abce7d93 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -59,6 +59,7 @@
- #include <asm/cpu_device_id.h>
- #include <asm/uv/uv.h>
- #include <asm/sigframe.h>
-+#include <asm/pks.h>
- 
- #include "cpu.h"
- 
-@@ -1632,6 +1633,7 @@ static void identify_cpu(struct cpuinfo_x86 *c)
- 
- 	x86_init_rdrand(c);
- 	setup_pku(c);
-+	pks_setup();
- 
- 	/*
- 	 * Clear/Set all flags overridden by options, need do it
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 7c90b2188c5f..f904376570f4 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -6,6 +6,7 @@
- #include <linux/debugfs.h>		/* debugfs_create_u32()		*/
- #include <linux/mm_types.h>             /* mm_struct, vma, etc...       */
- #include <linux/pkeys.h>                /* PKEY_*                       */
-+#include <linux/pks-keys.h>
- #include <uapi/asm-generic/mman-common.h>
- 
- #include <asm/cpufeature.h>             /* boot_cpu_has, ...            */
-@@ -209,3 +210,19 @@ u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
- 	pkval &= ~(PKEY_ACCESS_MASK << shift);
- 	return pkval | accessbits << shift;
+-void irqentry_exit_cond_resched(void)
++static void exit_cond_resched(void)
+ {
+ 	if (IS_ENABLED(CONFIG_PREEMPTION)) {
+ #ifdef CONFIG_PREEMPT_DYNAMIC
+@@ -406,6 +406,11 @@ void irqentry_exit_cond_resched(void)
+ 	}
  }
-+
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+
-+/*
-+ * PKS is independent of PKU and either or both may be supported on a CPU.
-+ */
-+void pks_setup(void)
+ 
++void irqentry_exit_cond_resched(struct pt_regs *regs)
 +{
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
-+	cr4_set_bits(X86_CR4_PKS);
++	exit_cond_resched();
 +}
 +
-+#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ {
+ 	lockdep_assert_irqs_disabled();
+@@ -431,7 +436,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ 		}
+ 
+ 		instrumentation_begin();
+-		irqentry_exit_cond_resched();
++		exit_cond_resched();
+ 		/* Covers both tracing and lockdep */
+ 		trace_hardirqs_on();
+ 		instrumentation_end();
 -- 
 2.35.1
 
