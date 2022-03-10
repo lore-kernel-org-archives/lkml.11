@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 551BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234164AbiCJOcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:32:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
+        id S243896AbiCJOc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:32:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243735AbiCJO0x (ORCPT
+        with ESMTP id S236183AbiCJO04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:26:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5B7154D2E;
-        Thu, 10 Mar 2022 06:22:28 -0800 (PST)
+        Thu, 10 Mar 2022 09:26:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E1C165C28;
+        Thu, 10 Mar 2022 06:22:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E9EB61B63;
-        Thu, 10 Mar 2022 14:22:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35177C36AF9;
-        Thu, 10 Mar 2022 14:22:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3559061CF0;
+        Thu, 10 Mar 2022 14:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0BDC340E8;
+        Thu, 10 Mar 2022 14:22:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922147;
-        bh=U3EXImq8gUZIXidQsm+kHu1XAwQQbkW0LhGr+JscwNY=;
+        s=korg; t=1646922150;
+        bh=xj+QdKUrjDDFGwApWZ1l3iJAR6528yj7oSQnmuWft5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ni7qKHcomFYnswdvoQfPvmVC1rB2HSGYJ2lwgZQFEKiY+2dHJB1o1R9aQQ2hc885N
-         uy79xygd+9UP9v39m938Q0Aj5YD8WID8rRsjWIIF4ZUj1i0bl5Nc7q06mi4zzh4rDc
-         ZN20PexPc4W0uKplRjZBGPzXCIv/uZtvIvAThbGU=
+        b=PIKb/60Ed8l+D0IiUOnpfEKAfGOSnOBo4Ayp/qB+nf5hW3NBENKowEIhVNkhj5apL
+         NMUaEjapRaMQMtxp3v5cp4sta8aEqt8vdIcC3T5l9S2YENurv92ZXk7E3LcfSHW7Xw
+         RlpNEbOVXB514ENhOzUejZq2/rphDbq/Zi1QR+t4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 21/33] ARM: Do not use NOCROSSREFS directive with ld.lld
-Date:   Thu, 10 Mar 2022 15:18:48 +0100
-Message-Id: <20220310140808.369034766@linuxfoundation.org>
+Subject: [PATCH 4.19 22/33] ARM: fix build warning in proc-v7-bugs.c
+Date:   Thu, 10 Mar 2022 15:18:49 +0100
+Message-Id: <20220310140808.397347677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140807.749164737@linuxfoundation.org>
 References: <20220310140807.749164737@linuxfoundation.org>
@@ -48,47 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 36168e387fa7d0f1fe0cd5cf76c8cea7aee714fa upstream.
+commit b1a384d2cbccb1eb3f84765020d25e2c1929706e upstream.
 
-ld.lld does not support the NOCROSSREFS directive at the moment, which
-breaks the build after commit b9baf5c8c5c3 ("ARM: Spectre-BHB
-workaround"):
+The kernel test robot discovered that building without
+HARDEN_BRANCH_PREDICTOR issues a warning due to a missing
+argument to pr_info().
 
-  ld.lld: error: ./arch/arm/kernel/vmlinux.lds:34: AT expected, but got NOCROSSREFS
+Add the missing argument.
 
-Support for this directive will eventually be implemented, at which
-point a version check can be added. To avoid breaking the build in the
-meantime, just define NOCROSSREFS to nothing when using ld.lld, with a
-link to the issue for tracking.
-
-Cc: stable@vger.kernel.org
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1609
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 9dd78194a372 ("ARM: report Spectre v2 status through sysfs")
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/vmlinux.lds.h |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/mm/proc-v7-bugs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm/kernel/vmlinux.lds.h
-+++ b/arch/arm/kernel/vmlinux.lds.h
-@@ -25,6 +25,14 @@
- #define ARM_MMU_DISCARD(x)	x
- #endif
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -110,7 +110,8 @@ static unsigned int spectre_v2_install_w
+ #else
+ static unsigned int spectre_v2_install_workaround(unsigned int method)
+ {
+-	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n");
++	pr_info("CPU%u: Spectre V2: workarounds disabled by configuration\n",
++		smp_processor_id());
  
-+/*
-+ * ld.lld does not support NOCROSSREFS:
-+ * https://github.com/ClangBuiltLinux/linux/issues/1609
-+ */
-+#ifdef CONFIG_LD_IS_LLD
-+#define NOCROSSREFS
-+#endif
-+
- /* Set start/end symbol names to the LMA for the section */
- #define ARM_LMA(sym, section)						\
- 	sym##_start = LOADADDR(section);				\
+ 	return SPECTRE_VULNERABLE;
+ }
 
 
