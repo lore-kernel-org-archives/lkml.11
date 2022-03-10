@@ -2,154 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69910C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 15:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236678AbiCJPof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 10:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        id S231241AbiCJPsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 10:48:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236680AbiCJPoc (ORCPT
+        with ESMTP id S230470AbiCJPsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 10:44:32 -0500
+        Thu, 10 Mar 2022 10:48:46 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1230B159286
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:43:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57687F14
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 07:47:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646927010;
+        s=mimecast20190719; t=1646927264;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dMyajQDSkp6YalzQfQ6wdQt14hBp4G+RbVV9rQvsjRE=;
-        b=dc9naEyCP3Wqgdgg83GASrf/BLMqmlMKwDXlYh3Ei9esClJHx9AHVNZ6KfTPW3bTNpYiK/
-        19oVong1y5NGFKiIBxzQ8JKv8IunVIDvMwAc2Dwlrac+qKX+tC/nYSqxCwlDl5DSPS15aV
-        BXckt21p4O7Vn7IPHGhBA/BH9Hlu/0o=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=l9mR/80qlAMFJEP55l81aNyJ85t2ielrHjLYKFMQaYQ=;
+        b=KTN9ECwFXlZhIrYTzh4nJ1Jj73oLE2AHdIqGDFOTsPTW4geGuehiSF3il+iTCGe9SzoQVf
+        JQhynYzFaucxP04hI1kxN4iwx14ysjqOVVNu4KwtJDEV7vKvWqEEck5t9adE1xTd7w5rip
+        JGVrsvFoAglNIhePWhm9rCoSXmxv0mM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-p86hZfsrOQCzHfygGHy-RA-1; Thu, 10 Mar 2022 10:43:26 -0500
-X-MC-Unique: p86hZfsrOQCzHfygGHy-RA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-664-P74NfXXjNsGi-zE_7koIOA-1; Thu, 10 Mar 2022 10:47:41 -0500
+X-MC-Unique: P74NfXXjNsGi-zE_7koIOA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D46A1091DA0;
-        Thu, 10 Mar 2022 15:43:24 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7073B7C037;
-        Thu, 10 Mar 2022 15:43:08 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 2215C416CE5D; Thu, 10 Mar 2022 10:22:13 -0300 (-03)
-Date:   Thu, 10 Mar 2022 10:22:12 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [patch v5] mm: lru_cache_disable: replace work queue synchronization
- with synchronize_rcu
-Message-ID: <Yin7hDxdt0s/x+fp@fuller.cnet>
-References: <YhUI1wUtV8yguijO@fuller.cnet>
- <YhUKRzEKxMvlGQ5n@fuller.cnet>
- <YiI+a9gTr/UBCf0X@fuller.cnet>
- <20220304163554.8872fe5d5a9d634f7a2884f5@linux-foundation.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD6A3520E;
+        Thu, 10 Mar 2022 15:47:39 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8889A832A5;
+        Thu, 10 Mar 2022 15:47:38 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] afs: Fix potential thrashing in afs writeback
+From:   David Howells <dhowells@redhat.com>
+To:     marc.dionne@auristor.com
+Cc:     linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 10 Mar 2022 15:47:37 +0000
+Message-ID: <164692725757.2097000.2060513769492301854.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220304163554.8872fe5d5a9d634f7a2884f5@linux-foundation.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In afs_writepages_region(), if the dirty page we find is undergoing
+writeback or write to cache, but the sync_mode is WB_SYNC_NONE, we go round
+the loop trying the same page again and again with no pausing or waiting
+unless and until another thread manages to clear the writeback and fscache
+flags.
 
-On systems that run FIFO:1 applications that busy loop,
-any SCHED_OTHER task that attempts to execute
-on such a CPU (such as work threads) will not
-be scheduled, which leads to system hangs.
+Fix this with three measures:
 
-Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU
-pagevec during the migration temporarily") relies on
-queueing work items on all online CPUs to ensure visibility
-of lru_disable_count.
+ (1) Advance the start to after the page we found.
 
-To fix this, replace the usage of work items with synchronize_rcu,
-which provides the same guarantees.
+ (2) Break out of the loop and return if rescheduling is requested.
 
-Readers of lru_disable_count are protected by either disabling
-preemption or rcu_read_lock:
+ (3) Arbitrarily give up after a maximum of 5 skips.
 
-preempt_disable, local_irq_disable  [bh_lru_lock()]
-rcu_read_lock                       [rt_spin_lock CONFIG_PREEMPT_RT]
-preempt_disable                     [local_lock !CONFIG_PREEMPT_RT]
-
-Since v5.1 kernel, synchronize_rcu() is guaranteed to wait on
-preempt_disable() regions of code. So any CPU which sees
-lru_disable_count = 0 will have exited the critical
-section when synchronize_rcu() returns.
-
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Acked-by: Minchan Kim <minchan@kernel.org>
-
+Fixes: 31143d5d515e ("AFS: implement basic file write support")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
- 
- v5: changelog improvements  		(Andrew Morton)
- v4: improve comment clarity, mention synchronize_rcu guarantees
-     on v5.1				(Andrew Morton /
-						 Paul E. McKenney)
- v3: update stale comment		(Nicolas Saenz Julienne)
- v2: rt_spin_lock calls rcu_read_lock, no need
- to add it before local_lock on swap.c	(Nicolas Saenz Julienne) 
 
-diff --git a/mm/swap.c b/mm/swap.c
-index bcf3ac288b56..b5ee163daa66 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
- 	for_each_online_cpu(cpu) {
- 		struct work_struct *work = &per_cpu(lru_add_drain_work, cpu);
- 
--		if (force_all_cpus ||
--		    pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
-+		if (pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
- 		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
- 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
- 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
-@@ -876,15 +875,21 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
- void lru_cache_disable(void)
- {
- 	atomic_inc(&lru_disable_count);
--#ifdef CONFIG_SMP
- 	/*
--	 * lru_add_drain_all in the force mode will schedule draining on
--	 * all online CPUs so any calls of lru_cache_disabled wrapped by
--	 * local_lock or preemption disabled would be ordered by that.
--	 * The atomic operation doesn't need to have stronger ordering
--	 * requirements because that is enforced by the scheduling
--	 * guarantees.
-+	 * Readers of lru_disable_count are protected by either disabling
-+	 * preemption or rcu_read_lock:
-+	 *
-+	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
-+	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
-+	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
-+	 *
-+	 * Since v5.1 kernel, synchronize_rcu() is guaranteed to wait on
-+	 * preempt_disable() regions of code. So any CPU which sees
-+	 * lru_disable_count = 0 will have exited the critical
-+	 * section when synchronize_rcu() returns.
- 	 */
-+	synchronize_rcu();
-+#ifdef CONFIG_SMP
- 	__lru_add_drain_all(true);
- #else
- 	lru_add_and_bh_lrus_drain();
+ fs/afs/write.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
+diff --git a/fs/afs/write.c b/fs/afs/write.c
+index 85c9056ba9fb..bd0201f4939a 100644
+--- a/fs/afs/write.c
++++ b/fs/afs/write.c
+@@ -701,7 +701,7 @@ static int afs_writepages_region(struct address_space *mapping,
+ 	struct folio *folio;
+ 	struct page *head_page;
+ 	ssize_t ret;
+-	int n;
++	int n, skips = 0;
+ 
+ 	_enter("%llx,%llx,", start, end);
+ 
+@@ -752,8 +752,15 @@ static int afs_writepages_region(struct address_space *mapping,
+ #ifdef CONFIG_AFS_FSCACHE
+ 				folio_wait_fscache(folio);
+ #endif
++			} else {
++				start += folio_size(folio);
+ 			}
+ 			folio_put(folio);
++			if (wbc->sync_mode == WB_SYNC_NONE) {
++				if (skips >= 5 || need_resched())
++					break;
++				skips++;
++			}
+ 			continue;
+ 		}
+ 
 
 
