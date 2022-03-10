@@ -2,80 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0723BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 08:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240177AbiCJIEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:04:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
+        id S240182AbiCJIF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:05:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiCJIET (ORCPT
+        with ESMTP id S231814AbiCJIFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:04:19 -0500
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24DDD48385;
-        Thu, 10 Mar 2022 00:03:17 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowABnVkGysClibGjFAg--.11037S2;
-        Thu, 10 Mar 2022 16:02:59 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     abel.vesa@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com
-Cc:     linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] clk: imx: Add check for kcalloc
-Date:   Thu, 10 Mar 2022 16:02:57 +0800
-Message-Id: <20220310080257.1988412-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Mar 2022 03:05:55 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F043D6BDCE
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 00:04:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6fZFRDk00Q3zeigqRio4keAMEWWmRAGUJBzI3wc4vAQ=; b=W3yXoQrHVgRBgOuCkBpPB/gz8i
+        hHpRH4Vk+apWrTyQskw2y87v/nbjZdjLg7oC7wtFJqhUstYc7xgq0y+HAisvh8mnqBSDKqAXTESYr
+        2K2IfYS/ep4DZGEZ17uWrOuPOnjFFATpZVvLNTql1Puws/3qju2vWtYYV43zWXtMIePBH8RjcWpyP
+        JOLOzsreGgH4Og22imza/oRbwSeqF2JvHJ9NX6bBauUPEKKHimWfhfq22gF2X7w7nJoIwFt487WPf
+        Qn3wzRhRFI43Gwij7BVkwIRzfoiKsXZQLal43/RREx+fvK3fHmkG5X7FBgr4OuD0snuAW5Yaq9UaQ
+        gtz59HOQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nSDn0-00Bptl-RQ; Thu, 10 Mar 2022 08:04:50 +0000
+Date:   Thu, 10 Mar 2022 00:04:50 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     Christoph Hellwig <hch@infradead.org>, michael@michaelkloos.com,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] riscv: Work to remove kernel dependence on the
+ M-extension
+Message-ID: <YimxItxjPsPTXeub@infradead.org>
+References: <YimjbmdACoQOk+hj@infradead.org>
+ <mhng-08a28047-b563-41f4-b705-f27b88554f2c@palmer-mbp2014>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowABnVkGysClibGjFAg--.11037S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrury5Jw45GFykAw1UWryxGrg_yoW3Xrg_Ga
-        yrJrn7Grs8tFnayF1UAr1rZr9Yvwn7Zr4xW3WavFy3J3y7Ar17J3yjvws3Xr17GrWj9FZx
-        C34qkrWxCr9xujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbxkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_
-        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb
-        XdbUUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <mhng-08a28047-b563-41f4-b705-f27b88554f2c@palmer-mbp2014>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the kcalloc(),
-it should be better to check it in order to
-avoid the dereference of the NULL pointer.
+On Wed, Mar 09, 2022 at 11:34:25PM -0800, Palmer Dabbelt wrote:
+> If someone has hardware that lacks M and users care about running Linux on
+> that then I'm happy to support it.  I'll still point out the silliness of
+> that decision, but if it's too late to change things then I'd rather support
+> the hardware.  If it's one of these "fill out every possible allowed ISA
+> flavor, even if nobody has one that runs Linux" then I don't see a reason to
+> bother -- there's an infinite amount of allowable RISC-V implementations,
+> we'll all go crazy chasing them around.
 
-Fixes: 379c9a24cc23 ("clk: imx: Fix reparenting of UARTs not associated with stdout")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/clk/imx/clk.c | 2 ++
- 1 file changed, 2 insertions(+)
+It's not like Linux had required M mode since the RISC-V port was merged
+upstream, so any new implementor really should know about it.  And
+performance on anything that requires Linux will just be horrible.
+I could see a bit of an excuse for a nommu port.
 
-diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
-index 7cc669934253..99249ab361d2 100644
---- a/drivers/clk/imx/clk.c
-+++ b/drivers/clk/imx/clk.c
-@@ -173,6 +173,8 @@ void imx_register_uart_clocks(unsigned int clk_count)
- 		int i;
- 
- 		imx_uart_clocks = kcalloc(clk_count, sizeof(struct clk *), GFP_KERNEL);
-+		if (!imx_uart_clocks)
-+			return;
- 
- 		if (!of_stdout)
- 			return;
--- 
-2.25.1
-
+Anyway, this kind of patch really does need to state the why.  And it
+better be a really good reason.
