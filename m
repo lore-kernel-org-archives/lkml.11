@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F33C4167E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF886C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 14:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244994AbiCJOin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S244932AbiCJOig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 09:38:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343615AbiCJObF (ORCPT
+        with ESMTP id S1343624AbiCJObG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:31:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162929BACF;
-        Thu, 10 Mar 2022 06:27:08 -0800 (PST)
+        Thu, 10 Mar 2022 09:31:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3509D06B;
+        Thu, 10 Mar 2022 06:27:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A681B82544;
-        Thu, 10 Mar 2022 14:27:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02E4C340EB;
-        Thu, 10 Mar 2022 14:27:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CE461B63;
+        Thu, 10 Mar 2022 14:26:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F30C340E8;
+        Thu, 10 Mar 2022 14:26:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646922425;
-        bh=UnvhIlQm44RU2lBhhosbmErjf2hqypuKRtKkNXHH5p4=;
+        s=korg; t=1646922411;
+        bh=T+N54UkHcq4XQeMGrUYj4BrPRFn4vEMXHGGu2ZpC7iw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=siZiiGiph+NxmvSobdHyDHMBrcUyBv6jtDRSyBwD1ur1xRvSshIzKWglDuA+2kQ41
-         WJl4AGQi5XsSmUi3JDtcch9n1fzeku8ovkykhPXPzFQMjEVRvZlITQA3GMyR+dLTR7
-         sIBSQqtLqf8ocxjWeDixVfMGAhiHdbIsOsqC69Io=
+        b=Kize23I/XPuOqoYcu+fV4DWj4vv4A49kbAhUaOX/6ELomQ9PpC24xRjrc3fnX/WIQ
+         16QLndZvqbFE42GafOV4cKnTS3Ffnj+MSpaSoba7gzMBTuS+tE55kRFFWnei17/HGU
+         Pks9Ijauyg7RX0v43qm0vOOkwdP119QiH2tdRZ60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.4 14/33] ARM: early traps initialisation
-Date:   Thu, 10 Mar 2022 15:19:15 +0100
-Message-Id: <20220310140809.163515443@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.4 10/33] x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+Date:   Thu, 10 Mar 2022 15:19:11 +0100
+Message-Id: <20220310140809.050264933@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
 References: <20220310140808.741682643@linuxfoundation.org>
@@ -48,71 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit 04e91b7324760a377a725e218b5ee783826d30f5 upstream.
+commit 0de05d056afdb00eca8c7bbb0c79a3438daf700c upstream.
 
-Provide a couple of helpers to copy the vectors and stubs, and also
-to flush the copied vectors and stubs.
+The commit
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+   44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
+
+added a warning for the "eIBRS + unprivileged eBPF" combination, which
+has been shown to be vulnerable against Spectre v2 BHB-based attacks.
+
+However, there's no warning about the "eIBRS + LFENCE retpoline +
+unprivileged eBPF" combo. The LFENCE adds more protection by shortening
+the speculation window after a mispredicted branch. That makes an attack
+significantly more difficult, even with unprivileged eBPF. So at least
+for now the logic doesn't warn about that combination.
+
+But if you then add SMT into the mix, the SMT attack angle weakens the
+effectiveness of the LFENCE considerably.
+
+So extend the "eIBRS + unprivileged eBPF" warning to also include the
+"eIBRS + LFENCE + unprivileged eBPF + SMT" case.
+
+  [ bp: Massage commit message. ]
+
+Suggested-by: Alyssa Milburn <alyssa.milburn@linux.intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/traps.c |   27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
---- a/arch/arm/kernel/traps.c
-+++ b/arch/arm/kernel/traps.c
-@@ -799,10 +799,22 @@ static inline void __init kuser_init(voi
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -610,12 +610,27 @@ static inline const char *spectre_v2_mod
+ 
+ #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
++#define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
+ 
+ #ifdef CONFIG_BPF_SYSCALL
+ void unpriv_ebpf_notify(int new_state)
+ {
+-	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && !new_state)
++	if (new_state)
++		return;
++
++	/* Unprivileged eBPF is enabled */
++
++	switch (spectre_v2_enabled) {
++	case SPECTRE_V2_EIBRS:
+ 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
++		break;
++	case SPECTRE_V2_EIBRS_LFENCE:
++		if (sched_smt_active())
++			pr_err(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
++		break;
++	default:
++		break;
++	}
  }
  #endif
  
-+#ifndef CONFIG_CPU_V7M
-+static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
-+{
-+	memcpy(vma, lma_start, lma_end - lma_start);
-+}
-+
-+static void flush_vectors(void *vma, size_t offset, size_t size)
-+{
-+	unsigned long start = (unsigned long)vma + offset;
-+	unsigned long end = start + size;
-+
-+	flush_icache_range(start, end);
-+}
-+
- void __init early_trap_init(void *vectors_base)
+@@ -1075,6 +1090,10 @@ void cpu_bugs_smt_update(void)
  {
--#ifndef CONFIG_CPU_V7M
--	unsigned long vectors = (unsigned long)vectors_base;
- 	extern char __stubs_start[], __stubs_end[];
- 	extern char __vectors_start[], __vectors_end[];
- 	unsigned i;
-@@ -823,17 +835,20 @@ void __init early_trap_init(void *vector
- 	 * into the vector page, mapped at 0xffff0000, and ensure these
- 	 * are visible to the instruction stream.
- 	 */
--	memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);
--	memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
-+	copy_from_lma(vectors_base, __vectors_start, __vectors_end);
-+	copy_from_lma(vectors_base + 0x1000, __stubs_start, __stubs_end);
+ 	mutex_lock(&spec_ctrl_mutex);
  
- 	kuser_init(vectors_base);
++	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
++	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
++		pr_warn_once(SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG);
++
+ 	switch (spectre_v2_user_stibp) {
+ 	case SPECTRE_V2_USER_NONE:
+ 		break;
+@@ -1711,7 +1730,11 @@ static ssize_t spectre_v2_show_state(cha
+ 		return sprintf(buf, "Vulnerable: LFENCE\n");
  
--	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
-+	flush_vectors(vectors_base, 0, PAGE_SIZE * 2);
-+}
- #else /* ifndef CONFIG_CPU_V7M */
-+void __init early_trap_init(void *vectors_base)
-+{
- 	/*
- 	 * on V7-M there is no need to copy the vector table to a dedicated
- 	 * memory area. The address is configurable and so a table in the kernel
- 	 * image can be used.
- 	 */
--#endif
- }
-+#endif
+ 	if (spectre_v2_enabled == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
+-		return sprintf(buf, "Vulnerable: Unprivileged eBPF enabled\n");
++		return sprintf(buf, "Vulnerable: eIBRS with unprivileged eBPF\n");
++
++	if (sched_smt_active() && unprivileged_ebpf_enabled() &&
++	    spectre_v2_enabled == SPECTRE_V2_EIBRS_LFENCE)
++		return sprintf(buf, "Vulnerable: eIBRS+LFENCE with unprivileged eBPF and SMT\n");
+ 
+ 	return sprintf(buf, "%s%s%s%s%s%s\n",
+ 		       spectre_v2_strings[spectre_v2_enabled],
 
 
