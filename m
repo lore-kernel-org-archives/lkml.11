@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 17:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244655AbiCJRXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 12:23:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
+        id S244707AbiCJRXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 12:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244713AbiCJRWo (ORCPT
+        with ESMTP id S244810AbiCJRW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 12:22:44 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A14199D40
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:26 -0800 (PST)
+        Thu, 10 Mar 2022 12:22:56 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7673119ABC8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 09:21:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646932886; x=1678468886;
+  t=1646932893; x=1678468893;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kkk+LCQw1C23mX1WkEmmWnrnM+AUHY54QPQUqmjdQBo=;
-  b=IR6jzAtM4fbd/pjcDSO1/gYv/QzJjmKdGIVqiDH54hoCkRiBEPICqk6g
-   dcBN6tCIp+zAPtYWj1h7hxoGmF7g3MAIfZc0Wy/KHAOQ5B15ymuzY8abF
-   Jr28Lvyz1gIxnOUsuBbK+mkG305iEV8/7cqN4tK7NBZbRd3+jl3yVYvtu
-   wZxwJjpc3wHskFrHd0hzJSGKDq+dl157oiBoeuwTWgfbmCk07p6N9+RZS
-   /6EU952PVXsrFEu3oqDGtWVmoO9/12toQQPFKs4kU8dGnB9njBnWBW+Kk
-   TdN3ZLcGL/0esSE8nk+f4WA43UMObdzs0A2KU6WuOlDmsR/HBOCntkX2F
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316033086"
+  bh=LEi5ixatEXIaTvJUZfAEuR4Ot8ERUfY1XluRiIAdkXA=;
+  b=D1lloPreyr01uUGUggX9kNI9lNqPSvKTvB9QvguRXhjSD0amodXwEiEQ
+   5+gSrBElG7yztmY5+72Q3CJt/OaNZlShURfAyyu9A6IRjvgKAPcvpv47N
+   wZYomQfU1X+dp91zkQCMpFar01xvc5comH5CVrmqjG869McRjfGYDxhp0
+   GvptGnyhl+YqRNrfegxlW/1onuK8IxeguOOfeRZtWUVUAQ5mvevsWAwY5
+   EdNC3OCJGpnfEKqGqjnv+FHM+aqN5E7dgWnLfUZdn0LIsNEgMHlIelbwf
+   9rllC6VKprrG9L0t1GwnNUgQbL+KJizD7jWM/r69rgVxjuvIDV6d/Dd4p
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="237484381"
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="316033086"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:25 -0800
+   d="scan'208";a="237484381"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:32 -0800
 X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="548091186"
+   d="scan'208";a="554738100"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:25 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 09:21:32 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -45,9 +45,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V9 27/45] x86/pkeys: Preserve PKRS MSR across exceptions
-Date:   Thu, 10 Mar 2022 09:20:01 -0800
-Message-Id: <20220310172019.850939-28-ira.weiny@intel.com>
+Subject: [PATCH V9 30/45] mm/pkeys: Introduce pks_update_exception()
+Date:   Thu, 10 Mar 2022 09:20:04 -0800
+Message-Id: <20220310172019.850939-31-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310172019.850939-1-ira.weiny@intel.com>
 References: <20220310172019.850939-1-ira.weiny@intel.com>
@@ -59,230 +59,166 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-PKRS is a per-logical-processor MSR which overlays additional protection
-for pages which have been mapped with a protection key.  It is desired
-to protect PKS pages while executing exception code while also allowing
-exception code to access PKS pages with the proper pks_set_*() calls.
+Some PKS use cases will want to catch permissions violations with the
+fault callback mechanism and optionally allow the access.
 
-To do this the current thread value must be saved, the CPU MSR value set
-to the default value during the exception, and the saved thread value
-restored upon completion.  This can be done with the new auxiliary
-pt_regs space.
+The pks_set_*() calls update the protection of the current running
+context.  They will not work to change the protections of a thread which
+has been interrupted.  Therefore updating a thread from within an
+exception requires a different method.
 
-When PKS is configured, configure auxiliary pt_regs, add space to
-pt_regs_auxiliary, and define save/restore functions.
+Introduce pks_update_exception() which updates the faulted threads
+protections in addition to the current context.
 
-Update the PKS test code to maintain functionality by clearing the saved
-PKRS value before returning.
+Add documentation
 
-Peter, Thomas, Andy, Dave, and Dan all suggested parts of the patch or
-aided in the development of the patch.
-
-[1] https://lore.kernel.org/lkml/CALCETrVe1i5JdyzD_BcctxQJn+ZE3T38EFPgjxN1F577M36g+w@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/874kpxx4jf.fsf@nanos.tec.linutronix.de/#t
-[3] https://lore.kernel.org/lkml/CALCETrUHwZPic89oExMMe-WyDY8-O3W68NcZvse3=PGW+iW5=w@mail.gmail.com/
-
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Suggested-by: Dan Williams <dan.j.williams@intel.com>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Suggested-by: Andy Lutomirski <luto@kernel.org>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-Changes for V9:
+Changes for V9
+	Add preemption disable around pkrs per cpu cache
 	Update commit message
-	s/pks_thread_pkrs/pkrs/
-	From Dave Hansen
-		s/pks_saved_pkrs/pkrs/
+	Change pkey type to u8
+	s/pks_saved_pkrs/pkrs
 
-Changes for V8:
-	Tie this into the new generic auxiliary pt_regs support.
-	Build this on the new irqentry_*() refactoring patches
-	Split this patch off from the PKS portion of the auxiliary
-		pt_regs functionality.
-	From Thomas
-		Fix noinstr mess
-		s/write_pkrs/pks_write_pkrs
-		s/pkrs_init_value/PKRS_INIT_VALUE
-	Simplify the number and location of the save/restore calls.
-		Cover entry from user space as well.
-
-Changes for V7:
-	Rebased to 5.14 entry code
-	declare write_pkrs() in pks.h
-	s/INIT_PKRS_VALUE/pkrs_init_value
-	Remove unnecessary INIT_PKRS_VALUE def
-	s/pkrs_save_set_irq/pkrs_save_irq/
-		The inital value for exceptions is best managed
-		completely within the pkey code.
+Changes for V8
+	Remove the concept of abandoning a pkey in favor of using the
+		custom fault handler via this new pks_update_exception()
+		call
+	Without an abandon call there is no need for an abandon mask on
+		sched in, new thread creation, or within exceptions...
+	This now lets all invalid access' fault
+	Ensure that all entry points into the pks has feature checks...
+	Place abandon fault check before the test callback to ensure
+		testing does not detect the double fault of the abandon
+		code and flag it incorrectly as a fault.
+	Change return type of pks_handle_abandoned_pkeys() to bool
 ---
- arch/x86/Kconfig                    |  3 ++-
- arch/x86/include/asm/entry-common.h |  3 +++
- arch/x86/include/asm/pks.h          |  4 ++++
- arch/x86/include/asm/ptrace.h       |  3 +++
- arch/x86/mm/pkeys.c                 | 32 +++++++++++++++++++++++++++++
- lib/pks/pks_test.c                  |  9 +++++++-
- 6 files changed, 52 insertions(+), 2 deletions(-)
+ Documentation/core-api/protection-keys.rst |  3 ++
+ arch/x86/mm/pkeys.c                        | 58 +++++++++++++++++++---
+ include/linux/pks.h                        |  5 ++
+ 3 files changed, 58 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 64348c94477e..f13fd7a73535 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1879,8 +1879,9 @@ config X86_INTEL_MEMORY_PROTECTION_KEYS
- 	  If unsure, say y.
+diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+index 5fdc83a39d4e..22ad58a93423 100644
+--- a/Documentation/core-api/protection-keys.rst
++++ b/Documentation/core-api/protection-keys.rst
+@@ -149,6 +149,9 @@ Changing permissions of individual keys
+ .. kernel-doc:: include/linux/pks.h
+         :identifiers: pks_set_readwrite pks_set_noaccess
  
- config ARCH_HAS_PTREGS_AUXILIARY
-+	def_bool y
- 	depends on X86_64
--	bool
-+	depends on ARCH_ENABLE_SUPERVISOR_PKEYS
++.. kernel-doc:: arch/x86/mm/pkeys.c
++        :identifiers: pks_update_exception
++
+ Overriding Default Fault Behavior
+ ---------------------------------
  
- choice
- 	prompt "TSX enable mode"
-diff --git a/arch/x86/include/asm/entry-common.h b/arch/x86/include/asm/entry-common.h
-index 5fa5dd2d539c..803727b95b3a 100644
---- a/arch/x86/include/asm/entry-common.h
-+++ b/arch/x86/include/asm/entry-common.h
-@@ -8,6 +8,7 @@
- #include <asm/nospec-branch.h>
- #include <asm/io_bitmap.h>
- #include <asm/fpu/api.h>
-+#include <asm/pks.h>
- 
- /* Check that the stack and regs on entry from user mode are sane. */
- static __always_inline void arch_check_user_regs(struct pt_regs *regs)
-@@ -99,10 +100,12 @@ static __always_inline void arch_exit_to_user_mode(void)
- 
- static inline void arch_save_aux_pt_regs(struct pt_regs *regs)
- {
-+	pks_save_pt_regs(regs);
- }
- 
- static inline void arch_restore_aux_pt_regs(struct pt_regs *regs)
- {
-+	pks_restore_pt_regs(regs);
- }
- 
- #endif
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-index e9ad3ecd7ed0..b69e03a141fe 100644
---- a/arch/x86/include/asm/pks.h
-+++ b/arch/x86/include/asm/pks.h
-@@ -6,6 +6,8 @@
- 
- void pks_setup(void);
- void x86_pkrs_load(struct thread_struct *thread);
-+void pks_save_pt_regs(struct pt_regs *regs);
-+void pks_restore_pt_regs(struct pt_regs *regs);
- 
- bool pks_handle_key_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 			  unsigned long address);
-@@ -14,6 +16,8 @@ bool pks_handle_key_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 
- static inline void pks_setup(void) { }
- static inline void x86_pkrs_load(struct thread_struct *thread) { }
-+static inline void pks_save_pt_regs(struct pt_regs *regs) { }
-+static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
- 
- static inline bool pks_handle_key_fault(struct pt_regs *regs,
- 					unsigned long hw_error_code,
-diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
-index 5e7f6e48c0ab..a3b00ad0d69b 100644
---- a/arch/x86/include/asm/ptrace.h
-+++ b/arch/x86/include/asm/ptrace.h
-@@ -97,6 +97,9 @@ struct pt_regs {
-  * ARCH_HAS_PTREGS_AUXILIARY.  Failure to do so will result in a build failure.
-  */
- struct pt_regs_auxiliary {
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+	u32 pkrs;
-+#endif
- };
- 
- struct pt_regs_extended {
 diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 39867d39460b..29885dfb0980 100644
+index 6327e32d7237..9b2a6a62d433 100644
 --- a/arch/x86/mm/pkeys.c
 +++ b/arch/x86/mm/pkeys.c
-@@ -346,6 +346,38 @@ void x86_pkrs_load(struct thread_struct *thread)
- 	pks_write_pkrs(thread->pkrs);
+@@ -409,6 +409,18 @@ void pks_setup(void)
+ 	cr4_set_bits(X86_CR4_PKS);
  }
  
-+/*
-+ * PKRS is a per-logical-processor MSR which overlays additional protection for
-+ * pages which have been mapped with a protection key.
-+ *
-+ * To protect against exceptions having potentially privileged access to memory
-+ * of an interrupted thread, save the current thread value and set the PKRS
-+ * value to be used during the exception.
-+ */
-+void pks_save_pt_regs(struct pt_regs *regs)
++static void __pks_update_protection(u8 pkey, u8 protection)
 +{
-+	struct pt_regs_auxiliary *aux_pt_regs;
++	u32 pkrs;
 +
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
++	pkrs = current->thread.pkrs;
++	current->thread.pkrs = pkey_update_pkval(pkrs, pkey, protection);
 +
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	aux_pt_regs->pkrs = current->thread.pkrs;
-+	pks_write_pkrs(PKS_INIT_VALUE);
-+}
-+
-+void pks_restore_pt_regs(struct pt_regs *regs)
-+{
-+	struct pt_regs_auxiliary *aux_pt_regs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	current->thread.pkrs = aux_pt_regs->pkrs;
++	preempt_disable();
 +	pks_write_pkrs(current->thread.pkrs);
++	preempt_enable();
 +}
 +
  /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
+  * Do not call this directly, see pks_set*().
   *
-diff --git a/lib/pks/pks_test.c b/lib/pks/pks_test.c
-index 16aa44cf498a..86af2f61393d 100644
---- a/lib/pks/pks_test.c
-+++ b/lib/pks/pks_test.c
-@@ -34,11 +34,14 @@
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/pgtable.h>
-+#include <linux/pkeys.h>
- #include <linux/pks.h>
- #include <linux/pks-keys.h>
+@@ -422,21 +434,51 @@ void pks_setup(void)
+  */
+ void pks_update_protection(u8 pkey, u8 protection)
+ {
+-	u32 pkrs;
+-
+ 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
+ 		return;
  
+ 	if (WARN_ON_ONCE(pkey >= PKS_KEY_MAX))
+ 		return;
+ 
+-	pkrs = current->thread.pkrs;
+-	current->thread.pkrs = pkey_update_pkval(pkrs, pkey,
+-						 protection);
+-	preempt_disable();
+-	pks_write_pkrs(current->thread.pkrs);
+-	preempt_enable();
++	__pks_update_protection(pkey, protection);
+ }
+ EXPORT_SYMBOL_GPL(pks_update_protection);
+ 
++/**
++ * pks_update_exception() - Update the protections of a faulted thread
++ *
++ * @regs: Faulting thread registers
++ * @pkey: pkey to update
++ * @protection: protection bits to use.
++ *
++ * CONTEXT: Exception
++ *
++ * pks_update_exception() updates the faulted threads protections in addition
++ * to the protections within the exception.
++ *
++ * This is useful because the pks_set_*() functions will not work to change the
++ * protections of a thread which has been interrupted.  Only the current
++ * context is updated by those functions.  Therefore, if a PKS fault callback
++ * wants to update the faulted threads protections it must call
++ * pks_update_exception().
++ */
++void pks_update_exception(struct pt_regs *regs, u8 pkey, u8 protection)
++{
++	struct pt_regs_extended *ept_regs;
++	u32 old;
++
++	if (!cpu_feature_enabled(X86_FEATURE_PKS))
++		return;
++
++	if (WARN_ON_ONCE(pkey >= PKS_KEY_MAX))
++		return;
++
++	__pks_update_protection(pkey, protection);
++
++	ept_regs = to_extended_pt_regs(regs);
++	old = ept_regs->aux.pkrs;
++	ept_regs->aux.pkrs = pkey_update_pkval(old, pkey, protection);
++}
++EXPORT_SYMBOL_GPL(pks_update_exception);
++
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+diff --git a/include/linux/pks.h b/include/linux/pks.h
+index 224fc3bbd072..45156f358776 100644
+--- a/include/linux/pks.h
++++ b/include/linux/pks.h
+@@ -9,6 +9,7 @@
  #include <uapi/asm-generic/mman-common.h>
  
-+#include <asm/ptrace.h>
-+
- #define PKS_TEST_MEM_SIZE (PAGE_SIZE)
+ void pks_update_protection(u8 pkey, u8 protection);
++void pks_update_exception(struct pt_regs *regs, u8 pkey, u8 protection);
  
- #define CHECK_DEFAULTS		0
-@@ -110,12 +113,16 @@ static void set_context_for_fault(struct pks_test_ctx *ctx)
- bool pks_test_fault_callback(struct pt_regs *regs, unsigned long address,
- 			     bool write)
- {
-+	struct pt_regs_extended *ept_regs = to_extended_pt_regs(regs);
-+	struct pt_regs_auxiliary *aux_pt_regs = &ept_regs->aux;
-+	u32 pkrs = aux_pt_regs->pkrs;
-+
- 	pr_debug("PKS Fault callback: ctx %p\n", g_ctx_under_test);
+ /**
+  * pks_set_noaccess() - Disable all access to the domain
+@@ -41,6 +42,10 @@ typedef bool (*pks_key_callback)(struct pt_regs *regs, unsigned long address,
  
- 	if (!g_ctx_under_test)
- 		return false;
+ static inline void pks_set_noaccess(u8 pkey) {}
+ static inline void pks_set_readwrite(u8 pkey) {}
++static inline void pks_update_exception(struct pt_regs *regs,
++					u8 pkey,
++					u8 protection)
++{ }
  
--	pks_set_readwrite(g_ctx_under_test->pkey);
-+	aux_pt_regs->pkrs = pkey_update_pkval(pkrs, g_ctx_under_test->pkey, 0);
- 	g_ctx_under_test->fault_seen = true;
- 	return true;
- }
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ 
 -- 
 2.35.1
 
