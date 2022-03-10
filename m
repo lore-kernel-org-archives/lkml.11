@@ -2,158 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A322CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E06A4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Mar 2022 11:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiCJLnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 06:43:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S241740AbiCJLnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Mar 2022 06:43:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235484AbiCJLnM (ORCPT
+        with ESMTP id S241763AbiCJLne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 06:43:12 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2117.outbound.protection.outlook.com [40.107.96.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078FB145AC7;
-        Thu, 10 Mar 2022 03:42:08 -0800 (PST)
+        Thu, 10 Mar 2022 06:43:34 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2042.outbound.protection.outlook.com [40.107.236.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D63145E30;
+        Thu, 10 Mar 2022 03:42:28 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KXT5WyL6I62ZiOrAiOifuf5tPMZ7CQU+nRpTZ7A0xextQy33s6dxJJuJMaI6IG8NhFAmAiFiwGJskHnkC4Ixui/gFDfNpExv1XME/wH6z+bXfd1v8g+PGeuxdKpm3/ux9GcKByfRrwTnhUO2b5XlD5E6qOLKHswcLdtNAEL9ZUCvOkMenZX9ipGy+g8My+U1c43gCmOpZx7psd0KZ6H5fx4CGvs/9WHGaUKyVR6S9VfiEZHn5O9JHDCVLOu/Zy4zbXKg6nvJFUrMF3brYrqIg0HzZOWtQiP01YT+LIDZHZteIWzvf2I3mU7KljPbiY7U7WA3KDWhfmwuS2MMl5U9TQ==
+ b=j27EDWcbQHPDQWfGt2ma4VRWvHvaAUOSFZqAT4wIbY78+x9YbiiHmwE4fYDK31uwVNtBgKFk/sHvNEVFvMi5HkaH5Zm6hMnAgP/1H83GeylHeibpj6pqkvQ/DA4G9gThg543x5WJytIxKwTly+VY3/NJM8SlDeFPJVU1qZMPxR2DNzP3R06WY1avUZPbPVWf/DI/FKGa2x90Dquc+0Pz47ouI+KhZRnG6J7nQkc27CJ4c4+Ob58xDi1CCcMJU4v3PobYcz40zb4XDRGSOv7sbU/NjoQKjlo30YemjkHvVvew6B//ON2NPGgOnsueSEPL8bSl5DRNvNArjSh6O1QeLg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wjv6CnSj3V2zB6DLMhx0xgB/PBPemXBO36wqpNHB844=;
- b=UB3ZZdzjlnD7gVr5GMIkEQSLgiBY0sPn+YGLfzGgHbSr19YjN89D5v7tFsMJ1IJmnQ0LCe5SDAK+EjZwz7zQVIwXwxHPQXP5m0+BP6PYedaCNtvRhh/niJQTxIyjFE0A85i6iyj/62Ul2nQ7R2030opF6kLOonZ3vKjzHP7LyBpJSc7tgRcor50e95S7IaYQwmQCyJ5853YbSRqgwAOw45Coarivk1wXSj1x8zrspRj/FI//XQlag4hZOT0GVMsYZW/2wNkfCDMLroSa6k6yt6XuXTfVjcKXJ4abzhGq73oyd5VBCrqBZZpLGYXUkF8EXllUqdOSjn9FjQyFc7e54g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
+ bh=Pn9ha6MI+JkQb6XPGZPSLKR/Hbe4jEnN3HXYYdnT+Wo=;
+ b=Enc//0OWXdKuamzOiL+oOoc5oGaoCiSt0jYitA8QSqlMVJGWsb5tFeaEEJ7Drtlzr06VKb2qLPIlfY93QjacbRMMhoUAkpg9K0Yl9Jx3FJVbV07XZ5EGwIDPurW3sD+oqnMCNAHPfiqXaWOZY+4i6PVI5O7K8WD5lDAaqqmUFIXAieJWPR32R0kYonSRtulCTO5fVHyU9Auoel3ApKUFJl+jV6kIVSYgOvLdUcqn3BeAjcF4gTMxOpIAPAylgeMQOb64xf5qR1dWCiAqIw+pYfEyJGAuA/m4G5LdUxqCnJDXVaxCsogj2RiyA4Nio6YU3MmhBzZ7fl1qJSuiuKnX2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wjv6CnSj3V2zB6DLMhx0xgB/PBPemXBO36wqpNHB844=;
- b=BpfuAd0d8VlshMLiJ9HxODYsd1UMoLp+Q/XY0TAI8J6mjhzPsOpmlWA6LllOfqJxRH3QgHz6kRfGpP2Fto7FXP8LMSx2AO1p/CcaABaEejC5Dokv54sRgYjlOjb3XXo3T8Wnhr8LbeGp7z7pl/lvGDkza9tNt0LhnBdvXsePjj4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
- DM6PR01MB3771.prod.exchangelabs.com (2603:10b6:5:82::24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5038.16; Thu, 10 Mar 2022 11:42:04 +0000
-Received: from SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6]) by SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6%6]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
- 11:42:04 +0000
-From:   Quan Nguyen <quan@os.amperecomputing.com>
-To:     Corey Minyard <minyard@acm.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org
-Cc:     Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: [PATCH v6 3/4] ipmi: ssif_bmc: Return -EFAULT if copy_from_user() fails
-Date:   Thu, 10 Mar 2022 18:41:18 +0700
-Message-Id: <20220310114119.13736-4-quan@os.amperecomputing.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220310114119.13736-1-quan@os.amperecomputing.com>
-References: <20220310114119.13736-1-quan@os.amperecomputing.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0125.apcprd02.prod.outlook.com
- (2603:1096:4:188::13) To SJ0PR01MB7282.prod.exchangelabs.com
- (2603:10b6:a03:3f2::24)
+ bh=Pn9ha6MI+JkQb6XPGZPSLKR/Hbe4jEnN3HXYYdnT+Wo=;
+ b=SvlGoB0p1c3gobPsp/71xDMxQYLW/+l6ISQBOFL92Zf4kO2Eoff8sprL8pIzssbiV40PbfF6/a8VwbPr1yz8dfE8az1M9rYj3PSFj1Rxcctr+Jv9YNoMPnSGwviWUdsYHY9ZhuNzdqLiF3SD/x9Fea0psYErXCOBA+xvYZMAanbwaxTnh3vMmKxiWI1mj/f5M4BbJWectOQP2sK/nnvMLpR8zXMm5FKEiwXBF4if9UnBSdwXeDBULcbn3MPDsfnhcyWqpJAOsU3XuOyVXaKCbWGhfxBnC09gywPotEQ3lz2/Du8xk15o97UG3xjGRbR4PmdLhT0XR8PKmBURRnqXEg==
+Received: from DM5PR17CA0067.namprd17.prod.outlook.com (2603:10b6:3:13f::29)
+ by MN2PR12MB4848.namprd12.prod.outlook.com (2603:10b6:208:1be::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 10 Mar
+ 2022 11:42:26 +0000
+Received: from DM6NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:13f:cafe::42) by DM5PR17CA0067.outlook.office365.com
+ (2603:10b6:3:13f::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22 via Frontend
+ Transport; Thu, 10 Mar 2022 11:42:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT056.mail.protection.outlook.com (10.13.173.99) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5038.14 via Frontend Transport; Thu, 10 Mar 2022 11:42:26 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Mar
+ 2022 11:42:25 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 10 Mar
+ 2022 03:42:24 -0800
+Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Thu, 10 Mar
+ 2022 03:42:21 -0800
+From:   Sameer Pujar <spujar@nvidia.com>
+To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <oder_chiou@realtek.com>, <robh@kernel.org>
+CC:     <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
+Subject: [RFC PATCH 0/3] Flexible codec clock configuration
+Date:   Thu, 10 Mar 2022 17:11:14 +0530
+Message-ID: <1646912477-3160-1-git-send-email-spujar@nvidia.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d611fabd-8eee-4196-a55f-08da028aff19
-X-MS-TrafficTypeDiagnostic: DM6PR01MB3771:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR01MB37717B97790867DDFD848F73F20B9@DM6PR01MB3771.prod.exchangelabs.com>
+X-MS-Office365-Filtering-Correlation-Id: d467749a-e86d-41d6-9f02-08da028b0cbf
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4848:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4848B979CF269FCB33DA5305A70B9@MN2PR12MB4848.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gky5Ab+W//BAhQk2IwggqqVPiUdUz6CmYQK7gtFQU6smKtkQuu5hgIH6u7EM/ibgk0xGACeIdFTc5kyLcghSZOLk6q7aHuxfNkdtf43CnXmO3ePzP49EOCN7QU27MfGL9y/6Va4SBj86i6htfeed9UOnkU4QKOSRONGZ5ABn6X4TnlKZpBgdpwVaLxhFzrYDWEn6XrLqqWs3LOy4vs//5AwsHibV67w8yqPRNqi4CPHHpM8nQ9meyWflNUwZrckAfLpuw5hxPUlqhaPCIcQdlI7lY9kxQmTf0hT3C6oYDWE0QoD1b/zF92PrLy7FwxKlwO9HFEieUl8s/Xln7mUmjBjNCSdUleEphAnp1QzDgCi+dufBXclWbHwBDk0LNKST4ah56e+k4PXH79ewYK+YLRoWinotcclZ0pFKBEXNf4FtVZh6MlP0c0MuQfAitZbAQZpRlTXMDaBmX7+2hy79dwQMOIL0jDcN12631qb2hFe50ZymKW9Rj+DgQhEscsJUkS7By0X6sca828js+mX1GrBcGpP3bmlXN6yXCdDQE3BPcctkAr6HhzSl+wrl0Zn7EpabvxYy1D26iWRj+Yd/qww5tURqsH75ABC6XzLaYMdHFAW9weybPZ3QV4RPTUfTN8onlS5Q4qnlLX7r9MqjUvCjcL8sYuMVEJszNw37tzf2fMEYK4ac7TXp2RzArHghHOiLLCf0ngUdH7E6kuZ9ufidKfMCFNop5rrqfZ1ixs0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(83380400001)(186003)(26005)(107886003)(921005)(54906003)(66946007)(110136005)(2616005)(316002)(6512007)(1076003)(52116002)(2906002)(6506007)(6666004)(86362001)(66476007)(66556008)(8936002)(7416002)(5660300002)(6486002)(508600001)(4326008)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BefJ29iVA7lzH+Tc0cl5Wwn/hWvI8l4RxyxBQLpFKF8i9y6QQxyHSuth/y28?=
- =?us-ascii?Q?gVfy5UxfB491HizQZWEDZbgrKujFVlql6uVQ/RzFgRS/Q0FB9886GqOCIh15?=
- =?us-ascii?Q?kCTQF7uMSgraTCs1+E9qsM92gklfyqDdJ6yXSdcpgISEGNT78OVKMUeUYZmA?=
- =?us-ascii?Q?2RFNftQN5YJDyiAkb5fCWjOrvHpqYRfWSV/5iqobIgHakB77j+HGSEtPqt/X?=
- =?us-ascii?Q?L9ICWJWh+7HJR67ybXjr/kWLZXdyD16PzKhDerfkSXNpiRv+2ynw87dQCZ6y?=
- =?us-ascii?Q?uS95MFMDz4quTHW0CUPN7IpWaW0/QPFdVwtg6Z1S43Kmj3BT8R/JzK3RewC3?=
- =?us-ascii?Q?UazP7P/JC7OtLP4/wk7fXiSUa2ugmaqfax5QRF2qOzvZ8GnhbbpUNn0VWjW5?=
- =?us-ascii?Q?dUCLiiT7CQhCQVrgjZPyybsApszkXVizoAj5I+KCZpPINWyoaR2kY91yN6ju?=
- =?us-ascii?Q?DbyNf8O5n/bEmQt7Niry4DQzlN0ZisAXv+H0sU9bl/WrvIh4+pi+VPR0J9lW?=
- =?us-ascii?Q?MD4QkmstqH6WjnW1Qey1Q6K6oggdnwe7tnP2FvCD9UlcB8gHY7QAXuYC67lI?=
- =?us-ascii?Q?2rpeFG5pAKzBmB4BYr+7g18zHkpeNwNV4wG2s/Wek1xqioK20P0rrDHkf4Vv?=
- =?us-ascii?Q?AdAvI1ZoGi4ZxUXbxJLt8RvH+yHP9338MOnBtKd+jhkMv2t46Qkys9RD/7Lz?=
- =?us-ascii?Q?HgPUvHndKnaPC/mCiEz1wVqVuEVxiLmwJHrG8Qes5qmWbRCjaWpe5bbugQrA?=
- =?us-ascii?Q?5Q+R7mEjIz/5FEN5t5f3noh+tSs8qq7tNazxNBaeDPq5cFKqL+vWADwFqVVx?=
- =?us-ascii?Q?aTVWAgKJLsO5X5qXIV7qXc64t6YWxEuE1qKDIlo6i4j5LCAfMbaPdH27BMYf?=
- =?us-ascii?Q?ngoT/6bzc76YOHEr0iXrJAQ8k82VX/3ltwZ3Va2gtFmMcbrdLU0u4VwgCeBn?=
- =?us-ascii?Q?pc7Rf4T5VuJU7DpS8EiI///Rp9SWHqhB164jtKl4mVF/eWhGm/JXxJ4D7SA1?=
- =?us-ascii?Q?Mim731gGz2C2I1dyTNywGwlRMorzSkvgLVyNaA9BUUGcdJcWEwVO/yTPftQb?=
- =?us-ascii?Q?8QMGYS5cG1vOzzjLtmnyTzXqYpEe+f0SuMHlk4HOzX0OTwPnXA2ckn4ritr1?=
- =?us-ascii?Q?ioaTlob7fLcUHX27VephVAq315dFQTnBU0CWVZ/AUYid4jUeVBo8Q2AYY3Yt?=
- =?us-ascii?Q?Vwir7gq9moyDMl/sLhPsefP+N1C7WnUkmKceNuzi9fxUo3yRsdbOUnceZzn3?=
- =?us-ascii?Q?9mZGWC05dtAYDFXdQETOhtngLaS4Jl1YuwCmoVu7F3yNB09V51EnJhMz8WCW?=
- =?us-ascii?Q?ZZlcLQCMrQeznC3fEhmWeaQOxB4PGXoMmA5S3YFZlYpoHEQdaPtU7TT6efmS?=
- =?us-ascii?Q?geLFqJuC2rRtvXDQnnkCmSd/g8c4tdIA1mbI9TI0jN9DqVLBsR4so9/uqXf0?=
- =?us-ascii?Q?fe2y9uudYuisPlb8as617S9Xc4g+X1zRaO61RFxODPb/etK2SzuDvfd7FT7Z?=
- =?us-ascii?Q?FkUpjXSG8G7sXhRihGcKO2F7AvmC21uVVX6dpyLPCbat1gG5Io5Bvu3309rX?=
- =?us-ascii?Q?Yg6N/54b9SqzXUmXw9klFjwal5XEMN2LDL32BhUHAvoojpPt9teeeyLsNI58?=
- =?us-ascii?Q?PFHaGgfHszgaeKfx4sTt6HsXHKrq2zCllO13hJUYmCzsvFJV1FUysqqoekbq?=
- =?us-ascii?Q?XuABkSua2acs46PzD0U/fRrNYa8=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d611fabd-8eee-4196-a55f-08da028aff19
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:42:04.2627
+X-Microsoft-Antispam-Message-Info: tEwgMOzYRGgQEAz2aV7NMweK6VOkVH2neKBrVuEum4Eb1F0shp7ypZLzf/P5LWofpuK+eKGIc2+K4H3SeOnw/E7b20ERrEuR32aiCnQuc0vG6H1DyoRZlSeWx9ptdsqdL+scxjd+uVKPpNa/uAzWYy648j3Dqzv9g246tI5KYMs760095swKzzphCnZQrDamy/aLJzYPkeZrOGPYIZtc2WsWiWb5/Tf3zUQpVNrb7GJUhPUDX2/evAprNRRihdrAQ4DYoLgJMv0Xi9vYkkt6WBcVKpWOdft2f3I2rfDje+07ovhkQNT2Pe0xk5VQ6aYB/lLONRGpDOEC2zLdUjDlYWwLAEQh1jNwpU1rbGwQsIupGPn9WTQXcS6NEvfsUm6k8YsWi8zpw1HSEzGArUHZSK08ZjCkb/4shzu9RDSIzUStxSKPDuNknfa+VLdVUNzC/XOhpe17f7iq2yzmIdrXTzIY6Er3qxbQh1HxHraaDLaV1uDyGlu4OE4d1bU9CR7SKn2lYiVphR9yQBYTV4BoOiaXH1le6MDj0Gl4HEkZDkGTQQi9q0wAJPfa1s7/MfWzN9lw+fVrBs5Y63TwzqySJmRNVsPMcgdKgJnJVNqCAu6v1FmB+qKZL8pj6WwFmarNh9N/iNQKciC/uKlRl2CCu2lAZFetusQ0Shg2bbT7ZG6yft7Ap/q/wfpfgKNgiLfuKMXN86JdZSQ76VPzB5fXlK20iny5Vqaxmjmo4Yx40KZQXoNl3vORfuftclQ0tp1BY/DQNslyOajBeGm7ZR7nnLwWK54viv4f5WrCTlIQ41Y=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(47076005)(70586007)(4326008)(2906002)(8936002)(5660300002)(40460700003)(7416002)(86362001)(36860700001)(70206006)(8676002)(83380400001)(316002)(426003)(2616005)(508600001)(107886003)(36756003)(186003)(26005)(54906003)(110136005)(82310400004)(966005)(356005)(6666004)(81166007)(7696005)(336012)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:42:26.2534
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TNUhbl8uD63EvAfj4sc0kNU9N19a/JQFOlQEhdOjrYdbB2pB5pvO2WWXcWraPKmIRX4jCqFk1idU1mYsLfGbdjV/hE+HMOKVNjoY9vZuhCY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR01MB3771
+X-MS-Exchange-CrossTenant-Network-Message-Id: d467749a-e86d-41d6-9f02-08da028b0cbf
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4848
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+Typically the codec drivers require setting up of Sysclk. Sometimes
+presence of internal PLL can provide more options of Sysclk configuration.
+Presently ASoC provides callbacks set_sysclk() and set_pll() in such
+cases. However it comes with following limitations considering generic
+machine drivers (simple-card or audio-graph-card):
 
-The copy_from_user() function returns the number of bytes remaining to
-be copied but we should return -EFAULT here.
+ 1. The Sysclk source needs to be passed to set_sysclk() callback.
+    Presently simple-card or audio-graph-card card rely on default
+    source value (which is 0). If any other source needs to be used,
+    it is currently not possible.
 
-Fixes: 501c25b59508 ("ipmi: ssif_bmc: Add SSIF BMC driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
-Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
----
-v6:
-  + New add in v6, thanks Dan for the patch     [Dan]
+ 2. The same would be true for codec PLL configuration as well, though
+    simple-card or audio-graph-card don't have support yet for the PLL
+    configuration.
 
- drivers/char/ipmi/ssif_bmc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/ipmi/ssif_bmc.c b/drivers/char/ipmi/ssif_bmc.c
-index 62db97773654..91ac2cae756e 100644
---- a/drivers/char/ipmi/ssif_bmc.c
-+++ b/drivers/char/ipmi/ssif_bmc.c
-@@ -87,9 +87,8 @@ static ssize_t ssif_bmc_write(struct file *file, const char __user *buf, size_t
- 	if (count > sizeof(struct ssif_msg))
- 		return -EINVAL;
- 
--	ret = copy_from_user(&msg, buf, count);
--	if (ret)
--		return ret;
-+	if (copy_from_user(&msg, buf, count))
-+		return -EFAULT;
- 
- 	if (!msg.len || count < ssif_msg_len(&msg))
- 		return -EINVAL;
+Earlier attempt[0] to address above was not felt suitable. The suggestion
+was to use standard clock based bindings instead.
+
+This RFC series takes RT5659 as a reference and exposes clock relationships
+via DT. **This is not in the final shape yet**, but I wanted to get some
+valuable feedback to understand if the idea is right. If this appears fine,
+this can be extended to other codecs (wherever necessary).
+
+This does not completely remove the need of set_sysclk() callback because
+the clock requirement (MCLK * fs) would come from the machine driver. But
+machine driver need not worry about Sysclk source. It would be internally
+managed by Codec via DT clock relationships.
+
+
+[0] https://patchwork.kernel.org/project/alsa-devel/list/?series=438531&archive=both&state=* 
+
+Sameer Pujar (3):
+  ASoC: soc-pcm: tweak DPCM BE hw_param() call order
+  ASoC: rt5659: Expose internal clock relationships
+  ASoC: tegra: Get clock rate in consumer mode
+
+ sound/soc/codecs/rt5659.c      | 257 +++++++++++++++++++++++++++++++++++++++--
+ sound/soc/codecs/rt5659.h      |   9 ++
+ sound/soc/soc-pcm.c            |  60 +++++++++-
+ sound/soc/tegra/tegra210_i2s.c |  25 ++--
+ 4 files changed, 332 insertions(+), 19 deletions(-)
+
 -- 
-2.35.1
+2.7.4
 
