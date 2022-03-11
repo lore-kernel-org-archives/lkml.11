@@ -2,92 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE389C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68258C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbiCKUwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 15:52:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
+        id S229827AbiCKUxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 15:53:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiCKUwL (ORCPT
+        with ESMTP id S230108AbiCKUws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 15:52:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEC21D981F;
-        Fri, 11 Mar 2022 12:51:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 11 Mar 2022 15:52:48 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3881FA1F5;
+        Fri, 11 Mar 2022 12:51:39 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D75AB61F99;
-        Fri, 11 Mar 2022 20:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF049C340E9;
-        Fri, 11 Mar 2022 20:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647031864;
-        bh=zmuWKozrUfnxutVRlths6JXC2XxK1VKUeowuBiagvhA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=S2WNf1lJT3t/VZEr+1IuLr89QbIyi9Kb/z9xp3TFGUnmgJm+rY1jfGd1ieRDDCAgF
-         uGvXD5A2EmXwfZL3DBSbJeLRxMItDJIyDJUj9VR3Z19PxQZbaPyHjY1rlvJ2pdmDZj
-         VIpeZ3IteKG0+hlzhM45S9OtgGBlttAFvSQWL921m2xA5PaJtxcmSajigOQXR4v0I4
-         lVejpEFMUlaSBHstv5PR0MwVU6dZl3wHoq9iy7a7WSV23YTQGJcgMlO26h8rJ2qsvS
-         4lVDxN0lOdfTOh+MQSNOP2umCm2X00YmclMp+g1UHRCYKsdRPSAzBtsyu/AjU1miu1
-         F+K1GDCu3srrw==
-Date:   Fri, 11 Mar 2022 21:51:00 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Jan Dabros <jsd@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        jarkko.nikula@linux.intel.com, andriy.shevchenko@linux.intel.com,
-        upstream@semihalf.com
-Subject: Re: [PATCH v2 -next] i2c: designware: Remove code duplication
-Message-ID: <Yiu2NIvEOow87s+r@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com,
-        andriy.shevchenko@linux.intel.com, upstream@semihalf.com
-References: <20220310220932.140973-1-jsd@semihalf.com>
+        by ms.lwn.net (Postfix) with ESMTPSA id 8AC4E2C0;
+        Fri, 11 Mar 2022 20:51:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 8AC4E2C0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1647031899; bh=/LWRPTtf700K3c+bDqiBvuFXKGiKGvDoktO+eG0ZbOM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=pDiP0i/pTI7bWgXP9BQ4WB1HAtdoz/EVI82QH12SD12si2DJwo+sDctnZLy1ArFiL
+         sk4wqhWxbpIlNTPNJa3U1EGoYhOpOBea8mEEO+9wrZCRUblTwt1h3FghSll8KYlYSm
+         qeozLQ8ENK8DXYYmR2wph2E7z4yn52PmtqnCt7RCcoXe9rXknicVCLUhUAqessmqpv
+         mSoaL6wkR2XxLsHs5rUhNGq0+VlbLGFL6wV8M74tJ+soyVo/l4MLpYe7o9lAB9Zbrz
+         OvjTV2gwcvk5HVeAlcgsxDNEnYE6CE3y7dTnaITIJmKpvCeG5akqOqOK7b0e3BOiu2
+         bZHsPfH7XfzIw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc:     kernel@axis.com, Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] docs: UML: Mention telnetd for port channel
+In-Reply-To: <20220310124230.3069354-1-vincent.whitchurch@axis.com>
+References: <20220310124230.3069354-1-vincent.whitchurch@axis.com>
+Date:   Fri, 11 Mar 2022 13:51:38 -0700
+Message-ID: <87r1782ox1.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rdPYt9goBFHRhha0"
-Content-Disposition: inline
-In-Reply-To: <20220310220932.140973-1-jsd@semihalf.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Vincent Whitchurch <vincent.whitchurch@axis.com> writes:
 
---rdPYt9goBFHRhha0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> It is not obvious from the documentation that using the "port" channel
+> for the console requires telnetd to be installed (see port_connection()
+> in arch/um/drivers/port_user.c).  Mention this, and the fact that UML
+> will not boot until a client connects.
+>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+>  Documentation/virt/uml/user_mode_linux_howto_v2.rst | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/virt/uml/user_mode_linux_howto_v2.rst b/Documentation/virt/uml/user_mode_linux_howto_v2.rst
+> index 2cafd3c3c6cb..d5ad96c795f6 100644
+> --- a/Documentation/virt/uml/user_mode_linux_howto_v2.rst
+> +++ b/Documentation/virt/uml/user_mode_linux_howto_v2.rst
+> @@ -664,7 +664,11 @@ one is input, the second one output.
+>  * The fd channel - use file descriptor numbers for input/output. Example:
+>    ``con1=fd:0,fd:1.``
+>  
+> -* The port channel - listen on TCP port number. Example: ``con1=port:4321``
+> +* The port channel - start a telnet server on TCP port number. Example:
+> +  ``con1=port:4321``.  The host must have /usr/sbin/in.telnetd (usually part of
+> +  a telnetd package) and the port-helper from the UML utilities (see the
+> +  information for the xterm channel below).  UML will not boot until a client
+> +  connects.
 
-On Thu, Mar 10, 2022 at 11:09:32PM +0100, Jan Dabros wrote:
-> Simplify code by moving common part to one function.
->=20
-> Signed-off-by: Jan Dabros <jsd@semihalf.com>
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied, thanks.
 
-Is it really based on for-next? I can't apply the patch. Am I missing
-something?
-
-
---rdPYt9goBFHRhha0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIrtjQACgkQFA3kzBSg
-KbZrnxAAifHU+tNf8a+mdHxvRXSHdQEceI62pvHsfwFJEVQpHhty6sm8iUyHU593
-Ju8iK2Oja1W4fd383sg5w1uvHv0eTrlzHPNgccDYJ/X6QfFc1z0N54gSILgYwyk+
-rfQpbzj9ZBydmk+y7ObAhmbLVitD6rGnwko/7vZvPlWbQ3vFvYtHR4s7oTsMFJGL
-EFYEtac9/hcjm0+iDJc8t7Yg1eclRVIUvwQh8PJlNTHNH9yFNqE6Asjeynl1d3lk
-e1hMUJ9iMMVEbowxuu/w2RXRbeQovbfvUoc76ppyOCtcv1rJWAwKG/dfOMgbOSoa
-uFe/+zJqAhWntOtun6x6D4FoDAFt2oMs9cUBHKwfKpIF1c+VmMbYZmcAioW1n0K7
-sz4Vk9BnQv1pjYmNfnWGAF67BCgvCSGh+FkR2lOjXJJbE+4uZ6myw6ujdFOatCnO
-XmiFj4X2R/V+wHA7nicqjw8ncsuE+c3EWj33IZBCQzxxpnvOH699u7NUBAvEZVdP
-P2vUS8kWFFQWadrC5uE0hBrudXsPuVshreDwdwppqr0LtBKY2qYYtOZhhCLuLj2D
-EJjI4btjZQreSdZmmecW3CyVsdf38dlV/PfEHaM8UtnonBBYyETDt6UdtTjH/TFx
-GCD/ts4bAi1bzSw8DuevIC59Z1pQ8xPUrxc5sanrIuM+X2U3e3Q=
-=W6+Q
------END PGP SIGNATURE-----
-
---rdPYt9goBFHRhha0--
+jon
