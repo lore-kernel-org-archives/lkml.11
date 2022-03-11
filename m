@@ -2,95 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA43AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbiCKWwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:52:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S229914AbiCKWwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiCKWwL (ORCPT
+        with ESMTP id S229994AbiCKWwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:52:11 -0500
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4AC8ECB1B;
-        Fri, 11 Mar 2022 14:30:32 -0800 (PST)
-Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 4260520B7178;
-        Fri, 11 Mar 2022 14:30:32 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4260520B7178
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1647037832;
-        bh=N1x1V2sY7mMppzWbWx3qgkpf7QBnkkPjK7jq4FHoask=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NJ+BUV1i55rgsecezhByakHPZ4Hzs5zerEkLc++lG+THztYBUCt9sJxZPHAwh3Tx9
-         BlSJVyCIivEa8CeF1nXyI4ylhSpouIuWNL1g61LVAJ4DonI3AF0YNovCTNJQ7mjSFb
-         QPSISgmiIx2mrTPp7SHZ+7/QaGyAwLbCjibUXvVM=
-From:   Beau Belgrave <beaub@linux.microsoft.com>
-To:     rostedt@goodmis.org, mhiramat@kernel.org
-Cc:     anders.roxell@linaro.org, linux-trace-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        beaub@linux.microsoft.com
-Subject: [PATCH] user_events: Use alloc_pages instead of kzalloc for register pages
-Date:   Fri, 11 Mar 2022 14:30:28 -0800
-Message-Id: <20220311223028.1865-1-beaub@linux.microsoft.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 11 Mar 2022 17:52:20 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9AF1409D0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:30:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647037844; x=1678573844;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=rCFdGeOoGSRoO6cqnYj1xlhLSbsmex/R1MQnhd4g/08=;
+  b=jg8y5cmTl1wwieyISJTwlswXFVrJj7kRE8y1KbzcHbAUwbrSPTBnSRxq
+   3bjQUd9dQ44FqA+HjPp5Zcm+JJXwGAq+5XH9pM5vY+F+lYMFTV5x8eeg4
+   0tJTZcvYVYxcUG+CxqgzC6dORL3SHjZ4TapfxiDNsM5EA6Z/ew1XQbVmD
+   WllvGJL8vUmLjpyC9jidFoED9DmtWEqfUgLk2ZEo5HYwNeblnyB3kvtJC
+   fMRYRh7WkYDx7eMhWR88eGPpgIOyhf+elR2DrEexnijWWmcBCo5UsULuz
+   ccocd1H9bURjOL8FQM/BYIRfAL3+F8zODuXXqLlWDAuV/U2l/HV04XkLF
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255604311"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="255604311"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 13:23:33 -0800
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="645060406"
+Received: from cpeirce-mobl1.amr.corp.intel.com (HELO [10.212.128.243]) ([10.212.128.243])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 13:23:32 -0800
+Message-ID: <103853ef-3afb-bb94-5ffd-8318d1a1d1a0@intel.com>
+Date:   Fri, 11 Mar 2022 13:23:26 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Nadav Amit <nadav.amit@gmail.com>
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Xu <peterx@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Nick Piggin <npiggin@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>
+References: <20220311190749.338281-1-namit@vmware.com>
+ <20220311190749.338281-3-namit@vmware.com>
+ <a2a43395-b848-a4f9-4065-109387680701@intel.com>
+ <AC8D21EA-CD32-4F9F-B5C1-ED8804EC76FF@vmware.com>
+ <70e08bd5-187a-daee-2822-1d9a437a9cff@intel.com>
+ <E46E0DA7-6427-4733-9D43-6CC1107194D6@gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [RESEND PATCH v3 2/5] x86/mm: check exec permissions on fault
+In-Reply-To: <E46E0DA7-6427-4733-9D43-6CC1107194D6@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kzalloc virtual addresses do not work with SetPageReserved, use the
-actual page virtual addresses instead via alloc_pages.
+On 3/11/22 13:16, Nadav Amit wrote:
+>> This is really about checking the sanity of the "hardware"-provided
+>> error code.  Let's just do it in  handle_page_fault(), maybe hidden in a
+>> function like:
+>>
+>> void check_error_code_sanity(unsigned long error_code)
+>> {
+>> 	WARN_ON_ONCE(...);
+>> }
+>>
+>> You can leave the X86_PF_PK check in place for now.  It's probably going
+>> away soon anyway.
+> Done. Thanks. But note that removing the check from access_error() means
+> that if the assertion is broken, userspace might crash inadvertently
+> (in contrast to the version I sent, which would have potentially led to
+> infinite stream of page-faults). I don’t know which behavior is better,
+> so let’s go with your version and just hope it doesn’t happen.
 
-The issue is reported when booting with user_events and
-DEBUG_VM_PGFLAGS=y.
-
-Link: https://lore.kernel.org/linux-trace-devel/CADYN=9+xY5Vku3Ws5E9S60SM5dCFfeGeRBkmDFbcxX0ZMoFing@mail.gmail.com/#R
-
-Reported-by: Anders Roxell <anders.roxell@linaro.org>
-Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
----
- kernel/trace/trace_events_user.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 2b5e9fdb63a0..59c900789757 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -1587,16 +1587,20 @@ static void set_page_reservations(bool set)
- static int __init trace_events_user_init(void)
- {
- 	int ret;
-+	struct page *register_pages;
- 
- 	/* Zero all bits beside 0 (which is reserved for failures) */
- 	bitmap_zero(page_bitmap, MAX_EVENTS);
- 	set_bit(0, page_bitmap);
- 
--	register_page_data = kzalloc(MAX_EVENTS, GFP_KERNEL);
-+	register_pages = alloc_pages(GFP_KERNEL | __GFP_ZERO,
-+				     get_order(MAX_EVENTS));
- 
--	if (!register_page_data)
-+	if (!register_pages)
- 		return -ENOMEM;
- 
-+	register_page_data = page_address(register_pages);
-+
- 	set_page_reservations(true);
- 
- 	ret = create_user_tracefs();
-@@ -1604,7 +1608,7 @@ static int __init trace_events_user_init(void)
- 	if (ret) {
- 		pr_warn("user_events could not register with tracefs\n");
- 		set_page_reservations(false);
--		kfree(register_page_data);
-+		__free_pages(register_pages, get_order(MAX_EVENTS));
- 		return ret;
- 	}
- 
-
-base-commit: 864ea0e10cc90416a01b46f0d47a6f26dc020820
--- 
-2.17.1
+Actually, crashing sounds much nicer to me than infinite page faults.
+It's a lot easier to debug, *especially* with a warning on dmesg.
 
