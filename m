@@ -2,260 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D529FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF29DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348092AbiCKK4g (ORCPT
+        id S1348105AbiCKK5K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        Fri, 11 Mar 2022 05:57:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231485AbiCKK4e (ORCPT
+        with ESMTP id S1343750AbiCKK5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:56:34 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243B81B510C;
-        Fri, 11 Mar 2022 02:55:31 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d07ae0b1c4so88330117b3.11;
-        Fri, 11 Mar 2022 02:55:31 -0800 (PST)
+        Fri, 11 Mar 2022 05:57:05 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143CA1B5120;
+        Fri, 11 Mar 2022 02:56:03 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id s11so7528790pfu.13;
+        Fri, 11 Mar 2022 02:56:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qlwCyDk8qlleYrAYeX+7n1Ivn6nloAFSh4xt8Gq150o=;
-        b=oaYU4zv7z2lQ1xabpxAZyjYx0RA1wJsVPblkE5xVDqUf7Z10PTPs6cEpwKyIXaEZLp
-         OR7FHaerSmPEUm9vpiREI5PHgfQIUR3LNKbaTrJ59BzycE9q6bxoG23jcyuHsza1KufN
-         EQuoGUhNP4ua9p4MDDqkY+Hi1KIDssycuBolb6ZYVVVVJHBAHd4uoSOkZaAo2ZmSqaHi
-         IpLg/FGBIvKw5JoL6Pgz+YTfcBHOi3war4xtv5GFc9k+2vDi+KNJx9qTZqgOdMCUymG2
-         602cuilghZfUlapRNuKVU6exzuh6x5ooe3mnoP70gdJq9Ojs0rAhGMKT0SOjjlPu4NfP
-         5tAg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6mMYXI3tVLpKUr8rwkLfSzKZwrbEoOdHBqCd++KoYUE=;
+        b=jWrGoRWGamloR60nHXKPZo7Ztwps9oByzyY2J3XRJStnDsdG0TgTq8LsV619gDJxAi
+         grRRW/5w1fHzmffjtqRHuKAfD/ewzFJBD9A7uXXubcSNeRIeARPqP5vwZNdCuAMuCjJM
+         bddOt/CxGD+RPMT74QeiBFFRHW/9icwI8MhCnwHYQlVoJM/ErBUDc2tdQ8kU12POykmk
+         SqB9LVkdQZAOOPOl5zzjfdeIhBUx5N3EfZoOugAABjHXDW2iqhzoR96UXhwzwvwgFUEb
+         Iu9+v0SEhDwd8o2P/AYJpGXCnwH16thfZIpK5/18ilIQBVwZ9YmLpZZ+HEU6TDiIjqJo
+         k0fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qlwCyDk8qlleYrAYeX+7n1Ivn6nloAFSh4xt8Gq150o=;
-        b=LtmB0q4THveFr5dTMjzWBmosn9j58EuQRNmxsvhwdfiJjmMAiDg7CwNccvvdBJXNhu
-         ZKiyfN9Oe7e08iQ0abW2a4uBxUuA8opGcmNDlOPwiWHx/YnUY8u5cQvtNEzjHhY/zwaO
-         J2TMvSRYFSavCSAf9vaFmrFVvT3CRmsgK9fthyq7rm/XwA6uVsaZ6ihlyPqzB8AvVT1z
-         WH6CgXdixGWiImnP+T13cioYU2HDC5+2S2D3GgI46F8WbEPKjjQW94LzY7Tj29SRz7EM
-         8zPoK5szQ+QpY/60r1CJyTAm40FCYO5HspI+dzjIhpcqUiS1i5lyJWkdnBCEgNQsLoP7
-         0fuw==
-X-Gm-Message-State: AOAM532X3trf0O5CGwcTpPTcL0T33DfY7xIs1rSbUFSoLrcDZRZxZ/AN
-        jp1bVNzTD9h2sUyl3zGREXYB8Ng0rF2mQrouKnU=
-X-Google-Smtp-Source: ABdhPJxW4CPn/wNnPf2NhXuDc0qbrCNkJ5zhS0YrB60/r/3wkqcqNNWHHLNWpmFub9ERdIkvwy2HwUOOIS4OoJKLLp8=
-X-Received: by 2002:a81:19c3:0:b0:2dc:2686:14e3 with SMTP id
- 186-20020a8119c3000000b002dc268614e3mr7479905ywz.515.1646996130236; Fri, 11
- Mar 2022 02:55:30 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6mMYXI3tVLpKUr8rwkLfSzKZwrbEoOdHBqCd++KoYUE=;
+        b=5dZ7bG7UjHCVem/iENs0GDR5LhIv9z/K7syxjFX6/gdJGPByBKICg8aE9X4p76LcmI
+         TRXnbdwSvMTUR5v0FsKRGEc4JA94STe1gDEb/x0zQi1j7DO6DrlNr8lOT/I4DyCFpdyj
+         7AfspM68cxQ8YIZF9qPCYPRumByQKmnsVTj9DVF+KSUUeBwb2TOzeb2SZmLY5GYdwqfH
+         dClf6rofv6j0neKjtkZHH3aEj3XaP0bPhbfwngF2ontf0gJg95wCIQDtMY2noIDU1D5S
+         X/b3jp5vbKu3JgK9tF08WqTgO7UKP8gWEUYHhnOVWmXDWO4PfdhLiYAi9ZVM/FyFE481
+         koDQ==
+X-Gm-Message-State: AOAM532umbqQ2YrarC1LaRVM5+WryooSnWY9ElW+uqN2rqTtHXhQwszK
+        fTOkAa15QskirQVGgNEQbW4=
+X-Google-Smtp-Source: ABdhPJzu+kk6aPcsBpgOyLuU4+r31SmDeNomcx6g4SJ4ZrvL5GtLtNdU5NzYtstnVa+/MzWXl6M4VA==
+X-Received: by 2002:a65:49cc:0:b0:372:a079:cb3a with SMTP id t12-20020a6549cc000000b00372a079cb3amr7778906pgs.222.1646996162573;
+        Fri, 11 Mar 2022 02:56:02 -0800 (PST)
+Received: from [192.168.43.80] (subs03-180-214-233-87.three.co.id. [180.214.233.87])
+        by smtp.gmail.com with ESMTPSA id mr4-20020a17090b238400b001bf80eb1baasm8744659pjb.14.2022.03.11.02.55.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 02:56:02 -0800 (PST)
+Message-ID: <97aba7b9-d8ff-327e-933f-95ba8a976d23@gmail.com>
+Date:   Fri, 11 Mar 2022 17:55:56 +0700
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-2-yuzhao@google.com>
-In-Reply-To: <20220309021230.721028-2-yuzhao@google.com>
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Fri, 11 Mar 2022 23:55:19 +1300
-Message-ID: <CAGsJ_4yt_q4=pPW1M6fHN9HrV5JuTo9_9GQ0wv4-VT7tivU1+Q@mail.gmail.com>
-Subject: Re: [PATCH v9 01/14] mm: x86, arm64: add arch_has_hw_pte_young()
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, page-reclaim@google.com,
-        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.16 00/53] 5.16.14-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220310140811.832630727@linuxfoundation.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 3:47 PM Yu Zhao <yuzhao@google.com> wrote:
->
-> Some architectures automatically set the accessed bit in PTEs, e.g.,
-> x86 and arm64 v8.2. On architectures that do not have this capability,
-> clearing the accessed bit in a PTE usually triggers a page fault
-> following the TLB miss of this PTE (to emulate the accessed bit).
->
-> Being aware of this capability can help make better decisions, e.g.,
-> whether to spread the work out over a period of time to reduce bursty
-> page faults when trying to clear the accessed bit in many PTEs.
->
-> Note that theoretically this capability can be unreliable, e.g.,
-> hotplugged CPUs might be different from builtin ones. Therefore it
-> should not be used in architecture-independent code that involves
-> correctness, e.g., to determine whether TLB flushes are required (in
-> combination with the accessed bit).
->
-> Signed-off-by: Yu Zhao <yuzhao@google.com>
-> Acked-by: Brian Geffon <bgeffon@google.com>
-> Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-> Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> Acked-by: Steven Barrett <steven@liquorix.net>
-> Acked-by: Suleiman Souhlal <suleiman@google.com>
-> Acked-by: Will Deacon <will@kernel.org>
-> Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-> Tested-by: Donald Carr <d@chaos-reins.com>
-> Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-> Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-> Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-> Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-> Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
-> ---
+On 10/03/22 21.09, Greg Kroah-Hartman wrote:
+> Note, I'm sending all the patches again for all of the -rc2 releases as
+> there has been a lot of churn from what was in -rc1 to -rc2.
+> 
+> This is the start of the stable review cycle for the 5.16.14 release.
+> There are 53 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
 
-Reviewed-by: Barry Song <baohua@kernel.org>
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0)
+and powerpc (ps3_defconfig, gcc 11.2.0).
 
-i guess arch_has_hw_pte_young() isn't called that often in either
-mm/memory.c or mm/vmscan.c.
-Otherwise, moving to a static key might help. Is it?
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-
->  arch/arm64/include/asm/pgtable.h | 14 ++------------
->  arch/x86/include/asm/pgtable.h   |  6 +++---
->  include/linux/pgtable.h          | 13 +++++++++++++
->  mm/memory.c                      | 14 +-------------
->  4 files changed, 19 insertions(+), 28 deletions(-)
->
-> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pg=
-table.h
-> index c4ba047a82d2..990358eca359 100644
-> --- a/arch/arm64/include/asm/pgtable.h
-> +++ b/arch/arm64/include/asm/pgtable.h
-> @@ -999,23 +999,13 @@ static inline void update_mmu_cache(struct vm_area_=
-struct *vma,
->   * page after fork() + CoW for pfn mappings. We don't always have a
->   * hardware-managed access flag on arm64.
->   */
-> -static inline bool arch_faults_on_old_pte(void)
-> -{
-> -       WARN_ON(preemptible());
-> -
-> -       return !cpu_has_hw_af();
-> -}
-> -#define arch_faults_on_old_pte         arch_faults_on_old_pte
-> +#define arch_has_hw_pte_young          cpu_has_hw_af
->
->  /*
->   * Experimentally, it's cheap to set the access flag in hardware and we
->   * benefit from prefaulting mappings as 'old' to start with.
->   */
-> -static inline bool arch_wants_old_prefaulted_pte(void)
-> -{
-> -       return !arch_faults_on_old_pte();
-> -}
-> -#define arch_wants_old_prefaulted_pte  arch_wants_old_prefaulted_pte
-> +#define arch_wants_old_prefaulted_pte  cpu_has_hw_af
->
->  static inline pgprot_t arch_filter_pgprot(pgprot_t prot)
->  {
-> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtabl=
-e.h
-> index 8a9432fb3802..60b6ce45c2e3 100644
-> --- a/arch/x86/include/asm/pgtable.h
-> +++ b/arch/x86/include/asm/pgtable.h
-> @@ -1423,10 +1423,10 @@ static inline bool arch_has_pfn_modify_check(void=
-)
->         return boot_cpu_has_bug(X86_BUG_L1TF);
->  }
->
-> -#define arch_faults_on_old_pte arch_faults_on_old_pte
-> -static inline bool arch_faults_on_old_pte(void)
-> +#define arch_has_hw_pte_young arch_has_hw_pte_young
-> +static inline bool arch_has_hw_pte_young(void)
->  {
-> -       return false;
-> +       return true;
->  }
->
->  #endif /* __ASSEMBLY__ */
-> diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
-> index f4f4077b97aa..79f64dcff07d 100644
-> --- a/include/linux/pgtable.h
-> +++ b/include/linux/pgtable.h
-> @@ -259,6 +259,19 @@ static inline int pmdp_clear_flush_young(struct vm_a=
-rea_struct *vma,
->  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
->  #endif
->
-> +#ifndef arch_has_hw_pte_young
-> +/*
-> + * Return whether the accessed bit is supported on the local CPU.
-> + *
-> + * This stub assumes accessing through an old PTE triggers a page fault.
-> + * Architectures that automatically set the access bit should overwrite =
-it.
-> + */
-> +static inline bool arch_has_hw_pte_young(void)
-> +{
-> +       return false;
-> +}
-> +#endif
-> +
->  #ifndef __HAVE_ARCH_PTEP_CLEAR
->  static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
->                               pte_t *ptep)
-> diff --git a/mm/memory.c b/mm/memory.c
-> index c125c4969913..a7379196a47e 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -122,18 +122,6 @@ int randomize_va_space __read_mostly =3D
->                                         2;
->  #endif
->
-> -#ifndef arch_faults_on_old_pte
-> -static inline bool arch_faults_on_old_pte(void)
-> -{
-> -       /*
-> -        * Those arches which don't have hw access flag feature need to
-> -        * implement their own helper. By default, "true" means pagefault
-> -        * will be hit on old pte.
-> -        */
-> -       return true;
-> -}
-> -#endif
-> -
->  #ifndef arch_wants_old_prefaulted_pte
->  static inline bool arch_wants_old_prefaulted_pte(void)
->  {
-> @@ -2778,7 +2766,7 @@ static inline bool cow_user_page(struct page *dst, =
-struct page *src,
->          * On architectures with software "accessed" bits, we would
->          * take a double page fault, so mark it accessed here.
->          */
-> -       if (arch_faults_on_old_pte() && !pte_young(vmf->orig_pte)) {
-> +       if (!arch_has_hw_pte_young() && !pte_young(vmf->orig_pte)) {
->                 pte_t entry;
->
->                 vmf->pte =3D pte_offset_map_lock(mm, vmf->pmd, addr, &vmf=
-->ptl);
-> --
-> 2.35.1.616.g0bdcbb4464-goog
->
-
-Thanks
-Barry
+-- 
+An old man doll... just what I always wanted! - Clara
