@@ -2,90 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E469DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1777EC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:00:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiCKW6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
+        id S230029AbiCKXBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbiCKW6i (ORCPT
+        with ESMTP id S230154AbiCKXBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:58:38 -0500
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 53CB224F7B1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:48:23 -0800 (PST)
-Received: (qmail 1595351 invoked by uid 1000); 11 Mar 2022 16:01:40 -0500
-Date:   Fri, 11 Mar 2022 16:01:40 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     syzbot <syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
-        rob@robgreener.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] memory leak in usb_get_configuration
-Message-ID: <Yiu4tCONfHVH1Qfv@rowland.harvard.edu>
-References: <000000000000351b8605d9d1d1bf@google.com>
+        Fri, 11 Mar 2022 18:01:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F32CD4CAF;
+        Fri, 11 Mar 2022 14:54:06 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BKJfOq013012;
+        Fri, 11 Mar 2022 21:03:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=AMfTQPWUKvQIp3nGKr1gvqWa8g4OU+tTTF1NxO5iCBw=;
+ b=quf1nfXdI9fv3YZig4FtVW3NetDo+gTB0baRqAESMexUEBwK//ED/7yl6TJgwg3UwiWq
+ 8VJs6HOk/IybdvCrfv+433ukp3q4rZZ7GeDP+MaS4OYP46HvzRIJc9kBDcNObF0PFGMc
+ zvUwXV6JmVgGwMUpKG2xGoneRSEv5xoricxvsjlaJczedrMr1ikb2PJPxPQGheJJ8WVJ
+ Qn4KexsvLsqErWxR/VnzzIHG/5jR84OpueX6Ufu3wZQehe/uJ8gV5r3HxWCVckR52N8E
+ C9GqvUQjBjlN9IgyxztBynas/c4fXeIeyJOpRI0VgLcaNvDT1fTl0OsDPvbwjsmslcw3 fw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqfxgv0hf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:59 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKtLBA002633;
+        Fri, 11 Mar 2022 21:03:58 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqfxgv0gs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:58 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3caM025881;
+        Fri, 11 Mar 2022 21:03:56 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3ekyg8njt0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:55 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL3qIc48169228
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 21:03:52 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 889094C040;
+        Fri, 11 Mar 2022 21:03:52 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CFA544C04E;
+        Fri, 11 Mar 2022 21:03:48 +0000 (GMT)
+Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.110.168])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 11 Mar 2022 21:03:48 +0000 (GMT)
+From:   Nayna Jain <nayna@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org,
+        Nayna Jain <nayna@linux.ibm.com>
+Subject: [PATCH v12 0/4] integrity: support including firmware ".platform" keys at build time 
+Date:   Fri, 11 Mar 2022 16:03:40 -0500
+Message-Id: <20220311210344.102396-1-nayna@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: vFj6BitYF0x-cbuTSlcAlvP41isWo2s8
+X-Proofpoint-ORIG-GUID: 29tSgp1oZs-enh7p1uMj0CP5vo99aQgQ
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000351b8605d9d1d1bf@google.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ lowpriorityscore=0 suspectscore=0 bulkscore=0 clxscore=1015 adultscore=0
+ mlxscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203110103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 03:54:24PM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    0014404f9c18 Merge branch 'akpm' (patches from Andrew)
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15864216700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3f0a704147ec8e32
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f0fae482604e6d9a87c9
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13a63dbe700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e150a1700000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88810c0289e0 (size 32):
->   comm "kworker/1:2", pid 139, jiffies 4294947862 (age 15.910s)
->   hex dump (first 32 bytes):
->     09 02 12 00 01 00 00 00 00 09 04 00 00 00 d0 bb  ................
->     3a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  :...............
->   backtrace:
->     [<ffffffff82c98127>] kmalloc include/linux/slab.h:586 [inline]
->     [<ffffffff82c98127>] usb_get_configuration+0x1c7/0x1cd0 drivers/usb/core/config.c:919
->     [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
->     [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
->     [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
->     [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
->     [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
->     [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
->     [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
->     [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
->     [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
->     [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+Some firmware support secure boot by embedding static keys to verify the
+Linux kernel during boot. However, these firmware do not expose an
+interface for the kernel to load firmware keys onto the ".platform"
+keyring, preventing the kernel from verifying the kexec kernel image
+signature.
 
-The console log shows that this is connected to gspca_dev_probe.  Let's 
-see who's calling it...
+This patchset exports load_certificate_list() and defines a new function
+load_builtin_platform_cert() to load compiled in certificates onto the
+".platform" keyring.
 
-Alan Stern
+Changelog:
+v12:
+* Replace Patch 3/4 with reverting of the commit as suggested by
+Masahiro Yamada.
 
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/  0014404f9c18
+v11:
+* Added a new patch to conditionally build extract-cert if
+PLATFORM_KEYRING is enabled.
 
-Index: usb-devel/drivers/media/usb/gspca/gspca.c
-===================================================================
---- usb-devel.orig/drivers/media/usb/gspca/gspca.c
-+++ usb-devel/drivers/media/usb/gspca/gspca.c
-@@ -1599,6 +1599,7 @@ int gspca_dev_probe(struct usb_interface
- 	if (dev->descriptor.bNumConfigurations != 1) {
- 		pr_err("%04x:%04x too many config\n",
- 		       id->idVendor, id->idProduct);
-+		dump_stack();
- 		return -ENODEV;
- 	}
- 
+v10:
+* Fixed the externs warning for Patch 3.
+
+v9:
+* Rebased on Jarkko's repo - 
+git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
+
+v8:
+* Includes Jarkko's feedback on patch description and removed Reported-by
+for Patch 1.
+
+v7:
+* Incldues Jarkko's feedback on patch description for Patch 1 and 3.
+
+v6:
+* Includes Jarkko's feedback:
+ * Split Patch 2 into two.
+ * Update Patch description.
+
+v5:
+* Renamed load_builtin_platform_cert() to load_platform_certificate_list()
+and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
+suggested by Mimi Zohar.
+
+v4:
+* Split into two patches as per Mimi Zohar and Dimitri John Ledkov
+recommendation.
+
+v3:
+* Included Jarkko's feedback
+ ** updated patch description to include approach.
+ ** removed extern for function declaration in the .h file.
+* Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
+
+v2:
+* Fixed the error reported by kernel test robot
+* Updated patch description based on Jarkko's feedback.
+
+Nayna Jain (4):
+  certs: export load_certificate_list() to be used outside certs/
+  integrity: make integrity_keyring_from_id() non-static
+  Revert "certs: move scripts/extract-cert to certs/"
+  integrity: support including firmware ".platform" keys at build time
+
+ MAINTAINERS                                   |  1 +
+ certs/.gitignore                              |  1 -
+ certs/Makefile                                | 18 ++++++---------
+ certs/blacklist.c                             |  1 -
+ certs/common.c                                |  2 +-
+ certs/common.h                                |  9 --------
+ certs/system_keyring.c                        |  1 -
+ include/keys/system_keyring.h                 |  6 +++++
+ scripts/.gitignore                            |  1 +
+ scripts/Makefile                              | 12 ++++++++--
+ {certs => scripts}/extract-cert.c             |  2 +-
+ scripts/remove-stale-files                    |  2 --
+ security/integrity/Kconfig                    | 10 ++++++++
+ security/integrity/Makefile                   | 15 +++++++++++-
+ security/integrity/digsig.c                   |  2 +-
+ security/integrity/integrity.h                |  9 ++++++++
+ .../integrity/platform_certs/platform_cert.S  | 23 +++++++++++++++++++
+ .../platform_certs/platform_keyring.c         | 23 +++++++++++++++++++
+ 18 files changed, 107 insertions(+), 31 deletions(-)
+ delete mode 100644 certs/common.h
+ rename {certs => scripts}/extract-cert.c (98%)
+ create mode 100644 security/integrity/platform_certs/platform_cert.S
+
+
+base-commit: fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9
+-- 
+2.34.1
