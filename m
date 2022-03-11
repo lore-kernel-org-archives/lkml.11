@@ -2,208 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00801C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CC6C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbiCKXtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:49:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        id S230017AbiCKXu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiCKXtV (ORCPT
+        with ESMTP id S229736AbiCKXuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:49:21 -0500
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE642E0;
-        Fri, 11 Mar 2022 15:48:17 -0800 (PST)
-Received: by mail-oi1-f177.google.com with SMTP id j83so11118148oih.6;
-        Fri, 11 Mar 2022 15:48:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=x6lwOUs0d65LCqBi3QipuhYyxDJ9eIewRF/1SecNNVk=;
-        b=yffyoz8VzCntSreC5fdhKB/KhtzaN3vp3KJDDSQVe1EJlWtKF0liID182gW2Mg0H7h
-         GT6m8U9FmUUZm1kWhrr3esZODmRauWH9NERPQkfwhDy7V6n7bOPZQ0mKps0LMDMcnoNH
-         9Tm2CMmtw1ZXLd+F1wrwqEMOBot/6CAiXX/pPlyjLmb4NUCxX5dDZ5cFX5epVosRe2rX
-         1RGgXpDX9qUhmT4jVQ/BCpALhGtl9JsdtMHPZelyL/K+sJ42gwF4t6EoNnVkstQaFGq+
-         Haf9o+d08O6EyONCCLlrKt+tJ+qHod5Lc+dq8+Lg2cK99pC18WvF2ZjHct0fDzCrTvnB
-         2Ypg==
-X-Gm-Message-State: AOAM531VtS2Lh6zAmJOj1zzmHZp/c1X3exqVqjay2IMPJ5UPJQG58ORh
-        zB3PPD21MVX1RYy/daVIo94XPibe+Q==
-X-Google-Smtp-Source: ABdhPJyvZ0r+1P93joNo0ptbuIsXbm7FYq3d7tYAdY68/bzI93gYnyJbwvMNDQDUCKsJKaNoyhXoNg==
-X-Received: by 2002:a05:6808:2013:b0:2d9:dbed:6999 with SMTP id q19-20020a056808201300b002d9dbed6999mr14493688oiw.30.1647042496534;
-        Fri, 11 Mar 2022 15:48:16 -0800 (PST)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id o21-20020a056870e81500b000d9b2ba714asm3942423oan.21.2022.03.11.15.48.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 15:48:15 -0800 (PST)
-From:   Rob Herring <robh@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        Fri, 11 Mar 2022 18:50:51 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7F011C17
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:49:47 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B2F07201315;
+        Sat, 12 Mar 2022 00:49:45 +0100 (CET)
+Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 77DFA201323;
+        Sat, 12 Mar 2022 00:49:45 +0100 (CET)
+Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.142])
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 5A42840577;
+        Fri, 11 Mar 2022 16:49:44 -0700 (MST)
+From:   Li Yang <leoyang.li@nxp.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Hou Zhiqiang <Zhiqiang.Hou@nxp.com>, Rob Herring <robh@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: dt-bindings: Fix patternProperties with fixed strings
-Date:   Fri, 11 Mar 2022 17:48:01 -0600
-Message-Id: <20220311234802.417610-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+Subject: [PATCH v3 2/4] dt-bindings: pci: layerscape-pci: Update the description of SCFG property
+Date:   Fri, 11 Mar 2022 17:49:36 -0600
+Message-Id: <20220311234938.8706-3-leoyang.li@nxp.com>
+X-Mailer: git-send-email 2.25.1.377.g2d2118b
+In-Reply-To: <20220311234938.8706-1-leoyang.li@nxp.com>
+References: <20220311234938.8706-1-leoyang.li@nxp.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The simple-audio-card and renesas,rsnd bindings used 'patternProperties'
-with fixed strings to work-around a dtschema meta-schema limitation. This
-is now fixed and the schemas can be fixed to use 'properties' instead.
+From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
 
-Signed-off-by: Rob Herring <robh@kernel.org>
+Update the description of the second entry of 'fsl,pcie-scfg' property,
+as the LS1043A PCIe controller also has some control registers in SCFG
+block, while it has 3 controllers.
+
+Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/sound/renesas,rsnd.yaml          | 16 ++++---
- .../bindings/sound/simple-card.yaml           | 42 +++++++++----------
- 2 files changed, 28 insertions(+), 30 deletions(-)
+ Documentation/devicetree/bindings/pci/layerscape-pci.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/sound/renesas,rsnd.yaml b/Documentation/devicetree/bindings/sound/renesas,rsnd.yaml
-index c2930d65728e..e17c0245f77a 100644
---- a/Documentation/devicetree/bindings/sound/renesas,rsnd.yaml
-+++ b/Documentation/devicetree/bindings/sound/renesas,rsnd.yaml
-@@ -123,9 +123,7 @@ properties:
-     $ref: audio-graph-port.yaml#
-     unevaluatedProperties: false
- 
--# use patternProperties to avoid naming "xxx,yyy" issue
--patternProperties:
--  "^rcar_sound,dvc$":
-+  rcar_sound,dvc:
-     description: DVC subnode.
-     type: object
-     patternProperties:
-@@ -141,7 +139,7 @@ patternProperties:
-           - dma-names
-     additionalProperties: false
- 
--  "^rcar_sound,mix$":
-+  rcar_sound,mix:
-     description: MIX subnode.
-     type: object
-     patternProperties:
-@@ -150,7 +148,7 @@ patternProperties:
-         # no properties
-     additionalProperties: false
- 
--  "^rcar_sound,ctu$":
-+  rcar_sound,ctu:
-     description: CTU subnode.
-     type: object
-     patternProperties:
-@@ -159,7 +157,7 @@ patternProperties:
-         # no properties
-     additionalProperties: false
- 
--  "^rcar_sound,src$":
-+  rcar_sound,src:
-     description: SRC subnode.
-     type: object
-     patternProperties:
-@@ -182,7 +180,7 @@ patternProperties:
-           - dma-names
-     additionalProperties: false
- 
--  "^rcar_sound,ssiu$":
-+  rcar_sound,ssiu:
-     description: SSIU subnode.
-     type: object
-     patternProperties:
-@@ -202,7 +200,7 @@ patternProperties:
-           - dma-names
-     additionalProperties: false
- 
--  "^rcar_sound,ssi$":
-+  rcar_sound,ssi:
-     description: SSI subnode.
-     type: object
-     patternProperties:
-@@ -239,7 +237,7 @@ patternProperties:
-     additionalProperties: false
- 
-   # For DAI base
--  "^rcar_sound,dai$":
-+  rcar_sound,dai:
-     description: DAI subnode.
-     type: object
-     patternProperties:
-diff --git a/Documentation/devicetree/bindings/sound/simple-card.yaml b/Documentation/devicetree/bindings/sound/simple-card.yaml
-index 45fd9fd9eb54..103044bd32eb 100644
---- a/Documentation/devicetree/bindings/sound/simple-card.yaml
-+++ b/Documentation/devicetree/bindings/sound/simple-card.yaml
-@@ -156,45 +156,45 @@ properties:
-     description: User specified audio sound card name.
-     $ref: /schemas/types.yaml#/definitions/string
- 
--# use patternProperties to avoid naming "xxx,yyy" issue
--patternProperties:
--  "^simple-audio-card,widgets$":
-+  simple-audio-card,widgets:
-     $ref: "#/definitions/widgets"
--  "^simple-audio-card,routing$":
-+  simple-audio-card,routing:
-     $ref: "#/definitions/routing"
--  "^simple-audio-card,cpu(@[0-9a-f]+)?":
--    $ref: "#/definitions/dai"
--  "^simple-audio-card,codec(@[0-9a-f]+)?":
--    $ref: "#/definitions/dai"
- 
-   # common properties
--  "^simple-audio-card,frame-master$":
-+  simple-audio-card,frame-master:
-     $ref: "#/definitions/frame-master"
--  "^simple-audio-card,bitclock-master$":
-+  simple-audio-card,bitclock-master:
-     $ref: "#/definitions/bitclock-master"
--  "^simple-audio-card,frame-inversion$":
-+  simple-audio-card,frame-inversion:
-     $ref: "#/definitions/frame-inversion"
--  "^simple-audio-card,bitclock-inversion$":
-+  simple-audio-card,bitclock-inversion:
-     $ref: "#/definitions/bitclock-inversion"
--  "^simple-audio-card,format$":
-+  simple-audio-card,format:
-     $ref: "#/definitions/format"
--  "^simple-audio-card,mclk-fs$":
-+  simple-audio-card,mclk-fs:
-     $ref: "#/definitions/mclk-fs"
--  "^simple-audio-card,aux-devs$":
-+  simple-audio-card,aux-devs:
-     $ref: "#/definitions/aux-devs"
--  "^simple-audio-card,convert-rate$":
-+  simple-audio-card,convert-rate:
-     $ref: "#/definitions/convert-rate"
--  "^simple-audio-card,convert-channels$":
-+  simple-audio-card,convert-channels:
-     $ref: "#/definitions/convert-channels"
--  "^simple-audio-card,prefix$":
-+  simple-audio-card,prefix:
-     $ref: "#/definitions/prefix"
--  "^simple-audio-card,pin-switches$":
-+  simple-audio-card,pin-switches:
-     $ref: "#/definitions/pin-switches"
--  "^simple-audio-card,hp-det-gpio$":
-+  simple-audio-card,hp-det-gpio:
-     maxItems: 1
--  "^simple-audio-card,mic-det-gpio$":
-+  simple-audio-card,mic-det-gpio:
-     maxItems: 1
- 
-+patternProperties:
-+  "^simple-audio-card,cpu(@[0-9a-f]+)?$":
-+    $ref: "#/definitions/dai"
-+  "^simple-audio-card,codec(@[0-9a-f]+)?$":
-+    $ref: "#/definitions/dai"
-+
-   "^simple-audio-card,dai-link(@[0-9a-f]+)?$":
-     description: |
-       Container for dai-link level properties and the CPU and CODEC sub-nodes.
+diff --git a/Documentation/devicetree/bindings/pci/layerscape-pci.txt b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
+index 215d2ee65c83..f1115fcd8088 100644
+--- a/Documentation/devicetree/bindings/pci/layerscape-pci.txt
++++ b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
+@@ -34,7 +34,7 @@ Required properties:
+   "intr": The interrupt that is asserted for controller interrupts
+ - fsl,pcie-scfg: Must include two entries.
+   The first entry must be a link to the SCFG device node
+-  The second entry must be '0' or '1' based on physical PCIe controller index.
++  The second entry is the physical PCIe controller index starting from '0'.
+   This is used to get SCFG PEXN registers
+ - dma-coherent: Indicates that the hardware IP block can ensure the coherency
+   of the data transferred from/to the IP block. This can avoid the software
 -- 
-2.32.0
+2.25.1
 
