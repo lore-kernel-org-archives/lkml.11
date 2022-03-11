@@ -2,170 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A24C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D452C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350683AbiCKRtC (ORCPT
+        id S1350354AbiCKRv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 12:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
+        Fri, 11 Mar 2022 12:51:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348199AbiCKRsu (ORCPT
+        with ESMTP id S1346660AbiCKRv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 12:48:50 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1140143381;
-        Fri, 11 Mar 2022 09:47:41 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22BHlDXT021105;
-        Fri, 11 Mar 2022 11:47:13 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647020833;
-        bh=pdP+i9m2lw1qpqeGFBrxp+l79uJC+mKNJuBzp+PYH+8=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=aRiuC3tc34x7CtK/Tz9/INvJh3X3MRMjZrXxbp1LrtQPZs1uQq52SBK5vlOIOsq2d
-         aP+PwInlCWjivPgYud86F5xtAeSGGy5rVswtp4YJWBMVxIofOh74yOcJHW9C+VzPKe
-         KI1eyO+dAQwGRUNwI+9ywSNIshSEa27vjd14vW1w=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22BHlDtl116195
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Mar 2022 11:47:13 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 11
- Mar 2022 11:47:12 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 11 Mar 2022 11:47:12 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22BHlBZx049523;
-        Fri, 11 Mar 2022 11:47:12 -0600
-Date:   Fri, 11 Mar 2022 23:17:11 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <Tudor.Ambarus@microchip.com>
-CC:     <michael@walle.cc>, <broonie@kernel.org>,
-        <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <Nicolas.Ferre@microchip.com>,
-        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>
-Subject: Re: [PATCH 1/4] spi: spi-mem: Allow specifying the byte order in DTR
- mode
-Message-ID: <20220311174711.wexljqvqx6cgmeub@ti.com>
-References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
- <20220218145900.1440045-2-tudor.ambarus@microchip.com>
- <20220302100255.gseqjbdyxrgmt3zf@ti.com>
- <f0501c29-ae70-185d-8f40-4a249e49575e@microchip.com>
+        Fri, 11 Mar 2022 12:51:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B10DA1D3DA9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:50:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647021051;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bJ1LnGLCik9cz8Oj4VtAQ6a1oLh3vtDtBJWR6jjMB14=;
+        b=gUMtaek7cKV88crwNgmUVdWo3ZiFoK2rXsn9HoVOe1BJtB5AbwcALT8ypEt3S5Zv6kNpWT
+        Pisdk+rB5fQ7arkXxQoq2BqQa/uh6XLQ62uioAKTnzBLj2D5NvEPHrTCxgBQQ8twxZ5d92
+        L2fcS0zNOfAcSwCqV6zGDyquN145PSQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-xiKu-LALPt6ibAPJpAsnjw-1; Fri, 11 Mar 2022 12:50:50 -0500
+X-MC-Unique: xiKu-LALPt6ibAPJpAsnjw-1
+Received: by mail-wm1-f69.google.com with SMTP id 3-20020a05600c230300b00384e15ceae4so5779204wmo.7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:50:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bJ1LnGLCik9cz8Oj4VtAQ6a1oLh3vtDtBJWR6jjMB14=;
+        b=rYBdfgpHPT5zK2r10711U0QHJs87yo1CmxPzmqUrecQft6ozEUTEdpv46IoJ1KrODh
+         QGKNjXrddbQavlXRmuryRx7qu7Ir6hn1dSlR7i8ZwL7WiOI8elew9feMxDf38AJIlCaa
+         3Q10PS5ZDhD2RRI2i9yWSxULBYOdBNgD6gUNaK2vz0AN5g8R/xXPf13O3hqqGA5l5TQp
+         WoUJYvvxtELDwWV0Ekgpvd/YgelA/P7L9nR9MLkxz3eJyOMZZ8a2JmdeUbZ1r5geeCOw
+         dSkZ1c9jURfOFAdnd0kmvCxqalw5UxXmx+oT9MhJQLdjifBgDlxVzp4jAK5n/9GTPjQQ
+         mYWQ==
+X-Gm-Message-State: AOAM53226BVJcD9tjgDeJcCtG7sh2sN2ygftyIq7FZE940rdPQC3VtAf
+        fr0PKZ3nFvWZcMDXuMTH+ekRGFzO4AkUb974iDaBI3WVD5qroxwxGRsTCWgdwlkhCuV3Mk6gny8
+        GxWSrNo+bIT6bg3Pik2ijUYMF
+X-Received: by 2002:a7b:cb84:0:b0:382:a9b9:2339 with SMTP id m4-20020a7bcb84000000b00382a9b92339mr16518527wmi.91.1647021049556;
+        Fri, 11 Mar 2022 09:50:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwV5rxQ6cU+cq4n86NWbEwiPpgQ80vOui2/XR7C8tqHuAzrSRz6o/8F0wDPUSmKCBUPsc5QIQ==
+X-Received: by 2002:a7b:cb84:0:b0:382:a9b9:2339 with SMTP id m4-20020a7bcb84000000b00382a9b92339mr16518514wmi.91.1647021049333;
+        Fri, 11 Mar 2022 09:50:49 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id t184-20020a1c46c1000000b003814de297fcsm10868608wma.16.2022.03.11.09.50.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 09:50:48 -0800 (PST)
+Message-ID: <ace6ecbf-9723-ac04-0c07-5e1c83f14afb@redhat.com>
+Date:   Fri, 11 Mar 2022 18:50:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <f0501c29-ae70-185d-8f40-4a249e49575e@microchip.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 21/30] KVM: x86/mmu: Zap invalidated roots via
+ asynchronous worker
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+References: <20220303193842.370645-1-pbonzini@redhat.com>
+ <20220303193842.370645-22-pbonzini@redhat.com> <YiExLB3O2byI4Xdu@google.com>
+ <YiEz3D18wEn8lcEq@google.com>
+ <eeac12f0-0a18-8c63-1987-494a2032fa9d@redhat.com>
+ <YiI4AmYkm2oiuiio@google.com>
+ <8b8c28cf-cf54-f889-be7d-afc9f5430ecd@redhat.com>
+ <YiKwFznqqiB9VRyn@google.com>
+ <20497464-0606-7ea5-89b8-8f5cd56a1a68@redhat.com>
+ <YifKoCZAmymIxDTQ@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YifKoCZAmymIxDTQ@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/03/22 05:31AM, Tudor.Ambarus@microchip.com wrote:
-> On 3/2/22 12:02, Pratyush Yadav wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Hi Tudor,
-> 
-> Hi, Pratyush,
-> 
-> > 
-> > I'm reviewing the code here. I still have not thought through the
-> > discussion about Kconfig option yet.
-> > 
-> > On 18/02/22 04:58PM, Tudor Ambarus wrote:
-> >> There are NOR flashes (Macronix) that swap the bytes on a 16-bit boundary
-> >> when configured in DTR mode. The byte order of 16-bit words is swapped
-> > 
-> > s/DTR mode/ Octal DTR mode/
-> > 
-> > I don't think this would apply to a 4D-4D-4D flash since it would only
-> > transmit one byte per clock cycle.
-> 
-> From what I see, flashes that claim "QPI DTR support" they actually support
-> 4S-4D-4D. JESD251-1 talks about 4S-4D-4D too. So data is latched on both rising
-> and falling edges of the clock. But I'm ok with your proposal because we don't
-> have any proof if there are any QPI DTR flashes that swap bytes in DTR.
-
-I think this problem fundamentally applies to Octal DTR and above (if 
-there is ever 16-line DTR (hexadecimal DTR?) in the future). In your 4D 
-data phase, you can only send _one_ byte per cycle. So the byte order 
-inter-cycle does not matter as it does in 8D mode. Similarly, for a 
-16-line STR this would also apply, since that has 2 bytes per cycle. For 
-a 16-line DTR there are now 4 bytes per cycle and so on.
-
-And the BFPT bit that you use to enable this swap also says "Byte order 
-in 8D-8D-8D mode". So I really don't think it makes sense for QPI DTR.
-
-> 
-> > 
-> >> when read or written in Double Transfer Rate (DTR) mode compared to
-> >> Single Transfer Rate (STR) mode. If one writes D0 D1 D2 D3 bytes using
-> >> 1-1-1 mode, and uses 8D-8D-8D SPI mode for reading, it will read back
-> >> D1 D0 D3 D2. Swapping the bytes is a bad design decision because this may
-> >> introduce some endianness problems. It can affect the boot sequence if the
-> >> entire boot sequence is not handled in either 8D-8D-8D mode or 1-1-1 mode.
-> >> Fortunately there are controllers that can swap back the bytes at runtime,
-> >> fixing the endiannesses. Provide a way for the upper layers to specify the
-> >> byte order in DTR mode.
-> >>
-> >> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> >> ---
-> >>  include/linux/spi/spi-mem.h | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/include/linux/spi/spi-mem.h b/include/linux/spi/spi-mem.h
-> >> index 85e2ff7b840d..e1878417420c 100644
-> >> --- a/include/linux/spi/spi-mem.h
-> >> +++ b/include/linux/spi/spi-mem.h
-> >> @@ -89,6 +89,8 @@ enum spi_mem_data_dir {
-> >>   * @dummy.dtr: whether the dummy bytes should be sent in DTR mode or not
-> >>   * @data.buswidth: number of IO lanes used to send/receive the data
-> >>   * @data.dtr: whether the data should be sent in DTR mode or not
-> >> + * @data.dtr_bswap16: whether the byte order of 16-bit words is swapped when
-> >> + *                 read or written in DTR mode compared to STR mode.
-> >>   * @data.dir: direction of the transfer
-> >>   * @data.nbytes: number of data bytes to send/receive. Can be zero if the
-> >>   *            operation does not involve transferring data
-> >> @@ -119,6 +121,7 @@ struct spi_mem_op {
-> >>       struct {
-> >>               u8 buswidth;
-> >>               u8 dtr : 1;
-> >> +             u8 dtr_bswap16 : 1;
-> 
-> but I would keep this name here as it is, without prepending octal.
-
-I won't nitpick much on the member name as long as the comment 
-describing its role is clear enough.
-
-> 
-> > 
-> > You also need to add this capability to spi_controller_mem_caps and
-> > update spi_mem_default_supports_op() to check for it.
-> 
-> sure, will do.
-> 
-> Thanks!
-> ta
-> > 
-> >>               enum spi_mem_data_dir dir;
-> >>               unsigned int nbytes;
-> >>               union {
-> >> --
-> >> 2.25.1
-> >>
-> > 
-> > --
-> > Regards,
-> > Pratyush Yadav
-> > Texas Instruments Inc.
+On 3/8/22 22:29, Sean Christopherson wrote:
+>>>> Good, for the record these are the commit messages I have:
+>> I'm seeing some hangs in ~50% of installation jobs, both Windows and Linux.
+>> I have not yet tried to reproduce outside the automated tests, or to bisect,
+>> but I'll try to push at least the first part of the series for 5.18.
+> Out of curiosity, what was the bug?  I see this got pushed to kvm/next.
 > 
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Of course it was in another, "harmless" patch that was in front of it. :)
+
+Paolo
+
