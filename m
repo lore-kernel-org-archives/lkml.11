@@ -2,177 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4163FC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842A9C352A8
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347622AbiCKF7H (ORCPT
+        id S1347757AbiCKF7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
+        Fri, 11 Mar 2022 00:59:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346669AbiCKFyA (ORCPT
+        with ESMTP id S1346715AbiCKFyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:54:00 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426F865C6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:54 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id b70-20020a253449000000b0062c16d950c5so6536577yba.9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:54 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:19 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD81F1E8F
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:14 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id x4so9011341iom.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=BHTniUnZLHzExLKWJC5iuCglVl1tbe9p6eIowKy0GQM=;
-        b=pwrwOwn9+tJo509wahAPqMGhQ2rvAbKv6/ghJQdd6I5mQ+Cjy4DKzBktwKWL86+Chk
-         FnzXllpNtO/3FK2NDSSwYOhGaUm6ECpT2npxpiwI2GxgHdjfBQwdCYOfTahCA/lt7Mx7
-         b656+TF0aYMaisWYv5cRjl49hSw5SxaoCFcvreene5/tsV8CBb7aNojQ7AIssaRBwbBl
-         vGqeumBoksGL42JZz81Dq9zaZ8WV/9DSS5cOKsuOsoi03DzCHtmxMx+fGLJvGhSm15A1
-         7H4EAtgSObUTA1CJRpvN0cRBNwq5AIJhWI2Ju71QZu2PHXuwUFMkMR/t/oDB3x8eTI8Z
-         3lKw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iH2ohTMZfPnRZ9E6jdBe6JKfO5koQv5qtiPS15nsl0I=;
+        b=lBLSNHNDBDLhECW+i7GItRVFc2s/fgUj/HMjqg84Xln7MQUu6DxpDIq7jdrZwx2YWB
+         HDmLI2wAzHNtmqomw5J3eD4YE0N+ivlLv1Er2iRuVUG3/ri6ZqhWubh8509kcBE3idYJ
+         QSA8JQqsfolKtgGCs518PBnajsSWdlErkZ82pu6WfzPooJzUIJTbF/7cexQ5S5Qzlfm4
+         T3VU65+SP5zmCBG6TatJtUP47W9CAUa1dZzaetX2Lj37T5DDBjKD1toIp6o1KdpvmHbF
+         sS2V5edCKN/TlpsmgAUVLXwVE/c7LQBrMEB794Vlthuht9Tw3zS8/YqcEUwo9Q6D9LGW
+         yd4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=BHTniUnZLHzExLKWJC5iuCglVl1tbe9p6eIowKy0GQM=;
-        b=dvebp7PR6tjcNhxQkCVtV19t8IReIA62j2Hv6ajvY5l15ckG05+zcyTD37fVInMD/t
-         DFo6mathcmNGmoIN12uptCBxCooKkkO+GLDgivxkOrlQ+BR85sYoN6Z9m9CHu+j6i/SX
-         NP1YB8xmq5/yLBDWNHx67UFnJt+d7uKbY2xLP8qImi1XsIPPucDYE/i4kW7ax3lBJQid
-         i47+rsUxT83rZPeivLW3gS9LbaN/MXZFmPU8dx+Wl/d4+SLqQ577jqgsXLb/bQKLwKpn
-         4iyluHdoeaou5PSN80stkxEZeJ7NScMj1KatfmbHnJvEeBe2MzFt+UA4H4MGCuQVY0Og
-         Ym7Q==
-X-Gm-Message-State: AOAM531OYNFic0w12X14ocZqwn/vhg321EiWmJ2LKNnMcLv4hxIixMMw
-        nXet3oh49C8elGSldGfFBlQhdlWEnImhnJzJWdxIylzaAtQADcj9c/xpWACPHuifnHSr/zdC5tj
-        0HuOyq6NG2x6bSbA3cKXefrOCelmdM9SxV7Z9JuMw34yd5SXc3T93TYqz/7yxJ1ESKFYgag==
-X-Google-Smtp-Source: ABdhPJydwvYY8q1PnDU3RNwscBmDVt6S5yfy7oMnsJHXIa1RsuR2ODkdAzZ93yT/Rm1125zfUhsdQZowe1E=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:b11c:0:b0:62c:16d9:c028 with SMTP id
- g28-20020a25b11c000000b0062c16d9c028mr6971040ybj.288.1646977973807; Thu, 10
- Mar 2022 21:52:53 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:15 +0000
-In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-65-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220311055056.57265-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 064/105] KVM: selftests: Convert amx_test away from VCPU_ID
-From:   Sean Christopherson <seanjc@google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iH2ohTMZfPnRZ9E6jdBe6JKfO5koQv5qtiPS15nsl0I=;
+        b=MFV9eJSnm7/8G5Yh6B3+nqwHIOBVgN++NcG1hnEefuLMirb8GoT4sqOG76k08OICvq
+         5zS1iZfyllYg7OQQmFURSgB6aTlbxy0I8oeBgbSfZRhJlBiH7Q6Xb6NHnM3ik2BZub/t
+         oQXypv35Dw5k0AIS16qj4Q6MOF2URLpUWCHLteQjTOCxrfXt3RzdC073u7NpAgYQ1MKI
+         bMBC+1nuQ8FfJR763GpHGr9cKeicEpmIfHky/iCaEzC2HQAQ7A2Q5UZxGqkVyGIiqYLl
+         7uv+QKv3e2z6r1jhYV4bvfFsYAm7nmcmQ36wQqS3G99A8VI4/2ZB5OoDtFntJFfp1eu/
+         3WtA==
+X-Gm-Message-State: AOAM5320JmI6XzShPbBDcWjFzpupSwSSgJvl3kBK674zUlGj2eC1qtCk
+        ZOO+vdmHm64TMARKgEr97Ih/OyYtf2TGltldWCs=
+X-Google-Smtp-Source: ABdhPJyhB8o0PTCDqSOXDuEw7PVy6+1fE/kih9mRtFuqIls65qjo2Ut/x9nk2zkysjNJPIYFuuSGFOigSWM7dqpBCj0=
+X-Received: by 2002:a5d:8ace:0:b0:641:2a6e:471c with SMTP id
+ e14-20020a5d8ace000000b006412a6e471cmr6896106iot.42.1646977993769; Thu, 10
+ Mar 2022 21:53:13 -0800 (PST)
+MIME-Version: 1.0
+References: <20220310081548.31846-1-steve.lee.analog@gmail.com>
+ <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
+ <YinhDPrSvrYV5vKp@sirena.org.uk>
+In-Reply-To: <YinhDPrSvrYV5vKp@sirena.org.uk>
+From:   Lee Steve <steve.lee.analog@gmail.com>
+Date:   Fri, 11 Mar 2022 14:53:02 +0900
+Message-ID: <CA+Fz0PZN=aW=YQ=np=tbcJat-B7GR-DFeWKufABEJbPfOz9bpA@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: max98390: Add reset gpio control
+To:     Mark Brown <broonie@kernel.org>
+Cc:     "Sa, Nuno" <Nuno.Sa@analog.com>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "ckeepax@opensource.cirrus.com" <ckeepax@opensource.cirrus.com>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "rf@opensource.wolfsonmicro.com" <rf@opensource.wolfsonmicro.com>,
+        "shumingf@realtek.com" <shumingf@realtek.com>,
+        "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>,
+        "krzk@kernel.org" <krzk@kernel.org>,
+        "dmurphy@ti.com" <dmurphy@ti.com>,
+        "jack.yu@realtek.com" <jack.yu@realtek.com>,
+        "steves.lee@maximintegrated.com" <steves.lee@maximintegrated.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- tools/testing/selftests/kvm/x86_64/amx_test.c | 33 +++++++++----------
- 1 file changed, 16 insertions(+), 17 deletions(-)
+On Thu, Mar 10, 2022 at 8:29 PM Mark Brown <broonie@kernel.org> wrote:
+>
+> On Thu, Mar 10, 2022 at 08:48:09AM +0000, Sa, Nuno wrote:
+>
+> > > +   max98390->reset_gpio = of_get_named_gpio(i2c-
+> > > >dev.of_node,
+> > > +                                           "maxim,reset-gpios", 0);
+>
+> > Why not using devm_gpiod_get_optional()? We could request the pin
+> > already in the asserted state and make the code slightly better...
+>
+> Yes, and it'd support other firmware interfaces too.  We also need an
+> update to the binding document covering the new property.
+>
+> Might also be worth putting the device into reset when unloading the
+> driver, though that's not essential.
 
-diff --git a/tools/testing/selftests/kvm/x86_64/amx_test.c b/tools/testing/selftests/kvm/x86_64/amx_test.c
-index 89d2423a2ffd..cd5a71f5a7ac 100644
---- a/tools/testing/selftests/kvm/x86_64/amx_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/amx_test.c
-@@ -25,7 +25,6 @@
- # error This test is 64-bit only
- #endif
- 
--#define VCPU_ID				0
- #define X86_FEATURE_XSAVE		(1 << 26)
- #define X86_FEATURE_OSXSAVE		(1 << 27)
- 
-@@ -320,6 +319,7 @@ int main(int argc, char *argv[])
- 	struct kvm_cpuid_entry2 *entry;
- 	struct kvm_regs regs1, regs2;
- 	bool amx_supported = false;
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct kvm_x86_state *state;
-@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
- 	vm_xsave_req_perm(XSTATE_XTILE_DATA_BIT);
- 
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
- 
- 	entry = kvm_get_supported_cpuid_entry(1);
- 	if (!(entry->ecx & X86_FEATURE_XSAVE)) {
-@@ -351,12 +351,12 @@ int main(int argc, char *argv[])
- 		xsave_restore_size = entry->ecx;
- 	}
- 
--	run = vcpu_state(vm, VCPU_ID);
--	vcpu_regs_get(vm, VCPU_ID, &regs1);
-+	run = vcpu->run;
-+	vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 	/* Register #NM handler */
- 	vm_init_descriptor_tables(vm);
--	vcpu_init_descriptor_tables(vm, VCPU_ID);
-+	vcpu_init_descriptor_tables(vm, vcpu->id);
- 	vm_install_exception_handler(vm, NM_VECTOR, guest_nm_handler);
- 
- 	/* amx cfg for guest_code */
-@@ -370,16 +370,16 @@ int main(int argc, char *argv[])
- 	/* xsave data for guest_code */
- 	xsavedata = vm_vaddr_alloc_pages(vm, 3);
- 	memset(addr_gva2hva(vm, xsavedata), 0, 3 * getpagesize());
--	vcpu_args_set(vm, VCPU_ID, 3, amx_cfg, tiledata, xsavedata);
-+	vcpu_args_set(vm, vcpu->id, 3, amx_cfg, tiledata, xsavedata);
- 
- 	for (stage = 1; ; stage++) {
--		_vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Stage %d: unexpected exit reason: %u (%s),\n",
- 			    stage, run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
- 
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
- 				  __FILE__, uc.args[1]);
-@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
- 				 * size subtract 8K amx size.
- 				 */
- 				amx_offset = xsave_restore_size - NUM_TILES*TILE_SIZE;
--				state = vcpu_save_state(vm, VCPU_ID);
-+				state = vcpu_save_state(vm, vcpu->id);
- 				void *amx_start = (void *)state->xsave + amx_offset;
- 				void *tiles_data = (void *)addr_gva2hva(vm, tiledata);
- 				/* Only check TMM0 register, 1 tile */
-@@ -425,22 +425,21 @@ int main(int argc, char *argv[])
- 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
- 		}
- 
--		state = vcpu_save_state(vm, VCPU_ID);
-+		state = vcpu_save_state(vm, vcpu->id);
- 		memset(&regs1, 0, sizeof(regs1));
--		vcpu_regs_get(vm, VCPU_ID, &regs1);
-+		vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 		kvm_vm_release(vm);
- 
- 		/* Restore state in a new VM.  */
--		kvm_vm_restart(vm);
--		vm_vcpu_add(vm, VCPU_ID);
--		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
--		vcpu_load_state(vm, VCPU_ID, state);
--		run = vcpu_state(vm, VCPU_ID);
-+		vcpu = vm_recreate_with_one_vcpu(vm);
-+		vcpu_set_cpuid(vm, vcpu->id, kvm_get_supported_cpuid());
-+		vcpu_load_state(vm, vcpu->id, state);
-+		run = vcpu->run;
- 		kvm_x86_state_cleanup(state);
- 
- 		memset(&regs2, 0, sizeof(regs2));
--		vcpu_regs_get(vm, VCPU_ID, &regs2);
-+		vcpu_regs_get(vm, vcpu->id, &regs2);
- 		TEST_ASSERT(!memcmp(&regs1, &regs2, sizeof(regs2)),
- 			    "Unexpected register values after vcpu_load_state; rdi: %lx rsi: %lx",
- 			    (ulong) regs2.rdi, (ulong) regs2.rsi);
--- 
-2.35.1.723.g4982287a31-goog
-
+I will check and update v2 patch.
