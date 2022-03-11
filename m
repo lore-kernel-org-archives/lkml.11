@@ -2,119 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27698C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4811C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbiCKUmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 15:42:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58586 "EHLO
+        id S231376AbiCKUpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 15:45:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232399AbiCKUmw (ORCPT
+        with ESMTP id S230450AbiCKUpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 15:42:52 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12291D6F63
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 12:41:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647031308; x=1678567308;
-  h=message-id:date:mime-version:from:to:cc:references:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=d+V62j80p7kCm2OV0b4F2QuYNYGrrrxGrbo0cWvMM/A=;
-  b=FTPqdbvjah/iYSSgkx4T7C+7/ZTSB1Vzx68gOiB78WCfE3kjRtblFoC7
-   bpJYDM2rb5oQHHgTCBXLwRohoI3lWmds2DtQvs1dEaxgqv1jJ/Zsw0M5G
-   HMaWnmywSE+yyagSXrFanBuff5d3CrkOsRpkWDvUKiXsBBxAwj5EIJqxc
-   ZhdF80uQiWV+z8bxW2hfNqw7Rxh6fEmPJzRINXE1ht70LIcmac9pY0svf
-   f8UeFNeoe0Ft3CA0zi2cqNDkNpnivxzs2ALOxOQD5bWg61ZKyQ5W5WlQ4
-   lD20gNqe5GdBgDwaAc8N07akv0CItw5qIDZTT6lshjz7YKX2VwnS2VkuR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="235602800"
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="235602800"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 12:41:48 -0800
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="645046437"
-Received: from cpeirce-mobl1.amr.corp.intel.com (HELO [10.212.128.243]) ([10.212.128.243])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 12:41:47 -0800
-Message-ID: <e5f84691-3475-1cbd-e46c-163bf594a4bc@intel.com>
-Date:   Fri, 11 Mar 2022 12:41:41 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Dave Hansen <dave.hansen@intel.com>
-To:     Nadav Amit <nadav.amit@gmail.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nadav Amit <namit@vmware.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Nick Piggin <npiggin@gmail.com>, x86@kernel.org
-References: <20220311190749.338281-1-namit@vmware.com>
- <20220311190749.338281-6-namit@vmware.com>
-Content-Language: en-US
-Subject: Re: [RESEND PATCH v3 5/5] mm: avoid unnecessary flush on
- change_huge_pmd()
-In-Reply-To: <20220311190749.338281-6-namit@vmware.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 11 Mar 2022 15:45:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9901EC26F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 12:44:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EF9A61F92
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 20:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DFB45C340EC;
+        Fri, 11 Mar 2022 20:44:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647031482;
+        bh=vDi2M9xuuoKAX94Xgn0xlD2AOH2r3dG2kCNUybD8kIY=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=QsC5USRG3VhfOPcwsr/WNBv/Uhyeyw2skf3/wMHhZ3q+HTq84x5G8pT36T+TqR2Sr
+         npC2BVHiMv3/IeSWj/aEnQh+kdfpeCaIwYPPEsaM2jDCVN9k8TmLBM6U2HvRG2uq1h
+         wCei+9hqGdwoV/t6gQT8riqc+JtIOEypMeD4a99TP1fJFdwB2L5KUedI42KYKCAfyb
+         nbVouqscYJ3srpnSrkyWpbRzrl8xZiqswwD4TiUEuKvhblGSwbL5W1vlQcoAHhcl2E
+         /W2Nn2WcLhSCMlR/Cc4NI6Rx/ygEd+lGwXanaLhSSsVRI/bzzGnLcE7XMTlw0V0OYV
+         HwJ63waqIcITg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB828E8DD5B;
+        Fri, 11 Mar 2022 20:44:42 +0000 (UTC)
+Subject: Re: [GIT PULL] RISC-V Fixes for 5.17-rc8
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
+References: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc8
+X-PR-Tracked-Commit-Id: 0966d385830de3470b7131db8e86c0c5bc9c52dc
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 77fe1ba90241c2af6f14d53988bf0cd6b9586699
+Message-Id: <164703148283.12993.8501085816446276759.pr-tracker-bot@kernel.org>
+Date:   Fri, 11 Mar 2022 20:44:42 +0000
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 11:07, Nadav Amit wrote:
-> From: Nadav Amit <namit@vmware.com>
-> 
-> Calls to change_protection_range() on THP can trigger, at least on x86,
-> two TLB flushes for one page: one immediately, when pmdp_invalidate() is
-> called by change_huge_pmd(), and then another one later (that can be
-> batched) when change_protection_range() finishes.
-> 
-> The first TLB flush is only necessary to prevent the dirty bit (and with
-> a lesser importance the access bit) from changing while the PTE is
-> modified. However, this is not necessary as the x86 CPUs set the
-> dirty-bit atomically with an additional check that the PTE is (still)
-> present. One caveat is Intel's Knights Landing that has a bug and does
-> not do so.
+The pull request you sent on Fri, 11 Mar 2022 09:18:12 -0800 (PST):
 
-First of all, thank you for your diligence here.  This is a super
-obscure issue.  I think I put handling for it in the kernel and I'm not
-sure I would have even thought about this angle.
+> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc8
 
-That said, I'm not sure this is all necessary.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/77fe1ba90241c2af6f14d53988bf0cd6b9586699
 
-Yes, the Dirty bit can get set unexpectedly in some PTEs.  But, the
-question is whether it is *VALUABLE* and needs to be preserved.  The
-current kernel code pretty much just lets the hardware set the Dirty bit
-and then ignores it.  If it were valuable, ignoring it would have been a
-bad thing.  We'd be losing data on today's kernels because the hardware
-told us about a write that happened but that the kernel ignored.
+Thank you!
 
-My mental model of what the microcode responsible for the erratum does
-is something along these lines:
-
-	if (write)
-		pte |= _PAGE_DIRTY;
-	if (!pte_present(pte))
-		#PF
-
-The PTE is marked dirty, but the write never actually executes.  The
-thread that triggered the A/D setting *also* gets a fault.
-
-I'll double-check with some Intel folks to make sure I'm not missing
-something.  But, either way, I don't think we should be going to this
-much trouble for the good ol' Xeon Phi.  I doubt there are many still
-around and I *REALLY* doubt they're running new kernels.
-
-*If* we need this (and I'm not convinced we do), my first instinct would
-be to just do this instead:
-
-	clear_cpu_cap(c, X86_FEATURE_PSE);
-
-on KNL systems.  If anyone cares, they know where to find us.
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
