@@ -2,129 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6721C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5664BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234052AbiCKIaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:30:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        id S235408AbiCKIaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiCKIaF (ORCPT
+        with ESMTP id S234020AbiCKIaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:30:05 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57EF1B0BE5;
-        Fri, 11 Mar 2022 00:29:02 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id n2so7134051plf.4;
-        Fri, 11 Mar 2022 00:29:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=yfQz7z8KZumc1Ycb9CqfcOoNgNnJJq7vzR6ooG1K2JQ=;
-        b=pe5wuNZgg6d3LXKiCChXh5TnqXyI1eYgWqE9f2t/h7FMxufbl5ktYUr55uhaGedqA1
-         nk/3fDSlLyAAS63VCnYojUXxvECFROYfjZnAdAWYoINV3kqi9Kou3fJNyNZsHen7coVD
-         9kopPY3klo+ypfbwBmeKm+uku4nFUP76F/KYfcuIoyMCpy8TBoYhDFWA0myBtcDwFsqQ
-         FlP4x0fvouo98vQO/PkSYOWWatishPoufkUvUyWotxKv2AG/Nt/dKyanST/iTrQW0JJo
-         ckByBxJz+8QPKlxrsvTPaja4DTgmAVsg73iTYvTtXNgFxNTF447QjI5vxyGpFE4IWzkf
-         x10A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yfQz7z8KZumc1Ycb9CqfcOoNgNnJJq7vzR6ooG1K2JQ=;
-        b=5/8VXtGcyLGvApFatrdCWh9tHqL/cPx64s9NUhp+gTv9E0YqLYcQ+FWxgetK0KdCdU
-         wOjr62ISyC82ri6o/3uA4ZP7fNSQg5UjqJsspnxwhfBpu5OTFqxV0qoaDLEKqZRjzUgx
-         IW7YEiYiKi41MlRk9gyxnKaQ0awPjewDbItIsjGIZ4bXJ7ix77eWNEB5OVqVb6eUrPNB
-         e9B3QJ+qRrBeXFNBQtIOLCwfPMmYKaSe8MADpFpJlMtbzFkBWNuyh8Dvp0gEtPKa/nc+
-         PSUNdE9d4XW3U25viCJdV8Sv3GyNcW0r/PGzcorCsc5EspYbGnm3bUaXpN6rdWdK8hCr
-         vTwA==
-X-Gm-Message-State: AOAM5302QeHMkznh0puQD9y5JM8ewGW5llDRsTIGT+yoOKyf/nccGrEy
-        Ibbm/j4cr6Dr8LSyVF26CVn1KFoxioY=
-X-Google-Smtp-Source: ABdhPJymbb8g9GfpxZY7Dyp91Z9WiGBqnyp0l7iDDQjn5ozr/TV16SmEk1jJLha+NULL5oSSrzxFKA==
-X-Received: by 2002:a17:90a:10d6:b0:1bc:48ad:c8c8 with SMTP id b22-20020a17090a10d600b001bc48adc8c8mr9605292pje.149.1646987342111;
-        Fri, 11 Mar 2022 00:29:02 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.115])
-        by smtp.googlemail.com with ESMTPSA id y19-20020a056a00181300b004f7203ad991sm9630115pfa.210.2022.03.11.00.28.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 11 Mar 2022 00:29:01 -0800 (PST)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 0/5] KVM: X86: Scaling Guest OS Critical Sections with boosting
-Date:   Fri, 11 Mar 2022 00:28:11 -0800
-Message-Id: <1646987291-28598-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 11 Mar 2022 03:30:23 -0500
+X-Greylist: delayed 608 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Mar 2022 00:29:19 PST
+Received: from mail.nearlyone.de (mail.nearlyone.de [IPv6:2a01:488:66:1000:2ea3:7291:0:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1321B8FF1;
+        Fri, 11 Mar 2022 00:29:19 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 62CE55CD07;
+        Fri, 11 Mar 2022 09:19:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=monom.org; s=dkim;
+        t=1646986747; h=from:subject:date:message-id:to:mime-version:content-type:
+         content-transfer-encoding; bh=ba/SYLs6LiMuyItQixZYYNNJ+XqLIWTXJlICJRitxrY=;
+        b=H5bNnEoNiapHd8wt8oDUlgsBa5BlYOjF4sxn2MGUV476uG20RPzPqjnjRLO98MMJ23zZdd
+        4bQT5t4onqta8YC8N3mIqHhqq7THWbgmGSzcGheSUrjcg/RjCdo7Xbtcqf/i4roCca2vpf
+        MLRChBPJyLvI/Z2bmYwWQHflMx0tAS6/OZOGsLchwApoPYpFFKFzKOFHcYD8zQK+DZtn8E
+        Upki8c9e0lyomrXjKYkrzSDiGpqVCqBpmQj7s/Y14xiw2PqhVhZDLmO7nVWlZPml2ixxWs
+        rMlv8cRWAOLtHnmFlQJz2mdsKcI96SmYfUu3IlhMabBDs6/DL23YbDlewSUNgg==
+Date:   Fri, 11 Mar 2022 09:19:04 +0100
+From:   Daniel Wagner <wagi@monom.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Tom Zanussi <tom.zanussi@linux.intel.com>,
+        Clark Williams <williams@redhat.com>
+Subject: [ANNOUNCE] 4.19.233-rt105
+Message-ID: <164698646082.13723.1987519373498826881@beryllium.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The missing semantic gap that occurs when a guest OS is preempted 
-when executing its own critical section, this leads to degradation 
-of application scalability. We try to bridge this semantic gap in 
-some ways, by passing guest preempt_count to the host and checking 
-guest irq disable state, the hypervisor now knows whether guest 
-OSes are running in the critical section, the hypervisor yield-on-spin 
-heuristics can be more smart this time to boost the vCPU candidate 
-who is in the critical section to mitigate this preemption problem, 
-in addition, it is more likely to be a potential lock holder.
+Hello RT-list!
 
-Testing on 96 HT 2 socket Xeon CLX server, with 96 vCPUs VM 100GB RAM,
-one VM running benchmark, the other(none-2) VMs running cpu-bound 
-workloads, There is no performance regression for other benchmarks 
-like Unixbench etc.
+I'm pleased to announce the 4.19.233-rt105 stable release. This is just
+an update to the latest upstream stable release. No RT specific changes.
 
-1VM
-            vanilla    optimized    improved
+Note, I've taken the maintainer job for the v4.19-rt series over from
+Clark, hence the signing key has changed (see below).
 
-hackbench -l 50000
-              28         21.45        30.5%
-ebizzy -M
-             12189       12354        1.4%
-dbench
-             712 MB/sec  722 MB/sec   1.4%
+You can get this release via the git tree at:
 
-2VM:
-            vanilla    optimized    improved
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 
-hackbench -l 10000
-              29.4        26          13%
-ebizzy -M
-             3834        4033          5%
-dbench
-           42.3 MB/sec  44.1 MB/sec   4.3%
+  branch: v4.19-rt
+  Head SHA1: d335ad45d7f06f4cf7cbf6679a55d8cf957efca0
 
-3VM:
-            vanilla    optimized    improved
+Or to build 4.19.233-rt105 directly, the following patches should be applied:
 
-hackbench -l 10000
-              47         35.46        33%
-ebizzy -M
-	     3828        4031         5%
-dbench 
-           30.5 MB/sec  31.16 MB/sec  2.3%
+  https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.19.tar.xz
 
-Wanpeng Li (5):
-  KVM: X86: Add MSR_KVM_PREEMPT_COUNT support
-  KVM: X86: Add guest interrupt disable state support
-  KVM: X86: Boost vCPU which is in the critical section
-  x86/kvm: Add MSR_KVM_PREEMPT_COUNT guest support
-  KVM: X86: Expose PREEMT_COUNT CPUID feature bit to guest
+  https://www.kernel.org/pub/linux/kernel/v4.x/patch-4.19.233.xz
 
- Documentation/virt/kvm/cpuid.rst     |  3 ++
- arch/x86/include/asm/kvm_host.h      |  7 ++++
- arch/x86/include/uapi/asm/kvm_para.h |  2 +
- arch/x86/kernel/kvm.c                | 10 +++++
- arch/x86/kvm/cpuid.c                 |  3 +-
- arch/x86/kvm/x86.c                   | 60 ++++++++++++++++++++++++++++
- include/linux/kvm_host.h             |  1 +
- virt/kvm/kvm_main.c                  |  7 ++++
- 8 files changed, 92 insertions(+), 1 deletion(-)
+  https://www.kernel.org/pub/linux/kernel/projects/rt/4.19/older/patch-4.19.233-rt105.patch.xz
 
--- 
-2.25.1
+Signing key fingerprint:
 
+  5BF6 7BC5 0826 72CA BB45  ACAE 587C 5ECA 5D0A 306C
+
+Enjoy!
+Daniel
+
+Changes from v4.19.232-rt104:
+---
+
+Alyssa Ross (1):
+      firmware: arm_scmi: Remove space in MODULE_ALIAS name
+
+Antony Antony (1):
+      xfrm: fix the if_id check in changelink
+
+Benjamin Beichler (1):
+      mac80211_hwsim: report NOACK frames in tx_status
+
+Brian Norris (1):
+      arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+
+D. Wythe (2):
+      net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error generated by client
+      net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server
+
+Daniel Wagner (2):
+      Merge tag 'v4.19.233' into v4.19-rt
+      Linux 4.19.233-rt105
+
+Daniele Palmas (1):
+      net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
+
+Eric Anholt (1):
+      i2c: bcm2835: Avoid clock stretching timeouts
+
+Eric Dumazet (1):
+      netfilter: fix use-after-free in __nf_register_net_hook()
+
+Filipe Manana (1):
+      btrfs: add missing run of delayed items after unlink during log replay
+
+Florian Westphal (2):
+      netfilter: nf_queue: don't assume sk is full socket
+      netfilter: nf_queue: fix possible use-after-free
+
+Greg Kroah-Hartman (1):
+      Linux 4.19.233
+
+Hangyu Hua (2):
+      usb: gadget: don't release an existing dev->buf
+      usb: gadget: clear related members when goto fail
+
+Hans de Goede (2):
+      Input: elan_i2c - move regulator_[en|dis]able() out of elan_[en|dis]able_power()
+      Input: elan_i2c - fix regulator enable count imbalance after suspend/resume
+
+Huang Pei (1):
+      hamradio: fix macro redefine warning
+
+Hugh Dickins (1):
+      memfd: fix F_SEAL_WRITE after shmem huge page allocated
+
+JaeMan Park (1):
+      mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
+
+Jann Horn (1):
+      efivars: Respect "block" flag in efivar_entry_set_safe()
+
+Jia-Ju Bai (1):
+      net: chelsio: cxgb3: check the return value of pci_find_capability()
+
+Jiasheng Jiang (2):
+      soc: fsl: qe: Check of ioremap return value
+      nl80211: Handle nla_memdup failures in handle_nan_filter
+
+Jiri Bohac (1):
+      xfrm: fix MTU regression
+
+José Expósito (1):
+      Input: clear BTN_RIGHT/MIDDLE on buttonpads
+
+Kai Vehmanen (2):
+      ASoC: rt5668: do not block workqueue if card is unbound
+      ASoC: rt5682: do not block workqueue if card is unbound
+
+Leon Romanovsky (1):
+      xfrm: enforce validity of offload input flags
+
+Lukas Wunner (1):
+      PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+
+Marek Marczykowski-Górecki (1):
+      xen/netfront: destroy queues before real_num_tx_queues is zeroed
+
+Marek Vasut (1):
+      ASoC: ops: Shift tested values in snd_soc_put_volsw() by +min
+
+Nicolas Escande (1):
+      mac80211: fix forwarded mesh frames AC & queue selection
+
+Randy Dunlap (3):
+      net: stmmac: fix return value of __setup handler
+      net: sxgbe: fix return value of __setup handler
+      ARM: 9182/1: mmu: fix returns from early_param() and __setup() functions
+
+Ronnie Sahlberg (1):
+      cifs: fix double free race when mount fails in cifs_get_root()
+
+Sergey Shtylyov (1):
+      ata: pata_hpt37x: fix PCI clock detection
+
+Steven Rostedt (Google) (1):
+      tracing/histogram: Fix sorting on old "cpu" value
+
+Sukadev Bhattiprolu (1):
+      ibmvnic: free reset-work-item when flushing
+
+Sven Eckelmann (3):
+      batman-adv: Request iflink once in batadv-on-batadv check
+      batman-adv: Request iflink once in batadv_get_real_netdevice
+      batman-adv: Don't expect inter-netns unique iflink indices
+
+Vincent Mailhol (1):
+      can: gs_usb: change active_channels's type from atomic_t to u8
+
+Vladimir Oltean (2):
+      net: dcb: flush lingering app table entries for unregistered devices
+      net: dcb: disable softirqs in dcbnl_flush_dev()
+
+William Mahon (1):
+      HID: add mapping for KEY_ALL_APPLICATIONS
+
+Wolfram Sang (2):
+      i2c: cadence: allow COMPILE_TEST
+      i2c: qup: allow COMPILE_TEST
+
+Ye Bin (1):
+      block: Fix fsync always failed if once failed
+
+Yongzhi Liu (1):
+      dmaengine: shdma: Fix runtime PM imbalance on error
+
+Zhen Ni (1):
+      ALSA: intel_hdmi: Fix reference to PCM buffer address
+
+Zheyu Ma (1):
+      net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+---
+Makefile                                          |  2 +-
+ arch/arm/mm/mmu.c                                 |  2 +
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi      | 17 ++++--
+ block/blk-flush.c                                 |  4 +-
+ drivers/ata/pata_hpt37x.c                         |  4 +-
+ drivers/dma/sh/shdma-base.c                       |  4 +-
+ drivers/firmware/arm_scmi/driver.c                |  2 +-
+ drivers/firmware/efi/vars.c                       |  5 +-
+ drivers/hid/hid-debug.c                           |  4 +-
+ drivers/hid/hid-input.c                           |  2 +
+ drivers/i2c/busses/Kconfig                        |  4 +-
+ drivers/i2c/busses/i2c-bcm2835.c                  | 11 ++++
+ drivers/input/input.c                             |  6 +++
+ drivers/input/mouse/elan_i2c_core.c               | 64 ++++++++---------------
+ drivers/net/arcnet/com20020-pci.c                 |  3 ++
+ drivers/net/can/usb/gs_usb.c                      | 10 ++--
+ drivers/net/ethernet/chelsio/cxgb3/t3_hw.c        |  2 +
+ drivers/net/ethernet/ibm/ibmvnic.c                |  4 +-
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c   |  6 +--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  6 +--
+ drivers/net/hamradio/mkiss.c                      |  2 +
+ drivers/net/usb/cdc_mbim.c                        |  5 ++
+ drivers/net/wireless/mac80211_hwsim.c             | 13 +++++
+ drivers/net/xen-netfront.c                        | 39 ++++++++------
+ drivers/pci/hotplug/pciehp_hpc.c                  |  7 +--
+ drivers/soc/fsl/qe/qe_io.c                        |  2 +
+ drivers/usb/gadget/legacy/inode.c                 | 10 ++--
+ fs/btrfs/tree-log.c                               | 18 +++++++
+ fs/cifs/cifsfs.c                                  |  1 +
+ include/net/netfilter/nf_queue.h                  |  2 +-
+ include/uapi/linux/input-event-codes.h            |  3 +-
+ include/uapi/linux/xfrm.h                         |  6 +++
+ kernel/trace/trace_events_hist.c                  |  6 +--
+ localversion-rt                                   |  2 +-
+ mm/memfd.c                                        | 30 ++++++++---
+ net/batman-adv/hard-interface.c                   | 29 ++++++----
+ net/dcb/dcbnl.c                                   | 44 ++++++++++++++++
+ net/ipv6/ip6_output.c                             | 11 ++--
+ net/mac80211/rx.c                                 |  4 +-
+ net/netfilter/core.c                              |  5 +-
+ net/netfilter/nf_queue.c                          | 22 ++++++--
+ net/netfilter/nfnetlink_queue.c                   | 12 +++--
+ net/smc/smc_core.c                                |  5 +-
+ net/wireless/nl80211.c                            | 12 +++++
+ net/xfrm/xfrm_device.c                            |  6 ++-
+ net/xfrm/xfrm_interface.c                         |  2 +-
+ sound/soc/codecs/rt5668.c                         | 12 +++--
+ sound/soc/codecs/rt5682.c                         | 12 +++--
+ sound/soc/soc-ops.c                               |  4 +-
+ sound/x86/intel_hdmi_audio.c                      |  2 +-
+ 50 files changed, 346 insertions(+), 144 deletions(-)
