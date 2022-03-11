@@ -2,136 +2,360 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CACAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E019C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350354AbiCKRnk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 12:43:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
+        id S237423AbiCKRrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 12:47:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243506AbiCKRni (ORCPT
+        with ESMTP id S1348689AbiCKRrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 12:43:38 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCBB427D0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:42:32 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id i66so5513629wma.5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:42:32 -0800 (PST)
+        Fri, 11 Mar 2022 12:47:07 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2E513A1CC
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:46:03 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id d10so20635243eje.10
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:46:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1Kiu69aDCpOmK6ciVX6BptEVNLoBkh9vUCLUZJD90Aw=;
-        b=FfxxQCuMcndqghCiuePJsvBOm9QSsZiPT/dhpuLws8R4GTUWvMPWc7Ulz+ocnE2aLN
-         fl9ZtKyoAUphXwzoUGca/TZTla82GTDiaNsXwTz5OnzUxbs1ehjpfkjYa0eku8v/XEFh
-         NKVNaozFF9n+FRas3NRVAMOThO6TKt7NRgklcSEUE0CPtJ5Ao9KH+AFz5utIQUNWA1u3
-         MxT+f4X3bewiasvHTTwd0lucb7PhmOu4ZGCnEdVw7ROPp2dfIOoAafXY3XSm5nToslAK
-         Nj+B6kDtok3YQxXgQJHLZJnRfKPftcDo5R1t1ws7n2wbzK4ezQO0KpJC46PCnrPDFk2k
-         vVRA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=16FTiziTuHY7luYyqhUgZZQe9XBDNooPz6CdRNgABNY=;
+        b=oxr+bbXplN7JLlsYtHsTMq87tB9qjjwJovy4Qmphj7sIBHnv5iE72yNg7suTzlkG7R
+         oINry5tchEi9fK7FZ7LUmaPJ+jCwkyU4D/uYP1hDIDuAHb5l5rVXjHcij7yoXtKuJ2Zp
+         enoa7/O0Z/su2Af9pCcQsKXgeplEeEeWn/P99XC2ffJEz02lS85YB1M8YGyi/hpMUmf1
+         ChQ9zzI46OgPcsPId44t45Xpz1NWniqZIQo00/15hexDGgVRQkUiwrC0I30gCFe2bue3
+         CtMBKIRZHu7FIrQ/cg6ZOxrbEKmIPRnJXzW/DvCQWv2G24+B32J7iO8vAxujZM6w1EVv
+         xiyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1Kiu69aDCpOmK6ciVX6BptEVNLoBkh9vUCLUZJD90Aw=;
-        b=DG4dijIKQDo1I7YmpDHmLcvoBa4HocCWsNSKKdyCorZK3jYwQHok71nfSNg0M9oLJ9
-         /quXZ24onklV+5eItxiocFK6+95hWKLnl4IL50sCk4xCnOV0c1c08xhZqdXLWsiZE4jU
-         wlCm7es9R0+MMvbX5woW/v8GI8/K21RugjexnljqHqAGssIL8YTyLWWufkr97mmBhD3j
-         xbVrpH3WZbCe7MiSRMN5sZaqhHiM5g4KKMJLsx8jIMp5c62AWlDsd8VpFhx2cf9J6Mu+
-         Afv1Vha/WhiVwsY51eBYrHJo8p69NYaF2hQRauZK95ruVEdxQ4+6qAqmUh8gOSMmpm57
-         l68w==
-X-Gm-Message-State: AOAM530PtNhnYHGg/SumGaNXpgctnV2v6QonBIRoDBDWW2N8ad0knO1Y
-        4RxkUqrBo3GQY0kip1/Fn6Mzmg==
-X-Google-Smtp-Source: ABdhPJyBVbe+lJqevWTofJpC2w6AmNhvp3PyRshXSZW5zn2gyZvlY2ZNtCiPYAv5Dkbq1UeVm3N2Lg==
-X-Received: by 2002:a1c:4489:0:b0:389:8b0f:9a67 with SMTP id r131-20020a1c4489000000b003898b0f9a67mr8516780wma.40.1647020550979;
-        Fri, 11 Mar 2022 09:42:30 -0800 (PST)
-Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
-        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b0020397ea11d2sm1806633wry.20.2022.03.11.09.42.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=16FTiziTuHY7luYyqhUgZZQe9XBDNooPz6CdRNgABNY=;
+        b=t54SVLhMP6VldT7Dul8nPdCjC9sRKbeeDxI9C6ugqoT91eod3R2A9EaYgIm9oPzTUz
+         SnIX6mMrmsC0n8Xr21PXzfWIRRPZD//PP3Qhvv5qmUITKpxCBFlEGC5qVNG7LZxlIz2P
+         XcTDiR+pNPbTPqhWLR7iU9fxB9Q3LdwP+pJg3h94FXd6Lgwcz+bvIdQi85fqIlkI/Mqt
+         IYrScLxv2Mj5qfP6iGQKaartVkOGIe5ddMxtY7NmvtduYQE70y+OPaepcGeU7KIAxfPV
+         yHmsJe2JczgFMzRyrwgw/pDifB2qim+iBCgQRDnUYhvjDvKUIdwtIJ1w6LQuYHDU7HPw
+         48fw==
+X-Gm-Message-State: AOAM530TJa+2o3eTAs0U6JxRV3SS+qVHcUWQdF68ZDveErFS2V2+BSx2
+        8Li7MxxfSW5aPL0jwnBs+mY=
+X-Google-Smtp-Source: ABdhPJwrEvlJ1jGKDiP915MpwaiTas/VtSW176/53uKYGRh7P+2bKjGc5/e1w+Yl1fYaK6RmZ7HAyQ==
+X-Received: by 2002:a17:907:8a0a:b0:6d8:85a6:4d42 with SMTP id sc10-20020a1709078a0a00b006d885a64d42mr9993383ejc.138.1647020761822;
+        Fri, 11 Mar 2022 09:46:01 -0800 (PST)
+Received: from orion.localdomain ([93.99.228.15])
+        by smtp.gmail.com with ESMTPSA id k23-20020a1709062a5700b006ccd8fdc300sm3166909eje.180.2022.03.11.09.46.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 09:42:30 -0800 (PST)
-Date:   Fri, 11 Mar 2022 18:42:26 +0100
-From:   "Steinar H. Gunderson" <sesse@google.com>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf intel-pt: Synthesize cycle events
-Message-ID: <YiuKAk7SaXP7B7Ee@google.com>
-References: <20220310093844.982656-1-sesse@google.com>
- <586de5fc-858b-2693-1986-5c77e8c0e3d0@intel.com>
+        Fri, 11 Mar 2022 09:46:01 -0800 (PST)
+Received: by orion.localdomain (Postfix, from userid 1003)
+        id 8C736A0482; Fri, 11 Mar 2022 18:46:03 +0100 (CET)
+From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
+To:     linux-mm@kvack.org
+Cc:     patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        vbabka@suse.cz, mhocko@kernel.org, mgorman@techsingularity.net,
+        willy@infradead.org, liam.howlett@oracle.com, hughd@google.com,
+        kirill@shutemov.name, riel@surriel.com, rostedt@goodmis.org,
+        peterz@infradead.org,
+        =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
+Subject: [RFC PATCH v2 4/4] [PATCH 4/4] mm: add tracing for VMA merges
+Date:   Fri, 11 Mar 2022 18:46:02 +0100
+Message-Id: <20220311174602.288010-5-matenajakub@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220311174602.288010-1-matenajakub@gmail.com>
+References: <20220311174602.288010-1-matenajakub@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <586de5fc-858b-2693-1986-5c77e8c0e3d0@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 11:10:30AM +0200, Adrian Hunter wrote:
->> @@ -1633,7 +1639,7 @@ static int intel_pt_synth_instruction_sample(struct intel_pt_queue *ptq)
->>  	else
->>  		sample.period = ptq->state->tot_insn_cnt - ptq->last_insn_cnt;
->>  
->> -	if (ptq->sample_ipc)
->> +	if (ptq->sample_ipc || pt->sample_cycles)
-> This is not quite right.  ptq->sample_ipc is set to indicate when the
-> cycle count is accurate for the current instruction.  It can be weakened
-> by using "Approx IPC" which was introduced for dlfilter-show-cycles.
-> Probably that approach should be followed for a "cycles" event also.
+Adds trace support for vma_merge to measure successful and unsuccessful
+merges of two VMAs with distinct anon_vmas and also trace support for
+merges made possible by update of page offset made possible by a previous
+patch in this series.
 
-Thanks for the review!
+Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
+---
+ include/trace/events/mmap.h | 83 +++++++++++++++++++++++++++++++++++++
+ mm/internal.h               | 12 ++++++
+ mm/mmap.c                   | 69 ++++++++++++++++--------------
+ 3 files changed, 133 insertions(+), 31 deletions(-)
 
-I'm not sure if I understand this entirely. The point of the code here
-is to get sample.cyc_cnt computed, even if we're not sampling IPC.
-I've seen the approx IPC code, but I'm not entirely sure how it
-interacts with this?
+diff --git a/include/trace/events/mmap.h b/include/trace/events/mmap.h
+index 4661f7ba07c0..bad7abe4899c 100644
+--- a/include/trace/events/mmap.h
++++ b/include/trace/events/mmap.h
+@@ -6,6 +6,27 @@
+ #define _TRACE_MMAP_H
+ 
+ #include <linux/tracepoint.h>
++#include <../mm/internal.h>
++
++#define AV_MERGE_TYPES		\
++	EM(MERGE_FAILED)	\
++	EM(AV_MERGE_FAILED)	\
++	EM(AV_MERGE_NULL)	\
++	EM(AV_MERGE_SAME)	\
++	EMe(AV_MERGE_DIFFERENT)
++
++#undef EM
++#undef EMe
++#define EM(a)	TRACE_DEFINE_ENUM(a);
++#define EMe(a)	TRACE_DEFINE_ENUM(a);
++
++AV_MERGE_TYPES
++
++#undef EM
++#undef EMe
++
++#define EM(a)   { a, #a },
++#define EMe(a)  { a, #a }
+ 
+ TRACE_EVENT(vm_unmapped_area,
+ 
+@@ -42,6 +63,68 @@ TRACE_EVENT(vm_unmapped_area,
+ 		__entry->low_limit, __entry->high_limit, __entry->align_mask,
+ 		__entry->align_offset)
+ );
++
++TRACE_EVENT(vm_av_merge,
++
++	TP_PROTO(int merged, enum vma_merge_res merge_prev,
++			enum vma_merge_res merge_next, enum vma_merge_res merge_both),
++
++	TP_ARGS(merged, merge_prev, merge_next, merge_both),
++
++	TP_STRUCT__entry(
++		__field(int,			merged)
++		__field(enum vma_merge_res,	predecessor_different_av)
++		__field(enum vma_merge_res,	successor_different_av)
++		__field(enum vma_merge_res,	predecessor_with_successor_different_av)
++		__field(int,			same_count)
++		__field(int,			diff_count)
++		__field(int,			failed_count)
++	),
++
++	TP_fast_assign(
++		__entry->merged = merged == 0;
++		__entry->predecessor_different_av = merge_prev;
++		__entry->successor_different_av = merge_next;
++		__entry->predecessor_with_successor_different_av = merge_both;
++		__entry->same_count = (merge_prev == AV_MERGE_SAME) +
++			(merge_next == AV_MERGE_SAME) +
++			(merge_both == AV_MERGE_SAME);
++		__entry->diff_count = (merge_prev == AV_MERGE_DIFFERENT) +
++			(merge_next == AV_MERGE_DIFFERENT) +
++			(merge_both == AV_MERGE_DIFFERENT);
++		__entry->failed_count = (merge_prev == AV_MERGE_FAILED) +
++			(merge_next == AV_MERGE_FAILED) +
++			(merge_both == AV_MERGE_FAILED);
++	),
++
++	TP_printk("merged=%d predecessor=%s successor=%s predecessor_with_successor=%s same_count=%d diff_count=%d failed_count=%d",
++		__entry->merged,
++		__print_symbolic(__entry->predecessor_different_av, AV_MERGE_TYPES),
++		__print_symbolic(__entry->successor_different_av, AV_MERGE_TYPES),
++		__print_symbolic(__entry->predecessor_with_successor_different_av, AV_MERGE_TYPES),
++		__entry->same_count, __entry->diff_count, __entry->failed_count)
++
++);
++
++TRACE_EVENT(vm_pgoff_merge,
++
++	TP_PROTO(struct vm_area_struct *vma, bool anon_pgoff_updated),
++
++	TP_ARGS(vma, anon_pgoff_updated),
++
++	TP_STRUCT__entry(
++		__field(bool,	faulted)
++		__field(bool,	updated)
++	),
++
++	TP_fast_assign(
++		__entry->faulted = vma->anon_vma;
++		__entry->updated = anon_pgoff_updated;
++	),
++
++	TP_printk("faulted=%d updated=%d\n",
++		__entry->faulted, __entry->updated)
++);
+ #endif
+ 
+ /* This part must be outside protection */
+diff --git a/mm/internal.h b/mm/internal.h
+index d80300392a19..860169612192 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -34,6 +34,18 @@ struct folio_batch;
+ /* Do not use these with a slab allocator */
+ #define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
+ 
++/*
++ * Following values indicate reason for merge success or failure.
++ */
++enum vma_merge_res {
++	MERGE_FAILED,
++	AV_MERGE_FAILED,
++	AV_MERGE_NULL,
++	MERGE_OK = AV_MERGE_NULL,
++	AV_MERGE_SAME,
++	AV_MERGE_DIFFERENT,
++};
++
+ void page_writeback_init(void);
+ 
+ static inline void *folio_raw_mapping(struct folio *folio)
+diff --git a/mm/mmap.c b/mm/mmap.c
+index ccb24862e670..663f8ec46f2c 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1064,21 +1064,21 @@ static inline int is_mergeable_anon_vma(struct anon_vma *anon_vma1,
+ 	 */
+ 	if ((!anon_vma1 || !anon_vma2) && (!vma ||
+ 		list_is_singular(&vma->anon_vma_chain)))
+-		return 1;
++		return AV_MERGE_NULL;
+ 	if (anon_vma1 == anon_vma2)
+-		return 1;
++		return AV_MERGE_SAME;
+ 	/*
+ 	 * Different anon_vma but not shared by several processes
+ 	 */
+ 	else if ((anon_vma1 && anon_vma2) &&
+ 			(anon_vma1 == anon_vma1->root)
+ 			&& (rbt_no_children(anon_vma1)))
+-		return 1;
++		return AV_MERGE_DIFFERENT;
+ 	/*
+ 	 * Different anon_vma and shared -> unmergeable
+ 	 */
+ 	else
+-		return 0;
++		return AV_MERGE_FAILED;
+ }
+ 
+ /*
+@@ -1099,12 +1099,10 @@ can_vma_merge_before(struct vm_area_struct *vma, unsigned long vm_flags,
+ 		     struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+ 		     const char *anon_name)
+ {
+-	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name) &&
+-	    is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma)) {
++	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name))
+ 		if (vma->vm_pgoff == vm_pgoff)
+-			return 1;
+-	}
+-	return 0;
++			return is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma);
++	return MERGE_FAILED;
+ }
+ 
+ /*
+@@ -1121,14 +1119,13 @@ can_vma_merge_after(struct vm_area_struct *vma, unsigned long vm_flags,
+ 		    struct vm_userfaultfd_ctx vm_userfaultfd_ctx,
+ 		    const char *anon_name)
+ {
+-	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name) &&
+-	    is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma)) {
++	if (is_mergeable_vma(vma, file, vm_flags, vm_userfaultfd_ctx, anon_name)) {
+ 		pgoff_t vm_pglen;
+ 		vm_pglen = vma_pages(vma);
+ 		if (vma->vm_pgoff + vm_pglen == vm_pgoff)
+-			return 1;
++			return is_mergeable_anon_vma(anon_vma, vma->anon_vma, vma);
+ 	}
+-	return 0;
++	return MERGE_FAILED;
+ }
+ 
+ /*
+@@ -1185,8 +1182,14 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ 	pgoff_t pglen = (end - addr) >> PAGE_SHIFT;
+ 	struct vm_area_struct *area, *next;
+ 	int err = -1;
+-	bool merge_prev = false;
+-	bool merge_next = false;
++	/*
++	 * Following three variables are used to store values
++	 * indicating wheather this VMA and its anon_vma can
++	 * be merged and also the type of failure or success.
++	 */
++	enum vma_merge_res merge_prev = MERGE_FAILED;
++	enum vma_merge_res merge_both = MERGE_FAILED;
++	enum vma_merge_res merge_next = MERGE_FAILED;
+ 
+ 	/*
+ 	 * We later require that vma->vm_flags == vm_flags,
+@@ -1207,32 +1210,34 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ 
+ 	/* Can we merge the predecessor? */
+ 	if (prev && prev->vm_end == addr &&
+-			mpol_equal(vma_policy(prev), policy) &&
+-			can_vma_merge_after(prev, vm_flags,
++			mpol_equal(vma_policy(prev), policy)) {
++		merge_prev = can_vma_merge_after(prev, vm_flags,
+ 					    anon_vma, file, pgoff,
+-					    vm_userfaultfd_ctx, anon_name)) {
+-		merge_prev = true;
+-		area = prev;
++					    vm_userfaultfd_ctx, anon_name);
+ 	}
++
+ 	/* Can we merge the successor? */
+ 	if (next && end == next->vm_start &&
+-			mpol_equal(policy, vma_policy(next)) &&
+-			can_vma_merge_before(next, vm_flags,
+-					     anon_vma, file, pgoff+pglen,
+-					     vm_userfaultfd_ctx, anon_name)) {
+-		merge_next = true;
++			mpol_equal(policy, vma_policy(next))) {
++		merge_next = can_vma_merge_before(next, vm_flags,
++					anon_vma, file, pgoff+pglen,
++					vm_userfaultfd_ctx, anon_name);
+ 	}
++
+ 	/* Can we merge both the predecessor and the successor? */
+-	if (merge_prev && merge_next &&
+-			is_mergeable_anon_vma(prev->anon_vma,
+-				next->anon_vma, NULL)) {	 /* cases 1, 6 */
++	if (merge_prev >= MERGE_OK && merge_next >= MERGE_OK)
++		merge_both = is_mergeable_anon_vma(prev->anon_vma, next->anon_vma, NULL);
++
++	if (merge_both >= MERGE_OK) {	 /* cases 1, 6 */
+ 		err = __vma_adjust(prev, prev->vm_start,
+ 					next->vm_end, prev->vm_pgoff, NULL,
+ 					prev);
+-	} else if (merge_prev) {			/* cases 2, 5, 7 */
++		area = prev;
++	} else if (merge_prev >= MERGE_OK) {			/* cases 2, 5, 7 */
+ 		err = __vma_adjust(prev, prev->vm_start,
+ 					end, prev->vm_pgoff, NULL, prev);
+-	} else if (merge_next) {
++		area = prev;
++	} else if (merge_next >= MERGE_OK) {
+ 		if (prev && addr < prev->vm_end)	/* case 4 */
+ 			err = __vma_adjust(prev, prev->vm_start,
+ 					addr, prev->vm_pgoff, NULL, next);
+@@ -1246,7 +1251,7 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ 		 */
+ 		area = next;
+ 	}
+-
++	trace_vm_av_merge(err, merge_prev, merge_next, merge_both);
+ 	/*
+ 	 * Cannot merge with predecessor or successor or error in __vma_adjust?
+ 	 */
+@@ -3321,6 +3326,8 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
+ 		/*
+ 		 * Source vma may have been merged into new_vma
+ 		 */
++		trace_vm_pgoff_merge(vma, anon_pgoff_updated);
++
+ 		if (unlikely(vma_start >= new_vma->vm_start &&
+ 			     vma_start < new_vma->vm_end)) {
+ 			/*
+-- 
+2.34.1
 
->>  		sample.cyc_cnt = ptq->ipc_cyc_cnt - ptq->last_in_cyc_cnt;
->>  	if (sample.cyc_cnt) {
->>  		sample.insn_cnt = ptq->ipc_insn_cnt - ptq->last_in_insn_cnt;
->> @@ -1643,8 +1649,30 @@ static int intel_pt_synth_instruction_sample(struct intel_pt_queue *ptq)
->>  
->>  	ptq->last_insn_cnt = ptq->state->tot_insn_cnt;
-> There are variables here that are specific to the "instructions" event, so
-> mixing "cycles" with "instructions" means duplicating those, however maybe
-> it would be better not to allow "y" and "i" options at the same time?
-
-Given that a decode can easily take an hour, it would be really nice to
-be able to keep y and i at the same time :-) (A long-standing pet peeve
-of mine in perf is that you can't show two events side-by-side;
-oprofile did that back in the day, at least on annotations.)
-
-What specifically do you mean by duplicating? That we need to calculate
-them twice in a way I don't do in my current patch, or something else?
-It feels like I'm missing some context here.
-
->> -	return intel_pt_deliver_synth_event(pt, event, &sample,
->> -					    pt->instructions_sample_type);
->> +	if (pt->sample_instructions) {
->> +		err = intel_pt_deliver_synth_event(pt, event, &sample,
->> +						   pt->instructions_sample_type);
->> +		if (err)
->> +			return err;
->> +	}
->> +
->> +	/*
->> +	 * NOTE: If not doing sampling (e.g. itrace=y0us), we will in practice
->> +	 * only see cycles being attributed to branches, since CYC packets
->> +	 * only are emitted together with other packets are emitted.
->> +	 * We should perhaps consider spreading it out over everything since
->> +	 * the last CYC packet, ie., since last time sample.cyc_cnt was nonzero.
->> +	 */
->> +	if (pt->sample_cycles && sample.cyc_cnt) {
->> +		sample.id = ptq->pt->cycles_id;
->> +		sample.stream_id = ptq->pt->cycles_id;
-> A "cycles" sample needs to set the sample period to the number of cycles since the
-> last "cycles" sample.
-
-OK. If I understand you right, is this as simple as sample.period =
-sample.cyc_cnt?
-
-/* Steinar */
