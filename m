@@ -2,80 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED60C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350245AbiCKQXk (ORCPT
+        id S1350229AbiCKQZf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:23:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        Fri, 11 Mar 2022 11:25:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349481AbiCKQX2 (ORCPT
+        with ESMTP id S1349035AbiCKQZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:23:28 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2691D17BC;
-        Fri, 11 Mar 2022 08:22:23 -0800 (PST)
-X-UUID: 1503581c2cd34abe835f7f7a726e30d4-20220312
-X-UUID: 1503581c2cd34abe835f7f7a726e30d4-20220312
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 448243189; Sat, 12 Mar 2022 00:22:18 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sat, 12 Mar 2022 00:22:16 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 12 Mar 2022 00:22:15 +0800
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>
-CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
-        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
-        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [v4 1/2] ASoC: dt-bindings: mt8192-mt6359: add new compatible for using rt1015p and rt5682
-Date:   Sat, 12 Mar 2022 00:22:12 +0800
-Message-ID: <20220311162213.6942-2-jiaxin.yu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311162213.6942-1-jiaxin.yu@mediatek.com>
-References: <20220311162213.6942-1-jiaxin.yu@mediatek.com>
+        Fri, 11 Mar 2022 11:25:32 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17596106C88
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:24:28 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id l1so6311388ilv.3
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:24:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TVv29Gu9R0lZt1E9Lqgvg+RLu73iRTIWopGteUyS5tk=;
+        b=lCofLKqu1VnbBCzaNpXV1knnGKNcPMluFAY18Sxq0Ca91tipY9CRbnwsMQkTdvik8F
+         SEOXnZRQxFAEERaWcST0h0s2XHvTs0kDaVF7br7uE7wlaR1SgaBnVMYVy1eVZhICq3d+
+         J4I3/GXLR4cGzJ35vLVuTEhDhSy06DjuoxSI3qjS0Kn0JoWRDAEznTb/KQUodcliR77J
+         6OqmsVAp8PJnJcvlKegxhcKKpPqO+KBXHYWpqgCmzQ8EKsO6M/sigADy85m0mea6f0b6
+         FM2iay5XDea5wMhPdMdntbPIeDwXmzAj3zIBFASvL/N2MEKawd4LO6UfhpQX8Akv5Gyx
+         uxBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TVv29Gu9R0lZt1E9Lqgvg+RLu73iRTIWopGteUyS5tk=;
+        b=rGmHCyLOe7DuxUUQXhbPdL+uZbDHF8QHS9gM3BZv01klxe6dFo3PoyzoIhYt2XRBLK
+         Zb8QU5Yjy4H7SSgNXgpmdrSAGHBWtLlH0irEpNEDmnMQsf/dRkkbbM1uf8BN28LsUO8K
+         w69nTlOUXsivPFvawDnaUopwlwaUxReAAca3a8setykfHree7Drb0EN16mb+HW1kme+E
+         ILAlewThKM2w6NCbp8yc2tP0pcYR8SFbhMz/lQtzdsQl0iXwQx1X3jRK7nWsXMqo9RGT
+         i0vqmSWLV9CdstWPD0N583n9ObtmGZkmlWslrum2fa+FtzxXYQvJutBdJngluLgOR/Ou
+         Q05A==
+X-Gm-Message-State: AOAM533syBB3ivtNLFmbQFOVHu6+8IclWXj1jSgsibiao8Nuku1kvBkZ
+        LY2bt5NkwIDcrRjbLNYkwnTJbw==
+X-Google-Smtp-Source: ABdhPJybfXZ+7K9olLoE/9/fWtbz4ao9QwudLVncfyyzWjxs1/RsmnajOwMe6+J+Q0mRrXeyMUZQ9Q==
+X-Received: by 2002:a92:ce91:0:b0:2c6:272c:bb51 with SMTP id r17-20020a92ce91000000b002c6272cbb51mr8214045ilo.170.1647015867291;
+        Fri, 11 Mar 2022 08:24:27 -0800 (PST)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id 4-20020a056e020ca400b002c6266f4876sm4477042ilg.84.2022.03.11.08.24.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 08:24:26 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, avuyyuru@codeaurora.org,
+        jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: ipa: use struct_size() for the interconnect array
+Date:   Fri, 11 Mar 2022 10:24:23 -0600
+Message-Id: <20220311162423.872645-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds new compatible string "mt8192_mt6359_rt1015p_rt5682s" for machines
-with rt1015p and rt5682s.
+In review for commit 8ee7ec4890e2b ("net: ipa: embed interconnect
+array in the power structure"), Jakub Kicinski suggested that a
+follow-up patch use struct_size() when computing the size of the
+IPA power structure, which ends with a flexible array member.
 
-Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Do that.
+
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- .../devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml   | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ipa/ipa_power.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-index 5a5b765b859a..7a4800b9033c 100644
---- a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-+++ b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-@@ -18,6 +18,7 @@ properties:
-     enum:
-       - mediatek,mt8192_mt6359_rt1015_rt5682
-       - mediatek,mt8192_mt6359_rt1015p_rt5682
-+      - mediatek,mt8192_mt6359_rt1015p_rt5682s
+diff --git a/drivers/net/ipa/ipa_power.c b/drivers/net/ipa/ipa_power.c
+index 16ece27d14d7e..db5ac7552286e 100644
+--- a/drivers/net/ipa/ipa_power.c
++++ b/drivers/net/ipa/ipa_power.c
+@@ -374,8 +374,8 @@ ipa_power_init(struct device *dev, const struct ipa_power_data *data)
+ 		goto err_clk_put;
+ 	}
  
-   mediatek,platform:
-     $ref: "/schemas/types.yaml#/definitions/phandle"
+-	size = data->interconnect_count * sizeof(power->interconnect[0]);
+-	power = kzalloc(sizeof(*power) + size, GFP_KERNEL);
++	size = struct_size(power, interconnect, data->interconnect_count);
++	power = kzalloc(size, GFP_KERNEL);
+ 	if (!power) {
+ 		ret = -ENOMEM;
+ 		goto err_clk_put;
 -- 
-2.18.0
+2.32.0
 
