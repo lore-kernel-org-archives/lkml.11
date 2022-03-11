@@ -2,101 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F52C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B28E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239290AbiCKKqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:46:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
+        id S241492AbiCKKqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 05:46:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233132AbiCKKqF (ORCPT
+        with ESMTP id S237246AbiCKKqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:46:05 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5A914EF65
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:45:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646995501; x=1678531501;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=rHS7CYDdSDyF1yFLX+HLnjkYA6AhNc6C0NyOCdwp6uk=;
-  b=g9duaCiGKUws8QKv9wVt7SQeBJQU94E+Ha0cd9zoPlwcAAsk84M7SAvH
-   iuUH64kNaW4FqzVt4JfzOtBSnsnppR5V2MkMS2/wpzwfi2TCW8J/3MvNk
-   pZXarOk1bHhlD/k3SQ81cTMa97xh/KOcaOF8QS+nnYksj57zBkQvaxK3U
-   Y=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 11 Mar 2022 02:45:01 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 02:45:00 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 11 Mar 2022 02:45:00 -0800
-Received: from hu-charante-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 11 Mar 2022 02:44:55 -0800
-From:   Charan Teja Kalla <quic_charante@quicinc.com>
-To:     <akpm@linux-foundation.org>, <hughd@google.com>,
-        <markhemm@googlemail.com>, <vbabka@suse.cz>, <rientjes@google.com>,
-        <mhocko@suse.com>, <surenb@google.com>, <shakeelb@google.com>,
-        <willy@infradead.org>, <hannes@cmpxchg.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Charan Teja Kalla <quic_charante@quicinc.com>
-Subject: [PATCH V5,0/2] mm: shmem: support POSIX_FADV_[WILL|DONT]NEED for shmem files
-Date:   Fri, 11 Mar 2022 16:13:50 +0530
-Message-ID: <cover.1646987674.git.quic_charante@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 11 Mar 2022 05:46:07 -0500
+Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EF914EF65
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:45:04 -0800 (PST)
+Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id 8415A8136C;
+        Fri, 11 Mar 2022 10:45:03 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id B3FE660009;
+        Fri, 11 Mar 2022 10:45:01 +0000 (UTC)
+Message-ID: <15e453381279ee9f607936d3b8d77806b58d9678.camel@perches.com>
+Subject: Re: [PATCH v7] drivers: ddcci: upstream DDCCI driver
+From:   Joe Perches <joe@perches.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Yusuf Khan <yusisamerican@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, jasowang@redhat.com,
+        mikelley@microsoft.com, mst@redhat.com, javier@javigon.com,
+        arnd@arndb.de, will@kernel.org, axboe@kernel.dk
+Date:   Fri, 11 Mar 2022 02:45:01 -0800
+In-Reply-To: <YisE6jjbzJyytqB8@kroah.com>
+References: <20220311074413.14644-1-yusisamerican@gmail.com>
+         <YisE6jjbzJyytqB8@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: fi6z97dirmept86g9cxo9kkr7oejf3cz
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: B3FE660009
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18eORL8decV1e1xVclhbFj8O6YZi9Ap/hk=
+X-HE-Tag: 1646995501-212910
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch aims to implement POSIX_FADV_WILLNEED and POSIX_FADV_DONTNEED
-advices to shmem files which can be helpful for the drivers who may want
-to manage the pages of shmem files on their own, like, that are created
-through shmem_file_setup[_with_mnt]().
+On Fri, 2022-03-11 at 09:14 +0100, Greg KH wrote:
+> On Thu, Mar 10, 2022 at 11:44:13PM -0800, Yusuf Khan wrote:
+> > This patch upstreams the DDCCI driver by Christoph Grenz into
+> > the kernel. The original gitlab page is loacted at https://gitlab
+> > .com/ddcci-driver-linux/ddcci-driver-linux/-/tree/master.
+[]
+> > diff --git a/drivers/char/ddcci.c b/drivers/char/ddcci.c
+[]
+> > @@ -0,0 +1,1887 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + *  DDC/CI sub-bus driver
+> > + *
+> > + *  Copyright (c) 2015 Christoph Grenz
+> > + */
+> > +
+> > +/*
+> > + * This program is free software; you can redistribute it and/or modify it
+> > + * under the terms of the GNU General Public License as published by the Free
+> > + * Software Foundation; either version 2 of the License, or (at your option)
+> > + * any later version.
+> 
+> This does not match the SPDX line.  Please fix up first before going any
+> further.
 
-Changes in V5:
- -- Moved the 'endbyte' calculations to a header function for use by shmem_fadvise().
- -- Addressed comments from suren.
+Which means fix up the SPDX line above to use the actual
+license of the code.
 
-Changes in V4:
-  -- Changed the code to use reclaim_pages() to writeout the shmem pages to swap and then reclaim.
-  -- Addressed comments from Mark Hemment and Matthew.
-  -- fadvise() on shmem file may even unmap a page.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1644572051-24091-1-git-send-email-quic_charante@quicinc.com/
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-Changes in V3:
-  -- Considered THP pages while doing FADVISE_[DONT|WILL]NEED, identified by Matthew.
-  -- xarray used properly, as identified by Matthew.
-  -- Excluded mapped pages as it requires unmapping and the man pages of fadvise don't talk about them.
-  -- RESEND: Fixed the compilation issue when CONFIG_TMPFS is not defined.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1641488717-13865-1-git-send-email-quic_charante@quicinc.com/
-
-Changes in V2:
-  -- Rearranged the code to not to sleep with rcu_lock while using xas_() functionality.
-  -- Addressed the comments from Suren.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1638442253-1591-1-git-send-email-quic_charante@quicinc.com/
-
-changes in V1:
-  -- Created the interface for fadvise(2) to work on shmem files.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1633701982-22302-1-git-send-email-charante@codeaurora.org/
-
-Charan Teja Kalla (2):
-  mm: fadvise: move 'endbyte' calculations to helper function
-  mm: shmem: implement POSIX_FADV_[WILL|DONT]NEED for shmem
-
- mm/fadvise.c  |  11 +-----
- mm/internal.h |  21 ++++++++++
- mm/shmem.c    | 123 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 145 insertions(+), 10 deletions(-)
-
--- 
-2.7.4
 
