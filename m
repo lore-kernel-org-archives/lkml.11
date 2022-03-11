@@ -2,114 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C82C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12428C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345944AbiCKDMz (ORCPT
+        id S1345957AbiCKDPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        Thu, 10 Mar 2022 22:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235944AbiCKDMw (ORCPT
+        with ESMTP id S235944AbiCKDPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:12:52 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A76E1A2717;
-        Thu, 10 Mar 2022 19:11:50 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id q11so8782336iod.6;
-        Thu, 10 Mar 2022 19:11:50 -0800 (PST)
+        Thu, 10 Mar 2022 22:15:48 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F421A1C7F
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:14:46 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so6995506pjl.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:14:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zdI5I1OFt3VEd9Bi1D2+rlxHCTOR7F6TW/3ddnGABGI=;
-        b=Di7co66q9GUmgtr7HV1VE4mIprk/TTqbfVAfjURthcTSUd4Spv6ddGyB24R7TvkDAU
-         0OTi1WSJ37jrGL5tYDR0qVnZqB26X9WQD62PdmXf3HGvOcpuDlq8ZF2jDa44zVcskzdf
-         7gXPa8yCti3/hx1k0L71KPHSRPPuGuyngOc1ztmxdv4MsLz4E/cxgzMb8d7sn60HNK7C
-         MLgccfykQS9M2tCTWz4DD/8G/1wsty0V5G024qQY9S5AWXqoC3p97Pynm5+3nbxQN7SD
-         nTsJ4OllH8nIiHbk8vckXgg9++ZYRt3HKq8mT0XJa7VKl2S6BIeguZL+NX0OaclpZfE2
-         RZqg==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k2icY+6tCwcqgzMbjLM+IMtOMr7cxOX9RXwF/4WbIuE=;
+        b=J3JwssbcL91tpuNT7fB9AVcoTviOQtRwAaCe9iUYL5OxfAk9+y02r+gp7oXfhuwg81
+         2qZbPheJlEQPpBKKhVsq8mte8hVVChgRP0B6I7mKXu1DYlneO/v/zulCcuhzuQCWcckc
+         L3Bx/6f6c2L1qtCazJhLaxvtkk6cBBtphYkOw6XvT14qWlJUwqhXUkaDewhc+9626ynK
+         lx2AAuA8aAAciwgkWY4L6PcPkcbaKiX5vnnOH+egphv+Bd/F6euavBUticf6UU2NKLmC
+         8b1Mfn5s4sJiuqEGBGI53M5/NTBZ3SHpiiQ1n8bkfqWxmKLWrjwKjYa1Fg9Wx18YfOOr
+         vg0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zdI5I1OFt3VEd9Bi1D2+rlxHCTOR7F6TW/3ddnGABGI=;
-        b=o+FP7RHhNuc+fuqxng28dx691jmNTMLkwBvF7zbrXiZ72nYVkMHlnJvY6588WMXjny
-         5udlWsPfEbGqpPXfe5IpB59jsKcrhS8T5xmJzKwduYizRfHQ6E3nbzUtuElJ8IdFkmB9
-         tMO6aXHlNHqyMXWnMz1Yjfk+oATqanqmbAI7qk8yNocPsxKBxB//PADx2hipM4/9DM0T
-         bEZZ0EpmBGmBKuXvknWa2oK8c6FtujydY9L4ffIqE1tfV3H1G0sSajkmalDhPKYH39EL
-         sBfG9WICZAyrZGBMKk77qand3+hni+eKq25CJ6S1K6dym+GnAMjsUdKIPlNEH1XprC5X
-         jmqQ==
-X-Gm-Message-State: AOAM533wrbMmT1Tz5wzBrXm2xqHXpmZyd50VUqcIOVUQnV6UxSznAP3F
-        bwxn2QE76jhet00i0i+qhu82MJt0UI7C+gOONu1m6+VnJps=
-X-Google-Smtp-Source: ABdhPJwv1OsldqQxCZl2SyZrLMJJjWq3cCbyhZiH79FQnopMc1wOpcdXZ92hu4MgiPaoMcgo4EWFkcqtjZNZp+/0jeo=
-X-Received: by 2002:a5d:8898:0:b0:645:e689:3381 with SMTP id
- d24-20020a5d8898000000b00645e6893381mr6539285ioo.179.1646968309416; Thu, 10
- Mar 2022 19:11:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20220310140811.832630727@linuxfoundation.org>
-In-Reply-To: <20220310140811.832630727@linuxfoundation.org>
-From:   Zan Aziz <zanaziz313@gmail.com>
-Date:   Thu, 10 Mar 2022 20:11:38 -0700
-Message-ID: <CAFU3qob1-Jx9o3JEAf=wBQ=syGpTWBt5eP3F=8UJkA=ABTgBOA@mail.gmail.com>
-Subject: Re: [PATCH 5.16 00/53] 5.16.14-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=k2icY+6tCwcqgzMbjLM+IMtOMr7cxOX9RXwF/4WbIuE=;
+        b=Ekmxo725iEYvDRV681HTwROpW5cyk1hAQSguy13Na5BS1x5dMf1zTaK3m4SpsWkMGh
+         yOSddnGhSwgvbk3ojTJo+WDOUgOteUyVqOzQMEAZYdSE3/Tv/+N3DV7y1NBIX96oRqLU
+         M7cZJgBweJSNnBR0+6r3Au98O4ZdrhIJLNsLp7VJN0RggeAWxb+E7KENs+x36W+U0WDJ
+         xgNdGiMkTidgL6PzRoxbhnNxndc+hZJ2tgg5yfYtIyFP+zRIICJ63wPIhf6EafbbiYWe
+         4Y9mpnHpUzcb2IicIAJwBnwsmmj02r9L/CYiVX5ly3fhvS2/DJNGAOidGW/nD6R2JqkV
+         6t0w==
+X-Gm-Message-State: AOAM532y+waTCmhaptIo//hG9yNlodhbPfVgy24E3vhHv2Xpk7pp8/lE
+        nsZWr8kxm0VeJbdaFvU1kbTTcw==
+X-Google-Smtp-Source: ABdhPJy4fvYld+2wi2QVybUrJQ6b31jsGkwcRrlP9HfNyDkH0uCBxKsrzbz1rkxbCv0nElwZJQHYdA==
+X-Received: by 2002:a17:902:e94f:b0:14f:1636:c8a8 with SMTP id b15-20020a170902e94f00b0014f1636c8a8mr8257065pll.130.1646968485668;
+        Thu, 10 Mar 2022 19:14:45 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id g18-20020a056a000b9200b004f783f5e890sm2149999pfj.156.2022.03.10.19.14.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 19:14:44 -0800 (PST)
+Date:   Thu, 10 Mar 2022 19:14:44 -0800 (PST)
+X-Google-Original-Date: Thu, 10 Mar 2022 15:52:57 PST (-0800)
+Subject:     Re: [PATCH 07/15] dt-bindings: pwm: sifive: include generic pwm schema
+In-Reply-To: <20220214081605.161394-7-krzysztof.kozlowski@canonical.com>
+CC:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        lee.jones@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com, mripard@kernel.org,
+        wens@csie.org, jernej.skrabec@gmail.com, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, heiko@sntech.de,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        nobuhiro1.iwamatsu@toshiba.co.jp, p.zabel@pengutronix.de,
+        anson.huang@nxp.com, vijayakannan.ayyathurai@intel.com,
+        rtanwar@maxlinear.com, jeff@labundy.com, yash.shah@sifive.com,
+        sagar.kadam@sifive.com, vigneshr@ti.com,
+        yoshihiro.shimoda.uh@renesas.com,
+        laurent.pinchart+renesas@ideasonboard.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     krzysztof.kozlowski@canonical.com
+Message-ID: <mhng-7a872d06-a00d-49eb-bf67-68ad634e9985@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 7:37 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Mon, 14 Feb 2022 00:15:57 PST (-0800), krzysztof.kozlowski@canonical.com wrote:
+> Include generic pwm.yaml schema, which enforces PWM node naming and
+> brings pwm-cells requirement.
 >
-> Note, I'm sending all the patches again for all of the -rc2 releases as
-> there has been a lot of churn from what was in -rc1 to -rc2.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-sifive.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 >
-> This is the start of the stable review cycle for the 5.16.14 release.
-> There are 53 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
+> index 84e66913d042..676b2160bada 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sifive.yaml
+> @@ -22,6 +22,9 @@ description:
 >
-> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
-> Anything received after that time might be too late.
+>    https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/pwm
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.14-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
+> +allOf:
+> +  - $ref: pwm.yaml#
+> +
+>  properties:
+>    compatible:
+>      items:
+> @@ -55,7 +58,6 @@ required:
+>    - compatible
+>    - reg
+>    - clocks
+> -  - "#pwm-cells"
+>    - interrupts
 >
-> thanks,
->
-> greg k-h
+>  additionalProperties: false
 
-Hi Greg,
-
-Compiled and booted on my test system Lenovo P50s: Intel Core i7
-No emergency and critical messages in the dmesg
-
-./perf bench sched all
-# Running sched/messaging benchmark...
-# 20 sender and receiver processes per group
-# 10 groups == 400 processes run
-
-     Total time: 0.441 [sec]
-
-# Running sched/pipe benchmark...
-# Executed 1000000 pipe operations between two processes
-
-     Total time: 7.078 [sec]
-
-       7.078003 usecs/op
-         141282 ops/sec
-
-Tested-by: Zan Aziz <zanaziz313@gmail.com>
-
-Thanks
--Zan
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
