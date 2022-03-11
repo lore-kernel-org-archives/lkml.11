@@ -2,213 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F216C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343750AbiCKKgi (ORCPT
+        id S1348032AbiCKKgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:36:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
+        Fri, 11 Mar 2022 05:36:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348015AbiCKKg2 (ORCPT
+        with ESMTP id S1347980AbiCKKgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:36:28 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA5F1BD988;
-        Fri, 11 Mar 2022 02:35:12 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 39DE021900;
-        Fri, 11 Mar 2022 10:35:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646994911; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=3mp/NTfr1ZRQi2cvIw2K8ve4TPHKPxpsioOPY6Gm7jc=;
-        b=jEF0gJQKcwhTeagwgBdvSlHK36VYwwKZUbqR5ce0nf5w8NliamXW+5XJYokUtbuWWuhBgB
-        8rKEt/xFMtHs84cFx6WEQp8PD/IfplRPiesklbTvPESwhZqVNC6NFBDRQiZfIVwtX1gnKU
-        r4JvdzxW9L6tOjbi2UUDEDb/R5Qt3hA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0D8A613A85;
-        Fri, 11 Mar 2022 10:35:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hhYYAt8lK2JRdgAAMHmgww
-        (envelope-from <jgross@suse.com>); Fri, 11 Mar 2022 10:35:11 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH] xen/usb: harden xen_hcd against malicious backends
-Date:   Fri, 11 Mar 2022 11:35:09 +0100
-Message-Id: <20220311103509.12908-1-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 11 Mar 2022 05:36:36 -0500
+Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20DE6117CA7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:35:29 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by vip-app02.163.net (Postfix) with ESMTP id 5F493440166
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 18:35:28 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646994928; bh=R3j49KALSMnjuQeiVsymhqxJED/9xKOwSzuBBzckNSQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cIxeJUWkDpEfQay55q1OipyMmLqQHo7DQl5MqLx0JGNH+Udw2XOuCcrsAEgWPMyjp
+         HrixmJmWEdlm7wzbidMAfucbRiEMN61g2btZCgfmmJkIkO0IrVo1fKqaVWeUQ/6MWz
+         dz5ozeAiKablIyHN4QzyIUtgy26Bp9A/Wd6GRi9s=
+Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
+          by localhost (TOM SMTP Server) with SMTP ID -1316492745
+          for <linux-kernel@vger.kernel.org>;
+          Fri, 11 Mar 2022 18:35:28 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646994928; bh=R3j49KALSMnjuQeiVsymhqxJED/9xKOwSzuBBzckNSQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cIxeJUWkDpEfQay55q1OipyMmLqQHo7DQl5MqLx0JGNH+Udw2XOuCcrsAEgWPMyjp
+         HrixmJmWEdlm7wzbidMAfucbRiEMN61g2btZCgfmmJkIkO0IrVo1fKqaVWeUQ/6MWz
+         dz5ozeAiKablIyHN4QzyIUtgy26Bp9A/Wd6GRi9s=
+Received: from localhost.localdomain (unknown [101.93.196.13])
+        by antispamvip.163.net (Postfix) with ESMTPA id 1DF371541564;
+        Fri, 11 Mar 2022 18:35:23 +0800 (CST)
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     sunmingbao@tom.com, tyler.sun@dell.com, ping.gan@dell.com,
+        yanxiu.cai@dell.com, libin.zhang@dell.com, ao.sun@dell.com
+Subject: [PATCH v2 1/3] tcp: export symbol tcp_set_congestion_control
+Date:   Fri, 11 Mar 2022 18:34:12 +0800
+Message-Id: <20220311103414.8255-1-sunmingbao@tom.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure a malicious backend can't cause any harm other than wrong
-I/O data.
+From: Mingbao Sun <tyler.sun@dell.com>
 
-Missing are verification of the request id in a response, sanitizing
-the reported actual I/O length, and protection against interrupt storms
-from the backend.
+congestion-control could have a noticeable impaction on the
+performance of TCP-based communications. This is of course true
+to NVMe/TCP in the kernel.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Different congestion-controls (e.g., cubic, dctcp) are suitable for
+different scenarios. Proper adoption of congestion control would
+benefit the performance. On the contrary, the performance could be
+destroyed.
+
+So to gain excellent performance against different network
+environments, NVMe/TCP tends to support specifying the
+congestion-control.
+
+This means NVMe/TCP (a kernel user) needs to set the congestion-control
+of its TCP sockets.
+
+Since the kernel API 'kernel_setsockopt' was removed, and since the
+function ‘tcp_set_congestion_control’ is just the real underlying guy
+handling this job, so it makes sense to get it exported.
+
+Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
 ---
- drivers/usb/host/xen-hcd.c | 57 ++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 14 deletions(-)
+ net/ipv4/tcp_cong.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
-index 01db5c767251..3e487baf8422 100644
---- a/drivers/usb/host/xen-hcd.c
-+++ b/drivers/usb/host/xen-hcd.c
-@@ -51,6 +51,7 @@ struct vdevice_status {
- struct usb_shadow {
- 	struct xenusb_urb_request req;
- 	struct urb *urb;
-+	bool in_flight;
- };
- 
- struct xenhcd_info {
-@@ -720,6 +721,12 @@ static void xenhcd_gnttab_done(struct xenhcd_info *info, unsigned int id)
- 	int nr_segs = 0;
- 	int i;
- 
-+	if (!shadow->in_flight) {
-+		xenhcd_set_error(info, "Illegal request id");
-+		return;
-+	}
-+	shadow->in_flight = false;
-+
- 	nr_segs = shadow->req.nr_buffer_segs;
- 
- 	if (xenusb_pipeisoc(shadow->req.pipe))
-@@ -803,6 +810,7 @@ static int xenhcd_do_request(struct xenhcd_info *info, struct urb_priv *urbp)
- 
- 	info->urb_ring.req_prod_pvt++;
- 	info->shadow[id].urb = urb;
-+	info->shadow[id].in_flight = true;
- 
- 	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&info->urb_ring, notify);
- 	if (notify)
-@@ -931,10 +939,27 @@ static int xenhcd_unlink_urb(struct xenhcd_info *info, struct urb_priv *urbp)
+diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+index db5831e6c136..1d6a23e42f7d 100644
+--- a/net/ipv4/tcp_cong.c
++++ b/net/ipv4/tcp_cong.c
+@@ -344,10 +344,20 @@ int tcp_set_allowed_congestion_control(char *val)
  	return ret;
  }
  
--static int xenhcd_urb_request_done(struct xenhcd_info *info)
-+static void xenhcd_res_to_urb(struct xenhcd_info *info,
-+			      struct xenusb_urb_response *res, struct urb *urb)
-+{
-+	if (unlikely(!urb))
-+		return;
-+
-+	if (res->actual_length > urb->transfer_buffer_length)
-+		urb->actual_length = urb->transfer_buffer_length;
-+	else if (res->actual_length < 0)
-+		urb->actual_length = 0;
-+	else
-+		urb->actual_length = res->actual_length;
-+	urb->error_count = res->error_count;
-+	urb->start_frame = res->start_frame;
-+	xenhcd_giveback_urb(info, urb, res->status);
-+}
-+
-+static int xenhcd_urb_request_done(struct xenhcd_info *info,
-+				   unsigned int *eoiflag)
- {
- 	struct xenusb_urb_response res;
--	struct urb *urb;
- 	RING_IDX i, rp;
- 	__u16 id;
- 	int more_to_do = 0;
-@@ -961,16 +986,12 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
- 			xenhcd_gnttab_done(info, id);
- 			if (info->error)
- 				goto err;
--			urb = info->shadow[id].urb;
--			if (likely(urb)) {
--				urb->actual_length = res.actual_length;
--				urb->error_count = res.error_count;
--				urb->start_frame = res.start_frame;
--				xenhcd_giveback_urb(info, urb, res.status);
--			}
-+			xenhcd_res_to_urb(info, &res, info->shadow[id].urb);
- 		}
- 
- 		xenhcd_add_id_to_freelist(info, id);
-+
-+		*eoiflag = 0;
- 	}
- 	info->urb_ring.rsp_cons = i;
- 
-@@ -988,7 +1009,7 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
- 	return 0;
+-/* Change congestion control for socket. If load is false, then it is the
+- * responsibility of the caller to call tcp_init_congestion_control or
+- * tcp_reinit_congestion_control (if the current congestion control was
+- * already initialized.
++/**
++ * tcp_set_congestion_control - set a sock's congestion control
++ * @sk:            the sock.
++ * @name:          the desired congestion control.
++ * @load:          whether to load the required module in case not loaded.
++ * @cap_net_admin: indicating if the caller have the CAP_NET_ADMIN.
++ *
++ * Returns 0 or an error.
++ *
++ * Must be called on a locked sock.
++ *
++ * If load is false, then it is the responsibility of the caller to call
++ * tcp_init_congestion_control or tcp_reinit_congestion_control (if the
++ * current congestion control was already initialized).
+  */
+ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+ 			       bool cap_net_admin)
+@@ -383,6 +393,7 @@ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+ 	rcu_read_unlock();
+ 	return err;
  }
++EXPORT_SYMBOL_GPL(tcp_set_congestion_control);
  
--static int xenhcd_conn_notify(struct xenhcd_info *info)
-+static int xenhcd_conn_notify(struct xenhcd_info *info, unsigned int *eoiflag)
- {
- 	struct xenusb_conn_response res;
- 	struct xenusb_conn_request *req;
-@@ -1033,6 +1054,8 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
- 				       info->conn_ring.req_prod_pvt);
- 		req->id = id;
- 		info->conn_ring.req_prod_pvt++;
-+
-+		*eoiflag = 0;
- 	}
- 
- 	if (rc != info->conn_ring.req_prod_pvt)
-@@ -1055,14 +1078,19 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
- static irqreturn_t xenhcd_int(int irq, void *dev_id)
- {
- 	struct xenhcd_info *info = (struct xenhcd_info *)dev_id;
-+	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
- 
--	if (unlikely(info->error))
-+	if (unlikely(info->error)) {
-+		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
- 		return IRQ_HANDLED;
-+	}
- 
--	while (xenhcd_urb_request_done(info) | xenhcd_conn_notify(info))
-+	while (xenhcd_urb_request_done(info, &eoiflag) |
-+	       xenhcd_conn_notify(info, &eoiflag))
- 		/* Yield point for this unbounded loop. */
- 		cond_resched();
- 
-+	xen_irq_lateeoi(irq, eoiflag);
- 	return IRQ_HANDLED;
- }
- 
-@@ -1139,9 +1167,9 @@ static int xenhcd_setup_rings(struct xenbus_device *dev,
- 		goto fail;
- 	}
- 
--	err = bind_evtchn_to_irq(info->evtchn);
-+	err = bind_evtchn_to_irq_lateeoi(info->evtchn);
- 	if (err <= 0) {
--		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq");
-+		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq_lateeoi");
- 		goto fail;
- 	}
- 
-@@ -1494,6 +1522,7 @@ static struct usb_hcd *xenhcd_create_hcd(struct xenbus_device *dev)
- 	for (i = 0; i < XENUSB_URB_RING_SIZE; i++) {
- 		info->shadow[i].req.id = i + 1;
- 		info->shadow[i].urb = NULL;
-+		info->shadow[i].in_flight = false;
- 	}
- 	info->shadow[XENUSB_URB_RING_SIZE - 1].req.id = 0x0fff;
- 
+ /* Slow start is used when congestion window is no greater than the slow start
+  * threshold. We base on RFC2581 and also handle stretch ACKs properly.
 -- 
-2.34.1
+2.26.2
 
