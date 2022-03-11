@@ -2,140 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D73EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 778F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346515AbiCKFvf (ORCPT
+        id S1346529AbiCKFwO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
+        Fri, 11 Mar 2022 00:52:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235070AbiCKFvc (ORCPT
+        with ESMTP id S1346518AbiCKFwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:51:32 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9A6E98EA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:50:29 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id 195so9119786iou.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:50:29 -0800 (PST)
+        Fri, 11 Mar 2022 00:52:13 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50490ECB28
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:09 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id x10-20020a170902a38a00b00151e09a4e15so3991937pla.15
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3B8QjIlmdJC8Bd0Vem9hqomGTMW6ZUxC9fqa1LEpXd8=;
-        b=QZGS63PS9pfUSfyFr/oDhhJNtJFuik3KIdwKY3PpvuP3fY8aefSNurgtEJ75OAJyXL
-         CbRQeVKeQor4yz60nSIWEdR5TZyN0QV5+FekbuenDvWrWpkFpxM/C4z3yTEHlb/CMZsz
-         3tk7l0R0YAf4zaLJ8CRpfdHIa8eu6xV20zKYwP2lEhHwTocUGa2bGeUbL+8BP4kzFmk/
-         qspHqatyaz920KEXdhgy+7n0G4bWFdblmhL49w9f0cn27W06zm6HVcD9ApjQMvrHUGEc
-         nEV34M7C8hyfoRJKqjBc5ni9sld+2F3Ibx0OyfKLTKdJiIRDULBT4HlyFk2YUmbGdvLr
-         7VsQ==
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=oO6SkjEiUDbSzkcF/OQIzEks0/M78f3nx/F5kOnCdxM=;
+        b=a1G2oSVZEWkawgXshmlwrmCPCRYc8bhXsgpGecRuCtowOFkiKW7W3Y1nzMIGVeoCvh
+         kkHJHMTJvNZepmQwWpRbl0KCnw077OZlavM5FDAXW53ImTbfQ+OWwzPfZxnxzULTQ73M
+         7IzTkIh9R3pQAUbJew+jgabAF3NqoUMhOY5UKHvQg3+BeYmTyL7yp59Mx2a43YpTo3TA
+         FxnWl2L1TQjDSGfXDgRpGyS2PQyt0lTq2vqcUe2ZhEPKoshcT+Swm+WnbDoi6WxPvM5h
+         36Dp3K1XpnAtOjlZs60t0+E8sow9YfQMBzxqtgIwcXH8W1ghKAHSQIr8bTNGNYpcJywC
+         Gu1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3B8QjIlmdJC8Bd0Vem9hqomGTMW6ZUxC9fqa1LEpXd8=;
-        b=SUlq/6VP+A0zjr03k55EJpU9m8/8fA73NcIgdXlKOTpuFb3Yrk76mpS0oqieumCxCl
-         LuntwUjFI4FYBNI90UdJikrBtcYObIduhKFer9fObI2/P1KHb6OQmj+exzeawa5H2ias
-         9qT7lDaS+h99Dv4f2yjNbuxbEIceY+H+VEP2IvLaio9SCVaa4nmSkIlyYybOcQU3veN+
-         9MQ96lfvtwz9h8WTfP+MosDWn3EgtFHqrfq+XDmaxzNBESoXPgt1AWicFhAiKx7Z24Gi
-         Kms8+Ea5yiAw/0FC8IVeyUI60yy3pOHJiyzx+jZgsBrJdkVBVEh2KNxcLPU1AeOoQfA6
-         xhxQ==
-X-Gm-Message-State: AOAM533GHFuKz+xUap7M2U3mchDb/0sw33l5ONCWqaZcDFQCKFIceJIl
-        a0t61w0eBQSGPKa3RKdTaA19oiYXM52gPCBmTBI=
-X-Google-Smtp-Source: ABdhPJzAbtdKwaCEOZhQzztbjFX7GP+aQtiKKok15pkU1whKZ1twhEO8IZfK457hIHx3+Bb+/kd5NE5f7iIGcTsyC+U=
-X-Received: by 2002:a05:6602:168f:b0:648:c800:3d61 with SMTP id
- s15-20020a056602168f00b00648c8003d61mr514167iow.197.1646977829264; Thu, 10
- Mar 2022 21:50:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20220310081548.31846-1-steve.lee.analog@gmail.com> <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
-In-Reply-To: <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
-From:   Lee Steve <steve.lee.analog@gmail.com>
-Date:   Fri, 11 Mar 2022 14:50:18 +0900
-Message-ID: <CA+Fz0PbNBXfC_0SYKVuHDic0ZREpHBk+oSqU5sO9Mq0AjY8_-w@mail.gmail.com>
-Subject: Re: [PATCH] ASoC: max98390: Add reset gpio control
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "ckeepax@opensource.cirrus.com" <ckeepax@opensource.cirrus.com>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "rf@opensource.wolfsonmicro.com" <rf@opensource.wolfsonmicro.com>,
-        "shumingf@realtek.com" <shumingf@realtek.com>,
-        "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "dmurphy@ti.com" <dmurphy@ti.com>,
-        "jack.yu@realtek.com" <jack.yu@realtek.com>,
-        "steves.lee@maximintegrated.com" <steves.lee@maximintegrated.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=oO6SkjEiUDbSzkcF/OQIzEks0/M78f3nx/F5kOnCdxM=;
+        b=tdkddBJmPQVmLZn9lZc/LpCEiJtk7T9iEyT3m+9MuMHGKr2C46MoBUrCRVYDMGJ3sL
+         yWBGszCck7d2cDLmvGuhe0DbpIxZH+9/OZ5ZdeawKlDui4WRUxSf+lSlsQE8+TEIzbJ3
+         8xsFVmxrKeYa+lbwnNiOTo4gZ8yiWLOOW36gZMzGb8EnbktkcTDNYBVMcHKywEAwipoa
+         r5kIRUj1rKdVhef5HryRakfR+FDYCx6JyY3mkkubnbw4hJ3mRRoAvIqKiD4V67s4Mqja
+         lGohWWnqGyK5+8a0tJOKfFBSpz6Gaxx24NxgE9WFOQ0UiMc9H6JKcVNONgia4+QpBukm
+         MzMw==
+X-Gm-Message-State: AOAM533MLHzSJCn859TAhQBjwh8OYbBP4+Wt0qq9hxY/PgRVmDZg61ja
+        zSR33718Bt/eapGUKzegPdFNJ/vw5OhUN2Zc7Orxq+cRUIBcdmp5kIKbQM8TDJbs3wnlPqnlf15
+        e2RGbwYJlv0KKbcMIZgcbrg+6erwp/mSsOcV7L97j4ZGpYk8qElP/saOKjgbKEibMu0qCcA==
+X-Google-Smtp-Source: ABdhPJw8A8W9Rl5o6wUNy4MNv+LN2uMFoxhMW4TTEvvYVyRJpIvD/DaOjA0NsGClaErKXM+0sDka7Eent+s=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:902:8e82:b0:151:777b:6d7 with SMTP id
+ bg2-20020a1709028e8200b00151777b06d7mr8812590plb.172.1646977868706; Thu, 10
+ Mar 2022 21:51:08 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 11 Mar 2022 05:49:12 +0000
+In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
+Message-Id: <20220311055056.57265-2-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220311055056.57265-1-seanjc@google.com>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [RFC PATCH 001/105] KVM: selftests: Fix buggy check in test_v3_new_redist_regions()
+From:   Sean Christopherson <seanjc@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 5:48 PM Sa, Nuno <Nuno.Sa@analog.com> wrote:
->
-> Hi Steve,
->
-> > From: Steve Lee <steve.lee.analog@gmail.com>
-> > Sent: Thursday, March 10, 2022 9:16 AM
-> > To: lgirdwood@gmail.com; broonie@kernel.org; perex@perex.cz;
-> > tiwai@suse.com; ckeepax@opensource.cirrus.com; geert@linux-
-> > m68k.org; rf@opensource.wolfsonmicro.com; shumingf@realtek.com;
-> > srinivas.kandagatla@linaro.org; krzk@kernel.org; dmurphy@ti.com;
-> > jack.yu@realtek.com; Sa, Nuno <Nuno.Sa@analog.com>;
-> > steves.lee@maximintegrated.com; linux-kernel@vger.kernel.org;
-> > alsa-devel@alsa-project.org
-> > Cc: Steve Lee <steve.lee.analog@gmail.com>
-> > Subject: [PATCH] ASoC: max98390: Add reset gpio control
-> >
-> > [External]
-> >
-> >  Add reset gpio control to support RESET PIN connected to gpio.
-> >
-> > Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
-> > ---
-> >  sound/soc/codecs/max98390.c | 18 ++++++++++++++++++
-> >  sound/soc/codecs/max98390.h |  1 +
-> >  2 files changed, 19 insertions(+)
-> >
-> > diff --git a/sound/soc/codecs/max98390.c
-> > b/sound/soc/codecs/max98390.c
-> > index b392567c2b3e..574d8d5f1119 100644
-> > --- a/sound/soc/codecs/max98390.c
-> > +++ b/sound/soc/codecs/max98390.c
-> > @@ -1073,6 +1073,24 @@ static int max98390_i2c_probe(struct
-> > i2c_client *i2c,
-> >               return ret;
-> >       }
-> >
-> > +     max98390->reset_gpio =3D of_get_named_gpio(i2c-
-> > >dev.of_node,
-> > +                                             "maxim,reset-gpios", 0);
->
-> Why not using devm_gpiod_get_optional()? We could request the pin
-> already in the asserted state and make the code slightly better...
->
-> /* I guess there's no need to save it in our struct as we only use it her=
-e? */
-> struct gpio_desc *reset_gpio;
->
-> reset_gpio =3D devm_gpiod_get_optional(&i2c->dev, "reset", GPIOD_OUT_HIGH=
-);
-> if (reset_gpio) {
->       usleep_range(1000, 2000);
->      /* bring out of reset */
->       gpio_direction_output(max98390->reset_gpio, 0);
->       usleep_range(1000, 2000);
-> }
->
-> Also, do we have this on the bindings doc? If not, it should be done on a=
- second
-> patch on this series...
->
-> - Nuno S=C3=A1
->
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ tools/testing/selftests/kvm/aarch64/vgic_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for comment on this patch. I will check and update as commented.
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 34379c98d2f4..0f046e3e953d 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -381,8 +381,8 @@ static void test_v3_new_redist_regions(void)
+ 	v = vm_gic_create_with_vcpus(KVM_DEV_TYPE_ARM_VGIC_V3, NR_VCPUS);
+ 	subtest_v3_redist_regions(&v);
+ 
+-	_kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
+-			  KVM_VGIC_V3_ADDR_TYPE_REDIST_REGION, dummy, true);
++	ret = _kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
++				 KVM_VGIC_V3_ADDR_TYPE_REDIST_REGION, dummy, true);
+ 	TEST_ASSERT(ret && errno == EFAULT,
+ 		    "register a third region allowing to cover the 4 vcpus");
+ 
+-- 
+2.35.1.723.g4982287a31-goog
+
