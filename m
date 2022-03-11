@@ -2,81 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74100C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C81C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349586AbiCKOx4 (ORCPT
+        id S1349705AbiCKOyD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
+        Fri, 11 Mar 2022 09:54:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349439AbiCKOxw (ORCPT
+        with ESMTP id S1349439AbiCKOx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:53:52 -0500
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA619CCC5;
-        Fri, 11 Mar 2022 06:52:48 -0800 (PST)
-Received: by mail-oo1-f49.google.com with SMTP id x26-20020a4a621a000000b00320d7d4af22so10752922ooc.4;
-        Fri, 11 Mar 2022 06:52:48 -0800 (PST)
+        Fri, 11 Mar 2022 09:53:57 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E67B19BE63;
+        Fri, 11 Mar 2022 06:52:53 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id u1so13292774wrg.11;
+        Fri, 11 Mar 2022 06:52:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=zXbQhDsb4KeIHJF68pqLMN1JbVnR3P47zU5x8xmbukY=;
+        b=BSANDLIqhwKqPBrb7Qys22MwnO6tUlv/4n97D6C6X5Xo7C0ubhSTuXrHjbCMsBJEm8
+         vmPhN2Koys66YJNxCfSmp+wBXlE+eJuOg6kODRnr6pMIoth0zpdaqu1ilC64Fj0yKH38
+         RthvqcRt3yNJAR9BT1UzW04Ux/o89D7N86AEIm7yZxKDtgFjLn4lzGWY8VLmAN/Bga+B
+         pZsS9dpYySIl/qfRzxYPYGJifxR9SDNeBc5s8yJnJGVegL7LHXyPDgnQnOq0tH91dFW4
+         8Evma8cK5v5z1t1ppjbgDxvCCen/LmKduf4oXjcfhNsNzMZ5mwu4BccW4yFxlUQ+zVk+
+         dsUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XouDAonvXlO6XU2IHSFCooSQTQ5SzgR1sMybojkfzAI=;
-        b=EgY27qioBEkTd8PkRaG91a6dO58+0mM0YqJZbufrDf+r2acEGmywtBFL+mwM/YN9iP
-         GnuHRhJ6jRxZXkq8P0pfbFeUZd4Zn+PHz4jpwn57vjY7iA+aeR59C7UzUlHgurDw0UYQ
-         0aIarLUAhdvbTHUIiTR4jfZNc9iDG1Jj36m/CPb0XK/lSmO9aaJwTGySM+TRN6glpRRA
-         XHzfeLmHAhiuroYzESqa9OOpES38e61np89jTkHby/N0xDPtccBMpdOCtu/1L1TV2185
-         mVOZzm7wnkwGkLXDOV3UCi1iS+KZojIThTMy4KvJ3YEhCmw3pLQQtt6Qv1F20HS/pvUT
-         H1Ng==
-X-Gm-Message-State: AOAM532z8ewZSADPxQDfzg2jL7PY2WIO9u8LdIZA3n4+iwhNivW/zsbK
-        x1gVWwjGAySV2m9td8oiag==
-X-Google-Smtp-Source: ABdhPJwVM00FBPusKKPXsuJpjuUgFPFT6v1xv+HzGc+G1sqBrbm5F+Ukz/YBeNSj5BBqeajDFr8FEg==
-X-Received: by 2002:a05:6870:3927:b0:da:34c1:560c with SMTP id b39-20020a056870392700b000da34c1560cmr10991064oap.176.1647010367441;
-        Fri, 11 Mar 2022 06:52:47 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id b63-20020acab242000000b002d9ddf4596fsm3929216oif.49.2022.03.11.06.52.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zXbQhDsb4KeIHJF68pqLMN1JbVnR3P47zU5x8xmbukY=;
+        b=FQpnxvQBqOGaidusiacIIH3+ws05K35pFlr7cfVLo39samG0QUV8089ly1gEyCefUe
+         F2Rt6Gnbsqf+CkGbIodvzXfGw6ha5Nyctvd8XTiYCSHS14HhCA37Qinc5SvPmkqYu7GR
+         /lJyMLVXRQiz9ZmpDhQFxqVHvxS3Q7enTQqXxNBgIhH/mz6ILiNwxmSF37TqAuQ0nRfV
+         1WZCFnltcR3/ZLsL1vAmafkkoPe73yxBBHxiffg4osXXsEx01YD9GKmQWbxcEQo82alx
+         7TQIzV+J4vzvpIhN+dmldZHs9GXWfSS4LO2ASTfwHpe+bimi/cDIx8XpMSOhZCDl8qH0
+         CnYQ==
+X-Gm-Message-State: AOAM530xFMZiKvA3TIwABDMmIrGCP8XNOCgt8+3LCjwoSUCzPIy2Juxr
+        WFLgQkuO++IttE7rQpTrGYU=
+X-Google-Smtp-Source: ABdhPJzHH8NgnMxZ4xQfDUIJUUso04P4Zd8QBxBCn/z6kuDzIy8sTogfhut+UHhuw2kIN85qtVoNrQ==
+X-Received: by 2002:adf:fbd0:0:b0:1e6:8ec3:570 with SMTP id d16-20020adffbd0000000b001e68ec30570mr8040941wrs.396.1647010371688;
+        Fri, 11 Mar 2022 06:52:51 -0800 (PST)
+Received: from felia.fritz.box (200116b826a9a900147fc2a0771e144b.dip.versatel-1u1.de. [2001:16b8:26a9:a900:147f:c2a0:771e:144b])
+        by smtp.gmail.com with ESMTPSA id n8-20020adf8b08000000b001f046cc8891sm7037812wra.24.2022.03.11.06.52.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 06:52:46 -0800 (PST)
-Received: (nullmailer pid 3772694 invoked by uid 1000);
-        Fri, 11 Mar 2022 14:52:45 -0000
-Date:   Fri, 11 Mar 2022 08:52:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     krzysztof.kozlowski@canonical.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, jirislaby@kernel.org,
-        kernel@axis.com, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, linux-serial@vger.kernel.org,
-        robh+dt@kernel.org, gregkh@linuxfoundation.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
-Message-ID: <YitiPSZp4thtal8D@robh.at.kernel.org>
-References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
- <20220311094515.3223023-2-vincent.whitchurch@axis.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311094515.3223023-2-vincent.whitchurch@axis.com>
+        Fri, 11 Mar 2022 06:52:51 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] mfd: ab8500: clean up definitions in header after debugfs removal
+Date:   Fri, 11 Mar 2022 15:52:09 +0100
+Message-Id: <20220311145209.17346-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Mar 2022 10:45:14 +0100, Vincent Whitchurch wrote:
-> Add a compatible for the UART on the ARTPEC-8 SoC.  This hardware block
-> is closely related to the variants used on the Exynos chips.  The
-> register layout is identical to Exynos850 et al but the fifo size is
-> different (64 bytes in each direction for all instances).
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
-> 
-> Notes:
->     v2:
->     - Expand commit message.
->     - Define required clocks.
-> 
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Commit 3d4d1266597c ("mfd: ab8500: Drop debugfs module") removes the config
+AB8500_DEBUG in drivers/mfd/Kconfig, but missed a reference to this config
+in include/linux/mfd/abx500/ab8500.h.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+The functions ab8500_dump_all_banks() and ab8500_debug_register_interrupt()
+in the ab8500 header, previously with definitions conditioned on
+AB8500_DEBUG, are now completely needless to define and handle at all.
+
+The function ab8500_debug_register_interrupt() is not used at all and can
+just be removed.
+
+The function ab8500_dump_all_banks() is just registered in the abx500_ops
+struct in the dump_all_banks field, but this is then not further referenced
+anywhere else at all. So, safely drop the dump_all_banks field from
+abx500_ops and delete the ab8500_dump_all_banks() definition.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Linus, Lee, please pick this clean-up on top of the commit above.
+
+ drivers/mfd/ab8500-core.c         | 3 +--
+ include/linux/mfd/abx500.h        | 1 -
+ include/linux/mfd/abx500/ab8500.h | 9 ---------
+ 3 files changed, 1 insertion(+), 12 deletions(-)
+
+diff --git a/drivers/mfd/ab8500-core.c b/drivers/mfd/ab8500-core.c
+index 6a059270acdc..9049030a0c82 100644
+--- a/drivers/mfd/ab8500-core.c
++++ b/drivers/mfd/ab8500-core.c
+@@ -328,8 +328,7 @@ static struct abx500_ops ab8500_ops = {
+ 	.set_register_page = NULL,
+ 	.mask_and_set_register = ab8500_mask_and_set_register,
+ 	.event_registers_startup_state_get = NULL,
+-	.startup_irq_enabled = NULL,
+-	.dump_all_banks = ab8500_dump_all_banks,
++	.startup_irq_enabled = NULL
+ };
+ 
+ static void ab8500_irq_lock(struct irq_data *data)
+diff --git a/include/linux/mfd/abx500.h b/include/linux/mfd/abx500.h
+index 7f07cfe44753..507e3d2f062f 100644
+--- a/include/linux/mfd/abx500.h
++++ b/include/linux/mfd/abx500.h
+@@ -63,7 +63,6 @@ struct abx500_ops {
+ 	int (*mask_and_set_register) (struct device *, u8, u8, u8, u8);
+ 	int (*event_registers_startup_state_get) (struct device *, u8 *);
+ 	int (*startup_irq_enabled) (struct device *, unsigned int);
+-	void (*dump_all_banks) (struct device *);
+ };
+ 
+ int abx500_register_ops(struct device *core_dev, struct abx500_ops *ops);
+diff --git a/include/linux/mfd/abx500/ab8500.h b/include/linux/mfd/abx500/ab8500.h
+index 302a330c5c84..42fd5da7d8a7 100644
+--- a/include/linux/mfd/abx500/ab8500.h
++++ b/include/linux/mfd/abx500/ab8500.h
+@@ -503,13 +503,4 @@ static inline int is_ab9540_2p0_or_earlier(struct ab8500 *ab)
+ 
+ void ab8500_override_turn_on_stat(u8 mask, u8 set);
+ 
+-#ifdef CONFIG_AB8500_DEBUG
+-extern int prcmu_abb_read(u8 slave, u8 reg, u8 *value, u8 size);
+-void ab8500_dump_all_banks(struct device *dev);
+-void ab8500_debug_register_interrupt(int line);
+-#else
+-static inline void ab8500_dump_all_banks(struct device *dev) {}
+-static inline void ab8500_debug_register_interrupt(int line) {}
+-#endif
+-
+ #endif /* MFD_AB8500_H */
+-- 
+2.17.1
+
