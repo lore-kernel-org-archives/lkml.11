@@ -2,109 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E855C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349393AbiCKOfk (ORCPT
+        id S1349397AbiCKOgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:35:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55998 "EHLO
+        Fri, 11 Mar 2022 09:36:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237079AbiCKOfh (ORCPT
+        with ESMTP id S237079AbiCKOgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:35:37 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6901C8D80;
-        Fri, 11 Mar 2022 06:34:34 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id v15so7068786qkg.8;
-        Fri, 11 Mar 2022 06:34:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KCfOxllSA7l93UmzB1yv+vpAiUm9dySLpad7xZoiNto=;
-        b=M9PLowjLzy/DJ8Nkeohqr1x+5EPPYhY17Vk0h8gES5lYD7lQk9WimboHcEHljtGVCt
-         hGLc6ptIKb4DpYDxKWxlRtgUzSSoEu1OB0jkG6OY24SM3uNcuVad54K9v7xsYJPzELrA
-         A8j2YHazES574D86dryMXaOhdZttmTzzKBlf94nK/EJ73i8IJhycxc3CxWjL/+pgvOrT
-         fDVeCLYVCDhOI4evfMlmaiNZ9OqhkghYsHlazuSRQmeoU6D6rntCLCkByRxhn2pGVuaT
-         ag0Zo/V45F+YfbDRGeyHTKMQfqCHqKgFCNkkezkmcqMVTu72/jVkcmZLjhYsHPXCPqnd
-         jQ9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KCfOxllSA7l93UmzB1yv+vpAiUm9dySLpad7xZoiNto=;
-        b=sYooxeZ+kWPt3DxeDwaQOuuZlXtFuazkjS4YR8aLTpauj1ZpW0F2bCuGkaaB5hWCNO
-         U9/s2kHJFa/lbnS4UywVGRpO7KhZf3NWy6SLQfHe2wXl47cHeVEVUw1XiKl2q6vuyae6
-         q2u/L4pKEPEeiVrEestrEhMKG2Ew5H82m8UyF0xEzPeOwWHTH5xTg2cPSlfcZzfoziR6
-         aJYoyxQfC/udQjiBcaNauIChNGWzz4Z7hV0rSb/4i+46MaB4pAsGGTMcBObSDXCTbur9
-         Ibiu8yAhfbdaj/mBStl8ZGhJJoJZ/Aic6GpCbviHffOPwqScRWhkmyCv7LsHv4JdrLZW
-         dICA==
-X-Gm-Message-State: AOAM533TBQhUdEA+EMy85WN5hx+1O9HqZazK276LpecfGaw8QYXoBUof
-        32mBRhJ2HEXweC2bSSk5rLLEKVuLOls=
-X-Google-Smtp-Source: ABdhPJw3Tr6RnWl6Tl63sVVww0rKudDV24bsZRKxFVZDlsP+EBcmgI4GkUhji2b5sqqo9Rlq4D37gg==
-X-Received: by 2002:a37:ab11:0:b0:67d:6742:2988 with SMTP id u17-20020a37ab11000000b0067d67422988mr4294770qke.51.1647009273873;
-        Fri, 11 Mar 2022 06:34:33 -0800 (PST)
-Received: from localhost (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
-        by smtp.gmail.com with ESMTPSA id l8-20020a05622a174800b002e1a30533e2sm5196918qtk.8.2022.03.11.06.34.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 06:34:33 -0800 (PST)
-Date:   Fri, 11 Mar 2022 09:34:31 -0500
-From:   Trevor Woerner <twoerner@gmail.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 3/3] serial: 8250_fintek.c: Clean up set_termios() message
-Message-ID: <20220311143431.GB38527@localhost>
-References: <20220311070203.18159-3-twoerner@gmail.com>
- <7bf43ee7-549e-c98c-1ca9-b5060124c94b@kernel.org>
+        Fri, 11 Mar 2022 09:36:14 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF221C8D8C;
+        Fri, 11 Mar 2022 06:35:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647009311; x=1678545311;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JlTOqI+h+WG8aKADoRW8mWa2X0Y8TfkTAAlyGRwmsq8=;
+  b=T4S3rAaoRazPXVfIJzLbAz3g9FABFnpDs7Lh/i6xwONSt4hoXGaSu/ej
+   hNxG1KyfP/8gg3R6XOVg7C/u3Q7jEvpkprtrclebugwy3BHJdC6F+Zk3E
+   LPlTAa3fibdV2GSNK+PWEBMBxkTaZcxrJRVU0EeskWcJIUhcHRqxw4gyD
+   JgaZuOHFYIgeGqXPzYTBUMRTOyKRTZso/DxpGfA9gidCzbrxm7xueVSCZ
+   Lfnx9U1kU858t784RaNlZsAwsa/G9oY7d4zW9iKowOmdwjpsbUqOx3xUp
+   68tFFlmfv/XPYCTe/wMUAqibp2qCXieUb+YWHH+9CKZ/eBkCmvO73H+kQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255769996"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="255769996"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 06:35:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="514519517"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga006.jf.intel.com with ESMTP; 11 Mar 2022 06:35:08 -0800
+Date:   Fri, 11 Mar 2022 22:28:14 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/6] fpga: zynqmp: Initialized variables before using it
+Message-ID: <20220311142814.GA97487@yilunxu-OptiPlex-7050>
+References: <20220308094519.1816649-1-nava.manne@xilinx.com>
+ <20220308094519.1816649-3-nava.manne@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7bf43ee7-549e-c98c-1ca9-b5060124c94b@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220308094519.1816649-3-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-03-11 @ 10:23:22 AM, Jiri Slaby wrote:
-> On 11. 03. 22, 8:02, Trevor Woerner wrote:
-> > Clean up the status message that is given in the case where a custom
-> > termios() is not installed.
-> > 
-> > Signed-off-by: Trevor Woerner <twoerner@gmail.com>
-> > ---
-> >   drivers/tty/serial/8250/8250_fintek.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-> > index 03ad2354d808..dcab23d1965e 100644
-> > --- a/drivers/tty/serial/8250/8250_fintek.c
-> > +++ b/drivers/tty/serial/8250/8250_fintek.c
-> > @@ -333,7 +333,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
-> >   	default:
-> >   		/* Don't change clocksource with unknown PID */
-> >   		dev_warn(port->dev,
-> > -			"%s: pid: %x Not support. use default set_termios.\n",
-> > +			"%s: chipID: %x not supported; using default set_termios.\n",
-> >   			__func__, pdata->pid);
+On Tue, Mar 08, 2022 at 03:15:15PM +0530, Nava kishore Manne wrote:
+> This patch initialized variables with the proper value.
+> Addresses-Coverity: "uninit_use: Using uninitialized value"
 > 
-> So the variable calls it PID, the comment calls it PID and you change the
-> report to chipID. Why?
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> ---
+>  drivers/fpga/zynqmp-fpga.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
+> index c60f20949c47..e931d69819a7 100644
+> --- a/drivers/fpga/zynqmp-fpga.c
+> +++ b/drivers/fpga/zynqmp-fpga.c
+> @@ -41,7 +41,7 @@ static int zynqmp_fpga_ops_write(struct fpga_manager *mgr,
+>  				 const char *buf, size_t size)
+>  {
+>  	struct zynqmp_fpga_priv *priv;
+> -	dma_addr_t dma_addr;
+> +	dma_addr_t dma_addr = 0;
 
-The datasheet doesn't contain the string/identifier PID anywhere. The hex
-value stored in pdata->pid is the contents of what the datasheet refers to as
-the Chip ID Register in the Global Control Registers. Identifying this value
-as the chipID would probably make more sense to a person who is trying to
-understand what this value is, provided they're also reading through the
-datasheet at the same time.
+The first use of this variable is as an output parameter:
 
-I was considering a patch that would change "pid" to "chipID" in
-8250_fintek.c, would that be a better way to go? I guess pid stands for "part
-ID" or "product ID", but neither of those appear in the datasheet either.
+	kbuf = dma_alloc_coherent(priv->dev, size, &dma_addr, GFP_KERNEL);
 
-> thanks,
+So I don't think it needs to be initialized as 0.
+
+Thanks,
+Yilun
+
+>  	u32 eemi_flags = 0;
+>  	char *kbuf;
+>  	int ret;
 > -- 
-> js
-> suse labs
+> 2.25.1
