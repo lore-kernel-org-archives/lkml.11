@@ -2,141 +2,354 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED65C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiCKWpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:45:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
+        id S229760AbiCKWpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:45:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiCKWpJ (ORCPT
+        with ESMTP id S229633AbiCKWph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:45:09 -0500
-Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CD22A2B9D;
-        Fri, 11 Mar 2022 14:20:40 -0800 (PST)
-Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
-        by mxout3.routing.net (Postfix) with ESMTP id C1C6960F5F;
-        Fri, 11 Mar 2022 21:04:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1647032663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rtt0wxHubmWpKdU6ekWYzCitwnoj4zI5iwxQKYKbTWk=;
-        b=eQzbJTFc57T/S09xkYoZDHtkcblS/4wW/Gl5PwOT8TmpANImFyi9Jjm7isC1rDJqurSShG
-        y5frICWIR4v3YP2hVYph2WPbq2QazU3BWIi6cKrLiJib3nqjJV4FGgIZAewOeV+GszMwNt
-        gch5CvVsh+eJEJNgEGdc9hBVBtvVhew=
-Received: from localhost.localdomain (fttx-pool-217.61.144.196.bambit.de [217.61.144.196])
-        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id A020640684;
-        Fri, 11 Mar 2022 21:04:22 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     devicetree@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH v6 3/6] ARM: dts: spear13xx: Fix sata node name
-Date:   Fri, 11 Mar 2022 22:03:54 +0100
-Message-Id: <20220311210357.222830-4-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311210357.222830-1-linux@fw-web.de>
-References: <20220311210357.222830-1-linux@fw-web.de>
+        Fri, 11 Mar 2022 17:45:37 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AE7148671;
+        Fri, 11 Mar 2022 14:21:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647037276; x=1678573276;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aXpYOn6ZRsuTaRkD1g4T1EgJ06+xggd+9isCrVZMGXo=;
+  b=jCTUM9rslUpRnz45xGT2RwDUDP2tWm08aBSkI43AnadT+f/cs7bj+kin
+   lZqpAolIykE9Q8A24aUuRK9WUPzQAWTbta+kbJX5z9u+nqJHqX5ng5d/6
+   qhbzOSLDgmSpD9DTvlFdhlhEh0M/+WIHDxgEutJCkyGVCp2Vkc9tMXUJK
+   Plr9npeesT798LIY44r8vnSjW2PKmaotEwDdjjI0UnGPW5we9HXLmxB/t
+   IG71vcLUjcWrC+0u9wgw4b3ddjQBqisseijRRQ+ipOEH5S1TISwJPGGi7
+   C5Zb4NaDGG/4mviq1wTD/LLhAyYhPReVgiKnW0oIGtF/LTJwIneJ2iKkf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255853491"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="255853491"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 14:14:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="496896178"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga003.jf.intel.com with ESMTP; 11 Mar 2022 14:14:14 -0800
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     rafael@kernel.org, daniel.lezcano@linaro.org, corbet@lwn.net
+Cc:     linux-pm@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] documentation: thermal: DPTF Documentation
+Date:   Fri, 11 Mar 2022 14:14:13 -0800
+Message-Id: <20220311221413.714859-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 127311bf-9db5-442b-9c8e-516e6731cf9d
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Document Intel Dynamic Platform and Thermal Framework (DPTF)
+ABI.
 
-After converting the binding to yaml the node name does
-not match the standard pattern, change it.
-
-arch/arm/boot/dts/spear1340-evb.dt.yaml: ahci@b1000000:
-$nodename:0: 'ahci@b1000000' does not match '^sata(@.*)?$'
-	From schema: Documentation/devicetree/bindings/ata/ahci-platform.yaml
-
-Fixes: 07658d9a659b ("SPEAr13xx: Add dts and dtsi files")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- arch/arm/boot/dts/spear1310.dtsi    | 6 +++---
- arch/arm/boot/dts/spear1340-evb.dts | 2 +-
- arch/arm/boot/dts/spear1340.dtsi    | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ Documentation/driver-api/thermal/index.rst    |   1 +
+ .../driver-api/thermal/intel_dptf.rst         | 272 ++++++++++++++++++
+ 2 files changed, 273 insertions(+)
+ create mode 100644 Documentation/driver-api/thermal/intel_dptf.rst
 
-diff --git a/arch/arm/boot/dts/spear1310.dtsi b/arch/arm/boot/dts/spear1310.dtsi
-index 2f746a9428a7..8702c290ed8a 100644
---- a/arch/arm/boot/dts/spear1310.dtsi
-+++ b/arch/arm/boot/dts/spear1310.dtsi
-@@ -50,7 +50,7 @@ miphy2: miphy@eb808000 {
- 			status = "disabled";
- 		};
- 
--		ahci0: ahci@b1000000 {
-+		ahci0: sata@b1000000 {
- 			compatible = "snps,spear-ahci";
- 			reg = <0xb1000000 0x10000>;
- 			interrupts = <0 68 0x4>;
-@@ -59,7 +59,7 @@ ahci0: ahci@b1000000 {
- 			status = "disabled";
- 		};
- 
--		ahci1: ahci@b1800000 {
-+		ahci1: sata@b1800000 {
- 			compatible = "snps,spear-ahci";
- 			reg = <0xb1800000 0x10000>;
- 			interrupts = <0 69 0x4>;
-@@ -68,7 +68,7 @@ ahci1: ahci@b1800000 {
- 			status = "disabled";
- 		};
- 
--		ahci2: ahci@b4000000 {
-+		ahci2: sata@b4000000 {
- 			compatible = "snps,spear-ahci";
- 			reg = <0xb4000000 0x10000>;
- 			interrupts = <0 70 0x4>;
-diff --git a/arch/arm/boot/dts/spear1340-evb.dts b/arch/arm/boot/dts/spear1340-evb.dts
-index fd194ebeedc9..65c757cd3718 100644
---- a/arch/arm/boot/dts/spear1340-evb.dts
-+++ b/arch/arm/boot/dts/spear1340-evb.dts
-@@ -112,7 +112,7 @@ pcie {
- 			};
- 		};
- 
--		ahci@b1000000 {
-+		sata@b1000000 {
- 			status = "okay";
- 		};
- 
-diff --git a/arch/arm/boot/dts/spear1340.dtsi b/arch/arm/boot/dts/spear1340.dtsi
-index 827e887afbda..f45f3046f1c8 100644
---- a/arch/arm/boot/dts/spear1340.dtsi
-+++ b/arch/arm/boot/dts/spear1340.dtsi
-@@ -33,7 +33,7 @@ miphy0: miphy@eb800000 {
- 			status = "disabled";
- 		};
- 
--		ahci0: ahci@b1000000 {
-+		ahci0: sata@b1000000 {
- 			compatible = "snps,spear-ahci";
- 			reg = <0xb1000000 0x10000>;
- 			interrupts = <0 72 0x4>;
+diff --git a/Documentation/driver-api/thermal/index.rst b/Documentation/driver-api/thermal/index.rst
+index 4cb0b9b6bfb8..030306ffa408 100644
+--- a/Documentation/driver-api/thermal/index.rst
++++ b/Documentation/driver-api/thermal/index.rst
+@@ -17,3 +17,4 @@ Thermal
+    intel_powerclamp
+    nouveau_thermal
+    x86_pkg_temperature_thermal
++   intel_dptf
+diff --git a/Documentation/driver-api/thermal/intel_dptf.rst b/Documentation/driver-api/thermal/intel_dptf.rst
+new file mode 100644
+index 000000000000..96668dca753a
+--- /dev/null
++++ b/Documentation/driver-api/thermal/intel_dptf.rst
+@@ -0,0 +1,272 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++===============================================================
++Intel(R) Dynamic Platform and Thermal Framework Sysfs Interface
++===============================================================
++
++:Copyright: |copy| 2022 Intel Corporation
++
++:Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
++
++Introduction
++------------
++
++Intel(R) Dynamic Platform and Thermal Framework (DPTF) is a platform
++level hardware/software solution for power and thermal management.
++
++As a container for multiple power/thermal technologies, DPTF provides
++a coordinated approach for different policies to effect the hardware
++state of a system.
++
++Since it is a platform level framework, this has several components.
++Some parts of the technology is implemented in the firmware and uses
++ACPI and PCI devices to expose various features for monitoring and
++control. Linux has a set of kernel drivers exposing hardware interface
++to user space. This allows user space thermal solutions like
++"Linux Thermal Daemon" to read platform specific thermal and power
++tables to deliver adequate performance while keeping the system under
++thermal limits.
++
++DPTF ACPI Drivers interface
++----------------------------
++
++:file:`/sys/bus/platform/devices/<N>/uuids`, where <N>
++=INT3400|INTC1040|INTC1041|INTC10A0
++
++``available_uuids`` (RO)
++	A set of UUIDs strings presenting available policies
++	which should be notified to the firmware when the
++	user space can support those policies.
++
++	UUID strings:
++
++	"42A441D6-AE6A-462b-A84B-4A8CE79027D3" : Passive 1
++
++	"3A95C389-E4B8-4629-A526-C52C88626BAE" : Active
++
++	"97C68AE7-15FA-499c-B8C9-5DA81D606E0A" : Critical
++
++	"63BE270F-1C11-48FD-A6F7-3AF253FF3E2D" : Adaptive performance
++
++	"5349962F-71E6-431D-9AE8-0A635B710AEE" : Emergency call
++
++	"9E04115A-AE87-4D1C-9500-0F3E340BFE75" : Passive 2
++
++	"F5A35014-C209-46A4-993A-EB56DE7530A1" : Power Boss
++
++	"6ED722A7-9240-48A5-B479-31EEF723D7CF" : Virtual Sensor
++
++	"16CAF1B7-DD38-40ED-B1C1-1B8A1913D531" : Cooling mode
++
++	"BE84BABF-C4D4-403D-B495-3128FD44dAC1" : HDC
++
++``current_uuid`` (RW)
++	User space can write strings from available UUIDs, one at a
++	time.
++
++:file:`/sys/bus/platform/devices/<N>/`, where <N>
++=INT3400|INTC1040|INTC1041|INTC10A0
++
++``imok`` (WO)
++	User space daemon write 1 to respond to firmware event
++	for sending keep alive notification. User space receives
++	THERMAL_EVENT_KEEP_ALIVE kobject uevent notification when
++	firmware calls for user space to respond with imok ACPI
++	method.
++
++``odvp*`` (RO)
++	Firmware thermal status variable values. Thermal tables
++	calls for different processing based on these variable
++	values.
++
++``data_vault`` (RO)
++	Binary thermal table. Refer to
++	https:/github.com/intel/thermal_daemon for decoding
++	thermal table.
++
++
++ACPI Thermal Relationship table interface
++------------------------------------------
++
++:file:`/dev/acpi_thermal_rel`
++
++	This device provides IOCTL interface to read standard ACPI
++	thermal relationship tables via ACPI methods _TRT and _ART.
++	These IOCTLs are defined in
++	drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
++
++	IOCTLs:
++
++	ACPI_THERMAL_GET_TRT_LEN: Get length of TRT table
++
++	ACPI_THERMAL_GET_ART_LEN: Get length of ART table
++
++	ACPI_THERMAL_GET_TRT_COUNT: Number of records in TRT table
++
++	ACPI_THERMAL_GET_ART_COUNT: Number of records in ART table
++
++	ACPI_THERMAL_GET_TRT: Read binary TRT table, length to read is
++	provided via argument to ioctl().
++
++	ACPI_THERMAL_GET_ART: Read binary ART table, length to read is
++	provided via argument to ioctl().
++
++DPTF ACPI Sensor drivers
++-------------------------
++
++DPTF Sensor drivers are presented as standard thermal sysfs thermal_zone.
++
++
++DPTF ACPI Cooling drivers
++--------------------------
++
++DPTF cooling drivers are presented as standard thermal sysfs cooling_device.
++
++
++DPTF Processor thermal PCI Driver interface
++--------------------------------------------
++
++:file:`/sys/bus/pci/devices/0000\:00\:04.0/power_limits/`
++
++Refer to Documentation/power/powercap/powercap.rst for powercap
++ABI.
++
++``power_limit_0_max_uw`` (RO)
++	Maximum powercap sysfs constraint_0_power_limit_uw for Intel RAPL
++
++``power_limit_0_step_uw`` (RO)
++	Power limit increment/decrements for Intel RAPL constraint 0 power limit
++
++``power_limit_0_min_uw`` (RO)
++	Minimum powercap sysfs constraint_0_power_limit_uw for Intel RAPL
++
++``power_limit_0_tmin_us`` (RO)
++	Minimum powercap sysfs constraint_0_time_window_us for Intel RAPL
++
++``power_limit_0_tmax_us`` (RO)
++	Maximum powercap sysfs constraint_0_time_window_us for Intel RAPL
++
++``power_limit_1_max_uw`` (RO)
++	Maximum powercap sysfs constraint_1_power_limit_uw for Intel RAPL
++
++``power_limit_1_step_uw`` (RO)
++	Power limit increment/decrements for Intel RAPL constraint 1 power limit
++
++``power_limit_1_min_uw`` (RO)
++	Minimum powercap sysfs constraint_1_power_limit_uw for Intel RAPL
++
++``power_limit_1_tmin_us`` (RO)
++	Minimum powercap sysfs constraint_1_time_window_us for Intel RAPL
++
++``power_limit_1_tmax_us`` (RO)
++	Maximum powercap sysfs constraint_1_time_window_us for Intel RAPL
++
++:file:`/sys/bus/pci/devices/0000\:00\:04.0/`
++
++``tcc_offset_degree_celsius`` (RW)
++	TCC offset from the critical temperature where hardware will throttle
++	CPU.
++
++:file:`/sys/bus/pci/devices/0000\:00\:04.0/workload_request`
++
++``workload_available_types`` (RO)
++	Available workload types. User space can specify one of the workload type
++	it is currently executing via workload_type. For example: idle, bursty,
++	sustained etc.
++
++``workload_type`` (RW)
++	User space can specify any one of the available workload type using
++	this interface.
++
++DPTF Processor thermal RFIM interface
++--------------------------------------------
++
++RFIM interface allows adjustment of FIVR (Fully Integrated Voltage Regulator)
++and DDR (Double Data Rate)frequencies to avoid RF interference with WiFi and 5G.
++
++Switching voltage regulators (VR) generate radiated EMI or RFI at the
++fundamental frequency and its harmonics. Some harmonics may interfere
++with very sensitive wireless receivers such as Wi-Fi and cellular that
++are integrated into host systems like notebook PCs.  One of mitigation
++methods is requesting SOC integrated VR (IVR) switching frequency to a
++small % and shift away the switching noise harmonic interference from
++radio channels.  OEM or ODMs can use the driver to control SOC IVR
++operation within the range where it does not impact IVR performance.
++
++DRAM devices of DDR IO interface and their power plane can generate EMI
++at the data rates. Similar to IVR control mechanism, Intel offers a
++mechanism by which DDR data rates can be changed if several conditions
++are met: there is strong RFI interference because of DDR; CPU power
++management has no other restriction in changing DDR data rates;
++PC ODMs enable this feature (real time DDR RFI Mitigation referred to as
++DDR-RFIM) for Wi-Fi from BIOS.
++
++
++FIVR attributes
++
++:file:`/sys/bus/pci/devices/0000\:00\:04.0/fivr/`
++
++``vco_ref_code_lo`` (RW)
++	The VCO reference code is an 11-bit field and controls the FIVR
++	switching frequency. This is the 3-bit LSB field.
++
++``vco_ref_code_hi`` (RW)
++	The VCO reference code is an 11-bit field and controls the FIVR
++	switching frequency. This is the 8-bit MSB field.
++
++``spread_spectrum_pct`` (RW)
++	Set the FIVR spread spectrum clocking percentage
++
++``spread_spectrum_clk_enable`` (RW)
++	Enable/disable of the FIVR spread spectrum clocking feature
++
++``rfi_vco_ref_code`` (RW)
++	This field is a read only status register which reflects the
++	current FIVR switching frequency
++
++``fivr_fffc_rev`` (RW)
++	This field indicated the revision of the FIVR HW.
++
++
++DVFS attributes
++
++:file:`/sys/bus/pci/devices/0000\:00\:04.0/dvfs/`
++
++``rfi_restriction_run_busy`` (RW)
++	Request the restriction of specific DDR data rate and set this
++	value 1. Self reset to 0 after operation.
++
++``rfi_restriction_err_code`` (RW)
++	0 :Request is accepted, 1:Feature disabled,
++	2: the request restricts more points than it is allowed
++
++``rfi_restriction_data_rate_Delta`` (RW)
++	Restricted DDR data rate for RFI protection: Lower Limit
++
++``rfi_restriction_data_rate_Base`` (RW)
++	Restricted DDR data rate for RFI protection: Upper Limit
++
++``ddr_data_rate_point_0`` (RO)
++	DDR data rate selection 1st point
++
++``ddr_data_rate_point_1`` (RO)
++	DDR data rate selection 2nd point
++
++``ddr_data_rate_point_2`` (RO)
++	DDR data rate selection 3rd point
++
++``ddr_data_rate_point_3`` (RO)
++	DDR data rate selection 4th point
++
++``rfi_disable (RW)``
++	Disable DDR rate change feature
++
++DPTF Power supply and Battery Interface
++----------------------------------------
++
++Refer to Documentation/ABI/testing/sysfs-platform-dptf
++
++DPTF Fan Control
++----------------------------------------
++
++Refer to Documentation/admin-guide/acpi/fan_performance_states.rst
 -- 
-2.25.1
+2.31.1
 
