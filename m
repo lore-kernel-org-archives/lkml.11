@@ -2,167 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347295AbiCKHxu (ORCPT
+        id S1347302AbiCKHxy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        Fri, 11 Mar 2022 02:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347266AbiCKHxk (ORCPT
+        with ESMTP id S1347275AbiCKHxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:53:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EF443B568
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:52:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646985155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nOdafaJtse+8LgWXWQrqdTTqXMwIbmNc8kkDbRO4C2U=;
-        b=JmPFq40oQK4L77dWhCcOAOZS1huusL3o5RMC6/gT7oWFzgaihrjthq2QTegu955jSI5E5W
-        ioggAuMi6rK/BIWVFyVc3UySc0abql2ua0Qo08bZ0T73m+MwLeEYtmBj/OnTEZtLQLrDFH
-        ziX5AVe8XfChogAfTnBarFtk0TIBkSE=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-118-aSRLaEPnMUyiGPpw6XZAkA-1; Fri, 11 Mar 2022 02:52:34 -0500
-X-MC-Unique: aSRLaEPnMUyiGPpw6XZAkA-1
-Received: by mail-ej1-f69.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso4502066ejs.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:52:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=nOdafaJtse+8LgWXWQrqdTTqXMwIbmNc8kkDbRO4C2U=;
-        b=cqJoD5fZ7OCX8cqI8mx5bPiOYAofsLIYGDi0Fl/gJLf+8a8OmrAKOct7Jl2wNPbTKu
-         Nnz79bORXlMp36b77bGuhWAfgOzFZ/ZMudPvSJTD2VZau+CLwrLz+1nPoQcUTIwE4Bwh
-         e0ebxUto4c+kMR5asUJrsKyRj7rkQaX7j5MS87qx+WhRmoZk33w1mNVwRMk7mGLtO9+S
-         UzsUhd4cbwvz0/Lyfp2iDJ59nMN41AXdABdrA2uiAQikwCT7AIhpu4yjgoNmpun8SyGH
-         2rFisfyUMnIhZS2AI7piCvHJRMou7wB/UhN1F1eyhETZxXHbPVuIwsLnqnHFlJHbrkZG
-         Az/w==
-X-Gm-Message-State: AOAM532O5t1+4FGzwGu/Nan+0jHkyRHsBLwtsBxivPhxrKaIY+OV8fG5
-        M8yAs0PvraOrNM6bz+UqbNRF/sfIqeTMHWoeZt8sk6GHIRWonpiOi8CIw+OmuYCGKLn3DULICqe
-        TT+5v04nQvg8wPmXcL7UvYJ2M
-X-Received: by 2002:a17:907:86a8:b0:6db:6c1c:d9c4 with SMTP id qa40-20020a17090786a800b006db6c1cd9c4mr7401994ejc.640.1646985152880;
-        Thu, 10 Mar 2022 23:52:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxoi4tVAbZEr4iaXAILaYiGbWBCMw/gOSBC7p2ecbnJ1XfcWwLWDBERuFBQjbG34JyrAe8X+w==
-X-Received: by 2002:a17:907:86a8:b0:6db:6c1c:d9c4 with SMTP id qa40-20020a17090786a800b006db6c1cd9c4mr7401976ejc.640.1646985152657;
-        Thu, 10 Mar 2022 23:52:32 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:cdb2:2781:c55:5db0? (2001-1c00-0c1e-bf00-cdb2-2781-0c55-5db0.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:cdb2:2781:c55:5db0])
-        by smtp.gmail.com with ESMTPSA id r14-20020a1709067fce00b006db0edb8a80sm2639575ejs.225.2022.03.10.23.52.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 23:52:32 -0800 (PST)
-Message-ID: <03675c75-ee6f-5da3-099c-2b82a1865455@redhat.com>
-Date:   Fri, 11 Mar 2022 08:52:31 +0100
+        Fri, 11 Mar 2022 02:53:43 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2087.outbound.protection.outlook.com [40.107.21.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626FC95A1F;
+        Thu, 10 Mar 2022 23:52:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AIxdjQBQAbN3xxV0zfYFqmMvZ/gGSqEYewMOm+z6fpUKKBawa9J/2PYM4p1cTqb4WdcTBqh00xQ8IFM5CHStVMX7a3Vtsjqi6d0hJf1FM5h6m/Y6+UrM6juF8hW3KfrvKWWw718zR87MjS1LvDHFL8p8PfxcO2si9FGOgzF18cShB4gfwCq1UClTbsfiDjZm8oXDtvUW9V5rPqMS7rZa9DimG0lWj51z49NwsJ5Srx7z1WIMu275Pc02RCPDM2iCdTketOlsdaEx2VQDnRHbaX8GkUs1bsuK/IotT4UjeE3AVTHZF+VwoSF+NbBVrzVhpfzdssMs+Gq8DNstRweAEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ku317mUSHruXe+eqtL9Jhx41SjsYYJOst5rCfUruQV0=;
+ b=A1gQ9pXRv1NknBpJxT9iBbJC/41GuWiKJDQUcwzRky+kFTmA6xqa3/dmzI4UwJL5sMIGWDDkIDavjChGWPDlbvOYDoqVJ7yDS3ppUIw5r7oIE0/+zI1OZd6dkIs9qtoW6WXsvroWXOLZGrtowNHkKHdOadvTfpjpFM8H4EqUJ92lO+EfGeQRqG1LiaSh3u2Mc+eYV2SteLFSjgBcNPF7XFcowOtsiZ7PnKgMUaLMOztaWQwCmMumT9bNVWRtdjtOgVi5oNXZ8LW0RwCvJRy6mNEdU9Fjof2+SOL+7i0LDkedxpmNYCqLmjGcKosz8xOZ2eNaoR6xt84uLjLZkqDigQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ku317mUSHruXe+eqtL9Jhx41SjsYYJOst5rCfUruQV0=;
+ b=ZHBwT+U5mdAlC+QCh2c9bXQNQEyd54tJp5TH57uHRVB05Rpcjfz082hviZzcSpImbsG+pHKkXhl2/a41saGE8n7/TZRHWE2ZrH2iA0A0HZFVX1ljIRbZ9UzURK+WYYJsfaOWwKEGnTEx8G2YWSS2e09NEtYUUL8w8aGh45H4644=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by DB7PR04MB4443.eurprd04.prod.outlook.com (2603:10a6:5:32::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 11 Mar
+ 2022 07:52:35 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::c39:69cf:c4ea:967]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::c39:69cf:c4ea:967%5]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
+ 07:52:35 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 3/5] media: imx-jpeg: Propagate the output frame size to the capture side
+Date:   Fri, 11 Mar 2022 15:51:45 +0800
+Message-Id: <f5b3eb363a5353d31bbcbc96a8d380866af2dab7.1646983646.git.ming.qian@nxp.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <cover.1646983646.git.ming.qian@nxp.com>
+References: <cover.1646983646.git.ming.qian@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGXP274CA0015.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::27)
+ To AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 3/3] x86/PCI: Preserve host bridge windows completely
- covered by E820
-Content-Language: en-US
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>, wse@tuxedocomputers.com
-References: <20220309181518.GA63422@bhelgaas>
- <b41cfd4d-3f55-168a-e96c-cf2d11d50f28@redhat.com>
-In-Reply-To: <b41cfd4d-3f55-168a-e96c-cf2d11d50f28@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2600a90e-3dc0-4fac-a2b7-08da03341af4
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4443:EE_
+X-Microsoft-Antispam-PRVS: <DB7PR04MB4443277FD319A9F3803D1546E70C9@DB7PR04MB4443.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XvbHJyob2eZvcyOfJP8CpYjL2PMkQmVjclDec/TNye/LkbMocSLfNnGafv9Exn8jhAfccPYIvqevFW30nYr0xtyNYfl+oW1WRrvX/jPDxvpRlZcI3VG+pLrrwqh9JpESNvEpwJ8u3SbdkdAxQBC1IDrc4heLvm8Asf7lDI37Oiu+WiTsIf1N3pMmpDq7UQH5oxgo1/mY1UDJDC0n6e9pV3Ln4Vu90f8XfoU1wpQrEZbzPn/0MEtcvQEJwn1LV40HaE7r+g9wvQzpn3dlves0kM6raCom/Yi7dkcm91dhGl34pMTfeyWz82EWA7UJ4fpwn1+IOlln1RyE2D2rK5K5/SD5Woka3M2GovpAGg+v5511NehkHp0cLmanYrEJaYvaUJG3B+y1sXZxOAz0t1OWm/ccUHdJ9/yzylSfmo4Q859N1wOIp0a0xpywI3FwR1vfFR5zUxUjA1MpZnPisP6kqaGsdT7/5xF1BNfdv2THODXRFA6IjnQTWOF65D4iL1Z/tVxl/RKTvnDGccj4Jepny3gg5km3daZFOY9P/xRigsoCityGFvBPXDcQYpwEvDtC58aCAU3H/ALq5LF16FUpoMys4PXw4zzq9IZe0syEr0peksI4Ix2HKDM3u0GGSookkaYAtHVH8zc08OGDhdbau9ndfFQaYEXCz/ITnYSvxJni3SHHqQVhRfIp8hG1PAXFn0WVi5ufmCE0ROvANMGF9w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(8936002)(26005)(52116002)(44832011)(2906002)(8676002)(6486002)(2616005)(508600001)(86362001)(4326008)(186003)(66946007)(6512007)(6506007)(5660300002)(66556008)(38350700002)(6666004)(38100700002)(66476007)(316002)(83380400001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Tet9QfBlwgEe111tKBeUvGQVe9YiZfOM0/n+ikhGogBnX2skkCk+RTxqpv0d?=
+ =?us-ascii?Q?J0albz8WoJ4mANZAVU2MkAwPrTzlfePk6KH8igq2uQdSy+fxvDVM4lWo0N8d?=
+ =?us-ascii?Q?FWj62kL42Y5BYqxzHMVxvKoVHB+PBN1DOj+blW1KHTEE6XI6NGR5f/IDV/YQ?=
+ =?us-ascii?Q?W6Y7NfDT1XYlKRoCXunMVdEWdsgi7hOqkALFqqX9+ZemqFZMDM3+cDw4FIjN?=
+ =?us-ascii?Q?3fJsoHr+NdUI0agzGXEqYTNQXg+G/c+wwRJpUUs1yneGy58taliZm+tdTSb1?=
+ =?us-ascii?Q?abkAy61iosQ6YRmXDc0CztKVz7U98WiRs+ZlHZrlGXKir6b7UK/bbiclUDmZ?=
+ =?us-ascii?Q?U66xZWQb7fg+xzvjrRMJrBgBORnLg+YiFn3Z5+JUgduiSeVI3NCYOIqsu52i?=
+ =?us-ascii?Q?qhN6YdSrVCeqcOlnL9RpJf4g42EESmIinlg5ltUWYrI1Y5uEyPkB8hnFXWY+?=
+ =?us-ascii?Q?3OnHLQo2fOu4EuCd6g6gLYsl1V3AD7xj46U+zOhoVUbtjqMjFDH3ciPoqC4p?=
+ =?us-ascii?Q?syRZN0Iq2MOa/mHci1RZsMm0R5dXuvokrjvjbt3RsTOk+x11k/DAJBOK1R3f?=
+ =?us-ascii?Q?5hAys8cne1MInEN+vdAzRCO6QpA3S6EBZVdB7hj82ediWj9lRkHI9IOf6dcN?=
+ =?us-ascii?Q?JCgUmvhvLv9H0ZxDTssLmGl9FkxdDxE0Am84h997Q/VoUOH2PUwpSIeuUKLs?=
+ =?us-ascii?Q?LN2sA6Eqb1zpC6afHLuGcPQty4BkycRQyXzDYj0r4mbhKDjmW8T532OX9IUl?=
+ =?us-ascii?Q?2Tgcg14FyVQepM4hyBMZGCpoEy35ng+qNkTEDa/Eq42MDEMYUJhV/2mjz3mT?=
+ =?us-ascii?Q?lYDYgjjwVuqNLvxLPU8uSvgRzO2/ZFO8VoF4FbdevCAXO4eyMlvr+9j4tXyK?=
+ =?us-ascii?Q?6pFy2isPwn2YL27jyfmrUy6j1mvUPvmPhp5Zx1uU/jhoBdLRzlJ5+QUxe3bo?=
+ =?us-ascii?Q?nwA0Q1nbt4NUdBT0qs8IuMmumu06cDmXO1W2KlVGn7LJUHRWv5DmbBWHCWn9?=
+ =?us-ascii?Q?MmOgC2z5HHN3TWExgCRhARGQCzpylNx4MXwTDG1rYBt6qzRQyfFZJ2dalJXX?=
+ =?us-ascii?Q?sCSAVl49WSIIgu5FIp/9kNPTmtrsdpNoCJuWnv8dm/H6xB6SdWKTVSBwlsgS?=
+ =?us-ascii?Q?ea3ngWZ/TjFiXiInz/K5oZnndMlbJqawb7Qj+2fyzkQ8N8u/XCbVY4G9XNtM?=
+ =?us-ascii?Q?sjo7XFEwcRDs9cXkq2ycjOYO7EffVs2s7vaYWtMaybWL6IobKPJhBi9Dwayw?=
+ =?us-ascii?Q?OpL3DCPNBGfNqsour62TxmCWSzxwj/PKFugxTKV41veFZ39sBXu/U7v9SlkS?=
+ =?us-ascii?Q?bO4jhmp67d1R0ibpKrkGQbt02i58HlGJ15TmA6gkCPOvhkKfn7YOt8/3BhCZ?=
+ =?us-ascii?Q?jdrCXa8XPqY8+qn4fZ6h9ieR/l2AyFdxLklY8L7H8mc1rGYOAz3VQaraN/xV?=
+ =?us-ascii?Q?kLl3osjqwhN4lYdrgpyJh53hp1Qk8PKz4OQyIGASeooA4wcs2WYWte5YP72Q?=
+ =?us-ascii?Q?pRtX2TZR65NMG6QDbvaxolzgM/Un8kqmsgvkOzetwsfd5ngPNe9Bt1lNLrWk?=
+ =?us-ascii?Q?fqq23uLtVwiMx+u94O2DHYeBnIBfULQNfMECDdtSMDk2kETbgtbcfNuYzj2Z?=
+ =?us-ascii?Q?0VLXB/lM7gCj2WK40CmzGYI=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2600a90e-3dc0-4fac-a2b7-08da03341af4
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 07:52:35.5519
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MSbYlqDjIRxRI6Atgzm1+CvTu6qPT4vLY4Gs2+q96KIVcHoBmEk5ylAVyPiAczWwKo+zdaU4THv4RSrBeCgoDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4443
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+The GStreamer v4l2videodec only ever calls S_FMT on the output side
+and then expects G_FMT on the capture side to return a valid format.
 
-On 3/10/22 13:28, Hans de Goede wrote:
-> Hi Bjorn,
-> 
-> On 3/9/22 19:15, Bjorn Helgaas wrote:
->> On Sat, Mar 05, 2022 at 11:37:23AM +0100, Hans de Goede wrote:
->>> On 3/4/22 16:46, Hans de Goede wrote:
->>>> On 3/4/22 16:32, Bjorn Helgaas wrote:
->>>>> On Fri, Mar 04, 2022 at 03:16:42PM +0100, Hans de Goede wrote:
->>>>>> On 3/4/22 04:51, Bjorn Helgaas wrote:
->>>>>>> From: Bjorn Helgaas <bhelgaas@google.com>
->>>>>>>
->>>>>>> Many folks have reported PCI devices not working.  It could affect any
->>>>>>> device, but most reports are for Thunderbolt controllers on Lenovo Yoga and
->>>>>>> Clevo Barebone laptops and the touchpad on Lenovo IdeaPads.
->>>>>>> ...
->>
->>>>>>> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
->>>>>>> index 7378ea146976..405f0af53e3d 100644
->>>>>>> --- a/arch/x86/kernel/resource.c
->>>>>>> +++ b/arch/x86/kernel/resource.c
->>>>>>> @@ -39,6 +39,17 @@ void remove_e820_regions(struct device *dev, struct resource *avail)
->>>>>>>  		e820_start = entry->addr;
->>>>>>>  		e820_end = entry->addr + entry->size - 1;
->>>>>>>  
->>>>>>> +		/*
->>>>>>> +		 * If an E820 entry covers just part of the resource, we
->>>>>>> +		 * assume E820 is telling us about something like host
->>>>>>> +		 * bridge register space that is unavailable for PCI
->>>>>>> +		 * devices.  But if it covers the *entire* resource, it's
->>>>>>> +		 * more likely just telling us that this is MMIO space, and
->>>>>>> +		 * that doesn't need to be removed.
->>>>>>> +		 */
->>>>>>> +		if (e820_start <= avail->start && avail->end <= e820_end)
->>>>>>> +			continue;
->>>>>>> +
->>>>>>
->>>>>> IMHO it would be good to add some logging here, since hitting this is
->>>>>> somewhat of a special case. For the Fedora test kernels I did I changed
->>>>>> this to:
->>>>>>
->>>>>> 		if (e820_start <= avail->start && avail->end <= e820_end) {
->>>>>> 			dev_info(dev, "resource %pR fully covered by e820 entry [mem %#010Lx-%#010Lx]\n",
->>>>>> 				 avail, e820_start, e820_end);
->>>>>> 			continue;
->>>>>> 		}
->>>>>>
->>>>>> And I expect/hope to see this new info message on the ideapad with the
->>>>>> touchpad issue.
->>
->> I added this logging.
->>
->>> So I just got the first report back from the Fedora test 5.16.12 kernel
->>> with this series added. Good news on the ideapad this wotks fine to
->>> fix the touchpad issue (as expected).
->>
->> Any "Tested-by" I could add?  If we can, I'd really like to give some
->> credit to the folks who suffered through this and helped resolve it.
-> 
-> Good point, the reporter of:
-> https://bugzilla.redhat.com/show_bug.cgi?id=1868899
-> 
-> has done most of the ideapad with touchpad issues testing for me
-> and has been very helpful. I agree he deserves credit for this.
-> 
-> I've asked him if he is ok with adding a Tested-by tag and if yes,
-> which email we should use.
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+---
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 25 +++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-If you can add the following tag that would be great:
-
-Tested-by: Matt Hansen <2lprbe78@duck.com>
-
-Regards,
-
-Hans
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 82b9b4630d9c..9e8a4157ce2f 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -1831,12 +1831,35 @@ static int mxc_jpeg_s_fmt_vid_out(struct file *file, void *priv,
+ 				  struct v4l2_format *f)
+ {
+ 	int ret;
++	struct mxc_jpeg_ctx *ctx = mxc_jpeg_fh_to_ctx(priv);
++	struct vb2_queue *dst_vq;
++	struct mxc_jpeg_q_data *q_data_cap;
++	enum v4l2_buf_type cap_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++	struct v4l2_format fc;
+ 
+ 	ret = mxc_jpeg_try_fmt_vid_out(file, priv, f);
+ 	if (ret)
+ 		return ret;
+ 
+-	return mxc_jpeg_s_fmt(mxc_jpeg_fh_to_ctx(priv), f);
++	ret = mxc_jpeg_s_fmt(mxc_jpeg_fh_to_ctx(priv), f);
++	if (ret)
++		return ret;
++
++	dst_vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, cap_type);
++	if (!dst_vq)
++		return -EINVAL;
++
++	if (vb2_is_busy(dst_vq))
++		return 0;
++
++	q_data_cap = mxc_jpeg_get_q_data(ctx, cap_type);
++	memset(&fc, 0, sizeof(fc));
++	fc.type = cap_type;
++	fc.fmt.pix_mp.pixelformat = q_data_cap->fmt->fourcc;
++	fc.fmt.pix_mp.width = f->fmt.pix_mp.width;
++	fc.fmt.pix_mp.height = f->fmt.pix_mp.height;
++
++	return mxc_jpeg_s_fmt_vid_cap(file, priv, &fc);
+ }
+ 
+ static int mxc_jpeg_g_fmt_vid(struct file *file, void *priv,
+-- 
+2.33.0
 
