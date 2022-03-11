@@ -2,109 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF40C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348628AbiCKMmM (ORCPT
+        id S1348575AbiCKMsL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 07:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
+        Fri, 11 Mar 2022 07:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233001AbiCKMmL (ORCPT
+        with ESMTP id S229868AbiCKMsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 07:42:11 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABF71A8058
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:41:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647002465; x=1678538465;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tmONhBIbZRxB1/USQ1+lPAWM5ks9zBRpbaCdGRjHaJ4=;
-  b=ZE3WmOGSSjJqkVqEBGsXYxzDEOWr5loMnYdXQ6up1YxzEvdZlFzoiygj
-   B0wx943DBa6SdyNHKUiDzxL6dKqJAP8Q/I2plxc9rNRKcfK3PI2wRFTIB
-   8IAvV5oEOrA8GuUFspThuOI594GmDGzdFoQ0CJ+U/Rl7b6U6eBUpJEBW1
-   LnPCnHuv48IYizPhANpdfIUmtesdz+tuieXvwf78aPoAAWRa8VGCP3fDB
-   N5eslCnw3Gbe0+rFW6mnXE0Od9b4sOOrsAiQ7H5WDlOEG4gVTNIHTMAcp
-   rTCYPbDWpYu95HND/ZMK/zmDIrZ/gx4gOnXD/4qSW0ZF6VzI4S5IQL1bQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="253127686"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="253127686"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 04:41:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="579275163"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 11 Mar 2022 04:41:03 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSeZr-0006Op-0Q; Fri, 11 Mar 2022 12:41:03 +0000
-Date:   Fri, 11 Mar 2022 20:40:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     nick.hawkins@hpe.com, verdun@hpe.com
-Cc:     kbuild-all@lists.01.org, Nick Hawkins <nick.hawkins@hpe.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 01/10] arch: arm: mach-hpe: Introduce the HPE GXP
- architecture
-Message-ID: <202203112000.DIc9zr62-lkp@intel.com>
-References: <20220310195229.109477-1-nick.hawkins@hpe.com>
+        Fri, 11 Mar 2022 07:48:10 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084111B50E6
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:47:07 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B3F7D210F4;
+        Fri, 11 Mar 2022 12:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647002825; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uIZs6aXbn1yfSeNvtrbgTb878okfutBst+D7FkC272s=;
+        b=s9nMxKW6jxrPK7qq76hQgTON8AqoGOYaAaSplZBc330xVay3feiEfHBceosn1YVK2jYRz9
+        4kah91S5OHZ5J0z9M0xIF3P4ve9qZHxPoOp+5SPaSeZtDtoDPTPq2W2fD888Ipj9Bdzffw
+        4mohCEIyLjX3gC+FqhKYSrAXQy6QLzA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647002825;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uIZs6aXbn1yfSeNvtrbgTb878okfutBst+D7FkC272s=;
+        b=9wj0/wIDb4SRo+1WUY+8gJIoFzP83RpwiznJE0zWgetbIxVHDRynK7B145JTY/WL8XVHQP
+        akAWuQ6s0kO2D8Bg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 989C013A85;
+        Fri, 11 Mar 2022 12:47:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id rMqKJMlEK2JnPgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 11 Mar 2022 12:47:05 +0000
+Message-ID: <27b91006-94f4-2dcb-e796-62e4e553d018@suse.cz>
+Date:   Fri, 11 Mar 2022 13:47:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+References: <319e4db9-64ae-4bca-92f0-ade85d342ff@google.com>
+ <20220304184927.vkq6ewn6uqtcesma@revolver>
+ <20220304190531.6giqbnnaka4xhovx@revolver>
+ <6038ebc2-bc88-497d-a3f3-5936726fb023@google.com>
+ <20220305020021.qmwg5dkham4lyz6v@revolver>
+ <29eac73-4f94-1688-3834-8bd6687a18@google.com>
+ <20220308160552.d3dlcaclkqnlkzzj@revolver>
+ <6036627b-6110-cc58-ca1-a6f736553dd@google.com>
+ <105e1620-5cf2-fecd-27e7-21a6045cc3ac@suse.cz>
+ <173fbbd0-d631-ede7-4641-39ead6531d9@google.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH mmotm] mempolicy: mbind_range() set_policy() after
+ vma_merge()
+In-Reply-To: <173fbbd0-d631-ede7-4641-39ead6531d9@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 3/11/22 09:54, Hugh Dickins wrote:
+> On Wed, 9 Mar 2022, Vlastimil Babka wrote:
+>> On 3/8/22 22:32, Hugh Dickins wrote:
+>> > On Tue, 8 Mar 2022, Liam Howlett wrote:
+>> >> 
+>> >> I must be missing something.  If mpol_equal() isn't sufficient to ensure
+>> >> we don't need to set_policy(), then why are the other vma_merge() cases
+>> >> okay - such as madvise_update_vma() and mlock_fixup()?  Won't the mem
+>> >> policy change in the same way in these cases?
+>> > 
+>> > mlock provides a good example to compare.
+>> > 
+>> > Mlocking pages is the business of mlock(), and mlock_fixup() needs to
+>> > attend to mm->locked_vm, and calling something to mark as PageMlocked
+>> > those pages already in the area now covered by mlock.  But it doesn't
+>> > need to worry about set_policy(), that's not its business, and is
+>> > unaffected by mlock changes (though merging of vmas needs mpol_equal()
+>> > to check that policy is the same, and merging and splitting of vmas
+>> > need to maintain the refcount of the shared policy if any).
+>> > 
+>> > Whereas NUMA mempolicy is the business of mbind(), and mbind_range()
+>> > needs to attend to vma->vm_policy, and if it's a mapping of something
+>> > supporting a shared set_policy(), call that to establish the new range
+>> > on the object mapped.  But it doesn't need to worry about mm->locked_vm
+>> > or whether pages are Mlocked, that's not its business, and is unaffected
+>> > by mbind changes (though merging of vmas needs to check VM_LOCKED among
+>> > other flags to check that they are the same before it can merge).
+>> 
+>> So if I understand correctly, we have case 8 of vma_merge():
+>> 
+>>     AAAA
+>> PPPPNNNNXXXX
+>> becomes
+>> PPPPXXXXXXXX 8
+>> 
+>> N is vma with some old policy different from new_pol
+>> A is the range where we change to new policy new_pol, which happens to be
+>> the same as existing policy of X
+>> Thus vma_merge() extends vma X to include range A - the vma N
+>> vma_merge() succeeds because it's passed new_pol to do the compatibility
+>> checks (although N still has the previous policy)
+> 
+> I *think* you have it the wrong way round there: my reading is that
+> this vma_merge() case 8 was correctly handled before, because in its
+> case !mpol_equal(vma_policy(vma), new_pol): I think case 8 was being
+> handled correctly, but the other cases were not.
+> 
+> Or was the comment even correct to reference case 8 especially?
 
-Thank you for the patch! Perhaps something to improve:
+I think it wasn't, but...
 
-[auto build test WARNING on tip/timers/core]
-[also build test WARNING on soc/for-next robh/for-next linus/master v5.17-rc7 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> I'm afraid bringing it all back to mind is a bit of an effort: I won't
+> stake my life on it, perhaps I'm the one who has it the wrong way round.
 
-url:    https://github.com/0day-ci/linux/commits/nick-hawkins-hpe-com/arch-arm-mach-hpe-Introduce-the-HPE-GXP-architecture/20220311-035513
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 58dedf0a4782ce42b4d31f1f62e5ad80a1b73d72
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20220311/202203112000.DIc9zr62-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9fbfc32473a65e025764e0a1456c421b4706fe8e
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review nick-hawkins-hpe-com/arch-arm-mach-hpe-Introduce-the-HPE-GXP-architecture/20220311-035513
-        git checkout 9fbfc32473a65e025764e0a1456c421b4706fe8e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+... same here.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Importantly I believe your patch is the correct solution.
 
-All warnings (new ones prefixed by >>):
+>> 
+>> Before Hugh's patch we would then realize "oh X already has new_pol, nothing
+>> to do". Note that this AFAICS doesn't affect actual pages migration between
+>> nodes, because that happens outside of mbind_range(). But it causes us to
+>> skip vma_replace_policy(), which causes us to skip vm_ops->set_policy, where
+>> tmpfs does something important (we could maybe argue that Hugh didn't
+>> specify the user visible effects of this exactly enough :) what is "leaving
+>> the new mbind unenforced" - are pages not migrated in this case?).
+> 
+> Went back to check the original (internal) report:
+> mbind MPOL_BIND on tmpfs can result in allocations on the wrong node.
+> And it was a genuine practical case, though the finder was kind enough
+> to distil it down to a minimal sequence (and correctly suggest the fix).
+> 
+> The user visible effect was that the pages got allocated on the local node
+> (happened to be 0), after the mbind() caller had specifically asked for
+> them to be allocated on node 1.  There was not any page migration involved
+> in the case reported: the pages simply got allocated on the wrong node.
 
->> arch/arm/mach-hpe/gxp.c:26:13: warning: no previous prototype for 'gxp_map_io' [-Wmissing-prototypes]
-      26 | void __init gxp_map_io(void)
-         |             ^~~~~~~~~~
+That's useful, thanks.
 
+> And yes, on this patch I should have asked for a
+> Cc: <stable@vger.kernel.org>
 
-vim +/gxp_map_io +26 arch/arm/mach-hpe/gxp.c
+Agree. Andrew can add it, and also the user visible effects above?
 
-    25	
-  > 26	void __init gxp_map_io(void)
-    27	{
-    28		iotable_init(gxp_io_desc, ARRAY_SIZE(gxp_io_desc));
-    29	}
-    30	
+Thanks,
+Vlastimil
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>> 
+>> HTH (if I'm right),
+>> Vlastimil
+
