@@ -2,112 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E470C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345696AbiCKCut (ORCPT
+        id S1345736AbiCKCym (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 21:50:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
+        Thu, 10 Mar 2022 21:54:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233034AbiCKCur (ORCPT
+        with ESMTP id S233034AbiCKCyj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 21:50:47 -0500
-Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08A91A274F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:49:45 -0800 (PST)
-Date:   Fri, 11 Mar 2022 02:49:40 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail3; t=1646966983;
-        bh=580k28RZJWmruhyNLJaUIw7q1yifrWd4WqcSy+ybKWo=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=ZF8FYbbFpCzxGnaB7xZpON8TRl6aEG9ZJXzgjVQdF/0AaUKypfyo2r6NOf41G4VPX
-         chPLti/RlDcF1XukztOtMmYbSMzy2dM2xXq38Iw3rFe55l1RTmuXP6it83vOPb5MOH
-         qJajJIRq0AK+ZgZ+PaTlV17YnB5UTh7oYgF04Ru733MZqiTbAK4q4dDtWDCaV0xy6a
-         urzqvoUKEuOmAW97BV0uRrETdfOnY1jZf2HJOej5uu6/v8kLzs0rtTIFJwNtarMZGj
-         Dbkgrn4ScnkWOWLDdu9aM1S+eC4v5ossq5QL/ensZaLjBXuMelyytpe7kva6H3dqwr
-         dsDmBshLVTHMw==
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-From:   =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Reply-To: =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
-Subject: Re: [RFC PATCH v1 1/2] list: add type-safer list_head wrapper
-Message-ID: <wKlkWvCGvBrBjshT6gHT23JY9kWImhFPmTKfZWtN5Bkv_OtIFHTy7thr5SAEL6sYDthMDth-rvFETX-gCZPPCb9t2bO1zilj0Q-OTTSbe00=@protonmail.com>
-In-Reply-To: <CAHk-=wjF4d_v5t=ht_vCOHxNDoPvsBuK-2jiEBus-__oPZuPFQ@mail.gmail.com>
-References: <20220311013238.3387227-1-pobrn@protonmail.com> <20220311013238.3387227-2-pobrn@protonmail.com> <CAHk-=wjkqz42CNjDgWA9U3uNWa9GriqaCqqKciqm0sZUYjfLQg@mail.gmail.com> <CAHk-=wjF4d_v5t=ht_vCOHxNDoPvsBuK-2jiEBus-__oPZuPFQ@mail.gmail.com>
+        Thu, 10 Mar 2022 21:54:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D34E190B4E;
+        Thu, 10 Mar 2022 18:53:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4970DCE26D2;
+        Fri, 11 Mar 2022 02:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75830C340E8;
+        Fri, 11 Mar 2022 02:53:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646967212;
+        bh=wT1pcZUk18cONswKQpNOup0p0atYyhyj3O67QRngiQA=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=iTxvmR7zQv03MaVyuVhejaSp5W8iKYpXm/lRwqfUimTnbOY5xVBbFmHJSIMV29poE
+         eYthba0KWKwMJKdfrEmO+gUuyFgf0VButOcG0I0P3BD4Ch1SRYDm4itJLOcxwrecky
+         w2VZOJkQcsvdOEu/aFUcKOdBwGIihbIfz+0CZkL+6fPT22/bAPQm34FiEV0bSDv5dW
+         0Y5s9dd7CrTY964+E2iMD1kRCbQkTyu4OC8d4Y0YUgOvZLDGcgemA+NsePIWqzoPCq
+         oly+1Nn0yemvFVAK4gGXC0vUMdqsBNg4BMR5pr5+7rBGlh9C13UBZXb5sLCQnISQKm
+         FEPgpRjgdoS8A==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220126173953.1016706-2-kernel@esmil.dk>
+References: <20220126173953.1016706-1-kernel@esmil.dk> <20220126173953.1016706-2-kernel@esmil.dk>
+Subject: Re: [PATCH v1 1/7] clk: starfive: jh7100: Don't round divisor up twice
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        Fu Wei <tekkamanninja@gmail.com>, linux-kernel@vger.kernel.org
+To:     Emil Renner Berthing <kernel@esmil.dk>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org
+Date:   Thu, 10 Mar 2022 18:53:30 -0800
+User-Agent: alot/0.10
+Message-Id: <20220311025332.75830C340E8@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+Quoting Emil Renner Berthing (2022-01-26 09:39:47)
+> The problem is best illustrated by an example. Suppose a consumer wants
+> a 4MHz clock rate from a divider with a 10MHz parent. It would then
+> call
+>=20
+>   clk_round_rate(clk, 4000000)
+>=20
+> which would call into our determine_rate() callback that correctly
+> rounds up and finds that a divisor of 3 gives the highest possible
+> frequency below the requested 4MHz and returns 10000000 / 3 =3D 3333333Hz.
+>=20
+> However the consumer would then call
+>=20
+>   clk_set_rate(clk, 3333333)
+>=20
+> but since 3333333 doesn't divide 10000000 evenly our set_rate() callback
+> would again round the divisor up and set it to 4 which results in an
+> unnecessarily low rate of 2.5MHz.
+>=20
+> Fix it by using DIV_ROUND_CLOSEST in the set_rate() callback.
+>=20
+> Fixes: 4210be668a09 ("clk: starfive: Add JH7100 clock generator driver")
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> ---
 
-
-2022. m=C3=A1rcius 11., p=C3=A9ntek 3:01 keltez=C3=A9ssel, Linus Torvalds =
-=C3=ADrta:
-> On Thu, Mar 10, 2022 at 5:42 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > That one didn't do the automatic offset thing, but see
-> >
-> >    https://lore.kernel.org/all/CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCA=
-j0AeL0=3DU4mg@mail.gmail.com/
-> >
-> > on the problems that has.
->
-> Note: I think the problems are serious enough that it almost certainly
-> isn't worth doing - it makes the code uglier for very little upside.
->
-> So I tried to explain how it _could_ be done, but that doesn't mean
-> that it _should_ be done.
->
-> Having the member name as part of the list traversal macro isn't
-> actually generally a real problem.
->
-> I added it to the list_traversal_head() macro in that original patch
-> because I think we can easily use the member head name to _verify_
-> that the declaration and the use match.
->
-> Yes, squirrelling  off the offset and not needing the member head name
-> at all at when traversing the list is obviously simpler syntax, but
-> that part has never been the real problem with list traversal. And
-> verifying that the member name that is passed in is the same as in the
-> list_traversal_head() would be trivial.
->
-> To verify it, we could simply change that type name from:
->
->      type *name##_traversal_type;
->
-> to be
->
->      type *name##_traversal_type_##member;
->
-> instead, and suddenly the member name in 'list_traverse()' has to
-> match that thing that list_traversal_head() created.
->
-> So yes, you'd have that third argument in list_traverse(), but it
-> would be trivially checked at compile-time.
-
-That is indeed a simpler thing to do, and doesn't need `offsetof()` at the
-declaration, but there are places - not many -  where the `list_head` membe=
-r
-is inside a subobject, for example, so `member` now contains a period.
-
-
->
-> And you'd avoid all the ugly complexities (described above) with lists
-> that are embedded inside data structures that refer to each other)
-
-
-Regards,
-Barnab=C3=A1s P=C5=91cze
+Applied to clk-next
