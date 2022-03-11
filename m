@@ -2,194 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC889C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EFB9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:54:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350062AbiCKPzZ (ORCPT
+        id S1349945AbiCKPz3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:55:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
+        Fri, 11 Mar 2022 10:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350385AbiCKPx6 (ORCPT
+        with ESMTP id S1350566AbiCKPyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:53:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 197191CF09D
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:52:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zlNKffXUsYA/dr1sDc5Q+AFd+03QHFEyPT6fGMhOla0=;
-        b=hfMsoWjpHPWMULWZOUvPhkDe/onnIo9rEfj6ATntKVLzQlMD6jXbWyyTVatZ0G3C/ujt8v
-        bhktNWrR2oYw9VqWFlrD0yb1IHvVn+huF/Y8VtlQamJTSNIOGZmqSfQ2eIAYEWWrvM6vtU
-        KMAoQJXdO2qtsIFjDjSqvmAU6CrjlTY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-UgCb4dLPNYeHKjIf77Ugvg-1; Fri, 11 Mar 2022 10:51:47 -0500
-X-MC-Unique: UgCb4dLPNYeHKjIf77Ugvg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BC25180A08F;
-        Fri, 11 Mar 2022 15:51:46 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E5B9B785FD;
-        Fri, 11 Mar 2022 15:51:43 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 31/31] KVM: selftests: hyperv_svm_test: Add Direct TLB flush test
-Date:   Fri, 11 Mar 2022 16:49:43 +0100
-Message-Id: <20220311154943.2299191-32-vkuznets@redhat.com>
-In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
-References: <20220311154943.2299191-1-vkuznets@redhat.com>
+        Fri, 11 Mar 2022 10:54:15 -0500
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58D9ECC57;
+        Fri, 11 Mar 2022 07:53:11 -0800 (PST)
+Received: by mail-yb1-f175.google.com with SMTP id l2so17819717ybe.8;
+        Fri, 11 Mar 2022 07:53:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FEtrVBpJ9DBkNlbjxVJR5SHVgIP3hXEvRRRjSXbn5+4=;
+        b=N4HcMhA1dOsjtmB6aWz1HIPAMT3s+zwJ0qkHV9mZA1fcHOO9GIi3NRu2iUOsb+OnD8
+         zq2vkKL6ALVTFFBfmSkizHvGeLyjl79p0MOJGCPi49dh9jPXtcrZZMbkgktEC2zYStAY
+         DJbWsxs1zxTf2EPYATHgu2Zsejynkb8JQ7TurJ2lPnDUBMpTjuC+1saDNvRkMP02xgJs
+         WApW8JgWmk3BrH8IENLUfbKRt2MDpluSW1SuKYPyppP66rYk9xs6Tf6j0lMrS0X/uoH4
+         HOGSZJR6065KTiZijC9U+uWMqSEiFyllikMmZBDM7JfZ36oX6TP7mAllJpei49SXsndx
+         VguQ==
+X-Gm-Message-State: AOAM530b6mTLt5TJlIAJRW/WZxMq7cFM5MUskPkYuw5RDh3kSCDUjDGC
+        +45FwwGEIZ5COpjt6g/wjVW+q6Arq/WaJ0dUrLs=
+X-Google-Smtp-Source: ABdhPJxU3SRPSOiwueLKQjDEtPITtq/dfRJ1NV9l2AVmzq8xiqXtHR1a4E/0K4VPjjN0/g7BtgqFri/2EM9XXP4vgnw=
+X-Received: by 2002:a25:d7c2:0:b0:628:9d06:457b with SMTP id
+ o185-20020a25d7c2000000b006289d06457bmr8462316ybg.137.1647013990912; Fri, 11
+ Mar 2022 07:53:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20220311081111.159639-1-zhengzucheng@huawei.com>
+In-Reply-To: <20220311081111.159639-1-zhengzucheng@huawei.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 11 Mar 2022 16:52:59 +0100
+Message-ID: <CAJZ5v0jponp=ijVx6W=eNEGrfTKh0KbGmOQG_V0P-Mq366559g@mail.gmail.com>
+Subject: Re: [PATCH] cpufreq: fix cpufreq_get() can't get correct CPU frequency
+To:     z00314508 <zhengzucheng@huawei.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Len Brown <len.brown@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable Hyper-V Direct TLB flush and check that Hyper-V TLB flush
-hypercalls from L2 don't exit to L1 unless 'TlbLockCount' is set in the
-Partition assist page.
+On Fri, Mar 11, 2022 at 9:11 AM z00314508 <zhengzucheng@huawei.com> wrote:
+>
+> From: Zucheng Zheng <zhengzucheng@huawei.com>
+>
+> On some specific platforms, the cpufreq driver does not define
+> cpufreq_driver.get() routine (eg:x86 intel_pstate driver), as a
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- .../selftests/kvm/x86_64/hyperv_svm_test.c    | 60 +++++++++++++++++--
- 1 file changed, 56 insertions(+), 4 deletions(-)
+I guess you mean the cpufreq driver ->get callback.
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-index 21f5ca9197da..e2849e58582f 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-@@ -42,11 +42,24 @@ struct hv_enlightenments {
-  */
- #define VMCB_HV_NESTED_ENLIGHTENMENTS (1U << 31)
- 
-+#define HV_SVM_EXITCODE_ENL 0xF0000000
-+#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
-+
- static inline void vmmcall(void)
- {
- 	__asm__ __volatile__("vmmcall");
- }
- 
-+static inline void hypercall(u64 control, vm_vaddr_t arg1, vm_vaddr_t arg2)
-+{
-+	asm volatile("mov %3, %%r8\n"
-+		     "vmmcall"
-+		     : "+c" (control), "+d" (arg1)
-+		     :  "r" (arg2)
-+		     : "cc", "memory", "rax", "rbx", "r8", "r9", "r10",
-+		       "r11", "r12", "r13", "r14", "r15");
-+}
-+
- void l2_guest_code(void)
- {
- 	GUEST_SYNC(3);
-@@ -62,11 +75,21 @@ void l2_guest_code(void)
- 
- 	GUEST_SYNC(5);
- 
-+	/* Direct TLB flush tests */
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	rdmsr(MSR_FS_BASE);
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	/* Make sure we're not issuing Hyper-V TLB flush call again */
-+	__asm__ __volatile__ ("mov $0xdeadbeef, %rcx");
-+
- 	/* Done, exit to L1 and never come back.  */
- 	vmmcall();
- }
- 
--static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
-+static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
-+						    vm_vaddr_t pgs_gpa)
- {
- 	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
- 	struct vmcb *vmcb = svm->vmcb;
-@@ -75,13 +98,23 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- 
- 	GUEST_SYNC(1);
- 
--	wrmsr(HV_X64_MSR_GUEST_OS_ID, (u64)0x8100 << 48);
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
-+	enable_vp_assist(svm->vp_assist_gpa, svm->vp_assist);
- 
- 	GUEST_ASSERT(svm->vmcb_gpa);
- 	/* Prepare for L2 execution. */
- 	generic_svm_setup(svm, l2_guest_code,
- 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
- 
-+	/* Direct TLB flush setup */
-+	hve->partition_assist_page = svm->partition_assist_gpa;
-+	hve->hv_enlightenments_control.nested_flush_hypercall = 1;
-+	hve->hv_vm_id = 1;
-+	hve->hv_vp_id = 1;
-+	current_vp_assist->nested_control.features.directhypercall = 1;
-+	*(u32 *)(svm->partition_assist) = 0;
-+
- 	GUEST_SYNC(2);
- 	run_guest(vmcb, svm->vmcb_gpa);
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
-@@ -116,6 +149,20 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
- 	vmcb->save.rip += 2; /* rdmsr */
- 
-+
-+	/*
-+	 * Direct TLB flush test. First VMCALL should be handled directly by L0,
-+	 * no VMCALL exit expested.
-+	 */
-+	run_guest(vmcb, svm->vmcb_gpa);
-+	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-+	vmcb->save.rip += 2; /* rdmsr */
-+	/* Enable synthetic vmexit */
-+	*(u32 *)(svm->partition_assist) = 1;
-+	run_guest(vmcb, svm->vmcb_gpa);
-+	GUEST_ASSERT(vmcb->control.exit_code == HV_SVM_EXITCODE_ENL);
-+	GUEST_ASSERT(vmcb->control.exit_info_1 == HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH);
-+
- 	run_guest(vmcb, svm->vmcb_gpa);
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
- 	GUEST_SYNC(6);
-@@ -126,7 +173,7 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- int main(int argc, char *argv[])
- {
- 	vm_vaddr_t nested_gva = 0;
--
-+	vm_vaddr_t hcall_page;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct ucall uc;
-@@ -141,7 +188,12 @@ int main(int argc, char *argv[])
- 	vcpu_set_hv_cpuid(vm, VCPU_ID);
- 	run = vcpu_state(vm, VCPU_ID);
- 	vcpu_alloc_svm(vm, &nested_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
-+
-+	hcall_page = vm_vaddr_alloc_pages(vm, 1);
-+	memset(addr_gva2hva(vm, hcall_page), 0x0,  getpagesize());
-+
-+	vcpu_args_set(vm, VCPU_ID, 2, nested_gva, addr_gva2gpa(vm, hcall_page));
-+	vcpu_set_msr(vm, VCPU_ID, HV_X64_MSR_VP_INDEX, VCPU_ID);
- 
- 	for (stage = 1;; stage++) {
- 		_vcpu_run(vm, VCPU_ID);
--- 
-2.35.1
+No, intel_pstate doesn't implement it, because it cannot reliably
+return the current CPU frequency.
 
+> result, the cpufreq_get() can't get the correct CPU frequency.
+
+No, it can't, if intel_pstate is the driver, but what's the problem?
+This function is only called in one place in the kernel and not on x8
+even.
+
+> Modern x86 processors include the hardware needed to accurately
+> calculate frequency over an interval -- APERF, MPERF and the TSC.
+
+You can compute the average frequency over an interval, but ->get is
+expected to return the actual current frequency at the time call time.
+
+> Here we use arch_freq_get_on_cpu() in preference to any driver
+> driver-specific cpufreq_driver.get() routine to get CPU frequency.
+>
+> Fixes: f8475cef9008 ("x86: use common aperfmperf_khz_on_cpu() to calculate KHz using APERF/MPERF")
+
+No kidding.
+
+> Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
+> ---
+>  drivers/cpufreq/cpufreq.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+> index 80f535cc8a75..d777257b4454 100644
+> --- a/drivers/cpufreq/cpufreq.c
+> +++ b/drivers/cpufreq/cpufreq.c
+> @@ -1806,10 +1806,14 @@ unsigned int cpufreq_get(unsigned int cpu)
+>  {
+>         struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
+>         unsigned int ret_freq = 0;
+> +       unsigned int freq;
+>
+>         if (policy) {
+>                 down_read(&policy->rwsem);
+> -               if (cpufreq_driver->get)
+> +               freq = arch_freq_get_on_cpu(policy->cpu);
+> +               if (freq)
+> +                       ret_freq = freq;
+> +               else if (cpufreq_driver->get)
+
+Again, what problem exactly does this address?
+
+>                         ret_freq = __cpufreq_get(policy);
+>                 up_read(&policy->rwsem);
+>
+> --
