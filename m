@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E95C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345618AbiCKCTP (ORCPT
+        id S1345615AbiCKCUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 21:19:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
+        Thu, 10 Mar 2022 21:20:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242459AbiCKCTJ (ORCPT
+        with ESMTP id S244602AbiCKCUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 21:19:09 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5C4BD7E9;
-        Thu, 10 Mar 2022 18:18:07 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id p9so10813424wra.12;
-        Thu, 10 Mar 2022 18:18:07 -0800 (PST)
+        Thu, 10 Mar 2022 21:20:39 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A7DE6D99
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:19:37 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id bc27so6277269pgb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:19:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=PX/KGIdfGQHH5ldFS8iIB3LqUgO+QPeZQxewHTPzYMw=;
-        b=hsd1qrW9yrTIvHK+FHlSXsG+017zFOyzmDU9b8XyJNgEZcteoosqx3ISzA2Qq92FSU
-         33I9tXnX7IQhcMjB0zTX2CeErae1P7RY7imXXAvZOlayiLPmkzUW4Wn9Nnzk4FCDnsJC
-         pHlJn4ndQYsXweP3TBCADkijSqu47vTxazCkXTypDrtlf0g3KNCCld+0A2oHL4fN1DHa
-         ZVjsnqWz22BYsTSOl6HRdbm8Sc4VpYa3m9EF23WQqkaYNTaBOHd1sXJYCevdbMeYPIEx
-         8lb7vXiGUMzc/h5R2egrwqpcQAW9TVquDHcnOkZS2VgMLMezAbLz5mGl0l+fUk5UzAzx
-         dzEg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RryUuol3Ylo4uqhnnPi8mUdUlrjxjJpVahPqVRRMRrc=;
+        b=BcPBYZyZprDcx+IbcqYMhON72+fH6zR3XH526BzNCXAXytQh20KAPR4p5fYrKTc9vs
+         uO+0TFZc6iKrP4NFkAbJv53WJCoJvFTeE5pDI2VJRXOyG6SecZvQ4PV/g4DqsxzCEznK
+         gDK2Qgx23qcHSmcqAk7XWwH+sC38AibZg1p36hGKBDIZIEJhQNq+1fNY+Dm3mcHd0PV7
+         cF9YVj4Mxd0F4NsHdIBE+/unKMg+sfZbvwCUT+SKzUZTX6L5rPQQDyZDOwTyt0qOp7Kg
+         202wy7Eug99PsrXAFGVEwTd88Gco2RUY2wu2fV9Jv1N+/lFIGL7PRyEtEqI+N7DW5iM9
+         Ff+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=PX/KGIdfGQHH5ldFS8iIB3LqUgO+QPeZQxewHTPzYMw=;
-        b=cxy9R9TlLHCbIHky+x1SmAeW8bUMidf3cmKXAMIiCw2UQBUOx+SJ431LNJlcBu00bF
-         evbflzBneYCo4IOta1Ms+xCKoDcIKZfylkNytDcJPsIrWgMH+PW3Q90q4X+MqtT0JrA7
-         7rt7B3TZyhx9+Or1yx+1p+p8ZNZ9g8d1vTGUvb1myL9wIv+pTP4Fcd6BV+HbnAXq2Jdv
-         AF/fPOThtAB8pjHVNb00exlob/9cXMlMT2A0gQW4/i+ZxW6KcKwMrXyx6XVA8wTaEdq9
-         /DlnWGMkSyNt4JkTUu7RJqXMrZSDZtgjxrpP/S3wkvKZBNuRybtLJFQ1gpxWOa22vxuB
-         2ozQ==
-X-Gm-Message-State: AOAM530e0aRgGyvLgpRLSN60AwArHE+4GxJG3cATyYnDdD9AM17HTzrd
-        EBZtuRoHF6jcaqIF1wTnkMQ=
-X-Google-Smtp-Source: ABdhPJwFnP9wVvB5oBMVjH/u+1R+8wTh2wU4wqIIyPZn07t+bJVt0Fw6fZRtDc2N81fQ4POxTgBhMw==
-X-Received: by 2002:a05:6000:2a8:b0:203:7a50:5dfe with SMTP id l8-20020a05600002a800b002037a505dfemr5606437wry.260.1646965086031;
-        Thu, 10 Mar 2022 18:18:06 -0800 (PST)
-Received: from localhost.localdomain ([64.64.123.47])
-        by smtp.gmail.com with ESMTPSA id p125-20020a1c2983000000b00389cc36a3bfsm7945862wmp.6.2022.03.10.18.18.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RryUuol3Ylo4uqhnnPi8mUdUlrjxjJpVahPqVRRMRrc=;
+        b=4ByiiIk12f5QhqlcWIdt8I0dtUGNJltGnUIaezIkZ0EL2hSSlMbCXR/bKsfSZxW/ti
+         ZQRZXc3RSuMeBvvjHjGpZnGyFa4hwyzByF7Ar3KbaAzWpuBKPvFAXWborsFXTsHXlNge
+         JFnW0isFfzaa+AovXesbpl3HgKqHBk74AFxWrFKIgfbBiJnx/e9HKezS+Tb6yCmhfnnB
+         aA2607l9Z6cZlyxdKw1qxUj9G+SmzoPbwBznK9fjQSEW3/fFiaddoPK1nrGNMLshQdqu
+         sZMvO7oVIchQcJDOIwNwd0oh7Ad/pUhU/DuZUFZVo/qKuH4J70cHPUSqDgoYkbiXBK5T
+         QM+w==
+X-Gm-Message-State: AOAM530e535S03KuLPuuCZLYroL940yVs2SonSo2hAK3gqyLEsOdm1Q6
+        Rkh2MYYmMYV4u8jNYyuCBobcKw==
+X-Google-Smtp-Source: ABdhPJwlYb8ABr9x+ddIrRLA23skw7Ni1f9WWTKFKNjJO9rhDZfuN1KpcKEnzeP5T8aNDhnXHTQ/nQ==
+X-Received: by 2002:a05:6a00:218d:b0:4f7:439b:64f1 with SMTP id h13-20020a056a00218d00b004f7439b64f1mr7775354pfi.8.1646965176279;
+        Thu, 10 Mar 2022 18:19:36 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id e6-20020a056a001a8600b004f78e446ff5sm74838pfv.15.2022.03.10.18.19.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 18:18:05 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
-        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        len.baker@gmx.com, gustavoars@kernel.org, shawn.guo@linaro.org
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH v2] brcmfmac: check the return value of devm_kzalloc() in brcmf_of_probe()
-Date:   Thu, 10 Mar 2022 18:17:51 -0800
-Message-Id: <20220311021751.29958-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 10 Mar 2022 18:19:35 -0800 (PST)
+Date:   Fri, 11 Mar 2022 02:19:32 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH 00/13] KVM: x86: Add a cap to disable NX hugepages on a VM
+Message-ID: <YiqxtIz+T1LGE1Ju@google.com>
+References: <20220310164532.1821490-1-bgardon@google.com>
+ <Yio8QtuMd6COcnEw@google.com>
+ <CANgfPd9xr5ev7fEiwBVUi89iHkuywq-Ba9zOeCMSTFmLkO243w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANgfPd9xr5ev7fEiwBVUi89iHkuywq-Ba9zOeCMSTFmLkO243w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function devm_kzalloc() in brcmf_of_probe() can fail, so its return
-value should be checked.
+On Thu, Mar 10, 2022, Ben Gardon wrote:
+> Those patches are a lot of churn, but at least to me, they make the
+> code much more readable. Currently there are many functions which just
+> pass along 0 for the memslot, and often have multiple other numerical
+> arguments, which makes it hard to understand what the function is
+> doing.
 
-Fixes: 29e354ebeeec ("brcmfmac: Transform compatible string for FW loading")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
-v2:
-* Add of_node_put() in error handling path.
-  Thank Kalle for good advice.
+Yeah, my solution for that was to rip out all the params.  E.g. the most used
+function I ended up with is
 
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 4 ++++
- 1 file changed, 4 insertions(+)
+  static inline struct kvm_vm *vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
+						     void *guest_code)
+  {
+	return __vm_create_with_one_vcpu(vcpu, 0, guest_code);
+  }
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index 513c7e6421b2..15eb96e288af 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -80,6 +80,10 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 		/* get rid of '/' in the compatible string to be able to find the FW */
- 		len = strlen(tmp) + 1;
- 		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
-+		if (!board_type) {
-+			of_node_put(root);
-+			return;
-+		}
- 		strscpy(board_type, tmp, len);
- 		for (i = 0; i < board_type[i]; i++) {
- 			if (board_type[i] == '/')
--- 
-2.17.1
+and then the usage is
 
+	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
+
+	supp_cpuid = kvm_get_supported_cpuid();
+	cpuid2 = vcpu_get_cpuid(vcpu);
+
+My overarching complaint with the selftests is that they make the hard things hard,
+and the easy things harder.  If a test wants to be backed by hugepages, it shouldn't
+have to manually specify a memslot.
+
+Let me post my selftests rework as RFC (_very_ RFC at this point).  I was hoping to
+do more than compile test before posting anything, but it's going to be multiple
+weeks before I'll get back to it.  Hopefully it'll start a discussion on actually
+rewriting the framework so that writing new tests is less painful, and so that every
+new thing that comes along doesn't require poking at 50 different tests.
