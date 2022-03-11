@@ -2,154 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A60C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347794AbiCKJ7X (ORCPT
+        id S1347747AbiCKKAA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:59:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39500 "EHLO
+        Fri, 11 Mar 2022 05:00:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347741AbiCKJ7Q (ORCPT
+        with ESMTP id S1347657AbiCKJ74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:59:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7CA29815;
-        Fri, 11 Mar 2022 01:57:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 297DAB82A51;
-        Fri, 11 Mar 2022 09:57:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF65C340E9;
-        Fri, 11 Mar 2022 09:57:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646992666;
-        bh=TlDKXRJP8g+zPbOArl+lDTVPe4L2hwaGQqxQ7NQQgho=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Lrw7AXAfvAHFetL7ZavLHZ7im1XZieixKl83nUEpiu7roX0qjXq69d4GQxxNjtXDm
-         VjH2ZbW1DaFWY9/Tp6uKw1QZ91yeSHnml6J7kAv5pjOdHhTrnV91CT9kO0Z1vAhpqG
-         m4+vczqvPUnNbo/GRdNa3gLc42LCotTfUSf5jTvQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.19.234
-Date:   Fri, 11 Mar 2022 10:57:28 +0100
-Message-Id: <1646992649239226@kroah.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 11 Mar 2022 04:59:56 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0A62655A;
+        Fri, 11 Mar 2022 01:58:53 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id h15so12098901wrc.6;
+        Fri, 11 Mar 2022 01:58:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i3NW5x0NziceOqfFD3EnA8Wx9WLWdE4ilwBF6WyCrxw=;
+        b=LcMdMHxBvozczf6meHZbQS5OG2OV7qy89Hqz217tElUy3+Zqkxo+NZqQZtRFkJtDe/
+         idLjdrxCt2gMbvjVk+QNutD/LpcDr9UTDHob11BJRYEZpn07xZEpVbazfWnpWaqpGHu9
+         K3LfOs6/Jl1+COyy9YxyjHlPk3kADKzwTB3YR/VbZ8HJoH4GLHSX5oFCW+aWdlni6TtQ
+         xuNclu68VmaktbgF0oYfvWqy2BqbvH7Y4UhUg/FeOj8QF2kTA1dW5D9WOKrgkI3g+NTv
+         GgPC9DGpYKx6+r06mijLvuVC8XU8isZq9fAke82Ooi3sMRNIK+L9S+habNb1YXFPKUY/
+         6wyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i3NW5x0NziceOqfFD3EnA8Wx9WLWdE4ilwBF6WyCrxw=;
+        b=X7DasNXX1iF1otbWX8Ksh/1KpFaOfbE1Bv0ctgi7XokMK6ydHLJ3LqAyXdJ0BWBmyu
+         IZOhFc4NMyEvS3zFPEZ4C9Dz6FZxuiHd+k1KXJoNxIYy0uyC67IpLkvUq5E+CkCXTnj8
+         lDT7w015YEE5bSqSl/+0wmmTf8cZO9q69xJJ5O8gVGOIzIVPHaFwUQCE5lbSBdFIrIMf
+         zmf/5HDUiFeoep9fYIe7lYUOoy1tps7xtoWcwopPMdlIWtczalSM3OmoVkZwOoHDBUOC
+         2xymKILSmspflKeQHPCxpVlBRmdpZK1zO73ssLUgdKRRtbvzRfQeV0pww+ama86w0ohH
+         hVYQ==
+X-Gm-Message-State: AOAM533EDa3kNyqhs77VmikYp1lhnIvPjtQTXECZ6OtqbHrJjjgv2Df9
+        voP5G3mPz3iBZfp869Oiho0=
+X-Google-Smtp-Source: ABdhPJykzFtSjRskkdvrH9sJVSlRPXIugTdlYgVVVxHkxibSM89zlO7T7ljTPvZbt7RbF+uRJL1kzA==
+X-Received: by 2002:a5d:47a1:0:b0:1f1:d729:ecdf with SMTP id 1-20020a5d47a1000000b001f1d729ecdfmr6474537wrb.466.1646992731421;
+        Fri, 11 Mar 2022 01:58:51 -0800 (PST)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id n16-20020a5d4850000000b0020373b34961sm6123371wrs.66.2022.03.11.01.58.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 01:58:51 -0800 (PST)
+Date:   Fri, 11 Mar 2022 09:58:49 +0000
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.4 00/33] 5.4.184-rc2 review
+Message-ID: <YisdWSC5pHrB+53i@debian>
+References: <20220310140808.741682643@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310140808.741682643@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.19.234 kernel.
+Hi Greg,
 
-All users of the 4.19 kernel series must upgrade.
+On Thu, Mar 10, 2022 at 03:19:01PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.184 release.
+> There are 33 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
+> Anything received after that time might be too late.
 
-The updated 4.19.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+Build test:
+mips (gcc version 11.2.1 20220301): 65 configs -> no new failure
+arm (gcc version 11.2.1 20220301): 107 configs -> no new failure
+arm64 (gcc version 11.2.1 20220301): 2 configs -> no failure
+x86_64 (gcc version 11.2.1 20220301): 4 configs -> no failure
 
-thanks,
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
 
-greg k-h
+[1]. https://openqa.qa.codethink.co.uk/tests/864
 
-------------
 
- Documentation/admin-guide/hw-vuln/spectre.rst   |   48 +++--
- Documentation/admin-guide/kernel-parameters.txt |    8 
- Makefile                                        |    2 
- arch/arm/include/asm/assembler.h                |   10 +
- arch/arm/include/asm/spectre.h                  |   32 +++
- arch/arm/kernel/Makefile                        |    2 
- arch/arm/kernel/entry-armv.S                    |   79 ++++++++
- arch/arm/kernel/entry-common.S                  |   24 ++
- arch/arm/kernel/spectre.c                       |   71 +++++++
- arch/arm/kernel/traps.c                         |   65 ++++++-
- arch/arm/kernel/vmlinux.lds.h                   |   43 +++-
- arch/arm/mm/Kconfig                             |   11 +
- arch/arm/mm/proc-v7-bugs.c                      |  201 +++++++++++++++++++---
- arch/x86/include/asm/cpufeatures.h              |    2 
- arch/x86/include/asm/nospec-branch.h            |   16 +
- arch/x86/kernel/cpu/bugs.c                      |  214 +++++++++++++++++-------
- drivers/block/xen-blkfront.c                    |   63 ++++---
- drivers/firmware/psci.c                         |   15 +
- drivers/net/xen-netfront.c                      |   54 +++---
- drivers/scsi/xen-scsifront.c                    |    3 
- drivers/xen/gntalloc.c                          |   25 --
- drivers/xen/grant-table.c                       |   71 ++++---
- drivers/xen/pvcalls-front.c                     |    8 
- drivers/xen/xenbus/xenbus_client.c              |   24 +-
- include/linux/arm-smccc.h                       |   74 ++++++++
- include/linux/bpf.h                             |   11 +
- include/xen/grant_table.h                       |   19 +-
- init/Kconfig                                    |    3 
- kernel/sysctl.c                                 |    8 
- net/9p/trans_xen.c                              |   14 -
- tools/arch/x86/include/asm/cpufeatures.h        |    2 
- 31 files changed, 962 insertions(+), 260 deletions(-)
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-Borislav Petkov (1):
-      x86/speculation: Merge one test in spectre_v2_user_select_mitigation()
-
-Emmanuel Gil Peyrot (1):
-      ARM: fix build error when BPF_SYSCALL is disabled
-
-Greg Kroah-Hartman (1):
-      Linux 4.19.234
-
-Josh Poimboeuf (3):
-      x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
-      x86/speculation: Warn about Spectre v2 LFENCE mitigation
-      x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
-
-Juergen Gross (11):
-      xen/xenbus: don't let xenbus_grant_ring() remove grants in error case
-      xen/grant-table: add gnttab_try_end_foreign_access()
-      xen/blkfront: don't use gnttab_query_foreign_access() for mapped status
-      xen/netfront: don't use gnttab_query_foreign_access() for mapped status
-      xen/scsifront: don't use gnttab_query_foreign_access() for mapped status
-      xen/gntalloc: don't use gnttab_query_foreign_access()
-      xen: remove gnttab_query_foreign_access()
-      xen/9p: use alloc/free_pages_exact()
-      xen/pvcalls: use alloc/free_pages_exact()
-      xen/gnttab: fix gnttab_end_foreign_access() without page specified
-      xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
-
-Kim Phillips (2):
-      x86/speculation: Use generic retpoline by default on AMD
-      x86/speculation: Update link to AMD speculation whitepaper
-
-Mark Rutland (1):
-      arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
-
-Nathan Chancellor (1):
-      ARM: Do not use NOCROSSREFS directive with ld.lld
-
-Peter Zijlstra (3):
-      x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
-      x86/speculation: Add eIBRS + Retpoline options
-      Documentation/hw-vuln: Update spectre doc
-
-Peter Zijlstra (Intel) (1):
-      x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
-
-Russell King (Oracle) (7):
-      ARM: report Spectre v2 status through sysfs
-      ARM: early traps initialisation
-      ARM: use LOADADDR() to get load address of sections
-      ARM: Spectre-BHB workaround
-      ARM: include unprivileged BPF status in Spectre V2 reporting
-      ARM: fix co-processor register typo
-      ARM: fix build warning in proc-v7-bugs.c
-
-Sami Tolvanen (1):
-      kbuild: add CONFIG_LD_IS_LLD
-
-Steven Price (1):
-      arm/arm64: Provide a wrapper for SMCCC 1.1 calls
+--
+Regards
+Sudip
 
