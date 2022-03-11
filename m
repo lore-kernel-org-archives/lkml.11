@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C53C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343962AbiCKD33 (ORCPT
+        id S1346085AbiCKD3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:29:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
+        Thu, 10 Mar 2022 22:29:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346010AbiCKD3M (ORCPT
+        with ESMTP id S1346031AbiCKD3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:29:12 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE162EBAD9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:09 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id n11-20020a170902d2cb00b0015331a5d02fso819113plc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:09 -0800 (PST)
+        Thu, 10 Mar 2022 22:29:15 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9196BEBAD6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:12 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id 16-20020a621910000000b004f783aad863so1412418pfz.15
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Q11tmqpRyohs0wxUo0y4r3aBzzijFQCBN8fS/7u/ul8=;
-        b=NHbaWQh8IotH/IrJheJvNEMIYI3iNClIpD6pF7pYa4PxajGfFNw7H4VVrbMYpSPW53
-         UaKM2vDuG07mwqwLS1qPpozBZFczUFXDbAL0vYIPnfVJlCbhnejjDtMkNl7a0iNnRl0q
-         cK1EvfqLBmuyqiIby2Isu4DOMI0utlyadO7Ln0VSaawOD4SnCYPhvodrFl9RzUiyc09P
-         r0AIxujLDr7NjYMg/SJIEhBIdr6iNtwxHc2wMkyMcyo4i0S/s6GX6HSVIppNLBppI7Yv
-         dAKoKlFxUmp/dNBDXBO/NM+2GPgkUnVYeA8dg1lPcriAanFXLAsGuB86BALXSDQdSErZ
-         N7wQ==
+        bh=j4Z3T+nzzIPRS6v7RNtG7klN67ptidGFnGzueq2K4lA=;
+        b=ZoWE8aSMXhRnbdnYUKJb/+InFLaumFndZAxbWr2Xetg1Mpig0CEcJL6dTdPZB/R851
+         3joeMc8nNG0Jn3syn9EVyM9wL0buqRTW8TJENX26wbHccDz3g183otaOVLJkv3lobo0C
+         NWmCThPSgO+Gb0ik+U6TzXR5/0tAz0/A4H/XABISWFdhB+p3Vid+pqlxgv5NRRfzruLs
+         vd4RQJBFEs0SXXgpixydqt/xnl/qWRzkZ93NPOJWjKYas5Bo+yJC/kw8r6GcPGK2Brf1
+         /JV0Lgp7xt+1KeOBndPb6y8c76Mmj5jgetbqG+tFceapYw4OyDdgiqIc0mKR12B1diQ+
+         3UrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Q11tmqpRyohs0wxUo0y4r3aBzzijFQCBN8fS/7u/ul8=;
-        b=60kpKZzmSCMEcjM5cLDGEGpFAeOtPuc331TQmeaLT1br5wbEbV1Nc2Ma2YNN0oE6mQ
-         4Zi3uErGgSxwEDosFr1IumDmjnCU9XRquZQsCmKXEbpBxPsC30ufChUuc1/z3RElhf2e
-         NasCURTRvqVrN1q5wrb58x+UjZoCbUogew9BSD96vY/eBWHaAeHU6JPOkn4sRpEHfTg6
-         rTisNoH2iV0G1MUSQTQ5mmgGi4uG9Avc45cwfC8GYyTujRkyoWi5i1SFkk9euHz78f4k
-         bQ9JKGQB75WI9p0k8wnEpw7bEKAafAkSPdjV1qkJMg5qx8xA1mGA7Ug2DPaRVpLGB7Dw
-         CDyw==
-X-Gm-Message-State: AOAM5318gZ7AUJSX9FXrpQcv1yU4qdrKcsguvyM0WVaX3eSEAGF6wTzg
-        Wj+ciY/Wu27qmMAEkv+uFwrp2G1CF+8=
-X-Google-Smtp-Source: ABdhPJx8m7u1JsrHVqes8stC/gTklmGIv5nAe2qeZV+KxBfHH86PkBaWKYnB9nvHLVdbfKw51+II8mHq1Do=
+        bh=j4Z3T+nzzIPRS6v7RNtG7klN67ptidGFnGzueq2K4lA=;
+        b=AhF/EsgC6cd09trCNLk4kjDMo3p58GI4wXO/6KDV8dxZm95fP4Tsdqgw2vqvl4cG+y
+         Z1YsiqiT+wOuDobIISLNQ1Vv5A6gz6g1gCWo4vXtTK/olUPcc4wS0HTqVDgjpmwWrYGi
+         qVfp8J9XtuyazXNdL5U7AGJ159TdKitvyO91RyoFYGGI/8HsF+ctdZlLbYNFI5aouNAu
+         LoFsX3XZA3Z/Xunu4uEc3BoaCuOLVIjHNAOpClt4OXVKb3BIzAL6Ze8/VTnkh9bmsCsM
+         0e0lGpOz6fWai4Z1YXOp6siGwivZTLLaSl+DRUqAnD7r8CjgFQ5LyGJm9JI8BYwUPBz9
+         xv5A==
+X-Gm-Message-State: AOAM531u79oOxIa7eK5Xsk8DC7qrkdetoAndEtJmZkkcLmb2lYJM6IAX
+        d6gZRBTXVUxvBxOInv5hTG/Q9SAMruQ=
+X-Google-Smtp-Source: ABdhPJz9vgLqgAlkmRAnk1nSs/gcNRQ9fjAPHBeNipVq0wvL8suZfMpo5RvlYD7tCfYlthJeiYYFZv21oIE=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:7086:b0:14f:ee29:5ef0 with SMTP id
- z6-20020a170902708600b0014fee295ef0mr8155852plk.142.1646969288900; Thu, 10
- Mar 2022 19:28:08 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:902:7895:b0:14b:6b63:b3fa with SMTP id
+ q21-20020a170902789500b0014b6b63b3famr8166081pll.156.1646969292083; Thu, 10
+ Mar 2022 19:28:12 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 03:27:43 +0000
+Date:   Fri, 11 Mar 2022 03:27:45 +0000
 In-Reply-To: <20220311032801.3467418-1-seanjc@google.com>
-Message-Id: <20220311032801.3467418-4-seanjc@google.com>
+Message-Id: <20220311032801.3467418-6-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311032801.3467418-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 03/21] KVM: VMX: Drop bits 31:16 when shoving exception error
- code into VMCS
+Subject: [PATCH 05/21] KVM: nVMX: Treat General Detect #DB (DR7.GD=1) as fault-like
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -70,65 +69,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deliberately truncate the exception error code when shoving it into the
-VMCS (VM-Entry field for vmcs01 and vmcs02, VM-Exit field for vmcs12).
-Intel CPUs are incapable of handling 32-bit error codes and will never
-generate an error code with bits 31:16, but userspace can provide an
-arbitrary error code via KVM_SET_VCPU_EVENTS.  Failure to drop the bits
-on exception injection results in failed VM-Entry, as VMX disallows
-setting bits 31:16.  Setting the bits on VM-Exit would at best confuse
-L1, and at worse induce a nested VM-Entry failure, e.g. if L1 decided to
-reinject the exception back into L2.
+Exclude General Detect #DBs, which have fault-like behavior but also have
+a non-zero payload (DR6.BD=1), from nVMX's handling of pending debug
+traps.  Opportunistically rewrite the comment to better document what is
+being checked, i.e. "has a non-zero payload" vs. "has a payload", and to
+call out the many caveats surrounding #DBs that KVM dodges one way or
+another.
 
-Cc: stable@vger.kernel.org
+Cc: Oliver Upton <oupton@google.com>
+Cc: Peter Shier <pshier@google.com>
+Fixes: 684c0422da71 ("KVM: nVMX: Handle pending #DB when injecting INIT VM-exit")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/nested.c |  9 ++++++++-
- arch/x86/kvm/vmx/vmx.c    | 11 ++++++++++-
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 36 +++++++++++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index f09c6eff7af9..7bdda9ef2828 100644
+index 7bdda9ef2828..298a58eaac32 100644
 --- a/arch/x86/kvm/vmx/nested.c
 +++ b/arch/x86/kvm/vmx/nested.c
-@@ -3808,7 +3808,14 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
- 	u32 intr_info = nr | INTR_INFO_VALID_MASK;
+@@ -3832,16 +3832,29 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
+ }
  
- 	if (vcpu->arch.exception.has_error_code) {
--		vmcs12->vm_exit_intr_error_code = vcpu->arch.exception.error_code;
-+		/*
-+		 * Intel CPUs will never generate an error code with bits 31:16
-+		 * set, and more importantly VMX disallows setting bits 31:16
-+		 * in the injected error code for VM-Entry.  Drop the bits to
-+		 * mimic hardware and avoid inducing failure on nested VM-Entry
-+		 * if L1 chooses to inject the exception back to L2.
-+		 */
-+		vmcs12->vm_exit_intr_error_code = (u16)vcpu->arch.exception.error_code;
- 		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
- 	}
+ /*
+- * Returns true if a debug trap is pending delivery.
++ * Returns true if a debug trap is (likely) pending delivery.  Infer the class
++ * of a #DB (trap-like vs. fault-like) from the exception payload (to-be-DR6).
++ * Using the payload is flawed because code breakpoints (fault-like) and data
++ * breakpoints (trap-like) set the same bits in DR6 (breakpoint detected), i.e.
++ * this will return false positives if a to-be-injected code breakpoint #DB is
++ * pending (from KVM's perspective, but not "pending" across an instruction
++ * boundary).  ICEBP, a.k.a. INT1, is also not reflected here even though it
++ * too is trap-like.
+  *
+- * In KVM, debug traps bear an exception payload. As such, the class of a #DB
+- * exception may be inferred from the presence of an exception payload.
++ * KVM "works" despite these flaws as ICEBP isn't currently supported by the
++ * emulator, Monitor Trap Flag is not marked pending on intercepted #DBs (the
++ * #DB has already happened), and MTF isn't marked pending on code breakpoints
++ * from the emulator (because such #DBs are fault-like and thus don't trigger
++ * actions that fire on instruction retire).
+  */
+-static inline bool vmx_pending_dbg_trap(struct kvm_vcpu *vcpu)
++static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
+ {
+-	return vcpu->arch.exception.pending &&
+-			vcpu->arch.exception.nr == DB_VECTOR &&
+-			vcpu->arch.exception.payload;
++	if (!vcpu->arch.exception.pending ||
++	    vcpu->arch.exception.nr != DB_VECTOR)
++		return 0;
++
++	/* General Detect #DBs are always fault-like. */
++	return vcpu->arch.exception.payload & ~DR6_BD;
+ }
  
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index e8963f5af618..a8ebe91fe9a5 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1613,7 +1613,16 @@ static void vmx_queue_exception(struct kvm_vcpu *vcpu)
- 	kvm_deliver_exception_payload(vcpu);
+ /*
+@@ -3853,9 +3866,10 @@ static inline bool vmx_pending_dbg_trap(struct kvm_vcpu *vcpu)
+  */
+ static void nested_vmx_update_pending_dbg(struct kvm_vcpu *vcpu)
+ {
+-	if (vmx_pending_dbg_trap(vcpu))
+-		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS,
+-			    vcpu->arch.exception.payload);
++	unsigned long pending_dbg = vmx_get_pending_dbg_trap(vcpu);
++
++	if (pending_dbg)
++		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS, pending_dbg);
+ }
  
- 	if (has_error_code) {
--		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, error_code);
-+		/*
-+		 * Despite the error code being architecturally defined as 32
-+		 * bits, and the VMCS field being 32 bits, Intel CPUs and thus
-+		 * VMX don't actually supporting setting bits 31:16.  Hardware
-+		 * will (should) never provide a bogus error code, but KVM's
-+		 * ABI lets userspace shove in arbitrary 32-bit values.  Drop
-+		 * the upper bits to avoid VM-Fail, losing information that
-+		 * does't really exist is preferable to killing the VM.
-+		 */
-+		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, (u16)error_code);
- 		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
- 	}
+ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
+@@ -3912,7 +3926,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	 * while delivering the pending exception.
+ 	 */
  
+-	if (vcpu->arch.exception.pending && !vmx_pending_dbg_trap(vcpu)) {
++	if (vcpu->arch.exception.pending && !vmx_get_pending_dbg_trap(vcpu)) {
+ 		if (vmx->nested.nested_run_pending)
+ 			return -EBUSY;
+ 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
 -- 
 2.35.1.723.g4982287a31-goog
 
