@@ -2,101 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D965C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F08FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348055AbiCKKgv (ORCPT
+        id S1348035AbiCKKgz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
+        Fri, 11 Mar 2022 05:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348024AbiCKKgh (ORCPT
+        with ESMTP id S1348054AbiCKKgt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:36:37 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAF61BD987;
-        Fri, 11 Mar 2022 02:35:30 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 18DCC21900;
-        Fri, 11 Mar 2022 10:35:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646994929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=2A0s9MNxg2Q3sbNoaDjqzamUO4PIFL9q9tcCNyUQzoo=;
-        b=kOTKT+erKLJg8Sd4nahKDsq5kn2bQQGml4MXQ+m1NTG+glUxRhoBrK+ftjenbbb2FK5k4N
-        eJMBxr9G8aAIvMFDCdAYBBuywecStRBkVAMuu2sI8CW0jHZ3ZUIZZpAs+Mz/MUbN1DD61B
-        Go1rLUSZ6tZYV9RL/MORon1oqiyXz4s=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CE33E13A85;
-        Fri, 11 Mar 2022 10:35:28 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 2CMJMfAlK2JydgAAMHmgww
-        (envelope-from <jgross@suse.com>); Fri, 11 Mar 2022 10:35:28 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
-        Jens Axboe <axboe@kernel.dk>, Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH] xen/blkfront: speed up purge_persistent_grants()
-Date:   Fri, 11 Mar 2022 11:35:27 +0100
-Message-Id: <20220311103527.12931-1-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 11 Mar 2022 05:36:49 -0500
+Received: from smtp.tom.com (smtprz01.163.net [106.3.154.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 515E71C1AFB
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:35:36 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by vip-app02.163.net (Postfix) with ESMTP id 5C7E944018F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 18:35:35 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646994935; bh=93JeBi/0/ADhIZMBBUs1HqDG4uLkWcGGpcH0lW56i4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aQKynntHrs+TQClSMNr5YAJh1fgg8wk6b77ONBQPN81i7cuXBWZ9lOmag7DjDIWNS
+         hBaBux2jPCfxgoIIvPRvOaKGNz9QZqS4XfQytZ/FBnejMoaMLs04RabOEl13yRix8j
+         VxLYYJ71vfMrbOp5fmDWXxgSQKegy5MhBFslLMF4=
+Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
+          by localhost (TOM SMTP Server) with SMTP ID 1963067711
+          for <linux-kernel@vger.kernel.org>;
+          Fri, 11 Mar 2022 18:35:35 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1646994935; bh=93JeBi/0/ADhIZMBBUs1HqDG4uLkWcGGpcH0lW56i4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aQKynntHrs+TQClSMNr5YAJh1fgg8wk6b77ONBQPN81i7cuXBWZ9lOmag7DjDIWNS
+         hBaBux2jPCfxgoIIvPRvOaKGNz9QZqS4XfQytZ/FBnejMoaMLs04RabOEl13yRix8j
+         VxLYYJ71vfMrbOp5fmDWXxgSQKegy5MhBFslLMF4=
+Received: from localhost.localdomain (unknown [101.93.196.13])
+        by antispamvip.163.net (Postfix) with ESMTPA id 56B381541576;
+        Fri, 11 Mar 2022 18:35:31 +0800 (CST)
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     sunmingbao@tom.com, tyler.sun@dell.com, ping.gan@dell.com,
+        yanxiu.cai@dell.com, libin.zhang@dell.com, ao.sun@dell.com
+Subject: [PATCH v2 2/3] nvme-tcp: support specifying the congestion-control
+Date:   Fri, 11 Mar 2022 18:34:13 +0800
+Message-Id: <20220311103414.8255-2-sunmingbao@tom.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220311103414.8255-1-sunmingbao@tom.com>
+References: <20220311103414.8255-1-sunmingbao@tom.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-purge_persistent_grants() is scanning the grants list for persistent
-grants being no longer in use by the backend. When having found such a
-grant, it will be set to "invalid" and pushed to the tail of the list.
+From: Mingbao Sun <tyler.sun@dell.com>
 
-Instead of pushing it directly to the end of the list, add it first to
-a temporary list, avoiding to scan those entries again in the main
-list traversal. After having finished the scan, append the temporary
-list to the grant list.
+congestion-control could have a noticeable impaction on the
+performance of TCP-based communications. This is of course true
+to NVMe_over_TCP.
 
-Suggested-by: Jan Beulich <jbeulich@suse.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Different congestion-controls (e.g., cubic, dctcp) are suitable for
+different scenarios. Proper adoption of congestion control would benefit
+the performance. On the contrary, the performance could be destroyed.
+
+Though we can specify the congestion-control of NVMe_over_TCP via
+writing '/proc/sys/net/ipv4/tcp_congestion_control', but this also
+changes the congestion-control of all the future TCP sockets that
+have not been explicitly assigned the congestion-control, thus bringing
+potential impaction on their performance.
+
+So it makes sense to make NVMe_over_TCP support specifying the
+congestion-control. And this commit addresses the host side.
+
+Implementation approach:
+a new option called 'tcp_congestion' was created in fabrics opt_tokens
+for 'nvme connect' command to passed in the congestion-control
+specified by the user.
+Then later in nvme_tcp_alloc_queue, the specified congestion-control
+would be applied to the relevant sockets of the host side.
+
+Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
 ---
- drivers/block/xen-blkfront.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/nvme/host/fabrics.c | 18 ++++++++++++++++++
+ drivers/nvme/host/fabrics.h |  2 ++
+ drivers/nvme/host/tcp.c     | 17 ++++++++++++++++-
+ 3 files changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index aa996b637d0b..378262ec47ae 100644
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -2533,6 +2533,7 @@ static void purge_persistent_grants(struct blkfront_info *info)
+diff --git a/drivers/nvme/host/fabrics.c b/drivers/nvme/host/fabrics.c
+index ee79a6d639b4..ecd1ec4e473a 100644
+--- a/drivers/nvme/host/fabrics.c
++++ b/drivers/nvme/host/fabrics.c
+@@ -10,6 +10,7 @@
+ #include <linux/mutex.h>
+ #include <linux/parser.h>
+ #include <linux/seq_file.h>
++#include <net/tcp.h>
+ #include "nvme.h"
+ #include "fabrics.h"
  
- 	for_each_rinfo(info, rinfo, i) {
- 		struct grant *gnt_list_entry, *tmp;
-+		LIST_HEAD(grants);
+@@ -548,6 +549,7 @@ static const match_table_t opt_tokens = {
+ 	{ NVMF_OPT_TOS,			"tos=%d"		},
+ 	{ NVMF_OPT_FAIL_FAST_TMO,	"fast_io_fail_tmo=%d"	},
+ 	{ NVMF_OPT_DISCOVERY,		"discovery"		},
++	{ NVMF_OPT_TCP_CONGESTION,	"tcp_congestion=%s"	},
+ 	{ NVMF_OPT_ERR,			NULL			}
+ };
  
- 		spin_lock_irqsave(&rinfo->ring_lock, flags);
- 
-@@ -2550,9 +2551,11 @@ static void purge_persistent_grants(struct blkfront_info *info)
- 			list_del(&gnt_list_entry->node);
- 			rinfo->persistent_gnts_c--;
- 			gnt_list_entry->gref = GRANT_INVALID_REF;
--			list_add_tail(&gnt_list_entry->node, &rinfo->grants);
-+			list_add_tail(&gnt_list_entry->node, &grants);
- 		}
- 
-+		list_splice_tail(&grants, &rinfo->grants);
+@@ -829,6 +831,21 @@ static int nvmf_parse_options(struct nvmf_ctrl_options *opts,
+ 		case NVMF_OPT_DISCOVERY:
+ 			opts->discovery_nqn = true;
+ 			break;
++		case NVMF_OPT_TCP_CONGESTION:
++			p = match_strdup(args);
++			if (!p) {
++				ret = -ENOMEM;
++				goto out;
++			}
++			if (strlen(p) >= TCP_CA_NAME_MAX) {
++				ret = -EINVAL;
++				kfree(p);
++				goto out;
++			}
 +
- 		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
- 	}
++			kfree(opts->tcp_congestion);
++			opts->tcp_congestion = p;
++			break;
+ 		default:
+ 			pr_warn("unknown parameter or missing value '%s' in ctrl creation request\n",
+ 				p);
+@@ -947,6 +964,7 @@ void nvmf_free_options(struct nvmf_ctrl_options *opts)
+ 	kfree(opts->subsysnqn);
+ 	kfree(opts->host_traddr);
+ 	kfree(opts->host_iface);
++	kfree(opts->tcp_congestion);
+ 	kfree(opts);
  }
+ EXPORT_SYMBOL_GPL(nvmf_free_options);
+diff --git a/drivers/nvme/host/fabrics.h b/drivers/nvme/host/fabrics.h
+index c3203ff1c654..25fdc169949d 100644
+--- a/drivers/nvme/host/fabrics.h
++++ b/drivers/nvme/host/fabrics.h
+@@ -68,6 +68,7 @@ enum {
+ 	NVMF_OPT_FAIL_FAST_TMO	= 1 << 20,
+ 	NVMF_OPT_HOST_IFACE	= 1 << 21,
+ 	NVMF_OPT_DISCOVERY	= 1 << 22,
++	NVMF_OPT_TCP_CONGESTION	= 1 << 23,
+ };
+ 
+ /**
+@@ -117,6 +118,7 @@ struct nvmf_ctrl_options {
+ 	unsigned int		nr_io_queues;
+ 	unsigned int		reconnect_delay;
+ 	bool			discovery_nqn;
++	const char		*tcp_congestion;
+ 	bool			duplicate_connect;
+ 	unsigned int		kato;
+ 	struct nvmf_host	*host;
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index 10fc45d95b86..8491f96a39e5 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -1487,6 +1487,20 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
+ 	if (nctrl->opts->tos >= 0)
+ 		ip_sock_set_tos(queue->sock->sk, nctrl->opts->tos);
+ 
++	if (nctrl->opts->mask & NVMF_OPT_TCP_CONGESTION) {
++		lock_sock(queue->sock->sk);
++		ret = tcp_set_congestion_control(queue->sock->sk,
++						 nctrl->opts->tcp_congestion,
++						 true, true);
++		release_sock(queue->sock->sk);
++		if (ret) {
++			dev_err(nctrl->device,
++				"failed to set TCP congestion to %s: %d\n",
++				nctrl->opts->tcp_congestion, ret);
++			goto err_sock;
++		}
++	}
++
+ 	/* Set 10 seconds timeout for icresp recvmsg */
+ 	queue->sock->sk->sk_rcvtimeo = 10 * HZ;
+ 
+@@ -2650,7 +2664,8 @@ static struct nvmf_transport_ops nvme_tcp_transport = {
+ 			  NVMF_OPT_HOST_TRADDR | NVMF_OPT_CTRL_LOSS_TMO |
+ 			  NVMF_OPT_HDR_DIGEST | NVMF_OPT_DATA_DIGEST |
+ 			  NVMF_OPT_NR_WRITE_QUEUES | NVMF_OPT_NR_POLL_QUEUES |
+-			  NVMF_OPT_TOS | NVMF_OPT_HOST_IFACE,
++			  NVMF_OPT_TOS | NVMF_OPT_HOST_IFACE |
++			  NVMF_OPT_TCP_CONGESTION,
+ 	.create_ctrl	= nvme_tcp_create_ctrl,
+ };
+ 
 -- 
-2.34.1
+2.26.2
 
