@@ -2,64 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35202C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EBC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243903AbiCKOqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        id S1349376AbiCKOxm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245484AbiCKOqb (ORCPT
+        with ESMTP id S243203AbiCKOxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:46:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3423E1AC282;
-        Fri, 11 Mar 2022 06:45:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2D760B3F;
-        Fri, 11 Mar 2022 14:45:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734F8C340ED;
-        Fri, 11 Mar 2022 14:45:26 +0000 (UTC)
-Date:   Fri, 11 Mar 2022 09:45:24 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Ritesh Harjani <riteshh@linux.ibm.com>
-Cc:     linux-ext4@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 00/10] ext4: Improve FC trace events
-Message-ID: <20220311094524.1fa2d98f@gandalf.local.home>
-In-Reply-To: <20220311051249.ltgqbjjothbrkbno@riteshh-domain>
-References: <cover.1646922487.git.riteshh@linux.ibm.com>
-        <20220310110553.431cc997@gandalf.local.home>
-        <20220310170731.hq6z6flycmgkhnaa@riteshh-domain>
-        <20220310193936.38ae7754@gandalf.local.home>
-        <20220311021931.d4oozgtefbalrcch@riteshh-domain>
-        <20220310213356.3948cfb7@gandalf.local.home>
-        <20220311031431.3sfbibwuthn4xkym@riteshh-domain>
-        <20220310233234.4418186a@gandalf.local.home>
-        <20220311051249.ltgqbjjothbrkbno@riteshh-domain>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 11 Mar 2022 09:53:40 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3381EA9958;
+        Fri, 11 Mar 2022 06:52:35 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 888CD175A;
+        Fri, 11 Mar 2022 06:52:34 -0800 (PST)
+Received: from [10.57.43.254] (unknown [10.57.43.254])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 673393F7F5;
+        Fri, 11 Mar 2022 06:52:32 -0800 (PST)
+Message-ID: <292386ee-cfa8-d849-57ce-156c76680e12@arm.com>
+Date:   Fri, 11 Mar 2022 14:52:30 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/6] coresight: Fail to open with return stacks if they
+ are unavailable
+Content-Language: en-US
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        mathieu.poirier@linaro.org, coresight@lists.linaro.org,
+        leo.yan@linaro.com, mike.leach@linaro.org
+Cc:     Leo Yan <leo.yan@linaro.org>, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+References: <20220113091056.1297982-1-james.clark@arm.com>
+ <20220113091056.1297982-3-james.clark@arm.com>
+ <50e5ff63-ae00-f04b-fc5b-f294742cb13a@arm.com>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <50e5ff63-ae00-f04b-fc5b-f294742cb13a@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Mar 2022 10:42:49 +0530
-Ritesh Harjani <riteshh@linux.ibm.com> wrote:
 
-> You may add below, if you like:-
+
+On 28/01/2022 11:24, Suzuki K Poulose wrote:
+> Hi James
 > 
-> Reported-and-tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
+> On 13/01/2022 09:10, James Clark wrote:
+>> Maintain consistency with the other options by failing to open when they
+>> aren't supported. For example ETM_OPT_TS, ETM_OPT_CTXTID2 and the newly
+>> added ETM_OPT_BRANCH_BROADCAST all return with -EINVAL if they are
+>> requested but not supported by hardware.
+> 
+> Looking at this again (with similar comment to the Branch Broadcast),
+> won't it disable using retstack on all CPUs, even when some of them
+> support it ?
+> 
+> i.e., CPU0 - supports retstack, CPU1 - doesn't
+> 
+> A perf run with retstack will fail, as CPU1 doesn't support it (even
+> though we advertise it, unconditionally).
+> 
+> So, if we ignore the failure, this would still allow CPU0 to use
+> the feature and as long as the OpenCSD is able to decode the trace
+> we should ignore the failure ?
+> 
+> I think we may also need to tune the etm4x_enable_hw() to skip
+> updating the TRCCONFIGR with features not supported by the ETM
+> 
 
-Will do. Thanks for testing.
+Hi Suzuki,
 
-I'll be adding this for the next merge window. I don't think this is
-something that needs to be added to this rc release nor stable. Do you
-agree?
+I'm picking up this branch broadcast change again after the haitus.
 
--- Steve
+For this point, do you think it would be worth distinguishing between "no
+known CPUs that support the feature" vs "not currently running on a
+CPU that supports it but there are others that do"?
+
+Also would we want to distinguish between per-CPU or per-process events?
+For the former it actually is possible to fail to open because all of
+the information is known.
+
+I'm just thinking of the case where someone asks for a load of flags
+and thinks that they're getting them but get no feedback that they won't.
+But I understand having some complicated solution like I'm suggesting
+might be even more surprising to users.
+
+Maybe the cleanest solution is to ask users to supply a config that
+can work on anywhere the event could possibly be scheduled. It doesn't
+really make sense to have retstack on a per-process event on big-little
+and then getting half of one type of data and half of another. It would
+make more sense to fail to open in that case and they have the choice of
+either doing per-CPU events or disabling retstacks altogether.
+
+This seems like a similar problem to the issue causing the Coresight self
+test failure where a certain sink was picked that couldn't be reached and
+the test failed.
+
+In that case the change we made doesn't quite match up to my suggestion here:
+
+ * Per-cpu but an unreachable sink -> fail
+ * Per-process and potentially reachable sink in the future -> pass
+
+Maybe it would have been better to say that the sink always has to be
+reachable otherwise is the outcome predicatable?
+
+James
+
+> Suzuki
+> 
+> 
+>>
+>> The consequence of not doing this is that the user may not be
+>> aware that they are not enabling the feature as it is silently disabled.
+>>
+>> Signed-off-by: James Clark <james.clark@arm.com>
+>> ---
+>>   drivers/hwtracing/coresight/coresight-etm4x-core.c | 13 +++++++++----
+>>   1 file changed, 9 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+>> index 04669ecc0efa..a93c1a5fe045 100644
+>> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+>> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+>> @@ -674,10 +674,15 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+>>       }
+>>         /* return stack - enable if selected and supported */
+>> -    if ((attr->config & BIT(ETM_OPT_RETSTK)) && drvdata->retstack)
+>> -        /* bit[12], Return stack enable bit */
+>> -        config->cfg |= BIT(12);
+>> -
+>> +    if (attr->config & BIT(ETM_OPT_RETSTK)) {
+>> +        if (!drvdata->retstack) {
+>> +            ret = -EINVAL;
+>> +            goto out;
+>> +        } else {
+>> +            /* bit[12], Return stack enable bit */
+>> +            config->cfg |= BIT(12);
+>> +        }
+>> +    }
+>>       /*
+>>        * Set any selected configuration and preset.
+>>        *
+> 
