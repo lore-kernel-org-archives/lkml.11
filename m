@@ -2,98 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B61C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2320C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347959AbiCKKej (ORCPT
+        id S1347945AbiCKKfB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:34:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
+        Fri, 11 Mar 2022 05:35:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347945AbiCKKef (ORCPT
+        with ESMTP id S229547AbiCKKe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:34:35 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED44F460F
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:33:31 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id f20-20020a05600c155400b00389d73ceb43so637434wmg.4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:33:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tHzWauNR3dX3JRCdUQ2Wh7sQFhVa1g70Y/fsse/k3yk=;
-        b=OgmwPVe3iTZnA/fxf5BvpufbW18UFWKBkE6DauL5sDY3H5EGsXZuQnYiUcls3Xp/Yb
-         ngodX1pS/phKVnyzuXFIoy84AfunMsefM49Ss1BSHYZl6/FrupaTRIDnlfY0f8IBKgXd
-         7Sb27GyhcyaZiEt0ybiWuBKbtISdNMGVC5OqP/hs6OCZ0k6uAggfx7ulG284ELodkOSO
-         b9BmifiA+AEWhfDJsB+JV8hPlwMmAQCKiHeN5IdCpB9fFof9PgSNmRPrZHLq2qijnyLW
-         kIzOHxQUZjxBbpRfgPQRVk0EUp+1ki1OYhihN8GHetTjVQ0uIC4DknrszIyxGchHGiaL
-         VVRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tHzWauNR3dX3JRCdUQ2Wh7sQFhVa1g70Y/fsse/k3yk=;
-        b=zGhX+F5HVGf2ZyFQPp1iULPVgW9KMp+sdv3r6Xyypdf6d4kq/w3yInRPwcTkYK4K4Y
-         MpgtgDZijq9X0w+c+YkWkSfAfrLa1wj16b1hNTPKXwjfm9IUSVQjADRcVkotw6Nc/fMC
-         h5WNhp7cP9wh6hbbX4J5ZwOdONu7Gp4nUTHVquK20x0img99f3Ubd/iFHWS69w3NuLkv
-         HYJE+jLpc9eq9EIbr+xrkzRNtnETyq20SMPDIVYi2GAz6vWazOIawtFGSz/AgE0NDREf
-         8RdywrhAwb67yOagKnHQqjxmNvm9Dpyp9HU1aImwyjKNPGMig4p7GQm7F2iB0dWlPykq
-         MenQ==
-X-Gm-Message-State: AOAM532RoxpW5pdx69gkzXGcG5HHPnN7hnwgj1Lh4Qvvoo1ELuhnkuuA
-        u8Vl3ipyGee2iNzeIhL8QnwuBQ==
-X-Google-Smtp-Source: ABdhPJwR2NyG/o0epriqRgWZiafPO4iha8N9ZD/x+FYDnBCO3aAzDwH1hjTV0yNCeh6rbGezo3zDgQ==
-X-Received: by 2002:a05:600c:4615:b0:386:9f67:8c63 with SMTP id m21-20020a05600c461500b003869f678c63mr15020537wmo.12.1646994809922;
-        Fri, 11 Mar 2022 02:33:29 -0800 (PST)
-Received: from xps-9300.baylibre (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id e10-20020a056000178a00b0020393321552sm2264138wrg.85.2022.03.11.02.33.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 02:33:29 -0800 (PST)
-From:   Alexandre Bailon <abailon@baylibre.com>
-To:     chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
-        matthias.bgg@gmail.com
-Cc:     linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Bailon <abailon@baylibre.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2] mmc: mtk-sd: Silence delay phase calculation debug log
-Date:   Fri, 11 Mar 2022 11:33:20 +0100
-Message-Id: <20220311103320.3072171-1-abailon@baylibre.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 11 Mar 2022 05:34:57 -0500
+Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2FFF406D
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:33:54 -0800 (PST)
+Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id 14DFC21516;
+        Fri, 11 Mar 2022 10:33:53 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 427BB20017;
+        Fri, 11 Mar 2022 10:33:52 +0000 (UTC)
+Message-ID: <6b97a143521840de469c0bb37543c16e362059b1.camel@perches.com>
+Subject: Re: [PATCH v3 10/10] maintainers: Introduce HPE GXP Architecture
+From:   Joe Perches <joe@perches.com>
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     linux-kernel@vger.kernel.org
+Date:   Fri, 11 Mar 2022 02:33:51 -0800
+In-Reply-To: <20220310195229.109477-10-nick.hawkins@hpe.com>
+References: <20220310195229.109477-1-nick.hawkins@hpe.com>
+         <20220310195229.109477-10-nick.hawkins@hpe.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: bfkwk6pj8c7jon1n7pbwyhsh7t4g1mck
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 427BB20017
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19lvNpNbuZ7LjzNBpxfOrnb9R/9zdZ8qSE=
+X-HE-Tag: 1646994832-405298
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver prints the following log everytime data is written to RPMB:
-mtk-msdc 11230000.mmc: phase: [map:ffffffff] [maxlen:32] [final:10]
+On Thu, 2022-03-10 at 13:52 -0600, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> Create a section in MAINTAINERS for the GXP HPE
+> architecture.
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -8791,6 +8791,20 @@ L:	platform-driver-x86@vger.kernel.org
+>  S:	Orphan
+>  F:	drivers/platform/x86/tc1100-wmi.c
+>  
+> +HPE GXP ARCHITECTURE
+> +M:	Jean-Marie Verdun <verdun@hpe.com>
+> +M:	Nick Hawkins <nick.hawkins@hpe.com>
+> +S:	MAINTAINED
 
-dev_info is used to print that log but it seems that log is only
-useful for debbuging. Use dev_dbg instead of dev_info.
+Use the case sensitive version instead
 
-Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/mmc/host/mtk-sd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+S:	Maintained
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index d5a9c269d492..05c8b4de46f3 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -1914,8 +1914,8 @@ static struct msdc_delay_phase get_best_delay(struct msdc_host *host, u32 delay)
- 		final_phase = (start_final + len_final / 3) % PAD_DELAY_MAX;
- 	else
- 		final_phase = (start_final + len_final / 2) % PAD_DELAY_MAX;
--	dev_info(host->dev, "phase: [map:%x] [maxlen:%d] [final:%d]\n",
--		 delay, len_final, final_phase);
-+	dev_dbg(host->dev, "phase: [map:%x] [maxlen:%d] [final:%d]\n",
-+		delay, len_final, final_phase);
- 
- 	delay_phase.maxlen = len_final;
- 	delay_phase.start = start_final;
--- 
-2.34.1
+$ git grep -h '^S:' MAINTAINERS | sort | uniq -c | sort -rn
+   1682 S:	Maintained
+    637 S:	Supported
+     71 S:	Odd Fixes
+     64 S:	Orphan
+     19 S:	Odd fixes
+      7 S:	Orphan / Obsolete
+      2 S:	Obsolete
+      1 S:	Buried alive in reporters
+
 
