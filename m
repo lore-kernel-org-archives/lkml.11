@@ -2,138 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B56C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF633C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243730AbiCKIvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:51:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        id S239531AbiCKIwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:52:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241469AbiCKIv3 (ORCPT
+        with ESMTP id S238027AbiCKIv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:51:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41C21BAF01
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:50:24 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nSayY-0004dq-AT; Fri, 11 Mar 2022 09:50:18 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nSayV-00552m-My; Fri, 11 Mar 2022 09:50:15 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, paskripkin@gmail.com
-Subject: [PATCH net-next v2 2/4] net: usb: asix: store chipid to avoid reading it on reset
-Date:   Fri, 11 Mar 2022 09:50:12 +0100
-Message-Id: <20220311085014.1210963-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220311085014.1210963-1-o.rempel@pengutronix.de>
-References: <20220311085014.1210963-1-o.rempel@pengutronix.de>
+        Fri, 11 Mar 2022 03:51:56 -0500
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354141BA93A
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:50:52 -0800 (PST)
+Received: from IT-EXMB-1-123.meizu.com (172.16.1.123) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 11 Mar
+ 2022 16:50:52 +0800
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by
+ IT-EXMB-1-123.meizu.com (172.16.1.123) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 11 Mar 2022 16:50:49 +0800
+Received: from IT-EXMB-1-125.meizu.com ([fe80::7481:7d92:3801:4575]) by
+ IT-EXMB-1-125.meizu.com ([fe80::7481:7d92:3801:4575%3]) with mapi id
+ 15.01.2308.014; Fri, 11 Mar 2022 16:50:49 +0800
+From:   =?gb2312?B?sNe6xs7E?= <baihaowen@meizu.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+CC:     "vireshk@kernel.org" <vireshk@kernel.org>,
+        "johan@kernel.org" <johan@kernel.org>,
+        "elder@kernel.org" <elder@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBzdGFnaW5nOiBncmV5YnVzOiBGaXggcG90ZW50aWFs?=
+ =?gb2312?Q?_NULL_dereference?=
+Thread-Topic: [PATCH] staging: greybus: Fix potential NULL dereference
+Thread-Index: AQHYNSL4iVqrOrm/80ClDX0ZeDDii6y5VuSAgACIFEY=
+Date:   Fri, 11 Mar 2022 08:50:49 +0000
+Message-ID: <0a6d02d1b6374cf0bddd0f4e7fbc475a@meizu.com>
+References: <1646987730-7597-1-git-send-email-baihaowen@meizu.com>,<20220311084019.w45kfluiamgosivu@vireshk-i7>
+In-Reply-To: <20220311084019.w45kfluiamgosivu@vireshk-i7>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.137.70]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We already read chipid on probe. There is no need to read it on reset.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/usb/asix.h         |  1 +
- drivers/net/usb/asix_devices.c | 19 +++++++------------
- 2 files changed, 8 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index b5ac693cebf2..691f37f45238 100644
---- a/drivers/net/usb/asix.h
-+++ b/drivers/net/usb/asix.h
-@@ -186,6 +186,7 @@ struct asix_common_private {
- 	u16 phy_addr;
- 	char phy_name[20];
- 	bool embd_phy;
-+	u8 chipcode;
- };
- 
- extern const struct driver_info ax88172a_info;
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 28bb98cdfa33..a0c02cd53472 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -450,7 +450,6 @@ static int ax88772a_hw_reset(struct usbnet *dev, int in_pm)
- 	struct asix_data *data = (struct asix_data *)&dev->data;
- 	struct asix_common_private *priv = dev->driver_priv;
- 	u16 rx_ctl, phy14h, phy15h, phy16h;
--	u8 chipcode = 0;
- 	int ret;
- 
- 	ret = asix_write_gpio(dev, AX_GPIO_RSE, 5, in_pm);
-@@ -493,12 +492,7 @@ static int ax88772a_hw_reset(struct usbnet *dev, int in_pm)
- 		goto out;
- 	}
- 
--	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0,
--			    0, 1, &chipcode, in_pm);
--	if (ret < 0)
--		goto out;
--
--	if ((chipcode & AX_CHIPCODE_MASK) == AX_AX88772B_CHIPCODE) {
-+	if (priv->chipcode == AX_AX88772B_CHIPCODE) {
- 		ret = asix_write_cmd(dev, AX_QCTCTRL, 0x8000, 0x8001,
- 				     0, NULL, in_pm);
- 		if (ret < 0) {
-@@ -506,7 +500,7 @@ static int ax88772a_hw_reset(struct usbnet *dev, int in_pm)
- 				   ret);
- 			goto out;
- 		}
--	} else if ((chipcode & AX_CHIPCODE_MASK) == AX_AX88772A_CHIPCODE) {
-+	} else if (priv->chipcode == AX_AX88772A_CHIPCODE) {
- 		/* Check if the PHY registers have default settings */
- 		phy14h = asix_mdio_read_nopm(dev->net, dev->mii.phy_id,
- 					     AX88772A_PHY14H);
-@@ -689,8 +683,8 @@ static int ax88772_init_phy(struct usbnet *dev)
- 
- static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- {
--	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
- 	struct asix_common_private *priv;
-+	u8 buf[ETH_ALEN] = {0};
- 	int ret, i;
- 
- 	priv = devm_kzalloc(&dev->udev->dev, sizeof(*priv), GFP_KERNEL);
-@@ -741,17 +735,18 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	priv->phy_addr = ret;
- 	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
- 
--	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
-+	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1,
-+			    &priv->chipcode, 0);
- 	if (ret < 0) {
- 		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
- 		return ret;
- 	}
- 
--	chipcode &= AX_CHIPCODE_MASK;
-+	priv->chipcode &= AX_CHIPCODE_MASK;
- 
- 	priv->resume = ax88772_resume;
- 	priv->suspend = ax88772_suspend;
--	if (chipcode == AX_AX88772_CHIPCODE)
-+	if (priv->chipcode == AX_AX88772_CHIPCODE)
- 		priv->reset = ax88772_hw_reset;
- 	else
- 		priv->reset = ax88772a_hw_reset;
--- 
-2.30.2
-
+T2gsIG15IGNhcmVsZXNzIHRvIGNoZWNrIGNvZGUuIFRoYW5rIHlvdSBmb3IgeW91ciBraW5kbHkg
+cmVtaW5kZXIuDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQq3orz+
+yMs6IFZpcmVzaCBLdW1hciA8dmlyZXNoLmt1bWFyQGxpbmFyby5vcmc+DQq3osvNyrG85DogMjAy
+MsTqM9TCMTHI1SAxNjo0MDoxOQ0KytW8/sjLOiCw17rGzsQNCrOty806IHZpcmVzaGtAa2VybmVs
+Lm9yZzsgam9oYW5Aa2VybmVsLm9yZzsgZWxkZXJAa2VybmVsLm9yZzsgZ3JlZ2toQGxpbnV4Zm91
+bmRhdGlvbi5vcmc7IGxpbnV4LXN0YWdpbmdAbGlzdHMubGludXguZGV2OyBsaW51eC1rZXJuZWxA
+dmdlci5rZXJuZWwub3JnDQrW98ziOiBSZTogW1BBVENIXSBzdGFnaW5nOiBncmV5YnVzOiBGaXgg
+cG90ZW50aWFsIE5VTEwgZGVyZWZlcmVuY2UNCg0KT24gMTEtMDMtMjIsIDE2OjM1LCBIYW93ZW4g
+QmFpIHdyb3RlOg0KPiBGaXggZm9sbG93aW5nIGNvY2NpY2hlY2sgd2FybmluZzoNCj4gZHJpdmVy
+cy9zdGFnaW5nL2dyZXlidXMvYm9vdHJvbS5jOjMwMTozNS0zOTogRVJST1I6IGZ3IGlzIE5VTEwg
+YnV0IGRlcmVmZXJlbmNlZC4NCj4NCj4gV2hlbiBnb3RvIHF1ZXVlX3dvcmsgYnV0IGRlcmVmZXJl
+bmNlIFVuaW5pdGlhbGl6ZWQgZncgd2lsbCB0cmlnZ2VyIGEgTlVMTA0KPiBkZXJlZmVyZW5jZS4N
+Cg0KUGxlYXNlIGhhdmUgYSBsb29rIGF0IGVhcmxpZXIgYXR0ZW1wdHMgbGlrZSB0aGlzOg0KDQpo
+dHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAxNTA5OS54VnY0OFZ6Tml0QGxpbnV4LmxvY2Fs
+Lw0KDQotLQ0KdmlyZXNoDQo=
