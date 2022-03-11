@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF34BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231960AbiCKGAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:00:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S1346685AbiCKGAl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 01:00:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346742AbiCKFzF (ORCPT
+        with ESMTP id S1346755AbiCKFzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:55:05 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4C1FCB48
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:28 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id 64-20020a621743000000b004f778ce34eeso2060058pfx.20
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:28 -0800 (PST)
+        Fri, 11 Mar 2022 00:55:07 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E921DFDF90
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:36 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id 9-20020a630509000000b0037c8607d296so4215923pgf.22
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=hnr6XEqehIXzCALgq9vRASMm6oo2AIu/MDOgH1LyShk=;
-        b=EoAgH5cJ31OJjhXsxuxR7e6zL32VPZA1g5mhlp8NSkqu6WpqnN7tDwnR+BwidyrDHZ
-         pAKDW7xU+9JeydShcuwof5FE5nB2xiMZF4pCXYy3utxwDDQ2dDIQdbhJRXQdhfLtRcSN
-         ldRCHIBqwAibsAScSbT+Nw6lmZTleUEhtebNqzqG85lkPxptvWG74elShld6F6clTIje
-         Pqzqdn9TkCTBRjfia/iKSXrQ1Jqm4yfuRihsxbz2fIwnQdrxcYN506d2H17KZc9YErfk
-         RJis4C1EWALn1bzMWMEqwpOFrQJ0n9WeZwoYLDmMek/pOr6CcApLohsdahFyY4YmaNLx
-         pRZA==
+        bh=fTRgciqd2oM8e2A4aufW48NTHgVD8bRTOiK4pDiyJUo=;
+        b=m5bsNEazzsuwHW0xRT8haw7lzZuXLgZtmFN8xzebFO9bXazVKcIHIoMhymRPrAqpzc
+         j63SRbaasMrPd17YcBx+/PJApTGKMTAKG/kDECofUmvTGUdsY3QHpFgt3HsaI+Ys4UqN
+         AHDKFKEIQgQoBLPHqTh6BpD05E4HaT3EOIEGp5lvnrzEoYvypQW/TBTNhUoEYwyIkYqN
+         JBP2HkuZMcFmAlKOLffXqk5sysRmpqn1dXiUatOGc8drmUnMKMaN24VpgxM1zGOVq/jn
+         baTl9RtY0hJsz1jsU+sgIZwc5tL1z2SU6DqUtvCaqg+QwQDMTBs8MV2LoT/fi6WxI/n3
+         gzGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=hnr6XEqehIXzCALgq9vRASMm6oo2AIu/MDOgH1LyShk=;
-        b=KVQSpkHi75fVKbO+pHO96f/CpYm1X5oZaOpJlj9Iq03G4RrCFF229pyR8vMHS2Jb5m
-         6VhnegO8IP8yk7+cQOLVAg9yzV60t/29i1D+q8VK7Z5YUc9KFz07/qL0UubCQsjJqYzc
-         HV+6kgsmWjnn34fO+OjaQmOGMINUK6tVg+fQ5oft+cg9UfMQcI+5PgwrtCGERRWa9EZT
-         lnSUUugI3sH1lSeFgCk+3bUC7Lxdha33wkPr/BvlHhwaB4chiTQe7aZI2fh3CxM+6tud
-         5qSjUuMxoxomN7lXHzaAW0VI4BIpQj0nW/pEcXuEoxhFdI6exOvFlz/eH3xOQBghvnml
-         WssQ==
-X-Gm-Message-State: AOAM5332XTuHbE4JmLVvR/DlMcA5gep67ZbTsSmpBjeu2HdLN0W7mWfy
-        fcAhqdzJkl7DB93jxn81L/sQrbk0IiVEk+N6Q9F0Ltq1KBx2mHohCK2jQtASG6a8aEZuVGP2c3G
-        UEc3VxzgmlIJvZ0VJjIc/Xd5nQ8MOtmd+XN9LN+vav7JzEFTwN4Ho9OmMZth83AFCpH8YYQ==
-X-Google-Smtp-Source: ABdhPJzX+Pnx85Bo0dMNSMCJtoCR/r5g9PUrtYDfOe+8lfxOmFP6cvRUh9u+RsJbE9AUrqZmlGq2yN8yoOo=
+        bh=fTRgciqd2oM8e2A4aufW48NTHgVD8bRTOiK4pDiyJUo=;
+        b=ctONNLreUPoEOICc9BrbvMX2uAcmiEA0eIY/8eHruiewGJ1VPZ+XShOzVuPUSjY0Bo
+         Y1Gnx1H2AHCMZIqNWDff2GBGrgfukcvE7Jx2RJFcLQufUSBp8MzFpj9kxQjQAo+75HRB
+         HDpzaIqk7Rf35G7c/8pdeh5xerJBEAP/iGPuoB+rplFsFUunHB34WOwGxCQ1HJvObwSz
+         dqpR3uVBxcCbUWH5qXvJ3qWeEvBoSnzD4ldDvScbTBfjqZxsoqbdl8eCiUnNMZRyTgko
+         GXTiPs2AUPOmjkdcfqnfTUm74nFFspepGO4xek33NPHNIyh7fv46RaBBMs9iqnpXFZEJ
+         5mPQ==
+X-Gm-Message-State: AOAM532kgctOCwD25mbXlFEPPDq4u3gvkJSYTt4kOOIc2S0JXihIq5hK
+        8ov1TfhYm47PuMRkdC2qc+YSiufv5DqJNOxIp35iU4TTSqvJ/KvHzhTvJYeOwJ3YVb5W+JTr8Ln
+        FJAs8TmP+gbnijW0XC0/5TScn7SbjxekTOjm64+uJWmQykzQYSqNNavq+ACq/lrZBqkfuYg==
+X-Google-Smtp-Source: ABdhPJy6g9iYQAPZVUkq+vp5vislrXjLxDopYT4xNw13R0aEyl1eIeiW0c4oQdnjEZaYB+vz8vpfK+LH+QA=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2312:b0:4f7:2d1f:d83e with SMTP id
- h18-20020a056a00231200b004f72d1fd83emr8785234pfh.14.1646978008030; Thu, 10
- Mar 2022 21:53:28 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:a8b:b0:4cd:6030:4df3 with SMTP id
+ b11-20020a056a000a8b00b004cd60304df3mr8461343pfl.40.1646978016360; Thu, 10
+ Mar 2022 21:53:36 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:35 +0000
+Date:   Fri, 11 Mar 2022 05:50:40 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-85-seanjc@google.com>
+Message-Id: <20220311055056.57265-90-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 084/105] KVM: selftests: Add VM creation helper that
- "returns" vCPUs
+Subject: [RFC PATCH 089/105] KVM: selftests: Convert xapic_ipi_test away from *_VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,114 +66,158 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h       | 16 ++++++++++++----
- .../testing/selftests/kvm/kvm_page_table_test.c |  4 ++--
- tools/testing/selftests/kvm/lib/kvm_util.c      | 17 ++++++++++-------
- .../testing/selftests/kvm/lib/perf_test_util.c  |  4 ++--
- 4 files changed, 26 insertions(+), 15 deletions(-)
+ .../selftests/kvm/x86_64/xapic_ipi_test.c     | 48 ++++++++-----------
+ 1 file changed, 20 insertions(+), 28 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 14457f98080b..051d9707e2e7 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -541,11 +541,19 @@ struct kvm_vm *vm_create_default_with_vcpus(uint32_t nr_vcpus, uint64_t extra_me
- 					    uint32_t vcpuids[]);
+diff --git a/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c b/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
+index 8b366652be31..4484ee563b18 100644
+--- a/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
+@@ -39,9 +39,6 @@
+ /* Default delay between migrate_pages calls (microseconds) */
+ #define DEFAULT_DELAY_USECS 500000
  
- /* Like vm_create_default_with_vcpus, but accepts mode and slot0 memory as a parameter */
--struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
--				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
--				    uint32_t num_percpu_pages, void *guest_code,
--				    uint32_t vcpuids[]);
-+struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
-+				      uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
-+				      uint32_t num_percpu_pages, void *guest_code,
-+				      uint32_t vcpuids[], struct kvm_vcpu *vcpus[]);
- 
-+static inline struct kvm_vm *vm_create_with_vcpus(uint32_t nr_vcpus,
-+						  void *guest_code,
-+						  struct kvm_vcpu *vcpus[])
-+{
-+	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus,
-+				      DEFAULT_GUEST_PHY_PAGES, 0, 0,
-+				      guest_code, NULL, vcpus);
-+}
- 
+-#define HALTER_VCPU_ID 0
+-#define SENDER_VCPU_ID 1
+-
  /*
-  * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
-diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
-index ba1fdc3dcf4a..b969257f646d 100644
---- a/tools/testing/selftests/kvm/kvm_page_table_test.c
-+++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
-@@ -268,8 +268,8 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+  * Vector for IPI from sender vCPU to halting vCPU.
+  * Value is arbitrary and was chosen for the alternating bit pattern. Any
+@@ -79,8 +76,7 @@ struct test_data_page {
  
- 	/* Create a VM with enough guest pages */
- 	guest_num_pages = test_mem_size / guest_page_size;
--	vm = vm_create_with_vcpus(mode, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
--				  guest_num_pages, 0, guest_code, NULL);
-+	vm = __vm_create_with_vcpus(mode, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
-+				    guest_num_pages, 0, guest_code, NULL, NULL);
- 
- 	/* Align down GPA of the testing memslot */
- 	if (!p->phys_offset)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 1580d4888d74..de568d0a2ccc 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -305,12 +305,13 @@ struct kvm_vm *vm_create(uint64_t phy_pages)
-  * extra_mem_pages is only used to calculate the maximum page table size,
-  * no real memory allocation for non-slot0 memory in this function.
-  */
--struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
--				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
--				    uint32_t num_percpu_pages, void *guest_code,
--				    uint32_t vcpuids[])
-+struct kvm_vm *__vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
-+				      uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
-+				      uint32_t num_percpu_pages, void *guest_code,
-+				      uint32_t vcpuids[], struct kvm_vcpu *vcpus[])
- {
- 	uint64_t vcpu_pages, extra_pg_pages, pages;
+ struct thread_params {
+ 	struct test_data_page *data;
+-	struct kvm_vm *vm;
+-	uint32_t vcpu_id;
 +	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	int i;
+ 	uint64_t *pipis_rcvd; /* host address of ipis_rcvd global */
+ };
  
-@@ -344,7 +345,9 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
- 	for (i = 0; i < nr_vcpus; ++i) {
- 		uint32_t vcpuid = vcpuids ? vcpuids[i] : i;
- 
--		vm_vcpu_add(vm, vcpuid, guest_code);
-+		vcpu = vm_vcpu_add(vm, vcpuid, guest_code);
-+		if (vcpus)
-+			vcpus[i] = vcpu;
- 	}
- 
- 	return vm;
-@@ -354,8 +357,8 @@ struct kvm_vm *vm_create_default_with_vcpus(uint32_t nr_vcpus, uint64_t extra_me
- 					    uint32_t num_percpu_pages, void *guest_code,
- 					    uint32_t vcpuids[])
+@@ -198,6 +194,7 @@ static void sender_guest_code(struct test_data_page *data)
+ static void *vcpu_thread(void *arg)
  {
--	return vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
--				    extra_mem_pages, num_percpu_pages, guest_code, vcpuids);
-+	return __vm_create_with_vcpus(VM_MODE_DEFAULT, nr_vcpus, DEFAULT_GUEST_PHY_PAGES,
-+				      extra_mem_pages, num_percpu_pages, guest_code, vcpuids, NULL);
+ 	struct thread_params *params = (struct thread_params *)arg;
++	struct kvm_vcpu *vcpu = params->vcpu;
+ 	struct ucall uc;
+ 	int old;
+ 	int r;
+@@ -206,17 +203,17 @@ static void *vcpu_thread(void *arg)
+ 	r = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old);
+ 	TEST_ASSERT(r == 0,
+ 		    "pthread_setcanceltype failed on vcpu_id=%u with errno=%d",
+-		    params->vcpu_id, r);
++		    vcpu->id, r);
+ 
+-	fprintf(stderr, "vCPU thread running vCPU %u\n", params->vcpu_id);
+-	vcpu_run(params->vm, params->vcpu_id);
+-	exit_reason = vcpu_state(params->vm, params->vcpu_id)->exit_reason;
++	fprintf(stderr, "vCPU thread running vCPU %u\n", vcpu->id);
++	vcpu_run(vcpu->vm, vcpu->id);
++	exit_reason = vcpu->run->exit_reason;
+ 
+ 	TEST_ASSERT(exit_reason == KVM_EXIT_IO,
+ 		    "vCPU %u exited with unexpected exit reason %u-%s, expected KVM_EXIT_IO",
+-		    params->vcpu_id, exit_reason, exit_reason_str(exit_reason));
++		    vcpu->id, exit_reason, exit_reason_str(exit_reason));
+ 
+-	if (get_ucall(params->vm, params->vcpu_id, &uc) == UCALL_ABORT) {
++	if (get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_ABORT) {
+ 		TEST_ASSERT(false,
+ 			    "vCPU %u exited with error: %s.\n"
+ 			    "Sending vCPU sent %lu IPIs to halting vCPU\n"
+@@ -224,7 +221,7 @@ static void *vcpu_thread(void *arg)
+ 			    "Halter TPR=%#x PPR=%#x LVR=%#x\n"
+ 			    "Migrations attempted: %lu\n"
+ 			    "Migrations completed: %lu\n",
+-			    params->vcpu_id, (const char *)uc.args[0],
++			    vcpu->id, (const char *)uc.args[0],
+ 			    params->data->ipis_sent, params->data->hlt_count,
+ 			    params->data->wake_count,
+ 			    *params->pipis_rcvd, params->data->halter_tpr,
+@@ -236,7 +233,7 @@ static void *vcpu_thread(void *arg)
+ 	return NULL;
  }
  
- struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
-diff --git a/tools/testing/selftests/kvm/lib/perf_test_util.c b/tools/testing/selftests/kvm/lib/perf_test_util.c
-index 722df3a28791..5b80ba7f12e4 100644
---- a/tools/testing/selftests/kvm/lib/perf_test_util.c
-+++ b/tools/testing/selftests/kvm/lib/perf_test_util.c
-@@ -139,8 +139,8 @@ struct kvm_vm *perf_test_create_vm(enum vm_guest_mode mode, int vcpus,
- 	 * The memory is also added to memslot 0, but that's a benign side
- 	 * effect as KVM allows aliasing HVAs in meslots.
+-static void cancel_join_vcpu_thread(pthread_t thread, uint32_t vcpu_id)
++static void cancel_join_vcpu_thread(pthread_t thread, struct kvm_vcpu *vcpu)
+ {
+ 	void *retval;
+ 	int r;
+@@ -244,12 +241,12 @@ static void cancel_join_vcpu_thread(pthread_t thread, uint32_t vcpu_id)
+ 	r = pthread_cancel(thread);
+ 	TEST_ASSERT(r == 0,
+ 		    "pthread_cancel on vcpu_id=%d failed with errno=%d",
+-		    vcpu_id, r);
++		    vcpu->id, r);
+ 
+ 	r = pthread_join(thread, &retval);
+ 	TEST_ASSERT(r == 0,
+ 		    "pthread_join on vcpu_id=%d failed with errno=%d",
+-		    vcpu_id, r);
++		    vcpu->id, r);
+ 	TEST_ASSERT(retval == PTHREAD_CANCELED,
+ 		    "expected retval=%p, got %p", PTHREAD_CANCELED,
+ 		    retval);
+@@ -415,34 +412,30 @@ int main(int argc, char *argv[])
+ 	if (delay_usecs <= 0)
+ 		delay_usecs = DEFAULT_DELAY_USECS;
+ 
+-	vm = vm_create_default(HALTER_VCPU_ID, 0, halter_guest_code);
+-	params[0].vm = vm;
+-	params[1].vm = vm;
++	vm = vm_create_with_one_vcpu(&params[0].vcpu, halter_guest_code);
+ 
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, HALTER_VCPU_ID);
++	vcpu_init_descriptor_tables(vm, params[0].vcpu->id);
+ 	vm_install_exception_handler(vm, IPI_VECTOR, guest_ipi_handler);
+ 
+ 	virt_pg_map(vm, APIC_DEFAULT_GPA, APIC_DEFAULT_GPA);
+ 
+-	vm_vcpu_add(vm, SENDER_VCPU_ID, sender_guest_code);
++	params[1].vcpu = vm_vcpu_add(vm, 1, sender_guest_code);
+ 
+ 	test_data_page_vaddr = vm_vaddr_alloc_page(vm);
+-	data =
+-	   (struct test_data_page *)addr_gva2hva(vm, test_data_page_vaddr);
++	data = addr_gva2hva(vm, test_data_page_vaddr);
+ 	memset(data, 0, sizeof(*data));
+ 	params[0].data = data;
+ 	params[1].data = data;
+ 
+-	vcpu_args_set(vm, HALTER_VCPU_ID, 1, test_data_page_vaddr);
+-	vcpu_args_set(vm, SENDER_VCPU_ID, 1, test_data_page_vaddr);
++	vcpu_args_set(vm, params[0].vcpu->id, 1, test_data_page_vaddr);
++	vcpu_args_set(vm, params[1].vcpu->id, 1, test_data_page_vaddr);
+ 
+ 	pipis_rcvd = (uint64_t *)addr_gva2hva(vm, (uint64_t)&ipis_rcvd);
+ 	params[0].pipis_rcvd = pipis_rcvd;
+ 	params[1].pipis_rcvd = pipis_rcvd;
+ 
+ 	/* Start halter vCPU thread and wait for it to execute first HLT. */
+-	params[0].vcpu_id = HALTER_VCPU_ID;
+ 	r = pthread_create(&threads[0], NULL, vcpu_thread, &params[0]);
+ 	TEST_ASSERT(r == 0,
+ 		    "pthread_create halter failed errno=%d", errno);
+@@ -462,7 +455,6 @@ int main(int argc, char *argv[])
+ 		"Halter vCPU thread reported its APIC ID: %u after %d seconds.\n",
+ 		data->halter_apic_id, wait_secs);
+ 
+-	params[1].vcpu_id = SENDER_VCPU_ID;
+ 	r = pthread_create(&threads[1], NULL, vcpu_thread, &params[1]);
+ 	TEST_ASSERT(r == 0, "pthread_create sender failed errno=%d", errno);
+ 
+@@ -478,8 +470,8 @@ int main(int argc, char *argv[])
+ 	/*
+ 	 * Cancel threads and wait for them to stop.
  	 */
--	vm = vm_create_with_vcpus(mode, vcpus, DEFAULT_GUEST_PHY_PAGES,
--				  guest_num_pages, 0, guest_code, NULL);
-+	vm = __vm_create_with_vcpus(mode, vcpus, DEFAULT_GUEST_PHY_PAGES,
-+				    guest_num_pages, 0, guest_code, NULL, NULL);
+-	cancel_join_vcpu_thread(threads[0], HALTER_VCPU_ID);
+-	cancel_join_vcpu_thread(threads[1], SENDER_VCPU_ID);
++	cancel_join_vcpu_thread(threads[0], params[0].vcpu);
++	cancel_join_vcpu_thread(threads[1], params[1].vcpu);
  
- 	pta->vm = vm;
- 
+ 	fprintf(stderr,
+ 		"Test successful after running for %d seconds.\n"
 -- 
 2.35.1.723.g4982287a31-goog
 
