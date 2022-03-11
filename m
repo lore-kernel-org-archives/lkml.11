@@ -2,287 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF18EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348949AbiCKNoQ (ORCPT
+        id S1348974AbiCKNvB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:44:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        Fri, 11 Mar 2022 08:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240780AbiCKNoN (ORCPT
+        with ESMTP id S1348949AbiCKNu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:44:13 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD19D18E432
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647006189; x=1678542189;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1WLciB+5XZNIRAFHKD3kF9c7MeIlHZUQ5tWcGCfeQD0=;
-  b=jkp0YcvDpwvWItk3N8yuF1qb9enGtX182GbC0vG9oXGPW5WsTF1ZT7Ei
-   lrgvHl/40Y13qNOva6BljE8kUogJgsjqiUWAEjimzhOu7ExWpp81e0FWq
-   bbxOOXnHl3SCATjZL3d0UlkT1A5AQroWW/NfmjlLXf3YJoZP5p+wkr9y4
-   MfYV2uBCwVi8kUh5DrsRIYM8hhY5qqYTgOwFeDMCYCt7gx0C4Lz2tj2kE
-   oTIxuIsKPaTsIDmuQGc6zH/je/iObUG9qM+MH6+mJEfITGCFc9ayRFm1T
-   2Lwf2AiqesNrMC07E7nLaH0mpwCRQ1i4/nOmAeQ8xkgnI03GeLCf+55DO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="342000714"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="342000714"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 05:43:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="644934835"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 11 Mar 2022 05:43:07 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSfXu-0006UW-9F; Fri, 11 Mar 2022 13:43:06 +0000
-Date:   Fri, 11 Mar 2022 21:42:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
-Subject: drivers/dma/iop-adma.c:170:5: error: implicit declaration of
- function 'list_for_each_entry_from_inside' is invalid in C99
-Message-ID: <202203112154.lWEn6Enk-lkp@intel.com>
+        Fri, 11 Mar 2022 08:50:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 791581C46B7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:49:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647006593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nkVV5Z2jvGzdxq9DT6Fv6Bpxc803c9THPKkducVZxOM=;
+        b=H4BsCFisBmfq7LqSX/Dgp2Z2AffdLpw0v9jw4B7lOETE6u1dgXSrz7Un+39/egkpZ85K6/
+        U/DsOqEJhktBUbCWq12hepVitg1cCxEsmaw75vE4pz1qFBUp2LI0z4j/MpaEih+XguaGfR
+        phSxBnSuhrKo2H/OJSY9D3XYEHf6fPg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-145-TueK1vdeMAWKJda3GjGIzA-1; Fri, 11 Mar 2022 08:49:50 -0500
+X-MC-Unique: TueK1vdeMAWKJda3GjGIzA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 251001091DA1;
+        Fri, 11 Mar 2022 13:49:48 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 72A0483591;
+        Fri, 11 Mar 2022 13:49:35 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <dd054c962818716e718bd9b446ee5322ca097675.camel@redhat.com>
+References: <dd054c962818716e718bd9b446ee5322ca097675.camel@redhat.com> <164692883658.2099075.5745824552116419504.stgit@warthog.procyon.org.uk> <164692907694.2099075.10081819855690054094.stgit@warthog.procyon.org.uk>
+To:     Jeff Layton <jlayton@redhat.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        ceph-devel@vger.kernel.org,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 12/20] ceph: Make ceph_init_request() check caps on readahead
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2533820.1647006574.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 11 Mar 2022 13:49:34 +0000
+Message-ID: <2533821.1647006574@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220311-151720/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-head:   54ae283053c127aac4b946dffa0f31f9885dbb77
-commit: 54ae283053c127aac4b946dffa0f31f9885dbb77 drivers/dma: remove iterator use outside the loop
-date:   6 hours ago
-config: arm64-randconfig-r014-20220310 (https://download.01.org/0day-ci/archive/20220311/202203112154.lWEn6Enk-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/54ae283053c127aac4b946dffa0f31f9885dbb77
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review UPDATE-20220311-151720/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-        git checkout 54ae283053c127aac4b946dffa0f31f9885dbb77
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/dma/
+Jeff Layton <jlayton@redhat.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> > +static int ceph_init_request(struct netfs_io_request *rreq, struct fi=
+le *file)
+> > +{
+> > +	struct inode *inode =3D rreq->inode;
+> > +	int got =3D 0, want =3D CEPH_CAP_FILE_CACHE;
+> > +	int ret =3D 0;
+> > +
+> > +	if (file) {
+> > +		struct ceph_rw_context *rw_ctx;
+> > +		struct ceph_file_info *fi =3D file->private_data;
+> > +
+> > +		rw_ctx =3D ceph_find_rw_context(fi);
+> > +		if (rw_ctx)
+> > +			return 0;
+> > +	}
+> > +
+> > +	if (rreq->origin !=3D NETFS_READAHEAD)
+> > +		return 0;
+> > +
+> =
 
-All errors (new ones prefixed by >>):
+> ^^^
+> I think you should move this check above the if (file) block above it.
+> We don't need to anything at all if we're not in readahead.
 
->> drivers/dma/iop-adma.c:170:5: error: implicit declaration of function 'list_for_each_entry_from_inside' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-                                   list_for_each_entry_from_inside(grp_iter, grp_start,
-                                   ^
->> drivers/dma/iop-adma.c:171:35: error: expected ';' after expression
-                                           &iop_chan->chain, chain_node) {
-                                                                        ^
-                                                                        ;
->> drivers/dma/iop-adma.c:170:37: error: use of undeclared identifier 'grp_iter'
-                                   list_for_each_entry_from_inside(grp_iter, grp_start,
-                                                                   ^
->> drivers/dma/iop-adma.c:171:24: error: use of undeclared identifier 'chain_node'
-                                           &iop_chan->chain, chain_node) {
-                                                             ^
-   drivers/dma/iop-adma.c:173:35: error: use of undeclared identifier 'grp_iter'; did you mean 'dup_iter'?
-                                               iop_desc_get_zero_result(grp_iter);
-                                                                        ^~~~~~~~
-                                                                        dup_iter
-   include/linux/uio.h:242:13: note: 'dup_iter' declared here
-   const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
-               ^
-   drivers/dma/iop-adma.c:175:10: error: use of undeclared identifier 'grp_iter'; did you mean 'grp_start'?
-                                               grp_iter->idx, zero_sum_result);
-                                               ^~~~~~~~
-                                               grp_start
-   include/linux/printk.h:574:26: note: expanded from macro 'pr_debug'
-           dynamic_pr_debug(fmt, ##__VA_ARGS__)
-                                   ^
-   include/linux/dynamic_debug.h:163:22: note: expanded from macro 'dynamic_pr_debug'
-                              pr_fmt(fmt), ##__VA_ARGS__)
-                                             ^
-   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                                 ^
-   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                   func(&id, ##__VA_ARGS__);               \
-                               ^
-   drivers/dma/iop-adma.c:106:44: note: 'grp_start' declared here
-           struct iop_adma_desc_slot *iter, *_iter, *grp_start = NULL;
-                                                     ^
->> drivers/dma/iop-adma.c:187:4: error: implicit declaration of function 'list_for_each_entry_safe_from_inside' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-                           list_for_each_entry_safe_from_inside(grp_iter, _grp_iter,
-                           ^
-   drivers/dma/iop-adma.c:188:45: error: expected ';' after expression
-                                   grp_start, &iop_chan->chain, chain_node) {
-                                                                           ^
-                                                                           ;
-   drivers/dma/iop-adma.c:187:41: error: use of undeclared identifier 'grp_iter'
-                           list_for_each_entry_safe_from_inside(grp_iter, _grp_iter,
-                                                                ^
->> drivers/dma/iop-adma.c:187:51: error: use of undeclared identifier '_grp_iter'
-                           list_for_each_entry_safe_from_inside(grp_iter, _grp_iter,
-                                                                          ^
-   drivers/dma/iop-adma.c:188:34: error: use of undeclared identifier 'chain_node'
-                                   grp_start, &iop_chan->chain, chain_node) {
-                                                                ^
-   drivers/dma/iop-adma.c:190:6: error: use of undeclared identifier 'grp_iter'; did you mean 'dup_iter'?
-                                           grp_iter, iop_chan, cookie);
-                                           ^~~~~~~~
-                                           dup_iter
-   include/linux/uio.h:242:13: note: 'dup_iter' declared here
-   const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
-               ^
-   drivers/dma/iop-adma.c:193:40: error: use of undeclared identifier 'grp_iter'; did you mean 'dup_iter'?
-                                   end_of_chain = iop_adma_clean_slot(grp_iter,
-                                                                      ^~~~~~~~
-                                                                      dup_iter
-   include/linux/uio.h:242:13: note: 'dup_iter' declared here
-   const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
-               ^
-   13 errors generated.
+How about the attached, then?
 
-
-vim +/list_for_each_entry_from_inside +170 drivers/dma/iop-adma.c
-
-   103	
-   104	static void __iop_adma_slot_cleanup(struct iop_adma_chan *iop_chan)
-   105	{
- > 106		struct iop_adma_desc_slot *iter, *_iter, *grp_start = NULL;
-   107		dma_cookie_t cookie = 0;
-   108		u32 current_desc = iop_chan_get_current_descriptor(iop_chan);
-   109		int busy = iop_chan_is_busy(iop_chan);
-   110		int seen_current = 0, slot_cnt = 0, slots_per_op = 0;
-   111	
-   112		dev_dbg(iop_chan->device->common.dev, "%s\n", __func__);
-   113		/* free completed slots from the chain starting with
-   114		 * the oldest descriptor
-   115		 */
-   116		list_for_each_entry_safe(iter, _iter, &iop_chan->chain,
-   117						chain_node) {
-   118			pr_debug("\tcookie: %d slot: %d busy: %d "
-   119				"this_desc: %pad next_desc: %#llx ack: %d\n",
-   120				iter->async_tx.cookie, iter->idx, busy,
-   121				&iter->async_tx.phys, (u64)iop_desc_get_next_desc(iter),
-   122				async_tx_test_ack(&iter->async_tx));
-   123			prefetch(_iter);
-   124			prefetch(&_iter->async_tx);
-   125	
-   126			/* do not advance past the current descriptor loaded into the
-   127			 * hardware channel, subsequent descriptors are either in
-   128			 * process or have not been submitted
-   129			 */
-   130			if (seen_current)
-   131				break;
-   132	
-   133			/* stop the search if we reach the current descriptor and the
-   134			 * channel is busy, or if it appears that the current descriptor
-   135			 * needs to be re-read (i.e. has been appended to)
-   136			 */
-   137			if (iter->async_tx.phys == current_desc) {
-   138				BUG_ON(seen_current++);
-   139				if (busy || iop_desc_get_next_desc(iter))
-   140					break;
-   141			}
-   142	
-   143			/* detect the start of a group transaction */
-   144			if (!slot_cnt && !slots_per_op) {
-   145				slot_cnt = iter->slot_cnt;
-   146				slots_per_op = iter->slots_per_op;
-   147				if (slot_cnt <= slots_per_op) {
-   148					slot_cnt = 0;
-   149					slots_per_op = 0;
-   150				}
-   151			}
-   152	
-   153			if (slot_cnt) {
-   154				pr_debug("\tgroup++\n");
-   155				if (!grp_start)
-   156					grp_start = iter;
-   157				slot_cnt -= slots_per_op;
-   158			}
-   159	
-   160			/* all the members of a group are complete */
-   161			if (slots_per_op != 0 && slot_cnt == 0) {
-   162				int end_of_chain = 0;
-   163				pr_debug("\tgroup end\n");
-   164	
-   165				/* collect the total results */
-   166				if (grp_start->xor_check_result) {
-   167					u32 zero_sum_result = 0;
-   168					slot_cnt = grp_start->slot_cnt;
-   169	
- > 170					list_for_each_entry_from_inside(grp_iter, grp_start,
- > 171						&iop_chan->chain, chain_node) {
-   172						zero_sum_result |=
-   173						    iop_desc_get_zero_result(grp_iter);
-   174						pr_debug("\titer%d result: %d\n",
-   175						    grp_iter->idx, zero_sum_result);
-   176						slot_cnt -= slots_per_op;
-   177						if (slot_cnt == 0)
-   178							break;
-   179					}
-   180					pr_debug("\tgrp_start->xor_check_result: %p\n",
-   181						grp_start->xor_check_result);
-   182					*grp_start->xor_check_result = zero_sum_result;
-   183				}
-   184	
-   185				/* clean up the group */
-   186				slot_cnt = grp_start->slot_cnt;
- > 187				list_for_each_entry_safe_from_inside(grp_iter, _grp_iter,
- > 188					grp_start, &iop_chan->chain, chain_node) {
-   189					cookie = iop_adma_run_tx_complete_actions(
-   190						grp_iter, iop_chan, cookie);
-   191	
-   192					slot_cnt -= slots_per_op;
-   193					end_of_chain = iop_adma_clean_slot(grp_iter,
-   194						iop_chan);
-   195	
-   196					if (slot_cnt == 0 || end_of_chain)
-   197						break;
-   198				}
-   199	
-   200				/* the group should be complete at this point */
-   201				BUG_ON(slot_cnt);
-   202	
-   203				slots_per_op = 0;
-   204				grp_start = NULL;
-   205				if (end_of_chain)
-   206					break;
-   207				else
-   208					continue;
-   209			} else if (slots_per_op) /* wait for group completion */
-   210				continue;
-   211	
-   212			/* write back zero sum results (single descriptor case) */
-   213			if (iter->xor_check_result && iter->async_tx.cookie)
-   214				*iter->xor_check_result =
-   215					iop_desc_get_zero_result(iter);
-   216	
-   217			cookie = iop_adma_run_tx_complete_actions(
-   218						iter, iop_chan, cookie);
-   219	
-   220			if (iop_adma_clean_slot(iter, iop_chan))
-   221				break;
-   222		}
-   223	
-   224		if (cookie > 0) {
-   225			iop_chan->common.completed_cookie = cookie;
-   226			pr_debug("\tcompleted cookie %d\n", cookie);
-   227		}
-   228	}
-   229	
-
+David
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+commit 7082946186fc26016b15bc9039bd6d92ae732ef3
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed Mar 9 21:45:22 2022 +0000
+
+    ceph: Make ceph_init_request() check caps on readahead
+    =
+
+    Move the caps check from ceph_readahead() to ceph_init_request(),
+    conditional on the origin being NETFS_READAHEAD so that in a future pa=
+tch,
+    ceph can point its ->readahead() vector directly at netfs_readahead().
+    =
+
+    Changes
+    =3D=3D=3D=3D=3D=3D=3D
+    ver #4)
+     - Move the check for NETFS_READAHEAD up in ceph_init_request()[2].
+    =
+
+    ver #3)
+     - Split from the patch to add a netfs inode context[1].
+     - Need to store the caps got in rreq->netfs_priv for later freeing.
+    =
+
+    Signed-off-by: David Howells <dhowells@redhat.com>
+    cc: ceph-devel@vger.kernel.org
+    cc: linux-cachefs@redhat.com
+    Link: https://lore.kernel.org/r/8af0d47f17d89c06bbf602496dd845f2b0bf25=
+b3.camel@kernel.org/ [1]
+    Link: https://lore.kernel.org/r/dd054c962818716e718bd9b446ee5322ca0976=
+75.camel@redhat.com/ [2]
+
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index 9189257476f8..4aeccafa5dda 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -354,6 +354,45 @@ static void ceph_netfs_issue_read(struct netfs_io_sub=
+request *subreq)
+ 	dout("%s: result %d\n", __func__, err);
+ }
+ =
+
++static int ceph_init_request(struct netfs_io_request *rreq, struct file *=
+file)
++{
++	struct inode *inode =3D rreq->inode;
++	int got =3D 0, want =3D CEPH_CAP_FILE_CACHE;
++	int ret =3D 0;
++
++	if (rreq->origin !=3D NETFS_READAHEAD)
++		return 0;
++
++	if (file) {
++		struct ceph_rw_context *rw_ctx;
++		struct ceph_file_info *fi =3D file->private_data;
++
++		rw_ctx =3D ceph_find_rw_context(fi);
++		if (rw_ctx)
++			return 0;
++	}
++
++	/*
++	 * readahead callers do not necessarily hold Fcb caps
++	 * (e.g. fadvise, madvise).
++	 */
++	ret =3D ceph_try_get_caps(inode, CEPH_CAP_FILE_RD, want, true, &got);
++	if (ret < 0) {
++		dout("start_read %p, error getting cap\n", inode);
++		return ret;
++	}
++
++	if (!(got & want)) {
++		dout("start_read %p, no cache cap\n", inode);
++		return -EACCES;
++	}
++	if (ret =3D=3D 0)
++		return -EACCES;
++
++	rreq->netfs_priv =3D (void *)(uintptr_t)got;
++	return 0;
++}
++
+ static void ceph_readahead_cleanup(struct address_space *mapping, void *p=
+riv)
+ {
+ 	struct inode *inode =3D mapping->host;
+@@ -365,7 +404,7 @@ static void ceph_readahead_cleanup(struct address_spac=
+e *mapping, void *priv)
+ }
+ =
+
+ static const struct netfs_request_ops ceph_netfs_read_ops =3D {
+-	.is_cache_enabled	=3D ceph_is_cache_enabled,
++	.init_request		=3D ceph_init_request,
+ 	.begin_cache_operation	=3D ceph_begin_cache_operation,
+ 	.issue_read		=3D ceph_netfs_issue_read,
+ 	.expand_readahead	=3D ceph_netfs_expand_readahead,
+@@ -393,33 +432,7 @@ static int ceph_readpage(struct file *file, struct pa=
+ge *subpage)
+ =
+
+ static void ceph_readahead(struct readahead_control *ractl)
+ {
+-	struct inode *inode =3D file_inode(ractl->file);
+-	struct ceph_file_info *fi =3D ractl->file->private_data;
+-	struct ceph_rw_context *rw_ctx;
+-	int got =3D 0;
+-	int ret =3D 0;
+-
+-	if (ceph_inode(inode)->i_inline_version !=3D CEPH_INLINE_NONE)
+-		return;
+-
+-	rw_ctx =3D ceph_find_rw_context(fi);
+-	if (!rw_ctx) {
+-		/*
+-		 * readahead callers do not necessarily hold Fcb caps
+-		 * (e.g. fadvise, madvise).
+-		 */
+-		int want =3D CEPH_CAP_FILE_CACHE;
+-
+-		ret =3D ceph_try_get_caps(inode, CEPH_CAP_FILE_RD, want, true, &got);
+-		if (ret < 0)
+-			dout("start_read %p, error getting cap\n", inode);
+-		else if (!(got & want))
+-			dout("start_read %p, no cache cap\n", inode);
+-
+-		if (ret <=3D 0)
+-			return;
+-	}
+-	netfs_readahead(ractl, &ceph_netfs_read_ops, (void *)(uintptr_t)got);
++	netfs_readahead(ractl, &ceph_netfs_read_ops, NULL);
+ }
+ =
+
+ #ifdef CONFIG_CEPH_FSCACHE
+
