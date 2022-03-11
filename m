@@ -2,114 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB77C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 495BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:25:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347165AbiCKH0I (ORCPT
+        id S1346528AbiCKH0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        Fri, 11 Mar 2022 02:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241896AbiCKHZy (ORCPT
+        with ESMTP id S240189AbiCKH0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:25:54 -0500
-Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5EA1B65EB;
-        Thu, 10 Mar 2022 23:24:51 -0800 (PST)
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="45601609"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643641200"; 
-   d="scan'208";a="45601609"
-Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
-  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP; 11 Mar 2022 16:23:45 +0900
-Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
-        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 0EBB7E05C8;
-        Fri, 11 Mar 2022 16:23:45 +0900 (JST)
-Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 58FF0EA177;
-        Fri, 11 Mar 2022 16:23:44 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id 32EF9401110B3;
-        Fri, 11 Mar 2022 16:23:44 +0900 (JST)
-From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        tan.shaopeng@jp.fujitsu.com
-Subject: [PATCH v5 4/6] selftests/resctrl: Make resctrl_tests run using kselftest framework
-Date:   Fri, 11 Mar 2022 16:21:45 +0900
-Message-Id: <20220311072147.3301525-5-tan.shaopeng@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220311072147.3301525-1-tan.shaopeng@jp.fujitsu.com>
-References: <20220311072147.3301525-1-tan.shaopeng@jp.fujitsu.com>
+        Fri, 11 Mar 2022 02:26:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10CB1B6E1A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:25:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A987B82AD2
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5C8C340E9;
+        Fri, 11 Mar 2022 07:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646983529;
+        bh=g84WdhT8WlUiVZ4Pe91HKYziG64yo/SO8s//Xpd2fk0=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=RYbR6QstwFDm4TM9v8bCHTbEje2eF314IM+w4i62zCcjy5CbFYtxmMOKpJl1xESrz
+         1BCXHnRkodtI0iUZHM1Id/Byrwtcth5mck8sVVve34jt7pFw08XUoAwxdlRGG/xbZs
+         bGgog83ItM1AGidvcly4RQhLWGsbx5S5WBDhGI8gTjLDYk4BnFir5Tq35/MNVNkeCB
+         MZKdaibOGRjUtHJ23sJKNEOyFufuv+omYan+GeYH1vI8J+HpgUmVsHy3lwtcYSGyly
+         XlKLxpYMmGv0fIXnXZ6OMuI4YvbBOwMIkd3EwnqMZLMsMZ1cY1GJ0qdxBsBliotM5X
+         x1JAFcmvQVRsg==
+Message-ID: <86d59c1d-b453-5ee2-4737-b4dd03829965@kernel.org>
+Date:   Fri, 11 Mar 2022 15:25:25 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [f2fs-dev] [PATCH 1/2 v2] f2fs: don't get FREEZE lock in
+ f2fs_evict_inode in frozen fs
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220309214834.3408741-1-jaegeuk@kernel.org>
+ <Yircgd9d773xnk3+@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <Yircgd9d773xnk3+@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In kselftest framework, all tests can be build/run at a time,
-and a sub test also can be build/run individually. As follows:
-$ make kselftest-all TARGETS=resctrl
-$ make -C tools/testing/selftests run_tests
-$ make -C tools/testing/selftests TARGETS=resctrl run_tests
+On 2022/3/11 13:22, Jaegeuk Kim wrote:
+> Let's purge inode cache in order to avoid the below deadlock.
+> 
+> [freeze test]                         shrinkder
+> freeze_super
+>   - pwercpu_down_write(SB_FREEZE_FS)
+>                                         - super_cache_scan
+>                                           - down_read(&sb->s_umount)
+>                                             - prune_icache_sb
+>                                              - dispose_list
+>                                               - evict
+>                                                - f2fs_evict_inode
+> thaw_super
+>   - down_write(&sb->s_umount);
+>                                                - __percpu_down_read(SB_FREEZE_FS)
+> 
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 
-However, resctrl_tests cannot be run using kselftest framework,
-users have to change directory to tools/testing/selftests/resctrl/,
-run "make" to build executable file "resctrl_tests",
-and run "sudo ./resctrl_tests" to execute the test.
+Reviewed-by: Chao Yu <chao@kernel.org>
 
-To build/run resctrl_tests using kselftest framework.
-Modify tools/testing/selftests/Makefile
-and tools/testing/selftests/resctrl/Makefile.
-
-Even after this change, users can still build/run resctrl_tests
-without using framework as before.
-
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
----
- tools/testing/selftests/Makefile         |  1 +
- tools/testing/selftests/resctrl/Makefile | 18 +++---------------
- 2 files changed, 4 insertions(+), 15 deletions(-)
-
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index d08fe4cfe811..6138354b3760 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -52,6 +52,7 @@ TARGETS += proc
- TARGETS += pstore
- TARGETS += ptrace
- TARGETS += openat2
-+TARGETS += resctrl
- TARGETS += rlimits
- TARGETS += rseq
- TARGETS += rtc
-diff --git a/tools/testing/selftests/resctrl/Makefile b/tools/testing/selftests/resctrl/Makefile
-index 6bcee2ec91a9..30af27b07d21 100644
---- a/tools/testing/selftests/resctrl/Makefile
-+++ b/tools/testing/selftests/resctrl/Makefile
-@@ -1,17 +1,5 @@
--CC = $(CROSS_COMPILE)gcc
--CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
--SRCS=$(wildcard *.c)
--OBJS=$(SRCS:.c=.o)
-+TEST_GEN_PROGS := resctrl_tests
- 
--all: resctrl_tests
-+include ../lib.mk
- 
--$(OBJS): $(SRCS)
--	$(CC) $(CFLAGS) -c $(SRCS)
--
--resctrl_tests: $(OBJS)
--	$(CC) $(CFLAGS) -o $@ $^
--
--.PHONY: clean
--
--clean:
--	$(RM) $(OBJS) resctrl_tests
-+$(OUTPUT)/resctrl_tests: $(wildcard *.c)
--- 
-2.27.0
-
+Thanks,
