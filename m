@@ -2,94 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09293C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346052AbiCKNLc (ORCPT
+        id S1346239AbiCKNLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:11:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
+        Fri, 11 Mar 2022 08:11:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235877AbiCKNL0 (ORCPT
+        with ESMTP id S1347958AbiCKNLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:11:26 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B681C230E;
-        Fri, 11 Mar 2022 05:10:23 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id h15so12874288wrc.6;
-        Fri, 11 Mar 2022 05:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=ifuiYsfaZmXujhhjdnLGqkFWQ/ohB0GeELLEYUmC2Ro=;
-        b=Da9XXFi60VvRHH8Yzcn8N5oz1mPAi4o7TexgydtetpRGNxTKZwD/SZT2wemiyZYTJs
-         r1cjTiLN4nG1ULIMV3K6Yi+6hrhey4qdqB/DxGqXSo7GFIPDgrO45gnpOLv87DaALjQv
-         7z0iR0cGb8lhFHrPO6yY1Y8leQg0TPy3I9HxaBNiuOiPGD7GYLXz98+NhYPccVj19zhb
-         92FkqCJlD+buFnh18dsLjwDwR4GTkvrghyUln7qJBkOwMmVwlr6X8Ugbpl+EMDNuJaxb
-         hqmlzEXS7ojFUojtQkooC1CIornXfqvvDWG/hRHWWrbfrxUqP2RhBqg8AJ0f7uc1wddG
-         49aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ifuiYsfaZmXujhhjdnLGqkFWQ/ohB0GeELLEYUmC2Ro=;
-        b=vu6TkpE5xOeqrIHuVopPrTWVE0bOeh6wdWE9wu6JFq/8w2GSG7q50LxpIhtqvDqsJb
-         R0j10pD1ls4G8RdtbX82Aw2GCyfUqdSMKS6rJlt86HWAqQiZd/tVvj6MXw50WyPE7HWX
-         5IqKm4UV0VuJrR9p+4o+CPquTMqAFm8ykeX3QwAa5SlPvPnLblarBIW5QiHf6dSHAB9w
-         CjitnB/GWAt82Dh8H9Mqto47Znlx3zDQ6g797p6Cwl6cEdtgTtNyCv93AOv16cP16tOC
-         pzTkNH8ugnz+3u0WkfprQfF0Bv9WDTPQqXiNLuMWDCrVPB+EFeeOTWROrXx9mqfmFQts
-         QI6Q==
-X-Gm-Message-State: AOAM531xYKSTkiuA/6vjQ1QwzPuJCkGIRhN1rH1OvxU4Fuw5HUkz50zk
-        6jLnwDAM7wbtXJplcXRN3xI=
-X-Google-Smtp-Source: ABdhPJxnhIX4FNkmpQCGan7ANCBMmiZgwwCSIIz3zRWvpgP/Rp8upFTo/ZOYgr2xBSbtS7Ij8OkRNw==
-X-Received: by 2002:a05:6000:143:b0:1f0:25a1:874c with SMTP id r3-20020a056000014300b001f025a1874cmr7220705wrx.191.1647004221946;
-        Fri, 11 Mar 2022 05:10:21 -0800 (PST)
-Received: from felia.fritz.box (200116b826a9a900147fc2a0771e144b.dip.versatel-1u1.de. [2001:16b8:26a9:a900:147f:c2a0:771e:144b])
-        by smtp.gmail.com with ESMTPSA id e4-20020adffc44000000b001f1dba38a65sm6581325wrs.105.2022.03.11.05.10.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 05:10:21 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: drop entry to removed file in ARM/RISCPC ARCHITECTURE
-Date:   Fri, 11 Mar 2022 14:09:56 +0100
-Message-Id: <20220311130957.17884-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 11 Mar 2022 08:11:37 -0500
+X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Mar 2022 05:10:33 PST
+Received: from out203-205-221-155.mail.qq.com (out203-205-221-155.mail.qq.com [203.205.221.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CECD1C232C
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:10:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1647004231;
+        bh=+6S3oZhJXthUPbzYWd80fospAGyDMx5urCnGtN8Fuj4=;
+        h=From:To:Cc:Subject:Date;
+        b=qLMA3oQpr1qpLuveyck7eeDfOpAR0VFC8Ceis2lOFJGk+bmJ/Z9iVkcmtbXFMVFBF
+         nlgSW13So18u7M4ZX1vYX/bq2XT7ou85KsMiwj+8RrTTrMQvp9cmTwptNPyoz5hEb8
+         rczPoCqVduNq+R1Blw3M3FOkZjB1XL20LD1qkJAw=
+Received: from localhost.localdomain ([111.193.130.237])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 1D0A74D3; Fri, 11 Mar 2022 21:07:16 +0800
+X-QQ-mid: xmsmtpt1647004036tazonpkur
+Message-ID: <tencent_B5D64530EB9C7DBB8D2C88A0C790F1489D0A@qq.com>
+X-QQ-XMAILINFO: NwFwz4tS/C+e9pALN+3gOw5wbLA8/rE6Q24PsFnaXIRlbH5x2WkoOxlvUATV65
+         gvv9TH6OGrtSRkWS1pEHG/gES0KULNpUeY/5lnUFbdBdJI9/c9P1bASbItuHS+B4DXkt/ot/pRE3
+         OAq1B0EKIsWfuUzX93eAOJor4nR44H6anUgGprjL1/JBvVe5grmInu7JZhjBWanoDIFKr6mBgTm1
+         327zIDpACdqS+WSK9JHT2JqUSyMAulKlAVHclyDGycqyNDBK/rjLTLyJX41mHeh/BmP4veascKYL
+         cgq2So/6t5WCO71slkwT2820EoHPf5sET/kc7Kn2kLYYJ/O+vY5F108bLEzLOPHsLgH8dywgXw7a
+         vyC8Sdu/UvK4D7kMwt9SmLOgvw9z9u49mUhAxZwYx4FTKmg1XvcG04RA8tjiKSm58XQpSGe7BZFU
+         OM7LkaVUoXRwVqq0yMWoTzdwxsvobxxeAEgT/IaT/NZgxmXEF2ay5+umMybeJz9aSV1TO1E0lsly
+         RSMc3rf5nUfGQKRRcg7UYZw3KMLslV8pxufSiaCm8Niqzv8sJ64RoCtkf1UkPcppoL0RSNi7KLlb
+         WYXZSwfaJwm+6Cacp+jkXyweuKSCk9GaJSvDlm+WhpZRsut0PC+ZiyNV3Icl9IWNdaIiV1Kf+S4Z
+         aOX3Cpy4AELxeRQPNE1uHBXKklnhCUOrytyQ8oVJWzuWetF+SJyn0k/cOgFQsDGK3kO9DWZGVDop
+         0MhdwxsyTB0bfF6aCcn4bFiSvWgteZlo+pnBTno/Ooq1qd8/Wgg2YBKHHziM/LWBQxQtjFYeQaBN
+         HKPKrV/oMU+uA/WeSsI95zjOgXP6tLXUsVNSaN2gwHOPpaUyNsyX6twS6gU1fybptcKlDiNHQn7J
+         liZklEUq89FmWZUPuvP+/LLXRylOePxeMy/RAbxsOp
+From:   Weiguo Li <liwg06@foxmail.com>
+To:     dave@stgolabs.net, dbueso@suse.de, peterz@infradead.org,
+        mingo@redhat.com, acme@kernel.org
+Cc:     mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] perf bench: Fix null check
+Date:   Fri, 11 Mar 2022 21:07:16 +0800
+X-OQ-MSGID: <20220311130716.257405-1-liwg06@foxmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1fe8d054c0a ("ARM: riscpc: use GENERIC_IRQ_MULTI_HANDLER") removes
-arch/arm/include/asm/hardware/entry-macro-iomd.S, but missed to adjust
-MAINTAINERS.
+We did a null check after "epollfdp = calloc(...)", but we checked
+"epollfd" instead of "epollfdp".
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
-
-Drop the file entry to the removed file in ARM/RISCPC ARCHITECTURE.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Weiguo Li <liwg06@foxmail.com>
 ---
-Ard, please pick this minor non-urgent clean-up patch. Thanks.
+ tools/perf/bench/epoll-ctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 02a75dd04187..d0df1309cca2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2606,7 +2606,6 @@ M:	Russell King <linux@armlinux.org.uk>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- W:	http://www.armlinux.org.uk/
--F:	arch/arm/include/asm/hardware/entry-macro-iomd.S
- F:	arch/arm/include/asm/hardware/ioc.h
- F:	arch/arm/include/asm/hardware/iomd.h
- F:	arch/arm/include/asm/hardware/memc.h
+diff --git a/tools/perf/bench/epoll-ctl.c b/tools/perf/bench/epoll-ctl.c
+index 740ae764537e..134612bde0cb 100644
+--- a/tools/perf/bench/epoll-ctl.c
++++ b/tools/perf/bench/epoll-ctl.c
+@@ -106,7 +106,7 @@ static void nest_epollfd(void)
+ 	printinfo("Nesting level(s): %d\n", nested);
+ 
+ 	epollfdp = calloc(nested, sizeof(int));
+-	if (!epollfd)
++	if (!epollfdp)
+ 		err(EXIT_FAILURE, "calloc");
+ 
+ 	for (i = 0; i < nested; i++) {
 -- 
-2.17.1
+2.25.1
+
 
