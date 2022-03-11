@@ -2,172 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D543C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbiCKWok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:44:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S229480AbiCKWpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:45:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiCKWoa (ORCPT
+        with ESMTP id S229604AbiCKWpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:44:30 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D782D277498;
-        Fri, 11 Mar 2022 14:20:03 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 075505DB;
-        Fri, 11 Mar 2022 13:48:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1647035306;
-        bh=P5ZzCyWn8Nc/M66e9melDdZzKd2Hn269uTStfhzFeC8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SeBg6gzwol1DPY+p8aBXLrgBeFwTV/cLJNNB+CzisLZn5BmXq8SHYUi4BmZTI5U87
-         EwF40TMiZh3r0gEjiam4MJxKeWQSKEJyhstMlz6G6s6e5q1orIIbmJ+LmDI+adDj6J
-         dD4rHas3tEoq254WVvMBjHQvd6oLPDMmrV61sYro=
-Date:   Fri, 11 Mar 2022 13:48:22 -0800
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: Add power-efuse binding
-Message-ID: <YivDpkajrJk3KfBM@hatter.bewilderbeest.net>
-References: <20220308011811.10353-1-zev@bewilderbeest.net>
- <20220308011811.10353-2-zev@bewilderbeest.net>
- <YitpuR+SlDiKh4eq@robh.at.kernel.org>
+        Fri, 11 Mar 2022 17:45:09 -0500
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CD22A2B9D;
+        Fri, 11 Mar 2022 14:20:40 -0800 (PST)
+Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
+        by mxout3.routing.net (Postfix) with ESMTP id C1C6960F5F;
+        Fri, 11 Mar 2022 21:04:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1647032663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rtt0wxHubmWpKdU6ekWYzCitwnoj4zI5iwxQKYKbTWk=;
+        b=eQzbJTFc57T/S09xkYoZDHtkcblS/4wW/Gl5PwOT8TmpANImFyi9Jjm7isC1rDJqurSShG
+        y5frICWIR4v3YP2hVYph2WPbq2QazU3BWIi6cKrLiJib3nqjJV4FGgIZAewOeV+GszMwNt
+        gch5CvVsh+eJEJNgEGdc9hBVBtvVhew=
+Received: from localhost.localdomain (fttx-pool-217.61.144.196.bambit.de [217.61.144.196])
+        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id A020640684;
+        Fri, 11 Mar 2022 21:04:22 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     devicetree@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH v6 3/6] ARM: dts: spear13xx: Fix sata node name
+Date:   Fri, 11 Mar 2022 22:03:54 +0100
+Message-Id: <20220311210357.222830-4-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220311210357.222830-1-linux@fw-web.de>
+References: <20220311210357.222830-1-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YitpuR+SlDiKh4eq@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 127311bf-9db5-442b-9c8e-516e6731cf9d
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 07:24:41AM PST, Rob Herring wrote:
->On Mon, Mar 07, 2022 at 05:18:09PM -0800, Zev Weiss wrote:
->> This can be used to describe a power output supplied by a regulator
->> device that the system controls.
->>
->> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
->> ---
->>  .../devicetree/bindings/misc/power-efuse.yaml | 49 +++++++++++++++++++
->>  1 file changed, 49 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/misc/power-efuse.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/misc/power-efuse.yaml b/Documentation/devicetree/bindings/misc/power-efuse.yaml
->> new file mode 100644
->> index 000000000000..5f8f0b21af0e
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/misc/power-efuse.yaml
->> @@ -0,0 +1,49 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/misc/power-efuse.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Generic power efuse device
->> +
->> +maintainers:
->> +  - Zev Weiss <zev@bewilderbeest.net>
->> +
->> +description: |
->> +  This binding describes a physical power output supplied by a
->> +  regulator providing efuse functionality (manual on/off control, and
->> +  auto-shutoff if current, voltage, or thermal limits are exceeded).
->> +
->> +  These may be found on systems such as "smart" network PDUs, and
->> +  typically supply power to devices entirely separate from the system
->> +  described by the device-tree by way of an external connector such as
->> +  an Open19 power cable:
->> +
->> +  https://www.open19.org/marketplace/coolpower-cable-assembly-8ru/
->
->Not really a helpful link...
->
->I still don't understand what the h/w looks like here. At least I now
->understand we're talking a fuse on power rail, not efuses in an SoC
->used as OTP bits or feature disables.
->
+From: Frank Wunderlich <frank-w@public-files.de>
 
-The systems this would actually be used for would be things like these:
-  - https://www.open19.org/marketplace/delta-16kw-power-shelf/
-  - https://www.open19.org/marketplace/inspur-open19-power-shelf-ob19200l1/
+After converting the binding to yaml the node name does
+not match the standard pattern, change it.
 
-The rightmost pictures on those pages show the four black connectors 
-where the cable assembly linked in the patch plugs in, each of which 
-provides the outputs from 12 such efuses, on 12 pairs of ground and 
-+12VDC pins.  (There are also two more single outputs off to the side.)
+arch/arm/boot/dts/spear1340-evb.dt.yaml: ahci@b1000000:
+$nodename:0: 'ahci@b1000000' does not match '^sata(@.*)?$'
+	From schema: Documentation/devicetree/bindings/ata/ahci-platform.yaml
 
-It essentially just amounts to an external power output supplied by a 
-regulator, with the regulator providing an on/off switch, overcurrent 
-protection, etc.
+Fixes: 07658d9a659b ("SPEAr13xx: Add dts and dtsi files")
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+ arch/arm/boot/dts/spear1310.dtsi    | 6 +++---
+ arch/arm/boot/dts/spear1340-evb.dts | 2 +-
+ arch/arm/boot/dts/spear1340.dtsi    | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-And yes, the ambiguity of the "efuse" terminology is unfortunate (the 
-"power-" prefix was an attempt to clarify it slightly).  That's the term 
-used in the documentation for the hardware and hence is what I've called 
-it here, but I'd be open to using a different name if that would help.
+diff --git a/arch/arm/boot/dts/spear1310.dtsi b/arch/arm/boot/dts/spear1310.dtsi
+index 2f746a9428a7..8702c290ed8a 100644
+--- a/arch/arm/boot/dts/spear1310.dtsi
++++ b/arch/arm/boot/dts/spear1310.dtsi
+@@ -50,7 +50,7 @@ miphy2: miphy@eb808000 {
+ 			status = "disabled";
+ 		};
+ 
+-		ahci0: ahci@b1000000 {
++		ahci0: sata@b1000000 {
+ 			compatible = "snps,spear-ahci";
+ 			reg = <0xb1000000 0x10000>;
+ 			interrupts = <0 68 0x4>;
+@@ -59,7 +59,7 @@ ahci0: ahci@b1000000 {
+ 			status = "disabled";
+ 		};
+ 
+-		ahci1: ahci@b1800000 {
++		ahci1: sata@b1800000 {
+ 			compatible = "snps,spear-ahci";
+ 			reg = <0xb1800000 0x10000>;
+ 			interrupts = <0 69 0x4>;
+@@ -68,7 +68,7 @@ ahci1: ahci@b1800000 {
+ 			status = "disabled";
+ 		};
+ 
+-		ahci2: ahci@b4000000 {
++		ahci2: sata@b4000000 {
+ 			compatible = "snps,spear-ahci";
+ 			reg = <0xb4000000 0x10000>;
+ 			interrupts = <0 70 0x4>;
+diff --git a/arch/arm/boot/dts/spear1340-evb.dts b/arch/arm/boot/dts/spear1340-evb.dts
+index fd194ebeedc9..65c757cd3718 100644
+--- a/arch/arm/boot/dts/spear1340-evb.dts
++++ b/arch/arm/boot/dts/spear1340-evb.dts
+@@ -112,7 +112,7 @@ pcie {
+ 			};
+ 		};
+ 
+-		ahci@b1000000 {
++		sata@b1000000 {
+ 			status = "okay";
+ 		};
+ 
+diff --git a/arch/arm/boot/dts/spear1340.dtsi b/arch/arm/boot/dts/spear1340.dtsi
+index 827e887afbda..f45f3046f1c8 100644
+--- a/arch/arm/boot/dts/spear1340.dtsi
++++ b/arch/arm/boot/dts/spear1340.dtsi
+@@ -33,7 +33,7 @@ miphy0: miphy@eb800000 {
+ 			status = "disabled";
+ 		};
+ 
+-		ahci0: ahci@b1000000 {
++		ahci0: sata@b1000000 {
+ 			compatible = "snps,spear-ahci";
+ 			reg = <0xb1000000 0x10000>;
+ 			interrupts = <0 72 0x4>;
+-- 
+2.25.1
 
->> +
->> +properties:
->> +  compatible:
->> +    const: power-efuse
->> +
->> +  vout-supply:
->> +    description:
->> +      phandle to the regulator providing power for the efuse
->
->Vout is a supply to the efuse and not the rail being fused?
-
-Yeah, that was a fairly muddled description -- it's really the latter.  
-Perhaps:
-
-   phandle to the regulator providing power for the output rail
-   controlled by the efuse
-
-?
-
->
->Sorry, I know nothing about how an efuse is implemented so you are going
->to have to explain or draw it.
->
->> +
->> +  error-flags-cache-ttl-ms:
->> +    description:
->> +      The number of milliseconds the vout-supply regulator's error
->> +      flags should be cached before re-fetching them.
->
->How does one fetch/read? the error flags?
->
-
-In the specific case I'm dealing with, via PMBus STATUS_* commands, 
-though I was aiming to keep this more generic so it could potentially be 
-used to describe non-PMBus arrangements (in the Linux case, via whatever 
-mechanism the implementation of the regulator's .get_error_flags() 
-function uses).
-
->> +
->> +required:
->> +  - compatible
->> +  - vout-supply
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    efuse {
->> +        compatible = "power-efuse";
->> +        vout-supply = <&efuse_reg>;
->> +        error-flags-cache-ttl-ms = <500>;
->> +    };
->> --
->> 2.35.1
->>
->>
