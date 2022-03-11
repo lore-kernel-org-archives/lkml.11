@@ -2,110 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26511C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346479AbiCKFql (ORCPT
+        id S1346503AbiCKFrH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:46:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        Fri, 11 Mar 2022 00:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235990AbiCKFqi (ORCPT
+        with ESMTP id S1345203AbiCKFrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:46:38 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0681AAFC9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:45:36 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id a5so7053823pfv.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:45:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=jLeXq2Ixl82u3kJhj+cevfsbwGuZVEVBDM1v8RCMk/k=;
-        b=SEZ164dfOblso9Z7mrK/NZD1o5BMCvzlKpCpQyKjbaVtBe9Q0iXnXi8UkoLjlbMzB5
-         a7b6NT1BwO90fxyhRS/Ew7RfOEgrQjQu2xpEOeHJ7N6SzP5lVu1GFnzFHTATMr7Gik35
-         IbFAIdVb8WIQ2ttLNqhWWSXia5NqZxt/XfyjeZoAm/Tswyo2YJVRa/l6RbMpSyOJWdi4
-         bGKP1a3peU8Qss2XeEuVUEjVstj3si6IgSBGJqK/JhrpTMOOlgXXLleKBs0n8oCkhnUa
-         qz5TIsp1d71YkghwrT9moLWlWsbvgeZ/ItpDT1bzkrTU6pM5YrbDIiA7EBYm9OtWQY+q
-         bhiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jLeXq2Ixl82u3kJhj+cevfsbwGuZVEVBDM1v8RCMk/k=;
-        b=L7Rs5gS400LC+y3xcqZ10ZqNhhOtJ93NuO4Zan902Qrs9PB3zS2GiY79tZplz/4T8x
-         N+VqUDjb+1VIhy5X+AqLJHi90BoJa+SEux6LO7P/Au8SAq7101qVPn+FZQIRumwPQAfn
-         Xtx05g3xErMGT4VtjTsmdxJq41h9HmBp95mohWh+1kSn9hqlXu2VF1p9zu9qKg2Lzar8
-         VD5+OtOSCbIDWI9ndw4zdx70Ci3fa/JMbZxY3YPyCyuZosXdsmVZfFjfC8TgOkbhFtxT
-         xFP/pXth4xkPdv95pwOzoQ33Te4SxeeS/OtBJNsRKg1kMY4JNOyw0wtAxTv96LkR2mZ8
-         nt9Q==
-X-Gm-Message-State: AOAM532qe1TiB9d5+mkTarVynzWHZF6YlAa3SdHihBY75ZoyRqH+UDtu
-        yob24Vsd7+HvgHcAf0e0/g==
-X-Google-Smtp-Source: ABdhPJwPDIe0g7pk3UVu2o34WL7sYDs4/dNMi96D6by4g0wYa0lbzNavWIaMW4P7PgWvfVWSbF0FqQ==
-X-Received: by 2002:a05:6a00:3011:b0:4f6:dca6:ece1 with SMTP id ay17-20020a056a00301100b004f6dca6ece1mr8588830pfb.75.1646977536008;
-        Thu, 10 Mar 2022 21:45:36 -0800 (PST)
-Received: from sh08423pcu1.spreadtrum.com ([101.230.211.98])
-        by smtp.gmail.com with ESMTPSA id o5-20020a056a00214500b004bd7036b50asm8962653pfk.172.2022.03.10.21.45.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Mar 2022 21:45:35 -0800 (PST)
-From:   Bruce Chen <brucechen251@gmail.com>
-To:     bruce.chen@unisoc.com, rogerq@kernel.org, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com, linux-kernel@vger.kernel.org
-Cc:     orsonzhai@gmail.com, gengcixi@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com
-Subject: [PATCH V2 2/2] extcon: usb-gpio: Remove disable irq operation in system sleep.
-Date:   Fri, 11 Mar 2022 13:44:07 +0800
-Message-Id: <1646977447-29598-1-git-send-email-brucechen251@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        Fri, 11 Mar 2022 00:47:03 -0500
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E79B1AD391;
+        Thu, 10 Mar 2022 21:45:59 -0800 (PST)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C6E7E68AFE; Fri, 11 Mar 2022 06:45:55 +0100 (CET)
+Date:   Fri, 11 Mar 2022 06:45:55 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Ondrej Zary <linux@zary.sk>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        Tim Waugh <tim@cyberelk.net>, linux-block@vger.kernel.org,
+        linux-parport@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v0] pata_parport: add driver (PARIDE replacement)
+Message-ID: <20220311054555.GA16362@lst.de>
+References: <20220310212812.13944-1-linux@zary.sk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310212812.13944-1-linux@zary.sk>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bruce Chen <bruce.chen@unisoc.com>
+On Thu, Mar 10, 2022 at 10:28:12PM +0100, Ondrej Zary wrote:
+> Add pata_parport (PARIDE replacement) core libata driver.
+> 
+> The original paride protocol modules are used for now so allow them to
+> be compiled without old PARIDE core.
 
-If disable vbus/id irq, it will lead to wakeup system fail
-in unisoc platform. In unisoc platform, Irq enable and irq
-wakeup are the same interrupt line. So remove disable vbus/id
-irq operation is a way to solve the issue.
+I agree with Damien that this needs a bit more text here.  Explaining
+what kind of hardware this drives, that this will allow to eventually
+drop paride, how it reuesed the low-level drivers, etc.
 
-Signed-off-by: Bruce Chen <bruce.chen@unisoc.com>
-Acked-by: Bruce Chen <bruce.chen@unisoc.com>
----
- drivers/extcon/extcon-usb-gpio.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+> +	  If your parallel port support is in a loadable module, you must build
+> +	  PATA_PARPORT as a module. If you built PATA_PARPORT support into your
+> +	  kernel, you may still build the individual protocol modules
+> +	  as loadable modules.
 
-diff --git a/drivers/extcon/extcon-usb-gpio.c b/drivers/extcon/extcon-usb-gpio.c
-index f2b65d9..40d967a 100644
---- a/drivers/extcon/extcon-usb-gpio.c
-+++ b/drivers/extcon/extcon-usb-gpio.c
-@@ -226,16 +226,6 @@ static int usb_extcon_suspend(struct device *dev)
- 		}
- 	}
- 
--	/*
--	 * We don't want to process any IRQs after this point
--	 * as GPIOs used behind I2C subsystem might not be
--	 * accessible until resume completes. So disable IRQ.
--	 */
--	if (info->id_gpiod)
--		disable_irq(info->id_irq);
--	if (info->vbus_gpiod)
--		disable_irq(info->vbus_irq);
--
- 	if (!device_may_wakeup(dev))
- 		pinctrl_pm_select_sleep_state(dev);
- 
-@@ -267,11 +257,6 @@ static int usb_extcon_resume(struct device *dev)
- 		}
- 	}
- 
--	if (info->id_gpiod)
--		enable_irq(info->id_irq);
--	if (info->vbus_gpiod)
--		enable_irq(info->vbus_irq);
--
- 	queue_delayed_work(system_power_efficient_wq,
- 			   &info->wq_detcable, 0);
- 
--- 
-1.9.1
+I'd drop the above.  The dependencies are already enforced by Kconfig
+and we don't really tend to mention this elsewhere.
 
+> +	  Unlike the old PARIDE, there are no high-level drivers needed.
+> +	  The IDE devices behind parallel port adapters are handled by the
+> +	  ATA layer.
+
+I also don't think this is needed.
+
+> index 000000000000..3ea8d824091e
+> --- /dev/null
+> +++ b/drivers/ata/parport/pata_parport.c
+> @@ -0,0 +1,805 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+
+Please add your copyright statement here.
+
+> +static void pata_parport_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
+
+Overly long line.
+
+> +			pi->proto->write_regr(pi, 0, ATA_REG_NSECT, tf->hob_nsect);
+> +			pi->proto->write_regr(pi, 0, ATA_REG_LBAL, tf->hob_lbal);
+> +			pi->proto->write_regr(pi, 0, ATA_REG_LBAM, tf->hob_lbam);
+> +			pi->proto->write_regr(pi, 0, ATA_REG_LBAH, tf->hob_lbah);
+
+Same here.
+
+> +static void pata_parport_exec_command(struct ata_port *ap, const struct ata_taskfile *tf)
+
+.. and here.
+
+And a bunch more.
+
+> +static void pata_parport_bus_release(struct device *dev)
+> +{
+> +	/* nothing to do here but required to avoid warning on device removal */
+> +}
+> +
+> +static struct bus_type pata_parport_bus_type = {
+> +	.name = DRV_NAME,
+> +};
+> +
+> +static struct device pata_parport_bus = {
+> +	.init_name = DRV_NAME,
+> +	.release = pata_parport_bus_release,
+> +};
+> +
+> +/* temporary for old paride protocol modules */
+> +static struct scsi_host_template pata_parport_sht = {
+> +	PATA_PARPORT_SHT("pata_parport")
+> +};
+
+Did you look into my suggestion to use struct pardevice.dev instead?
+
+> index ddb9e589da7f..f3bd01a9c9ec 100644
+> --- a/drivers/block/paride/paride.h
+> +++ b/drivers/block/paride/paride.h
+> @@ -1,3 +1,7 @@
+> +#if IS_ENABLED(CONFIG_PATA_PARPORT)
+> +#include "../../ata/parport/pata_parport.h"
+> +
+> +#else
+
+Maybe add a comment here?  Also this is a pretty clear indication
+that pata_parport.h should be in include/linux/ at least for now.
