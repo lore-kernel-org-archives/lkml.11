@@ -2,74 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26636C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348819AbiCKNNZ (ORCPT
+        id S1348828AbiCKNPk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
+        Fri, 11 Mar 2022 08:15:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348810AbiCKNNX (ORCPT
+        with ESMTP id S1348815AbiCKNPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:13:23 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Mar 2022 05:12:19 PST
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7FA1C2DBD
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:12:19 -0800 (PST)
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20220311131114a52a99d5f1e7f792db
-        for <linux-kernel@vger.kernel.org>;
-        Fri, 11 Mar 2022 14:11:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=raphael.lisicki@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=OiZ+D1JjDvqox07n28ij4jAYs8XPUSnRKqPqymKI+aA=;
- b=bqWAFRG3IjGuc77kwk+aecHcPU/G5lXMbJx+PcLLYxdixFUNNYh8u+RU7kObh1jj9LHOQz
- XbwnG7/mZKPv5eNMDZI0kM45vGbDApN5XbO0/6oonAa29untph4bJRCahjyDqYIt0rBb98rp
- XK4G9GvGmop/G/AmdAXYlYApnIb58=;
-Message-ID: <f7ca02c3-c632-7141-02f6-4b2055621e34@siemens.com>
-Date:   Fri, 11 Mar 2022 14:11:13 +0100
+        Fri, 11 Mar 2022 08:15:38 -0500
+X-Greylist: delayed 426 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Mar 2022 05:14:34 PST
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65651187E23;
+        Fri, 11 Mar 2022 05:14:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1647004472;
+        bh=FMOnkqFTBBpJisQx6U/1gR7mxTpSOznVSYK5PoP3F+c=;
+        h=From:To:Cc:Subject:Date;
+        b=ZS2gADM4N8v2ST1GI+D1QX93H59VX4fS5by1ERURatD7CIRa5cPnIyjW/ouJdpDLT
+         e6ccy8bs5zyDvBPheHeYR81fRWRMnR0FugDHG+P4bdwj1rvu6eABQajEj66xyjRcRD
+         NZq42QUrMOp9MrRM875bSJcEP9euF7WbJt0CUxXA=
+Received: from localhost.localdomain ([111.193.130.237])
+        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+        id 1BA1C83E; Fri, 11 Mar 2022 21:06:58 +0800
+X-QQ-mid: xmsmtpt1647004018tqcywn45w
+Message-ID: <tencent_DF39269807EC9425E24787E6DB632441A405@qq.com>
+X-QQ-XMAILINFO: Ms5xyImz3IR/cwTgMFAUfw9FhKeGEvyQDBTgYfUA/0Iolu5DLZmltTiXFOspWq
+         D8b7yMzM9b4kcp0p6hf/jhmGA7Hp32uKKVBnqCMiXT9t5mQ1PyCO61YgxIOmxOBjSDSebimxQrI3
+         gAOyx+iliyrpIt72aSiIsyiXhcs0crj8shO04OZjUm9crV8W7fRi+vfa94pHhVQ6mTs45FNIFrLi
+         C8kvtVRLTFIZfb2/X6Uz6MGPK+5aUAz0TDzZVw3xiLH2WKcokeHhM+iLeb/deQFqnQIeDF70yMvw
+         pyVMs/rb2OKNKX46ZSDseRcehOzArfRL18o4TI/3WKmISHl7326ptR9AhtLmkvBRL0iaLWGMnVPG
+         xYyWKJmoe9VpXZ8gnaZfvqZOAOomGq/QFB5bz/H5tPYUbM/YqYxPZVOYoHvwL5+M5I0EZ2BccaBr
+         F3h+9+Up71oSZDMoJ3nLuFBunQ9h1V1Ybj+mRio8Bg5yOfqt/qPTDwW5RSJsyyMcLAXg+zAKyEu7
+         gGwwUwTvIFQ78oh/z14TjpZVPKBIazVUXzLw6s0yfR2RDnrQnCaCXosBExaz1HMaxOxcmKROJyGx
+         FSsRB7NXgYtRcdjBMt78sbIQzlTgRolpdgAomvK2qMOVPUF23iTmSAvYprL/TRtk/qZZSbvyAjJI
+         6z08Z1QkzZAEJ9HX0FVK6wAlX8TRgUhVhpq3VRzLdyJqrq1e7mDYSVhazpUtKoOpSIWysF/92+bV
+         UsURJX++S8hHd7qlkU24H7+nhZjy6xEEtWCjKqB6gEqflHvFJrdB/be9jJqt6gJ50Z7AAu7YXRID
+         5pmcPVJx9V8WcptHIlgfGN7MNTQKhuDXZ59avBTlRQKS4K4CAq6hmHT49g+7L4KRodajHG295MfM
+         CgkVdRqbuauau8HdyNx12lkyUBaBcI2M6/A/kl4eeeItHnbvD7KrA6QfCbFVCoYZRKtNgaDaI0
+From:   Weiguo Li <liwg06@foxmail.com>
+To:     john.garry@huawei.com, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org
+Cc:     mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] perf parse-events: Fix null check
+Date:   Fri, 11 Mar 2022 21:06:57 +0800
+X-OQ-MSGID: <20220311130657.257353-1-liwg06@foxmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Subject: Re: [PATCH] scsi: hpsa: prevent hpsa to severly delay boot
-Content-Language: en-US
-To:     Corentin Labbe <clabbe@baylibre.com>, don.brace@microchip.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        storagedev@microchip.com
-References: <20220204131247.1684875-1-clabbe@baylibre.com>
-From:   Raphael Lisicki <raphael.lisicki@siemens.com>
-In-Reply-To: <20220204131247.1684875-1-clabbe@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-7517:519-21489:flowmailer
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+We did a null check after "tmp->symbol = strdup(...)", but we checked
+"list->symbol" other than "tmp->symbol".
 
-On 04.02.22 14:12, Corentin Labbe wrote:
-> On my HPE Proliant microserver gen 10+, modprobing hpsa lead to:
-> hpsa 0000:01:00.7: unrecognized board ID: 0x00e41590
-> hpsa 0000:01:00.7: unrecognized board ID: 0x00e41590
-> hpsa 0000:01:00.7: can't disable ASPM; OS doesnt't have ASPM control
-> hpsa 0000:01:00.7: board not ready, timed ou >
-> And the boot is severly delayed until the timeout.
+Signed-off-by: Weiguo Li <liwg06@foxmail.com>
+---
+ tools/perf/util/parse-events.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The same happens with ProLiant DL360 Gen10.
+diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
+index 9739b05b999e..dfb50a5f83d0 100644
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -2193,7 +2193,7 @@ int perf_pmu__test_parse_init(void)
+ 	for (i = 0; i < ARRAY_SIZE(symbols); i++, tmp++) {
+ 		tmp->type = symbols[i].type;
+ 		tmp->symbol = strdup(symbols[i].symbol);
+-		if (!list->symbol)
++		if (!tmp->symbol)
+ 			goto err_free;
+ 	}
+ 
+-- 
+2.25.1
 
-
-> 
-> The controller is HPE Smart Array S100i SR Gen10
-> 
-> I have tried to add (naivly) to struct board_type products:
-> 	{0x00e41590, "Smart Array S100i SR Gen10", &SA5_access},
-> but the board still time out.
-> 
-> With further search, I found that the S100i seems to be a fake SW RAID controller usefull for windows only.
-> 
-> So I use the following patch to fix the boot stuck.
-
-
-Also confirmed on ProLiant DL360 Gen10 as working, but not sure about 
-the general approach.
