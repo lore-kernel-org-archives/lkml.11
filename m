@@ -2,181 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6F8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC8DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344327AbiCKQCB (ORCPT
+        id S1350079AbiCKQCI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:02:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        Fri, 11 Mar 2022 11:02:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiCKQBx (ORCPT
+        with ESMTP id S1350102AbiCKQB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:01:53 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD4F1CD9E6;
-        Fri, 11 Mar 2022 08:00:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 11 Mar 2022 11:01:58 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEAC1CCB02;
+        Fri, 11 Mar 2022 08:00:54 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 29C7ECE294C;
-        Fri, 11 Mar 2022 16:00:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D49C340E9;
-        Fri, 11 Mar 2022 16:00:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647014445;
-        bh=11oxb9yaROPxs0+LsOoCAd2B2Rmo0siA0o2ZuHPqprA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QLiBP4+AzU7ahxgvEw8aHw0Ay6eG5q9xwebZBDY7JThSicTJAOiHYNeQcCGm62Jft
-         QL95pwNm6P18DHK4XOfCQvjLByt5YXtr+AratIOaWlmlrYoKEFgIdptZ2TWLumTQ2w
-         Rx7vESBujZLoXJmajX5KCUQHuGNbpTdDL6Oeu+gZCNblDum8a+XcVW4wDLR+dM2+do
-         /jsPbFunQGPZ3Rnm+L2KXvvOaaJ1ywC7UnnOdBQnHOGMoWUrAhskqFyt4LBSbv/W/G
-         BeUDtBQhHl2y1nxeWrZ+pBzisaRhYOeFQxPICcvMJImmG94194b9tDv8cfSdeZmNnt
-         409z65pu+olLQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v11 10/12] fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
-Date:   Sat, 12 Mar 2022 01:00:38 +0900
-Message-Id: <164701443826.268462.9710343323787214959.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164701432038.268462.3329725152949938527.stgit@devnote2>
-References: <164701432038.268462.3329725152949938527.stgit@devnote2>
-User-Agent: StGit/0.19
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1B6B621106;
+        Fri, 11 Mar 2022 16:00:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647014453; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SAaUOGAe1srGHsWHBvn1FZ7QUyxX7XpJoMnIGqLANGo=;
+        b=JC9r4EOT7aEN0yB8Qf9FysIjDt/Lfq9D5zM4Ke/NbM9uN/KN1uAZpE5K4BgUSbilo63d9z
+        ht/QmX4FXDK1KjhUAtCwUayHbXzLF9H3rBvvtmdT+W0F37+q8YPjroPqnmmlYH+VtrjBi7
+        QtXDY6i3jI+KGH0cCUUGI9NsJFBQN9M=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DE50513A89;
+        Fri, 11 Mar 2022 16:00:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gxi4NTRyK2IjHwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Fri, 11 Mar 2022 16:00:52 +0000
+Date:   Fri, 11 Mar 2022 17:00:51 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Frank Hofmann <fhofmann@cloudflare.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Daniel Dao <dqminh@cloudflare.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] memcg: sync flush only if periodic flush is delayed
+Message-ID: <20220311160051.GA24796@blackbody.suse.cz>
+References: <20220304184040.1304781-1-shakeelb@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220304184040.1304781-1-shakeelb@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce FPROBE_FL_KPROBE_SHARED flag for sharing fprobe callback with
-kprobes safely from the viewpoint of recursion.
+Hello.
 
-Since the recursion safety of the fprobe (and ftrace) is a bit different
-from the kprobes, this may cause an issue if user wants to run the same
-code from the fprobe and the kprobes.
+TL;DR rstats are slow but accurate on reader side. To tackle the
+performance regression no flush seems simpler than this patch.
 
-The kprobes has per-cpu 'current_kprobe' variable which protects the
-kprobe handler from recursion in any case. On the other hand, the fprobe
-uses only ftrace_test_recursion_trylock(), which will allow interrupt
-context calls another (or same) fprobe during the fprobe user handler is
-running.
 
-This is not a matter in cases if the common callback shared among the
-kprobes and the fprobe has its own recursion detection, or it can handle
-the recursion in the different contexts (normal/interrupt/NMI.)
-But if it relies on the 'current_kprobe' recursion lock, it has to check
-kprobe_running() and use kprobe_busy_*() APIs.
+So, I've made an overview for myself what were the relevant changes with
+rstat introduction.
+The amount of work is:
+- before
+  R: O(1)
+  W: O(tree_depth)
 
-Fprobe has FPROBE_FL_KPROBE_SHARED flag to do this. If your common callback
-code will be shared with kprobes, please set FPROBE_FL_KPROBE_SHARED
-*before* registering the fprobe, like;
+- after
+  R: O(nr_cpus * nr_cgroups(subtree) * nr_counters) 
+  W: O(tree_depth)
 
- fprobe.flags = FPROBE_FL_KPROBE_SHARED;
+That doesn't look like a positive change especially on the reader side.
 
- register_fprobe(&fprobe, "func*", NULL);
+(In theory, the reader's work would be amortized but as the original
+report here shows, not all workloads are diluting the flushes
+sufficiently. [1])
 
-This will protect your common callback from the nested call.
+The benefit this was traded for was the greater accuracy, the possible
+error is:
+- before
+  - O(nr_cpus * nr_cgroups(subtree) * MEMCG_CHARGE_BATCH)	(1)
+- after
+    O(nr_cpus * MEMCG_CHARGE_BATCH) // sync. flush
+    or
+    O(flush_period * max_cr) // periodic flush only		(2)
+                             // max_cr is per-counter max change rate
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- include/linux/fprobe.h  |   12 ++++++++++++
- include/linux/kprobes.h |    3 +++
- kernel/trace/fprobe.c   |   19 ++++++++++++++++++-
- 3 files changed, 33 insertions(+), 1 deletion(-)
+So we could argue that if the pre-rstat kernels did just fine with the
+error (1), they would not be worse with periodic flush if we can compare
+(1) and (2). 
 
-diff --git a/include/linux/fprobe.h b/include/linux/fprobe.h
-index 8eefec2b485e..1c2bde0ead73 100644
---- a/include/linux/fprobe.h
-+++ b/include/linux/fprobe.h
-@@ -34,13 +34,25 @@ struct fprobe {
- 	void (*exit_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
- };
- 
-+/* This fprobe is soft-disabled. */
- #define FPROBE_FL_DISABLED	1
- 
-+/*
-+ * This fprobe handler will be shared with kprobes.
-+ * This flag must be set before registering.
-+ */
-+#define FPROBE_FL_KPROBE_SHARED	2
-+
- static inline bool fprobe_disabled(struct fprobe *fp)
- {
- 	return (fp) ? fp->flags & FPROBE_FL_DISABLED : false;
- }
- 
-+static inline bool fprobe_shared_with_kprobes(struct fprobe *fp)
-+{
-+	return (fp) ? fp->flags & FPROBE_FL_KPROBE_SHARED : false;
-+}
-+
- #ifdef CONFIG_FPROBE
- int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter);
- int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num);
-diff --git a/include/linux/kprobes.h b/include/linux/kprobes.h
-index 19b884353b15..5f1859836deb 100644
---- a/include/linux/kprobes.h
-+++ b/include/linux/kprobes.h
-@@ -427,6 +427,9 @@ static inline struct kprobe *kprobe_running(void)
- {
- 	return NULL;
- }
-+#define kprobe_busy_begin()	do {} while (0)
-+#define kprobe_busy_end()	do {} while (0)
-+
- static inline int register_kprobe(struct kprobe *p)
- {
- 	return -EOPNOTSUPP;
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 38073632bfe4..8b2dd5b9dcd1 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -56,6 +56,20 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
- }
- NOKPROBE_SYMBOL(fprobe_handler);
- 
-+static void fprobe_kprobe_handler(unsigned long ip, unsigned long parent_ip,
-+				  struct ftrace_ops *ops, struct ftrace_regs *fregs)
-+{
-+	struct fprobe *fp = container_of(ops, struct fprobe, ops);
-+
-+	if (unlikely(kprobe_running())) {
-+		fp->nmissed++;
-+		return;
-+	}
-+	kprobe_busy_begin();
-+	fprobe_handler(ip, parent_ip, ops, fregs);
-+	kprobe_busy_end();
-+}
-+
- static void fprobe_exit_handler(struct rethook_node *rh, void *data,
- 				struct pt_regs *regs)
- {
-@@ -110,7 +124,10 @@ static unsigned long *get_ftrace_locations(const char **syms, int num)
- static void fprobe_init(struct fprobe *fp)
- {
- 	fp->nmissed = 0;
--	fp->ops.func = fprobe_handler;
-+	if (fprobe_shared_with_kprobes(fp))
-+		fp->ops.func = fprobe_kprobe_handler;
-+	else
-+		fp->ops.func = fprobe_handler;
- 	fp->ops.flags |= FTRACE_OPS_FL_SAVE_REGS;
- }
- 
+On Fri, Mar 04, 2022 at 06:40:40PM +0000, Shakeel Butt <shakeelb@google.com> wrote:
+> This patch fixes this regression by making the rstat flushing
+> conditional in the performance critical codepaths. More specifically,
+> the kernel relies on the async periodic rstat flusher to flush the stats
+> and only if the periodic flusher is delayed by more than twice the
+> amount of its normal time window then the kernel allows rstat flushing
+> from the performance critical codepaths.
+
+I'm not sure whether your patch attempts to solve the problem of
+(a) periodic flush getting stuck or (b) limiting error on refault path.
+If it's (a), it should be tackled more systematically (dedicated wq?).
+If it's (b), why not just rely on periodic flush (self answer: (1) and
+(2) comparison is workload dependent).
+
+> Now the question: what are the side-effects of this change? The worst
+> that can happen is the refault codepath will see 4sec old lruvec stats
+> and may cause false (or missed) activations of the refaulted page which
+> may under-or-overestimate the workingset size. Though that is not very
+> concerning as the kernel can already miss or do false activations.
+
+We can't argue what's the effect of periodic only flushing so this
+newly introduced factor would inherit that too. I find it superfluous.
+
+
+Michal
+
+[1] This is worth looking at in more detail.
+
+From the flush condition we have
+  cr * Δt = nr_cpus * MEMCG_CHARGE_BATCH 
+where Δt is time between flushes and cr is global change rate.
+
+cr composes of all updates together (corresponds to stats_updates in
+memcg_rstat_updated(), max_cr is change rate per counter)
+  cr = Σ cr_i <= nr_counters * max_cr 
+
+By combining these two we get shortest time between flushes:
+  cr * Δt <= nr_counters * max_cr * Δt
+  nr_cpus * MEMCG_CHARGE_BATCH <= nr_counters * max_cr * Δt
+  Δt >= (nr_cpus * MEMCG_CHARGE_BATCH) / (nr_counters * max_cr)
+
+We are interested in 
+  R_amort = flush_work / Δt
+which is
+  R_amort <= flush_work * nr_counters * max_cr / (nr_cpus * MEMCG_CHARGE_BATCH)
+
+R_amort: O( nr_cpus * nr_cgroups(subtree) * nr_counters * (nr_counters * max_cr) / (nr_cpus * MEMCG_CHARGE_BATCH) )
+R_amort: O( nr_cgroups(subtree) * nr_counters^2 * max_cr) / (MEMCG_CHARGE_BATCH) )
+
+The square looks interesting given there are already tens of counters.
+(As data from Ivan have shown, we can hardly restore the pre-rstat
+performance on the read side even with mere mod_delayed_work().)
+This is what you partially solved with introduction of NR_MEMCG_EVENTS
+but the stats_updates was still sum of all events, so the flush might
+have still triggered too frequently.
+
+Maybe that would be better long-term approach, splitting into accurate
+and approximate counters and reflect that in the error estimator stats_updates.
+
+Or some other optimization of mem_cgroup_css_rstat_flush().
+
 
