@@ -2,108 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25336C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349416AbiCKPcX (ORCPT
+        id S1349481AbiCKPc2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:32:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        Fri, 11 Mar 2022 10:32:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245374AbiCKPcP (ORCPT
+        with ESMTP id S1349435AbiCKPcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:32:15 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CD71B8CB5;
-        Fri, 11 Mar 2022 07:31:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647012671; x=1678548671;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=RMMRc4l/DMGvaxhGwtRQMf5EeR3IlqrnnLrpu8bbrak=;
-  b=WzqIFtBhcXIggjeehhHaEQVuhhi8jKTqMAIrAJoziPqTuWQR5r75229M
-   ATZntzVNx1bp8+Nx58vCjnEFYJwGo9rOuLmkjxVGLEOcErdC/tqfQRbGu
-   bgff4I17h1SqFWPb+QikvSbO/XPDQM2DwJaxmbtpXN6EgoJlg/SWJ0vHK
-   o=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 11 Mar 2022 07:31:11 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 07:31:10 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 11 Mar 2022 07:31:10 -0800
-Received: from hu-charante-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 11 Mar 2022 07:31:05 -0800
-From:   Charan Teja Kalla <quic_charante@quicinc.com>
-To:     <akpm@linux-foundation.org>, <surenb@google.com>, <vbabka@suse.cz>,
-        <rientjes@google.com>, <sfr@canb.auug.org.au>,
-        <edgararriaga@google.com>, <minchan@kernel.org>,
-        <nadav.amit@gmail.com>, <mhocko@suse.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        "# 5 . 10+" <stable@vger.kernel.org>
-Subject: [PATCH V2,2/2] mm: madvise: skip unmapped vma holes passed to process_madvise
-Date:   Fri, 11 Mar 2022 20:59:06 +0530
-Message-ID: <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1647008754.git.quic_charante@quicinc.com>
-References: <cover.1647008754.git.quic_charante@quicinc.com>
+        Fri, 11 Mar 2022 10:32:24 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52011C1EF3
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:31:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647012678; x=1678548678;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=74LlUyf4rfaEpydmlY6oUXwXyrn+FHbndhMrKi3O2eI=;
+  b=MRw+bxBgIAfSV+pmVttMWVl7w1k923GzATCRgzsOjtNoO8kNhOYEikAv
+   k/pU+RsnUE12NaEbc5nmSeVIWPhHo6PH1C2mmdNuarSscGrm+zm6x+MGu
+   GVitAHRgTCdW7rtolrKlofJToJcyCNGBlOv76jntbVptSt/UqwTAu7EOz
+   fXvlJlLr/MPnUn5Ls8r8Fg4guTkk6t4avoAW7hKYK3nlc0h03y+zpKlny
+   gqHA29uS9znDVvjA4diC0DqmIzL6gpBzsNxMupjoYVXbhltsgEgtzOOA4
+   5pv4CnxF6soIYnbyv4w2zo6C9nwke+IKAb/Stm3jaIoAZ7JTOxilo7rnF
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255326131"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="255326131"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 07:31:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="633442482"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 11 Mar 2022 07:31:16 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nShEZ-0006cv-RW; Fri, 11 Mar 2022 15:31:15 +0000
+Date:   Fri, 11 Mar 2022 23:31:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/sgx] BUILD SUCCESS
+ ed83935a9af088439462ef3f2efcf1ef62b05dfd
+Message-ID: <622b6b35.TcoD7pV42lO9oaFY%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The process_madvise() system call is expected to skip holes in vma
-passed through 'struct iovec' vector list. But do_madvise, which
-process_madvise() calls for each vma, returns ENOMEM in case of unmapped
-holes, despite the VMA is processed.
-Thus process_madvise() should treat ENOMEM as expected and consider the
-VMA passed to as processed and continue processing other vma's in the
-vector list. Returning -ENOMEM to user, despite the VMA is processed,
-will be unable to figure out where to start the next madvise.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/sgx
+branch HEAD: ed83935a9af088439462ef3f2efcf1ef62b05dfd  x86/sgx: Free backing memory after faulting the enclave page
 
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Cc: <stable@vger.kernel.org> # 5.10+
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+elapsed time: 742m
+
+configs tested: 121
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+nios2                         3c120_defconfig
+sparc                            allyesconfig
+arm                            lart_defconfig
+sh                            titan_defconfig
+sh                            shmin_defconfig
+m68k                          multi_defconfig
+arm                         cm_x300_defconfig
+arm                     eseries_pxa_defconfig
+sh                   sh7770_generic_defconfig
+powerpc                     tqm8548_defconfig
+mips                  maltasmvp_eva_defconfig
+sh                             sh03_defconfig
+powerpc                     ep8248e_defconfig
+xtensa                          iss_defconfig
+openrisc                  or1klitex_defconfig
+sh                          sdk7780_defconfig
+arm                             rpc_defconfig
+arm                      jornada720_defconfig
+powerpc                 mpc8540_ads_defconfig
+xtensa                       common_defconfig
+sh                           se7750_defconfig
+arm                        shmobile_defconfig
+arc                    vdk_hs38_smp_defconfig
+arm                          badge4_defconfig
+sh                           se7206_defconfig
+arc                          axs103_defconfig
+sh                               allmodconfig
+arm                          pxa3xx_defconfig
+openrisc                         alldefconfig
+powerpc                       holly_defconfig
+powerpc                 mpc837x_mds_defconfig
+arm                         s3c6400_defconfig
+arm                        keystone_defconfig
+h8300                    h8300h-sim_defconfig
+arm                  randconfig-c002-20220310
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
+
+clang tested configs:
+arm                  randconfig-c002-20220310
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220310
+riscv                randconfig-c006-20220310
+mips                 randconfig-c004-20220310
+i386                          randconfig-c001
+powerpc                     tqm8540_defconfig
+mips                       lemote2f_defconfig
+mips                     cu1830-neo_defconfig
+arm                          ixp4xx_defconfig
+powerpc                 mpc8315_rdb_defconfig
+arm                    vt8500_v6_v7_defconfig
+hexagon                          alldefconfig
+arm                         orion5x_defconfig
+powerpc                     ppa8548_defconfig
+arm                     davinci_all_defconfig
+mips                           mtx1_defconfig
+arm                          collie_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220310
+hexagon              randconfig-r041-20220310
+riscv                randconfig-r042-20220310
+
 ---
-Changes in V2:
-  -- Fixed handling of ENOMEM by process_madvise().
-  -- Patch doesn't exist in V1.
-
- mm/madvise.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/mm/madvise.c b/mm/madvise.c
-index e97e6a9..14fb76d 100644
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1426,9 +1426,16 @@ SYSCALL_DEFINE5(process_madvise, int, pidfd, const struct iovec __user *, vec,
- 
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
-+		/*
-+		 * do_madvise returns ENOMEM if unmapped holes are present
-+		 * in the passed VMA. process_madvise() is expected to skip
-+		 * unmapped holes passed to it in the 'struct iovec' list
-+		 * and not fail because of them. Thus treat -ENOMEM return
-+		 * from do_madvise as valid and continue processing.
-+		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0)
-+		if (ret < 0 && ret != -ENOMEM)
- 			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
--- 
-2.7.4
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
