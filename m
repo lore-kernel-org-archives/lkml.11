@@ -2,104 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1671BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347019AbiCKHV7 (ORCPT
+        id S1347026AbiCKHXn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        Fri, 11 Mar 2022 02:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiCKHV5 (ORCPT
+        with ESMTP id S231960AbiCKHXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:21:57 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7659A1B30A6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:20:55 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KFHLZ1bbmz9sYw;
-        Fri, 11 Mar 2022 15:17:10 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Mar
- 2022 15:20:53 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <anshuman.khandual@arm.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH v2] mm: remove unneeded local variable follflags
-Date:   Fri, 11 Mar 2022 15:20:02 +0800
-Message-ID: <20220311072002.35575-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Fri, 11 Mar 2022 02:23:40 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C89FD1D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:22:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646983357; x=1678519357;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=u8g6o6mmzKfeSZyi85GEnzkTpDNKFd0dqka1Dten3mQ=;
+  b=AQwizOjrqH7kMY5V3w6EnlZ6dVzJhS/3KPWbaLVW0ibxt+8QNJWhra6H
+   Tf4Ee5qHxcLxOM4JMUgeLMFftkuW4bGdGLYK70XG7PQe70UysGH77N0nF
+   XW7Raz+JKcPCCiP/REu3CKJB1rtBIYBlVQixTsJEv6DMheJerRZuF6e7W
+   E90ODytIwlhcPm0jnfG5FiyrnsZnjUG3yLgsGyt6RCYQLf1kpP335h5VL
+   vJZjK15k9hkz9lRA+u+i2RJxSaMDylJ4l2AsfDpm+fCJqHuGaL+wvSMVI
+   upzT2SHRabDJ0HrOi73gKcDAEk0DBewl49P/DMg+Dtazb+igWstkmCfKn
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255708249"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="255708249"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 23:22:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="644847458"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 10 Mar 2022 23:22:35 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSZbe-000626-9J; Fri, 11 Mar 2022 07:22:34 +0000
+Date:   Fri, 11 Mar 2022 15:21:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Nick Hawkins <nick.hawkins@hpe.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 01/10] arch: arm: mach-hpe: Introduce the HPE GXP
+ architecture
+Message-ID: <202203111516.oSsKrRqX-lkp@intel.com>
+References: <20220310195229.109477-1-nick.hawkins@hpe.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can pass FOLL_GET | FOLL_DUMP to follow_page directly to simplify
-the code a bit in add_page_for_migration and split_huge_pages_pid.
+Hi,
 
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on tip/timers/core]
+[also build test WARNING on soc/for-next robh/for-next linus/master v5.17-rc7 next-20220310]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/nick-hawkins-hpe-com/arch-arm-mach-hpe-Introduce-the-HPE-GXP-architecture/20220311-035513
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 58dedf0a4782ce42b4d31f1f62e5ad80a1b73d72
+config: arm-defconfig (https://download.01.org/0day-ci/archive/20220311/202203111516.oSsKrRqX-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/0day-ci/linux/commit/9fbfc32473a65e025764e0a1456c421b4706fe8e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review nick-hawkins-hpe-com/arch-arm-mach-hpe-Introduce-the-HPE-GXP-architecture/20220311-035513
+        git checkout 9fbfc32473a65e025764e0a1456c421b4706fe8e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm/mach-hpe/gxp.c:26:13: warning: no previous prototype for function 'gxp_map_io' [-Wmissing-prototypes]
+   void __init gxp_map_io(void)
+               ^
+   arch/arm/mach-hpe/gxp.c:26:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init gxp_map_io(void)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/gxp_map_io +26 arch/arm/mach-hpe/gxp.c
+
+    25	
+  > 26	void __init gxp_map_io(void)
+    27	{
+    28		iotable_init(gxp_io_desc, ARRAY_SIZE(gxp_io_desc));
+    29	}
+    30	
+
 ---
-v1->v2:
-  do similar instance in add_page_for_migration per Anshuman
-  collect Reviewed-by tag. Thanks Anshuman for review.
----
- mm/huge_memory.c | 4 +---
- mm/migrate.c     | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index f92791d3cb79..2fe38212e07c 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2840,7 +2840,6 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
- 	 */
- 	for (addr = vaddr_start; addr < vaddr_end; addr += PAGE_SIZE) {
- 		struct vm_area_struct *vma = find_vma(mm, addr);
--		unsigned int follflags;
- 		struct page *page;
- 
- 		if (!vma || addr < vma->vm_start)
-@@ -2853,8 +2852,7 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
- 		}
- 
- 		/* FOLL_DUMP to ignore special (like zero) pages */
--		follflags = FOLL_GET | FOLL_DUMP;
--		page = follow_page(vma, addr, follflags);
-+		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
- 
- 		if (IS_ERR(page))
- 			continue;
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 47d23d526e64..c1b58832d0f6 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1604,7 +1604,6 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
- {
- 	struct vm_area_struct *vma;
- 	struct page *page;
--	unsigned int follflags;
- 	int err;
- 
- 	mmap_read_lock(mm);
-@@ -1614,8 +1613,7 @@ static int add_page_for_migration(struct mm_struct *mm, unsigned long addr,
- 		goto out;
- 
- 	/* FOLL_DUMP to ignore special (like zero) pages */
--	follflags = FOLL_GET | FOLL_DUMP;
--	page = follow_page(vma, addr, follflags);
-+	page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
- 
- 	err = PTR_ERR(page);
- 	if (IS_ERR(page))
--- 
-2.23.0
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
