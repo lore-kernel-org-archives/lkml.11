@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C01E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239095AbiCKRrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 12:47:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
+        id S241148AbiCKRrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 12:47:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346629AbiCKRrH (ORCPT
+        with ESMTP id S237361AbiCKRrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 12:47:07 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E8814A6DF
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FB1133955
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:46:03 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id qt6so20619822ejb.11
+Received: by mail-ej1-x634.google.com with SMTP id qt6so20619848ejb.11
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:46:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=46hR8qn+FvV21nPx7MnpWlG2AiI7do5YUIgYG1Cv7cg=;
-        b=ccCwwfBqjf2cVwLVdbFKTirEaQR5eqblzaW5tzpXkhLDCeMz14RXQg3cgWpYmopJuC
-         UayK8wqQCxTeafeMNClzwFdgnNC6gFoZnpmxSIpsX8NOTF42N9Kwa/ccyN9Q8KieESwo
-         0DSRUaZkiZor8fAoqjJ09A1UuoRIbbUHaoOcwPEnOWblwGh4dApEJfT2y8PxAEv5KU0m
-         CHsrvO3pm8mtxWqeKXbgIECQwf+2C8cQ/ORW/Omn0etA8qsmKu7cU3Tsuj4C5ZqscAwb
-         OgdxwRzYJWKmoi40IMCcmUzO0NdX6D2WfkvKvVf8vTkjqBDIwhMsfo6NEsJbli2mAF9f
-         j7kg==
+        bh=09Pa4q2b4vX67JHZNNkgoh3+KCy7fCLjcgKDWwRT+M0=;
+        b=DLAOcfyY4RSMcyqKyRAYZJw4xE61oYMJpgI+6BgAA5I8tDn6gOw/xkp0RylEQ+BNG+
+         X39US6T7op8ybAYMVIohzhKnlFqbUyGI1nmeDVMJu4r0EFookP8UKAVCn0b9I0S4r9EG
+         zRr2tJSNzseIfWg5zifBxJn5RpDYyC6hTMj1hhMmGpTKHVIS5wJ6w834mHZiFJgkcJED
+         zLZiHIeQa0DH1RPSwXLHUOxDA+GJzV6U8W0o4sDbKCiRwu/qAd9UKUu8cIULaI1Hjfp9
+         o9zV7HGVWbHNVSdUBl4Wu+d+et3xkhKh96P8usb+0UMW6piuQlF2y+YZWK1gs2rGV1Dw
+         CVBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=46hR8qn+FvV21nPx7MnpWlG2AiI7do5YUIgYG1Cv7cg=;
-        b=hl6oXEZUvpj8MnhZkYEEg5vyK755Fxkz0RYvPRqvcCsfZ5FJozwHCYN6+xqm4KNIBe
-         r25ICz6KfOHJGKL/NMOy4FdLpP//ly0/sIP3eUfyWTQeetpny8Kw6ydS0/hNs1BObkya
-         n1/LubN1E7Yhqvgzvgbo6wxjOOYnBVDEw3Er+A+mLothwquZz/RmzRDaIgI6MYkpo0By
-         HQzg73HZjQ4ckDN1QTRw+cw+9grV7CcqyrBVDLXUJa45Aa+mnsRa7ScwwBVX30xjdOUX
-         tQVkCLeAMAnCLv8NNUX+Ah0pNV3b/E/nmoYI0z/MiciF4m7V1OYCyPZnoxma6JFa0c1P
-         3sQg==
-X-Gm-Message-State: AOAM531CPmyQ+h2sdC1Fyee5FndEaresgAmEzuSItKSnalWlCjDx907Z
-        fztnskUz5IqEQ3xAe8/dbxc=
-X-Google-Smtp-Source: ABdhPJzr5vVq5kXp5nER8koKW+0CLiQKDEP5mHuCuUineelZnECEWO40tLksEo7SeQ+Tfn2AjOxVrw==
-X-Received: by 2002:a17:906:3ad1:b0:6ce:a880:7745 with SMTP id z17-20020a1709063ad100b006cea8807745mr9552418ejd.46.1647020762124;
+        bh=09Pa4q2b4vX67JHZNNkgoh3+KCy7fCLjcgKDWwRT+M0=;
+        b=ZhiyCqQax/lKK1qdCYjb83iJvve79GA9BCUgyAxXFX89qM43Rfw6CJHMgLLaHjW6IL
+         cpjJ856mqibazi7lSVz7EmiJE/J8nvywtwveFctnh9ams0OQtXwb42s6NwtXNbOW467Q
+         c3t1vg26HolKFgTZ6+CQJkbBzxsRHCl+xVuZoLVMYwPGeUKn6ST9P402unCpLGsBaZ5P
+         ZqF3zSjtPDwTZ//hcwWEFAlNzJWE8cMHBUnFPnzudipHpkGaHyq3Se6luSmqfJ3bHsOR
+         BWqSQ56EQ9ypzFWJGmb1KJAo595AMr/focNDfwXBc5E6RLs1IKtllw8u84fhAYkJv8PJ
+         KFPw==
+X-Gm-Message-State: AOAM531alcf+AlEagu1Z1umnJKp3x0mA4zfSBPs7Ilg434rLJUscrOwP
+        iot0be3VMypTDaCS+Mu2wkw=
+X-Google-Smtp-Source: ABdhPJyHfDu2o5XZ2wRtC0e82YeqMCLO+OmeSyH71sQYMclcdq3RHn7j70Faw1aLHMPlviZ/+d4w2w==
+X-Received: by 2002:a17:906:9b95:b0:6db:38fc:5ff4 with SMTP id dd21-20020a1709069b9500b006db38fc5ff4mr9143643ejc.114.1647020762408;
         Fri, 11 Mar 2022 09:46:02 -0800 (PST)
 Received: from orion.localdomain ([93.99.228.15])
-        by smtp.gmail.com with ESMTPSA id fs6-20020a170907600600b006da8ec6e4a6sm3185068ejc.26.2022.03.11.09.46.00
+        by smtp.gmail.com with ESMTPSA id i21-20020a1709061cd500b006da62ab503csm3159886ejh.157.2022.03.11.09.46.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 11 Mar 2022 09:46:01 -0800 (PST)
 Received: by orion.localdomain (Postfix, from userid 1003)
-        id 88CDAA00C3; Fri, 11 Mar 2022 18:46:03 +0100 (CET)
+        id 814DCA00A8; Fri, 11 Mar 2022 18:46:03 +0100 (CET)
 From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
 To:     linux-mm@kvack.org
 Cc:     patches@lists.linux.dev, linux-kernel@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc:     patches@lists.linux.dev, linux-kernel@vger.kernel.org,
         kirill@shutemov.name, riel@surriel.com, rostedt@goodmis.org,
         peterz@infradead.org,
         =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
-Subject: [RFC PATCH v2 3/4] [PATCH 3/4] mm: enable merging of VMAs with different anon_vmas
-Date:   Fri, 11 Mar 2022 18:46:01 +0100
-Message-Id: <20220311174602.288010-4-matenajakub@gmail.com>
+Subject: [RFC PATCH v2 1/4] [PATCH 1/4] mm: refactor of vma_merge()
+Date:   Fri, 11 Mar 2022 18:45:59 +0100
+Message-Id: <20220311174602.288010-2-matenajakub@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220311174602.288010-1-matenajakub@gmail.com>
 References: <20220311174602.288010-1-matenajakub@gmail.com>
@@ -71,138 +71,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable merging of a VMA even when it is linked to different
-anon_vma than the one it is being merged to, but only if the VMA
-in question does not share any page with a parent or child process.
-Every anonymous page stores a pointer to its anon_vma in the parameter
-mapping, which is now updated as part of the merge process.
+Refactor vma_merge() to make it shorter, more understandable and
+suitable for tracing of successful merges that are made possible by
+following patches in the series. Main change is the elimination of code
+duplicity in the case of merge next check. This is done by first doing
+checks and caching the results before executing the merge itself. Exit
+paths are also unified.
 
 Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
 ---
- include/linux/rmap.h | 17 ++++++++++++++++-
- mm/mmap.c            | 15 ++++++++++++++-
- mm/rmap.c            | 40 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 70 insertions(+), 2 deletions(-)
+ mm/mmap.c | 81 +++++++++++++++++++++++++------------------------------
+ 1 file changed, 36 insertions(+), 45 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index e704b1a4c06c..c8508a4ebc46 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -137,10 +137,13 @@ static inline void anon_vma_unlock_read(struct anon_vma *anon_vma)
-  */
- void anon_vma_init(void);	/* create anon_vma_cachep */
- int  __anon_vma_prepare(struct vm_area_struct *);
-+void reconnect_pages(struct vm_area_struct *vma, struct vm_area_struct *next);
- void unlink_anon_vmas(struct vm_area_struct *);
- int anon_vma_clone(struct vm_area_struct *, struct vm_area_struct *);
- int anon_vma_fork(struct vm_area_struct *, struct vm_area_struct *);
- 
-+bool rbt_no_children(struct anon_vma *av);
-+
- static inline int anon_vma_prepare(struct vm_area_struct *vma)
- {
- 	if (likely(vma->anon_vma))
-@@ -149,10 +152,22 @@ static inline int anon_vma_prepare(struct vm_area_struct *vma)
- 	return __anon_vma_prepare(vma);
- }
- 
-+/**
-+ * anon_vma_merge() - Merge anon_vmas of the given VMAs
-+ * @vma: VMA being merged to
-+ * @next: VMA being merged
-+ */
- static inline void anon_vma_merge(struct vm_area_struct *vma,
- 				  struct vm_area_struct *next)
- {
--	VM_BUG_ON_VMA(vma->anon_vma != next->anon_vma, vma);
-+	struct anon_vma *anon_vma1 = vma->anon_vma;
-+	struct anon_vma *anon_vma2 = next->anon_vma;
-+
-+	VM_BUG_ON_VMA(anon_vma1 && anon_vma2 && anon_vma1 != anon_vma2 &&
-+			((anon_vma2 != anon_vma2->root)
-+			|| !rbt_no_children(anon_vma2)), vma);
-+
-+	reconnect_pages(vma, next);
- 	unlink_anon_vmas(next);
- }
- 
 diff --git a/mm/mmap.c b/mm/mmap.c
-index 4f9c6ca7ff4e..ccb24862e670 100644
+index 1e8fdb0b51ed..8d817b11c656 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -1065,7 +1065,20 @@ static inline int is_mergeable_anon_vma(struct anon_vma *anon_vma1,
- 	if ((!anon_vma1 || !anon_vma2) && (!vma ||
- 		list_is_singular(&vma->anon_vma_chain)))
- 		return 1;
--	return anon_vma1 == anon_vma2;
-+	if (anon_vma1 == anon_vma2)
-+		return 1;
-+	/*
-+	 * Different anon_vma but not shared by several processes
-+	 */
-+	else if ((anon_vma1 && anon_vma2) &&
-+			(anon_vma1 == anon_vma1->root)
-+			&& (rbt_no_children(anon_vma1)))
-+		return 1;
-+	/*
-+	 * Different anon_vma and shared -> unmergeable
-+	 */
-+	else
-+		return 0;
- }
+@@ -1171,7 +1171,9 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ {
+ 	pgoff_t pglen = (end - addr) >> PAGE_SHIFT;
+ 	struct vm_area_struct *area, *next;
+-	int err;
++	int err = -1;
++	bool merge_prev = false;
++	bool merge_next = false;
  
- /*
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 96273d6a9796..b296e1e1aec3 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -387,6 +387,46 @@ int anon_vma_fork(struct vm_area_struct *vma, struct vm_area_struct *pvma)
- 	return -ENOMEM;
- }
+ 	/*
+ 	 * We later require that vma->vm_flags == vm_flags,
+@@ -1190,66 +1192,55 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
+ 	VM_WARN_ON(area && end > area->vm_end);
+ 	VM_WARN_ON(addr >= end);
  
-+/**
-+ * reconnect_pages() - Reconnect physical pages from old to vma
-+ * @vma: VMA to newly contain all physical pages of old
-+ * @old: old VMA being merged to vma
-+ */
-+void reconnect_pages(struct vm_area_struct *vma, struct vm_area_struct *old)
-+{
-+	struct anon_vma *anon_vma1 = vma->anon_vma;
-+	struct anon_vma *anon_vma2 = old->anon_vma;
-+	unsigned long pg_iter;
-+	int pg_iters;
-+
-+	if (anon_vma1 == anon_vma2 || anon_vma1 == NULL || anon_vma2 == NULL)
-+		return; /* Nothing to do */
-+
-+	/* Modify page->mapping for all pages in old */
-+	pg_iter = 0;
-+	pg_iters = (old->vm_end - old->vm_start) >> PAGE_SHIFT;
-+
-+	for (; pg_iter < pg_iters; ++pg_iter) {
-+		/* Get the physical page */
-+		unsigned long shift = pg_iter << PAGE_SHIFT;
-+		struct page *phys_page = follow_page(old, old->vm_start + shift, FOLL_GET);
-+		struct anon_vma *page_anon_vma;
-+
-+		/* Do some checks and lock the page */
-+		if (phys_page == NULL)
-+			continue; /* Virtual memory page is not mapped */
-+		lock_page(phys_page);
-+		page_anon_vma = page_get_anon_vma(phys_page);
-+		if (page_anon_vma != NULL) { /* NULL in case of ZERO_PAGE */
-+			VM_BUG_ON_VMA(page_anon_vma != old->anon_vma, old);
-+			/* Update physical page's mapping */
-+			page_move_anon_rmap(phys_page, vma);
-+		}
-+		unlock_page(phys_page);
-+		put_page(phys_page);
+-	/*
+-	 * Can it merge with the predecessor?
+-	 */
++	/* Can we merge the predecessor? */
+ 	if (prev && prev->vm_end == addr &&
+ 			mpol_equal(vma_policy(prev), policy) &&
+ 			can_vma_merge_after(prev, vm_flags,
+ 					    anon_vma, file, pgoff,
+ 					    vm_userfaultfd_ctx, anon_name)) {
+-		/*
+-		 * OK, it can.  Can we now merge in the successor as well?
+-		 */
+-		if (next && end == next->vm_start &&
+-				mpol_equal(policy, vma_policy(next)) &&
+-				can_vma_merge_before(next, vm_flags,
+-						     anon_vma, file,
+-						     pgoff+pglen,
+-						     vm_userfaultfd_ctx, anon_name) &&
+-				is_mergeable_anon_vma(prev->anon_vma,
+-						      next->anon_vma, NULL)) {
+-							/* cases 1, 6 */
+-			err = __vma_adjust(prev, prev->vm_start,
+-					 next->vm_end, prev->vm_pgoff, NULL,
+-					 prev);
+-		} else					/* cases 2, 5, 7 */
+-			err = __vma_adjust(prev, prev->vm_start,
+-					 end, prev->vm_pgoff, NULL, prev);
+-		if (err)
+-			return NULL;
+-		khugepaged_enter_vma_merge(prev, vm_flags);
+-		return prev;
++		merge_prev = true;
++		area = prev;
+ 	}
+-
+-	/*
+-	 * Can this new request be merged in front of next?
+-	 */
++	/* Can we merge the successor? */
+ 	if (next && end == next->vm_start &&
+ 			mpol_equal(policy, vma_policy(next)) &&
+ 			can_vma_merge_before(next, vm_flags,
+ 					     anon_vma, file, pgoff+pglen,
+ 					     vm_userfaultfd_ctx, anon_name)) {
++		merge_next = true;
 +	}
-+}
-+
++	/* Can we merge both the predecessor and the successor? */
++	if (merge_prev && merge_next &&
++			is_mergeable_anon_vma(prev->anon_vma,
++				next->anon_vma, NULL)) {	 /* cases 1, 6 */
++		err = __vma_adjust(prev, prev->vm_start,
++					next->vm_end, prev->vm_pgoff, NULL,
++					prev);
++	} else if (merge_prev) {			/* cases 2, 5, 7 */
++		err = __vma_adjust(prev, prev->vm_start,
++					end, prev->vm_pgoff, NULL, prev);
++	} else if (merge_next) {
+ 		if (prev && addr < prev->vm_end)	/* case 4 */
+ 			err = __vma_adjust(prev, prev->vm_start,
+-					 addr, prev->vm_pgoff, NULL, next);
+-		else {					/* cases 3, 8 */
++					addr, prev->vm_pgoff, NULL, next);
++		else					/* cases 3, 8 */
+ 			err = __vma_adjust(area, addr, next->vm_end,
+-					 next->vm_pgoff - pglen, NULL, next);
+-			/*
+-			 * In case 3 area is already equal to next and
+-			 * this is a noop, but in case 8 "area" has
+-			 * been removed and next was expanded over it.
+-			 */
+-			area = next;
+-		}
+-		if (err)
+-			return NULL;
+-		khugepaged_enter_vma_merge(area, vm_flags);
+-		return area;
++					next->vm_pgoff - pglen, NULL, next);
++		/*
++		 * In case 3 and 4 area is already equal to next and
++		 * this is a noop, but in case 8 "area" has
++		 * been removed and next was expanded over it.
++		 */
++		area = next;
+ 	}
+ 
+-	return NULL;
++	/*
++	 * Cannot merge with predecessor or successor or error in __vma_adjust?
++	 */
++	if (err)
++		return NULL;
++	khugepaged_enter_vma_merge(area, vm_flags);
++	return area;
+ }
+ 
  /*
-  * Used by rbt_no_children to check node subtree.
-  * Check if none of the VMAs connected to the node subtree via
 -- 
 2.34.1
 
