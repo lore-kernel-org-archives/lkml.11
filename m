@@ -2,90 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F465C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77221C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347585AbiCKJfq (ORCPT
+        id S1347604AbiCKJgC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:35:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        Fri, 11 Mar 2022 04:36:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347553AbiCKJfl (ORCPT
+        with ESMTP id S244357AbiCKJf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:35:41 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76089F3B2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:34:38 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: rcn)
-        with ESMTPSA id E511A1F4649E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646991277;
-        bh=6IuTiAPuhKDYgNwCLKRyc4SunUJTB6ruZFYFsOvvpvs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gD8SJkWPQ7AVcDYe+nWxXfobtI4INoYCVxW2ZB+Ymm9w2+8CaNz1q4SOTOz0LYPjz
-         hGE5rXOAurREVi3IW7YQ+311vbeuCvhAZEtGwT1UQ6JGNN4jw9I5SVByaHfedUpRgk
-         8tl6I1ycOfeVe6h3U6FpZHRJQ4a08lXbIc0faRsAqCq1QccSYUlhyRTPdgqB7lD/KD
-         nlgN6VZ5BncUXMpaEJHhVlgNMh78y/7kD8lLHl4E8MWn0XAm+B4cW/SdglvOY5S+SS
-         JRf3BVt9wetOW7qBA0Od2XtzFbiAg08uBp+EtWKh8s9Wzyz3ipXIE1sm44716SVvX1
-         7EEsvho0zxjdg==
-From:   =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        kernel@collabora.com, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org
-Subject: [PATCH 2/2 RESEND] drm/bridge: Add extra checks in pre_enable and post_enable
-Date:   Fri, 11 Mar 2022 10:34:06 +0100
-Message-Id: <20220311093406.4068019-3-ricardo.canuelo@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311093406.4068019-1-ricardo.canuelo@collabora.com>
-References: <20220311093406.4068019-1-ricardo.canuelo@collabora.com>
+        Fri, 11 Mar 2022 04:35:58 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E066C1BE0ED;
+        Fri, 11 Mar 2022 01:34:54 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KFLPQ21L3z4xcC;
+        Fri, 11 Mar 2022 20:34:50 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646991290;
+        bh=lwDxUp/hw1Ufl/I6V6gqcN35yraDwcV17dzlHziDAEA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=EtVgwZeYBJhZeYmzoBTfpvi2AyPYddT+GZ2qqEEnPa8A+CPVW2p79QIG5nP3pgocX
+         YDvu1XpImleNrbHVAZUJ2Z2uoaQAQnTiT3a2j7ngsT+reG+dlvT+K/ZIyA57WrttF+
+         VjlU2zg8O78ux9V5xYN4sRrCbsH84qQl2aw6pD/l8SNd9gtBot82mEpEJ2+y3G9lF6
+         O9z6EzCM6nlI3DFv5+/t0K+/MiHPBkVH5wwkbFBCtOEwGO/18C43akAVSP5AXbu8Wi
+         1EGXLwmXiZXdousv3nbPOb+rtLzAm1akZpOT9pfao1B33smKo49AoxOyDFohAx/gvP
+         wH3nWSpvBHZRg==
+Date:   Fri, 11 Mar 2022 20:34:46 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: No tree today
+Message-ID: <20220311203446.6d916402@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/ep0E.32A17704ykWfvTBq/O";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Depending on the bridge code, certain userspace events during a driver
-teardown (such as a DRM ioctl call) might cause a race condition where
-the drm_bridge_chain_pre_enable() and drm_bridge_chain_post_enable()
-functions could be called for a bridge that has just been detached and
-removed from the bridge chain of an encoder.
+--Sig_/ep0E.32A17704ykWfvTBq/O
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This change makes these functions a bit more robust by bailing out if
-the bridge has already been detached.
+Hi all,
 
-Tested on an Acer Chromebook R13 (Elm, MT8173) with Debian Sid.
+Due to a breakdown in our internal network this afternoon, I cannot
+complete linux-next today.  Sorry about that.
 
-Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
----
- drivers/gpu/drm/drm_bridge.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Also there will be no linux-next release on Monday.
 
-diff --git a/drivers/gpu/drm/drm_bridge.c b/drivers/gpu/drm/drm_bridge.c
-index c96847fc0ebc..e074aa456dd1 100644
---- a/drivers/gpu/drm/drm_bridge.c
-+++ b/drivers/gpu/drm/drm_bridge.c
-@@ -529,7 +529,7 @@ void drm_bridge_chain_post_disable(struct drm_bridge *bridge)
- {
- 	struct drm_encoder *encoder;
- 
--	if (!bridge)
-+	if (!bridge || !bridge->dev)
- 		return;
- 
- 	encoder = bridge->encoder;
-@@ -585,7 +585,7 @@ void drm_bridge_chain_pre_enable(struct drm_bridge *bridge)
- 	struct drm_encoder *encoder;
- 	struct drm_bridge *iter;
- 
--	if (!bridge)
-+	if (!bridge || !bridge->dev)
- 		return;
- 
- 	encoder = bridge->encoder;
--- 
-2.25.1
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/ep0E.32A17704ykWfvTBq/O
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIrF7YACgkQAVBC80lX
+0GyHDAf9GJoa2abEU7vsTMN3JWLa9dOJlp9W5L0Zc4jj8Z9DCg+b8A+AuVGqCD/Q
+iS9wnt2FuqzUykp9RA4XXOcDDGOhasfLuSf+ypxcO+Cphtqv6YROaTlqnaO9S367
+9Ej3T2919l+jUa1eJePrLepL0P357uU6R3trI9axdjktCV85t3tZA9PjNUfli9JM
+lZ+Ivc277zddXUKF/rjp1UunGWhGg3yVaRxFq6/s2GKNN3GAA66whNEHRmWdHfwe
+gSKM+BPZOcK6U+A5KALynd17VbNhMT/Fy4LVEAUqIWp7/l8jFMf2lItBEBWPIBog
+qnf2q5rvJCUCRnZe2cSWhW9woB5IKg==
+=p7L9
+-----END PGP SIGNATURE-----
+
+--Sig_/ep0E.32A17704ykWfvTBq/O--
