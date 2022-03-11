@@ -2,118 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F2CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B66C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241431AbiCKPyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:54:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        id S1345668AbiCKPzB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 10:55:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350261AbiCKPxv (ORCPT
+        with ESMTP id S1350304AbiCKPxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:53:51 -0500
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154DB1CD7E9;
-        Fri, 11 Mar 2022 07:51:47 -0800 (PST)
-Received: by mail-ej1-f49.google.com with SMTP id r13so20007249ejd.5;
-        Fri, 11 Mar 2022 07:51:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q0QOdS1sMxvUzRYvahLqWBcTBPRVF3/VPDGumtpDOcQ=;
-        b=BDheWuGFye9IiR1KGHqUTwkqweTfiCTEYX/DNvA+2sqyJFtsSb1vKBStMbIurshjIP
-         5/D9BN5e8igaKU9esTafkMqZzhydhRFEqcX9uufk8qdM5F2CVG+VA2xrrbS0huG9cnHM
-         SnA1iCB4PNAuKJnuJR8ppvklin1nK9iSS4u44ZZb48ptQW5+4ROcGxgQpSQSkfGqyVhs
-         UfAC20/7xqUBUmisJEP3Xtkkrc2egZJC3UyJC+Wbw8/CsZPj1SunB+yyi/15ijwKfq/D
-         YIjrUW7Tnia3e2FuXQkCh2OPlB80piCIG+h+JinWldmAeot31tISu/EFd5kzZfx3uGuA
-         8/sg==
-X-Gm-Message-State: AOAM530i8amohfbzPcUEM8B1TT/v1hIF0FZMpQ1tvad9xnpHC3Ojh1pp
-        INHfiIyZtWSl0qxNhRiDT78q6+gehvnF1A==
-X-Google-Smtp-Source: ABdhPJzo8iL4yZTpJU9GQSnP1+ZNVyW0eV4fvlgcCN8v/286An0s/RQv4YnJOdskbZ376f0itYm2Mg==
-X-Received: by 2002:a17:907:6d14:b0:6d9:565a:ed0 with SMTP id sa20-20020a1709076d1400b006d9565a0ed0mr9074772ejc.331.1647013891268;
-        Fri, 11 Mar 2022 07:51:31 -0800 (PST)
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
-        by smtp.gmail.com with ESMTPSA id n3-20020a1709061d0300b006da94efcc7esm3039654ejh.204.2022.03.11.07.51.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 07:51:30 -0800 (PST)
-Received: by mail-wm1-f43.google.com with SMTP id q20so5363378wmq.1;
-        Fri, 11 Mar 2022 07:51:30 -0800 (PST)
-X-Received: by 2002:a05:600c:2250:b0:383:bab2:9df5 with SMTP id
- a16-20020a05600c225000b00383bab29df5mr8274340wmm.162.1647013890307; Fri, 11
- Mar 2022 07:51:30 -0800 (PST)
+        Fri, 11 Mar 2022 10:53:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 686B61CD9E1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:51:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647013896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bBLhChg87FRrs5MpYt/tg2Gm57CzbrV4UINPPthvRVg=;
+        b=hLjj1fXeqicKolTyNu1Z0MkEkeUlm2oOHHuRGbnQafzMtz+8e7jXXmW/0zGBAm7o7XwDSj
+        sYp2S5EhNu9PwVWPgWY7eWQqNDtQf0MkK42hk5qU22sDp/bv+AFHKMsma2/2+uOrDlHYZB
+        gLiujjdvC55zwIVHj3Qo3DmFX8YzOJQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-411-mjRGmV_kOQmlD8jynA-wxQ-1; Fri, 11 Mar 2022 10:51:33 -0500
+X-MC-Unique: mjRGmV_kOQmlD8jynA-wxQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59A5C801AFC;
+        Fri, 11 Mar 2022 15:51:31 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE1F3866D4;
+        Fri, 11 Mar 2022 15:51:25 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 26/31] KVM: selftests: nVMX: Allocate Hyper-V partition assist page
+Date:   Fri, 11 Mar 2022 16:49:38 +0100
+Message-Id: <20220311154943.2299191-27-vkuznets@redhat.com>
+In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
+References: <20220311154943.2299191-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-References: <164692725757.2097000.2060513769492301854.stgit@warthog.procyon.org.uk>
-In-Reply-To: <164692725757.2097000.2060513769492301854.stgit@warthog.procyon.org.uk>
-From:   Marc Dionne <marc.dionne@auristor.com>
-Date:   Fri, 11 Mar 2022 11:51:16 -0400
-X-Gmail-Original-Message-ID: <CAB9dFdsROMZoE85dytrw_YynGArhC4d1pwNPfqbrMVGm8+jXMQ@mail.gmail.com>
-Message-ID: <CAB9dFdsROMZoE85dytrw_YynGArhC4d1pwNPfqbrMVGm8+jXMQ@mail.gmail.com>
-Subject: Re: [PATCH] afs: Fix potential thrashing in afs writeback
-To:     David Howells <dhowells@redhat.com>
-Cc:     linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 11:47 AM David Howells <dhowells@redhat.com> wrote:
->
-> In afs_writepages_region(), if the dirty page we find is undergoing
-> writeback or write to cache, but the sync_mode is WB_SYNC_NONE, we go round
-> the loop trying the same page again and again with no pausing or waiting
-> unless and until another thread manages to clear the writeback and fscache
-> flags.
->
-> Fix this with three measures:
->
->  (1) Advance the start to after the page we found.
->
->  (2) Break out of the loop and return if rescheduling is requested.
->
->  (3) Arbitrarily give up after a maximum of 5 skips.
->
-> Fixes: 31143d5d515e ("AFS: implement basic file write support")
-> Reported-by: Marc Dionne <marc.dionne@auristor.com>
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> ---
->
->  fs/afs/write.c |    9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/fs/afs/write.c b/fs/afs/write.c
-> index 85c9056ba9fb..bd0201f4939a 100644
-> --- a/fs/afs/write.c
-> +++ b/fs/afs/write.c
-> @@ -701,7 +701,7 @@ static int afs_writepages_region(struct address_space *mapping,
->         struct folio *folio;
->         struct page *head_page;
->         ssize_t ret;
-> -       int n;
-> +       int n, skips = 0;
->
->         _enter("%llx,%llx,", start, end);
->
-> @@ -752,8 +752,15 @@ static int afs_writepages_region(struct address_space *mapping,
->  #ifdef CONFIG_AFS_FSCACHE
->                                 folio_wait_fscache(folio);
->  #endif
-> +                       } else {
-> +                               start += folio_size(folio);
->                         }
->                         folio_put(folio);
-> +                       if (wbc->sync_mode == WB_SYNC_NONE) {
-> +                               if (skips >= 5 || need_resched())
-> +                                       break;
-> +                               skips++;
-> +                       }
->                         continue;
->                 }
+In preparation to testing Hyper-V Direct TLB flush hypercalls,
+allocate so-called Partition assist page and link it to 'struct
+vmx_pages'.
 
-Looks good in testing, the problem would show up in xfstests generic/285.
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ tools/testing/selftests/kvm/include/x86_64/vmx.h | 4 ++++
+ tools/testing/selftests/kvm/lib/x86_64/vmx.c     | 7 +++++++
+ 2 files changed, 11 insertions(+)
 
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-Acked-by: Marc Dionne <marc.dionne@auristor.com>
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index 583ceb0d1457..f99922ca8259 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -567,6 +567,10 @@ struct vmx_pages {
+ 	uint64_t enlightened_vmcs_gpa;
+ 	void *enlightened_vmcs;
+ 
++	void *partition_assist_hva;
++	uint64_t partition_assist_gpa;
++	void *partition_assist;
++
+ 	void *eptp_hva;
+ 	uint64_t eptp_gpa;
+ 	void *eptp;
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+index d089d8b850b5..3db21e0e1a8f 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+@@ -124,6 +124,13 @@ vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva)
+ 	vmx->enlightened_vmcs_gpa =
+ 		addr_gva2gpa(vm, (uintptr_t)vmx->enlightened_vmcs);
+ 
++	/* Setup of a region of guest memory for the partition assist page. */
++	vmx->partition_assist = (void *)vm_vaddr_alloc_page(vm);
++	vmx->partition_assist_hva =
++		addr_gva2hva(vm, (uintptr_t)vmx->partition_assist);
++	vmx->partition_assist_gpa =
++		addr_gva2gpa(vm, (uintptr_t)vmx->partition_assist);
++
+ 	*p_vmx_gva = vmx_gva;
+ 	return vmx;
+ }
+-- 
+2.35.1
 
-Marc
