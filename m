@@ -2,203 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE06C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B394C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiCKWyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S229865AbiCKWy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiCKWy1 (ORCPT
+        with ESMTP id S230099AbiCKWyj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:54:27 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B656CF4050
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:28:48 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id 63so4238668uaw.10
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:28:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=92arqH79BiLSpPq07XLUFaVqVUezAYRqELNUQGsWkP8=;
-        b=iQpC0+rNJZbuHaOeNvznCfYVkxwcczBWd0UPzccgCs+Go8jlx74Jwrya4YQPPBqi1a
-         LIhTzDWIhSomlxEQMebBYj8mab0jbSuU3k9hDKg0n1CMhsrp9WiAjLKAjU27AZhCBitS
-         QdUsya3XzeGHUIkAESKVibTANgUfmYd5fV2hTFATDwqkRGRgZ8T6ndA7i/TLiLdoJf0W
-         ZgnR8E5uV3gns2EJU0+hrIVrz5bQFQ2CfJzZXCTKlZr0x+0nbhJsXD0LqeAY2NFTGf2N
-         ZcI9uRsZS71/z3er5kTnwf0nSFfrzZrnHIc3Sol/BUgkr2SKn5yPQVWURocQU4wj4diI
-         6opQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=92arqH79BiLSpPq07XLUFaVqVUezAYRqELNUQGsWkP8=;
-        b=4uacjPuCqeBcVW2R6u9fXVS4KF1gY1hd4NzGF5KPoBshJT5eQdCEsAxP9u/Hm54Vm8
-         MrRRWH4o7Q9HyBI7rb4U6VQgtxh8cf/V5xmnVqngc4TH77tyL7dl9Czj4qhiccGhsn+4
-         XSxilnmuZN526XwgocoiZGyuxLYHSCHRMrWKAoZ7llkXFDJ5HSCjywwIue/rXVEqcVG/
-         IZCdfbzTBddL69L0pRPQm03rP141u8pibjb5q8zl2YR33UFONpXVYZJ7uSqCTAp01CsL
-         xWnLLmIqv6y6RWGduulxKPWRkD1+ZHDnGJ1U0fGw4xH8g9fiimbrU4Aa2MguNlGehyLC
-         2K6g==
-X-Gm-Message-State: AOAM531qqzKXxl83ylluWuKzt4sjR3VyFkhRZnCHNKewJercbGQPn+Ei
-        PCnU9D+KKHN74Z67m2RVu8LDLvANPBr9tA==
-X-Google-Smtp-Source: ABdhPJyNJ1dbWXRv+O1wDk73YwyJ+7WeYLAxuFLmw30ASpn4am7HYMJlx1E1uXw3X6gJavS+fE1RZA==
-X-Received: by 2002:a4a:a9cf:0:b0:2e9:5c75:e242 with SMTP id h15-20020a4aa9cf000000b002e95c75e242mr5516391oon.25.1647033654425;
-        Fri, 11 Mar 2022 13:20:54 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id u22-20020a4ae696000000b0032158ab4ce9sm2585808oot.26.2022.03.11.13.20.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 13:20:53 -0800 (PST)
-Date:   Fri, 11 Mar 2022 15:20:52 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     mathieu.poirier@linaro.org, arnaud.pouliquen@foss.st.com,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peng.fan@nxp.com
-Subject: Re: [PATCH V3 2/2] remoteproc: support attach recovery after rproc
- crash
-Message-ID: <Yiu9NNn/ZFpg7j7F@builder.lan>
-References: <20220309230128.15856-1-peng.fan@oss.nxp.com>
- <20220309230128.15856-3-peng.fan@oss.nxp.com>
+        Fri, 11 Mar 2022 17:54:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106352706DE;
+        Fri, 11 Mar 2022 14:28:17 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BHxUkg003827;
+        Fri, 11 Mar 2022 21:04:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=HBiwIFdfCpXFXTjddD97v7AqI4oARpQF2Ep15Ju6G+4=;
+ b=B+ASO5LkeGSY2+xtPOWXP2MYNenvP1NjhF8ESaG1m1QSvZwCh3xMaWqOzWPbEZxWzKaS
+ SCR0MWEvADd/+UJ0NztjZG1r3TSR5IsXYD/JRgFq8pvDF36AGVnvV3ZCmG/75KAfpbfd
+ WpeRi6sTMEkQ2/tsXT0Ctc/xxT32oYtqaQy6fS+HlwThkFHaN/BIVooFYvibPWWsY4D6
+ ZqQ8S5fdakbhhyXwB6ve9NlCTfdarAawGMBUbl7GFtjm6nu+k3Ypgb4DVOjsVMVOrGao
+ rfrXYukAGQ/eFZnaHr/FyEnzcBpeKSUXeA+CwbZIRt/6Wp4BN69cYCjC9cDm8DwXCBsC 4g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eq7xn68a0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:06 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKM4Bu007079;
+        Fri, 11 Mar 2022 21:04:06 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eq7xn6899-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:06 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL43Dr017632;
+        Fri, 11 Mar 2022 21:04:03 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3epyswcdgh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:03 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL41Tg41026010
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 21:04:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 846A54C046;
+        Fri, 11 Mar 2022 21:04:00 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 09E0A4C04A;
+        Fri, 11 Mar 2022 21:03:57 +0000 (GMT)
+Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.110.168])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 11 Mar 2022 21:03:56 +0000 (GMT)
+From:   Nayna Jain <nayna@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org,
+        Nayna Jain <nayna@linux.ibm.com>
+Subject: [PATCH v12 2/4] integrity: make integrity_keyring_from_id() non-static
+Date:   Fri, 11 Mar 2022 16:03:42 -0500
+Message-Id: <20220311210344.102396-3-nayna@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220311210344.102396-1-nayna@linux.ibm.com>
+References: <20220311210344.102396-1-nayna@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309230128.15856-3-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: GVioA75BLK0CflhTIS__0pKMBbGiD-3F
+X-Proofpoint-ORIG-GUID: k3Lzpy4Us1g2M6nhCtrlTq64GCvLA9-7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
+ spamscore=0 phishscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203110103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 09 Mar 17:01 CST 2022, Peng Fan (OSS) wrote:
+Make integrity_keyring_from_id() non-static so that it is accessible
+by other files in security/integrity.
 
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Current logic only support main processor to stop/start the remote
-> processor after rproc crash. However to SoC, such as i.MX8QM/QXP, the
-> remote processor could do attach recovery after crash and trigger watchdog
-> reboot. It does not need main processor to load image, or stop/start M4
-> core.
-> 
-> Introduce two functions: rproc_attach_recovery, rproc_firmware_recovery
-> for the two cases. Firmware recovery is as before, let main processor to
-> help recovery, while attach recovery is recover itself withou help.
-> To attach recovery, we only do detach and attach.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+---
+ security/integrity/digsig.c    | 2 +-
+ security/integrity/integrity.h | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-Hi Peng,
+diff --git a/security/integrity/digsig.c b/security/integrity/digsig.c
+index c8c8a4a4e7a0..9c3165c07935 100644
+--- a/security/integrity/digsig.c
++++ b/security/integrity/digsig.c
+@@ -39,7 +39,7 @@ static const char * const keyring_name[INTEGRITY_KEYRING_MAX] = {
+ #define restrict_link_to_ima restrict_link_by_builtin_trusted
+ #endif
+ 
+-static struct key *integrity_keyring_from_id(const unsigned int id)
++struct key *integrity_keyring_from_id(const unsigned int id)
+ {
+ 	if (id >= INTEGRITY_KEYRING_MAX)
+ 		return ERR_PTR(-EINVAL);
+diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
+index 2e214c761158..76e9a9515f99 100644
+--- a/security/integrity/integrity.h
++++ b/security/integrity/integrity.h
+@@ -168,6 +168,7 @@ int __init integrity_init_keyring(const unsigned int id);
+ int __init integrity_load_x509(const unsigned int id, const char *path);
+ int __init integrity_load_cert(const unsigned int id, const char *source,
+ 			       const void *data, size_t len, key_perm_t perm);
++struct key *integrity_keyring_from_id(const unsigned int id);
+ #else
+ 
+ static inline int integrity_digsig_verify(const unsigned int id,
+@@ -195,6 +196,11 @@ static inline int __init integrity_load_cert(const unsigned int id,
+ {
+ 	return 0;
+ }
++
++static inline struct key *integrity_keyring_from_id(const unsigned int id)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
+ #endif /* CONFIG_INTEGRITY_SIGNATURE */
+ 
+ #ifdef CONFIG_INTEGRITY_ASYMMETRIC_KEYS
+-- 
+2.34.1
 
-Didn't spot this v3 as I reviewed v2, please see my feedback on that
-version.
-
-Regards,
-Bjorn
-
-> ---
-> 
-> V3:
->  Resend with cover-letter
-> 
-> V2-version 2:
->  use rproc_has_feature in patch 1/2
-> V2-version1:
->  Nothing change in V2.
->  Only move this patch out from
->  https://patchwork.kernel.org/project/linux-remoteproc/list/?series=604364
-> 
->  drivers/remoteproc/remoteproc_core.c | 67 ++++++++++++++++++++--------
->  1 file changed, 48 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 69f51acf235e..366fad475898 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -1887,6 +1887,50 @@ static int __rproc_detach(struct rproc *rproc)
->  	return 0;
->  }
->  
-> +static int rproc_attach_recovery(struct rproc *rproc)
-> +{
-> +	int ret;
-> +
-> +	mutex_unlock(&rproc->lock);
-> +	ret = rproc_detach(rproc);
-> +	mutex_lock(&rproc->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (atomic_inc_return(&rproc->power) > 1)
-> +		return 0;
-> +
-> +	return rproc_attach(rproc);
-> +}
-> +
-> +static int rproc_firmware_recovery(struct rproc *rproc)
-> +{
-> +	const struct firmware *firmware_p;
-> +	struct device *dev = &rproc->dev;
-> +	int ret;
-> +
-> +	ret = rproc_stop(rproc, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* generate coredump */
-> +	rproc->ops->coredump(rproc);
-> +
-> +	/* load firmware */
-> +	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "request_firmware failed: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* boot the remote processor up again */
-> +	ret = rproc_start(rproc, firmware_p);
-> +
-> +	release_firmware(firmware_p);
-> +
-> +	return ret;
-> +}
-> +
->  /**
->   * rproc_trigger_recovery() - recover a remoteproc
->   * @rproc: the remote processor
-> @@ -1901,7 +1945,6 @@ static int __rproc_detach(struct rproc *rproc)
->   */
->  int rproc_trigger_recovery(struct rproc *rproc)
->  {
-> -	const struct firmware *firmware_p;
->  	struct device *dev = &rproc->dev;
->  	int ret;
->  
-> @@ -1915,24 +1958,10 @@ int rproc_trigger_recovery(struct rproc *rproc)
->  
->  	dev_err(dev, "recovering %s\n", rproc->name);
->  
-> -	ret = rproc_stop(rproc, true);
-> -	if (ret)
-> -		goto unlock_mutex;
-> -
-> -	/* generate coredump */
-> -	rproc->ops->coredump(rproc);
-> -
-> -	/* load firmware */
-> -	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "request_firmware failed: %d\n", ret);
-> -		goto unlock_mutex;
-> -	}
-> -
-> -	/* boot the remote processor up again */
-> -	ret = rproc_start(rproc, firmware_p);
-> -
-> -	release_firmware(firmware_p);
-> +	if (rproc_has_feature(rproc, RPROC_FEAT_ATTACH_RECOVERY))
-> +		ret = rproc_attach_recovery(rproc);
-> +	else
-> +		ret = rproc_firmware_recovery(rproc);
->  
->  unlock_mutex:
->  	mutex_unlock(&rproc->lock);
-> -- 
-> 2.30.0
-> 
