@@ -2,128 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14496C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346969AbiCKLtS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
+        id S244573AbiCKLxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 06:53:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239127AbiCKLtE (ORCPT
+        with ESMTP id S235279AbiCKLxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 06:49:04 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99855B3D7;
-        Fri, 11 Mar 2022 03:47:57 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 23F4B212B7;
-        Fri, 11 Mar 2022 11:47:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1646999276; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oeRZzyoEDQvlB5msCh0cXRSFmfvaW4btwhnt1U2zclM=;
-        b=d/o1GW9hJeVjx4oFkBxUzQSxiyt1cb1i7V1euFU/hpX66BDGyNjJ56Ouj/26THFpDgo1Y+
-        Yi3Nq/q7Bo8qvJQt8SjvuiFXYpxBbwgWAtOUC72CGEo+X8uZf6MX2Z5Cg0y+ULYKU/vb1Z
-        KP5Z/zDZ14m2M4/13JHZncvMR5RVn0w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1646999276;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oeRZzyoEDQvlB5msCh0cXRSFmfvaW4btwhnt1U2zclM=;
-        b=Q1cyZru8d1F2Pmf/fNESry/IBb3LROikVzGcGi5MG3Jd1HsVEIRbNKXOsd4ar1KMSdUfG4
-        wECQ0bwHi8ATXcCQ==
-Received: from vasant-suse.fritz.box (unknown [10.163.24.178])
-        by relay2.suse.de (Postfix) with ESMTP id E2218A3B88;
-        Fri, 11 Mar 2022 11:47:55 +0000 (UTC)
-From:   Vasant Karasulli <vkarasulli@suse.de>
-To:     Namjae Jeon <linkinjeon@kernel.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ddiss@suse.de
-Cc:     Vasant Karasulli <vkarasulli@suse.de>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH v3 1/2] exfat: add keep_last_dots mount option
-Date:   Fri, 11 Mar 2022 12:47:45 +0100
-Message-Id: <20220311114746.7643-2-vkarasulli@suse.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220311114746.7643-1-vkarasulli@suse.de>
-References: <20220311114746.7643-1-vkarasulli@suse.de>
+        Fri, 11 Mar 2022 06:53:49 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F82051329
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:52:45 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id e186so16620369ybc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:52:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vcfCQf2ipBXym0WGWa/TPLq262jF+MOIdkhc8cIElBc=;
+        b=qT6Ctf9FHvk5UXjURmdbs62M1JDay7M+EVARQ2dkMVVf+RhXGnyAClPHGmYONCKgow
+         INFKIBS3t7CwxZsdD/OeaAinCjIdI9blsmY/P5ICQv3iQaCppBePlntLQlpJNwjVGddz
+         Pi32uihRrfaFX6oxskxTdjd1f6+nJHG67qwGL4g3/xbfPn7sCZ2EeXmFLjg2xeB3Vj0p
+         QSjouGtbY9EYf7pU3UveTOT7zcaotD5rK7zgiVv+dYk9oTQtcaKEakM6MvUJxoKTS2S7
+         UDpZQSws0lcYUrYNO17coAtjXj2nFB6O+D6sqV1RhifF5q72MDMNArDfGDq7WM2bkiVB
+         oPbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vcfCQf2ipBXym0WGWa/TPLq262jF+MOIdkhc8cIElBc=;
+        b=LxI8x/9mJUaWOWw6hAssqddqimBgjikB+15eeXP2hsihMqgOiETDBv/tgrnhlgJWku
+         +23PWmYudROHbeSgrvf7wfx7bd1kYpoEfpVlCzxtkYo8ixgwUO7R4AAUvVwQZJDASodS
+         iv8zKD36GPc6SabJlGi2/XSZNthaThd2VVB7m/gMzubUYXN9VN1LsnlZ098S5MNb+YLo
+         21JUT/yYtja6gYJvD5oCcBMCwB8KyYpOf4ryqqqs5FogQIAnwOTaGW1K8nK5NfR3jR10
+         y/jl3DV+3cKRMvwMzMp293Qci8UEoaG8fLvv0Ay4qzyanE3oyqRQGfl7K5L+qO281DMT
+         PI0A==
+X-Gm-Message-State: AOAM532PC7diPouC4YgHCfSPe1pJsxgPkSi2iLCbl18i9WE1r/QAocIJ
+        UcBsLnRckEltf6X+eR3R1ixwbEKOIh++o8kQjR3wMA==
+X-Google-Smtp-Source: ABdhPJz/cuI5oGeD+7slacIT8yD/BzgUoTMLR5eYU9e7xyrQS31gC2q8RtTsPCwh4VJ0sXH2N3uPpHsFU23FwhMiVVs=
+X-Received: by 2002:a25:da91:0:b0:628:aa84:f69e with SMTP id
+ n139-20020a25da91000000b00628aa84f69emr8246947ybf.603.1646999564536; Fri, 11
+ Mar 2022 03:52:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220310140812.869208747@linuxfoundation.org>
+In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 11 Mar 2022 17:22:33 +0530
+Message-ID: <CA+G9fYsV1RA=jfBqG88NsZhdouCsB7=xg2Oq78AAL5_vUhObjw@mail.gmail.com>
+Subject: Re: [PATCH 5.10 00/58] 5.10.105-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "keep_last_dots" mount option will, in a
-subsequent commit, control whether or not trailing periods '.' are stripped
-from path components during file lookup or file creation.
+On Thu, 10 Mar 2022 at 19:54, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.10.105 release.
+> There are 58 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.105-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Suggested-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
-Co-developed-by: David Disseldorp <ddiss@suse.de>
-Signed-off-by: David Disseldorp <ddiss@suse.de>
----
- fs/exfat/exfat_fs.h | 3 ++-
- fs/exfat/super.c    | 7 +++++++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
-index 619e5b4bed10..c6800b880920 100644
---- a/fs/exfat/exfat_fs.h
-+++ b/fs/exfat/exfat_fs.h
-@@ -203,7 +203,8 @@ struct exfat_mount_options {
- 	/* on error: continue, panic, remount-ro */
- 	enum exfat_error_mode errors;
- 	unsigned utf8:1, /* Use of UTF-8 character set */
--		 discard:1; /* Issue discard requests on deletions */
-+		 discard:1, /* Issue discard requests on deletions */
-+		 keep_last_dots:1; /* Keep trailing periods in paths */
- 	int time_offset; /* Offset of timestamps from UTC (in minutes) */
- };
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-diff --git a/fs/exfat/super.c b/fs/exfat/super.c
-index 8c9fb7dcec16..4c3f80ed17b1 100644
---- a/fs/exfat/super.c
-+++ b/fs/exfat/super.c
-@@ -174,6 +174,8 @@ static int exfat_show_options(struct seq_file *m, struct dentry *root)
- 		seq_puts(m, ",errors=remount-ro");
- 	if (opts->discard)
- 		seq_puts(m, ",discard");
-+	if (opts->keep_last_dots)
-+		seq_puts(m, ",keep_last_dots");
- 	if (opts->time_offset)
- 		seq_printf(m, ",time_offset=%d", opts->time_offset);
- 	return 0;
-@@ -217,6 +219,7 @@ enum {
- 	Opt_charset,
- 	Opt_errors,
- 	Opt_discard,
-+	Opt_keep_last_dots,
- 	Opt_time_offset,
+## Build
+* kernel: 5.10.105-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.10.y
+* git commit: 222eae85893657f02832253fe1c164f7d0b2c88c
+* git describe: v5.10.104-59-g222eae858936
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.104-59-g222eae858936
 
- 	/* Deprecated options */
-@@ -243,6 +246,7 @@ static const struct fs_parameter_spec exfat_parameters[] = {
- 	fsparam_string("iocharset",		Opt_charset),
- 	fsparam_enum("errors",			Opt_errors, exfat_param_enums),
- 	fsparam_flag("discard",			Opt_discard),
-+	fsparam_flag("keep_last_dots",		Opt_keep_last_dots),
- 	fsparam_s32("time_offset",		Opt_time_offset),
- 	__fsparam(NULL, "utf8",			Opt_utf8, fs_param_deprecated,
- 		  NULL),
-@@ -297,6 +301,9 @@ static int exfat_parse_param(struct fs_context *fc, struct fs_parameter *param)
- 	case Opt_discard:
- 		opts->discard = 1;
- 		break;
-+	case Opt_keep_last_dots:
-+		opts->keep_last_dots = 1;
-+		break;
- 	case Opt_time_offset:
- 		/*
- 		 * Make the limit 24 just in case someone invents something
+## Test Regressions (compared to v5.10.104-43-ge5e4a8f0fb6e)
+No test regressions found.
+
+## Metric Regressions (compared to v5.10.104-43-ge5e4a8f0fb6e)
+No metric regressions found.
+
+## Test Fixes (compared to v5.10.104-43-ge5e4a8f0fb6e)
+No test fixes found.
+
+## Metric Fixes (compared to v5.10.104-43-ge5e4a8f0fb6e)
+No metric fixes found.
+
+## Test result summary
+total: 103231, pass: 87446, fail: 919, skip: 13751, xfail: 1115
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 46 passed, 14 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
 --
-2.32.0
-
+Linaro LKFT
+https://lkft.linaro.org
